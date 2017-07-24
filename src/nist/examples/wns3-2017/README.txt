@@ -94,6 +94,9 @@ The master script  is pre-configured with a shorter version of the PSCCH
 validation. Users can modify the parameters values with those suggested in the
 commented lines.
 
+NOTE: gawk 4.0.0 or later is required because the script uses multi-dimensional
+arrays.
+
 2. Output
 The master script will compute the mean and standard deviation of the PSCCH 
 resource collision ratios, and other PSCCH error ratios corresponding to each
