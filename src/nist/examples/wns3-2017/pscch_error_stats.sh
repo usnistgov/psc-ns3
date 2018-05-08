@@ -106,7 +106,7 @@ do
                     collided_periods += 1;
                   }
                 single_o += p_single_o;
-                if(p_sigle_o > 0)
+                if(p_single_o > 0)
                   {
                     so_periods += 1;
                   }
@@ -160,7 +160,7 @@ do
                 collided_periods += 1;
               }
             single_o += p_single_o;
-            if(p_sigle_o > 0)
+            if(p_single_o > 0)
               {
                 so_periods += 1;
               }
