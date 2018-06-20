@@ -129,6 +129,12 @@ private:
    * \param msg LteRrcSap::MeasurementReport 
    */
   void DoSendMeasurementReport (LteRrcSap::MeasurementReport msg);
+  /**
+   * Send sidelink UE information function
+   *
+   * \param msg LteRrcSap::SidelinkUeInformation 
+   */  
+  void DoSendSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg);
 
   /// Set ENB RRC SAP provider
   void SetEnbRrcSapProvider ();

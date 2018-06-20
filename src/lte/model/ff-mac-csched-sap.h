@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "ff-mac-common.h"
+#include "lte-sl-pool.h"
 
 namespace ns3 {
 
@@ -232,6 +233,22 @@ public:
 
     std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendorSpecificList
   };
+  /**
+   * Parameters to setup a pool
+   */
+  struct CschedPoolConfigReqParameters
+  {
+    uint32_t m_group;
+
+    Ptr<SidelinkCommResourcePool> m_pool;
+  };  
+  /**
+   * Parameters to release a pool
+   */
+  struct CschedPoolReleaseReqParameters
+  {
+    uint32_t m_group;
+  };
 
   //
   // CSCHED - MAC Scheduler Control SAP primitives
@@ -272,6 +289,11 @@ public:
    * \param params CschedUeReleaseReqParameters
    */
   virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params) = 0;
+
+  //we are not making those function purely virtual so not all templates need to support them
+  virtual void CschedPoolConfigReq (const struct CschedPoolConfigReqParameters& params) {};
+  
+  virtual void CschedPoolReleaseReq (const struct CschedPoolReleaseReqParameters& params) {};
 
 private:
 };
@@ -507,6 +529,92 @@ void
 MemberCschedSapProvider<C>::CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params)
 {
   m_scheduler->DoCschedUeReleaseReq (params);
+}
+
+
+/// MemberCschedSlSapProvider class
+template <class C>
+class MemberCschedSlSapProvider : public FfMacCschedSapProvider
+{
+public:
+  /**
+   * Constructor
+   *
+   * \param scheduler the scheduler class
+   */
+  MemberCschedSlSapProvider (C* scheduler);
+
+  // inherited from FfMacCschedSapProvider
+  virtual void CschedCellConfigReq (const struct CschedCellConfigReqParameters& params);
+  virtual void CschedUeConfigReq (const struct CschedUeConfigReqParameters& params);
+  virtual void CschedLcConfigReq (const struct CschedLcConfigReqParameters& params);
+  virtual void CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params);
+  virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params);
+  virtual void CschedPoolConfigReq (const struct CschedPoolConfigReqParameters& params);  
+  virtual void CschedPoolReleaseReq (const struct CschedPoolReleaseReqParameters& params);
+
+private:
+  MemberCschedSlSapProvider ();
+  C* m_scheduler; ///< scheduler class
+};
+
+template <class C>
+MemberCschedSlSapProvider<C>::MemberCschedSlSapProvider ()
+{
+}
+
+template <class C>
+MemberCschedSlSapProvider<C>::MemberCschedSlSapProvider (C* scheduler) : m_scheduler (scheduler)
+{
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedCellConfigReq (const struct CschedCellConfigReqParameters& params)
+{
+  m_scheduler->DoCschedCellConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedUeConfigReq (const struct CschedUeConfigReqParameters& params)
+{
+  m_scheduler->DoCschedUeConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedLcConfigReq (const struct CschedLcConfigReqParameters& params)
+{
+  m_scheduler->DoCschedLcConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params)
+{
+  m_scheduler->DoCschedLcReleaseReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params)
+{
+  m_scheduler->DoCschedUeReleaseReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedPoolConfigReq (const struct CschedPoolConfigReqParameters& params)
+{
+  m_scheduler->DoCschedPoolConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedPoolReleaseReq (const struct CschedPoolReleaseReqParameters& params)
+{
+  m_scheduler->DoCschedPoolReleaseReq (params);
 }
 
 

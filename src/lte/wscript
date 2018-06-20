@@ -131,7 +131,14 @@ def build(bld):
         'model/component-carrier.cc',
         'helper/cc-helper.cc',
         'model/component-carrier-ue.cc',
-        'model/component-carrier-enb.cc'
+        'model/component-carrier-enb.cc',
+        'model/lte-sl-disc-preconfig-pool-factory.cc',
+        'model/lte-sl-disc-resource-pool-factory.cc',
+        'model/lte-sl-pool.cc',
+        'model/lte-sl-pool-factory.cc',
+        'model/lte-sl-preconfig-pool-factory.cc',
+        'model/lte-sl-resource-pool-factory.cc',
+        'model/lte-sl-enb-rrc.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -192,7 +199,8 @@ def build(bld):
         'test/lte-test-carrier-aggregation.cc',
         'test/lte-test-aggregation-throughput-scale.cc',
         'test/lte-test-ipv6-routing.cc',
-        'test/lte-test-carrier-aggregation-configuration.cc'
+        'test/lte-test-carrier-aggregation-configuration.cc',
+        'test/test-lte-sidelink-scen-pool.cc'
         ]
 
     headers = bld(features='ns3header')
@@ -322,7 +330,14 @@ def build(bld):
         'helper/cc-helper.h',
         'model/component-carrier.h',
         'model/component-carrier-ue.h',
-        'model/component-carrier-enb.h'
+        'model/component-carrier-enb.h',
+        'model/lte-sl-disc-preconfig-pool-factory.h',
+        'model/lte-sl-disc-resource-pool-factory.h',
+        'model/lte-sl-pool.h',
+        'model/lte-sl-pool-factory.h',
+        'model/lte-sl-preconfig-pool-factory.h',
+        'model/lte-sl-resource-pool-factory.h',
+        'model/lte-sl-enb-rrc.h',
         ]
 
     if (bld.env['ENABLE_EMU']):

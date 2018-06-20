@@ -251,6 +251,17 @@ private:
   */
   void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
   /**
+  * \brief add Sidelink resource pool function
+  * \param group
+  * \parm Ptr<SidelinkCommResourcePool> pool
+  */
+  void DoAddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool);
+  /**
+  * \brief remove Sidelink resource pool function
+  * \param group id
+  */
+  void DoRemovePool (uint32_t group);
+  /**
   * \brief Get RACH configuration function
   * \returns LteEnbCmacSapProvider::RachConfig
   */

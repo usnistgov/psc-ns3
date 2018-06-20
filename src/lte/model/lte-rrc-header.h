@@ -1108,6 +1108,39 @@ private:
 
 };
 
+
+
+/**
+* This class manages the serialization/deserialization of MeasurementReport IE
+*/
+class SidelinkUeInformationHeader : public RrcUlDcchMessage
+{
+public:
+  SidelinkUeInformationHeader ();
+  ~SidelinkUeInformationHeader ();
+
+  // Inherited from RrcNistAsn1Header 
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+
+  /**
+  * Receives a SidelinkUeInformation IE and stores the contents into the class attributes
+  * @param msg The information element to parse
+  */
+  void SetMessage (LteRrcSap::SidelinkUeInformation msg);
+
+  /**
+  * Returns a SidelinkUeInformation IE from the values in the class attributes
+  * @return A SidelinkUeInformation, as defined in NistLteRrcSap
+  */
+  LteRrcSap::SidelinkUeInformation GetMessage () const;
+
+private:
+  LteRrcSap::SidelinkUeInformation m_sidelinkUeInformation;
+
+};
+  
 } // namespace ns3
 
 #endif // RRC_HEADER_H

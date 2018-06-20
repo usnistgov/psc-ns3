@@ -74,6 +74,8 @@ public:
   virtual void ReconfigureLc (LcInfo lcinfo);
   virtual void ReleaseLc (uint16_t rnti, uint8_t lcid);
   virtual void UeUpdateConfigurationReq (UeConfig params);
+  virtual void AddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool);
+  virtual void RemovePool (uint32_t group);
   virtual RachConfig GetRachConfig ();
   virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti);
   
@@ -128,6 +130,18 @@ void
 EnbMacMemberLteEnbCmacSapProvider::UeUpdateConfigurationReq (UeConfig params)
 {
   m_mac->DoUeUpdateConfigurationReq (params);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::AddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool)
+{
+  m_mac->DoAddPool (group, pool);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::RemovePool (uint32_t group)
+{
+  m_mac->DoRemovePool (group);
 }
 
 LteEnbCmacSapProvider::RachConfig 
@@ -919,6 +933,29 @@ LteEnbMac::DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params)
   req.m_transmissionMode = params.m_transmissionMode;
   req.m_reconfigureFlag = true;
   m_cschedSapProvider->CschedUeConfigReq (req);
+}
+
+void
+LteEnbMac::DoAddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool)
+{
+  NS_LOG_FUNCTION (this);
+
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedPoolConfigReqParameters req;
+  req.m_group = group;
+  req.m_pool = pool;
+  m_cschedSapProvider->CschedPoolConfigReq (req);  
+}
+
+void
+LteEnbMac::DoRemovePool (uint32_t group)
+{
+  NS_LOG_FUNCTION (this);
+
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedPoolReleaseReqParameters req;
+  req.m_group = group;
+  m_cschedSapProvider->CschedPoolReleaseReq (req);
 }
 
 LteEnbCmacSapProvider::RachConfig 

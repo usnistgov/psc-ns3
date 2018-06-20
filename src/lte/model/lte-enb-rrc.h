@@ -46,10 +46,12 @@
 #include <ns3/lte-ffr-rrc-sap.h>
 #include <ns3/lte-rlc.h>
 
+
 #include <map>
 #include <set>
 #include <ns3/component-carrier-enb.h>
 #include <vector>
+#include <ns3/lte-sl-enb-rrc.h>
 
 #define MIN_NO_CC 1
 #define MAX_NO_CC 5 // this is the maximum number of carrier components allowed by 3GPP up to R13
@@ -61,8 +63,6 @@ class LteSignalingRadioBearerInfo;
 class LteDataRadioBearerInfo;
 class LteEnbRrc;
 class Packet;
-
-
 
 /**
  * \ingroup lte
@@ -291,7 +291,11 @@ public:
    * \param msg the measrurement report
    */
   void RecvMeasurementReport (LteRrcSap::MeasurementReport msg);
-
+  /**
+   * Implement the LteEnbRrcSapProvider::RecvSidelinkUeInformation interface.
+   * \param msg the Sidelink UE information
+   */
+  void RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg);
 
   // METHODS FORWARDED FROM ENB CMAC SAP //////////////////////////////////////
 
@@ -564,6 +568,12 @@ private:
 
   /// Pending start data radio bearers
   bool m_pendingStartDataRadioBearers;
+
+  /**
+   * List of destinations for sidelink communications
+   */
+  std::vector<uint32_t> m_slDestinations;
+  bool m_slPoolChanged; ///< Define if Sidelink pool has changed
 
 }; // end of `class UeManager`
 
@@ -1084,6 +1094,13 @@ private:
    * \param msg the LteRrcSap::MeasurementReport
    */
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::SidelinkUeInformation interface to UeManager::SidelinkUeInformation
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::SidelinkUeInformation
+   */
+  void DoRecvSidelinkUeInformation (uint16_t rnti, LteRrcSap::SidelinkUeInformation msg);
 
   // S1 SAP methods
 
@@ -1480,7 +1497,11 @@ private:
   std::set<uint16_t> m_ueSrsConfigurationIndexSet; ///< UE SRS configuration index set
   uint16_t m_lastAllocatedConfigurationIndex; ///< last allocated configuration index
   bool m_reconfigureUes; ///< reconfigure UEs?
-
+ 
+  /**
+   * Sidelink configuration
+   */
+  Ptr<LteSlEnbRrc> m_sidelinkConfiguration;
   /**
    * The `QRxLevMin` attribute. One of information transmitted within the SIB1
    * message, indicating the required minimum RSRP level that any UE must

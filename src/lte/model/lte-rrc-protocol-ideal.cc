@@ -170,6 +170,16 @@ LteUeRrcProtocolIdeal::DoSendMeasurementReport (LteRrcSap::MeasurementReport msg
                         msg);
 }
 
+void
+LteUeRrcProtocolIdeal::DoSendSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
+{
+  Simulator::Schedule (RRC_IDEAL_MSG_DELAY, 
+                        &LteEnbRrcSapProvider::RecvSidelinkUeInformation,
+                        m_enbRrcSapProvider,
+                        m_rnti, 
+                        msg);
+}
+
 void 
 LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()
 {

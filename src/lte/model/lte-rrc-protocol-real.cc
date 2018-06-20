@@ -229,6 +229,24 @@ LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentComplete (LteRrcSap::Rrc
   m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
 
+void
+LteUeRrcProtocolReal::DoSendSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
+{
+  Ptr<Packet> packet = Create<Packet> ();
+
+  //todo: define header
+  SidelinkUeInformationHeader sidelinkUeInformationHeader;
+  sidelinkUeInformationHeader.SetMessage (msg);
+
+  packet->AddHeader (sidelinkUeInformationHeader);
+  
+  LtePdcpSapProvider::TransmitPdcpSduParameters transmitPdcpSduParameters;
+  transmitPdcpSduParameters.pdcpSdu = packet;
+  transmitPdcpSduParameters.rnti = m_rnti;
+  transmitPdcpSduParameters.lcid = 1;
+
+  m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
+}
 
 void 
 LteUeRrcProtocolReal::SetEnbRrcSapProvider ()

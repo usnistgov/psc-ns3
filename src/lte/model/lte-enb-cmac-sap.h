@@ -26,6 +26,7 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-common.h>
+#include <ns3/lte-sl-pool.h>
 
 namespace ns3 {
 
@@ -120,6 +121,16 @@ public:
      * Transmission mode [1..7] (i.e., SISO, MIMO, etc.)
      */
     uint8_t   m_transmissionMode;
+    /**
+     * UE id assigned for sidelink within this cell
+     */
+    //uint16_t m_slrnti;
+    
+    /**
+     * The list of destinations this UE can perform sidelink transmission
+     * The index is used by SL BSR to indicate which group the request is for
+     */
+    std::vector<uint32_t> m_slDestinations;
   };
 
   /** 
@@ -129,6 +140,18 @@ public:
    */
   virtual void UeUpdateConfigurationReq (UeConfig params) = 0;
 
+  /**
+   * Adds pool information for the given group
+   * \param group The Destination L2 ID
+   * \param pool The pool information
+   */
+  virtual void AddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool) = 0;
+  
+  /**
+   * Adds pool information for the given group
+   * \param group The Destination L2 ID
+   */
+  virtual void RemovePool (uint32_t group) = 0;
 
   /**
    * struct defining the RACH configuration of the MAC
