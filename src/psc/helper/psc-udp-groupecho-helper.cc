@@ -15,9 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Modified by: NIST
+ * This application helper, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
+ * is derived from udp-echo-helper.cc originally authored by 
+ * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
  */
+
 #include "psc-udp-groupecho-helper.h"
 #include "ns3/psc-udp-groupecho-server.h"
 #include "ns3/uinteger.h"

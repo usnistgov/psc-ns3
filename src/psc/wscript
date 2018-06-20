@@ -9,6 +9,12 @@
 def build(bld):
     module = bld.create_ns3_module('psc', ['network', 'antenna', 'buildings', 'lte'])
     module.source = [
+        'model/psc-hybrid-propagation-loss-model.cc',
+        'model/psc-indoor-propagation-loss-model.cc',
+        'model/psc-outdoor-propagation-loss-model.cc',
+        'model/psc-3gpp-propagation-loss-model.cc',
+        'model/psc-urbanmacrocell-propagation-loss-model.cc',
+        'model/psc-scm-urbanmacrocell-propagation-loss-model.cc',
         'model/psc-udp-groupecho-server.cc',
         'helper/psc-udp-groupecho-helper.cc',
         ]
@@ -20,6 +26,12 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'psc'
     headers.source = [
+        'model/psc-hybrid-propagation-loss-model.h',
+        'model/psc-indoor-propagation-loss-model.h',
+        'model/psc-outdoor-propagation-loss-model.h',
+        'model/psc-3gpp-propagation-loss-model.h',
+        'model/psc-urbanmacrocell-propagation-loss-model.h',
+        'model/psc-scm-urbanmacrocell-propagation-loss-model.h',
         'model/psc-udp-groupecho-server.h',
         'helper/psc-udp-groupecho-helper.h',
         ]

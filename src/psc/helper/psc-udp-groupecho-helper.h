@@ -15,8 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Modified by: NIST
- * Author: Fernando J. Cintron <fernando.cintron@nist.gov>
+ * This application helper, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
+ * is derived from udp-echo-helper.h originally authored by 
+ * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
+ *
  * 
  * PscUdpGroupEchoServer offers different modes of operation 
  * by setting the session timeout time accordingly:
@@ -28,6 +30,7 @@
  * (only forward packets to group) by setting the echoback parameter 
  * to false.
  */
+
 #ifndef PSC_UDP_GROUPECHO_HELPER_H
 #define PSC_UDP_GROUPECHO_HELPER_H
 

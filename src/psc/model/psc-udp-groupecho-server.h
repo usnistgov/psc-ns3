@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Modified by: NIST
- * Author: Fernando J. Cintron <fernando.cintron@nist.gov>
+ * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov> 
+ * is derived from udp-echo-server.h originally authored by University of Washington. 
  */
 
 #ifndef PSC_UDP_GROUPECHO_SERVER_H
@@ -95,16 +95,15 @@ private:
   void HandleRead (Ptr<Socket> socket);
   void PrintClients (void);
 
-  uint16_t m_port; //!< Port on which we listen for incoming packets.
-  uint16_t m_port_client; //!< Port on which we echo packets to client.
-  Ptr<Socket> m_socket; //!< IPv4 Socket
-  Ptr<Socket> m_socket6; //!< IPv6 Socket
-  Address m_local; //!< local multicast address
-  std::map<std::string,client> m_clients; //!< Group of clients
-  double  m_timeout; //!< Inactive client session expiration time <seconds>.
-  bool m_echoback; //!< Set server to echo back the client.
-  /// Callbacks for tracing the packet Rx events
-  TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
+  uint16_t m_port; ///< Port on which we listen for incoming packets.
+  uint16_t m_port_client; ///< Port on which we echo packets to client.
+  Ptr<Socket> m_socket; ///< IPv4 Socket
+  Ptr<Socket> m_socket6; ///< IPv6 Socket
+  Address m_local; ///< local multicast address
+  std::map<std::string,client> m_clients; ///< Group of clients
+  double  m_timeout; ///< Inactive client session expiration time <seconds>.
+  bool m_echoback; ///< Set server to echo back the client.
+  TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace; ///< Callbacks for tracing the packet Rx events
   
 };
 

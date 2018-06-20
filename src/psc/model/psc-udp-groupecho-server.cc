@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Modified by: NIST
+ * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov> 
+ * is derived from udp-echo-server.cc originally authored by University of Washington. 
  */
 
 #include "ns3/log.h"
@@ -235,9 +236,9 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
       if (it != m_clients.end ())
         {
           // Client is a group member. Udate timestamp.
-          //std::cout<<"Client found; old timestamp: " << it->second.tstamp.GetSeconds ()<<std::endl;
+          NS_LOG_DEBUG("Client found; old timestamp: " << it->second.tstamp.GetSeconds ());
           it->second.tstamp = Simulator::Now ();
-          //std::cout<<"New timestamp: " << it->second.tstamp.GetSeconds ()<<std::endl;
+          NS_LOG_DEBUG("New timestamp: " << it->second.tstamp.GetSeconds ());
         }
       else // Add client to group
         {
