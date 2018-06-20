@@ -10,6 +10,7 @@ def build(bld):
         'model/isotropic-antenna-model.cc',
         'model/cosine-antenna-model.cc',
         'model/parabolic-antenna-model.cc',
+        'model/parabolic-3d-antenna-model.cc',
         ]
  
     module_test = bld.create_ns3_module_test_library('antenna')
@@ -19,6 +20,7 @@ def build(bld):
         'test/test-isotropic-antenna.cc',
         'test/test-cosine-antenna.cc',
         'test/test-parabolic-antenna.cc',
+        'test/test-parabolic-3d-antenna.cc',
         ]
     
     headers = bld(features='ns3header')
@@ -29,6 +31,7 @@ def build(bld):
         'model/isotropic-antenna-model.h',
         'model/cosine-antenna-model.h',
         'model/parabolic-antenna-model.h',
+        'model/parabolic-3d-antenna-model.h',
         ]
 
     bld.ns3_python_bindings()
