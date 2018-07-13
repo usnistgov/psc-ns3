@@ -270,6 +270,27 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-pssch-bitmap.dia \
+	$(SRC)/lte/doc/source/figures/prose-non-roaming-arch.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1c.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1a.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-ue-phy.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-enb-rrc.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-ue-rrc.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-pool-config.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-in-coverage-tx.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-in-coverage-rx.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-out-of-coverage-tx.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-out-of-coverage-rx.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-pscch.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-psbch.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-psdch.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-pssch-harq1.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-pssch-harq2.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-pssch-harq3.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-bler-pssch-harq4.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-simple-scenario.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-simple-OofCovrg-scenario.dia \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/netanim/doc/figures/PacketStatistics.png \
 	$(SRC)/netanim/doc/figures/PacketStatistics.pdf \
@@ -373,6 +394,24 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-rlc-data-retx-ul.eps \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.eps \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
+	$(FIGURES)/lte-sl-pssch-bitmap.eps \
+	$(FIGURES)/prose-non-roaming-arch.eps \
+	$(FIGURES)/sidelink-scenarios-1c.eps \
+	$(FIGURES)/sidelink-scenarios-1a.eps \
+	$(FIGURES)/lte-sl-ue-phy.eps \
+	$(FIGURES)/lte-sl-in-coverage-tx.png \
+	$(FIGURES)/lte-sl-in-coverage-rx.png \
+	$(FIGURES)/lte-sl-out-of-coverage-tx.png \
+	$(FIGURES)/lte-sl-out-of-coverage-rx.png \
+	$(FIGURES)/lte-sl-bler-pscch.png \
+	$(FIGURES)/lte-sl-bler-psbch.png \
+	$(FIGURES)/lte-sl-bler-psdch.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq1.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq2.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq3.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq4.png \
+	$(FIGURES)/lte-sl-simple-scenario.eps \
+	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.eps \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 	$(FIGURES)/spectrum-analyzer-example.eps \

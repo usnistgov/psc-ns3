@@ -40,7 +40,7 @@ namespace ns3 {
  * \ingroup buildings
  * \brief mobility buildings information (to be used by mobility models)
  *
- * This model implements the managment of scenarios where users might be
+ * This model implements the management of scenarios where users might be
  * either indoor (e.g., houses, offices, etc.) and outdoor.
  * 
  */
@@ -83,6 +83,12 @@ public:
    */
   void SetOutdoor ();
 
+  /**
+   * Mark this MobilityBuildingInfo instance consistent
+   *
+   */
+  void SetMobilityModelConsistentFlag ();
+
   /** 
    * 
    * \return 
@@ -107,6 +113,14 @@ public:
    */
   Ptr<Building> GetBuilding ();
 
+  /**
+   * Returns true if this MobilityBuildingInfo made
+   * consistent
+   *
+   *\return MobilityModelConsistentFlag
+   */
+  bool GetMobilityModelConsistentFlag ();
+
 
 
 private:
@@ -116,6 +130,7 @@ private:
   uint8_t m_nFloor;
   uint8_t m_roomX;
   uint8_t m_roomY;
+  bool m_consistent;
 
 };
 

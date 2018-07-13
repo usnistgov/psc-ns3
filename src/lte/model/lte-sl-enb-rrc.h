@@ -56,91 +56,134 @@ namespace ns3 {
    */
 class LteSlEnbRrc : public Object
 {
-    friend class LteUeRrc;
-    friend class UeManager;
-    
-   public:
-    LteSlEnbRrc ();
+  friend class LteUeRrc;
+  friend class UeManager;
 
-    virtual ~LteSlEnbRrc (void);
+public:
+  LteSlEnbRrc ();
 
-    /**
-     * \brief makes a copy of the sidelink configuration
-     * \return a copy of the sidelink configuration
-     */
-    Ptr<LteSlEnbRrc> Copy ();
+  virtual ~LteSlEnbRrc (void);
 
-    
-    // inherited from Object
-  protected:
-    virtual void DoInitialize ();
-    virtual void DoDispose ();
+  /**
+   * \brief makes a copy of the Sidelink configuration
+   * \return A copy of the Sidelink configuration
+   */
+  Ptr<LteSlEnbRrc> Copy ();
 
-  public:
-    /**
-     *  Register this type.
-     *  \return The object TypeId.
-     */
-    static TypeId GetTypeId (void);
 
-    // /**
-    //  * Sets the SIB 18 information
-    //  * \param sib18 The content of the system information block to broadcast
-    //  */
-    // void SetSystemInformationBlockType18 (LteRrcSap::SystemInformationBlockType18 sib18);
+  // inherited from Object
+protected:
+  virtual void DoInitialize ();
+  virtual void DoDispose ();
 
-    /**
-     * Gets the SIB 18 information
-     * \return The SIB 18
-     */
-    LteRrcSap::SystemInformationBlockType18 GetSystemInformationType18 ();
+public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
+  static TypeId GetTypeId (void);
 
-    /**
-     * Sets the sidelink status, i.e., True for Enabled and False for Disabled
-     */
-    void SetSlEnabled (bool status);
+  /**
+   * Gets the SIB 18 information
+   * \return The SIB 18
+   */
+  LteRrcSap::SystemInformationBlockType18 GetSystemInformationType18 ();
 
-    /**
-     * Gets the sidelink status
-     * \return the sidelink status, i.e., True for Enabled and False for Disabled 
-     */    
-    bool IsSlEnabled ();
+  /**
+   * Sets the Sidelink status, i.e., True for Enabled and False for Disabled
+   * \param status The Sidelink Communication status True for Enabled and False for Disabled
+   */
+  void SetSlEnabled (bool status);
 
-    /**
-     * Utility function to preconfigure dedicated pools for UEs
-     * \param group The group associated with the pool
-     * \param pool The pool information
-     */
-    void AddPreconfiguredDedicatedPool (uint32_t group, LteRrcSap::SlCommTxResourcesSetup pool);
+  /**
+   * Gets the Sidelink status
+   * \return The Sidelink status, i.e., True for Enabled and False for Disabled
+   */
+  bool IsSlEnabled ();
 
-    /**
-     * Sets the pool to be used in exceptional cases
-     * \param pool The pool information
-     */
-    void SetCommTxPoolExceptional (LteRrcSap::SlCommTxPoolList pool);
-    
-  private:
+  /**
+   * Sets the Sidelink Discovery status, i.e., True for Enabled and False for Disabled
+   * \param status The Sidelink Discovery status True for Enabled and False for Disabled
+   */
+  void SetDiscEnabled (bool status);
 
-    bool IsPoolInList (LteRrcSap::SlCommResourcePool pool, LteRrcSap::SlCommResourcePool *pools, int nbPool);
-      
-    //Add information about pools allocated for communication and discovery
+  /**
+   * Gets the Sidelink Discovery status
+   * \return The Sidelink Discovery status, i.e., True for Enabled and False for Disabled
+   */
+  bool IsDiscEnabled ();
 
-    //std::map <uint16_t, LteRrcSap::SlCommTxResourcesSetup> m_dedicatedPoolMap; ///< Maps the UE's RNTI to its associated dedicated resources
 
-    std::map <uint32_t, LteRrcSap::SlCommTxResourcesSetup> m_preconfigDedicatedPoolMap; ///< Pre-provisioned dedicated pools using the group L2 address
-    LteRrcSap::SlCommTxPoolList m_preconfigCommTxPoolExceptional; ///< Pre-provisioned pool for exceptional cases
-    LteRrcSap::SystemInformationBlockType18 m_sib18; ///< System Information Block Type 18 currently broadcasted
-    bool m_slEnabled; ///< Indicates if Sidelink is enabled
+  /**
+   * Add Preconfigured Dedicated Pool function
+   * Utility function to preconfigure Sidelink Communication
+   * dedicated pools for UEs
+   *
+   * \param group The group associated with the pool
+   * \param pool The pool information
+   */
+  void AddPreconfiguredDedicatedPool (uint32_t group, LteRrcSap::SlCommTxResourcesSetup pool);
 
-    struct ActivePoolInfo {
-      Ptr<SidelinkCommResourcePool> m_pool; ///< Pointer to the pool
-      LteRrcSap::SlCommTxResourcesSetup m_poolSetup; ///< Pool in a different format
-      std::set<uint16_t> m_rntiSet; ///< List of UEs assigned to the pool
-    };
+  /**
+   * Add Preconfigured Dedicated Pool function
+   * Utility function to preconfigure Sidelink Discovery
+   * dedicated pools for UEs
+   *
+   * \param pool The Sidelink Discovery pool information
+   */
+  void AddPreconfiguredDedicatedPool (LteRrcSap::SlPreconfigDiscPool pool);
 
-    std::map <uint32_t, LteSlEnbRrc::ActivePoolInfo> m_activePoolMap; ///< Map of Active pools
-    
-  }; //end of 'class LteSlEnbRrc
+  /**
+   * Add discovery pool to the pools list function
+   * \param pool The Sidelink Discovery pool information
+   */
+  void AddDiscPool (LteRrcSap::SlDiscTxResourcesSetup pool);
+
+  /**
+   * Set Communication Tx pool exceptional function
+   * Sets the pool to be used in exceptional cases
+   *
+   * \param pool The pool information
+   */
+  void SetCommTxPoolExceptional (LteRrcSap::SlCommTxPoolList pool);
+
+  /**
+   * Get System information type 19 function
+   *
+   * \return The SIB 19
+   */
+  LteRrcSap::SystemInformationBlockType19 GetSystemInformationType19 ();
+
+private:
+  bool IsPoolInList (LteRrcSap::SlCommResourcePool pool, LteRrcSap::SlCommResourcePool *pools, int nbPool);
+  bool IsPoolInList (LteRrcSap::SlDiscResourcePool pool, LteRrcSap::SlDiscResourcePool *pools, int nbPool);
+
+  //Add information about pools allocated for communication and discovery
+  std::map <uint32_t, LteRrcSap::SlCommTxResourcesSetup> m_preconfigDedicatedPoolMap;   ///< Pre-provisioned dedicated pools using the group L2 address
+  // discovery pools
+  // 1 pool (m_discPoolList.scheduled.discTxConfig) if scheduled
+  // 1 or more pools (m_discPoolList.ueSelected.poolToAddModList.pools[i].pool
+  // with i < m_discPoolList.ueSelected.poolToAddModList.nbPools) if ue-selected
+  LteRrcSap::SlDiscTxResourcesSetup m_discPoolList;   ///< Sidelink Discovery pool list
+
+  LteRrcSap::SlPreconfigDiscPool m_preconfigDiscPool;   ///< Pre-configured Sidelink Discovery pool
+
+  LteRrcSap::SlCommTxPoolList m_preconfigCommTxPoolExceptional;   ///< Pre-provisioned pool for exceptional cases
+  LteRrcSap::SystemInformationBlockType18 m_sib18;   ///< System Information Block Type 18 currently broadcasted
+  LteRrcSap::SystemInformationBlockType19 m_sib19;   ///< System Information Block Type 19 currently broadcasted
+  bool m_slEnabled;   ///< Indicates if Sidelink is enabled
+  bool m_discEnabled;   ///< Indicates if Sidelink Discovery is enabled
+
+  struct ActivePoolInfo
+  {
+    Ptr<SidelinkCommResourcePool> m_pool;   ///< Pointer to the pool
+    LteRrcSap::SlCommTxResourcesSetup m_poolSetup;   ///< Pool in a different format
+    std::set<uint16_t> m_rntiSet;   ///< List of UEs assigned to the pool
+  };
+
+  std::map <uint32_t, LteSlEnbRrc::ActivePoolInfo> m_activePoolMap;   ///< Map of Active pools
+
+};   //end of 'class LteSlEnbRrc
 
 
 } // namespace ns3

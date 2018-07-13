@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef SINGLE_MODEL_SPECTRUM_CHANNEL_H
@@ -25,6 +26,7 @@
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-model.h>
 #include <ns3/traced-callback.h>
+#include <ns3/mobility-model.h>
 
 namespace ns3 {
 
@@ -122,6 +124,13 @@ private:
    * in a future release.
    */
   TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
+
+  /**
+   * The `Gain` trace source. Fired whenever a new path loss value
+   * is calculated. Exporting pointer to the mobility model of the transmitter and
+   * the receiver, tx antenna gain, rx antenna gain, propagation gain and pathloss
+   */
+   TracedCallback<Ptr<MobilityModel>, Ptr<MobilityModel>, double, double, double, double> m_gainTrace;
 };
 
 

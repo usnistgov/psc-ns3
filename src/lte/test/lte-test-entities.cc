@@ -167,6 +167,8 @@ LteTestRrc::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params)
   NS_LOG_FUNCTION (this << params.pdcpSdu->GetSize ());
   Ptr<Packet> p = params.pdcpSdu;
 //   NS_LOG_LOGIC ("PDU received = " << (*p));
+  params.srcL2Id = 0;
+  params.dstL2Id = 0;
 
   uint32_t dataLen = p->GetSize ();
   uint8_t *buf = new uint8_t[dataLen];
@@ -203,6 +205,8 @@ LteTestRrc::Start ()
   p.rnti = 1111;
   p.lcid = 222;
   p.pdcpSdu = Create<Packet> (m_pduSize);
+  p.srcL2Id = 0;
+  p.dstL2Id = 0;
   
   bool haveContext = false;
   Ptr<Node> node;
@@ -246,6 +250,8 @@ LteTestRrc::SendData (Time at, std::string dataToSend)
   LtePdcpSapProvider::TransmitPdcpSduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
+  p.srcL2Id = 0;
+  p.dstL2Id = 0;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.pdcpSdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
@@ -346,6 +352,8 @@ LteTestPdcp::SendData (Time time, std::string dataToSend)
   LteRlcSapProvider::TransmitPdcpPduParameters p;
   p.rnti = 1111;
   p.lcid = 222;
+  p.srcL2Id = 0;
+  p.dstL2Id = 0;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.pdcpPdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());

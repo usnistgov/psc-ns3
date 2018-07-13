@@ -17,6 +17,7 @@
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 #ifndef LTE_COMMON_H
 #define LTE_COMMON_H
@@ -223,6 +224,7 @@ struct PhyReceptionStatParameters
   uint8_t  m_ndi;          ///< new data indicator flag
   uint8_t  m_correctness;  ///< correctness of the TB received
   uint8_t  m_ccId;        ///< component carrier id
+  double m_sinrPerRb; ///< linear average SINR per RB
 
   /**
    *  TracedCallback signature.
@@ -231,6 +233,93 @@ struct PhyReceptionStatParameters
    * \todo The argument should be passed by const reference, since it's large.
    */
   typedef void (* TracedCallback)(const PhyReceptionStatParameters params);
+  
+};
+
+/// PhyTransmissionStatParameters structure
+struct SlPhyTransmissionStatParameters
+{
+  int64_t  m_timestamp; ///< in millisecond
+  uint16_t m_cellId;  ///< Cell ID of the attached Enb
+  uint64_t m_imsi;    ///< IMSI of the scheduled UE
+  uint16_t m_rnti; ///< RNTI
+  uint16_t m_resPscch; ///< Resource for PSCCH
+  uint8_t  m_tpc; ///< TPC
+  uint8_t  m_hopping; ///< hopping flag
+  uint8_t  m_rbStart; ///< models rb assignment
+  uint8_t  m_rbLen;   ///< models rb assignment
+  uint8_t  m_hoppingInfo; ///< models rb assignment when hopping is enabled
+  uint8_t  m_iTrp; ///< Time recourse pattern (TRP) index
+  uint8_t  m_ccId;    ///< component carrier id
+
+  /**
+   *  TracedCallback signature.
+   *
+   * \param [in] params Value of the PhyTransmissionionStatParameters.
+   * \todo The argument should be passed by const reference, since it's large.
+   */
+  typedef void (* TracedCallback)(const SlPhyTransmissionStatParameters params);
+
+};
+
+/// SlPhyTransmissionStatParameters structure
+struct SlPhyReceptionStatParameters
+{
+  int64_t  m_timestamp; ///< in millisecond
+  uint16_t m_cellId;  ///< Cell ID of the attached Enb
+  uint64_t m_imsi;    ///< IMSI of the scheduled UE
+  uint16_t m_rnti; ///< RNTI
+  uint16_t m_resPscch; ///< Resource for PSCCH
+  uint8_t  m_mcs;     ///< MCS for transport block
+  uint8_t  m_hopping; ///< hopping flag
+  uint8_t  m_rbStart; ///< models RB assignment
+  uint8_t  m_rbLen;   ///< models RB assignment
+  uint16_t m_size;         ///< Size of transport block
+  uint8_t  m_correctness;  ///< correctness of the TB received
+  uint8_t  m_iTrp; ///< Time recourse pattern (TRP) index
+  uint8_t   m_groupDstId; ///< Group destination ID
+
+  /**
+   *  TracedCallback signature.
+   *
+   * \param [in] params Value of the PhyReceptionStatParameters.
+   * \todo The argument should be passed by const reference, since it's large.
+   */
+  typedef void (* TracedCallback)(const SlPhyReceptionStatParameters params);
+
+};
+
+
+
+struct SlUeMacStatParameters
+{
+  int64_t  m_timestamp;    ///< in millisecond
+  uint16_t m_cellId;       ///< Cell ID of the attached Enb
+  uint64_t m_imsi;         ///< IMSI of the scheduled UE
+  uint16_t m_rnti;         ///< C-RNTI scheduled
+  uint32_t m_frameNo;       ///< the frame number
+  uint32_t m_subframeNo;   ///< the subframe number
+  uint8_t  m_mcs;          ///< MCS for transport block
+  uint16_t m_tbSize;       ///< Size of transport block in bytes
+  uint16_t m_pscchRi;      ///< PSCCH resource index
+  uint32_t m_pscchFrame1;    ///< PSCCH 1st transmission frame number
+  uint32_t m_pscchSubframe1; ///< PSCCH 1st transmission subframe number
+  uint32_t m_pscchFrame2;    ///< PSCCH 2st transmission frame number
+  uint32_t m_pscchSubframe2; ///< PSCCH 2st transmission subframe number
+  uint16_t m_psschTxStartRB;   ///< PSSCH transmission start RB
+  uint16_t m_psschTxLengthRB;  ///< PSSCH transmission length RB
+  uint16_t m_psschItrp;   ///< PSSCH I_TRP
+  uint32_t m_psschFrame;    ///< PSSCH frame used to transmitt
+  uint32_t m_psschSubframe;    ///< PSSCH subframe used to transmitt
+  uint32_t m_psschFrameStart;    ///< PSSCH frame start
+  uint32_t m_psschSubframeStart;    ///< PSSCH frame start
+
+  /**
+   *  TracedCallback signature.
+   *
+   * \param [in] params Value of the SlUeMacStatParameters.
+   */
+  typedef void (* TracedCallback)(const SlUeMacStatParameters params);
   
 };
 

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_RLC_AM_H

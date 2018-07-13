@@ -17,6 +17,7 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  *         Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include <ns3/object-factory.h>
@@ -161,13 +162,15 @@ LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_srsPeriodicity (0),
     m_srsStartTime (Seconds (0)),
     m_currentSrsOffset (0),
-    m_interferenceSampleCounter (0)
+    m_interferenceSampleCounter (0),
+    m_disableEnbPhy(false)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   m_enbCphySapProvider = new MemberLteEnbCphySapProvider<LteEnbPhy> (this);
   m_harqPhyModule = Create <LteHarqPhy> ();
   m_downlinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
   m_uplinkSpectrumPhy->SetHarqPhyModule (m_harqPhyModule);
+
 }
 
 TypeId
@@ -276,14 +279,21 @@ LteEnbPhy::DoInitialize ()
           haveNodeId = true;
         }
     }
-  if (haveNodeId)
-    {
-      Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
-    }
-  else
-    {
-      Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
-    }
+ if(!m_disableEnbPhy)
+  {
+   if (haveNodeId)
+     {
+       Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
+     }
+   else
+     {
+       Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
+     }
+  }
+ else
+   {
+       NS_LOG_INFO ("eNB disabled!");
+   }
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
   m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
   LtePhy::DoInitialize ();
@@ -583,6 +593,15 @@ LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgL
               }
           }
           break;
+        case LteControlMessage::SCI:
+          NS_LOG_INFO ("eNodeB receiving SL_DCI...ignore");
+          break;
+        case LteControlMessage::MIB_SL:
+          NS_LOG_INFO ("eNodeB receiving MIB_SL...ignore");
+          break;
+        case LteControlMessage::SL_DISC_MSG:
+          NS_LOG_INFO ("eNodeB receiving discovery message...ignore");
+          break;
         default:
           NS_FATAL_ERROR ("Unexpected LteControlMessage type");
           break;
@@ -635,7 +654,7 @@ LteEnbPhy::StartSubFrame (void)
   if (m_srsPeriodicity>0)
     { 
       // might be 0 in case the eNB has no UEs attached
-      NS_ASSERT_MSG (m_nrFrames > 1, "the SRS index check code assumes that frameNo starts at 1");
+      NS_ASSERT_MSG (m_nrFrames > 0, "the SRS index check code assumes that frameNo starts at 1");
       NS_ASSERT_MSG (m_nrSubFrames > 0 && m_nrSubFrames <= 10, "the SRS index check code assumes that subframeNo starts at 1");
       m_currentSrsOffset = (((m_nrFrames-1)*10 + (m_nrSubFrames-1)) % m_srsPeriodicity);
     }
@@ -807,7 +826,7 @@ LteEnbPhy::SendDataChannels (Ptr<PacketBurst> pb)
 {
   // set the current tx power spectral density
   SetDownlinkSubChannelsWithPowerAllocation (m_dlDataRbMap);
-  // send the current burts of packets
+  // send the current burst of packets
   NS_LOG_LOGIC (this << " eNB start TX DATA");
   std::list<Ptr<LteControlMessage> > ctrlMsgList;
   ctrlMsgList.clear ();
@@ -834,6 +853,12 @@ void
 LteEnbPhy::EndFrame (void)
 {
   NS_LOG_FUNCTION (this << Simulator::Now ().GetSeconds ());
+  if (m_nrFrames == 1024)
+    {
+      NS_LOG_DEBUG("Reset frame number to 0. Current frame number = " << m_nrFrames);
+      //StartFrame function is responsible to increase it.
+      m_nrFrames = 0;
+    }
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
@@ -1132,6 +1157,13 @@ LteEnbPhy::ReceiveLteUlHarqFeedback (UlInfoListElement_s mes)
   NS_LOG_FUNCTION (this);
   // forward to scheduler
   m_enbPhySapUser->UlInfoListElementHarqFeeback (mes);
+}
+
+void
+LteEnbPhy::DisableEnbPhy (bool disableEnbPhy)
+{
+  NS_LOG_FUNCTION (this << disableEnbPhy);
+  m_disableEnbPhy = disableEnbPhy;
 }
 
 };

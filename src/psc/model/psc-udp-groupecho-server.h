@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov> 
- * is derived from udp-echo-server.h originally authored by University of Washington. 
+ * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
+ * is derived from udp-echo-server.h originally authored by University of Washington.
  */
 
 #ifndef PSC_UDP_GROUPECHO_SERVER_H
@@ -31,27 +31,27 @@
 #include <map>
 #include <string>
 #include "ns3/traced-callback.h"
- 
+
 #define INF_SESSION -1
 #define NO_GROUP_SESSION 0
- 
+
 namespace ns3 {
 
 class Socket;
 class Packet;
 
-  /**
-   * Structure to store information about the client
-   */
+/**
+ * Structure to store information about the client
+ */
 struct client
 {
-  Address addrs; //!< The remote address of the client 
+  Address addrs; //!< The remote address of the client
   Address echo_addrs; //!< The address where to send a response
-  Time tstamp; //!< Last time the server heard from the client 
- };
+  Time tstamp; //!< Last time the server heard from the client
+};
 
 /**
- * \ingroup applications 
+ * \ingroup applications
  * \defgroup groupudpecho GroupUdpEcho
  */
 
@@ -61,7 +61,7 @@ struct client
  *
  * Every packet received is sent back to active group members.
  */
-class PscUdpGroupEchoServer : public Application 
+class PscUdpGroupEchoServer : public Application
 {
 public:
   /**
@@ -81,7 +81,6 @@ protected:
   virtual void DoDispose (void);
 
 private:
-
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
@@ -104,7 +103,7 @@ private:
   double  m_timeout; ///< Inactive client session expiration time <seconds>.
   bool m_echoback; ///< Set server to echo back the client.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace; ///< Callbacks for tracing the packet Rx events
-  
+
 };
 
 } // namespace ns3

@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
- * modified by: Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by: Marco Miozzo <mmiozzo@cttc.es>
  *        Convert MacStatsCalculator in PhyRxStatsCalculator
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "phy-rx-stats-calculator.h"
@@ -33,7 +34,9 @@ NS_OBJECT_ENSURE_REGISTERED (PhyRxStatsCalculator);
 
 PhyRxStatsCalculator::PhyRxStatsCalculator ()
   : m_dlRxFirstWrite (true),
-    m_ulRxFirstWrite (true)
+    m_ulRxFirstWrite (true),
+    m_slRxFirstWrite (true),
+    m_slPscchRxFirstWrite (true)
 {
   NS_LOG_FUNCTION (this);
 
@@ -60,6 +63,16 @@ PhyRxStatsCalculator::GetTypeId (void)
                    "Name of the file where the uplink results will be saved.",
                    StringValue ("UlRxPhyStats.txt"),
                    MakeStringAccessor (&PhyRxStatsCalculator::SetUlRxOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("SlRxOutputFilename",
+                   "Name of the file where the Sidelink results will be saved.",
+                   StringValue ("SlRxPhyStats.txt"),
+                   MakeStringAccessor (&PhyRxStatsCalculator::SetSlRxOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("SlPscchRxOutputFilename",
+                   "Name of the file where the Sidelink PSCHCH results will be saved.",
+                   StringValue ("SlPscchRxPhyStats.txt"),
+                   MakeStringAccessor (&PhyRxStatsCalculator::SetSlPscchRxOutputFilename),
                    MakeStringChecker ())
   ;
   return tid;
@@ -90,6 +103,30 @@ PhyRxStatsCalculator::GetDlRxOutputFilename (void)
 }
 
 void
+PhyRxStatsCalculator::SetSlRxOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetSlOutputFilename (outputFilename);
+}
+
+std::string
+PhyRxStatsCalculator::GetSlRxOutputFilename (void)
+{
+  return LteStatsCalculator::GetSlOutputFilename ();
+}
+
+void
+PhyRxStatsCalculator::SetSlPscchRxOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetSlPscchOutputFilename (outputFilename);
+}
+
+std::string
+PhyRxStatsCalculator::GetSlPscchRxOutputFilename (void)
+{
+  return LteStatsCalculator::GetSlPscchOutputFilename ();
+}
+
+void
 PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
 {
   NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti << params.m_layer << params.m_mcs << params.m_size << params.m_rv << params.m_ndi << params.m_correctness);
@@ -105,7 +142,7 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
           return;
         }
       m_dlRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
+      outFile << "% time\tcellId\tIMSI\tRNTI\ttxMode\tlayer\tmcs\tsize\trv\tndi\tcorrect\tavrgSinrPerRb\tccId";
       outFile << std::endl;
     }
   else
@@ -130,6 +167,7 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
   outFile << (uint32_t) params.m_rv << "\t";
   outFile << (uint32_t) params.m_ndi << "\t";
   outFile << (uint32_t) params.m_correctness << "\t";
+  outFile << (double) params.m_sinrPerRb << "\t";
   outFile << (uint32_t) params.m_ccId << std::endl;
   outFile.close ();
 }
@@ -150,7 +188,7 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
           return;
         }
       m_ulRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect\tccId";
+      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect\tavrgSinrPerRb\tccId";
       outFile << std::endl;
     }
   else
@@ -174,7 +212,96 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
   outFile << (uint32_t) params.m_rv << "\t";
   outFile << (uint32_t) params.m_ndi << "\t";
   outFile << (uint32_t) params.m_correctness << "\t";
+  outFile << (double) params.m_sinrPerRb << "\t";
   outFile << (uint32_t) params.m_ccId <<std::endl;
+  outFile.close ();
+}
+
+void
+PhyRxStatsCalculator::SlPhyReception (PhyReceptionStatParameters params)
+{
+  NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_timestamp << params.m_rnti << params.m_layer << params.m_mcs << params.m_size << params.m_rv << params.m_ndi << params.m_correctness);
+  NS_LOG_INFO ("Write SL Rx Phy Stats in " << GetSlRxOutputFilename ().c_str ());
+
+  std::ofstream outFile;
+  if (m_slRxFirstWrite == true)
+    {
+      outFile.open (GetSlRxOutputFilename ().c_str ());
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlRxOutputFilename ().c_str ());
+          return;
+        }
+      m_slRxFirstWrite = false;
+      outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tcorrect\tavrgSinrPerRb";
+      outFile << std::endl;
+    }
+  else
+    {
+      outFile.open (GetSlRxOutputFilename ().c_str (),  std::ios_base::app);
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlRxOutputFilename ().c_str ());
+          return;
+        }
+    }
+
+  outFile << params.m_timestamp << "\t";
+  outFile << (uint32_t) params.m_cellId << "\t";
+  outFile << params.m_imsi << "\t";
+  outFile << params.m_rnti << "\t";
+  outFile << (uint32_t) params.m_layer << "\t";
+  outFile << (uint32_t) params.m_mcs << "\t";
+  outFile << params.m_size << "\t";
+  outFile << (uint32_t) params.m_rv << "\t";
+  outFile << (uint32_t) params.m_ndi << "\t";
+  outFile << (uint32_t) params.m_correctness << "\t";
+  outFile << (double) params.m_sinrPerRb <<std::endl;
+  outFile.close ();
+}
+
+void
+PhyRxStatsCalculator::SlPscchReception (SlPhyReceptionStatParameters params)
+{
+  NS_LOG_FUNCTION (this << params.m_timestamp << params.m_cellId << params.m_imsi << params.m_rnti << (uint16_t)params.m_mcs << params.m_size << params.m_resPscch << (uint16_t)params.m_rbLen << (uint16_t)params.m_rbStart<< (uint16_t)params.m_iTrp << (uint16_t)params.m_hopping << (uint16_t)params.m_groupDstId << (uint16_t)params.m_correctness);
+  NS_LOG_INFO ("Write SL Rx PSCCH Stats in " << GetSlPscchRxOutputFilename ().c_str ());
+
+  std::ofstream outFile;
+  if (m_slPscchRxFirstWrite == true)
+    {
+      outFile.open (GetSlPscchRxOutputFilename ().c_str ());
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlPscchRxOutputFilename ().c_str ());
+          return;
+        }
+      m_slPscchRxFirstWrite = false;
+      outFile << "% time\tcellId\tIMSI\tRNTI\tmcs\tsize\tresPscch\trbLen\trbStart\tiTrp\thopping\tgroupDstId\tcorrect";
+      outFile << std::endl;
+    }
+  else
+    {
+      outFile.open (GetSlPscchRxOutputFilename ().c_str (),  std::ios_base::app);
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlPscchRxOutputFilename ().c_str ());
+          return;
+        }
+    }
+
+  outFile << params.m_timestamp << "\t";
+  outFile << (uint32_t) params.m_cellId << "\t";
+  outFile << params.m_imsi << "\t";
+  outFile << params.m_rnti << "\t";
+  outFile << (uint32_t) params.m_mcs << "\t";
+  outFile << params.m_size << "\t";
+  outFile << params.m_resPscch << "\t";
+  outFile << (uint32_t) params.m_rbLen << "\t";
+  outFile << (uint32_t) params.m_rbStart << "\t";
+  outFile << (uint32_t) params.m_iTrp << "\t";
+  outFile << (uint32_t) params.m_hopping << "\t";
+  outFile << (uint32_t) params.m_groupDstId << "\t";
+  outFile << (uint32_t) params.m_correctness <<std::endl;
   outFile.close ();
 }
 
@@ -222,6 +349,52 @@ PhyRxStatsCalculator::UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxSta
 
   params.m_imsi = imsi;
   phyRxStats->UlPhyReception (params);
+}
+
+void
+PhyRxStatsCalculator::SlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
+                      std::string path, PhyReceptionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyRxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  std::string pathSlUePhy  = path.substr (0, path.find ("/ComponentCarrierMapUe"));
+  if (phyRxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyRxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromLteNetDevice (pathSlUePhy);
+      phyRxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyRxStats->SlPhyReception (params);
+}
+
+void
+PhyRxStatsCalculator::SlPscchReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
+                      std::string path, SlPhyReceptionStatParameters params)
+{
+  NS_LOG_FUNCTION (phyRxStats << path);
+  uint64_t imsi = 0;
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  std::string pathSlUePhy  = path.substr (0, path.find ("/ComponentCarrierMapUe"));
+  if (phyRxStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      imsi = phyRxStats->GetImsiPath (pathAndRnti.str ());
+    }
+  else
+    {
+      imsi = FindImsiFromLteNetDevice (pathSlUePhy);
+      phyRxStats->SetImsiPath (pathAndRnti.str (), imsi);
+    }
+
+  params.m_imsi = imsi;
+  phyRxStats->SlPscchReception (params);
 }
 
 } // namespace ns3

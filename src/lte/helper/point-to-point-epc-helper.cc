@@ -18,6 +18,7 @@
  * Author: Jaume Nin <jnin@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
  *         Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include <ns3/point-to-point-epc-helper.h>
@@ -411,6 +412,40 @@ PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi
   return bearerId;
 }
 
+void
+PointToPointEpcHelper::ActivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  NS_ASSERT (ueLteDevice);
+  ueLteDevice->GetNas ()->ActivateSidelinkBearer (tft);
+}
+ 
+void
+PointToPointEpcHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  NS_ASSERT (ueLteDevice);
+  ueLteDevice->GetNas ()->DeactivateSidelinkBearer (tft);
+}
+
+void
+PointToPointEpcHelper::StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetNas ()->AddDiscoveryApps (apps, rxtx);
+}
+
+void
+PointToPointEpcHelper::StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetNas ()->RemoveDiscoveryApps (apps, rxtx);
+}
+  
 Ptr<Node>
 PointToPointEpcHelper::GetPgwNode ()
 {

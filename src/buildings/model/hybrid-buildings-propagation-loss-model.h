@@ -93,7 +93,7 @@ public:
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
-   * \returns the propagation loss (in dBm)
+   * \returns the propagation loss (in dB)
    */
   virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 

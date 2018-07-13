@@ -1363,6 +1363,14 @@ FdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
     {
       if (ret.m_dciList.size () > 0)
         {
+          std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+          itMap = m_allocationMaps.find (params.m_sfnSf);
+          if (itMap != m_allocationMaps.end ())
+            {
+              //remove obsolete info on allocation first
+              NS_LOG_DEBUG("Found SFnSF = "<<params.m_sfnSf<< " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+              m_allocationMaps.erase (itMap);
+            }
           m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           m_schedSapUser->SchedUlConfigInd (ret);
         }
@@ -1476,6 +1484,14 @@ FdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
           if (ret.m_dciList.size () > 0)
             {
               m_schedSapUser->SchedUlConfigInd (ret);
+            }
+          std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+          itMap = m_allocationMaps.find (params.m_sfnSf);
+          if (itMap != m_allocationMaps.end ())
+            {
+              //remove obsolete info on allocation first
+              NS_LOG_DEBUG("Found SFnSF = "<<params.m_sfnSf<< " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+              m_allocationMaps.erase (itMap);
             }
           m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           return;
@@ -1594,7 +1610,14 @@ FdMtFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
     }
   while (((*it).first != m_nextRntiUl)&&(rbPerFlow!=0));
 
-
+  std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+  itMap = m_allocationMaps.find (params.m_sfnSf);
+  if (itMap != m_allocationMaps.end ())
+    {
+      //remove obsolete info on allocation first
+      NS_LOG_DEBUG("Found SFnSF = "<<params.m_sfnSf<< " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+      m_allocationMaps.erase (itMap);
+    }
   m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
   m_schedSapUser->SchedUlConfigInd (ret);
 

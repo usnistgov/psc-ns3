@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef FF_MAC_COMMON_H
@@ -24,6 +25,8 @@
 #include <ns3/simple-ref-count.h>
 #include <ns3/ptr.h>
 #include <vector>
+#include<bitset>
+#include <map>
 
 
 /**
@@ -155,6 +158,55 @@ struct UlDciListElement_s
   uint8_t   m_dai; ///< DAI
   uint8_t   m_freqHopping; ///< freq hopping
   int8_t    m_pdcchPowerOffset; ///< CCH power offset
+};
+
+/**
+ * \brief See section 5.3.3.1.9 3GPP TS 36.212 Rel 12.4
+ * \struct SlDciListElement_s
+ */
+struct SlDciListElement_s
+{
+  uint16_t m_rnti; ///< RNTI
+  uint16_t m_resPscch; ///< Resource for PSCCH
+  uint8_t  m_tpc; ///< TPC
+  uint8_t  m_hopping; ///< hopping flag
+  uint8_t  m_rbStart; ///< models rb assignment
+  uint8_t  m_rbLen;   ///< models rb assignment
+  uint8_t  m_hoppingInfo; ///< models rb assignment when hopping is enabled
+  uint8_t  m_trp; ///< Time resource pattern (TRP)
+};
+
+/**
+ * \brief See section 5.4.3.1.1 3GPP TS 36.212 Rel 12.4
+ * \struct SciListElement_s
+ */
+struct SciListElement_s
+{
+  uint16_t  m_rnti; ///< RNTI
+  uint8_t   m_resPscch; ///< added for modeling
+  uint8_t   m_hopping; ///< hopping flag
+  uint8_t   m_rbStart; ///< models rb assignment
+  uint8_t   m_rbLen;   ///< models rb assignment
+  uint8_t   m_hoppingInfo; ///< models rb assignment when hopping is enabled
+  uint16_t  m_tbSize;  ///< added for modeling
+  uint8_t   m_trp; ///< Time resourse pattern (TRP)
+  uint8_t   m_mcs; ///< MCS
+  uint16_t  m_timing; ///< Timing advance indication
+  uint8_t   m_groupDstId; ///< Group destination ID
+};
+ 
+/**
+ * \brief See section 11.2.5 3GPP TS 24.334
+ * \struct SlDiscMsg
+ */
+struct SlDiscMsg 
+{
+  uint16_t  m_rnti; ///< added for modeling
+  uint8_t   m_resPsdch; ///< added for modeling
+  uint8_t m_msgType; ///< Message Type
+  std::bitset <184> m_proSeAppCode; ///< ProSe application code
+  uint32_t m_mic; ///< Message Integrity Check (MIC)
+  uint8_t m_utcBasedCounter; ///< UTC-based counter
 };
 
 /**
@@ -336,7 +388,7 @@ struct MacCeListElement_s
   /// MAC CE type enum
   enum MacCeType_e
   {
-    BSR, PHR, CRNTI
+    BSR, PHR, CRNTI, SLBSR
   } m_macCeType; ///< MAC CE type
   struct MacCeValue_u m_macCeValue; ///< MAC CE value
 };
@@ -469,7 +521,7 @@ struct UeSelected_s
  */
 struct SbMeasResult_s
 {
-  struct UeSelected_s           m_ueSelected; ///< UE selected
+  struct UeSelected_s m_ueSelected; ///< UE selected
   std::vector <struct HigherLayerSelected_s> m_higherLayerSelected; ///< higher layer selected
   struct BwPart_s               m_bwPart; ///< bw part
 };

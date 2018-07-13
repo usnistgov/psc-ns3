@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef FF_MAC_CSCHED_SAP_H
@@ -86,7 +87,7 @@ public:
     struct SiConfiguration_s m_siConfiguration; ///< SI configuration
 
     uint8_t m_ulBandwidth; ///< UL bandwidth
-    uint8_t m_dlBandwidth; ///< DL badnwidth
+    uint8_t m_dlBandwidth; ///< DL bandwidth
 
     enum NormalExtended_e m_ulCyclicPrefixLength; ///< UL cyclic prefix length
     enum NormalExtended_e m_dlCyclicPrefixLength; ///< DL cyclic prefix length
@@ -114,7 +115,7 @@ public:
     uint8_t m_deltaPucchShift; ///< delta pu cch shift
     uint8_t m_nrbCqi; ///< nrb CQI
     uint8_t m_ncsAn; ///< ncs an
-    uint8_t m_srsSubframeConfiguration; ///< SRS subframe confguration
+    uint8_t m_srsSubframeConfiguration; ///< SRS subframe configuration
     uint8_t m_srsSubframeOffset; ///< SRS subframe offset
     uint8_t m_srsBandwidthConfiguration; ///< SRS bandwidth configuration
     bool    m_srsMaxUpPts; ///< SRS maximum up pts
@@ -194,6 +195,8 @@ public:
     uint8_t   m_ackNackRepetitionFactor; ///< ackNackRepetitionFactor
 
     std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendorSpecificList
+
+    std::vector <uint32_t> m_slDestinations;
   };
 
   /**
@@ -234,7 +237,7 @@ public:
     std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendorSpecificList
   };
   /**
-   * Parameters to setup a pool
+   * Parameters to setup a Sidelink communication pool
    */
   struct CschedPoolConfigReqParameters
   {
@@ -243,11 +246,28 @@ public:
     Ptr<SidelinkCommResourcePool> m_pool;
   };  
   /**
-   * Parameters to release a pool
+   * Parameters to release a Sidelink communication pool
    */
   struct CschedPoolReleaseReqParameters
   {
     uint32_t m_group;
+  };
+  /**
+   * Parameters to setup a Sidelink discovery pool
+   */
+  struct CschedDiscPoolConfigReqParameters
+  {
+    uint32_t m_discTxResourceReq;
+
+    Ptr<SidelinkDiscResourcePool> m_pool;
+  };
+
+  /**
+   * Parameters to release a Sidelink discovery pool
+   */
+  struct CschedDiscPoolReleaseReqParameters
+  {
+    uint32_t m_discTxResourceReq;
   };
 
   //
@@ -291,9 +311,31 @@ public:
   virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params) = 0;
 
   //we are not making those function purely virtual so not all templates need to support them
+  /**
+   * \brief CSCHED_POOL_CONFIG_REQ
+   *
+   * \param params CschedPoolConfigReqParameters
+   */
   virtual void CschedPoolConfigReq (const struct CschedPoolConfigReqParameters& params) {};
-  
+  /**
+   * \brief CSCHED_POOL_RELEASE_REQ
+   *
+   * \param params CschedPoolConfigReqParameters
+   *
+   */
   virtual void CschedPoolReleaseReq (const struct CschedPoolReleaseReqParameters& params) {};
+  /**
+   * \brief CSCHED_DISC_POOL_CONFIG_REQ
+   *
+   * \param params CschedDiscPoolConfigReqParameters
+   */
+  virtual void CschedDiscPoolConfigReq (const struct CschedDiscPoolConfigReqParameters& params) {};
+  /**
+   * \brief CSCHED_DISC_POOL_RELEASE_REQ
+   *
+   * \param params CschedDiscPoolConfigReqParameters
+   */
+  virtual void CschedDiscPoolReleaseReq (const struct CschedDiscPoolReleaseReqParameters& params) {};
 
 private:
 };
@@ -552,6 +594,8 @@ public:
   virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params);
   virtual void CschedPoolConfigReq (const struct CschedPoolConfigReqParameters& params);  
   virtual void CschedPoolReleaseReq (const struct CschedPoolReleaseReqParameters& params);
+  virtual void CschedDiscPoolConfigReq (const struct CschedDiscPoolConfigReqParameters& params);
+  virtual void CschedDiscPoolReleaseReq (const struct CschedDiscPoolReleaseReqParameters& params);
 
 private:
   MemberCschedSlSapProvider ();
@@ -615,6 +659,20 @@ void
 MemberCschedSlSapProvider<C>::CschedPoolReleaseReq (const struct CschedPoolReleaseReqParameters& params)
 {
   m_scheduler->DoCschedPoolReleaseReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedDiscPoolConfigReq (const struct CschedDiscPoolConfigReqParameters& params)
+{
+  m_scheduler->DoCschedDiscPoolConfigReq (params);
+}
+
+template <class C>
+void
+MemberCschedSlSapProvider<C>::CschedDiscPoolReleaseReq (const struct CschedDiscPoolReleaseReqParameters& params)
+{
+  m_scheduler->DoCschedDiscPoolReleaseReq (params);
 }
 
 

@@ -51,6 +51,7 @@ MobilityBuildingInfo::MobilityBuildingInfo ()
   m_nFloor = 1;
   m_roomX = 1;
   m_roomY = 1;
+  m_consistent = false;
 }
 
 
@@ -62,12 +63,14 @@ MobilityBuildingInfo::MobilityBuildingInfo (Ptr<Building> building)
   m_nFloor = 1;
   m_roomX = 1;
   m_roomY = 1;
+  m_consistent = false;
 }
 
 bool
 MobilityBuildingInfo::IsIndoor (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF(!m_consistent, "This MobilityBuildingInfo is not consistent. You should call BuildingsHelper::MakeMobilityModelConsistent at least once");
   return (m_indoor);
 }
 
@@ -75,6 +78,7 @@ bool
 MobilityBuildingInfo::IsOutdoor (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF(!m_consistent, "This MobilityBuildingInfo is not consistent. You should call BuildingsHelper::MakeMobilityModelConsistent at least once");
   return (!m_indoor);
 }
 
@@ -126,6 +130,13 @@ MobilityBuildingInfo::SetOutdoor (void)
   m_indoor = false;
 }
 
+void
+MobilityBuildingInfo::SetMobilityModelConsistentFlag (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_consistent = true;
+}
+
 uint8_t
 MobilityBuildingInfo::GetFloorNumber (void)
 {
@@ -153,6 +164,13 @@ MobilityBuildingInfo::GetBuilding ()
 {
   NS_LOG_FUNCTION (this);
   return (m_myBuilding);
+}
+
+bool
+MobilityBuildingInfo::GetMobilityModelConsistentFlag (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_consistent;
 }
 
   

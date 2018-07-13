@@ -46,7 +46,6 @@ namespace ns3 {
 class LteSlDiscPreconfigPoolFactory : public LteSlDiscResourcePoolFactory
 {
 public:
-
   /**
    * Create a preconfigured discovery pool
    */

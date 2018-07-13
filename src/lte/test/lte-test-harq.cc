@@ -237,6 +237,8 @@ LenaHarqTestCase::DoRun (void)
   // for debugging purposes
   lena->EnableMacTraces ();
 
+  BuildingsHelper::MakeMobilityModelConsistent ();
+
   Simulator::Run ();
 
   /**

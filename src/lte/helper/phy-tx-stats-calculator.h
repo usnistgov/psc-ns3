@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
- * modified by: Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by: Marco Miozzo <mmiozzo@cttc.es>
  *        Convert MacStatsCalculator in PhyTxStatsCalculator
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef PHY_TX_STATS_CALCULATOR_H_
@@ -70,38 +71,38 @@ public:
   /**
    * Set the name of the file where the UL Tx PHY statistics will be stored.
    *
-   * @param outputFilename string with the name of the file
+   * \param outputFilename The string with the name of the file
    */
   void SetUlTxOutputFilename (std::string outputFilename);
 
   /**
    * Get the name of the file where the UL RX PHY statistics will be stored.
-   * @return the name of the file where the UL RX PHY statistics will be stored
+   * \return The name of the file where the UL RX PHY statistics will be stored
    */
   std::string GetUlTxOutputFilename (void);
 
   /**
    * Set the name of the file where the DL TX PHY statistics will be stored.
    *
-   * @param outputFilename string with the name of the file
+   * \param outputFilename The string with the name of the file
    */
   void SetDlTxOutputFilename (std::string outputFilename);
 
   /**
    * Get the name of the file where the DL TX PHY statistics will be stored.
-   * @return the name of the file where the DL TX PHY statistics will be stored
+   * \return The name of the file where the DL TX PHY statistics will be stored
    */
   std::string GetDlTxOutputFilename (void);
 
   /**
-   * Notifies the stats calculator that an downlink trasmission has occurred.
-   * @param params Trace information regarding PHY transmission stats
+   * Notifies the stats calculator that an downlink transmission has occurred.
+   * \param params The trace information regarding PHY transmission stats
    */
   void DlPhyTransmission (PhyTransmissionStatParameters params);
 
   /**
-   * Notifies the stats calculator that an uplink trasmission has occurred.
-   * @param params Trace information regarding PHY transmission stats
+   * Notifies the stats calculator that an uplink transmission has occurred.
+   * \param params The trace information regarding PHY transmission stats
    */
   void UlPhyTransmission (PhyTransmissionStatParameters params);
 
@@ -143,6 +144,13 @@ private:
    */
   bool m_ulTxFirstWrite;
 
+  /**
+   * When writing Sidelink TX PHY statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
+  bool m_slTxFirstWrite;
 };
 
 } // namespace ns3

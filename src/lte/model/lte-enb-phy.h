@@ -17,6 +17,7 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef ENB_LTE_PHY_H
@@ -299,6 +300,14 @@ public:
   void SetHarqPhyModule (Ptr<LteHarqPhy> harq);
 
   /**
+   * \brief enable or disable enb Phy
+   *
+   * \param enableEnbPhy
+   * \TODO remove it after RLF implementation
+   */
+  void DisableEnbPhy (bool disableEnbPhy);
+
+  /**
    * TracedCallback signature for the linear average of SRS SINRs.
    *
    * \param [in] cellId
@@ -509,6 +518,7 @@ private:
    */
   uint16_t m_interferenceSamplePeriod;
   uint16_t m_interferenceSampleCounter; ///< interference sample counter
+  bool m_disableEnbPhy; ///< switch to disable eNB PHY
 
   /**
    * The `DlPhyTransmission` trace source. Contains trace information regarding

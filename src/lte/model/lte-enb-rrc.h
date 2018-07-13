@@ -18,9 +18,9 @@
  * Authors: Nicola Baldo <nbaldo@cttc.es>
  *          Marco Miozzo <mmiozzo@cttc.es>
  *          Manuel Requena <manuel.requena@cttc.es> 
- * Modified by:
- *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_ENB_RRC_H
@@ -45,7 +45,7 @@
 #include <ns3/lte-anr-sap.h>
 #include <ns3/lte-ffr-rrc-sap.h>
 #include <ns3/lte-rlc.h>
-
+#include "ns3/random-variable-stream.h"
 
 #include <map>
 #include <set>
@@ -573,7 +573,17 @@ private:
    * List of destinations for sidelink communications
    */
   std::vector<uint32_t> m_slDestinations;
-  bool m_slPoolChanged; ///< Define if Sidelink pool has changed
+
+  bool m_slPoolChanged; ///< Define if Sidelink Communication pool has changed
+
+  uint8_t m_discTxResourceReq; ///< Sidelink Discovery resources requested by the UE
+
+  bool m_discPoolChanged; ///< Define if Sidelink Discovery pool has changed
+
+  /**
+   * Uniform distribution to define the discovery pool in case of random selection
+   */
+  Ptr<UniformRandomVariable> m_rand;
 
 }; // end of `class UeManager`
 

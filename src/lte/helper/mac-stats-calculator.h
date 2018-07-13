@@ -17,13 +17,15 @@
  *
  * Author: Jaume Nin <jnin@cttc.es>
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef MAC_STATS_CALCULATOR_H_
 #define MAC_STATS_CALCULATOR_H_
 
 #include "ns3/lte-stats-calculator.h"
+#include "ns3/lte-common.h"
 #include "ns3/nstime.h"
 #include "ns3/uinteger.h"
 #include <string>
@@ -91,6 +93,35 @@ public:
    */
   std::string GetDlOutputFilename (void);
 
+  //Sidelink
+
+  /**
+   * Set the name of the file where the Sidelink PSCCH UE MAC statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetSlUeCchOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the Sidelink PSCCH UE MAC statistics will be stored.
+   * @return the name of the file where the Sidelink statistics will be stored
+   */
+  std::string GetSlUeCchOutputFilename (void);
+
+  /**
+   * Set the name of the file where the Sidelink PSSCH UE MAC statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetSlUeSchOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the Sidelink PSSCH UE MAC statistics will be stored.
+   * @return the name of the file where the Sidelink statistics will be stored
+   */
+  std::string GetSlUeSchOutputFilename (void);
+
+
   /**
    * Notifies the stats calculator that an downlink scheduling has occurred.
    * @param cellId Cell ID of the attached Enb
@@ -147,6 +178,28 @@ public:
   static void UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
                              uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
                              uint8_t mcs, uint16_t size, uint8_t componentCarrierId);
+  //Sidelink
+
+  /**
+   * Trace sink for the ns3::LteUeMac::SlPscchScheduling trace source
+   */
+  static void SlUeCchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params);
+
+  /**
+   * Trace sink for the ns3::LteUeMac::SlPsschScheduling trace source
+   */
+  static void SlUeSchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params);
+
+  /**
+   * Notifies the stats calculator that a Sidelink PSCCH UE MAC scheduling has occurred.
+   */
+  void SlUeCchScheduling (SlUeMacStatParameters params);
+
+   /**
+   * Notifies the stats calculator that a Sidelink PSSCH UE MAC scheduling has occurred.
+   */
+  void SlUeSchScheduling (SlUeMacStatParameters params);
+
 
 
 private:
@@ -165,6 +218,22 @@ private:
    * files have not been opened yet
    */
   bool m_ulFirstWrite;
+
+  /**
+   * When writing Sidelink PSCCH UE MAC statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
+  bool m_slUeCchFirstWrite;
+
+  /**
+   * When writing Sidelink PSSCH UE MAC statistics first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
+  bool m_slUeSchFirstWrite;
 
 };
 

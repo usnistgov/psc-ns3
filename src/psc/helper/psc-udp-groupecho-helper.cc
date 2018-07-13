@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * This application helper, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
- * is derived from udp-echo-helper.cc originally authored by 
+ * is derived from udp-echo-helper.cc originally authored by
  * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
  */
 
@@ -34,14 +34,14 @@ PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port)
   SetAttribute ("Port", UintegerValue (port));
 }
 
-  PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port, double stime)
+PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port, double stime)
 {
   m_factory.SetTypeId (PscUdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
   SetAttribute ("Timeout", DoubleValue (stime));
 }
 
-  PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback)
+PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback)
 {
   m_factory.SetTypeId (PscUdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
@@ -49,9 +49,9 @@ PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port)
   SetAttribute ("Echo", BooleanValue (echoback));
 }
 
-void 
+void
 PscUdpGroupEchoServerHelper::SetAttribute (
-  std::string name, 
+  std::string name,
   const AttributeValue &value)
 {
   m_factory.Set (name, value);

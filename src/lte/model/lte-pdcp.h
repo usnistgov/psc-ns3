@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_PDCP_H
@@ -64,6 +65,18 @@ public:
    */
   void SetLcId (uint8_t lcId);
 
+  /**
+   * Sets the source L2 Id for sidelink identification of the RLC UM and PDCP entity
+   * \param src
+   */
+  void SetSourceL2Id (uint32_t src);
+   
+  /**
+   * Sets the source L2 Id for sidelink identification of the RLC UM PDCP entity
+   * \param src
+   */
+  void SetDestinationL2Id (uint32_t dst);
+ 
   /**
    *
    *
@@ -164,7 +177,9 @@ protected:
 
   uint16_t m_rnti; ///< RNTI
   uint8_t m_lcid; ///< LCID
-
+  uint32_t m_srcL2Id;  ///< Source L2 ID (24 bits)
+  uint32_t m_dstL2Id;  ///< Destination L2 ID (24 bits)
+    
   /**
    * Used to inform of a PDU delivery to the RLC SAP provider.
    * The parameters are RNTI, LCID and bytes delivered

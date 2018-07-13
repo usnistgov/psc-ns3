@@ -192,7 +192,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (ueNodes);
   BuildingsHelper::Install (ueNodes);
-  
+
   // remove random shadowing component
   lena->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
   lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
@@ -245,6 +245,8 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (m_statsStartTime));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (statsDuration));
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
 
   Simulator::Run ();
 
@@ -401,6 +403,8 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (m_statsStartTime));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (statsDuration));
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
 
   Simulator::Run ();
   

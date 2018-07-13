@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_PDCP_SAP_H
@@ -45,6 +46,8 @@ public:
     Ptr<Packet> pdcpSdu;  /**< the RRC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
+    uint32_t    srcL2Id;  /**< Source L2 ID (24 bits) */
+    uint32_t    dstL2Id;  /**< Destination L2 ID (24 bits) */
   };
 
   /**
@@ -78,6 +81,8 @@ public:
     Ptr<Packet> pdcpSdu;  /**< the RRC PDU */
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
+    uint32_t    srcL2Id;  /**< Source L2 ID (24 bits) */
+    uint32_t    dstL2Id;  /**< Destination L2 ID (24 bits) */    
   };
 
   /**

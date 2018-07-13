@@ -133,13 +133,31 @@ LteHarqPhy::UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uin
   NS_LOG_FUNCTION (this << (uint16_t) id << mi);
   if (m_miDlHarqProcessesInfoMap.at (layer).at (id).size () == 3)  // MAX HARQ RETX
     {
-      // HARQ should be disabled -> discard info
+      NS_LOG_DEBUG("Downlink HARQ should be disabled -> discard info");
       return;
     }
   HarqProcessInfoElement_t el;
   el.m_mi = mi;
   el.m_infoBits = infoBytes * 8;
   el.m_codeBits = codeBytes * 8;
+  m_miDlHarqProcessesInfoMap.at (layer).at (id).push_back (el);
+}
+
+
+void
+LteHarqPhy::UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double sinr)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) id << sinr);
+  if (m_miDlHarqProcessesInfoMap.at (layer).at (id).size () == 3)  // MAX HARQ RETX
+    {
+      NS_LOG_DEBUG("Downlink HARQ should be disabled -> discard info");
+      return;
+    }
+  HarqProcessInfoElement_t el;
+  el.m_mi = 0;
+  el.m_infoBits = 0;
+  el.m_codeBits = 0;
+  el.m_sinr = sinr;
   m_miDlHarqProcessesInfoMap.at (layer).at (id).push_back (el);
 }
 
@@ -178,7 +196,7 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBy
     {
       if ((*it).second.at (0).size () == 3) // MAX HARQ RETX
         {
-          // HARQ should be disabled -> discard info
+          NS_LOG_DEBUG("Uplink HARQ should be disabled -> discard info");
           return;
         }
       
@@ -196,6 +214,51 @@ LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBy
       (*it).second.at (7).push_back (el);
     }
 }
+
+
+void
+LteHarqPhy::UpdateUlHarqProcessStatus (uint16_t rnti, double sinr)
+{
+  NS_LOG_FUNCTION (this << rnti << sinr);
+  std::map <uint16_t, std::vector <HarqProcessInfoList_t> >::iterator it;
+  it = m_miUlHarqProcessesInfoMap.find (rnti);
+  if (it==m_miUlHarqProcessesInfoMap.end ())
+    {
+      // new entry
+      std::vector <HarqProcessInfoList_t> harqList;
+      harqList.resize (8);
+      HarqProcessInfoElement_t el;
+      el.m_mi = 0;
+      el.m_infoBits = 0;
+      el.m_codeBits = 0;
+      el.m_sinr = sinr;
+      harqList.at (7).push_back (el);
+      m_miUlHarqProcessesInfoMap.insert (std::pair <uint16_t, std::vector <HarqProcessInfoList_t> > (rnti, harqList));
+    }
+  else
+    {
+      if ((*it).second.at (0).size () == 3) // MAX HARQ RETX
+        {
+          NS_LOG_DEBUG("Uplink HARQ should be disabled -> discard info");
+          return;
+        }
+
+//       move current status back at the end to maintain full history
+      HarqProcessInfoList_t list = (*it).second.at (0);
+      for (uint8_t i = 0; i < list.size (); i++)
+        {
+          (*it).second.at (7).push_back (list.at (i));
+        }
+
+      HarqProcessInfoElement_t el;
+      el.m_mi = 0;
+      el.m_infoBits = 0;
+      el.m_codeBits = 0;
+      el.m_sinr = sinr;
+      (*it).second.at (7).push_back (el);
+    }
+}
+
 
 void
 LteHarqPhy::ResetUlHarqProcessStatus (uint16_t rnti, uint8_t id)

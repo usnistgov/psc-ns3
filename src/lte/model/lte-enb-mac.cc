@@ -17,9 +17,9 @@
  *
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  *         Nicola Baldo  <nbaldo@cttc.es>
- * Modified by:
- *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 
@@ -76,6 +76,8 @@ public:
   virtual void UeUpdateConfigurationReq (UeConfig params);
   virtual void AddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool);
   virtual void RemovePool (uint32_t group);
+  virtual void AddPool (uint8_t resReq, Ptr<SidelinkDiscResourcePool> pool);
+  virtual void RemoveDiscPool (uint8_t resReq);
   virtual RachConfig GetRachConfig ();
   virtual AllocateNcRaPreambleReturnValue AllocateNcRaPreamble (uint16_t rnti);
   
@@ -142,6 +144,18 @@ void
 EnbMacMemberLteEnbCmacSapProvider::RemovePool (uint32_t group)
 {
   m_mac->DoRemovePool (group);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::AddPool (uint8_t resReq, Ptr<SidelinkDiscResourcePool> pool)
+{
+  m_mac->DoAddPool (resReq, pool);
+}
+
+void
+EnbMacMemberLteEnbCmacSapProvider::RemoveDiscPool (uint8_t resReq)
+{
+  m_mac->DoRemoveDiscPool (resReq);
 }
 
 LteEnbCmacSapProvider::RachConfig 
@@ -573,16 +587,22 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   // Get downlink transmission opportunities
   uint32_t dlSchedFrameNo = m_frameNo;
   uint32_t dlSchedSubframeNo = m_subframeNo;
-  //   NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
   if (dlSchedSubframeNo + m_macChTtiDelay > 10)
     {
       dlSchedFrameNo++;
+      if (dlSchedFrameNo > 1024)
+        {
+          dlSchedFrameNo = 1;
+        }
       dlSchedSubframeNo = (dlSchedSubframeNo + m_macChTtiDelay) % 10;
     }
   else
     {
       dlSchedSubframeNo = dlSchedSubframeNo + m_macChTtiDelay;
     }
+
+  NS_ABORT_MSG_IF (dlSchedFrameNo > 1024, "Downlink frame number should not cross maximum limit of 1024");
+
   FfMacSchedSapProvider::SchedDlTriggerReqParameters dlparams;
   dlparams.m_sfnSf = ((0x3FF & dlSchedFrameNo) << 4) | (0xF & dlSchedSubframeNo);
 
@@ -631,16 +651,23 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   if (ulSchedSubframeNo + (m_macChTtiDelay + UL_PUSCH_TTIS_DELAY) > 10)
     {
       ulSchedFrameNo++;
+      if (ulSchedFrameNo > 1024)
+        {
+          ulSchedFrameNo = 1;
+        }
       ulSchedSubframeNo = (ulSchedSubframeNo + (m_macChTtiDelay + UL_PUSCH_TTIS_DELAY)) % 10;
     }
   else
     {
       ulSchedSubframeNo = ulSchedSubframeNo + (m_macChTtiDelay + UL_PUSCH_TTIS_DELAY);
     }
+
+  NS_ABORT_MSG_IF (ulSchedFrameNo > 1024, "Uplink frame number should not cross maximum limit of 1024");
+
   FfMacSchedSapProvider::SchedUlTriggerReqParameters ulparams;
   ulparams.m_sfnSf = ((0x3FF & ulSchedFrameNo) << 4) | (0xF & ulSchedSubframeNo);
 
-  // Forward DL HARQ feebacks collected during last TTI
+  // Forward DL HARQ feedbacks collected during last TTI
   if (m_ulInfoListReceived.size () > 0)
     {
      ulparams.m_ulInfoList = m_ulInfoListReceived;
@@ -649,7 +676,6 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     }
 
   m_schedSapProvider->SchedUlTriggerReq (ulparams);
-
 }
 
 
@@ -718,6 +744,7 @@ void
 LteEnbMac::ReceiveBsrMessage  (MacCeListElement_s bsr)
 {
   NS_LOG_FUNCTION (this);
+  //store BSR, both normal LTE and Sidelink
   m_ccmMacSapUser->UlReceiveMacCe (bsr, m_componentCarrierId);
 }
 
@@ -931,6 +958,8 @@ LteEnbMac::DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params)
   FfMacCschedSapProvider::CschedUeConfigReqParameters req;
   req.m_rnti = params.m_rnti;
   req.m_transmissionMode = params.m_transmissionMode;
+  req.m_slDestinations = params.m_slDestinations;
+  NS_LOG_DEBUG ("Sidelink: adding " << params.m_slDestinations.size () << " destinations for UE with RNTI " << params.m_rnti);
   req.m_reconfigureFlag = true;
   m_cschedSapProvider->CschedUeConfigReq (req);
 }
@@ -956,6 +985,27 @@ LteEnbMac::DoRemovePool (uint32_t group)
   FfMacCschedSapProvider::CschedPoolReleaseReqParameters req;
   req.m_group = group;
   m_cschedSapProvider->CschedPoolReleaseReq (req);
+}
+
+void
+LteEnbMac::DoAddPool (uint8_t resReq, Ptr<SidelinkDiscResourcePool> pool)
+{
+  NS_LOG_FUNCTION (this);
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedDiscPoolConfigReqParameters req;
+  req.m_discTxResourceReq = resReq; // for discovery
+  req.m_pool = pool;
+  m_cschedSapProvider->CschedDiscPoolConfigReq (req);
+}
+
+void
+LteEnbMac::DoRemoveDiscPool (uint8_t resReq)
+{
+  NS_LOG_FUNCTION (this);
+  // propagates to scheduler
+  FfMacCschedSapProvider::CschedDiscPoolReleaseReqParameters req;
+  req.m_discTxResourceReq = resReq;
+  m_cschedSapProvider->CschedDiscPoolReleaseReq (req);
 }
 
 LteEnbCmacSapProvider::RachConfig 
@@ -1208,7 +1258,19 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
                       ind.m_dciList.at (i).m_mcs, ind.m_dciList.at (i).m_tbSize, m_componentCarrierId);
     }
 
+  if (ind.m_sldciList.size () > 0) {
+    NS_LOG_DEBUG ("Sending " << ind.m_sldciList.size () << " SL_DCI messages");
+  }
 
+  for (unsigned int i = 0; i < ind.m_sldciList.size (); i++)
+    {
+      NS_LOG_DEBUG ("i=" << i << " rnti=" << (uint32_t) (ind.m_sldciList.at (i).m_rnti));
+      // send the correspondent sl dci
+      Ptr<SlDciLteControlMessage> msg = Create<SlDciLteControlMessage> ();
+      msg->SetDci (ind.m_sldciList.at (i));
+      m_enbPhySapProvider->SendLteControlMessage (msg);
+    }
+// Trace for Sidelink UE uplink scheduling is implemented in UE MAC
 
 }
 

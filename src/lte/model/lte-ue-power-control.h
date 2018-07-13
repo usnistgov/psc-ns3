@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Piotr Gawlowicz <gawlowicz.p@gmail.com>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  *
  */
 
@@ -107,7 +108,7 @@ public:
   void SetRnti (uint16_t rnti);
 
   /**
-   * \brief Set PO nominal PUSCH function
+   * \brief Set PO Nominal PUSCH function
    *
    * \param value the value to set
    */
@@ -166,6 +167,29 @@ public:
    * \returns the SRS transmit power
    */
   double GetSrsTxPower (std::vector <int> rb);
+  /**
+   * Get PSSCH Tx power for sidelink
+   *
+   * \param rb the RB list
+   * \return the transmission power to be used
+   */
+  double GetPsschTxPower (std::vector <int> rb);
+
+  /**
+   * Get PSCCH Tx power for sidelink
+   *
+   * \param rb the RB list
+   * \return the transmission power to be used
+   */
+  double GetPscchTxPower (std::vector <int> rb);
+
+  /**
+   * Get PSDCH Tx power for sidelink
+   *
+   * \param rb the RB list
+   * \return the transmission power to be used
+   */
+  double GetPsdchTxPower (std::vector <int> rb);
 
   /**
    * TracedCallback signature for uplink transmit power.
@@ -193,6 +217,11 @@ private:
   double m_curPucchTxPower; ///< current PUCCH transmit power
   double m_curSrsTxPower; ///< current SRS transmit power
 
+  //Sidelink
+  double m_psschTxPower; ///< current PSSCH transmit power
+  double m_pscchTxPower; ///< current PSCCH transmit power
+  double m_psdchTxPower; ///< current PSDCH transmit power
+
   double m_referenceSignalPower; ///< reference signal power
   bool m_rsrpSet; ///< is RSRP set?
   double m_rsrp; ///< RSRP value
@@ -218,21 +247,37 @@ private:
   uint16_t m_cellId; ///< cell ID
   uint16_t m_rnti; ///< RNTI
   /**
-   * Trace information regarding Uplink TxPower
+   * Trace information regarding PUSCH TxPower
    * uint16_t cellId, uint16_t rnti, double txPower
    */
   TracedCallback<uint16_t, uint16_t, double> m_reportPuschTxPower;
   /**
-   * Trace information regarding Uplink TxPower
+   * Trace information regarding PUCCH TxPower
    * uint16_t cellId, uint16_t rnti, double txPower
    */
   TracedCallback<uint16_t, uint16_t, double> m_reportPucchTxPower;
   /**
-   * Trace information regarding Uplink TxPower
+   * Trace information regarding SRS TxPower
    * uint16_t cellId, uint16_t rnti, double txPower
    */
   TracedCallback<uint16_t, uint16_t, double> m_reportSrsTxPower;
 
+//Sidelink
+  /**
+   * Trace information regarding PSSCH TxPower
+   * uint16_t cellId, uint16_t rnti, double txPower
+   */
+  TracedCallback<uint16_t, uint16_t, double> m_reportPsschTxPower;
+  /**
+   * Trace information regarding PSCCH TxPower
+   * uint16_t cellId, uint16_t rnti, double txPower
+   */
+  TracedCallback<uint16_t, uint16_t, double> m_reportPscchTxPower;
+  /**
+   * Trace information regarding PSDCH TxPower
+   * uint16_t cellId, uint16_t rnti, double txPower
+   */
+  TracedCallback<uint16_t, uint16_t, double> m_reportPsdchTxPower;
 };
 
 

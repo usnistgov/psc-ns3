@@ -65,7 +65,14 @@ IMAGES_DIA = \
 	$(FIGURES)/ca-ue-ctrl-plane.dia \
 	$(FIGURES)/ca-rrc-reconf.dia \
 	$(FIGURES)/ca-lte-enb-net-device-changes.dia \
-	$(FIGURES)/ca-lte-ue-net-device-changes.dia
+	$(FIGURES)/ca-lte-ue-net-device-changes.dia \
+	$(FIGURES)/sidelink-pssch-bitmap.dia \
+	$(FIGURES)/prose-non-roaming-arch.dia \
+	$(FIGURES)/sidelink-scenarios-1c.dia \
+	$(FIGURES)/sidelink-scenarios-1a.dia \
+	$(FIGURES)/lte-sl-ue-phy.dia \
+	$(FIGURES)/lte-sl-simple-scenario.dia \
+	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.dia \
 
 # specify eps figures from which .png and .pdf figures need to be built
 
@@ -174,6 +181,20 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/carrier-aggregation-mac-impact.png \
 	$(FIGURES)/ca-test-example-ul.png \
 	$(FIGURES)/ca-test-example-dl.png \
+	$(FIGURES)/lte-sl-enb-rrc.png \
+	$(FIGURES)/lte-sl-pool-config.png \
+	$(FIGURES)/lte-sl-ue-rrc.png \
+	$(FIGURES)/lte-sl-in-coverage-tx.png \
+	$(FIGURES)/lte-sl-in-coverage-rx.png \
+	$(FIGURES)/lte-sl-out-of-coverage-tx.png \
+	$(FIGURES)/lte-sl-out-of-coverage-rx.png \
+	$(FIGURES)/lte-sl-bler-pscch.png \
+	$(FIGURES)/lte-sl-bler-psbch.png \
+	$(FIGURES)/lte-sl-bler-psdch.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq1.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq2.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq3.png \
+	$(FIGURES)/lte-sl-bler-pssch-harq4.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
 	${IMAGES_DOT:.dot=.png} \

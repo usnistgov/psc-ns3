@@ -17,6 +17,7 @@
  *
  * Authors: Nicola Baldo <nbaldo@cttc.es>
  *          Lluis Parcerisa <lparcerisa@cttc.cat>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 
@@ -617,7 +618,8 @@ public:
     } cplen;
   };
 
-  struct SlPeriodComm {
+  struct SlPeriodComm
+  {
     enum
       {
         sf40,
@@ -716,15 +718,18 @@ public:
   }
 
   //Offset of the pool of resource relative to SFN 0 of the cell or DFN 0 when out of coverage
-  struct SlOffsetIndicator {
-    uint16_t offset; //MAx is 319 for communication, 10239 for discovery
+  struct SlOffsetIndicator
+  {
+    uint16_t offset; //Max is 319 for communication, 10239 for discovery
   };
 
-  struct SubframeBitmapSl {
+  struct SubframeBitmapSl
+  {
     std::bitset<40> bitmap; //40 bits for FDD
   };
   
-  struct SlTfResourceConfig {
+  struct SlTfResourceConfig
+  {
     uint8_t prbNum;
     uint8_t prbStart;
     uint8_t prbEnd;
@@ -738,27 +743,30 @@ public:
     }
   };
 
-  struct SlHoppingConfigComm {
-    uint16_t hoppingParameters; //valid range 0..504
+  struct SlHoppingConfigComm
+  {
+    uint16_t hoppingParameter; //valid range 0..504
     enum {
-      ns1,
-      ns2,
-      ns4,
+      ns1 = 1,
+      ns2 = 2,
+      ns4 = 4,
     } numSubbands;
     uint8_t rbOffset; //valid range 0..110
     uint8_t hoppingInfo; //Information in hopping bits. Valid range [0,3]. Values 0..2 are used for Type 1 hopping.
 
     friend bool operator==(const SlHoppingConfigComm& lhs, const SlHoppingConfigComm& rhs)
     {
-      return lhs.hoppingParameters == rhs.hoppingParameters && lhs.numSubbands == rhs.numSubbands && lhs.rbOffset == rhs.rbOffset && lhs.hoppingInfo == rhs.hoppingInfo;
+      return lhs.hoppingParameter == rhs.hoppingParameter && lhs.numSubbands == rhs.numSubbands && lhs.rbOffset == rhs.rbOffset && lhs.hoppingInfo == rhs.hoppingInfo;
     }
   };
 
-  struct SlTrptSubset {
+  struct SlTrptSubset
+  {
     std::bitset<3> subset; //3 bits for FDD to indicate the set of k values
   };
 
-  struct SlTxParameters {
+  struct SlTxParameters
+  {
     enum {
       al0,
       al04,
@@ -779,36 +787,38 @@ public:
 
   static double AlphaAsDouble (SlTxParameters param) {
     double alpha = 0;
-    switch (param.alpha) {
-    case SlTxParameters::al0:
-      alpha = 0;
-      break;
-    case SlTxParameters::al04:
-      alpha = 0.4;
-      break;
-    case SlTxParameters::al05:
-      alpha = 0.5;
-      break;
-    case SlTxParameters::al06:
-      alpha = 0.6;
-      break;
-    case SlTxParameters::al07:
-      alpha = 0.7;
-      break;
-    case SlTxParameters::al08:
-      alpha = 0.8;
-      break;
-    case SlTxParameters::al09:
-      alpha = 0.9;
-      break;
-    case SlTxParameters::al1:
-      alpha = 1;
-      break;
+    switch (param.alpha)
+    {
+      case SlTxParameters::al0:
+        alpha = 0;
+        break;
+      case SlTxParameters::al04:
+        alpha = 0.4;
+        break;
+     case SlTxParameters::al05:
+        alpha = 0.5;
+        break;
+     case SlTxParameters::al06:
+        alpha = 0.6;
+        break;
+     case SlTxParameters::al07:
+        alpha = 0.7;
+        break;
+     case SlTxParameters::al08:
+        alpha = 0.8;
+        break;
+     case SlTxParameters::al09:
+        alpha = 0.9;
+        break;
+     case SlTxParameters::al1:
+        alpha = 1;
+        break;
     }
     return alpha;
   };
   
-  struct SlCommResourcePool {
+  struct SlCommResourcePool
+  {
     SlCpLen scCpLen;
     SlPeriodComm scPeriod;
     SlTfResourceConfig scTfResourceConfig;
@@ -822,7 +832,8 @@ public:
     } ueSelectedResourceConfig;
     //rxParametersNCell not specified yet
     bool haveTxParameters; //mandatory present when included in commTxPoolNormalDedicated, commTxPoolNormalCommon or commTxPoolExceptional
-    struct TxParameters {
+    struct TxParameters
+    {
       SlTxParameters scTxParameters;
       SlTxParameters dataTxParameters;
     } txParameters;
@@ -835,38 +846,44 @@ public:
         && lhs.dataCpLen.cplen == rhs.dataCpLen.cplen
         && lhs.dataHoppingConfig == rhs.dataHoppingConfig
         && lhs.haveUeSelectedResourceConfig == rhs.haveUeSelectedResourceConfig;
-      if (equal && lhs.haveUeSelectedResourceConfig) {
-        equal = equal && lhs.ueSelectedResourceConfig.dataTfResourceConfig == rhs.ueSelectedResourceConfig.dataTfResourceConfig
-          && lhs.ueSelectedResourceConfig.haveTrptSubset == rhs.ueSelectedResourceConfig.haveTrptSubset;
-        if (equal && lhs.ueSelectedResourceConfig.haveTrptSubset) {
-          equal = equal && lhs.ueSelectedResourceConfig.trptSubset.subset == rhs.ueSelectedResourceConfig.trptSubset.subset;
+      if (equal && lhs.haveUeSelectedResourceConfig)
+        {
+          equal = equal && lhs.ueSelectedResourceConfig.dataTfResourceConfig == rhs.ueSelectedResourceConfig.dataTfResourceConfig
+            && lhs.ueSelectedResourceConfig.haveTrptSubset == rhs.ueSelectedResourceConfig.haveTrptSubset;
+          if (equal && lhs.ueSelectedResourceConfig.haveTrptSubset)
+            {
+              equal = equal && lhs.ueSelectedResourceConfig.trptSubset.subset == rhs.ueSelectedResourceConfig.trptSubset.subset;
+            }
         }
-      }
       equal = equal && lhs.haveTxParameters == rhs.haveTxParameters;
-      if (equal && lhs.haveTxParameters) {
-        equal = equal && lhs.txParameters.scTxParameters == rhs.txParameters.scTxParameters
+      if (equal && lhs.haveTxParameters)
+        {
+          equal = equal && lhs.txParameters.scTxParameters == rhs.txParameters.scTxParameters
           && lhs.txParameters.dataTxParameters == rhs.txParameters.dataTxParameters;
-      }
+        }
       return equal;
     }
-    
   };
   
-  struct SlCommTxPoolList {
+  struct SlCommTxPoolList
+  {
     uint8_t nbPools;
     SlCommResourcePool pools[MAXSL_TXPOOL];
   };
 
-  struct SlCommRxPoolList {
+  struct SlCommRxPoolList
+  {
     uint8_t nbPools;
     SlCommResourcePool pools[MAXSL_RXPOOL];
   };
 
-  struct SlSyncConfigList {
+  struct SlSyncConfigList
+  {
     uint8_t nbConfig;
   };
 
-  struct Sib18CommConfig { //SlCommConfig struct used in RRC Connection
+  struct Sib18CommConfig
+  { //SlCommConfig struct used in RRC Connection
     SlCommRxPoolList commRxPool;
     SlCommTxPoolList commTxPoolNormalCommon; //Optional (number of pools may be 0)
     SlCommTxPoolList commTxPoolExceptional;  //Optional (number of pools may be 0)
@@ -879,8 +896,9 @@ public:
     Sib18CommConfig commConfig;
   };
 
-  struct SlPreconfigGeneral {
-    uint16_t carrierFreq; //ulEarfcn
+  struct SlPreconfigGeneral
+  {
+    uint32_t carrierFreq; //ulEarfcn
     uint8_t slBandwidth;  //nb RBs
   };
   
@@ -914,7 +932,9 @@ public:
     uint16_t syncRefDiffHyst;   	///< Threshold representing how higher than the (currently) selected SyncRef S-RSRP the S-RSRP of a newly detected SyncRef should be to consider a change. Unit[dB] Valid values: 0, 3, 6, 9, 12 (+inf not represented)
   };
 
-  struct SlPreconfigCommPool { //Same as SlCommResourcePool with rxParametersNCell absent
+  struct SlPreconfigCommPool
+  {
+    //Same as SlCommResourcePool with rxParametersNCell absent
     SlCpLen scCpLen;
     SlPeriodComm scPeriod;
     SlTfResourceConfig scTfResourceConfig;
@@ -926,12 +946,14 @@ public:
     SlTxParameters dataTxParameters;
   };
   
-  struct SlPreconfigCommPoolList {
+  struct SlPreconfigCommPoolList
+  {
     uint8_t nbPools;
     SlPreconfigCommPool pools[MAXSL_TXPOOL];
   };
    // Discovery period duration
-  struct SlPeriodDisc {
+  struct SlPeriodDisc
+  {
     enum
       {
         rf32,
@@ -972,66 +994,19 @@ public:
   };
 
   // Probability of transmission for Discovery
-  struct TxProbability {
-    enum {
+  struct TxProbability
+  {
+    enum
+    {
       p25,
       p50,
       p75,
       p100,
-      pOptimal
     } probability;
   };
 
-  static uint32_t TxProbabilityAsInt (TxProbability prob)
+  struct SlPreconfigDiscPool
   {
-    uint32_t p = 0;
-    switch (prob.probability)
-    {
-      case TxProbability::p25:
-        p = 25;
-        break;
-      case TxProbability::p50:
-        p = 50;
-        break;
-      case TxProbability::p75:
-        p = 75;
-        break;
-      case TxProbability::p100:
-        p = 100;
-        break;
-      case TxProbability::pOptimal:
-        p = 32;
-        break;
-    }
-    return p;
-  }
-
-  static TxProbability TxProbabilityFromInt (uint32_t p)
-  {
-    TxProbability prob;
-    switch (p)
-    {
-      case 25:
-        prob.probability = TxProbability::p25;
-        break;
-      case 50:
-        prob.probability = TxProbability::p50;
-        break;
-      case 75:
-        prob.probability = TxProbability::p75;
-        break;
-      case 100:
-        prob.probability = TxProbability::p100;
-        break;
-      case 32:
-        prob.probability = TxProbability::pOptimal;
-        break;
-    }
-    return prob;
-  }
-
-
-  struct SlPreconfigDiscPool { 
     SlCpLen cpLen;
     SlPeriodDisc discPeriod;
     int8_t numRetx; // 0..3
@@ -1042,9 +1017,25 @@ public:
       TxProbability txProbability; 
     } txParameters;
 
+    friend bool operator==(const SlPreconfigDiscPool& lhs, const SlPreconfigDiscPool& rhs)
+        {
+          bool equal = lhs.cpLen.cplen == rhs.cpLen.cplen
+            && lhs.discPeriod.period == rhs.discPeriod.period
+            && lhs.numRetx == rhs.numRetx
+            && lhs.numRepetition == rhs.numRepetition
+            && lhs.tfResourceConfig == rhs.tfResourceConfig;
+            if (equal)
+              {
+                equal = equal && lhs.txParameters.txParametersGeneral == rhs.txParameters.txParametersGeneral
+                              && lhs.txParameters.txProbability.probability == rhs.txParameters.txProbability.probability;
+              }
+            return equal;
+        }
+
   };
   
-  struct SlPreconfigDiscPoolList {
+  struct SlPreconfigDiscPoolList
+  {
     uint8_t nbPools;
     SlPreconfigDiscPool pools[MAXSL_TXPOOL];
   };
@@ -1079,7 +1070,8 @@ public:
     } period;
   };
 
-  struct RetxBsrTimer {
+  struct RetxBsrTimer
+  {
     enum {
       sf320,
       sf640,
@@ -1108,12 +1100,15 @@ public:
     SlCommTxPoolToAddMod pools[MAXSL_TXPOOL];
   };
 
-  struct SlTxPoolToReleaseList {
+  struct SlTxPoolToReleaseList
+  {
     uint8_t nbPools;
     uint8_t poolIdentities[MAXSL_TXPOOL];
   };
   
-  struct SlCommConfigScheduled { //Indicates the configuration for the case E-UTRAN schedules the transmission resources based on sidelink specific BSR from the UE.
+  struct SlCommConfigScheduled
+  {
+    //Indicates the configuration for the case E-UTRAN schedules the transmission resources based on sidelink specific BSR from the UE.
     uint16_t crnti;
     SlMacMainConfigSl macMainConfig;
     SlCommResourcePool commTxConfig;
@@ -1121,15 +1116,19 @@ public:
     uint8_t mcs; //0..28
   };
   
-  struct SlCommConfigUeSelected { //commTxPoolNormalDedicated: Indicates a pool of transmission resources the UE is allowed to use while in RRC_CONNECTED.
+  struct SlCommConfigUeSelected
+  {
+    //commTxPoolNormalDedicated: Indicates a pool of transmission resources the UE is allowed to use while in RRC_CONNECTED.
     bool havePoolToRelease;
     SlTxPoolToReleaseList poolToRelease;
     bool havePoolToAdd;
     SlCommTxPoolToAddModList poolToAddModList;
   };
 
-  struct SlCommTxResourcesSetup {//for dedicated configuration
-    enum {
+  struct SlCommTxResourcesSetup
+  {//for dedicated configuration
+    enum
+    {
       SCHEDULED,
       UE_SELECTED
     } setup; //indicates which type of resources is being allocated
@@ -1137,7 +1136,8 @@ public:
     SlCommConfigUeSelected ueSelected;
   };
   
-  struct SlCommConfig {//for dedicated configuration
+  struct SlCommConfig
+  {//for dedicated configuration
     enum {
       RELEASE,
       SETUP
@@ -1145,12 +1145,14 @@ public:
     SlCommTxResourcesSetup setup; //valid only if commTxResources = setup
   };
 
-  struct SlDestinationInfoList {
+  struct SlDestinationInfoList
+  {
     int nbDestinations;
     uint32_t SlDestinationIdentity[MAXSL_DEST]; //each destination is 24 bit long.
   };
   
-  struct SlCommTxResourceReq {
+  struct SlCommTxResourceReq
+  {
     uint32_t carrierFreq;
     SlDestinationInfoList slDestinationInfoList;
   };
@@ -1180,7 +1182,7 @@ public:
     switch (rsrp)
     {
       case 1:
-        r =- -110;
+        r = -110;
         break;
       case 2:
         r = -100;
@@ -1201,8 +1203,10 @@ public:
     return r;
   }
 
-  struct SubframeAssignement {
-    enum {
+  struct SubframeAssignement
+  {
+    enum
+    {
       sa0,
       sa1,
       sa2,
@@ -1212,8 +1216,10 @@ public:
       sa6
     } sa;
   };
-  struct SpecialSubframePatterns {
-    enum {
+  struct SpecialSubframePatterns
+  {
+    enum
+    {
       ssp0,
       ssp1,
       ssp2,
@@ -1226,16 +1232,19 @@ public:
     } ssp;
   };
 
-  struct SlDiscResourcePool {
+  struct SlDiscResourcePool
+  {
     SlCpLen cpLen; // defined for communication.
     SlPeriodDisc discPeriod;
     int8_t numRetx; // 0..3
     int32_t numRepetition; // 1..50
     SlTfResourceConfig tfResourceConfig; 
     bool haveTxParameters;
-    struct TxParameters {
+    struct TxParameters
+    {
       SlTxParameters txParametersGeneral;
-      struct UeSelectedResourceConfig{
+      struct UeSelectedResourceConfig
+      {
         PoolSelection poolSelection;
         bool havePoolSelectionRsrpBased;
         PoolSelectionRsrpBased poolSelectionRsrpBased; 
@@ -1243,8 +1252,10 @@ public:
       } ueSelectedResourceConfig;
     } txParameters;
     bool haveRxParameters;
-    struct RxParameters {
-      struct TddConfig {
+    struct RxParameters
+    {
+      struct TddConfig
+      {
         SubframeAssignement subframeAssignement;
         SpecialSubframePatterns specialSubframePatterns;
       } tddConfig;
@@ -1259,47 +1270,55 @@ public:
         && lhs.numRepetition == rhs.numRepetition
         && lhs.tfResourceConfig == rhs.tfResourceConfig
         && lhs.haveTxParameters == rhs.haveTxParameters;
-      if (equal && lhs.haveTxParameters) {
-        equal = equal && lhs.txParameters.txParametersGeneral == rhs.txParameters.txParametersGeneral
+      if (equal && lhs.haveTxParameters)
+        {
+          equal = equal && lhs.txParameters.txParametersGeneral == rhs.txParameters.txParametersGeneral
           && lhs.txParameters.ueSelectedResourceConfig.poolSelection.selection == rhs.txParameters.ueSelectedResourceConfig.poolSelection.selection;
-      }
+        }
       equal = equal && lhs.txParameters.ueSelectedResourceConfig.havePoolSelectionRsrpBased == rhs.txParameters.ueSelectedResourceConfig.havePoolSelectionRsrpBased;
-      if (equal && lhs.txParameters.ueSelectedResourceConfig.havePoolSelectionRsrpBased) {
-        equal = equal && lhs.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh == rhs.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh
+      if (equal && lhs.txParameters.ueSelectedResourceConfig.havePoolSelectionRsrpBased)
+        {
+          equal = equal && lhs.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh == rhs.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh
           && lhs.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow == rhs.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow
           && lhs.txParameters.ueSelectedResourceConfig.txProbability.probability == rhs.txParameters.ueSelectedResourceConfig.txProbability.probability;
-      }
+        }
       equal = equal && lhs.haveRxParameters == rhs.haveRxParameters;
-      if (equal && lhs.haveRxParameters) {
-        equal = equal && lhs.rxParameters.tddConfig.subframeAssignement.sa == rhs.rxParameters.tddConfig.subframeAssignement.sa
+      if (equal && lhs.haveRxParameters)
+        {
+          equal = equal && lhs.rxParameters.tddConfig.subframeAssignement.sa == rhs.rxParameters.tddConfig.subframeAssignement.sa
           && lhs.rxParameters.tddConfig.specialSubframePatterns.ssp == rhs.rxParameters.tddConfig.specialSubframePatterns.ssp
           && lhs.rxParameters.syncConfigIndex == rhs.rxParameters.syncConfigIndex;
-      }
+        }
       return equal;
     }
   };
 
-  struct SlDiscTxPoolList {
+  struct SlDiscTxPoolList
+  {
     uint8_t nbPools;
     SlDiscResourcePool pools[MAXSL_TXPOOL];
   };
 
-  struct SlDiscRxPoolList {
+  struct SlDiscRxPoolList
+  {
     uint8_t nbPools;
     SlDiscResourcePool pools[MAXSL_RXPOOL];
   };
 
-  struct SlDiscTxPowerInfo {
+  struct SlDiscTxPowerInfo
+  {
     uint32_t discMaxTxPower; //-30..30
   };
 
   // The first entry in SLDiscTxPowerInfoList corresponds to UE range class "short", the second entry corresponds to "medium" and the third entry corresponds to "long"
-  struct SlDiscTxPowerInfoList {
+  struct SlDiscTxPowerInfoList
+  {
     uint8_t nbPowerInfo;
     SlDiscTxPowerInfo power[MAXSL_DISC_POWERCLASS];
   };
 
-  struct Sib19DiscConfig { // SlDiscConfig struct used in RRC Connection
+  struct Sib19DiscConfig
+  { // SlDiscConfig struct used in RRC Connection
     SlDiscRxPoolList discRxPool;
     SlDiscTxPoolList discTxPoolCommon; // Optional 
     SlDiscTxPowerInfoList discTxPowerInfo;  // Optional 
@@ -1341,12 +1360,14 @@ public:
     uint32_t discPrbIndex; //1..50
   };
 
-  struct SlTfIndexPairList {
+  struct SlTfIndexPairList
+  {
     uint8_t nbPair;
     SlTfIndexPair pair[MAXSL_TF_INDEXPAIR];
   };
 
-  struct SlHoppingConfigDisc {
+  struct SlHoppingConfigDisc
+  {
     uint32_t a; //1..200
     uint32_t b; //1..10
     enum {
@@ -1355,20 +1376,23 @@ public:
     } c;
   };
 
-  struct SlDiscConfigScheduled { 
+  struct SlDiscConfigScheduled
+  {
     SlDiscResourcePool discTxConfig;
     SlTfIndexPairList discTfIndexList;
     SlHoppingConfigDisc discHoppingConfigDisc;
   };
 
-  struct SlDiscConfigUeSelected { 
+  struct SlDiscConfigUeSelected
+  {
     bool havePoolToRelease;
     SlTxPoolToReleaseList poolToRelease;
     bool havePoolToAdd;
     SlDiscTxPoolToAddModList poolToAddModList;
   };
 
-  struct SlDiscTxResourcesSetup {
+  struct SlDiscTxResourcesSetup
+  {
     enum {
       SCHEDULED,
       UE_SELECTED
@@ -1377,8 +1401,10 @@ public:
     SlDiscConfigUeSelected ueSelected;
   };
   
-  struct SlDiscConfig {
-    enum {
+  struct SlDiscConfig
+  {
+    enum
+    {
       RELEASE,
       SETUP
     } discTxResources; 
@@ -2526,24 +2552,7 @@ MemberLteEnbRrcSapProvider<C>::RecvSidelinkUeInformation (uint16_t rnti, Sidelin
   Simulator::ScheduleNow (&C::DoRecvSidelinkUeInformation, m_owner, rnti, msg);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 } // namespace ns3
 
 
 #endif // LTE_RRC_SAP_H
-
-
-
-

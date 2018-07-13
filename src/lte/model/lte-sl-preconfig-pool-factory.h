@@ -41,7 +41,7 @@
 
 namespace ns3 {
 
-  /** Class to generate preconfigured pool configuration */
+/** Class to generate preconfigured pool configuration */
 class LteSlPreconfigPoolFactory : public LteSlResourcePoolFactory
 {
 public:

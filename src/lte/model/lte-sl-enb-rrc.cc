@@ -56,13 +56,14 @@ TypeId LteSlEnbRrc::GetTypeId (void)
   static TypeId  tid = TypeId ("ns3::LteSlEnbRrc")
     .SetParent<Object> ()
     .AddConstructor<LteSlEnbRrc> ()
-    
-    ;
+
+  ;
   return tid;
 }
 
 LteSlEnbRrc::LteSlEnbRrc ()
-  : m_slEnabled (false)
+  : m_slEnabled (false),
+    m_discEnabled (false)
 {
   m_preconfigCommTxPoolExceptional.nbPools = 0;
 }
@@ -70,18 +71,18 @@ LteSlEnbRrc::LteSlEnbRrc ()
 void
 LteSlEnbRrc::DoInitialize ()
 {
-
+  NS_LOG_FUNCTION (this);
 }
 
 LteSlEnbRrc::~LteSlEnbRrc (void)
 {
-
+  NS_LOG_FUNCTION (this);
 }
-  
+
 void
 LteSlEnbRrc::DoDispose ()
-{  
-    
+{
+  NS_LOG_FUNCTION (this);
 }
 
 /**
@@ -96,21 +97,24 @@ LteSlEnbRrc::Copy ()
   //copy internal values
   copy->m_slEnabled = m_slEnabled;
   copy->m_sib18 = m_sib18;
-  //copy->m_dedicatedPoolMap = m_dedicatedPoolMap;
   copy->m_preconfigDedicatedPoolMap = m_preconfigDedicatedPoolMap;
   copy->m_preconfigCommTxPoolExceptional = m_preconfigCommTxPoolExceptional;
-  
+  copy->m_sib19 = m_sib19;
+  copy->m_discEnabled = m_discEnabled;
+  copy->m_discPoolList = m_discPoolList;
+  copy->m_preconfigDiscPool = m_preconfigDiscPool;
+
   return copy;
 }
 
-  
+
 // void
 // LteSlEnbRrc::SetSystemInformationBlockType18 (LteRrcSap::SystemInformationBlockType18 sib18)
 // {
 //   NS_LOG_FUNCTION (this);
 //   m_sib18 = sib18;
 // }
-  
+
 /**
  * Gets the SIB 18 information
  * \return The SIB 18
@@ -125,31 +129,38 @@ LteSlEnbRrc::GetSystemInformationType18 ()
   sib18.commConfig.commRxPool.nbPools = 0;
   sib18.commConfig.commTxPoolNormalCommon.nbPools = 0;
   sib18.commConfig.commTxPoolExceptional.nbPools = 0;
-  
+
   std::map <uint32_t, LteSlEnbRrc::ActivePoolInfo>::iterator it;
-  for (it = m_activePoolMap.begin() ; it != m_activePoolMap.end() ; it++) {
-    //check if pool already listed
-    if (it->second.m_poolSetup.setup == LteRrcSap::SlCommTxResourcesSetup::SCHEDULED) {
-      //check single pool
-      if (!IsPoolInList(it->second.m_poolSetup.scheduled.commTxConfig, sib18.commConfig.commRxPool.pools, sib18.commConfig.commRxPool.nbPools)) {
-        //add pool
-        sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools]=it->second.m_poolSetup.scheduled.commTxConfig;
-        sib18.commConfig.commRxPool.nbPools++;
-      }
-    } else if (it->second.m_poolSetup.ueSelected.havePoolToAdd) {
-      //check all pools
-      for (int i = 0 ; i < it->second.m_poolSetup.ueSelected.poolToAddModList.nbPools ; i++) {
-        if (!IsPoolInList(it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool, sib18.commConfig.commRxPool.pools, sib18.commConfig.commRxPool.nbPools)) {
-          //add pool
-        sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools]=it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool;
-        sib18.commConfig.commRxPool.nbPools++;
+  for (it = m_activePoolMap.begin (); it != m_activePoolMap.end (); it++)
+    {
+      //check if pool already listed
+      if (it->second.m_poolSetup.setup == LteRrcSap::SlCommTxResourcesSetup::SCHEDULED)
+        {
+          //check single pool
+          if (!IsPoolInList (it->second.m_poolSetup.scheduled.commTxConfig, sib18.commConfig.commRxPool.pools, sib18.commConfig.commRxPool.nbPools))
+            {
+              //add pool
+              sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools] = it->second.m_poolSetup.scheduled.commTxConfig;
+              sib18.commConfig.commRxPool.nbPools++;
+            }
         }
-      }
+      else if (it->second.m_poolSetup.ueSelected.havePoolToAdd)
+        {
+          //check all pools
+          for (int i = 0; i < it->second.m_poolSetup.ueSelected.poolToAddModList.nbPools; i++)
+            {
+              if (!IsPoolInList (it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool, sib18.commConfig.commRxPool.pools, sib18.commConfig.commRxPool.nbPools))
+                {
+                  //add pool
+                  sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools] = it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool;
+                  sib18.commConfig.commRxPool.nbPools++;
+                }
+            }
+        }
     }
-  }
-  
+
   sib18.commConfig.commTxPoolExceptional = m_preconfigCommTxPoolExceptional;
-  
+
   return sib18;
 }
 
@@ -157,12 +168,13 @@ bool
 LteSlEnbRrc::IsPoolInList (LteRrcSap::SlCommResourcePool pool, LteRrcSap::SlCommResourcePool *pools, int nbPool)
 {
   bool found = false;
-  for (int i = 0 ; i < nbPool && !found; i++) {
-    found =  pool == pools[i];
-  }
+  for (int i = 0; i < nbPool && !found; i++)
+    {
+      found =  pool == pools[i];
+    }
   return found;
 }
-  
+
 
 void
 LteSlEnbRrc::SetSlEnabled (bool status)
@@ -170,12 +182,26 @@ LteSlEnbRrc::SetSlEnabled (bool status)
   NS_LOG_FUNCTION (this);
   m_slEnabled = status;
 }
-    
+
 bool
 LteSlEnbRrc::IsSlEnabled ()
 {
   NS_LOG_FUNCTION (this);
   return m_slEnabled;
+}
+
+void
+LteSlEnbRrc::SetDiscEnabled (bool status)
+{
+  NS_LOG_FUNCTION (this);
+  m_discEnabled = status;
+}
+
+bool
+LteSlEnbRrc::IsDiscEnabled ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_discEnabled;
 }
 
 void
@@ -186,11 +212,73 @@ LteSlEnbRrc::AddPreconfiguredDedicatedPool (uint32_t group, LteRrcSap::SlCommTxR
 }
 
 void
+LteSlEnbRrc::AddPreconfiguredDedicatedPool (LteRrcSap::SlPreconfigDiscPool pool)
+{
+  NS_LOG_FUNCTION (this);
+  m_preconfigDiscPool = pool;
+}
+
+void
+LteSlEnbRrc::AddDiscPool (LteRrcSap::SlDiscTxResourcesSetup pool)
+{
+  NS_LOG_FUNCTION (this);
+  m_discPoolList = pool;
+}
+
+void
 LteSlEnbRrc::SetCommTxPoolExceptional (LteRrcSap::SlCommTxPoolList pool)
 {
   NS_LOG_FUNCTION (this);
   m_preconfigCommTxPoolExceptional = pool;
 }
 
+LteRrcSap::SystemInformationBlockType19
+LteSlEnbRrc::GetSystemInformationType19 ()
+{
+  NS_LOG_FUNCTION (this);
+
+  //build the content of SIB 19 by looking at pools allocated
+  LteRrcSap::SystemInformationBlockType19 sib19;
+  sib19.discConfig.discRxPool.nbPools = 0;
+  sib19.discConfig.discTxPoolCommon.nbPools = 0;
+  sib19.discConfig.discTxPowerInfo.nbPowerInfo = 0;
+
+  //check if pool already listed
+  if (m_discPoolList.setup == LteRrcSap::SlDiscTxResourcesSetup::SCHEDULED)
+    {  //check single pool
+      if (!IsPoolInList (m_discPoolList.scheduled.discTxConfig, sib19.discConfig.discRxPool.pools, sib19.discConfig.discRxPool.nbPools))
+        {
+          //add pool
+          sib19.discConfig.discRxPool.pools[sib19.discConfig.discRxPool.nbPools] = m_discPoolList.scheduled.discTxConfig;
+          sib19.discConfig.discRxPool.nbPools++;
+        }
+    }
+  else if (m_discPoolList.ueSelected.havePoolToAdd)
+    {
+      //check all pools
+      for (int i = 0; i < m_discPoolList.ueSelected.poolToAddModList.nbPools; i++)
+        {
+          if (!IsPoolInList (m_discPoolList.ueSelected.poolToAddModList.pools[i].pool, sib19.discConfig.discRxPool.pools, sib19.discConfig.discRxPool.nbPools))
+            {
+              //add pool
+              sib19.discConfig.discRxPool.pools[sib19.discConfig.discRxPool.nbPools] = m_discPoolList.ueSelected.poolToAddModList.pools[i].pool;
+              sib19.discConfig.discRxPool.nbPools++;
+            }
+        }
+    }
+
+  return sib19;
+}
+
+bool
+LteSlEnbRrc::IsPoolInList (LteRrcSap::SlDiscResourcePool pool, LteRrcSap::SlDiscResourcePool *pools, int nbPool)
+{
+  bool found = false;
+  for (int i = 0; i < nbPool && !found; i++)
+    {
+      found =  pool == pools[i];
+    }
+  return found;
+}
 
 } // namespace ns3

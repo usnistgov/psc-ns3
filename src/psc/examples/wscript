@@ -1,6 +1,9 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    #obj = bld.create_ns3_program('psc-example', ['psc'])
-    #obj.source = 'psc-example.cc'
+    if not bld.env['ENABLE_EXAMPLES']:
+        return;
 
+    obj = bld.create_ns3_program('example-udpgroupecho',
+                                 ['psc'])
+    obj.source = 'example-udpgroupecho.cc'

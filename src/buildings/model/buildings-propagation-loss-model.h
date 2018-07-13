@@ -17,6 +17,7 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  * 
  */
 
@@ -64,9 +65,11 @@ public:
   /**
    * \param a the mobility model of the source
    * \param b the mobility model of the destination
-   * \returns the propagation loss (in dBm)
+   * \returns the propagation loss (in dB)
    */
   virtual double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
+
+  virtual double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
   // inherited from PropagationLossModel
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
@@ -76,8 +79,6 @@ protected:
   double HeightLoss (Ptr<MobilityBuildingInfo> n) const;
   double InternalWallsLoss (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
   
-  double GetShadowing (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-
   double m_lossInternalWall; // in meters
 
   
@@ -94,7 +95,7 @@ protected:
   };
 
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, ShadowingLoss> > m_shadowingLossMap;
-  double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
+  virtual double EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b) const;
 
 
   double m_shadowingSigmaExtWalls;

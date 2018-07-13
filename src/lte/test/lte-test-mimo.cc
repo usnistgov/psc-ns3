@@ -241,6 +241,9 @@ LenaMimoTestCase::DoRun (void)
       sampleTime += 0.2;
     }
   Simulator::Stop (Seconds (simulationTime));
+
+  BuildingsHelper::MakeMobilityModelConsistent ();
+
   Simulator::Run ();
   Simulator::Destroy ();
 

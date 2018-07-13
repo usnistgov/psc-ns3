@@ -38,59 +38,59 @@
 #include "ns3/log.h"
 
 namespace ns3 {
-  
-  NS_LOG_COMPONENT_DEFINE ("LteSlTft");
 
-  LteSlTft::LteSlTft (Direction d, Ipv4Address groupIp, uint32_t groupL2)
-  {
-    NS_LOG_FUNCTION (this);
-    m_direction = d;
-    m_groupAddress = groupIp;
-    NS_ASSERT_MSG ((groupL2 & 0xFF000000) == 0, "Group L2 address must be 24 bits");
-    m_groupL2Address = groupL2;
-  }
+NS_LOG_COMPONENT_DEFINE ("LteSlTft");
 
-  Ptr<LteSlTft>
-  LteSlTft::Copy ()
-  {
-    Ptr<LteSlTft> tft = Create<LteSlTft> (m_direction, m_groupAddress, m_groupL2Address);
-    return tft;
-  }
-  
-  /** 
-   * 
-   * \param remoteAddress 
-   * 
-   * \return true if the TFT matches with the
-   * parameters, false otherwise.
-   */
-  bool
-  LteSlTft::Matches (Ipv4Address remoteAddress)
-  {
-    return remoteAddress == m_groupAddress;
+LteSlTft::LteSlTft (Direction d, Ipv4Address groupIp, uint32_t groupL2)
+{
+  NS_LOG_FUNCTION (this);
+  m_direction = d;
+  m_groupAddress = groupIp;
+  NS_ASSERT_MSG ((groupL2 & 0xFF000000) == 0, "Group L2 address must be 24 bits");
+  m_groupL2Address = groupL2;
+}
 
-  }
+Ptr<LteSlTft>
+LteSlTft::Copy ()
+{
+  Ptr<LteSlTft> tft = Create<LteSlTft> (m_direction, m_groupAddress, m_groupL2Address);
+  return tft;
+}
+
+/**
+ *
+ * \param remoteAddress
+ *
+ * \return true if the TFT matches with the
+ * parameters, false otherwise.
+ */
+bool
+LteSlTft::Matches (Ipv4Address remoteAddress)
+{
+  return remoteAddress == m_groupAddress;
+
+}
 
 
-  uint32_t
-  LteSlTft::GetGroupL2Address ()
-  {
-    return m_groupL2Address;
-  }
+uint32_t
+LteSlTft::GetGroupL2Address ()
+{
+  return m_groupL2Address;
+}
 
-  bool
-  LteSlTft::isReceive ()
-  {
-    //receiving if RECEIVE or BIDIRECTIONAL
-    return m_direction != LteSlTft::TRANSMIT;
-  }
+bool
+LteSlTft::isReceive ()
+{
+  //receiving if RECEIVE or BIDIRECTIONAL
+  return m_direction != LteSlTft::TRANSMIT;
+}
 
-  bool
-  LteSlTft::isTransmit ()
-  {
-    //transmitting if TRANSMIT or BIDIRECTIONAL
-    return m_direction != LteSlTft::RECEIVE;
-  }
+bool
+LteSlTft::isTransmit ()
+{
+  //transmitting if TRANSMIT or BIDIRECTIONAL
+  return m_direction != LteSlTft::RECEIVE;
+}
 
-  
+
 }

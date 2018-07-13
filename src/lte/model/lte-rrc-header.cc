@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Lluis Parcerisa <lparcerisa@cttc.cat>
- * Modified by:
- *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "ns3/log.h"
@@ -1046,6 +1046,12 @@ RrcAsn1Header::SerializeThresholdEutra (LteRrcSap::ThresholdEutra thresholdEutra
       SerializeChoice (2,1,false);
       SerializeInteger (thresholdEutra.range, 0, 34);
     }
+}
+
+void
+RrcAsn1Header::SerializeSidelinkUeInformation (LteRrcSap::SidelinkUeInformation slUeInfo) const
+{
+  NS_FATAL_ERROR ("SidelinkUeInformation header not implemented");
 }
 
 void
@@ -4519,6 +4525,12 @@ RrcAsn1Header::DeserializeMeasConfig (LteRrcSap::MeasConfig * measConfig, Buffer
   return bIterator;
 }
 
+Buffer::Iterator
+RrcAsn1Header::DeserializeSidelinkUeInformation (LteRrcSap::SidelinkUeInformation *slUeInfo, Buffer::Iterator bIterator)
+{
+  NS_FATAL_ERROR ("SidelinkUeInformation header not implemented");
+}
+
 //////////////////// RrcConnectionRequest class ////////////////////////
 
 // Constructor
@@ -5044,6 +5056,8 @@ RrcConnectionReconfigurationCompleteHeader::GetRrcTransactionIdentifier () const
 //////////////////// RrcConnectionReconfigurationHeader class ////////////////////////
 
 RrcConnectionReconfigurationHeader::RrcConnectionReconfigurationHeader ()
+  : m_haveSlCommConfig (false),
+    m_haveSlDiscConfig (false)
 {
 }
 
@@ -5569,6 +5583,10 @@ RrcConnectionReconfigurationHeader::SetMessage (LteRrcSap::RrcConnectionReconfig
   m_radioResourceConfigDedicated = msg.radioResourceConfigDedicated;
   m_haveNonCriticalExtension = msg.haveNonCriticalExtension;
   m_nonCriticalExtension = msg.nonCriticalExtension;
+  m_haveSlCommConfig = msg.haveSlCommConfig;
+  m_slCommConfig = msg.slCommConfig;
+  m_haveSlDiscConfig = msg.haveSlDiscConfig;
+  m_slDiscConfig = msg.slDiscConfig;
 
   m_isDataSerialized = false;
 }
@@ -5577,7 +5595,6 @@ LteRrcSap::RrcConnectionReconfiguration
 RrcConnectionReconfigurationHeader::GetMessage () const
 {
   LteRrcSap::RrcConnectionReconfiguration msg;
-
   msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
   msg.haveMeasConfig = m_haveMeasConfig;
   msg.measConfig = m_measConfig;
@@ -5587,6 +5604,10 @@ RrcConnectionReconfigurationHeader::GetMessage () const
   msg.radioResourceConfigDedicated = m_radioResourceConfigDedicated;
   msg.haveNonCriticalExtension = m_haveNonCriticalExtension;
   msg.nonCriticalExtension = m_nonCriticalExtension;
+  msg.haveSlCommConfig = m_haveSlCommConfig;
+  msg.slCommConfig = m_slCommConfig;
+  msg.haveSlDiscConfig = m_haveSlDiscConfig;
+  msg.slDiscConfig = m_slDiscConfig;
 
   return msg;
 }
@@ -5673,6 +5694,18 @@ LteRrcSap::PhysicalConfigDedicated
 RrcConnectionReconfigurationHeader::GetPhysicalConfigDedicated () const
 {
   return m_radioResourceConfigDedicated.physicalConfigDedicated;
+}
+
+bool
+RrcConnectionReconfigurationHeader::HaveSlCommConfig () const
+{
+  return m_haveSlCommConfig;
+}
+
+bool
+RrcConnectionReconfigurationHeader::HaveSlDiscConfig () const
+{
+  return m_haveSlDiscConfig;
 }
 
 
@@ -6789,33 +6822,35 @@ SidelinkUeInformationHeader::~SidelinkUeInformationHeader ()
 void
 SidelinkUeInformationHeader::PreSerialize () const
 {
-  m_serializationResult = Buffer ();
+  NS_FATAL_ERROR ("SidelinkUeInformation header not implemented");
 
-  // Serialize DCCH message
-  SerializeUlDcchMessage (20);
+//  m_serializationResult = Buffer ();
+//
+//  // Serialize DCCH message
+//  SerializeUlDcchMessage (20);
 
-  // Serialize MeasurementReport sequence:
-  // no default or optional fields. Extension marker not present.
-  SerializeSequence (std::bitset<0> (),false);
+//  // Serialize MeasurementReport sequence:
+//  // no default or optional fields. Extension marker not present.
+//  SerializeSequence (std::bitset<0> (),false);
 
-
-
-  // Finish serialization
-  FinalizeSerialization ();
+//  // Finish serialization
+//  FinalizeSerialization ();
 }
 
 uint32_t
 SidelinkUeInformationHeader::Deserialize (Buffer::Iterator bIterator)
 {
-  std::bitset<0> bitset0;
+  NS_FATAL_ERROR ("SidelinkUeInformation header not implemented");
 
-  bIterator = DeserializeSequence (&bitset0,false,bIterator);
-
-  bIterator = DeserializeUlDcchMessage (bIterator);
-
-
-
-  return GetSerializedSize ();
+//  std::bitset<0> bitset0;
+//
+//  bIterator = DeserializeSequence (&bitset0,false,bIterator);
+//
+//  bIterator = DeserializeUlDcchMessage (bIterator);
+//
+//
+//
+//  return GetSerializedSize ();
 }
 
 void
@@ -6839,7 +6874,6 @@ SidelinkUeInformationHeader::GetMessage () const
   msg = m_sidelinkUeInformation;
   return msg;
 }
-
 
 
 ///////////////////  RrcUlDcchMessage //////////////////////////////////

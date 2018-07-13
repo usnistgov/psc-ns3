@@ -17,6 +17,7 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  * Modified by Marco Miozzo <mmiozzo@cttc.es> (add data and ctrl diversity)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include <ns3/log.h>
@@ -147,9 +148,37 @@ LteSpectrumSignalParametersUlSrsFrame::Copy ()
 }
 
 
+LteSpectrumSignalParametersSlFrame::LteSpectrumSignalParametersSlFrame ()
+{
+  NS_LOG_FUNCTION (this);
+}
 
+LteSpectrumSignalParametersSlFrame::LteSpectrumSignalParametersSlFrame (const LteSpectrumSignalParametersSlFrame& p)
+: SpectrumSignalParameters (p)
+{
+  NS_LOG_FUNCTION (this << &p);
+  nodeId = p.nodeId;
+  groupId = p.groupId;
+  slssId = p.slssId;
+  ctrlMsgList = p.ctrlMsgList;
+  if (p.packetBurst)
+    {
+      packetBurst = p.packetBurst->Copy ();
+    }
+}
 
-
-
+Ptr<SpectrumSignalParameters>
+LteSpectrumSignalParametersSlFrame::Copy ()
+{
+    NS_LOG_FUNCTION (this);
+  // Ideally we would use:
+  // return Copy<LteSpectrumSignalParametersSlCtrlFrame> (*this);
+  // but for some reason it doesn't work. Another alternative is 
+  // return Copy<LteSpectrumSignalParametersSlCtrlFrame> (this);
+  // but it causes a double creation of the object, hence it is less efficient.
+  // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
+  Ptr<LteSpectrumSignalParametersSlFrame> lssp (new LteSpectrumSignalParametersSlFrame (*this), false);  
+  return lssp;
+}
 
 } // namespace ns3

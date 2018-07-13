@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_STATS_CALCULATOR_H_
@@ -79,6 +80,32 @@ public:
    * @return the name of the file where the downlink statistics will be stored
    */
   std::string GetDlOutputFilename (void);
+
+  /**
+   * Set the name of the file where the Sidelink statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetSlOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the Sidelink statistics will be stored.
+   * @return the name of the file where the Sidelink statistics will be stored
+   */
+  std::string GetSlOutputFilename (void);
+
+  /**
+   * Set the name of the file where the Sidelink PSCCH statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetSlPscchOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the Sidelink PSCCH statistics will be stored.
+   * @return the name of the file where the Sidelink PSCCH statistics will be stored
+   */
+  std::string GetSlPscchOutputFilename (void);
 
   /**
    * Checks if there is an already stored IMSI for the given path
@@ -204,6 +231,16 @@ private:
    * Name of the file where the uplink results will be saved
    */
   std::string m_ulOutputFilename;
+
+  /**
+   * Name of the file where the Sidelink results will be saved
+   */
+  std::string m_slOutputFilename;
+
+  /**
+   * Name of the file where the Sidlink PSCCH results will be saved
+   */
+  std::string m_slPscchOutputFilename;
 };
 
 } // namespace ns3

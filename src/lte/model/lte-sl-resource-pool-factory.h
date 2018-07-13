@@ -41,7 +41,7 @@
 
 namespace ns3 {
 
-  /** Class to configure and generate resource pools */
+/** Class to configure and generate resource pools */
 class LteSlResourcePoolFactory : public LteSlPoolFactory
 {
 public:
@@ -60,8 +60,8 @@ public:
   void SetControlCpLen (std::string cpLen);
 
   /** 
-   * Set the sidelink period duration
-   * \param period The sidelink period
+   * Set the Sidelink period duration
+   * \param period The Sidelink period
    */
   void SetControlPeriod (std::string period);
 
@@ -85,7 +85,7 @@ public:
 
   /**
    * Sets the offset (in subframe) for the control channel
-   * \param offset the number of subframes from the begining of the sidelink period
+   * \param offset the number of subframes from the beginning of the Sidelink period
    */
   void SetControlOffset (int16_t offset);
 
@@ -103,9 +103,9 @@ public:
 
   /**
    * Sets the frequency hopping parameters
-   * \param hoppingParameters The frequency hopping parameters
+   * \param hoppingParameter The frequency hopping parameter
    */
-  void SetDataHoppingParameters (int8_t hoppingParameters);
+  void SetDataHoppingParameter (uint16_t hoppingParameter);
 
   /**
    * Sets the bands for frequency hoping
@@ -128,7 +128,7 @@ public:
   // UE Selected Parameters
   /** 
    * Indicates if the configuration is for a UE selected pool
-   * \param ueSelected true if the connfiguration is for a UE selected pool 
+   * \param ueSelected true if the configuration is for a UE selected pool
    */
   void SetHaveUeSelectedResourceConfig (bool ueSelected);
 
@@ -180,7 +180,7 @@ public:
    * \param txParam True if the configuration provides transmission parameters to use
    */ 
   void SetHaveTxParameters (bool txParam);
-  
+
   /**
    * Sets the alpha parameter for the power control algorithm in the control channel
    * \param alpha The alpha parameter for the power control algorithm
@@ -190,7 +190,7 @@ public:
   /**
    * Sets the p0 parameter for the power control algorithm in the control channel
    * \param p0 The p0 parameter for the power control algorithm
-   */  
+   */
   void SetControlTxP0 (int16_t p0);
 
   /**
@@ -202,8 +202,160 @@ public:
   /**
    * Sets the p0 parameter for the power control algorithm in the shared channel
    * \param p0 The p0 parameter for the power control algorithm
-   */  
+   */
   void SetDataTxP0 (int16_t p0);
+
+  /**
+   * Gets the cyclic prefix length for the control channel
+   * \return The control cyclic prefix length
+   */
+  std::string GetControlCpLen (void);
+
+  /**
+   * Gets the Sidelink period duration
+   * \return The Sidelink control period
+   */
+  std::string GetControlPeriod (void);
+
+  /**
+   * Gets the number of PRBs in  the control channel (from the start up and the end down)
+   * \return The number of PRBs for transmitting the control
+   */
+  int8_t GetControlPrbNum (void);
+
+  /**
+   * Gets the index of the PRB where the control channel starts
+   * \return The index of the starting PRB
+   */
+  int8_t GetControlPrbStart (void);
+
+  /**
+   * Gets the index of the PRB where the control channel ends
+   * \return The index of the last PRB
+   */
+  int8_t GetControlPrbEnd (void);
+
+  /**
+   * Gets the offset (in subframe) for the control channel
+   * \return The offset (in subframe) for control transmission from the beginning of the Sidelink period
+   */
+  int16_t GetControlOffset (void);
+
+  /**
+   * Gets the bitmap identifying which subframes belong to the control channel
+   * \return The bitmap identifying which subframes belong to the control channel
+   */
+  int64_t GetControlBitmap (void);
+
+  /**
+   * Gets the cyclic prefix for the data channel
+   * \return The data cyclic prefix
+   */
+  std::string GetDataCpLen (void);
+
+  /**
+   * Gets the frequency hopping parameters
+   * \return The frequency hopping parameter
+   */
+  uint16_t GetDataHoppingParameter (void);
+
+  /**
+   * Gets the bands for frequency hoping
+   * \return The bands for frequency hopping
+   */
+  std::string GetDataHoppingSubbands (void);
+
+  /**
+   * Gets the RB offset for frequency hopping
+   * \return The RB offset to use for frequency hopping
+   */
+  int8_t GetDataHoppingOffset (void);
+
+  /**
+   * Gets the hopping information for frequency hopping
+   * \return The hopping info type to use
+   */
+  int8_t GetDataHoppingInfo (void);
+
+  // UE Selected Parameters
+  /**
+   * Gets HaveUeSelectedResourceConfig flag
+   * \return True true if The configuration is for a UE selected pool
+   */
+  bool GetHaveUeSelectedResourceConfig (void);
+
+  /**
+   * Gets HaveTrptSubset flag
+   * \return True if the configuration contain the TRP subset information
+   */
+  bool GetHaveTrptSubset (void);
+
+  /**
+   * Gets the TRP subset value
+   * \return The TRP subset value
+   */
+  int64_t GetTrptSubset (void);
+
+  /**
+   * Gets the number of PRBs for the shared channel (from the start up and end down)
+   * \return The number of PRBs for the data shared channel
+   */
+  int8_t GetDataPrbNum (void);
+
+  /**
+   * Gets the index of the PRB where the shared channel starts
+   * \return The index of the PRB where the data shared channel starts
+   */
+  int8_t GetDataPrbStart (void);
+
+  /**
+   * Gets the index of the PRB where the shared channel ends
+   * \return The index of the PRB where the shared channel ends
+   */
+  int8_t GetDataPrbEnd (void);
+
+  /**
+   * Gets the offset of the shared channel (from the start of the period)
+   * \return The data offset (in subframe)
+   */
+  int16_t GetDataOffset (void);
+
+  /**
+   * Gets the bitmap identifying the subframes to use for the shared channel
+   * \return The bitmap value
+   */
+  int64_t GetDataBitmap (void);
+
+  // Tx Parameters
+  /**
+   * Gets have tx parameters
+   * \return True if the transmission parameters are set
+   */
+  bool GetHaveTxParameters (void);
+
+  /**
+   * Gets the alpha parameter for the power control algorithm in the control channel
+   * \return The alpha parameter for control transmission for the power control algorithm
+   */
+  std::string GetControlTxAlpha (void);
+
+  /**
+   * Gets the p0 parameter for the power control algorithm in the control channel
+   * \return The p0 parameter value for control transmission for the power control algorithm
+   */
+  int16_t GetControlTxP0 (void);
+
+  /**
+   * Gets the alpha parameter for the power control algorithm in the shared channel
+   * \return The alpha parameter for data transmission for the power control algorithm
+   */
+  std::string GetDataTxAlpha (void);
+
+  /**
+   * Gets the p0 parameter for the power control algorithm in the shared channel
+   * \return The p0 parameter for data transmission for the power control algorithm
+   */
+  int16_t GetDataTxP0 (void);
 
 private:
   LteRrcSap::SlCommResourcePool m_pool;
@@ -211,7 +363,7 @@ private:
 protected:
   // Control
   std::string m_scCpLen; //!< cyclic prefix for the control channel
-  std::string m_period; //!< sidelink period duration
+  std::string m_period; //!< Sidelink period duration
   int8_t m_scPrbNum; //!< number of PRBs in the control channel
   int8_t m_scPrbStart; //!< index of the PRB where the control channel starts
   int8_t m_scPrbEnd; //!< index of the PRB where the control channel ends
@@ -221,7 +373,7 @@ protected:
 
   // Data
   std::string m_dataCpLen; //!< cyclic prefix for the shared channel
-  int8_t m_hoppingParameters; //!< frequency hopping for the shared channel
+  uint16_t m_hoppingParameter; //!< frequency hopping for the shared channel
   std::string m_subbands; //!< number of subbands
   int8_t m_rbOffset; //!< offset in the PRBs
   int8_t m_hoppingInfo; //!< Information in hopping bits.

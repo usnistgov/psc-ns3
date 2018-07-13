@@ -17,6 +17,7 @@
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_ENB_CMAC_SAP_H
@@ -141,17 +142,34 @@ public:
   virtual void UeUpdateConfigurationReq (UeConfig params) = 0;
 
   /**
-   * Adds pool information for the given group
+   * Adds Sidelink Communication pool for the given group
+   *
    * \param group The Destination L2 ID
    * \param pool The pool information
    */
   virtual void AddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool) = 0;
   
   /**
-   * Adds pool information for the given group
+   * Removes Sidelink Communication pool for the given group
+   *
    * \param group The Destination L2 ID
    */
   virtual void RemovePool (uint32_t group) = 0;
+  /**
+   * Adds Sidelink Discovery pool for the given group
+   *
+   * \param reReq resources requested
+   * \param pool The pool information for discovery
+   */
+  virtual void AddPool (uint8_t resReq, Ptr<SidelinkDiscResourcePool> pool) = 0;
+
+  /**
+   * Removes Sidelink Discovery pool
+   *
+   * \param reReq resources requested to be removed
+   */
+  virtual void RemoveDiscPool (uint8_t resReq) = 0;
+
 
   /**
    * struct defining the RACH configuration of the MAC

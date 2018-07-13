@@ -400,6 +400,40 @@ EmuEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi, Ptr<Epc
   return bearerId;
 }
 
+void
+EmuEpcHelper::ActivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  NS_ASSERT (ueLteDevice);
+  ueLteDevice->GetNas ()->ActivateSidelinkBearer (tft);
+}
+
+void
+EmuEpcHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+
+  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
+  NS_ASSERT (ueLteDevice);
+  ueLteDevice->GetNas ()->DeactivateSidelinkBearer (tft);
+}
+
+void
+EmuEpcHelper::StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetNas ()->AddDiscoveryApps (apps, rxtx);
+}
+
+void
+EmuEpcHelper::StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this << ueDevice);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetNas ()->RemoveDiscoveryApps (apps, rxtx);
+}
+
 
 Ptr<Node>
 EmuEpcHelper::GetPgwNode ()

@@ -44,7 +44,16 @@ cpp_examples = [
     ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::FdBetFfMacScheduler", "options.valgrind", "True"),
     ("lena-ipv6-addr-conf", "True", "True"), 
     ("lena-ipv6-ue-rh", "True", "True"), 
-    ("lena-ipv6-ue-ue", "True", "True"), 
+    ("lena-ipv6-ue-ue", "True", "True"),
+    ("lte-sl-in-covrg-comm-mode1", "True", "True"),
+    ("lte-sl-in-covrg-comm-mode2", "True", "True"),
+    ("lte-sl-out-of-covrg-comm", "True", "True"),
+    ("wns3-2017-discovery", "True", "True"),
+    ("wns3-2017-pscch", "True", "True"),
+    ("wns3-2017-pssch", "True", "True"),
+    ("wns3-2017-synch", "True", "True"),
+    ("lte-3gpp-hex-topology --simTime=2 --enableChannelLogs=1 --enableLteTraces=1 --epc=1", "True", "True"),
+    ("lte-wrap-around-hex-topology --simTime=2 --enableChannelLogs=1 --enableLteTraces=1 enableTopologyLogs=1", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

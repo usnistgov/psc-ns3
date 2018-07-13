@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef FF_MAC_SCHED_SAP_H
@@ -309,6 +310,8 @@ public:
   {
     std::vector <struct UlDciListElement_s> m_dciList; ///< DCI list
     std::vector <struct PhichListElement_s> m_phichList; ///< PHICH list
+    
+    std::vector <struct SlDciListElement_s> m_sldciList; ///< Sidelink DCI list
 
     std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
   };

@@ -17,7 +17,8 @@
  *
  * Author: Jaume Nin <jnin@cttc.es>
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "mac-stats-calculator.h"
@@ -33,7 +34,9 @@ NS_OBJECT_ENSURE_REGISTERED (MacStatsCalculator);
 
 MacStatsCalculator::MacStatsCalculator ()
   : m_dlFirstWrite (true),
-    m_ulFirstWrite (true)
+    m_ulFirstWrite (true),
+    m_slUeCchFirstWrite (true),
+    m_slUeSchFirstWrite (true)
 {
   NS_LOG_FUNCTION (this);
 
@@ -61,6 +64,16 @@ MacStatsCalculator::GetTypeId (void)
                    StringValue ("UlMacStats.txt"),
                    MakeStringAccessor (&MacStatsCalculator::SetUlOutputFilename),
                    MakeStringChecker ())
+    .AddAttribute ("SlUeCchOutputFilename",
+                   "Name of the file where the Sidelink results will be saved.",
+                   StringValue ("SlUeMacStats.txt"),
+                   MakeStringAccessor (&MacStatsCalculator::SetSlUeCchOutputFilename),
+                   MakeStringChecker ())
+    .AddAttribute ("SlUeSchOutputFilename",
+                   "Name of the file where the Sidelink results will be saved.",
+                   StringValue ("SlSchUeMacStats.txt"),
+                   MakeStringAccessor (&MacStatsCalculator::SetSlUeSchOutputFilename),
+                   MakeStringChecker ())
   ;
   return tid;
 }
@@ -87,6 +100,30 @@ std::string
 MacStatsCalculator::GetDlOutputFilename (void)
 {
   return LteStatsCalculator::GetDlOutputFilename ();
+}
+
+void
+MacStatsCalculator::SetSlUeCchOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetSlPscchOutputFilename (outputFilename);
+}
+
+std::string
+MacStatsCalculator::GetSlUeCchOutputFilename (void)
+{
+  return LteStatsCalculator::GetSlPscchOutputFilename ();
+}
+
+void
+MacStatsCalculator::SetSlUeSchOutputFilename (std::string outputFilename)
+{
+  LteStatsCalculator::SetSlOutputFilename (outputFilename);
+}
+
+std::string
+MacStatsCalculator::GetSlUeSchOutputFilename (void)
+{
+  return LteStatsCalculator::GetSlOutputFilename ();
 }
 
 void
@@ -176,6 +213,100 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
 }
 
 void
+MacStatsCalculator::SlUeCchScheduling (SlUeMacStatParameters params)
+{
+  NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_frameNo << params.m_subframeNo << params.m_rnti << (uint32_t) params.m_mcs << params.m_pscchRi << params.m_pscchFrame1 << params.m_pscchSubframe1 << params.m_pscchFrame2 << params.m_pscchSubframe2 << params.m_psschTxStartRB << params.m_psschTxLengthRB << params.m_psschItrp);
+  NS_LOG_INFO ("Write SL UE Mac Stats in " << GetSlUeCchOutputFilename ().c_str ());
+
+  std::ofstream outFile;
+  if ( m_slUeCchFirstWrite == true )
+    {
+      outFile.open (GetSlUeCchOutputFilename ().c_str ());
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlUeCchOutputFilename ().c_str ());
+          return;
+        }
+      m_slUeCchFirstWrite = false;
+      outFile << "% time\tcellId\tIMSI\tRNTI\tframe\tsframe\tresPscch\tpscchFr1\tpscchSf1\tpscchFr2\tpscchSf2\tmcs\tTBS\tpsschRB\tpsschLen\tpsschItrp";
+      outFile << std::endl;
+    }
+  else
+    {
+      outFile.open (GetSlUeCchOutputFilename ().c_str (),  std::ios_base::app);
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlUeCchOutputFilename ().c_str ());
+          return;
+        }
+    }
+
+  outFile << (uint32_t) params.m_timestamp << "\t";
+  outFile << (uint32_t) params.m_cellId << "\t";
+  outFile << params.m_imsi << "\t";
+  outFile << params.m_rnti << "\t";
+  outFile << params.m_frameNo << "\t";
+  outFile << params.m_subframeNo << "\t";
+  outFile << params.m_pscchRi << "\t";
+  outFile << params.m_pscchFrame1 << "\t";
+  outFile << params.m_pscchSubframe1 << "\t";
+  outFile << params.m_pscchFrame2 << "\t";
+  outFile << params.m_pscchSubframe2 << "\t";
+  outFile << (uint32_t) params.m_mcs << "\t";
+  outFile << params.m_tbSize << "\t";
+  outFile << params.m_psschTxStartRB << "\t";
+  outFile << params.m_psschTxLengthRB << "\t";
+  outFile << params.m_psschItrp << std::endl;
+  outFile.close ();
+}
+
+void
+MacStatsCalculator::SlUeSchScheduling (SlUeMacStatParameters params)
+{
+  NS_LOG_FUNCTION (this << params.m_cellId << params.m_imsi << params.m_rnti << params.m_frameNo << params.m_subframeNo << (uint32_t) params.m_mcs << params.m_tbSize << params.m_psschTxStartRB << params.m_psschTxLengthRB);
+  NS_LOG_INFO ("Write SL Shared Channel UE Mac Stats in " << GetSlUeSchOutputFilename ().c_str ());
+
+  std::ofstream outFile;
+  if ( m_slUeSchFirstWrite == true )
+    {
+      outFile.open (GetSlUeSchOutputFilename ().c_str ());
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlUeSchOutputFilename ().c_str ());
+          return;
+        }
+      m_slUeSchFirstWrite = false;
+      outFile << "% time\tcellId\tIMSI\tRNTI\tscPrdStartFr\tscPrdStartSf\tschStartFr\tschStartSf\tcurrFr\tcurrSf\tmcs\tTBS\tpsschRB\tpsschLen";
+      outFile << std::endl;
+    }
+  else
+    {
+      outFile.open (GetSlUeSchOutputFilename ().c_str (),  std::ios_base::app);
+      if (!outFile.is_open ())
+        {
+          NS_LOG_ERROR ("Can't open file " << GetSlUeSchOutputFilename ().c_str ());
+          return;
+        }
+    }
+
+  outFile << (uint32_t) params.m_timestamp << "\t";
+  outFile << (uint32_t) params.m_cellId << "\t";
+  outFile << params.m_imsi << "\t";
+  outFile << params.m_rnti << "\t";
+  outFile << params.m_frameNo << "\t";
+  outFile << params.m_subframeNo << "\t";
+  outFile << params.m_psschFrameStart << "\t";
+  outFile << params.m_psschSubframeStart << "\t";
+  outFile << params.m_psschFrame << "\t";
+  outFile << params.m_psschSubframe << "\t";
+  outFile << (uint32_t) params.m_mcs << "\t";
+  outFile << params.m_tbSize << "\t";
+  outFile << params.m_psschTxStartRB << "\t";
+  outFile << params.m_psschTxLengthRB << std::endl;
+  outFile.close ();
+}
+
+void
 MacStatsCalculator::DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, DlSchedulingCallbackInfo dlSchedulingCallbackInfo)
 {
   NS_LOG_FUNCTION (macStats << path);
@@ -240,5 +371,54 @@ MacStatsCalculator::UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std:
   macStats->UlScheduling (cellId, imsi, frameNo, subframeNo, rnti, mcs, size, componentCarrierId);
 }
 
+void
+MacStatsCalculator::SlUeCchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params)
+{
+  NS_LOG_FUNCTION (macStats << path);
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      NS_LOG_LOGIC("Existing IMSI path. Getting IMSI...");
+      params.m_imsi = macStats->GetImsiPath (pathAndRnti.str ());
+      NS_LOG_LOGIC("IMSI= " << params.m_imsi);
+    }
+  else
+    {
+      NS_LOG_LOGIC("NON-existing IMSI path. Finding IMSI from UE LteNetDevice...");
+      std::string ueNetDevicePath = path.substr (0, path.find("/ComponentCarrierMapUe"));
+      params.m_imsi = FindImsiFromLteNetDevice (ueNetDevicePath);
+      NS_LOG_LOGIC("Found IMSI= " << params.m_imsi);
+      macStats->SetImsiPath (pathAndRnti.str (), params.m_imsi);
+    }
+  params.m_cellId = 0;
+
+  macStats->SlUeCchScheduling (params);
+}
+
+void
+MacStatsCalculator::SlUeSchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params)
+{
+  NS_LOG_FUNCTION (macStats << path);
+  std::ostringstream pathAndRnti;
+  pathAndRnti << path << "/" << params.m_rnti;
+  if (macStats->ExistsImsiPath (pathAndRnti.str ()) == true)
+    {
+      NS_LOG_LOGIC("Existing IMSI path. Getting IMSI...");
+      params.m_imsi = macStats->GetImsiPath (pathAndRnti.str ());
+      NS_LOG_LOGIC("IMSI= " << params.m_imsi);
+    }
+  else
+    {
+      NS_LOG_LOGIC("NON-existing IMSI path. Finding IMSI from UE LteNetDevice...");
+      std::string ueNetDevicePath = path.substr (0, path.find("/ComponentCarrierMapUe"));
+      params.m_imsi = FindImsiFromLteNetDevice (ueNetDevicePath);
+      NS_LOG_LOGIC("Found IMSI= " << params.m_imsi);
+      macStats->SetImsiPath (pathAndRnti.str (), params.m_imsi);
+    }
+  params.m_cellId = 0;
+
+  macStats->SlUeSchScheduling (params);
+}
 
 } // namespace ns3

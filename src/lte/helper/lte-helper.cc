@@ -18,7 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es> (re-wrote from scratch this helper)
  *         Giuseppe Piro <g.piro@poliba.it> (parts of the PHY & channel  creation & configuration copied from the GSoC 2011 code)
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "lte-helper.h"
@@ -37,10 +38,9 @@
 #include <ns3/lte-ue-phy.h>
 #include <ns3/lte-spectrum-phy.h>
 #include <ns3/lte-chunk-processor.h>
+#include <ns3/lte-sl-chunk-processor.h>
 #include <ns3/multi-model-spectrum-channel.h>
-#include <ns3/friis-spectrum-propagation-loss.h>
 #include <ns3/trace-fading-loss-model.h>
-#include <ns3/isotropic-antenna-model.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/lte-ffr-algorithm.h>
@@ -60,11 +60,13 @@
 #include <ns3/phy-rx-stats-calculator.h>
 #include <ns3/epc-helper.h>
 #include <iostream>
-#include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/lte-spectrum-value-helper.h>
 #include <ns3/epc-x2.h>
 #include <ns3/object-map.h>
 #include <ns3/object-factory.h>
+#include <ns3/isotropic-antenna-model.h>
+#include <ns3/friis-spectrum-propagation-loss.h>
+#include <ns3/propagation-loss-model.h>
 
 namespace ns3 {
 
@@ -190,10 +192,21 @@ TypeId LteHelper::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("NumberOfComponentCarriers",
                    "Set the number of Component carrier to use "
-                   "If it is more than one and m_useCa is false, it will raise an error ",
+                   "If it is more than one and m_useCa is false, it will raise an error",
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteHelper::m_noOfCcs),
                    MakeUintegerChecker<uint16_t> (MIN_NO_CC, MAX_NO_CC))
+    .AddAttribute ("UseSidelink",
+                   "Enables or disables UE Sidelink communication",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteHelper::m_useSidelink),
+                   MakeBooleanChecker ())
+    .AddAttribute ("DisableEnbPhy",
+                   "If false, normal eNB operation."
+                   "If true, eNB physical layer disable.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteHelper::DisableEnbPhy),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -207,6 +220,14 @@ LteHelper::DoDispose ()
   m_componentCarrierPhyParams.clear();
   Object::DoDispose ();
 }
+
+void
+LteHelper::DisableEnbPhy (bool disableEnbPhy)
+{
+  NS_LOG_FUNCTION (this << disableEnbPhy);
+  m_disableEnbPhy = disableEnbPhy;
+}
+
 
 Ptr<SpectrumChannel>
 LteHelper::GetUplinkSpectrumChannel (void) const
@@ -396,6 +417,19 @@ LteHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
   m_pathlossModelFactory.Set (n, v);
 }
 
+Ptr<Object>
+LteHelper::GetUplinkPathlossModel () const
+{
+  return m_uplinkPathlossModel;
+}
+
+Ptr<Object>
+LteHelper::GetDownlinkPathlossModel () const
+{
+  return m_downlinkPathlossModel;
+}
+
+
 void
 LteHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
 {
@@ -550,6 +584,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       dlPhy->SetHarqPhyModule (harq);
       ulPhy->SetHarqPhyModule (harq);
       phy->SetHarqPhyModule (harq);
+      phy->DisableEnbPhy (m_disableEnbPhy);
 
       Ptr<LteChunkProcessor> pCtrl = Create<LteChunkProcessor> ();
       pCtrl->AddCallback (MakeCallback (&LteEnbPhy::GenerateCtrlCqiReport, phy));
@@ -799,13 +834,30 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
     {
       Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
       Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
+      Ptr<LteSpectrumPhy> slPhy;
+      if (m_useSidelink)
+        {
+          slPhy = CreateObject<LteSpectrumPhy> ();
+          slPhy->SetAttribute ("HalfDuplexPhy", PointerValue (ulPhy));
+        }
 
       Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
+
+      if (m_useSidelink)
+        {
+          phy->SetSlSpectrumPhy (slPhy);
+        }
 
       Ptr<LteHarqPhy> harq = Create<LteHarqPhy> ();
       dlPhy->SetHarqPhyModule (harq);
       ulPhy->SetHarqPhyModule (harq);
       phy->SetHarqPhyModule (harq);
+
+      Ptr<LteSlHarqPhy> slHarq = Create<LteSlHarqPhy> ();
+      if (m_useSidelink)
+        {
+          slPhy->SetSlHarqPhyModule (slHarq);
+        }
 
       Ptr<LteChunkProcessor> pRs = Create<LteChunkProcessor> ();
       pRs->AddCallback (MakeCallback (&LteUePhy::ReportRsReceivedPower, phy));
@@ -823,6 +875,21 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       pData->AddCallback (MakeCallback (&LteSpectrumPhy::UpdateSinrPerceived, dlPhy));
       dlPhy->AddDataSinrChunkProcessor (pData);
 
+      if (m_useSidelink)
+        {
+          Ptr<LteSlChunkProcessor> pSlSinr = Create<LteSlChunkProcessor> ();
+          pSlSinr->AddCallback (MakeCallback (&LteSpectrumPhy::UpdateSlSinrPerceived, slPhy));
+          slPhy->AddSlSinrChunkProcessor (pSlSinr);
+
+          Ptr<LteSlChunkProcessor> pSlSignal = Create<LteSlChunkProcessor> ();
+          pSlSignal->AddCallback (MakeCallback (&LteSpectrumPhy::UpdateSlSigPerceived, slPhy));
+          slPhy->AddSlSignalChunkProcessor (pSlSignal);
+
+          Ptr<LteSlChunkProcessor> pSlInterference = Create<LteSlChunkProcessor> ();
+          pSlInterference->AddCallback (MakeCallback (&LteSpectrumPhy::UpdateSlIntPerceived, slPhy));
+          slPhy->AddSlInterferenceChunkProcessor (pSlInterference);
+        }
+
       if (m_usePdschForCqiGeneration)
         {
           // CQI calculation based on PDCCH for signal and PDSCH for interference
@@ -839,16 +906,28 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 
       dlPhy->SetChannel (m_downlinkChannel);
       ulPhy->SetChannel (m_uplinkChannel);
+      if (m_useSidelink)
+        {
+          slPhy->SetChannel (m_uplinkChannel); //want the UE to receive Sidelink messages on the uplink
+        }
 
       Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
       NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");
       dlPhy->SetMobility (mm);
       ulPhy->SetMobility (mm);
+      if (m_useSidelink)
+        {
+          slPhy->SetMobility (mm);
+        }
 
       Ptr<AntennaModel> antenna = (m_ueAntennaModelFactory.Create ())->GetObject<AntennaModel> ();
       NS_ASSERT_MSG (antenna, "error in creating the AntennaModel object");
       dlPhy->SetAntenna (antenna);
       ulPhy->SetAntenna (antenna);
+      if (m_useSidelink)
+        {
+          slPhy->SetAntenna (antenna);
+        }
 
       it->second->SetPhy(phy);
     }
@@ -913,6 +992,13 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   NS_ABORT_MSG_IF (m_imsiCounter >= 0xFFFFFFFF, "max num UEs exceeded");
   uint64_t imsi = ++m_imsiCounter;
 
+  if (m_useSidelink)
+    {
+      //Initialize sidelink configuration
+      Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
+      ueSidelinkConfiguration->SetSourceL2Id ((uint32_t) (imsi & 0xFFFFFF)); //use lower 24 bits of IMSI as source
+      rrc->SetAttribute ("SidelinkConfiguration", PointerValue (ueSidelinkConfiguration));
+    }
 
   dev->SetNode (n);
   dev->SetAttribute ("Imsi", UintegerValue (imsi));
@@ -930,6 +1016,13 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       ccPhy->SetDevice (dev);
       ccPhy->GetUlSpectrumPhy ()->SetDevice (dev);
       ccPhy->GetDlSpectrumPhy ()->SetDevice (dev);
+      if (m_useSidelink)
+        {
+          ccPhy->GetSlSpectrumPhy ()->SetDevice (dev);
+          ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, ccPhy));
+          ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, ccPhy));
+          ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxSlssCallback (MakeCallback (&LteUePhy::ReceiveSlss,ccPhy));
+        }
       ccPhy->GetDlSpectrumPhy ()->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, ccPhy));
       ccPhy->GetDlSpectrumPhy ()->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, ccPhy));
       ccPhy->GetDlSpectrumPhy ()->SetLtePhyRxPssCallback (MakeCallback (&LteUePhy::ReceivePss, ccPhy));
@@ -1084,6 +1177,87 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
   uint64_t imsi = ueDevice->GetObject<LteUeNetDevice> ()->GetImsi ();
   uint8_t bearerId = m_epcHelper->ActivateEpsBearer (ueDevice, imsi, tft, bearer);
   return bearerId;
+}
+
+void
+LteHelper::ActivateSidelinkBearer (NetDeviceContainer ueDevices, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      ActivateSidelinkBearer (*i, tft->Copy());
+    }
+}
+
+
+void
+LteHelper::ActivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ASSERT_MSG (m_epcHelper != 0, "sidelink bearers cannot be set up when the EPC is not used");
+
+  m_epcHelper->ActivateSidelinkBearer (ueDevice, tft);
+}
+
+void
+LteHelper::DeactivateSidelinkBearer (NetDeviceContainer ueDevices, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      DeactivateSidelinkBearer (*i, tft);
+    }
+}
+
+
+void
+LteHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ASSERT_MSG (m_epcHelper != 0, "sidelink bearers cannot be set up when the EPC is not used");
+
+  m_epcHelper->DeactivateSidelinkBearer (ueDevice, tft);
+}
+void
+LteHelper::StartDiscovery (NetDeviceContainer ueDevices, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      StartDiscovery (*i, apps, rxtx);
+    }
+}
+
+void
+LteHelper::StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ASSERT_MSG (m_epcHelper != 0, "discovery can't start when the EPC is not used");
+
+  m_epcHelper->StartDiscovery (ueDevice, apps, rxtx);
+}
+
+void
+LteHelper::StopDiscovery (NetDeviceContainer ueDevices, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      StopDiscovery (*i, apps, rxtx);
+    }
+}
+
+void
+LteHelper::StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ASSERT_MSG (m_epcHelper != 0, "no EPC is used");
+
+  m_epcHelper->StopDiscovery (ueDevice, apps, rxtx);
 }
 
 /**
@@ -1490,6 +1664,12 @@ LteHelper::EnablePhyTraces (void)
   EnableUlTxPhyTraces ();
   EnableDlRxPhyTraces ();
   EnableUlRxPhyTraces ();
+  //Sidelink
+  if(m_useSidelink)
+    {
+      EnableSlRxPhyTraces ();
+      EnableSlPscchRxPhyTraces ();
+    }
 }
 
 void
@@ -1520,12 +1700,32 @@ LteHelper::EnableUlRxPhyTraces (void)
                    MakeBoundCallback (&PhyRxStatsCalculator::UlPhyReceptionCallback, m_phyRxStats));
 }
 
+void
+LteHelper::EnableSlRxPhyTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/SlSpectrumPhy/SlPhyReception",
+                   MakeBoundCallback (&PhyRxStatsCalculator::SlPhyReceptionCallback, m_phyRxStats));
+}
+
+void
+LteHelper::EnableSlPscchRxPhyTraces (void)
+{
+  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/SlSpectrumPhy/SlPscchReception",
+                   MakeBoundCallback (&PhyRxStatsCalculator::SlPscchReceptionCallback, m_phyRxStats));
+}
+
 
 void
 LteHelper::EnableMacTraces (void)
 {
   EnableDlMacTraces ();
   EnableUlMacTraces ();
+  //Sidelink
+  if (m_useSidelink)
+    {
+      EnableSlPscchMacTraces ();
+      EnableSlPsschMacTraces ();
+    }
 }
 
 
@@ -1543,6 +1743,22 @@ LteHelper::EnableUlMacTraces (void)
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&MacStatsCalculator::UlSchedulingCallback, m_macStats));
+}
+
+void
+LteHelper::EnableSlPscchMacTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUeMac/SlPscchScheduling",
+                   MakeBoundCallback (&MacStatsCalculator::SlUeCchSchedulingCallback, m_macStats));
+}
+
+void
+LteHelper::EnableSlPsschMacTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUeMac/SlPsschScheduling",
+                   MakeBoundCallback (&MacStatsCalculator::SlUeSchSchedulingCallback, m_macStats));
 }
 
 void
@@ -1582,6 +1798,51 @@ Ptr<RadioBearerStatsCalculator>
 LteHelper::GetPdcpStats (void)
 {
   return m_pdcpStats;
+}
+
+void
+LteHelper::InstallSidelinkConfiguration (NetDeviceContainer enbDevices, Ptr<LteSlEnbRrc> slConfiguration)
+{
+  //for each device, install a copy of the configuration
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = enbDevices.Begin (); i != enbDevices.End (); ++i)
+    {
+      InstallSidelinkConfiguration (*i, slConfiguration->Copy());
+    }
+}
+
+void
+LteHelper::InstallSidelinkConfiguration (Ptr<NetDevice> enbDevice, Ptr<LteSlEnbRrc> slConfiguration)
+{
+  Ptr<LteEnbRrc> rrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc();
+  NS_ASSERT_MSG (rrc != 0, "RRC layer not found");
+  rrc->SetAttribute ("SidelinkConfiguration", PointerValue (slConfiguration));
+}
+
+void
+LteHelper::InstallSidelinkConfiguration (NetDeviceContainer ueDevices, Ptr<LteSlUeRrc> slConfiguration)
+{
+  //for each device, install a copy of the configuration
+  NS_LOG_FUNCTION (this);
+  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
+    {
+      InstallSidelinkConfiguration (*i, slConfiguration);
+    }
+}
+
+void
+LteHelper::InstallSidelinkConfiguration (Ptr<NetDevice> ueDevice, Ptr<LteSlUeRrc> slConfiguration)
+{
+  Ptr<LteUeRrc> rrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc();
+  NS_ASSERT_MSG (rrc != 0, "RRC layer not found");
+  PointerValue ptr;
+  rrc->GetAttribute ("SidelinkConfiguration", ptr);
+  Ptr<LteSlUeRrc> ueConfig = ptr.Get<LteSlUeRrc> ();
+  ueConfig->SetSlPreconfiguration (slConfiguration->GetSlPreconfiguration());
+  ueConfig->SetSlEnabled (slConfiguration->IsSlEnabled());
+  ueConfig->SetDiscEnabled (slConfiguration->IsDiscEnabled());
+  ueConfig->SetDiscTxResources (slConfiguration->GetDiscTxResources ());
+  ueConfig->SetDiscInterFreq (slConfiguration->GetDiscInterFreq ());
 }
 
 } // namespace ns3

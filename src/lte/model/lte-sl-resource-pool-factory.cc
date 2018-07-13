@@ -40,35 +40,32 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteSlResourcePoolFactory");
 
-LteSlResourcePoolFactory::LteSlResourcePoolFactory () :
-  m_scCpLen("NORMAL"),
-  m_period("sf40"),
-  m_scPrbNum(22),
-  m_scPrbStart(0),
-  m_scPrbEnd(49),
-  m_scOffset(0),
-  //m_scBitmapSize(40),
-  m_scBitmapValue(0xFF00000000),
-  m_dataCpLen("NORMAL"),
-  m_hoppingParameters(0),
-  m_subbands("ns4"),
-  m_rbOffset(0),
-  m_hoppingInfo(0xFF),
-  m_ueSelected(true),
-  m_haveTrptSubset(false),
-  //m_trptSubsetSize(3),
-  m_trptSubsetValue(0x7),
-  m_dataPrbNum(25),
-  m_dataPrbStart(0),
-  m_dataPrbEnd(49),
-  m_dataOffset(8),
-  //m_dataBitmapSize(40),
-  m_dataBitmapValue(0xFFFFFFFFFF),
-  m_txParam(true),
-  m_txAlpha("al09"),
-  m_txP0(-40),
-  m_dataAlpha("al09"),
-  m_dataP0(-40)
+LteSlResourcePoolFactory::LteSlResourcePoolFactory ()
+  : m_scCpLen ("NORMAL"),
+    m_period ("sf40"),
+    m_scPrbNum (22),
+    m_scPrbStart (0),
+    m_scPrbEnd (49),
+    m_scOffset (0),
+    m_scBitmapValue (0x00000000FF),
+    m_dataCpLen ("NORMAL"),
+    m_hoppingParameter (0),
+    m_subbands ("ns4"),
+    m_rbOffset (0),
+    m_hoppingInfo (0xFF),
+    m_ueSelected (true),
+    m_haveTrptSubset (false),
+    m_trptSubsetValue (0x7),
+    m_dataPrbNum (25),
+    m_dataPrbStart (0),
+    m_dataPrbEnd (49),
+    m_dataOffset (8),
+    m_dataBitmapValue (0xFFFFFFFFFF),
+    m_txParam (true),
+    m_txAlpha ("al09"),
+    m_txP0 (-40),
+    m_dataAlpha ("al09"),
+    m_dataP0 (-40)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -77,22 +74,62 @@ LteRrcSap::SlCommResourcePool
 LteSlResourcePoolFactory::CreatePool ()
 {
   // Control
-  //pool.scCpLen.cplen = m_scCpLen;
-  if (m_scCpLen == "NORMAL") {m_pool.scCpLen.cplen = LteRrcSap::SlCpLen::NORMAL;}
-  else if (m_scCpLen == "EXTENDED") {m_pool.scCpLen.cplen = LteRrcSap::SlCpLen::EXTENDED;}
-  else {NS_FATAL_ERROR ("UNSUPPORTED CONTROL CP LENGTH");}
-  //pool.scPeriod.period = m_period;
-  if (m_period == "sf40") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf40;}
-  else if (m_period == "sf60") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf60;}
-  else if (m_period == "sf70") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf70;}
-  else if (m_period == "sf80") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf80;}
-  else if (m_period == "sf120") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf120;}
-  else if (m_period == "sf140") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf140;}
-  else if (m_period == "sf160") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf160;}
-  else if (m_period == "sf240") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf240;}
-  else if (m_period == "sf280") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf280;}
-  else if (m_period == "sf320") {m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf320;}
-  else {NS_FATAL_ERROR ("UNSUPPORTED CONTROL PERIOD LENGTH");}
+  if (m_scCpLen == "NORMAL")
+    {
+      m_pool.scCpLen.cplen = LteRrcSap::SlCpLen::NORMAL;
+    }
+  else if (m_scCpLen == "EXTENDED")
+    {
+      m_pool.scCpLen.cplen = LteRrcSap::SlCpLen::EXTENDED;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("UNSUPPORTED CONTROL CP LENGTH");
+    }
+  if (m_period == "sf40")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf40;
+    }
+  else if (m_period == "sf60")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf60;
+    }
+  else if (m_period == "sf70")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf70;
+    }
+  else if (m_period == "sf80")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf80;
+    }
+  else if (m_period == "sf120")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf120;
+    }
+  else if (m_period == "sf140")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf140;
+    }
+  else if (m_period == "sf160")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf160;
+    }
+  else if (m_period == "sf240")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf240;
+    }
+  else if (m_period == "sf280")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf280;
+    }
+  else if (m_period == "sf320")
+    {
+      m_pool.scPeriod.period = LteRrcSap::SlPeriodComm::sf320;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("UNSUPPORTED CONTROL PERIOD LENGTH");
+    }
   m_pool.scTfResourceConfig.prbNum = m_scPrbNum;
   m_pool.scTfResourceConfig.prbStart = m_scPrbStart;
   m_pool.scTfResourceConfig.prbEnd = m_scPrbEnd;
@@ -100,63 +137,147 @@ LteSlResourcePoolFactory::CreatePool ()
   m_pool.scTfResourceConfig.subframeBitmap.bitmap = std::bitset<40> (m_scBitmapValue);
 
   // Data
-  //pool.dataCpLen.cplen = m_dataCpLen;
-  if (m_dataCpLen == "NORMAL") {m_pool.dataCpLen.cplen = LteRrcSap::SlCpLen::NORMAL;}
-  else if (m_dataCpLen == "EXTENDED") {m_pool.dataCpLen.cplen = LteRrcSap::SlCpLen::EXTENDED;}
-  else {NS_FATAL_ERROR ("UNSUPPORTED CONTROL CP LENGTH");}
-  m_pool.dataHoppingConfig.hoppingParameters = m_hoppingParameters;
-  //pool.dataHoppingConfig.numSubbands = m_subbands;
-  if (m_subbands == "ns1") {m_pool.dataHoppingConfig.numSubbands = LteRrcSap::SlHoppingConfigComm::ns1;}
-  else if (m_subbands == "ns2") {m_pool.dataHoppingConfig.numSubbands = LteRrcSap::SlHoppingConfigComm::ns2;}
-  else if (m_subbands == "ns4") {m_pool.dataHoppingConfig.numSubbands = LteRrcSap::SlHoppingConfigComm::ns4;}
-  else {NS_FATAL_ERROR ("UNSUPPORTED NUMBER OF SUBBANDS");}
-  if (m_rbOffset >= 0 && m_rbOffset <= 110) {m_pool.dataHoppingConfig.rbOffset = m_rbOffset;}
-  else {NS_FATAL_ERROR ("UNSUPPORTED RB OFFSET");}
+  if (m_dataCpLen == "NORMAL")
+    {
+      m_pool.dataCpLen.cplen = LteRrcSap::SlCpLen::NORMAL;
+    }
+  else if (m_dataCpLen == "EXTENDED")
+    {
+      m_pool.dataCpLen.cplen = LteRrcSap::SlCpLen::EXTENDED;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("UNSUPPORTED CONTROL CP LENGTH");
+    }
+  if (m_hoppingParameter >= 504)
+    {
+      m_pool.dataHoppingConfig.hoppingParameter = 510;
+    }
+  else
+    {
+      m_pool.dataHoppingConfig.hoppingParameter = m_hoppingParameter;
+    }
+  if (m_subbands == "ns1")
+    {
+      m_pool.dataHoppingConfig.numSubbands = LteRrcSap::SlHoppingConfigComm::ns1;
+    }
+  else if (m_subbands == "ns2")
+    {
+      m_pool.dataHoppingConfig.numSubbands = LteRrcSap::SlHoppingConfigComm::ns2;
+    }
+  else if (m_subbands == "ns4")
+    {
+      m_pool.dataHoppingConfig.numSubbands = LteRrcSap::SlHoppingConfigComm::ns4;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("UNSUPPORTED NUMBER OF SUBBANDS");
+    }
+  if (m_rbOffset >= 0 && m_rbOffset <= 110)
+    {
+      m_pool.dataHoppingConfig.rbOffset = m_rbOffset;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("UNSUPPORTED RB OFFSET");
+    }
   m_pool.dataHoppingConfig.hoppingInfo = m_hoppingInfo;
 
   // Ue Selected Parameters
   m_pool.haveUeSelectedResourceConfig = m_ueSelected;
   if (m_ueSelected)
-  {
-    m_pool.ueSelectedResourceConfig.haveTrptSubset = m_haveTrptSubset;
-    if (m_haveTrptSubset)
     {
-      m_pool.ueSelectedResourceConfig.trptSubset.subset = std::bitset<3> (m_trptSubsetValue);
+      m_pool.ueSelectedResourceConfig.haveTrptSubset = m_haveTrptSubset;
+      if (m_haveTrptSubset)
+        {
+          m_pool.ueSelectedResourceConfig.trptSubset.subset = std::bitset<3> (m_trptSubsetValue);
+        }
+      m_pool.ueSelectedResourceConfig.dataTfResourceConfig.prbNum = m_dataPrbNum;
+      m_pool.ueSelectedResourceConfig.dataTfResourceConfig.prbStart = m_dataPrbStart;
+      m_pool.ueSelectedResourceConfig.dataTfResourceConfig.prbEnd = m_dataPrbEnd;
+      m_pool.ueSelectedResourceConfig.dataTfResourceConfig.offsetIndicator.offset = m_dataOffset;
+      m_pool.ueSelectedResourceConfig.dataTfResourceConfig.subframeBitmap.bitmap = std::bitset<40> (m_dataBitmapValue);
     }
-    m_pool.ueSelectedResourceConfig.dataTfResourceConfig.prbNum = m_dataPrbNum;
-    m_pool.ueSelectedResourceConfig.dataTfResourceConfig.prbStart = m_dataPrbStart;
-    m_pool.ueSelectedResourceConfig.dataTfResourceConfig.prbEnd = m_dataPrbEnd;
-    m_pool.ueSelectedResourceConfig.dataTfResourceConfig.offsetIndicator.offset = m_dataOffset;
-    m_pool.ueSelectedResourceConfig.dataTfResourceConfig.subframeBitmap.bitmap = std::bitset<40> (m_dataBitmapValue);
-  }
 
   // Tx Parameters
   m_pool.haveTxParameters = m_txParam;
   if (m_txParam)
-  {
-    //pool.txParameters.scTxParameters.alpha = m_txAlpha;
-    if (m_txAlpha == "al0") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al0;}
-    else if (m_txAlpha == "al04") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al04;}
-    else if (m_txAlpha == "al05") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al05;}
-    else if (m_txAlpha == "al06") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al06;}
-    else if (m_txAlpha == "al07") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al07;}
-    else if (m_txAlpha == "al08") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al08;}
-    else if (m_txAlpha == "al09") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al09;}
-    else if (m_txAlpha == "al1") {m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al1;}
-    else {NS_FATAL_ERROR ("UNSUPPORTED CONTROL TX ALPHA");}
-    m_pool.txParameters.scTxParameters.p0 = m_txP0;
-    //pool.txParameters.dataTxParameters.alpha = m_dataAlpha;
-    if (m_dataAlpha == "al0") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al0;}
-    else if (m_dataAlpha == "al04") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al04;}
-    else if (m_dataAlpha == "al05") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al05;}
-    else if (m_dataAlpha == "al06") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al06;}
-    else if (m_dataAlpha == "al07") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al07;}
-    else if (m_dataAlpha == "al08") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al08;}
-    else if (m_dataAlpha == "al09") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al09;}
-    else if (m_dataAlpha == "al1") {m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al1;}
-    else {NS_FATAL_ERROR ("UNSUPPORTED DATA TX ALPHA");}
-    m_pool.txParameters.dataTxParameters.p0 = m_dataP0;
-  }
+    {
+      if (m_txAlpha == "al0")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al0;
+        }
+      else if (m_txAlpha == "al04")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al04;
+        }
+      else if (m_txAlpha == "al05")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al05;
+        }
+      else if (m_txAlpha == "al06")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al06;
+        }
+      else if (m_txAlpha == "al07")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al07;
+        }
+      else if (m_txAlpha == "al08")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al08;
+        }
+      else if (m_txAlpha == "al09")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al09;
+        }
+      else if (m_txAlpha == "al1")
+        {
+          m_pool.txParameters.scTxParameters.alpha = LteRrcSap::SlTxParameters::al1;
+        }
+      else
+        {
+          NS_FATAL_ERROR ("UNSUPPORTED CONTROL TX ALPHA");
+        }
+      m_pool.txParameters.scTxParameters.p0 = m_txP0;
+      if (m_dataAlpha == "al0")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al0;
+        }
+      else if (m_dataAlpha == "al04")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al04;
+        }
+      else if (m_dataAlpha == "al05")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al05;
+        }
+      else if (m_dataAlpha == "al06")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al06;
+        }
+      else if (m_dataAlpha == "al07")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al07;
+        }
+      else if (m_dataAlpha == "al08")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al08;
+        }
+      else if (m_dataAlpha == "al09")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al09;
+        }
+      else if (m_dataAlpha == "al1")
+        {
+          m_pool.txParameters.dataTxParameters.alpha = LteRrcSap::SlTxParameters::al1;
+        }
+      else
+        {
+          NS_FATAL_ERROR ("UNSUPPORTED DATA TX ALPHA");
+        }
+      m_pool.txParameters.dataTxParameters.p0 = m_dataP0;
+    }
 
   return m_pool;
 }
@@ -220,10 +341,10 @@ LteSlResourcePoolFactory::SetDataCpLen (std::string cpLen)
 }
 
 void
-LteSlResourcePoolFactory::SetDataHoppingParameters (int8_t hoppingParameters)
+LteSlResourcePoolFactory::SetDataHoppingParameter (uint16_t hoppingParameter)
 {
-  NS_LOG_FUNCTION (this << hoppingParameters);
-  m_hoppingParameters = hoppingParameters;
+  NS_LOG_FUNCTION (this << hoppingParameter);
+  m_hoppingParameter = hoppingParameter;
 }
 
 void
@@ -338,6 +459,184 @@ LteSlResourcePoolFactory::SetDataTxP0 (int16_t p0)
 {
   NS_LOG_FUNCTION (this << p0);
   m_dataP0 = p0;
+}
+
+std::string
+LteSlResourcePoolFactory::GetControlCpLen (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_scCpLen;
+}
+
+std::string
+LteSlResourcePoolFactory::GetControlPeriod (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_period;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetControlPrbNum (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_scPrbNum;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetControlPrbStart (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_scPrbStart;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetControlPrbEnd (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_scPrbEnd;
+}
+
+int16_t
+LteSlResourcePoolFactory::GetControlOffset (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_scOffset;
+}
+
+int64_t
+LteSlResourcePoolFactory::GetControlBitmap (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_scBitmapValue;
+}
+
+// Data
+std::string
+LteSlResourcePoolFactory::GetDataCpLen (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataCpLen;
+}
+
+uint16_t
+LteSlResourcePoolFactory::GetDataHoppingParameter (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_hoppingParameter;
+}
+
+std::string
+LteSlResourcePoolFactory::GetDataHoppingSubbands (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_subbands;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetDataHoppingOffset (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_rbOffset;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetDataHoppingInfo (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_hoppingInfo;
+}
+
+// UE Selected Parameters
+bool
+LteSlResourcePoolFactory::GetHaveUeSelectedResourceConfig (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_ueSelected;
+}
+
+bool
+LteSlResourcePoolFactory::GetHaveTrptSubset (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_haveTrptSubset;
+}
+
+int64_t
+LteSlResourcePoolFactory::GetTrptSubset (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_trptSubsetValue;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetDataPrbNum (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataPrbNum;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetDataPrbStart (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataPrbStart;
+}
+
+int8_t
+LteSlResourcePoolFactory::GetDataPrbEnd (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataPrbEnd;
+}
+
+int16_t
+LteSlResourcePoolFactory::GetDataOffset (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataOffset;
+}
+
+int64_t
+LteSlResourcePoolFactory::GetDataBitmap (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataBitmapValue;
+}
+
+// Tx Parameters
+bool
+LteSlResourcePoolFactory::GetHaveTxParameters (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_txParam;
+}
+
+std::string
+LteSlResourcePoolFactory::GetControlTxAlpha (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_txAlpha;
+}
+
+int16_t
+LteSlResourcePoolFactory::GetControlTxP0 (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_txP0;
+}
+
+std::string
+LteSlResourcePoolFactory::GetDataTxAlpha (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataAlpha;
+}
+
+int16_t
+LteSlResourcePoolFactory::GetDataTxP0 ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_dataP0;
 }
 
 } // namespace ns3

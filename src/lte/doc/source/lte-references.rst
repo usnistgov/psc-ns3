@@ -40,8 +40,16 @@ References
 
 .. [TS36423] 3GPP TS 36.423 "E-UTRAN X2 application protocol (X2AP)"
 
+.. [TS24334] 3GPP TS 24.334 "Proximity-services (ProSe) User Equipment (UE) to ProSe function protocol aspects; Stage 3"
+
+.. [TS23303] 3GPP TS 23.303 "Technical Specification Group Services and System Aspects; Proximity-based services (ProSe); Stage 2"
+
+.. [TS23003] 3GPP TS 23.003 "Technical Specification Group Core Network and Terminals; Numbering, addressing and identification; V15"
+
 .. [TR36814] 3GPP TR 36.814 "E-UTRA Further advancements for E-UTRA physical layer aspects"
 
+.. [TR36843] 3GPP TR 36.843 "Study on LTE Device to Device Proximity Services; Radio Aspects"
+ 
 .. [R1-081483] 3GPP R1-081483 `"Conveying MCS and TB size via PDCCH"
    <http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip>`_
 
@@ -156,7 +164,23 @@ References
    Experimentation: ADRENALINE-LENA Integration"
    <http://www.cttc.es/publication/a-testbed-for-fixed-mobile-convergence-experimentation-adrenaline-lena-integration/>`_, 
    in Proceedings of European Wireless 2014, 14-16 May 2014, Barcelona
-   (Spain). 
+   (Spain).
+
+.. [NIST2016] Rouil, R., Cintrón, F.J., Ben Mosbah, A. and Gamboa, S., 
+   `"An LTE Device-to-Device module for ns-3 "
+   <https://www.nist.gov/publications/lte-device-device-module-ns-3/>`_, 
+   in Proceedings of the Workshop on ns-3, 15-16 June 2016, Seattle
+   (Washington).
+
+.. [NIST2017] Rouil, R., Cintrón, F.J., Ben Mosbah, A. and Gamboa, S., 
+   `"Implementation and Validation of an LTE D2D Model for ns-3"
+   <https://www.nist.gov/publications/implementation-and-validation-lte-d2d-model-ns-3/>`_, 
+   in Proceedings of the Workshop on ns-3, 13-14 June 2017, Porto
+   (Portugal).
+
+.. [NISTBLERD2D] J. Wang, R. Rouil `"BLER Performance Evaluation of LTE Device-to-Device Communications. 
+   Technical Report. National Institute of Standards and Technology, Gaithersburg, MD."
+   <https://www.nist.gov/publications/bler-performance-evaluation-lte-device-device-communications>`_,.
 
 
 .. [ASHamza2013] Abdelbaset S. Hamza, Shady S. Khalifa, Haitham S. Hamza, and Khaled Elsayed, "A Survey on Inter-Cell Interference Coordination Techniques in OFDMA-based Cellular Networks", IEEE Communications Surveys & Tutorials, March 19, 2013

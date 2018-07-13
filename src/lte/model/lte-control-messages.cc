@@ -17,6 +17,7 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  *         Marco Miozzo <marco.miozzo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "lte-control-messages.h"
@@ -107,6 +108,35 @@ UlDciLteControlMessage::SetDci (UlDciListElement_s dci)
 
 UlDciListElement_s
 UlDciLteControlMessage::GetDci (void)
+{
+  return m_dci;
+}
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+SlDciLteControlMessage::SlDciLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::SL_DCI);
+}
+
+
+SlDciLteControlMessage::~SlDciLteControlMessage (void)
+{
+
+}
+
+void
+SlDciLteControlMessage::SetDci (SlDciListElement_s dci)
+{
+  m_dci = dci;
+
+}
+
+
+SlDciListElement_s
+SlDciLteControlMessage::GetDci (void)
 {
   return m_dci;
 }
@@ -283,6 +313,27 @@ Sib1LteControlMessage::GetSib1 () const
 // ---------------------------------------------------------------------------
 
 
+SciLteControlMessage::SciLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::SCI);
+}
+
+
+void
+SciLteControlMessage::SetSci (SciListElement_s sci)
+{
+  m_sci = sci;
+}
+
+SciListElement_s
+SciLteControlMessage::GetSci ()
+{
+  return m_sci;
+}
+
+
+// ---------------------------------------------------------------------------
+
 
 DlHarqFeedbackLteControlMessage::DlHarqFeedbackLteControlMessage (void)
 {
@@ -307,6 +358,52 @@ DlHarqFeedbackLteControlMessage::GetDlHarqFeedback (void)
 {
   return m_dlInfoListElement;
 }
+
+
+// ---------------------------------------------------------------------------
+
+
+MibSlLteControlMessage::MibSlLteControlMessage (void)
+{
+  SetMessageType (LteControlMessage::MIB_SL);
+}
+
+void
+MibSlLteControlMessage::SetMibSL (LteRrcSap::MasterInformationBlockSL mibSL)
+{
+  m_mibSL = mibSL;
+}
+
+LteRrcSap::MasterInformationBlockSL
+MibSlLteControlMessage::GetMibSL ()
+{
+  return m_mibSL;
+}
+
+
+// ---------------------------------------------------------------------------
+
+
+SlDiscMessage::SlDiscMessage (void)
+{
+  SetMessageType (LteControlMessage::SL_DISC_MSG);
+}
+
+
+void
+SlDiscMessage::SetSlDiscMessage (SlDiscMsg discMsg)
+{
+  m_discMsg = discMsg;
+}
+
+SlDiscMsg
+SlDiscMessage::GetSlDiscMessage ()
+{
+  return m_discMsg;
+}
+
+
+// ---------------------------------------------------------------------------
 
 
 } // namespace ns3

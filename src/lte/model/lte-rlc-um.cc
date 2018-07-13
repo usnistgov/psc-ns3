@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "ns3/simulator.h"
@@ -40,7 +41,9 @@ LteRlcUm::LteRlcUm ()
     m_vrUx (0),
     m_vrUh (0),
     m_windowSize (512),
-    m_expectedSeqNumber (0)
+    m_expectedSeqNumber (0),
+    m_rxFirstPdu (false),
+    m_chanTypeSelection (LteRlcUm::STCH)
 {
   NS_LOG_FUNCTION (this);
   m_reassemblingState = WAITING_S0_FULL;
@@ -63,6 +66,19 @@ LteRlcUm::GetTypeId (void)
                    UintegerValue (10 * 1024),
                    MakeUintegerAccessor (&LteRlcUm::m_maxTxBufferSize),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("WindowSize",
+                   "Size of the window (default is 512)",
+                   UintegerValue (512),
+                   MakeUintegerAccessor (&LteRlcUm::m_windowSize),
+                   MakeUintegerChecker<uint16_t> (0))
+
+    .AddAttribute ("ChannelType",
+                   "The UM logical channel type to use.",
+                   EnumValue (LteRlcUm::Default),
+                   MakeEnumAccessor (&LteRlcUm::m_chanTypeSelection),
+                   MakeEnumChecker (LteRlcUm::Default, "Default",
+                                    LteRlcUm::STCH, "STCH"))
+
     ;
   return tid;
 }
@@ -387,6 +403,8 @@ LteRlcUm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
   params.pdu = packet;
   params.rnti = m_rnti;
   params.lcid = m_lcid;
+  params.srcL2Id = m_srcL2Id;
+  params.dstL2Id = m_dstL2Id;
   params.layer = layer;
   params.harqProcessId = harqId;
   params.componentCarrierId = componentCarrierId;
@@ -445,6 +463,14 @@ LteRlcUm::DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid)
   //    - discard the received UMD PDU;
   // - else:
   //    - place the received UMD PDU in the reception buffer.
+
+  // 7.1 State variables
+    if (this->m_chanTypeSelection == LteRlcUm::STCH && this->m_rxFirstPdu == false)
+      {
+        this->m_vrUr = seqNumber;
+        this->m_vrUh = seqNumber;
+        this->m_rxFirstPdu = true;
+      }
 
   NS_LOG_LOGIC ("VR(UR) = " << m_vrUr);
   NS_LOG_LOGIC ("VR(UX) = " << m_vrUx);
@@ -1134,6 +1160,8 @@ LteRlcUm::DoReportBufferStatus (void)
   LteMacSapProvider::ReportBufferStatusParameters r;
   r.rnti = m_rnti;
   r.lcid = m_lcid;
+  r.srcL2Id = m_srcL2Id;
+  r.dstL2Id = m_dstL2Id;
   r.txQueueSize = queueSize;
   r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
   r.retxQueueSize = 0;

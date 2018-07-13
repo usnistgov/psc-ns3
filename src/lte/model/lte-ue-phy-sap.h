@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 
@@ -41,25 +42,44 @@ public:
   virtual ~LteUePhySapProvider ();
 
   /**
-  * \brief Send the MAC PDU to the channel
-  * \param p the MAC PDU to send
-  * \return true if
+  * \brief Send The MAC PDU to the channel
+  * \param p The MAC PDU to send
   */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 
   /**
   * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-  * \param msg the Ideal Control Message to send
+  * \param msg The Ideal Control Message to send
   */
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
   /** 
-   * send a preamble on the PRACH
+   * Send a preamble on the PRACH
    * 
-   * \param prachId the ID of the preamble
-   * \param raRnti the RA rnti
+   * \param prachId The ID of the preamble
+   * \param raRnti The RA RNTI
    */
   virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti) = 0;
+
+  //Sidelink Communication
+
+  /**
+   * Set discovery announcement apps
+   * \param apps The applications we are interested in announcing
+   */
+   virtual void AddDiscTxApps (std::list<uint32_t> apps) = 0;
+
+  /**
+   * Set discovery monitoring apps
+   * \param apps The applications we are interested in monitoring
+   */
+   virtual void AddDiscRxApps (std::list<uint32_t> apps) = 0;
+
+  /**
+   * Set grant for discovery
+   * \param resPsdch The resource to use in the discovery pool
+   */
+  virtual void SetDiscGrantInfo (uint8_t resPsdch) = 0;
 
 };
 
@@ -77,25 +97,40 @@ public:
 
 
   /**
-  * Called by the Phy to notify the MAC of the reception of a new PHY-PDU
-  *
-  * \param p
-  */
+   * Called by the Phy to notify the MAC of the reception of a new PHY-PDU
+   *
+   * \param p The packet
+   */
   virtual void ReceivePhyPdu (Ptr<Packet> p) = 0;
 
   /**
-  * \brief Trigger the start from a new frame (input from Phy layer)
-  * \param frameNo frame number
-  * \param subframeNo subframe number
-  */
+   * \brief Trigger the start from a new frame (input from Phy layer)
+   * \param frameNo The frame number
+   * \param subframeNo The subframe number
+   */
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) = 0;
 
   /**
-  * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-  * \param msg the Ideal Control Message to receive
-  */
+   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   * \param msg The Ideal Control Message to receive
+   */
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
+  /**
+   * Notify the MAC that the PHY changed of timing as consequence of a change of SyncRef
+   * Adjust the MAC subframe indication
+   *
+   * \param frameNo The current PHY frame number
+   * \param subframeNo The current PHY subframe number
+   */
+   virtual void NotifyChangeOfTiming (uint32_t frameNo, uint32_t subframeNo) = 0;
+
+  /**
+   * Notify the MAC that Sidelink is configured
+   *
+   * \param
+   */
+  virtual void NotifySidelinkEnabled () = 0;
 };
 
 

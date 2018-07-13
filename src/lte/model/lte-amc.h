@@ -18,6 +18,7 @@
  * Original Author: Giuseppe Piro  <g.piro@poliba.it>
  * Modified by:     Nicola Baldo   <nbaldo@cttc.es>
  * Modified by:     Marco Miozzo   <mmiozzo@cttc.es>
+ * Modified by:     NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef AMCMODULE_H
@@ -64,7 +65,11 @@ public:
       /**
        * An AMC model based on 10% of BER according to LteMiErrorModel.
        */
-      MiErrorModel
+      MiErrorModel,
+      /**
+       * An AMC model based on 10% of BER according to LteNistErrorModel
+       */
+      NistErrorModel
     };
   
   /**

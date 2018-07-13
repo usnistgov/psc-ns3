@@ -92,13 +92,15 @@ BuildingsHelper::MakeConsistent (Ptr<MobilityModel> mm)
           uint16_t floor = (*bit)->GetFloor (pos);
           uint16_t roomX = (*bit)->GetRoomX (pos);
           uint16_t roomY = (*bit)->GetRoomY (pos);	   
-          bmm->SetIndoor (*bit, floor, roomX, roomY);	      
+          bmm->SetIndoor (*bit, floor, roomX, roomY);
+          bmm->SetMobilityModelConsistentFlag();
         }		    	  
     }
   if (!found)
     {
       NS_LOG_LOGIC ("MobilityBuildingInfo " << bmm << " pos " << mm->GetPosition ()  << " is outdoor");
       bmm->SetOutdoor ();
+      bmm->SetMobilityModelConsistentFlag();
     }
 
 }

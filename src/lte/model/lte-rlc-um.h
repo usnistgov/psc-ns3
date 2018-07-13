@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_RLC_UM_H
@@ -35,6 +36,11 @@ namespace ns3 {
 class LteRlcUm : public LteRlc
 {
 public:
+  enum ChanType
+  {
+    Default = 0,
+    STCH
+  };
   LteRlcUm ();
   virtual ~LteRlcUm ();
   /**
@@ -141,6 +147,8 @@ private:
    * Expected Sequence Number
    */
   SequenceNumber10 m_expectedSeqNumber;
+  bool m_rxFirstPdu;       // Indicates if the first PDU has already been received.
+  ChanType m_chanTypeSelection;       // The logical channel type.
 
 };
 

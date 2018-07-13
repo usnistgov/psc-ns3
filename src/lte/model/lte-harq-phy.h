@@ -43,6 +43,7 @@ struct HarqProcessInfoElement_t
    uint8_t m_rv; ///< RV
    uint16_t m_infoBits; ///< info bits
    uint16_t m_codeBits; ///< code bits
+   double m_sinr; //effective mean SINR for the transmission
 };
 
 typedef std::vector <HarqProcessInfoElement_t> HarqProcessInfoList_t; ///< HarqProcessInfoList_t typedef 
@@ -59,81 +60,98 @@ public:
   LteHarqPhy ();
   ~LteHarqPhy ();
 
-  /**
+ /**
   * \brief Subframe Indication function
-  * \param frameNo the frame number
-  * \param subframeNo the subframe number
+  * \param frameNo The frame number
+  * \param subframeNo The subframe number
   */
   void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
 
-  /**
+ /**
   * \brief Return the cumulated MI of the HARQ procId in case of retransmissions
   * for DL (asynchronous)
-  * \param harqProcId the HARQ proc id
-  * \param layer layer no. (for MIMO spatial multiplexing)
-  * \return the MI accumulated
+  * \param harqProcId The HARQ process id
+  * \param layer The layer number (for MIMO spatial multiplexing)
+  * \return The MI accumulated
   */
   double GetAccumulatedMiDl (uint8_t harqProcId, uint8_t layer);
 
-  /**
+ /**
   * \brief Return the info of the HARQ procId in case of retransmissions
   * for DL (asynchronous)
-  * \param harqProcId the HARQ proc id
-  * \param layer layer no. (for MIMO spatial multiplexing)
-  * \return the vector of the info related to HARQ proc Id
+  * \param harqProcId The HARQ process id
+  * \param layer The layer number (for MIMO spatial multiplexing)
+  * \return The vector of the info related to HARQ proc Id
   */
   HarqProcessInfoList_t GetHarqProcessInfoDl (uint8_t harqProcId, uint8_t layer);
 
-  /**
+ /**
   * \brief Return the cumulated MI of the HARQ procId in case of retransmissions
   * for UL (synchronous)
-  * \param rnti the RNTI of the transmitter
-  * \return the MI accumulated
+  * \param rnti The RNTI of the transmitter
+  * \return The MI accumulated
   */
   double GetAccumulatedMiUl (uint16_t rnti);
 
-  /**
+ /**
   * \brief Return the info of the HARQ procId in case of retransmissions
   * for UL (asynchronous)
-  * \param rnti the RNTI of the transmitter
-  * \param harqProcId the HARQ proc id
-  * \return the vector of the info related to HARQ proc Id
+  * \param rnti The RNTI of the transmitter
+  * \param harqProcId The HARQ process id
+  * \return The vector of the info related to HARQ proc Id
   */
   HarqProcessInfoList_t GetHarqProcessInfoUl (uint16_t rnti, uint8_t harqProcId);
 
-  /**
+ /**
   * \brief Update the Info associated to the decodification of an HARQ process
   * for DL (asynchronous)
-  * \param id the HARQ proc id
-  * \param layer layer no. (for MIMO spatial multiplexing)
-  * \param mi the new MI
-  * \param infoBytes the no. of bytes of info
-  * \param codeBytes the total no. of bytes txed
+  * \param id The HARQ process id
+  * \param layer The layer number (for MIMO spatial multiplexing)
+  * \param mi The new MI
+  * \param infoBytes The number of bytes of info
+  * \param codeBytes The total number of bytes txed
   */
   void UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double mi, uint16_t infoBytes, uint16_t codeBytes);
 
-  /**
+ /**
+  * \brief Update the Info associated to the decodification of an HARQ process
+  * for DL (asynchronous)
+  * \param id The HARQ process id
+  * \param layer The layer number (for MIMO spatial multiplexing)
+  * \param sinr The new SINR
+  */
+  void UpdateDlHarqProcessStatus (uint8_t id, uint8_t layer, double sinr);
+
+ /**
   * \brief Reset the info associated to the decodification of an HARQ process
   * for DL (asynchronous)
-  * \param id the HARQ proc id
+  * \param id The HARQ process id
   */
   void ResetDlHarqProcessStatus(uint8_t id);
 
-  /**
+ /**
   * \brief Update the MI value associated to the decodification of an HARQ process
   * for DL (asynchronous)
-  * \param rnti the RNTI of the transmitter
-  * \param mi the new MI
-  * \param infoBytes the no. of bytes of info
-  * \param codeBytes the total no. of bytes txed
+  * \param rnti The RNTI of the transmitter
+  * \param mi The new MI
+  * \param infoBytes The number of bytes of info
+  * \param codeBytes The total number of bytes txed
   */
   void UpdateUlHarqProcessStatus (uint16_t rnti, double mi, uint16_t infoBytes, uint16_t codeBytes);
 
-  /**
+ /**
+  * \brief Update the mean SINR value associated to the decodification of an HARQ process
+  * for UL
+  * \param rnti The RNTI of the transmitter
+  * \param sinr The new SINR
+  */
+  void UpdateUlHarqProcessStatus (uint16_t rnti, double sinr);
+
+ /**
   * \brief Reset  the info associated to the decodification of an HARQ process
   * for DL (asynchronous)
-  * \param rnti the RNTI of the transmitter
-  * \param id the HARQ proc id
+  * \param rnti The RNTI of the transmitter
+  * \param id The HARQ process id
   */
   void ResetUlHarqProcessStatus(uint16_t rnti, uint8_t id);
   

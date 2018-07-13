@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jnin@cttc.es>
- * modified by: Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by: Marco Miozzo <mmiozzo@cttc.es>
  *        Convert MacStatsCalculator in PhyTxStatsCalculator
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "phy-tx-stats-calculator.h"
@@ -33,7 +34,8 @@ NS_OBJECT_ENSURE_REGISTERED (PhyTxStatsCalculator);
 
 PhyTxStatsCalculator::PhyTxStatsCalculator ()
   : m_dlTxFirstWrite (true),
-    m_ulTxFirstWrite (true)
+    m_ulTxFirstWrite (true),
+    m_slTxFirstWrite (true)
 {
   NS_LOG_FUNCTION (this);
 
@@ -224,7 +226,6 @@ PhyTxStatsCalculator::UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTx
   params.m_imsi = imsi;
   phyTxStats->UlPhyTransmission (params);
 }
-
 
 } // namespace ns3
 

@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Lluis Parcerisa <lparcerisa@cttc.cat>
- * Modified by:
- *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef RRC_HEADER_H
@@ -197,6 +197,12 @@ protected:
    * \param thresholdEutra LteRrcSap::ThresholdEutra
    */
   void SerializeThresholdEutra (LteRrcSap::ThresholdEutra thresholdEutra) const;
+  /**
+   * Serialize Sidelink UE information function
+   *
+   * \param slUeInfo LteRrcSap::SidelinkUeInformation
+   */
+  void SerializeSidelinkUeInformation (LteRrcSap::SidelinkUeInformation slUeInfo) const;
   
   // Deserialization functions
   /**
@@ -359,7 +365,14 @@ protected:
    * \returns buffer iterator
    */
   Buffer::Iterator DeserializePhysicalConfigDedicatedSCell (LteRrcSap::PhysicalConfigDedicatedSCell *pcdsc, Buffer::Iterator bIterator);
-
+  /**
+   * Deserialize Sidelink UE information function
+   *
+   * \param slUeInfo LteRrcSap::SidelinkUeInformation
+   * \param bIterator buffer iterator
+   * \returns buffer iterator
+   */
+  Buffer::Iterator DeserializeSidelinkUeInformation (LteRrcSap::SidelinkUeInformation *slUeInfo, Buffer::Iterator bIterator);
   /**
    * This function prints the object, for debugging purposes.
    * @param os The output stream to use (i.e. std::cout)
@@ -818,17 +831,31 @@ public:
   * @return m_radioResourceConfigDedicated.drbToReleaseList
   */
   std::list<uint8_t> GetDrbToReleaseList () const;
+  /**
+   * Getter for m_haveSlCommConfig
+   * @return m_haveSlCommConfig
+   */
+   bool HaveSlCommConfig () const;
+  /**
+   * Getter for m_haveSlDiscConfig
+   * @return m_haveSlDiscConfig
+   */
+   bool HaveSlDiscConfig () const;
 
 private:
   uint8_t m_rrcTransactionIdentifier; ///< RRC transaction identifier
   bool m_haveMeasConfig; ///< have measure config?
   LteRrcSap::MeasConfig m_measConfig; ///< the measure config
   bool m_haveMobilityControlInfo; ///< have mobility control info?
-  LteRrcSap::MobilityControlInfo m_mobilityControlInfo; ///< the modility control info
+  LteRrcSap::MobilityControlInfo m_mobilityControlInfo; ///< the mobility control info
   bool m_haveRadioResourceConfigDedicated; ///< have radio resource config dedicated?
   LteRrcSap::RadioResourceConfigDedicated m_radioResourceConfigDedicated; ///< the radio resource config dedicated
   bool m_haveNonCriticalExtension; ///< Have critical extension
   LteRrcSap::NonCriticalExtensionConfiguration m_nonCriticalExtension; ///< the critical extension
+  bool m_haveSlCommConfig; ///< have dedicated Sidelink communication configuration
+  LteRrcSap::SlCommConfig m_slCommConfig; ///< dedicated configuration for Sidelink direct communication
+  bool m_haveSlDiscConfig; ///< have dedicated Sidelink discovery configuration
+  LteRrcSap::SlDiscConfig m_slDiscConfig; ///< dedicated configuration for Sidelink direct discovery
 };
 
 /**

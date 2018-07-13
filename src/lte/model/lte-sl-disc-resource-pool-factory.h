@@ -47,94 +47,219 @@ namespace ns3 {
 class LteSlDiscResourcePoolFactory : public LteSlPoolFactory
 {
 public:
-  
   /**
    * Create a discovery resource pool
    */
   LteSlDiscResourcePoolFactory ();
-  
+
   /**
    * Set the discovery resource pool
    */
   LteRrcSap::SlDiscResourcePool CreatePool ();
 
   /**
-   * Set CP length 
-   * \param cpLen 
+   * Set cyclic prefix length, i.e., NORMAL or EXTENDED
+   * \param cpLen The cyclic prefix length
    */
   void SetDiscCpLen (std::string cpLen);
-    
+
   /**
-   * Set discovery period
-   * \param period the discovery period 
+   * Set the discovery period
+   * \param period The discovery period
    */
   void SetDiscPeriod (std::string period);
-  
+
   /**
    * Set the number of retransmissions of the discovery message
-   * \param numRetx the number of retransmissions of the discovery message
+   * \param numRetx The number of retransmissions of the discovery message
    */
   void SetNumRetx (int8_t numRetx);
 
   /**
    * Set the number of repetition of the bitmap within the discovery period
-   * \param numRep the number of repetition of the bitmap within the discovery period
+   * \param numRep The number of repetition of the bitmap within the discovery period
    */
-  void SetNumRepetition (int8_t numRep);
+  void SetNumRepetition (int32_t numRep);
 
   /**
    * Set the number of resource blocks to be used for discovery
-   * \param prbNum the number of resource blocks to be used for discovery
+   * \param prbNum The number of resource blocks to be used for discovery
    */
   void SetDiscPrbNum (int32_t prbNum);
 
   /**
    * Set the lower bound of resource blocks to be used for discovery
-   * \param prbStart the lower bound of resource blocks to be used for discovery
+   * \param prbStart The lower bound of resource blocks to be used for discovery
    */
   void SetDiscPrbStart (int32_t prbStart);
-    
+
   /**
    * Set the upper bound of resource blocks to be used for discovery
-   * \param prbEnd the upper bound of resource blocks to be used for discovery
+   * \param prbEnd The upper bound of resource blocks to be used for discovery
    */
   void SetDiscPrbEnd (int32_t prbEnd);
 
   /**
    * Set the offset to start the discovery
-   * \param offset the offset to start the discovery
+   * \param offset The offset to start the discovery
    */
   void SetDiscOffset (int32_t offset);
 
   /**
    * Set the discovery bitmap
-   * \param value the discovery bitmap
+   * \param value The discovery bitmap
    */
   void SetDiscBitmap (int64_t value);
 
   /**
-   * Set the tx parameters for discovery 
-   * \param txParam the tx parameters for discovery 
+   * Set the tx parameters for discovery
+   * \param txParam The tx parameters for discovery
    */
   void SetHaveTxParameters (bool txParam);
 
   /**
    * Set the alpha
-   * \param alpha the alpha
+   * \param alpha The alpha value
    */
   void SetDiscTxAlpha (std::string alpha);
 
   /**
    * Set the P0
-   * \param p0 the P0 
+   * \param p0 The P0 value
    */
   void SetDiscTxP0 (int32_t p0);
 
   /**
-   * Set the transmission probability of the discovery message 
-   * \param txProb the transmission probability of the discovery message
+   * Set the pool selection criteria for the discovery
+   * \param poolSelection The pool selection criteria: RSRPBASED or RANDOM
+   */
+  void SetDiscPoolSelection (std::string poolSelection);
+
+  /**
+   * Set the RSRP pool selection
+   * \param rsrpBased The RSRP pool selection
+   */
+  void SetHaveRsrpBasedPoolSelection (bool rsrpBased);
+
+  /**
+   * Set the RSRP lower boundary
+   * \param rsrpThreshLow The lower boundary
+   */
+  void SetRsrpThreshLow (int32_t rsrpThreshLow);
+
+  /**
+   * Set the RSRP higher boundary
+   * \param rsrpThreshHigh The higher boundary
+   */
+  void SetRsrpThreshHigh (int32_t rsrpThreshHigh);
+
+  /**
+   * Set the transmission probability of the discovery message
+   * \param txProb The transmission probability of the discovery message
    */
   void SetDiscTxProbability (std::string txProb);
+
+  /**
+   * Get discover cyclic prefix length
+   * \return the discover cyclic prefix length as string
+   */
+  std::string GetDiscCpLen (void);
+
+  /**
+   * Get discovery period
+   * \return The discovery period
+   */
+  std::string GetDiscPeriod (void);
+
+  /**
+   * Get the number of retransmissions of the discovery message
+   * \return The number of retransmissions of the discovery message
+   */
+  int8_t GetNumRetx (void);
+
+  /**
+   * Get the number of repetition of the bitmap within the discovery period
+   * \return The number of repetition of the bitmap within the discovery period
+   */
+  int32_t GetNumRepetition (void);
+
+  /**
+   * Get the number of resource blocks to be used for discovery
+   * \return The number of resource blocks to be used for discovery
+   */
+  int32_t GetDiscPrbNum (void);
+
+  /**
+   * Get the lower bound of resource blocks to be used for discovery
+   * \return The lower bound of resource blocks to be used for discovery
+   */
+  int32_t GetDiscPrbStart (void);
+
+  /**
+   * Get the upper bound of resource blocks to be used for discovery
+   * \return The upper bound of resource blocks to be used for discovery
+   */
+  int32_t GetDiscPrbEnd (void);
+
+  /**
+   * Get the offset to start the discovery
+   * \return The offset to start the discovery
+   */
+  int32_t GetDiscOffset (void);
+
+  /**
+   * Get the discovery bitmap
+   * \return The discovery bitmap
+   */
+  int64_t GetDiscBitmap (void);
+
+  /**
+   * Get the tx parameters for discovery
+   * \return True if tx parameters for discovery are set
+   */
+  bool GetHaveTxParameters (void);
+
+  /**
+   * Get the alpha
+   * \return The alpha value
+   */
+  std::string GetDiscTxAlpha (void);
+
+  /**
+   * Get the P0
+   * \return p0 The P0 value
+   */
+  int32_t GetDiscTxP0 (void);
+
+  /**
+   * Get the pool selection criteria for the discovery
+   * \return The pool selection criteria: RSRPBASED or RANDOM
+   */
+  std::string GetDiscPoolSelection (void);
+
+  /**
+   * Get the RSRP pool selection
+   * \return true if the pool selection is RSRP based
+   */
+  bool GetHaveRsrpBasedPoolSelection (void);
+
+  /**
+   * Get the RSRP lower boundary
+   * \return The RSRP lower boundary
+   */
+  int32_t GetRsrpThreshLow (void);
+
+  /**
+   * Get the RSRP higher boundary
+   * \return The RSRP higher boundary
+   */
+  int32_t GetRsrpThreshHigh (void);
+
+  /**
+   * Get the transmission probability of the discovery message
+   * \return txProb The transmission probability of the discovery message
+   */
+  std::string GetDiscTxProbability (void);
 
 private:
   LteRrcSap::SlDiscResourcePool m_pool;
@@ -155,7 +280,7 @@ protected:
   /**
    * the number of repetition of the bitmap within the discovery period
    */
-  int8_t m_numRep;
+  int32_t m_numRep;
   /**
    * the number of resource blocks to be used for discovery
    */
@@ -169,7 +294,7 @@ protected:
    */
   int32_t m_discPrbEnd;
   /**
-   * the discoevry offset
+   * the discovery offset
    */
   int32_t m_discOffset;
   /**
@@ -177,9 +302,9 @@ protected:
    */
   int64_t m_discBitmapValue;
   /**
-   * the tramission parameters for discovery
+   * the transmission parameters for discovery
    */
-  bool m_txParam;  
+  bool m_txParam;
   /**
    * the alpha
    */
@@ -204,15 +329,15 @@ protected:
 
   /**
    * RSRP-based Pool Selection:
-   * low boundry
+   * low boundary
    */
   uint32_t m_rsrpThreshLow;
 
   /**
    * RSRP-based Pool Selection:
-   * high boundry
+   * high boundary
    */
-  uint32_t m_rsrpThreshHigh; 
+  uint32_t m_rsrpThreshHigh;
 
   /**
    * the transmission probability of the discovery message

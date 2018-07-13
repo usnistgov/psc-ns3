@@ -16,18 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * This application helper, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
- * is derived from udp-echo-helper.h originally authored by 
+ * is derived from udp-echo-helper.h originally authored by
  * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
  *
- * 
- * PscUdpGroupEchoServer offers different modes of operation 
+ *
+ * PscUdpGroupEchoServer offers different modes of operation
  * by setting the session timeout time accordingly:
  *       INF_SESSION - Session last infinitely
  *  NO_GROUP_SESSION - No group session.
  *         <timeout> - Session timeout time in seconds.
- * 
- * The server can be set to not echoback source client 
- * (only forward packets to group) by setting the echoback parameter 
+ *
+ * The server can be set to not echoback source client
+ * (only forward packets to group) by setting the echoback parameter
  * to false.
  */
 
@@ -69,14 +69,14 @@ public:
    * \param stime Inactive client session expiration time (seconds).
    */
   PscUdpGroupEchoServerHelper (uint16_t port, double stime);
-  
-    /**
+
+  /**
    * Create PscUdpGroupEchoServerHelper which will make life easier for people trying
    * to set up simulations with echos.
    *
    * \param port The port the server will wait on for incoming packets
    * \param stime Inactive client session expiration time (seconds).
-   * \param echoback Sets the server to echoback source client. 
+   * \param echoback Sets the server to echoback source client.
    */
   PscUdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback);
 
@@ -116,7 +116,7 @@ public:
    * Create one udp echo server application on each of the Nodes in the
    * NodeContainer.
    *
-   * \returns The applications created, one Application per Node in the 
+   * \returns The applications created, one Application per Node in the
    *          NodeContainer.
    */
   ApplicationContainer Install (NodeContainer c) const;

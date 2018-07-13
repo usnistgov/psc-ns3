@@ -83,7 +83,7 @@ NoOpComponentCarrierManager::DoTransmitPdu (LteMacSapProvider::TransmitPduParame
 {
   NS_LOG_FUNCTION (this);
   std::map <uint8_t, LteMacSapProvider*>::iterator it =  m_macSapProvidersMap.find (params.componentCarrierId);
-  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier " << params.componentCarrierId);
+  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find SAP for ComponentCarrier " << params.componentCarrierId);
   // with this algorithm all traffic is on Primary Carrier
   it->second->TransmitPdu (params);
 }
@@ -94,7 +94,7 @@ NoOpComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBuff
   NS_LOG_FUNCTION (this);
   auto ueManager = m_ccmRrcSapUser->GetUeManager (params.rnti);
   std::map <uint8_t, LteMacSapProvider*>::iterator it = m_macSapProvidersMap.find (ueManager->GetComponentCarrierId ());
-  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier ");
+  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find SAP for ComponentCarrier ");
   it->second->ReportBufferStatus (params);
 }
 
@@ -370,8 +370,9 @@ void
 NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (bsr.m_macCeType == MacCeListElement_s::BSR, "Received a Control Message not allowed " << bsr.m_macCeType);
-  if ( bsr.m_macCeType == MacCeListElement_s::BSR)
+  NS_ASSERT_MSG ((bsr.m_macCeType == MacCeListElement_s::BSR) || (bsr.m_macCeType == MacCeListElement_s::SLBSR),
+                                                    "Received a Control Message not allowed " << bsr.m_macCeType);
+  if (bsr.m_macCeType == MacCeListElement_s::BSR)
     {
       MacCeListElement_s newBsr;
       newBsr.m_rnti = bsr.m_rnti;
@@ -396,7 +397,7 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
       auto sapIt = m_ccmMacSapProviderMap.find (componentCarrierId);
       if (sapIt == m_ccmMacSapProviderMap.end ())
         {
-          NS_FATAL_ERROR ("Sap not found in the CcmMacSapProviderMap");
+          NS_FATAL_ERROR ("SAP not found in the CcmMacSapProviderMap");
         }
       else
         {
@@ -405,9 +406,23 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
           sapIt->second->ReportMacCeToScheduler (newBsr);
         }
     }
+  else if (bsr.m_macCeType == MacCeListElement_s::SLBSR)
+    {
+      // find the component carrier SAP and deliver the SLBSR
+      auto sapIt = m_ccmMacSapProviderMap.find (componentCarrierId);
+      if (sapIt == m_ccmMacSapProviderMap.end ())
+        {
+          NS_FATAL_ERROR ("SAP not found in the CcmMacSapProviderMap");
+        }
+      else
+        {
+          sapIt->second->ReportMacCeToScheduler (bsr);
+        }
+
+    }
   else
     {
-      NS_FATAL_ERROR ("Expected BSR type of message.");
+      NS_FATAL_ERROR ("Unexpected BSR type of message. Component carrier id = "<<(uint16_t)componentCarrierId);
     }
 }
 
@@ -471,7 +486,8 @@ RrComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t com
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (componentCarrierId == 0, "Received BSR from a ComponentCarrier not allowed, ComponentCarrierId = " << componentCarrierId);
-  NS_ASSERT_MSG (bsr.m_macCeType == MacCeListElement_s::BSR, "Received a Control Message not allowed " << bsr.m_macCeType);
+  NS_ASSERT_MSG ((bsr.m_macCeType == MacCeListElement_s::BSR) || (bsr.m_macCeType == MacCeListElement_s::SLBSR),
+                                                      "Received a Control Message not allowed " << bsr.m_macCeType);
 
   // split traffic in uplink equally among carriers
   uint32_t numberOfCarriersForUe = m_enabledComponentCarrier.find(bsr.m_rnti)->second;

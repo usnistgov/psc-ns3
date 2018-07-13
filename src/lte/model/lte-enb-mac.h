@@ -17,9 +17,9 @@
  *
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  *         Nicola Baldo  <nbaldo@cttc.es>
- * Modified by:
- *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_ENB_MAC_H
@@ -70,7 +70,7 @@ class LteEnbMac :   public Object
 public:
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return The object TypeId
    */
   static TypeId GetTypeId (void);
 
@@ -80,27 +80,27 @@ public:
 
   /**
    * \brief Set the component carrier ID
-   * \param index the component carrier ID
+   * \param index The component carrier ID
    */
   void SetComponentCarrierId (uint8_t index);
   /**
    * \brief Set the scheduler SAP provider
-   * \param s a pointer SAP provider of the FF packet scheduler
+   * \param s A pointer SAP provider of the FF packet scheduler
    */
   void SetFfMacSchedSapProvider (FfMacSchedSapProvider* s);
   /**
    * \brief Get the scheduler SAP user
-   * \return a pointer to the SAP user of the scheduler
+   * \return A pointer to the SAP user of the scheduler
    */
   FfMacSchedSapUser* GetFfMacSchedSapUser (void);
   /**
    * \brief Set the control scheduler SAP provider
-   * \param s a pointer to the control scheduler SAP provider
+   * \param s A pointer to the control scheduler SAP provider
    */
   void SetFfMacCschedSapProvider (FfMacCschedSapProvider* s);
   /**
    * \brief Get the control scheduler SAP user
-   * \return a pointer to the control scheduler SAP user
+   * \return A pointer to the control scheduler SAP user
    */
   FfMacCschedSapUser* GetFfMacCschedSapUser (void);
 
@@ -108,47 +108,47 @@ public:
 
   /**
    * \brief Set the MAC SAP user
-   * \param s a pointer to the MAC SAP user
+   * \param s A pointer to the MAC SAP user
    */
   void SetLteMacSapUser (LteMacSapUser* s);
   /**
    * \brief Get the MAC SAP provider
-   * \return a pointer to the SAP provider of the MAC
+   * \return A pointer to the SAP provider of the MAC
    */
   LteMacSapProvider* GetLteMacSapProvider (void);
   /**
    * \brief Set the control MAC SAP user
-   * \param s a pointer to the control MAC SAP user
+   * \param s A pointer to the control MAC SAP user
    */
   void SetLteEnbCmacSapUser (LteEnbCmacSapUser* s);
   /**
    * \brief Get the control MAC SAP provider
-   * \return a pointer to the control MAC SAP provider
+   * \return A pointer to the control MAC SAP provider
    */
   LteEnbCmacSapProvider* GetLteEnbCmacSapProvider (void);
 
 
   /**
   * \brief Get the eNB-PHY SAP User
-  * \return a pointer to the SAP User of the PHY
+  * \return A pointer to the SAP User of the PHY
   */
   LteEnbPhySapUser* GetLteEnbPhySapUser ();
 
   /**
   * \brief Set the PHY SAP Provider
-  * \param s a pointer to the PHY SAP provider
+  * \param s A pointer to the PHY SAP provider
   */
   void SetLteEnbPhySapProvider (LteEnbPhySapProvider* s);
 
   /**
   * \brief Get the eNB-ComponentCarrierManager SAP User
-  * \return a pointer to the SAP User of the ComponentCarrierManager
+  * \return A pointer to the SAP User of the ComponentCarrierManager
   */
   LteCcmMacSapProvider* GetLteCcmMacSapProvider ();
 
   /**
   * \brief Set the ComponentCarrierManager SAP user
-  * \param s a pointer to the ComponentCarrierManager provider
+  * \param s A pointer to the ComponentCarrierManager provider
   */
   void SetLteCcmMacSapUser (LteCcmMacSapUser* s);
   
@@ -156,14 +156,14 @@ public:
   /**
    * TracedCallback signature for DL scheduling events.
    *
-   * \param [in] frame Frame number.
-   * \param [in] subframe Subframe number.
+   * \param [in] frame The frame number.
+   * \param [in] subframe The subframe number.
    * \param [in] rnti The C-RNTI identifying the UE.
    * \param [in] mcs0 The MCS for transport block.. 
-   * \param [in] tbs0Size
+   * \param [in] tbs0Size The transport block size of layer 0
    * \param [in] mcs1 The MCS for transport block.
-   * \param [in] tbs1Size
-   * \param [in] component carrier id
+   * \param [in] tbs1Size The transport block size of layer 1
+   * \param [in] component The component carrier id
    */
   typedef void (* DlSchedulingTracedCallback)
     (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
@@ -173,11 +173,11 @@ public:
   /**
    *  TracedCallback signature for UL scheduling events.
    *
-   * \param [in] frame Frame number.
-   * \param [in] subframe Subframe number.
+   * \param [in] frame The frame number.
+   * \param [in] subframe The subframe number.
    * \param [in] rnti The C-RNTI identifying the UE.
    * \param [in] mcs  The MCS for transport block
-   * \param [in] tbsSize
+   * \param [in] tbsSize The transport block size
    */
   typedef void (* UlSchedulingTracedCallback)
     (const uint32_t frame, const uint32_t subframe, const uint16_t rnti,
@@ -187,19 +187,19 @@ private:
 
   /**
   * \brief Receive a DL CQI ideal control message
-  * \param msg the DL CQI message
+  * \param msg The DL CQI message
   */
   void ReceiveDlCqiLteControlMessage  (Ptr<DlCqiLteControlMessage> msg);
 
   /**
   * \brief Receive a DL CQI ideal control message
-  * \param msg the DL CQI message
+  * \param msg The DL CQI message
   */
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
 
   /**
   * \brief Receive a CE element containing the buffer status report
-  * \param bsr the BSR message
+  * \param bsr The BSR message
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
 
@@ -214,35 +214,35 @@ private:
   // forwarded from LteEnbCmacSapProvider
   /**
   * \brief Configure MAC function
-  * \param ulBandwidth the UL bandwidth
-  * \param dlBandwidth the DL bandwidth
+  * \param ulBandwidth The UL bandwidth
+  * \param dlBandwidth The DL bandwidth
   */
   void DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
   /**
   * \brief Add UE function
-  * \param rnti the RNTI
+  * \param rnti The RNTI
   */
   void DoAddUe (uint16_t rnti);
   /**
   * \brief Remove UE function
-  * \param rnti the RNTI
+  * \param rnti The RNTI
   */
   void DoRemoveUe (uint16_t rnti);
   /**
   * \brief Add LC function
-  * \param lcinfo the LC info
-  * \param msu the LTE MAC SAP user
+  * \param lcinfo The LC info
+  * \param msu The LTE MAC SAP user
   */
   void DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu);
   /**
   * \brief Reconfigure LC function
-  * \param lcinfo the LC info
+  * \param lcinfo The LC info
   */
   void DoReconfigureLc (LteEnbCmacSapProvider::LcInfo lcinfo);
   /**
   * \brief Release LC function
-  * \param rnti the RNTI
-  * \param lcid the LCID
+  * \param rnti The RNTI
+  * \param lcid The LCID
   */
   void DoReleaseLc (uint16_t  rnti, uint8_t lcid);
   /**
@@ -251,25 +251,44 @@ private:
   */
   void DoUeUpdateConfigurationReq (LteEnbCmacSapProvider::UeConfig params);
   /**
-  * \brief add Sidelink resource pool function
-  * \param group
-  * \parm Ptr<SidelinkCommResourcePool> pool
+  * \brief Add pool function
+  * Adds Sidelink Communication resource pool for the given group
+  * \param group The Sidelink L2 group id
+  * \param pool The Sidelink communication pool
   */
   void DoAddPool (uint32_t group, Ptr<SidelinkCommResourcePool> pool);
   /**
-  * \brief remove Sidelink resource pool function
-  * \param group id
+  * \brief Remove pool function
+  * Removes Sidelink Communication resource pool for the given group
+  *
+  * \param group The Sidelink L2 group id
   */
   void DoRemovePool (uint32_t group);
   /**
+   * \brief Add pool function
+   * Adds Sidelink Discovery pool for the requested resources
+   *
+   * \param resReq The discovery resources requested
+   * \param pool The pool information for discovery
+   */
+  void DoAddPool (uint8_t resReq, Ptr<SidelinkDiscResourcePool> pool);
+  /**
+   * \brief Remove Discovery pool function
+   * Removes Sidelink Discovery pool
+   *
+   * \param reReq The resources requested to be removed
+   */
+  void DoRemoveDiscPool (uint8_t resReq);
+
+  /**
   * \brief Get RACH configuration function
-  * \returns LteEnbCmacSapProvider::RachConfig
+  * \return LteEnbCmacSapProvider::RachConfig
   */
   LteEnbCmacSapProvider::RachConfig DoGetRachConfig ();
   /**
   * \brief Allocate NC RA preamble function
-  * \param rnti the RNTI
-  * \returns LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue
+  * \param rnti The RNTI
+  * \return LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue
   */
   LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue DoAllocateNcRaPreamble (uint16_t rnti);
 
@@ -338,27 +357,27 @@ private:
   // forwarded from LteEnbPhySapUser
   /**
   * \brief Subrame Indication function
-  * \param frameNo frame number
-  * \param subframeNo subframe number
+  * \param frameNo The frame number
+  * \param subframeNo The subframe number
   */
   void DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo);
   /**
   * \brief Receive RACH Preamble function
-  * \param prachId PRACH ID number
+  * \param prachId The PRACH ID number
   */
   void DoReceiveRachPreamble (uint8_t prachId);
 
   // forwarded by LteCcmMacSapProvider
   /**
    * Report MAC CE to scheduler
-   * \param bsr the BSR
+   * \param bsr The buffer status report
    */
   void DoReportMacCeToScheduler (MacCeListElement_s bsr);
   
 public:
   /**
    * legacy public for use the Phy callback
-   * \param p packet
+   * \param p The packet
    */
   void DoReceivePhyPdu (Ptr<Packet> p);
 

@@ -17,6 +17,7 @@
  *
  * Authors: Nicola Baldo <nbaldo@cttc.es>
  *          Lluis Parcerisa <lparcerisa@cttc.cat>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 

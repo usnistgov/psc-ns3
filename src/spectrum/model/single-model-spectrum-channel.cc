@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include <ns3/object.h>
@@ -26,14 +27,13 @@
 #include <ns3/net-device.h>
 #include <ns3/node.h>
 #include <ns3/double.h>
-#include <ns3/mobility-model.h>
 #include <ns3/spectrum-phy.h>
 #include <ns3/spectrum-propagation-loss-model.h>
 #include <ns3/propagation-loss-model.h>
 #include <ns3/propagation-delay-model.h>
 #include <ns3/antenna-model.h>
 #include <ns3/angles.h>
-
+#include "ns3/pointer.h"
 
 #include "single-model-spectrum-channel.h"
 
@@ -83,6 +83,25 @@ SingleModelSpectrumChannel::GetTypeId (void)
                    DoubleValue (1.0e9),
                    MakeDoubleAccessor (&SingleModelSpectrumChannel::m_maxLossDb),
                    MakeDoubleChecker<double> ())
+
+    .AddAttribute ("PropagationLossModel",
+                   "A pointer to the propagation loss model attached to this channel.",
+                   PointerValue (0),
+                   MakePointerAccessor (&SingleModelSpectrumChannel::m_propagationLoss),
+                   MakePointerChecker<PropagationLossModel> ())
+
+    .AddTraceSource ("Gain",
+                     "This trace is fired whenever a new path loss value "
+                     "is calculated. The parameters to this trace are : "
+                     "Pointer to the mobility model of the transmitter"
+                     "Pointer to the mobility model of the receiver"
+                     "Tx antenna gain"
+                     "Rx antenna gain"
+                     "Propagation gain"
+                     "Pathloss",
+                     MakeTraceSourceAccessor (&SingleModelSpectrumChannel::m_gainTrace),
+                     "ns3::SpectrumChannel::GainTracedCallback")
+
     .AddTraceSource ("PathLoss",
                      "This trace is fired whenever a new path loss value "
                      "is calculated. The first and second parameters "
@@ -149,29 +168,42 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
           if (senderMobility && receiverMobility)
             {
               double pathLossDb = 0;
+              double txAntennaGain = 0;
+              double rxAntennaGain = 0;
+              double propagationGainDb = 0;
+
               if (rxParams->txAntenna != 0)
                 {
                   Angles txAngles (receiverMobility->GetPosition (), senderMobility->GetPosition ());
-                  double txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
+                  txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
                   NS_LOG_LOGIC ("txAntennaGain = " << txAntennaGain << " dB");
                   pathLossDb -= txAntennaGain;
+                  NS_LOG_LOGIC ("pathLossDb = " << pathLossDb << " dB");
                 }
               Ptr<AntennaModel> rxAntenna = (*rxPhyIterator)->GetRxAntenna ();
               if (rxAntenna != 0)
                 {
                   Angles rxAngles (senderMobility->GetPosition (), receiverMobility->GetPosition ());
-                  double rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
+                  rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
                   NS_LOG_LOGIC ("rxAntennaGain = " << rxAntennaGain << " dB");
                   pathLossDb -= rxAntennaGain;
+                  NS_LOG_LOGIC ("pathLossDb = " << pathLossDb << " dB");
                 }
               if (m_propagationLoss)
                 {
-                  double propagationGainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
+                  propagationGainDb = m_propagationLoss->CalcRxPower (0, senderMobility, receiverMobility);
                   NS_LOG_LOGIC ("propagationGainDb = " << propagationGainDb << " dB");
                   pathLossDb -= propagationGainDb;
-                }                    
-              NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");    
+                  NS_LOG_LOGIC ("pathLossDb = " << pathLossDb << " dB");
+                }
+
+              NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");
+
+              // Gain trace
+              m_gainTrace (senderMobility, receiverMobility, txAntennaGain, rxAntennaGain, propagationGainDb, pathLossDb);
+
               m_pathLossTrace (txParams->txPhy, *rxPhyIterator, pathLossDb);
+
               if ( pathLossDb > m_maxLossDb)
                 {
                   // beyond range

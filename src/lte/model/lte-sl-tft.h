@@ -54,13 +54,15 @@ namespace ns3 {
 class LteSlTft : public SimpleRefCount<LteSlTft>
 {
 public:
-
   /**
-   * Indicates the direction of the traffic that is to be classified. 
+   * Indicates the direction of the traffic that is to be classified.
    */
-  enum Direction {TRANSMIT = 1,
-		  RECEIVE = 2,
-		  BIDIRECTIONAL = 3};
+  enum Direction
+  {
+    TRANSMIT = 1,
+    RECEIVE = 2,
+    BIDIRECTIONAL = 3
+  };
 
   /**
    * Constructor
@@ -74,8 +76,8 @@ public:
    * Clone the TFT
    * \return a copy of this SLTFT
    */
-  Ptr<LteSlTft> Copy();
-  
+  Ptr<LteSlTft> Copy ();
+
   /** 
    * Function to evaluate if the SL TFT matches the remote IP address
    * \param remoteAddress 
@@ -102,14 +104,11 @@ public:
    * \return true if the TFT is for an outgoing sidelink bearer
    */
   bool isTransmit ();
-  
- private:
 
-  
-  
+private:
   Direction m_direction; /**< whether the filter needs to be applied
-			  to uplink / downlink only, or in both cases*/
-  
+                          to uplink / downlink only, or in both cases*/
+
   Ipv4Address m_groupAddress;     /**< IPv4 address of the remote host  */
   uint32_t m_groupL2Address;      /** 24 bit MAC address  **/
 

@@ -17,6 +17,7 @@
  *
  * Authors: Nicola Baldo <nbaldo@cttc.es>
  *          Lluis Parcerisa <lparcerisa@cttc.cat>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include <ns3/fatal-error.h>
@@ -122,6 +123,8 @@ LteUeRrcProtocolReal::DoSendRrcConnectionRequest (LteRrcSap::RrcConnectionReques
   transmitPdcpPduParameters.pdcpPdu = packet;
   transmitPdcpPduParameters.rnti = m_rnti;
   transmitPdcpPduParameters.lcid = 0;
+  transmitPdcpPduParameters.srcL2Id = 0;
+  transmitPdcpPduParameters.dstL2Id = 0;
 
   m_setupParameters.srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
@@ -140,6 +143,8 @@ LteUeRrcProtocolReal::DoSendRrcConnectionSetupCompleted (LteRrcSap::RrcConnectio
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = m_rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   if (m_setupParameters.srb1SapProvider)
     {
@@ -166,6 +171,8 @@ LteUeRrcProtocolReal::DoSendRrcConnectionReconfigurationCompleted (LteRrcSap::Rr
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = m_rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
@@ -189,6 +196,8 @@ LteUeRrcProtocolReal::DoSendMeasurementReport (LteRrcSap::MeasurementReport msg)
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = m_rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
@@ -207,6 +216,8 @@ LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentRequest (LteRrcSap::RrcC
   transmitPdcpPduParameters.pdcpPdu = packet;
   transmitPdcpPduParameters.rnti = m_rnti;
   transmitPdcpPduParameters.lcid = 0;
+  transmitPdcpPduParameters.srcL2Id = 0;
+  transmitPdcpPduParameters.dstL2Id = 0;
 
   m_setupParameters.srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
@@ -225,6 +236,8 @@ LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentComplete (LteRrcSap::Rrc
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = m_rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
@@ -244,6 +257,8 @@ LteUeRrcProtocolReal::DoSendSidelinkUeInformation (LteRrcSap::SidelinkUeInformat
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = m_rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
@@ -566,6 +581,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcCo
   transmitPdcpPduParameters.pdcpPdu = packet;
   transmitPdcpPduParameters.rnti = rnti;
   transmitPdcpPduParameters.lcid = 0;
+  transmitPdcpPduParameters.srcL2Id = 0;
+  transmitPdcpPduParameters.dstL2Id = 0;
 
   m_setupUeParametersMap.at (rnti).srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
@@ -584,6 +601,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionReject (uint16_t rnti, LteRrcSap::RrcC
   transmitPdcpPduParameters.pdcpPdu = packet;
   transmitPdcpPduParameters.rnti = rnti;
   transmitPdcpPduParameters.lcid = 0;
+  transmitPdcpPduParameters.srcL2Id = 0;
+  transmitPdcpPduParameters.dstL2Id = 0;
 
   m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
@@ -602,6 +621,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionReconfiguration (uint16_t rnti, LteRrc
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   m_setupUeParametersMap[rnti].srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
@@ -620,6 +641,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionReestablishment (uint16_t rnti, LteRrc
   transmitPdcpPduParameters.pdcpPdu = packet;
   transmitPdcpPduParameters.rnti = rnti;
   transmitPdcpPduParameters.lcid = 0;
+  transmitPdcpPduParameters.srcL2Id = 0;
+  transmitPdcpPduParameters.dstL2Id = 0;
 
   m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
@@ -638,6 +661,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionReestablishmentReject (uint16_t rnti, 
   transmitPdcpPduParameters.pdcpPdu = packet;
   transmitPdcpPduParameters.rnti = rnti;
   transmitPdcpPduParameters.lcid = 0;
+  transmitPdcpPduParameters.srcL2Id = 0;
+  transmitPdcpPduParameters.dstL2Id = 0;
 
   m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
@@ -656,6 +681,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::Rrc
   transmitPdcpSduParameters.pdcpSdu = packet;
   transmitPdcpSduParameters.rnti = rnti;
   transmitPdcpSduParameters.lcid = 1;
+  transmitPdcpSduParameters.srcL2Id = 0;
+  transmitPdcpSduParameters.dstL2Id = 0;
 
   m_setupUeParametersMap[rnti].srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }

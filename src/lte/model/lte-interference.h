@@ -39,7 +39,7 @@ class LteChunkProcessor;
 
 
 /**
- * This class implements a gaussian interference model, i.e., all
+ * This class implements a Gaussian interference model, i.e., all
  * incoming signals are added to the total interference.
  *
  */
@@ -51,7 +51,7 @@ public:
 
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return The object TypeId
    */
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
@@ -61,16 +61,16 @@ public:
    * calculated by this LteInterference instance. Note that all the
    * added LteChunkProcessors will work in parallel.
    *
-   * @param p
+   * \param p The chunk processor for SINR evaluation
    */
   void AddSinrChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
    * Add a LteChunkProcessor that will use the time-vs-frequency
-   *  interference calculated by this LteInterference instance. Note 
-   *  that all the added LteChunkProcessors will work in parallel.
+   * interference calculated by this LteInterference instance. Note
+   * that all the added LteChunkProcessors will work in parallel.
    *
-   * @param p
+   * \param p The chunk processor for interference evaluation
    */
   void AddInterferenceChunkProcessor (Ptr<LteChunkProcessor> p);
 
@@ -79,14 +79,14 @@ public:
    *  power calculated by this LteInterference instance. Note
    *  that all the added LteChunkProcessors will work in parallel.
    *
-   * @param p
+   * \param p The chunk processor for Reference Signal (RS) power evaluation
    */
   void AddRsPowerChunkProcessor (Ptr<LteChunkProcessor> p);
 
   /**
-   * notify that the PHY is starting a RX attempt
+   * notify an LteChunkProcessor that the PHY is starting an RX attempt
    *
-   * @param rxPsd the power spectral density of the signal being RX
+   * \param rxPsd The power spectral density of the signal being RX
    */
   void StartRx (Ptr<const SpectrumValue> rxPsd);
 
@@ -102,37 +102,37 @@ public:
   /**
    * notify that a new signal is being perceived in the medium. This
    * method is to be called for all incoming signal, regardless of
-   * wether they're useful signals or interferers.
+   * whether they are useful signals or interference.
    *
-   * @param spd the power spectral density of the new signal
-   * @param duration the duration of the new signal
+   * \param spd The power spectral density of the new signal
+   * \param duration The duration of the new signal
    */
   void AddSignal (Ptr<const SpectrumValue> spd, const Time duration);
 
 
   /**
    *
-   * @param noisePsd the Noise Power Spectral Density in power units
+   * \param noisePsd The Noise Power Spectral Density in power units
    * (Watt, Pascal...) per Hz.
    */
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
 
 private:
   /**
-   * Considitionally evaluate chunk
+   * Conditionally evaluate chunk
    */
   void ConditionallyEvaluateChunk ();
   /**
    * Add signal function
    *
-   * @param spd the power spectral density of the new signal
+   * \param spd The power spectral density of the new signal
    */
   void DoAddSignal  (Ptr<const SpectrumValue> spd);
   /**
    * Subtract signal
    *
-   * @param spd the power spectral density of the new signal
-   * @param signalId the signal ID
+   * \param spd The power spectral density of the new signal
+   * \param signalId The signal ID
    */
   void DoSubtractSignal  (Ptr<const SpectrumValue> spd, uint32_t signalId);
 
@@ -145,8 +145,8 @@ private:
                                   * attempted
                                   */
 
-  Ptr<SpectrumValue> m_allSignals; /**< stores the spectral
-                                    * power density of the sum of incoming signals;
+  Ptr<SpectrumValue> m_allSignals; /**< stores the power spectral
+                                    * density of the sum of incoming signals;
                                     * does not include noise, includes the SPD of the signal being RX
                                     */
 

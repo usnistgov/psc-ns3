@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov> 
- * is derived from udp-echo-server.cc originally authored by University of Washington. 
+ * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
+ * is derived from udp-echo-server.cc originally authored by University of Washington.
  */
 
 #include "ns3/log.h"
@@ -55,7 +55,7 @@ PscUdpGroupEchoServer::GetTypeId (void)
                    UintegerValue (9),
                    MakeUintegerAccessor (&PscUdpGroupEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
-	.AddAttribute ("EchoPort", "Port on which we echo packets to client.",
+    .AddAttribute ("EchoPort", "Port on which we echo packets to client.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&PscUdpGroupEchoServer::m_port_client),
                    MakeUintegerChecker<uint16_t> ())
@@ -68,10 +68,10 @@ PscUdpGroupEchoServer::GetTypeId (void)
                    MakeBooleanAccessor (&PscUdpGroupEchoServer::m_echoback),
                    MakeBooleanChecker ())
     .AddTraceSource ("Rx", "A packet has been received",
-				   MakeTraceSourceAccessor (&PscUdpGroupEchoServer::m_rxTrace),
-				   "ns3::Packet::PacketAddressTracedCallback")
+                     MakeTraceSourceAccessor (&PscUdpGroupEchoServer::m_rxTrace),
+                     "ns3::Packet::PacketAddressTracedCallback")
   ;
-  
+
   return tid;
 }
 
@@ -80,7 +80,7 @@ PscUdpGroupEchoServer::PscUdpGroupEchoServer ()
   NS_LOG_FUNCTION (this);
 }
 
-PscUdpGroupEchoServer::~PscUdpGroupEchoServer()
+PscUdpGroupEchoServer::~PscUdpGroupEchoServer ()
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
@@ -98,7 +98,7 @@ PscUdpGroupEchoServer::AddClient (const Address& address)
   std::string ipaddrskey = os.str ();
 
   src_client.addrs = address;
-	src_client.echo_addrs = InetSocketAddress (clientAddress.GetIpv4 (), m_port_client);
+  src_client.echo_addrs = InetSocketAddress (clientAddress.GetIpv4 (), m_port_client);
   src_client.tstamp = Simulator::Now ();
 
   m_clients[ipaddrskey] = src_client;
@@ -113,11 +113,11 @@ PscUdpGroupEchoServer::DoDispose (void)
   Application::DoDispose ();
 }
 
-void 
+void
 PscUdpGroupEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO("Starting PscUdpGroupEchoServer with SessionTime: " << m_timeout);
+  NS_LOG_INFO ("Starting PscUdpGroupEchoServer with SessionTime: " << m_timeout);
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -164,24 +164,24 @@ PscUdpGroupEchoServer::StartApplication (void)
   m_socket6->SetRecvCallback (MakeCallback (&PscUdpGroupEchoServer::HandleRead, this));
 }
 
-void 
+void
 PscUdpGroupEchoServer::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket != 0) 
+  if (m_socket != 0)
     {
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
-  if (m_socket6 != 0) 
+  if (m_socket6 != 0)
     {
       m_socket6->Close ();
       m_socket6->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 
-void 
+void
 PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -193,10 +193,10 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
   std::ostringstream os;
   client src_client;
   double lapse;
-  
+
   while ((packet = socket->RecvFrom (from)))
     {
-	  m_rxTrace (packet, from);
+      m_rxTrace (packet, from);
       if (InetSocketAddress::IsMatchingType (from))
         {
           NS_LOG_INFO (Simulator::Now ().GetSeconds () << " server received " << packet->GetSize () << " bytes from " <<
@@ -204,10 +204,10 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                        InetSocketAddress::ConvertFrom (from).GetPort ());
 
           os << InetSocketAddress::ConvertFrom (from).GetIpv4 () << ":" << InetSocketAddress::ConvertFrom (from).GetPort ();
-		  
-		  InetSocketAddress inet_addrs = InetSocketAddress::ConvertFrom (from);
-		  inet_addrs.SetPort(m_port_client);
-		  echo_addrs = inet_addrs;
+
+          InetSocketAddress inet_addrs = InetSocketAddress::ConvertFrom (from);
+          inet_addrs.SetPort (m_port_client);
+          echo_addrs = inet_addrs;
         }
       else if (Inet6SocketAddress::IsMatchingType (from))
         {
@@ -215,42 +215,44 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                        Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
                        Inet6SocketAddress::ConvertFrom (from).GetPort ());
           os << Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << ":" << Inet6SocketAddress::ConvertFrom (from).GetPort ();
-		  
-		  Inet6SocketAddress inet6_addrs = Inet6SocketAddress::ConvertFrom (from);
-		  inet6_addrs.SetPort(m_port_client);
-		  echo_addrs = inet6_addrs;
+
+          Inet6SocketAddress inet6_addrs = Inet6SocketAddress::ConvertFrom (from);
+          inet6_addrs.SetPort (m_port_client);
+          echo_addrs = inet6_addrs;
         }
-      
+
 
       packet->RemoveAllPacketTags ();
       packet->RemoveAllByteTags ();
-      
+
       /* Update clients group with new/existing client.
        * If exist, update timestamp. Else, add client to group with new timestamp.
        * Echo packet.
        */
 
       ipaddrskey = os.str ();
-      
-      it = m_clients.find(ipaddrskey);
+
+      it = m_clients.find (ipaddrskey);
       if (it != m_clients.end ())
         {
           // Client is a group member. Udate timestamp.
-          NS_LOG_DEBUG("Client found; old timestamp: " << it->second.tstamp.GetSeconds ());
+          NS_LOG_DEBUG ("Client found; old timestamp: " << it->second.tstamp.GetSeconds ());
           it->second.tstamp = Simulator::Now ();
-          NS_LOG_DEBUG("New timestamp: " << it->second.tstamp.GetSeconds ());
+          NS_LOG_DEBUG ("New timestamp: " << it->second.tstamp.GetSeconds ());
         }
       else // Add client to group
         {
-		  //client src_client;
+          //client src_client;
           src_client.addrs = from;
-		  src_client.echo_addrs = echo_addrs;
+          src_client.echo_addrs = echo_addrs;
           src_client.tstamp = Simulator::Now ();
           m_clients[ipaddrskey] = src_client;
         }
-      
-      if(g_log.IsEnabled (LOG_DEBUG))
-        this->PrintClients ();
+
+      if (g_log.IsEnabled (LOG_DEBUG))
+        {
+          this->PrintClients ();
+        }
 
       /* Echoing packet to group.
        * Iterate through all the clients, check timestamp.
@@ -259,138 +261,154 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
       /* m_timeout  < 0 : Server serves group clients indefinitely
        * m_timeout == 0 : Server behaves as single echo-client (no group echo)
-       * m_timeout  > 0 : Server group echo clients that have been active within 
-       *                 the m_timeout elapsed time. 
+       * m_timeout  > 0 : Server group echo clients that have been active within
+       *                 the m_timeout elapsed time.
        */
-      Address addrs_dest; 
+      Address addrs_dest;
       if (m_timeout < 0)
-        { 
+        {
           // Server serves group clients indefinitely.
           for (it = m_clients.begin ();
-               it!=m_clients.end (); ++it)
-            { 
-			  // If no echo back, neglect client source
-			  if (!m_echoback && it->first == ipaddrskey)
-				  continue;
-			  
+               it != m_clients.end (); ++it)
+            {
+              // If no echo back, neglect client source
+              if (!m_echoback && it->first == ipaddrskey)
+                {
+                  continue;
+                }
+
               // Check elapsed time
               lapse = Simulator::Now ().GetSeconds () - it->second.tstamp.GetSeconds ();
-              
-			  // Set destination address with the agreed client port.
-			  if (m_port_client !=0)
-				addrs_dest = it->second.echo_addrs;
-			  else
-				addrs_dest = it->second.addrs;
-			  
-			  // Forward packet
-			  NS_LOG_LOGIC ("Echoing packet");
+
+              // Set destination address with the agreed client port.
+              if (m_port_client != 0)
+                {
+                  addrs_dest = it->second.echo_addrs;
+                }
+              else
+                {
+                  addrs_dest = it->second.addrs;
+                }
+
+              // Forward packet
+              NS_LOG_LOGIC ("Echoing packet");
               socket->SendTo (packet, 0, addrs_dest);
-              
+
               if (InetSocketAddress::IsMatchingType (addrs_dest))
                 {
-                  NS_LOG_INFO (Simulator::Now ().GetSeconds () 
-                               << " server sent " 
-                               << packet->GetSize () 
+                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
+                               << " server sent "
+                               << packet->GetSize ()
                                << " bytes to "
-                               << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 () 
-                               << " port " 
+                               << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 ()
+                               << " port "
                                << InetSocketAddress::ConvertFrom (addrs_dest).GetPort ());
                 }
               else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
                 {
-                  NS_LOG_INFO (Simulator::Now ().GetSeconds () 
-                               << " server sent " 
-                               << packet->GetSize () 
-                               << " bytes to " 
-                               << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 () 
-                               << " port " 
+                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
+                               << " server sent "
+                               << packet->GetSize ()
+                               << " bytes to "
+                               << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 ()
+                               << " port "
                                << Inet6SocketAddress::ConvertFrom (addrs_dest).GetPort ());
                 }
             }
         }
       else if (m_timeout == 0)
-        { 
-		  // Only one client allowed in group.
-          it = m_clients.find(ipaddrskey);
+        {
+          // Only one client allowed in group.
+          it = m_clients.find (ipaddrskey);
           if (m_echoback)
-			{
-			  // Set destination address with the agreed client port.
-			  if (m_port_client !=0)
-				addrs_dest = it->second.echo_addrs;
-			  else
-				addrs_dest = it->second.addrs;
-			  
-			  // Forward packet
-			  NS_LOG_LOGIC ("Echoing packet");
+            {
+              // Set destination address with the agreed client port.
+              if (m_port_client != 0)
+                {
+                  addrs_dest = it->second.echo_addrs;
+                }
+              else
+                {
+                  addrs_dest = it->second.addrs;
+                }
+
+              // Forward packet
+              NS_LOG_LOGIC ("Echoing packet");
               socket->SendTo (packet, 0, addrs_dest);
-				  
-			  if (InetSocketAddress::IsMatchingType (addrs_dest))
-				{
-				  NS_LOG_INFO (Simulator::Now ().GetSeconds () 
-							   << " server sent " 
-							   << packet->GetSize () 
-							   << " bytes to "
-							   << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 () 
-							   << " port " 
-							   << InetSocketAddress::ConvertFrom (addrs_dest).GetPort ());
-				}
-			  else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
-				{
-				  NS_LOG_INFO (Simulator::Now ().GetSeconds () 
-							   << " server sent " 
-							   << packet->GetSize () 
-							   << " bytes to " 
-							   << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 () 
-							   << " port " 
-							   << Inet6SocketAddress::ConvertFrom (addrs_dest).GetPort ());
-				}
-			}
+
+              if (InetSocketAddress::IsMatchingType (addrs_dest))
+                {
+                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
+                               << " server sent "
+                               << packet->GetSize ()
+                               << " bytes to "
+                               << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 ()
+                               << " port "
+                               << InetSocketAddress::ConvertFrom (addrs_dest).GetPort ());
+                }
+              else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
+                {
+                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
+                               << " server sent "
+                               << packet->GetSize ()
+                               << " bytes to "
+                               << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 ()
+                               << " port "
+                               << Inet6SocketAddress::ConvertFrom (addrs_dest).GetPort ());
+                }
+            }
           // Remove client
           m_clients.erase (it);
         }
       else //if (m_timeout > 0)
         {
           for (it = m_clients.begin ();
-               it!=m_clients.end (); ++it)
-            { 
-			  // If no echo back, neglect client source
-			  if (!m_echoback && it->first == ipaddrskey)
-				  continue;
-			  
+               it != m_clients.end (); ++it)
+            {
+              // If no echo back, neglect client source
+              if (!m_echoback && it->first == ipaddrskey)
+                {
+                  continue;
+                }
+
               // Check elapsed time
               lapse = Simulator::Now ().GetSeconds () - it->second.tstamp.GetSeconds ();
-              
+
               if (lapse < m_timeout)
                 {
                   // Set destination address with the agreed client port.
-				  if (m_port_client !=0)
-					addrs_dest = it->second.echo_addrs;
-				  else
-					addrs_dest = it->second.addrs;
-				  
-				  // Forward packet
-				  NS_LOG_LOGIC ("Echoing packet");
-				  socket->SendTo (packet, 0, addrs_dest);
-				  
-              
+                  if (m_port_client != 0)
+                    {
+                      addrs_dest = it->second.echo_addrs;
+                    }
+                  else
+                    {
+                      addrs_dest = it->second.addrs;
+                    }
+
+                  // Forward packet
+                  NS_LOG_LOGIC ("Echoing packet");
+                  socket->SendTo (packet, 0, addrs_dest);
+
+
                   if (InetSocketAddress::IsMatchingType (addrs_dest))
                     {
-                      NS_LOG_INFO (Simulator::Now ().GetSeconds () 
-                                   << " server sent " 
-                                   << packet->GetSize () 
+                      NS_LOG_INFO (Simulator::Now ().GetSeconds ()
+                                   << " server sent "
+                                   << packet->GetSize ()
                                    << " bytes to "
-                                   << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 () 
-                                   << " port " 
+                                   << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 ()
+                                   << " port "
                                    << InetSocketAddress::ConvertFrom (addrs_dest).GetPort ());
                     }
                   else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
                     {
-                      NS_LOG_INFO (Simulator::Now ().GetSeconds () 
-                                   << " server sent " 
-                                   << packet->GetSize () 
-                                   << " bytes to " 
-                                   << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 () 
-                                   << " port " 
+                      NS_LOG_INFO (Simulator::Now ().GetSeconds ()
+                                   << " server sent "
+                                   << packet->GetSize ()
+                                   << " bytes to "
+                                   << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 ()
+                                   << " port "
                                    << Inet6SocketAddress::ConvertFrom (addrs_dest).GetPort ());
                     }
                 }
@@ -402,8 +420,8 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                   m_clients.erase (tempit);
                 }
             }
-        }//end for
-    }//end while
+        } //end for
+    } //end while
 }
 
 void
@@ -412,24 +430,28 @@ PscUdpGroupEchoServer::PrintClients (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
                << " number of clients: " << m_clients.size ());
-  if( m_clients.size () > 0 )
+  if ( m_clients.size () > 0 )
     {
       // Check time lapse
       double tstamp = Simulator::Now ().GetSeconds ();
       double lapse;
-      NS_LOG_INFO (std::setfill ('-') << std::setw(57) << "-" << std::setfill (' '));
-      NS_LOG_INFO (std::setw(23) << "Client  " << std::setw(10) << "Session");
-      NS_LOG_INFO (std::setfill ('-') << std::setw(57) << "-" << std::setfill (' '));
+      NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
+      NS_LOG_INFO (std::setw (23) << "Client  " << std::setw (10) << "Session");
+      NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
       for (std::map<std::string,client>::iterator it = m_clients.begin ();
-           it!=m_clients.end (); ++it)
+           it != m_clients.end (); ++it)
         {
           lapse = tstamp - it->second.tstamp.GetSeconds ();
           if (m_timeout < 0 || lapse < m_timeout)
-            NS_LOG_INFO (std::setw(23) << it->first << " " << std::setw(10) << lapse);
+            {
+              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse);
+            }
           else
-            NS_LOG_INFO (std::setw(23) << it->first << " " << std::setw(10) << lapse << " **Session Expired!**");
+            {
+              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse << " **Session Expired!**");
+            }
         }
-      NS_LOG_INFO (std::setfill ('=') << std::setw(57) << "=" << std::setfill (' '));
+      NS_LOG_INFO (std::setfill ('=') << std::setw (57) << "=" << std::setfill (' '));
     }
 }
 

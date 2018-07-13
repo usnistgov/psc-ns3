@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_UE_CMAC_SAP_H
@@ -25,6 +26,8 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-common.h>
+#include <ns3/lte-sl-pool.h>
+#include <ns3/lte-control-messages.h>
 
 namespace ns3 {
 
@@ -53,24 +56,24 @@ public:
   /** 
    * Configure RACH function 
    *
-   * \param rc the RACH config
+   * \param rc The RACH config
    */
   virtual void ConfigureRach (RachConfig rc) = 0;
 
   /** 
-   * tell the MAC to start a contention-based random access procedure,
+   * Tells the MAC to start a contention-based random access procedure,
    * e.g., to perform RRC connection establishment 
    * 
    */
   virtual void StartContentionBasedRandomAccessProcedure () = 0;
 
   /** 
-   * tell the MAC to start a non-contention-based random access
+   * Tells the MAC to start a non-contention-based random access
    * procedure, e.g., as a consequence of handover
    * 
-   * \param rnti
-   * \param rapId Random Access Preamble Identifier
-   * \param prachMask 
+   * \param rnti The RNTI
+   * \param rapId The Random Access Preamble Identifier
+   * \param prachMask The PRACK mask
    */
   virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t rapId, uint8_t prachMask) = 0;
 
@@ -85,32 +88,130 @@ public:
   };
   
   /** 
-   * add a new Logical Channel (LC) 
+   * Adds a new Logical Channel (LC)
    * 
-   * \param lcId the ID of the LC
-   * \param lcConfig the LC configuration provided by the RRC
-   * \param msu the corresponding LteMacSapUser
+   * \param lcId The ID of the LC
+   * \param lcConfig The LC configuration provided by the RRC
+   * \param msu The corresponding LteMacSapUser
    */
   virtual void AddLc (uint8_t lcId, LogicalChannelConfig lcConfig, LteMacSapUser* msu) = 0;
 
+  /**
+   * Adds a new Logical Channel (LC) used for Sidelink
+   *
+   * \param lcId The ID of the LC
+   * \param srcL2Id The L2 group id of the source
+   * \param dstL2Id The L2 group id of the destination
+   * \param lcConfig The LC configuration provided by the RRC
+   * \param msu The corresponding LteMacSapUser
+   */
+  virtual void AddSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, LogicalChannelConfig lcConfig, LteMacSapUser* msu) = 0;
+
   /** 
-   * remove an existing LC
+   * Removes an existing LC
    * 
    * \param lcId 
    */
   virtual void RemoveLc (uint8_t lcId) = 0;
 
+  /**
+   * Removes an existing Sidelink LC
+   *
+   * \param lcId The LC ID
+   * \param srcL2Id The L2 group id of the source
+   * \param dstL2Id The L2 group id of the destination
+   */
+  virtual void RemoveSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
+
   /** 
-   * reset the MAC
+   * Resets the MAC
    * 
    */
   virtual void Reset () = 0;
   
   /**
+   * Adds a Sidelink transmission pool for the given destination
    *
-   * \param rnti the cell-specific UE identifier
+   * \param dstL2Id The destination
+   * \param pool The transmission pool
+   */
+  virtual void AddSlCommTxPool (uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> pool) = 0;
+
+  /**
+   * Removes the Sidelink communication transmission pool for the given destination
+   *
+   * \param dstL2Id The destination
+   */
+  virtual void RemoveSlCommTxPool (uint32_t dstL2Id) = 0;
+
+  /**
+   * Sets the Sidelink communication receiving pools
+   *
+   * \param pools The list of Sidelink receiving pools
+   */
+  virtual void SetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools) = 0;
+
+  /**
+   * Adds a new destination to listen for
+   *
+   * \param destination A destination (L2 ID) to listen for
+   */
+  virtual void AddSlDestination (uint32_t destination) = 0;
+
+  /**
+   * Removes a destination to listen for
+   *
+   * \param destination The destination (L2 ID) that is no longer of interest
+   */
+  virtual void RemoveSlDestination (uint32_t destination) = 0;
+
+  /**
+   * Sets a Sidelink discovery pool
+   *
+   * \param res The discovery resources
+   * \param pool The transmission pool
+   */
+  virtual void SetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool) = 0;
+
+  /**
+   * Removes the Sidelink discovery pool
+   */
+  virtual void RemoveSlDiscTxPool () = 0;
+
+ /**
+   * Sets the Sidelink discovery receiving pools
+   *
+   * \param pools The Sidelink discovery receiving pools
+   */
+  virtual void SetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools) = 0;
+
+  /*
+   * Push announcing applications to MAC
+   *
+   * \param apps The applications to announce
+   */
+  virtual void ModifyDiscTxApps (std::list<uint32_t> apps) = 0;
+
+  /*
+   * Push monitoring applications to MAC
+   *
+   * \params apps The applications to monitor
+   */
+  virtual void ModifyDiscRxApps (std::list<uint32_t> apps) = 0;
+
+  /**
+   * Sets the RNTI of the UE
+   *
+   * \param rnti The cell-specific UE identifier
    */
   virtual void SetRnti (uint16_t rnti) = 0;
+
+  //todo Check if we need AddLCPriority function
+  /**
+   *  added function to handle priority in UL scheduling
+   *
+   */
+ // virtual void AddLCPriority (uint8_t rnti, uint8_t lcid ,uint8_t  priority) = 0;
 
 };
 
@@ -145,6 +246,27 @@ public:
    * 
    */
   virtual void NotifyRandomAccessFailed () = 0;
+
+  /**
+   * Notify the RRC that the MAC has detected a new incoming flow for Sidelink reception
+   */
+  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
+
+  /**
+   * Notify the RRC that the MAC has data to send in the PSSCH
+   */
+  virtual void NotifyMacHasSlDataToSend () = 0;
+  /**
+   * Notify the RRC that the MAC does not have data to send in the PSSCH
+   */
+  virtual void NotifyMacHasNoSlDataToSend () = 0;
+
+  /**
+   * Notify the RRC that the MAC has detected a new incoming flow for discovery reception
+   *
+   * \param msg LTE control message
+   */
+  virtual void NotifyDiscoveryReception (Ptr<LteControlMessage> msg) = 0;
 };
 
 

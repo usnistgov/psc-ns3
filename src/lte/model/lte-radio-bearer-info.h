@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef LTE_RADIO_BEARER_INFO_H
@@ -96,6 +97,20 @@ public:
   Ipv4Address m_transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
 };
 
+/**
+ * store information on active sidelink data radio bearer instance
+ * 
+ */
+class LteSidelinkRadioBearerInfo : public LteRadioBearerInfo
+{
+
+public:
+  static TypeId GetTypeId (void);
+  uint8_t m_logicalChannelIdentity;
+  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig;
+  uint32_t m_sourceL2Id;
+  uint32_t m_destinationL2Id;
+};
 
 
 

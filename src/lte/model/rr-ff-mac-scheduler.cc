@@ -1256,6 +1256,14 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
     {
       if (ret.m_dciList.size () > 0)
         {
+          std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+          itMap = m_allocationMaps.find (params.m_sfnSf);
+          if (itMap != m_allocationMaps.end ())
+            {
+              //remove obsolete info on allocation first
+              NS_LOG_DEBUG("Found SFnSF = "<<params.m_sfnSf<< " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+              m_allocationMaps.erase (itMap);
+            }
           m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           m_schedSapUser->SchedUlConfigInd (ret);
         }
@@ -1370,6 +1378,14 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
             {
               m_schedSapUser->SchedUlConfigInd (ret);
             }
+          std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+          itMap = m_allocationMaps.find (params.m_sfnSf);
+          if (itMap != m_allocationMaps.end ())
+            {
+              //remove obsolete info on allocation first
+              NS_LOG_DEBUG("Found SFnSF = "<<params.m_sfnSf<< " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+              m_allocationMaps.erase (itMap);
+            }
           m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
           return;
         }
@@ -1475,6 +1491,15 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
         }
     }
   while (((*it).first != m_nextRntiUl)&&(rbPerFlow!=0));
+
+  std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+  itMap = m_allocationMaps.find (params.m_sfnSf);
+  if (itMap != m_allocationMaps.end ())
+    {
+      //remove obsolete info on allocation first
+      NS_LOG_DEBUG("Found SFnSF = "<<params.m_sfnSf<< " UL - Frame no. " << (params.m_sfnSf >> 4) << " subframe no. " << (0xF & params.m_sfnSf));
+      m_allocationMaps.erase (itMap);
+    }
 
   m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
 
@@ -1702,7 +1727,7 @@ RrFfMacScheduler::RefreshDlCqiMaps (void)
           // delete correspondent entries
           std::map <uint16_t,uint8_t>::iterator itMap = m_p10CqiRxed.find ((*itP10).first);
           NS_ASSERT_MSG (itMap != m_p10CqiRxed.end (), " Does not find CQI report for user " << (*itP10).first);
-          NS_LOG_INFO (this << " P10-CQI exired for user " << (*itP10).first);
+          NS_LOG_INFO (this << " P10-CQI expired for user " << (*itP10).first);
           m_p10CqiRxed.erase (itMap);
           std::map <uint16_t,uint32_t>::iterator temp = itP10;
           itP10++;
@@ -1732,7 +1757,7 @@ RrFfMacScheduler::RefreshUlCqiMaps (void)
           // delete correspondent entries
           std::map <uint16_t, std::vector <double> >::iterator itMap = m_ueCqi.find ((*itUl).first);
           NS_ASSERT_MSG (itMap != m_ueCqi.end (), " Does not find CQI report for user " << (*itUl).first);
-          NS_LOG_INFO (this << " UL-CQI exired for user " << (*itUl).first);
+          NS_LOG_INFO (this << " UL-CQI expired for user " << (*itUl).first);
           (*itMap).second.clear ();
           m_ueCqi.erase (itMap);
           std::map <uint16_t,uint32_t>::iterator temp = itUl;
