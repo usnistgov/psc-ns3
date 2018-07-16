@@ -46,7 +46,7 @@
 #include "ns3/random-variable-stream.h"
 
 // Example of udp group echo server with ON-OFF clients.
-// PscUdpGroupEchoServer offers different modes of operation
+// UdpGroupEchoServer offers different modes of operation
 // by setting the session timeout time accordingly:
 //       INF_SESSION - Session last infinitely
 //  NO_GROUP_SESSION - No group session.
@@ -65,6 +65,7 @@
 
 
 using namespace ns3;
+using namespace psc;
 
 NS_LOG_COMPONENT_DEFINE ("UdpGroupEchoExample");
 
@@ -72,6 +73,7 @@ int
 main (int argc, char *argv[])
 {
   bool verbose = true;
+  bool enablePcap = false;
   uint32_t nCsma = 2;
   uint32_t nExtra = 0;
   double simTime = 10;
@@ -79,6 +81,7 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("nExtra", "Number of \"extra\" CSMA nodes/devices", nExtra);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue ("enablePcap", "Enable PCAP file output", enablePcap);
   cmd.AddValue ("time", "Simulation time", simTime);
 
   cmd.Parse (argc,argv);
@@ -86,7 +89,7 @@ main (int argc, char *argv[])
   if (verbose)
     {
       LogComponentEnable ("UdpGroupEchoExample", LOG_LEVEL_INFO);
-      LogComponentEnable ("PscUdpGroupEchoServerApplication", LOG_LEVEL_INFO);
+      LogComponentEnable ("UdpGroupEchoServerApplication", LOG_LEVEL_INFO);
     }
 
   nCsma += nExtra;
@@ -117,7 +120,7 @@ main (int argc, char *argv[])
   // Set the session timeout time in seconds, else INF_SESSION or NO_GROUP_SESSION
   double timeout = INF_SESSION;
   bool echoback = false;
-  PscUdpGroupEchoServerHelper echoServer (serverPort, timeout, echoback);
+  UdpGroupEchoServerHelper echoServer (serverPort, timeout, echoback);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma - 1));
   serverApps.Start (Seconds (1.0));
@@ -152,9 +155,12 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  csma.EnablePcap ("gecho-client", clientNodes.Get (0)->GetId (),0);
-  csma.EnablePcap ("gecho-client", clientNodes.Get (1)->GetId (),0);
-  csma.EnablePcap ("gecho-server", csmaNodes.Get (nCsma - 1)->GetId (),0);
+  if (enablePcap)
+    {
+      csma.EnablePcap ("udpgroupecho-client", clientNodes.Get (0)->GetId (),0);
+      csma.EnablePcap ("udpgroupecho-client", clientNodes.Get (1)->GetId (),0);
+      csma.EnablePcap ("udpgroupecho-server", csmaNodes.Get (nCsma - 1)->GetId (),0);
+    }
 
   Simulator::Stop (Seconds (simTime));
 

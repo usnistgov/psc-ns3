@@ -36,51 +36,53 @@
 #include <iomanip>
 #include "ns3/boolean.h"
 
-#include "psc-udp-groupecho-server.h"
+#include "udp-groupecho-server.h"
 #include <sstream>
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PscUdpGroupEchoServerApplication");
+NS_LOG_COMPONENT_DEFINE ("UdpGroupEchoServerApplication");
 
-NS_OBJECT_ENSURE_REGISTERED (PscUdpGroupEchoServer);
+namespace psc {
+
+NS_OBJECT_ENSURE_REGISTERED (UdpGroupEchoServer);
 
 TypeId
-PscUdpGroupEchoServer::GetTypeId (void)
+UdpGroupEchoServer::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::PscUdpGroupEchoServer")
+  static TypeId tid = TypeId ("ns3::psc::UdpGroupEchoServer")
     .SetParent<Application> ()
-    .AddConstructor<PscUdpGroupEchoServer> ()
+    .SetGroupName ("Psc")
+    .AddConstructor<UdpGroupEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
                    UintegerValue (9),
-                   MakeUintegerAccessor (&PscUdpGroupEchoServer::m_port),
+                   MakeUintegerAccessor (&UdpGroupEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("EchoPort", "Port on which we echo packets to client.",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&PscUdpGroupEchoServer::m_port_client),
+                   MakeUintegerAccessor (&UdpGroupEchoServer::m_port_client),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("Timeout", "Inactive client session expiration time <seconds>.\nSessionTime  < 0 : Server echoes group clients indefinitely\nSessionTime == 0 : Server echoes single client (Default)\nSessionTime  > 0 : Server forwards packets to group. Session timeout units are seconds.",
                    DoubleValue (0),
-                   MakeDoubleAccessor (&PscUdpGroupEchoServer::m_timeout),
+                   MakeDoubleAccessor (&UdpGroupEchoServer::m_timeout),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Echo", "Server echoes back client. True (default) | False",
                    BooleanValue (true),
-                   MakeBooleanAccessor (&PscUdpGroupEchoServer::m_echoback),
+                   MakeBooleanAccessor (&UdpGroupEchoServer::m_echoback),
                    MakeBooleanChecker ())
     .AddTraceSource ("Rx", "A packet has been received",
-                     MakeTraceSourceAccessor (&PscUdpGroupEchoServer::m_rxTrace),
+                     MakeTraceSourceAccessor (&UdpGroupEchoServer::m_rxTrace),
                      "ns3::Packet::PacketAddressTracedCallback")
   ;
-
   return tid;
 }
 
-PscUdpGroupEchoServer::PscUdpGroupEchoServer ()
+UdpGroupEchoServer::UdpGroupEchoServer ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-PscUdpGroupEchoServer::~PscUdpGroupEchoServer ()
+UdpGroupEchoServer::~UdpGroupEchoServer ()
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
@@ -88,7 +90,7 @@ PscUdpGroupEchoServer::~PscUdpGroupEchoServer ()
 }
 
 void
-PscUdpGroupEchoServer::AddClient (const Address& address)
+UdpGroupEchoServer::AddClient (const Address& address)
 {
   client src_client;
   std::ostringstream os;
@@ -107,17 +109,17 @@ PscUdpGroupEchoServer::AddClient (const Address& address)
 }
 
 void
-PscUdpGroupEchoServer::DoDispose (void)
+UdpGroupEchoServer::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-PscUdpGroupEchoServer::StartApplication (void)
+UdpGroupEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO ("Starting PscUdpGroupEchoServer with SessionTime: " << m_timeout);
+  NS_LOG_INFO ("Starting UdpGroupEchoServer with SessionTime: " << m_timeout);
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -160,12 +162,12 @@ PscUdpGroupEchoServer::StartApplication (void)
         }
     }
 
-  m_socket->SetRecvCallback (MakeCallback (&PscUdpGroupEchoServer::HandleRead, this));
-  m_socket6->SetRecvCallback (MakeCallback (&PscUdpGroupEchoServer::HandleRead, this));
+  m_socket->SetRecvCallback (MakeCallback (&UdpGroupEchoServer::HandleRead, this));
+  m_socket6->SetRecvCallback (MakeCallback (&UdpGroupEchoServer::HandleRead, this));
 }
 
 void
-PscUdpGroupEchoServer::StopApplication ()
+UdpGroupEchoServer::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -182,7 +184,7 @@ PscUdpGroupEchoServer::StopApplication ()
 }
 
 void
-PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
+UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 
@@ -425,7 +427,7 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 }
 
 void
-PscUdpGroupEchoServer::PrintClients (void)
+UdpGroupEchoServer::PrintClients (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
@@ -455,4 +457,5 @@ PscUdpGroupEchoServer::PrintClients (void)
     }
 }
 
+} // Namespace psc
 } // Namespace ns3

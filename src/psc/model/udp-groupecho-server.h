@@ -19,8 +19,8 @@
  * is derived from udp-echo-server.h originally authored by University of Washington.
  */
 
-#ifndef PSC_UDP_GROUPECHO_SERVER_H
-#define PSC_UDP_GROUPECHO_SERVER_H
+#ifndef UDP_GROUPECHO_SERVER_H
+#define UDP_GROUPECHO_SERVER_H
 
 #include "ns3/application.h"
 #include "ns3/event-id.h"
@@ -40,6 +40,8 @@ namespace ns3 {
 class Socket;
 class Packet;
 
+namespace psc {
+
 /**
  * Structure to store information about the client
  */
@@ -51,17 +53,16 @@ struct client
 };
 
 /**
- * \ingroup applications
- * \defgroup groupudpecho GroupUdpEcho
+ * \defgroup psc Public Safety Communications
  */
 
 /**
- * \ingroup groupudpecho
+ * \ingroup psc
  * \brief A Udp Group Echo server
  *
  * Every packet received is sent back to active group members.
  */
-class PscUdpGroupEchoServer : public Application
+class UdpGroupEchoServer : public Application
 {
 public:
   /**
@@ -69,8 +70,8 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  PscUdpGroupEchoServer ();
-  virtual ~PscUdpGroupEchoServer ();
+  UdpGroupEchoServer ();
+  virtual ~UdpGroupEchoServer ();
   /**
    * Adds a new client to the list of clients to echo messages
    * \param client The new client to add
@@ -106,7 +107,8 @@ private:
 
 };
 
+} // namespace psc
 } // namespace ns3
 
-#endif /* PSC_UDP_GROUPECHO_SERVER_H */
+#endif /* UDP_GROUPECHO_SERVER_H */
 

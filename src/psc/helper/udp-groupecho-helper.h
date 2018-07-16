@@ -20,7 +20,7 @@
  * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
  *
  *
- * PscUdpGroupEchoServer offers different modes of operation
+ * UdpGroupEchoServer offers different modes of operation
  * by setting the session timeout time accordingly:
  *       INF_SESSION - Session last infinitely
  *  NO_GROUP_SESSION - No group session.
@@ -44,41 +44,42 @@
 #include "ns3/ipv6-address.h"
 
 namespace ns3 {
+namespace psc {
 
 /**
  * \ingroup udpecho
  * \brief Create a server application which waits for input UDP packets
  *        and sends them back to the original sender.
  */
-class PscUdpGroupEchoServerHelper
+class UdpGroupEchoServerHelper
 {
 public:
   /**
-   * Create PscUdpGroupEchoServerHelper which will make life easier for people trying
+   * Create UdpGroupEchoServerHelper which will make life easier for people trying
    * to set up simulations with echos. Session time is set to 0. Equivalent to UdpEchoServer.
    *
    * \param port The port the server will wait on for incoming packets
    */
-  PscUdpGroupEchoServerHelper (uint16_t port);
+  UdpGroupEchoServerHelper (uint16_t port);
 
   /**
-   * Create PscUdpGroupEchoServerHelper which will make life easier for people trying
+   * Create UdpGroupEchoServerHelper which will make life easier for people trying
    * to set up simulations with echos.
    *
    * \param port The port the server will wait on for incoming packets
    * \param stime Inactive client session expiration time (seconds).
    */
-  PscUdpGroupEchoServerHelper (uint16_t port, double stime);
+  UdpGroupEchoServerHelper (uint16_t port, double stime);
 
   /**
-   * Create PscUdpGroupEchoServerHelper which will make life easier for people trying
+   * Create UdpGroupEchoServerHelper which will make life easier for people trying
    * to set up simulations with echos.
    *
    * \param port The port the server will wait on for incoming packets
    * \param stime Inactive client session expiration time (seconds).
    * \param echoback Sets the server to echoback source client.
    */
-  PscUdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback);
+  UdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback);
 
   /**
    * Record an attribute to be set in each Application after it is is created.
@@ -134,6 +135,7 @@ private:
   ObjectFactory m_factory; //!< Object factory.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* PSC_UDP_GROUPECHO_HELPER_H */
