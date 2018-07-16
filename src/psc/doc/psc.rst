@@ -1,4 +1,4 @@
-Example Module Documentation
+Public Safety Communications
 ----------------------------
 
 .. include:: replace.txt
@@ -10,89 +10,88 @@ Example Module Documentation
    ============= Subsection (#.#.#)
    ############# Paragraph (no number)
 
-This is a suggested outline for adding new module documentation to |ns3|.
-See ``src/click/doc/click.rst`` for an example.
+|ns3| support for public safety communications (PSC) is based on 
+relatively new capabilities for 4G LTE systems introduced in 3GPP Release 12
+and later releases.  Device-to-Device (D2D) Proximity Services (ProSe)
+communications are terms relating to features allowing for UEs to discover
+each other, synchronize, and communicate with each other, without
+the use of an eNodeB.  These services make use of a so-called `sidelink`
+channel between UEs.
 
-The introductory paragraph is for describing what this code is trying to
-model.
+Support for public safety communications is distributed among the following
+four |ns3| modules:
 
-For consistency (italicized formatting), please use |ns3| to refer to
-ns-3 in the documentation (and likewise, |ns2| for ns-2).  These macros
-are defined in the file ``replace.txt``.
+1) ``psc``:  (this module)  Support for models and scenarios that are specific to public safety communications.
+2) ``lte``:  Support for ProSe (sidelink communications).
+3) ``buildings``:  Support for pathloss models including building effects, as defined by 3GPP with relevance to public safety scenarios.
+4) ``antenna``: Parabolic antenna model as described in 3GPP document TR 36.814
+
+All of the above mentioned features are based on development led by the
+Wireless Networks Division of the U.S. National Institute of Standards
+and Technology, described in publications ([Rou16]_ and  [Rou17]_).  
+
+Documentation for the PSC features implemented in the |ns3| ``lte``, ``buildings``, and ``antenna`` modules is provided in the respective 
+module documentation.  This chapter documents the |ns3| ``psc`` module.
+
+At present, the majority of the code related to public safety communications is
+found in the ProSe implementation in the ``lte`` module.  This is because
+the ProSe services of sidelink communications, discovery, and synchronization
+are deeply connected to the LTE models and difficult to factor into a
+separate module.   Features intrisic to the low-level operation of ProSe in 
+LTE are found in the ``lte`` module. 
+
+There is no support for legacy public safety communications such as land
+mobile radio system (LMRS), and only IPv4 (and not IPv6) is presently
+supported.
+
+Future extensions to this module or other related modules such as LTE are planned for the following features:
+
+1) mission-critical push-to-talk (MCPTT) and possibly other public safety applications
+2) UE-to-network relay
+3) public safety scenario support code and example programs
 
 Model Description
 *****************
 
-The source code for the new module lives in the directory ``src/psc``.
+The source code for the PSC module lives in the directory ``src/psc``.
 
-Add here a basic description of what is being modeled.
+::
+
+  /* Placeholder for UdpGroupEcho description */
 
 Design
 ======
 
-Briefly describe the software design of the model and how it fits into 
-the existing ns-3 architecture. 
+::
+
+  /* Placeholder for UdpGroupEcho */
 
 Scope and Limitations
 =====================
 
-What can the model do?  What can it not do?  Please use this section to
-describe the scope and limitations of the model.
+::
+
+  /* Placeholder for UdpGroupEcho */
 
 References
 ==========
 
-Add academic citations here, such as if you published a paper on this
-model, or if readers should read a particular specification or other work.
+.. [Rou16] Rouil, R., Cintrón, F.J., Ben Mosbah, A. and Gamboa, S.,
+   `"An LTE Device-to-Device module for ns-3 "
+   <https://www.nist.gov/publications/lte-device-device-module-ns-3/>`_,
+   in Proceedings of the Workshop on ns-3, 15-16 June 2016, Seattle
+   (Washington).
+
+.. [Rou17] Rouil, R., Cintrón, F.J., Ben Mosbah, A. and Gamboa, S.,
+   `"Implementation and Validation of an LTE D2D Model for ns-3"
+   <https://www.nist.gov/publications/implementation-and-validation-lte-d2d-model-ns-3/>`_,
+   in Proceedings of the Workshop on ns-3, 13-14 June 2017, Porto
+   (Portugal).
 
 Usage
 *****
 
-This section is principally concerned with the usage of your model, using
-the public API.  Focus first on most common usage patterns, then go
-into more advanced topics.
+::
 
-Building New Module
-===================
+  /* Point to examples; cross-reference where needed */
 
-Include this subsection only if there are special build instructions or
-platform limitations.
-
-Helpers
-=======
-
-What helper API will users typically use?  Describe it here.
-
-Attributes
-==========
-
-What classes hold attributes, and what are the key ones worth mentioning?
-
-Output
-======
-
-What kind of data does the model generate?  What are the key trace
-sources?   What kind of logging output can be enabled?
-
-Advanced Usage
-==============
-
-Go into further details (such as using the API outside of the helpers)
-in additional sections, as needed.
-
-Examples
-========
-
-What examples using this new code are available?  Describe them here.
-
-Troubleshooting
-===============
-
-Add any tips for avoiding pitfalls, etc.
-
-Validation
-**********
-
-Describe how the model has been tested/validated.  What tests run in the
-test suite?  How much API and code is covered by the tests?  Again, 
-references to outside published work may help here.
