@@ -14,7 +14,7 @@ Public Safety Communications
 relatively new capabilities for 4G LTE systems introduced in 3GPP Release 12
 and later releases.  Device-to-Device (D2D) Proximity Services (ProSe)
 communications are terms relating to features allowing for UEs to discover
-each other, synchronize, and communicate with each other, without
+each other, synchronize, and communicate with each other, with or without
 the use of an eNodeB.  These services make use of a so-called `sidelink`
 channel between UEs.
 
