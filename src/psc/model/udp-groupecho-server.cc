@@ -92,16 +92,16 @@ UdpGroupEchoServer::~UdpGroupEchoServer ()
 void
 UdpGroupEchoServer::AddClient (const Address& address)
 {
-  client src_client;
+  UdpGroupEchoClient src_client;
   std::ostringstream os;
   InetSocketAddress clientAddress = InetSocketAddress::ConvertFrom (address);
 
   os << clientAddress.GetIpv4 () << ":" << clientAddress.GetPort ();
   std::string ipaddrskey = os.str ();
 
-  src_client.addrs = address;
-  src_client.echo_addrs = InetSocketAddress (clientAddress.GetIpv4 (), m_port_client);
-  src_client.tstamp = Simulator::Now ();
+  src_client.m_address = address;
+  src_client.m_echo_address = InetSocketAddress (clientAddress.GetIpv4 (), m_port_client);
+  src_client.m_timestamp = Simulator::Now ();
 
   m_clients[ipaddrskey] = src_client;
 
@@ -189,11 +189,11 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
 
   Ptr<Packet> packet;
-  Address from, echo_addrs;
-  std::map<std::string,client>::iterator it, tempit;
+  Address from, echo_address;
+  std::map<std::string, UdpGroupEchoClient>::iterator it, tempit;
   std::string ipaddrskey;
   std::ostringstream os;
-  client src_client;
+  UdpGroupEchoClient src_client;
   double lapse;
 
   while ((packet = socket->RecvFrom (from)))
@@ -209,7 +209,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
           InetSocketAddress inet_addrs = InetSocketAddress::ConvertFrom (from);
           inet_addrs.SetPort (m_port_client);
-          echo_addrs = inet_addrs;
+          echo_address = inet_addrs;
         }
       else if (Inet6SocketAddress::IsMatchingType (from))
         {
@@ -220,7 +220,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
           Inet6SocketAddress inet6_addrs = Inet6SocketAddress::ConvertFrom (from);
           inet6_addrs.SetPort (m_port_client);
-          echo_addrs = inet6_addrs;
+          echo_address = inet6_addrs;
         }
 
 
@@ -238,16 +238,15 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
       if (it != m_clients.end ())
         {
           // Client is a group member. Udate timestamp.
-          NS_LOG_DEBUG ("Client found; old timestamp: " << it->second.tstamp.GetSeconds ());
-          it->second.tstamp = Simulator::Now ();
-          NS_LOG_DEBUG ("New timestamp: " << it->second.tstamp.GetSeconds ());
+          NS_LOG_DEBUG ("Client found; old timestamp: " << it->second.m_timestamp.GetSeconds ());
+          it->second.m_timestamp = Simulator::Now ();
+          NS_LOG_DEBUG ("New timestamp: " << it->second.m_timestamp.GetSeconds ());
         }
       else // Add client to group
         {
-          //client src_client;
-          src_client.addrs = from;
-          src_client.echo_addrs = echo_addrs;
-          src_client.tstamp = Simulator::Now ();
+          src_client.m_address = from;
+          src_client.m_echo_address = echo_address;
+          src_client.m_timestamp = Simulator::Now ();
           m_clients[ipaddrskey] = src_client;
         }
 
@@ -280,16 +279,16 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
 
               // Check elapsed time
-              lapse = Simulator::Now ().GetSeconds () - it->second.tstamp.GetSeconds ();
+              lapse = Simulator::Now ().GetSeconds () - it->second.m_timestamp.GetSeconds ();
 
               // Set destination address with the agreed client port.
               if (m_port_client != 0)
                 {
-                  addrs_dest = it->second.echo_addrs;
+                  addrs_dest = it->second.m_echo_address;
                 }
               else
                 {
-                  addrs_dest = it->second.addrs;
+                  addrs_dest = it->second.m_address;
                 }
 
               // Forward packet
@@ -327,11 +326,11 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
               // Set destination address with the agreed client port.
               if (m_port_client != 0)
                 {
-                  addrs_dest = it->second.echo_addrs;
+                  addrs_dest = it->second.m_echo_address;
                 }
               else
                 {
-                  addrs_dest = it->second.addrs;
+                  addrs_dest = it->second.m_address;
                 }
 
               // Forward packet
@@ -374,18 +373,18 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
 
               // Check elapsed time
-              lapse = Simulator::Now ().GetSeconds () - it->second.tstamp.GetSeconds ();
+              lapse = Simulator::Now ().GetSeconds () - it->second.m_timestamp.GetSeconds ();
 
               if (lapse < m_timeout)
                 {
                   // Set destination address with the agreed client port.
                   if (m_port_client != 0)
                     {
-                      addrs_dest = it->second.echo_addrs;
+                      addrs_dest = it->second.m_echo_address;
                     }
                   else
                     {
-                      addrs_dest = it->second.addrs;
+                      addrs_dest = it->second.m_address;
                     }
 
                   // Forward packet
@@ -440,10 +439,10 @@ UdpGroupEchoServer::PrintClients (void)
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
       NS_LOG_INFO (std::setw (23) << "Client  " << std::setw (10) << "Session");
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
-      for (std::map<std::string,client>::iterator it = m_clients.begin ();
+      for (std::map<std::string, UdpGroupEchoClient>::iterator it = m_clients.begin ();
            it != m_clients.end (); ++it)
         {
-          lapse = tstamp - it->second.tstamp.GetSeconds ();
+          lapse = tstamp - it->second.m_timestamp.GetSeconds ();
           if (m_timeout < 0 || lapse < m_timeout)
             {
               NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse);

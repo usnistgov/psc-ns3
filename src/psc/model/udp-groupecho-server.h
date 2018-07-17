@@ -23,14 +23,12 @@
 #define UDP_GROUPECHO_SERVER_H
 
 #include "ns3/application.h"
-#include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/address.h"
-#include "ns3/timer.h"
 #include "ns3/nstime.h"
+#include "ns3/traced-callback.h"
 #include <map>
 #include <string>
-#include "ns3/traced-callback.h"
 
 #define INF_SESSION -1
 #define NO_GROUP_SESSION 0
@@ -45,11 +43,11 @@ namespace psc {
 /**
  * Structure to store information about the client
  */
-struct client
+struct UdpGroupEchoClient
 {
-  Address addrs; //!< The remote address of the client
-  Address echo_addrs; //!< The address where to send a response
-  Time tstamp; //!< Last time the server heard from the client
+  Address m_address; //!< The remote address of the client
+  Address m_echo_address; //!< The address where to send a response
+  Time m_timestamp; //!< Last time the server heard from the client
 };
 
 /**
@@ -74,7 +72,7 @@ public:
   virtual ~UdpGroupEchoServer ();
   /**
    * Adds a new client to the list of clients to echo messages
-   * \param client The new client to add
+   * \param client The new client address to add
    */
   virtual void AddClient (const Address& client);
 
@@ -100,7 +98,7 @@ private:
   Ptr<Socket> m_socket; ///< IPv4 Socket
   Ptr<Socket> m_socket6; ///< IPv6 Socket
   Address m_local; ///< local multicast address
-  std::map<std::string,client> m_clients; ///< Group of clients
+  std::map<std::string, UdpGroupEchoClient> m_clients; ///< Group of clients
   double  m_timeout; ///< Inactive client session expiration time <seconds>.
   bool m_echoback; ///< Set server to echo back the client.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace; ///< Callbacks for tracing the packet Rx events
