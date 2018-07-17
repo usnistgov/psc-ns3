@@ -51,7 +51,7 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-profiling.rst \
 	$(SRC)/lte/doc/source/lte-references.rst \
 	$(SRC)/propagation/doc/propagation.rst \
-	$(SRC)/psc/doc/psc.rst \
+	$(SRC)/psc/doc/source/psc.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
 	$(SRC)/network/doc/error-model.rst \
