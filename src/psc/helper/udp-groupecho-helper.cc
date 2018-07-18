@@ -21,10 +21,10 @@
  */
 
 #include "udp-groupecho-helper.h"
-#include "ns3/udp-groupecho-server.h"
 #include "ns3/uinteger.h"
 #include "ns3/names.h"
 #include "ns3/boolean.h"
+#include "ns3/enum.h"
 
 namespace ns3 {
 namespace psc {
@@ -42,11 +42,12 @@ UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, double stime)
   SetAttribute ("Timeout", DoubleValue (stime));
 }
 
-UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, double stime, UdpGroupEchoServer::Mode_t mode, bool echoback)
 {
   m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
   SetAttribute ("Timeout", DoubleValue (stime));
+  SetAttribute ("Mode", EnumValue (mode));
   SetAttribute ("Echo", BooleanValue (echoback));
 }
 

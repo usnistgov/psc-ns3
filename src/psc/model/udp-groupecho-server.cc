@@ -35,6 +35,7 @@
 #include "ns3/double.h"
 #include <iomanip>
 #include "ns3/boolean.h"
+#include "ns3/enum.h"
 
 #include "udp-groupecho-server.h"
 #include <sstream>
@@ -46,6 +47,28 @@ NS_LOG_COMPONENT_DEFINE ("UdpGroupEchoServerApplication");
 namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (UdpGroupEchoServer);
+
+// For pretty-printing of mode in logging statements below
+std::string
+ModeToString (UdpGroupEchoServer::Mode_t mode)
+{
+  if (mode == UdpGroupEchoServer::INF_SESSION)
+    {
+      return "INF_SESSION";
+    }
+  else if (mode == UdpGroupEchoServer::NO_GROUP_SESSION)
+    {
+      return "INF_SESSION";
+    }
+  else if (mode == UdpGroupEchoServer::TIMEOUT_LIMITED)
+    {
+      return "TIMEOUT_LIMITED";
+    }
+  else
+    {
+      return "UNKNOWN";
+    }
+}
 
 TypeId
 UdpGroupEchoServer::GetTypeId (void)
@@ -62,6 +85,12 @@ UdpGroupEchoServer::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&UdpGroupEchoServer::m_port_client),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("Mode", "Determines the mode of echo operation",
+                   EnumValue (Mode_t::NO_GROUP_SESSION),
+                   MakeEnumAccessor (&UdpGroupEchoServer::m_mode),
+                   MakeEnumChecker (Mode_t::INF_SESSION, "InfSession",
+                                    Mode_t::NO_GROUP_SESSION, "NoGroupSession",
+                                    Mode_t::TIMEOUT_LIMITED, "TimeoutLimited"))
     .AddAttribute ("Timeout", "Inactive client session expiration time <seconds>.\nSessionTime  < 0 : Server echoes group clients indefinitely\nSessionTime == 0 : Server echoes single client (Default)\nSessionTime  > 0 : Server forwards packets to group. Session timeout units are seconds.",
                    DoubleValue (0),
                    MakeDoubleAccessor (&UdpGroupEchoServer::m_timeout),
@@ -119,7 +148,7 @@ void
 UdpGroupEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO ("Starting UdpGroupEchoServer with SessionTime: " << m_timeout);
+  NS_LOG_INFO ("Starting UdpGroupEchoServer with mode " << ModeToString (m_mode) << " session time " << m_timeout);
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -260,13 +289,13 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
        * If timestamp has expired, remove client.
        * Else, echo/fwd packet to client.*/
 
-      /* m_timeout  < 0 : Server serves group clients indefinitely
-       * m_timeout == 0 : Server behaves as single echo-client (no group echo)
-       * m_timeout  > 0 : Server group echo clients that have been active within
+      /* m_mode == INF_SESSION      : Server serves group clients indefinitely
+       * m_mode == NO_GROUP_SESSION : Server behaves as single echo-client (no group echo)
+       * m_mode == TIMEOUT_LIMITED  : Server group echo clients that have been active within
        *                 the m_timeout elapsed time.
        */
       Address addrs_dest;
-      if (m_timeout < 0)
+      if (m_mode == INF_SESSION)
         {
           // Server serves group clients indefinitely.
           for (it = m_clients.begin ();
@@ -317,7 +346,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
             }
         }
-      else if (m_timeout == 0)
+      else if (m_mode == NO_GROUP_SESSION)
         {
           // Only one client allowed in group.
           it = m_clients.find (ipaddrskey);
@@ -361,7 +390,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
           // Remove client
           m_clients.erase (it);
         }
-      else //if (m_timeout > 0)
+      else //if (m_mode == TIMEOUT_LIMITED)
         {
           for (it = m_clients.begin ();
                it != m_clients.end (); ++it)
@@ -443,7 +472,9 @@ UdpGroupEchoServer::PrintClients (void)
            it != m_clients.end (); ++it)
         {
           lapse = tstamp - it->second.m_timestamp.GetSeconds ();
-          if (m_timeout < 0 || lapse < m_timeout)
+          if (m_mode == INF_SESSION || 
+              m_mode == NO_GROUP_SESSION || 
+              (m_mode == TIMEOUT_LIMITED && lapse < m_timeout))
             {
               NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse);
             }

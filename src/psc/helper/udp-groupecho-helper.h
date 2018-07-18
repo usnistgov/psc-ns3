@@ -21,12 +21,12 @@
  *
  *
  * UdpGroupEchoServer offers different modes of operation
- * by setting the session timeout time accordingly:
+ * by setting the mode accordingly:
  *       INF_SESSION - Session last infinitely
  *  NO_GROUP_SESSION - No group session.
- *         <timeout> - Session timeout time in seconds.
+ *   TIMEOUT_LIMITED - Session timeout time in seconds.
  *
- * The server can be set to not echoback source client
+ * In addition, the server can be set to not echoback source client
  * (only forward packets to group) by setting the echoback parameter
  * to false.
  */
@@ -42,6 +42,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/udp-groupecho-server.h"
 
 namespace ns3 {
 namespace psc {
@@ -77,9 +78,10 @@ public:
    *
    * \param port The port the server will wait on for incoming packets
    * \param stime Inactive client session expiration time (seconds).
+   * \param mode Mode of echo operation.
    * \param echoback Sets the server to echoback source client.
    */
-  UdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback);
+  UdpGroupEchoServerHelper (uint16_t port, double stime, UdpGroupEchoServer::Mode_t mode, bool echoback);
 
   /**
    * Record an attribute to be set in each Application after it is is created.

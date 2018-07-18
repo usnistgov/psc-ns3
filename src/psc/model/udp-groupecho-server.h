@@ -30,9 +30,6 @@
 #include <map>
 #include <string>
 
-#define INF_SESSION -1
-#define NO_GROUP_SESSION 0
-
 namespace ns3 {
 
 class Socket;
@@ -68,6 +65,17 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+
+  /**
+   * \brief Mode of echo operation
+   */
+  typedef enum
+  {
+    INF_SESSION,       /**<  Group echo with no session expiration time */
+    NO_GROUP_SESSION,  /**<  Server echoes single client only           */
+    TIMEOUT_LIMITED    /**<  Server forwards to group within timeout    */
+  } Mode_t ;
+
   UdpGroupEchoServer ();
   virtual ~UdpGroupEchoServer ();
   /**
@@ -93,6 +101,7 @@ private:
   void HandleRead (Ptr<Socket> socket);
   void PrintClients (void);
 
+  Mode_t m_mode; ///< Mode of echo operation
   uint16_t m_port; ///< Port on which we listen for incoming packets.
   uint16_t m_port_client; ///< Port on which we echo packets to client.
   Ptr<Socket> m_socket; ///< IPv4 Socket

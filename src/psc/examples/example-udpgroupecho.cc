@@ -47,10 +47,10 @@
 
 // Example of udp group echo server with ON-OFF clients.
 // UdpGroupEchoServer offers different modes of operation
-// by setting the session timeout time accordingly:
+// by setting the mode accordingly:
 //       INF_SESSION - Session last infinitely
 //  NO_GROUP_SESSION - No group session.
-//         <timeout> - Session timeout time in seconds.
+//   TIMEOUT_LIMITED - Group echo with session timeout time
 //
 // The server can be set to not echoback source client
 // with the echoback parameter set to false.
@@ -117,10 +117,12 @@ main (int argc, char *argv[])
 
   // Server
   uint16_t serverPort = 9;
-  // Set the session timeout time in seconds, else INF_SESSION or NO_GROUP_SESSION
-  double timeout = INF_SESSION;
+  // Set the session timeout time in seconds
+  double timeout = 0;
+  // Set the echo mode 
+  UdpGroupEchoServer::Mode_t mode = UdpGroupEchoServer::INF_SESSION;
   bool echoback = false;
-  UdpGroupEchoServerHelper echoServer (serverPort, timeout, echoback);
+  UdpGroupEchoServerHelper echoServer (serverPort, timeout, mode, echoback);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma - 1));
   serverApps.Start (Seconds (1.0));
