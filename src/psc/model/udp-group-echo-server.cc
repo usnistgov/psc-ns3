@@ -91,10 +91,10 @@ UdpGroupEchoServer::GetTypeId (void)
                    MakeEnumChecker (Mode_t::INF_SESSION, "InfSession",
                                     Mode_t::NO_GROUP_SESSION, "NoGroupSession",
                                     Mode_t::TIMEOUT_LIMITED, "TimeoutLimited"))
-    .AddAttribute ("Timeout", "Inactive client session expiration time <seconds>.\nSessionTime  < 0 : Server echoes group clients indefinitely\nSessionTime == 0 : Server echoes single client (Default)\nSessionTime  > 0 : Server forwards packets to group. Session timeout units are seconds.",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&UdpGroupEchoServer::m_timeout),
-                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Timeout", "Inactive client session expiration time",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&UdpGroupEchoServer::m_timeout),
+                   MakeTimeChecker ())
     .AddAttribute ("Echo", "Server echoes back client. True (default) | False",
                    BooleanValue (true),
                    MakeBooleanAccessor (&UdpGroupEchoServer::m_echoback),
@@ -148,7 +148,7 @@ void
 UdpGroupEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO ("Starting UdpGroupEchoServer with mode " << ModeToString (m_mode) << " session time " << m_timeout);
+  NS_LOG_INFO ("Starting UdpGroupEchoServer with mode " << ModeToString (m_mode) << " session time " << m_timeout.GetSeconds ());
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -223,7 +223,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
   std::string ipaddrskey;
   std::ostringstream os;
   UdpGroupEchoClient src_client;
-  double lapse;
+  Time lapse;
 
   while ((packet = socket->RecvFrom (from)))
     {
@@ -308,7 +308,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
 
               // Check elapsed time
-              lapse = Simulator::Now ().GetSeconds () - it->second.m_timestamp.GetSeconds ();
+              lapse = Simulator::Now () - it->second.m_timestamp;
 
               // Set destination address with the agreed client port.
               if (m_port_client != 0)
@@ -402,7 +402,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
 
               // Check elapsed time
-              lapse = Simulator::Now ().GetSeconds () - it->second.m_timestamp.GetSeconds ();
+              lapse = Simulator::Now () - it->second.m_timestamp;
 
               if (lapse < m_timeout)
                 {
@@ -463,24 +463,24 @@ UdpGroupEchoServer::PrintClients (void)
   if ( m_clients.size () > 0 )
     {
       // Check time lapse
-      double tstamp = Simulator::Now ().GetSeconds ();
-      double lapse;
+      Time tstamp = Simulator::Now ();
+      Time lapse;
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
       NS_LOG_INFO (std::setw (23) << "Client  " << std::setw (10) << "Session");
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
       for (std::map<std::string, UdpGroupEchoClient>::iterator it = m_clients.begin ();
            it != m_clients.end (); ++it)
         {
-          lapse = tstamp - it->second.m_timestamp.GetSeconds ();
+          lapse = tstamp - it->second.m_timestamp;
           if (m_mode == INF_SESSION || 
               m_mode == NO_GROUP_SESSION || 
               (m_mode == TIMEOUT_LIMITED && lapse < m_timeout))
             {
-              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse);
+              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse.GetSeconds ());
             }
           else
             {
-              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse << " **Session Expired!**");
+              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse.GetSeconds () << " **Session Expired!**");
             }
         }
       NS_LOG_INFO (std::setfill ('=') << std::setw (57) << "=" << std::setfill (' '));

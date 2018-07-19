@@ -117,8 +117,8 @@ main (int argc, char *argv[])
 
   // Server
   uint16_t serverPort = 9;
-  // Set the session timeout time in seconds
-  double timeout = 0;
+  // Set the session timeout time
+  Time timeout = Seconds (0);
   // Set the echo mode 
   UdpGroupEchoServer::Mode_t mode = UdpGroupEchoServer::INF_SESSION;
   bool echoback = false;

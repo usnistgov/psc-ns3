@@ -35,18 +35,18 @@ UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port)
   SetAttribute ("Port", UintegerValue (port));
 }
 
-UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, double stime)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirationTime)
 {
   m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
-  SetAttribute ("Timeout", DoubleValue (stime));
+  SetAttribute ("Timeout", TimeValue (expirationTime));
 }
 
-UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, double stime, UdpGroupEchoServer::Mode_t mode, bool echoback)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoback)
 {
   m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
-  SetAttribute ("Timeout", DoubleValue (stime));
+  SetAttribute ("Timeout", TimeValue (expirationTime));
   SetAttribute ("Mode", EnumValue (mode));
   SetAttribute ("Echo", BooleanValue (echoback));
 }

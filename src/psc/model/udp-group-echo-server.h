@@ -108,7 +108,7 @@ private:
   Ptr<Socket> m_socket6; ///< IPv6 Socket
   Address m_local; ///< local multicast address
   std::map<std::string, UdpGroupEchoClient> m_clients; ///< Group of clients
-  double  m_timeout; ///< Inactive client session expiration time <seconds>.
+  Time m_timeout; ///< Inactive client session expiration time
   bool m_echoback; ///< Set server to echo back the client.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace; ///< Callbacks for tracing the packet Rx events
 

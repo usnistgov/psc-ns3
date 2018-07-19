@@ -68,20 +68,20 @@ public:
    * to set up simulations with echos.
    *
    * \param port The port the server will wait on for incoming packets
-   * \param stime Inactive client session expiration time (seconds).
+   * \param expirationTime Inactive client session expiration time
    */
-  UdpGroupEchoServerHelper (uint16_t port, double stime);
+  UdpGroupEchoServerHelper (uint16_t port, Time expirationTime);
 
   /**
    * Create UdpGroupEchoServerHelper which will make life easier for people trying
    * to set up simulations with echos.
    *
    * \param port The port the server will wait on for incoming packets
-   * \param stime Inactive client session expiration time (seconds).
+   * \param expirationTime Inactive client session expiration time
    * \param mode Mode of echo operation.
    * \param echoback Sets the server to echoback source client.
    */
-  UdpGroupEchoServerHelper (uint16_t port, double stime, UdpGroupEchoServer::Mode_t mode, bool echoback);
+  UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoback);
 
   /**
    * Record an attribute to be set in each Application after it is is created.
