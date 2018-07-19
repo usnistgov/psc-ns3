@@ -37,7 +37,7 @@ source_suffix = '.rst'
 #source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'psc'
+master_doc = 'index'
 
 # General information about the project.
 project = u'PSC'
@@ -178,8 +178,12 @@ html_theme = 'default'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('psc', 'psc-module.tex', u'The ns-3 PSC Module Documentation', u'National Institute of Standards and Technology (NIST)', 'manual'),
+  ('psc', 'psc-module.tex', u'ns-3 Public Safety Communications', u'National Institute of Standards and Technology (NIST)', 'manual'),
 ]
+
+latex_elements = {
+  'classoptions': ',openany,oneside'
+}
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -215,6 +219,6 @@ pdf_break_level = 4
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'ns-3-model-library', u'ns-3 Model Library',
+    ('index', 'ns-3 PSC module', u'ns-3 PSC module',
      [u'ns-3 project'], 1)
 ]

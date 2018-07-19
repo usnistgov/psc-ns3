@@ -1,8 +1,4 @@
 
-:orphan: true
-
-.. only:: html or latex
-
 .. include:: replace.txt
 .. highlight:: cpp
 
@@ -12,11 +8,16 @@
    ============= Subsection (#.#.#)
    ############# Paragraph (no number)
 
-Public Safety Communications
-----------------------------
+UDP Group Echo
+**************
 
-.. toctree::
+Model Description
+=================
 
-   psc-design
-   udp-group-echo
-   psc-references
+Usage
+=====
+
+::
+
+  /* Point to examples; cross-reference where needed */
+
