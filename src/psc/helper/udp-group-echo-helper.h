@@ -26,8 +26,8 @@
  *  NO_GROUP_SESSION - No group session.
  *   TIMEOUT_LIMITED - Session timeout time in seconds.
  *
- * In addition, the server can be set to not echoback source client
- * (only forward packets to group) by setting the echoback parameter
+ * In addition, the server can be set to not echo back to the source client
+ * (only forward packets to group) by setting the echoClient parameter
  * to false.
  */
 
@@ -79,9 +79,9 @@ public:
    * \param port The port the server will wait on for incoming packets
    * \param expirationTime Inactive client session expiration time
    * \param mode Mode of echo operation.
-   * \param echoback Sets the server to echoback source client.
+   * \param echoClient Sets the server to echo back to the source client.
    */
-  UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoback);
+  UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoClient);
 
   /**
    * Record an attribute to be set in each Application after it is is created.

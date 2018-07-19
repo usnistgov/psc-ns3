@@ -52,8 +52,8 @@
 //  NO_GROUP_SESSION - No group session.
 //   TIMEOUT_LIMITED - Group echo with session timeout time
 //
-// The server can be set to not echoback source client
-// with the echoback parameter set to false.
+// The server can be set to not echo back to the source client
+// with the echoClient parameter set to false.
 
 // Network Topology (with at least 2 nodes)
 //
@@ -121,8 +121,8 @@ main (int argc, char *argv[])
   Time timeout = Seconds (0);
   // Set the echo mode 
   UdpGroupEchoServer::Mode_t mode = UdpGroupEchoServer::INF_SESSION;
-  bool echoback = false;
-  UdpGroupEchoServerHelper echoServer (serverPort, timeout, mode, echoback);
+  bool echoClient = false;
+  UdpGroupEchoServerHelper echoServer (serverPort, timeout, mode, echoClient);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma - 1));
   serverApps.Start (Seconds (1.0));

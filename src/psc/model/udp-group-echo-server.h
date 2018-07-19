@@ -109,7 +109,7 @@ private:
   Address m_local; ///< local multicast address
   std::map<std::string, UdpGroupEchoClient> m_clients; ///< Group of clients
   Time m_timeout; ///< Inactive client session expiration time
-  bool m_echoback; ///< Set server to echo back the client.
+  bool m_echoClient; ///< Set server to echo back to the client.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace; ///< Callbacks for tracing the packet Rx events
 
 };

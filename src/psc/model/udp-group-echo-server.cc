@@ -95,9 +95,10 @@ UdpGroupEchoServer::GetTypeId (void)
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&UdpGroupEchoServer::m_timeout),
                    MakeTimeChecker ())
-    .AddAttribute ("Echo", "Server echoes back client. True (default) | False",
+    .AddAttribute ("EchoClient", "Server echoes back to the sending client",
+
                    BooleanValue (true),
-                   MakeBooleanAccessor (&UdpGroupEchoServer::m_echoback),
+                   MakeBooleanAccessor (&UdpGroupEchoServer::m_echoClient),
                    MakeBooleanChecker ())
     .AddTraceSource ("Rx", "A packet has been received",
                      MakeTraceSourceAccessor (&UdpGroupEchoServer::m_rxTrace),
@@ -301,8 +302,8 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
           for (it = m_clients.begin ();
                it != m_clients.end (); ++it)
             {
-              // If no echo back, neglect client source
-              if (!m_echoback && it->first == ipaddrskey)
+              // If no echo back to client, neglect client source
+              if (!m_echoClient && it->first == ipaddrskey)
                 {
                   continue;
                 }
@@ -350,7 +351,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
         {
           // Only one client allowed in group.
           it = m_clients.find (ipaddrskey);
-          if (m_echoback)
+          if (m_echoClient)
             {
               // Set destination address with the agreed client port.
               if (m_port_client != 0)
@@ -396,7 +397,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                it != m_clients.end (); ++it)
             {
               // If no echo back, neglect client source
-              if (!m_echoback && it->first == ipaddrskey)
+              if (!m_echoClient && it->first == ipaddrskey)
                 {
                   continue;
                 }

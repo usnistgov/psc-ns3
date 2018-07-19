@@ -42,13 +42,13 @@ UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirati
   SetAttribute ("Timeout", TimeValue (expirationTime));
 }
 
-UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoback)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoClient)
 {
   m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
   SetAttribute ("Timeout", TimeValue (expirationTime));
   SetAttribute ("Mode", EnumValue (mode));
-  SetAttribute ("Echo", BooleanValue (echoback));
+  SetAttribute ("EchoClient", BooleanValue (echoClient));
 }
 
 void
