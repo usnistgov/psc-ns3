@@ -37,7 +37,7 @@
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
 
-#include "udp-groupecho-server.h"
+#include "udp-group-echo-server.h"
 #include <sstream>
 
 namespace ns3 {

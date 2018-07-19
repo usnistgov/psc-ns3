@@ -9,8 +9,8 @@
 def build(bld):
     module = bld.create_ns3_module('psc', ['network', 'antenna', 'buildings', 'lte'])
     module.source = [
-        'model/udp-groupecho-server.cc',
-        'helper/udp-groupecho-helper.cc',
+        'model/udp-group-echo-server.cc',
+        'helper/udp-group-echo-helper.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('psc')
@@ -20,8 +20,8 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'psc'
     headers.source = [
-        'model/udp-groupecho-server.h',
-        'helper/udp-groupecho-helper.h',
+        'model/udp-group-echo-server.h',
+        'helper/udp-group-echo-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

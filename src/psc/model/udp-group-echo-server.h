@@ -19,8 +19,8 @@
  * is derived from udp-echo-server.h originally authored by University of Washington.
  */
 
-#ifndef UDP_GROUPECHO_SERVER_H
-#define UDP_GROUPECHO_SERVER_H
+#ifndef UDP_GROUP_ECHO_SERVER_H
+#define UDP_GROUP_ECHO_SERVER_H
 
 #include "ns3/application.h"
 #include "ns3/ptr.h"
@@ -117,5 +117,5 @@ private:
 } // namespace psc
 } // namespace ns3
 
-#endif /* UDP_GROUPECHO_SERVER_H */
+#endif /* UDP_GROUP_ECHO_SERVER_H */
 

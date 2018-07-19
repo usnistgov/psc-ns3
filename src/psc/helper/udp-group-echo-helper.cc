@@ -20,7 +20,7 @@
  * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
  */
 
-#include "udp-groupecho-helper.h"
+#include "udp-group-echo-helper.h"
 #include "ns3/uinteger.h"
 #include "ns3/names.h"
 #include "ns3/boolean.h"

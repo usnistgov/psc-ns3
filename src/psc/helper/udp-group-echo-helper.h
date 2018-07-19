@@ -31,8 +31,8 @@
  * to false.
  */
 
-#ifndef PSC_UDP_GROUPECHO_HELPER_H
-#define PSC_UDP_GROUPECHO_HELPER_H
+#ifndef PSC_UDP_GROUP_ECHO_HELPER_H
+#define PSC_UDP_GROUP_ECHO_HELPER_H
 
 #include <stdint.h>
 #include "ns3/integer.h"
@@ -42,7 +42,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
-#include "ns3/udp-groupecho-server.h"
+#include "ns3/udp-group-echo-server.h"
 
 namespace ns3 {
 namespace psc {
@@ -140,4 +140,4 @@ private:
 } // namespace psc
 } // namespace ns3
 
-#endif /* PSC_UDP_GROUPECHO_HELPER_H */
+#endif /* PSC_UDP_GROUP_ECHO_HELPER_H */
