@@ -58,7 +58,7 @@
 // Network Topology (with at least 2 nodes)
 //
 //  *    *
-// n0   n1   ... nExtra-1  nExtra
+// n0   n1   ... n(nExtra)  n(1+nExtra)
 //  |    |    |    |         |
 //  ==========================
 //     LAN 10.1.2.0
@@ -74,12 +74,18 @@ main (int argc, char *argv[])
 {
   bool verbose = true;
   bool enablePcap = false;
+  bool echoClient = true;
+  Time timeout = Seconds (0);
+  std::string mode ("InfSession");
   uint32_t nCsma = 2;
   uint32_t nExtra = 0;
   double simTime = 10;
 
   CommandLine cmd;
   cmd.AddValue ("nExtra", "Number of \"extra\" CSMA nodes/devices", nExtra);
+  cmd.AddValue ("echoClient", "Set EchoClient attribute", echoClient);
+  cmd.AddValue ("mode", "Set Mode attribute (InfSession|NoGroupSession|TimeoutLimited)", mode);
+  cmd.AddValue ("timeout", "Set Timeout attribute", timeout);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
   cmd.AddValue ("enablePcap", "Enable PCAP file output", enablePcap);
   cmd.AddValue ("time", "Simulation time", simTime);
@@ -117,12 +123,11 @@ main (int argc, char *argv[])
 
   // Server
   uint16_t serverPort = 9;
-  // Set the session timeout time
-  Time timeout = Seconds (0);
-  // Set the echo mode 
-  UdpGroupEchoServer::Mode_t mode = UdpGroupEchoServer::INF_SESSION;
-  bool echoClient = false;
-  UdpGroupEchoServerHelper echoServer (serverPort, timeout, mode, echoClient);
+  // Attributes 'timeout', 'mode', 'echoClient' may be set above
+  UdpGroupEchoServerHelper echoServer (serverPort);
+  echoServer.SetAttribute ("Timeout", TimeValue (timeout));
+  echoServer.SetAttribute ("Mode", StringValue (mode));
+  echoServer.SetAttribute ("EchoClient", BooleanValue (echoClient));
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma - 1));
   serverApps.Start (Seconds (1.0));
@@ -138,30 +143,29 @@ main (int argc, char *argv[])
   offRv->SetAttribute ("Mean", DoubleValue (0.8333));
   //offRv->SetAttribute ("Bound", DoubleValue (40.0));
 
-  //DataRate[bps]=Payload[bits] * PacketRate[per second] = 16400
-  //EncoderFrameLength=20ms
-  //PacketRate= 1/EncoderFrameLength[ms] = 50
-  OnOffHelper clientONOFFHelper ("ns3::UdpSocketFactory", Address (InetSocketAddress (csmaInterfaces.GetAddress (nCsma - 1), serverPort)));
-  clientONOFFHelper.SetAttribute ("PacketSize", UintegerValue (41)); //Bytes
-  clientONOFFHelper.SetAttribute ("DataRate", DataRateValue (16400)); //bps
-  clientONOFFHelper.SetAttribute ("OnTime", PointerValue (onRv));
-  clientONOFFHelper.SetAttribute ("OffTime", PointerValue (offRv));
+  OnOffHelper clientOnOffHelper ("ns3::UdpSocketFactory", Address (InetSocketAddress (csmaInterfaces.GetAddress (nCsma - 1), serverPort)));
+  clientOnOffHelper.SetAttribute ("PacketSize", UintegerValue (41)); //Bytes
+  clientOnOffHelper.SetAttribute ("DataRate", DataRateValue (16400)); //bps
+  clientOnOffHelper.SetAttribute ("OnTime", PointerValue (onRv));
+  clientOnOffHelper.SetAttribute ("OffTime", PointerValue (offRv));
 
   NodeContainer clientNodes;
-  clientNodes.Add (csmaNodes.Get (0));
-  clientNodes.Add (csmaNodes.Get (1));
+  for (uint32_t i = 0; i < csmaNodes.GetN () - 1; i++)
+    {
+      clientNodes.Add (csmaNodes.Get (i));
+    }
 
-  ApplicationContainer clientONOFFApps = clientONOFFHelper.Install (clientNodes);
-  clientONOFFApps.Start (Seconds (2.0));
-  clientONOFFApps.Stop (Seconds (simTime));
+  ApplicationContainer clientOnOffApps = clientOnOffHelper.Install (clientNodes);
+  clientOnOffApps.Start (Seconds (2.0));
+  clientOnOffApps.Stop (Seconds (simTime));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   if (enablePcap)
     {
-      csma.EnablePcap ("udpgroupecho-client", clientNodes.Get (0)->GetId (),0);
-      csma.EnablePcap ("udpgroupecho-client", clientNodes.Get (1)->GetId (),0);
-      csma.EnablePcap ("udpgroupecho-server", csmaNodes.Get (nCsma - 1)->GetId (),0);
+      csma.EnablePcap ("udp-group-echo-client", clientNodes.Get (0)->GetId (),0);
+      csma.EnablePcap ("udp-group-echo-client", clientNodes.Get (1)->GetId (),0);
+      csma.EnablePcap ("udp-group-echo-server", csmaNodes.Get (nCsma - 1)->GetId (),0);
     }
 
   Simulator::Stop (Seconds (simTime));
