@@ -9,7 +9,7 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("example-udpgroupecho --nExtra=0 --verbose=1 --time=10", "True", "True"),
+    ("example-udp-group-echo --nExtra=0 --verbose=1 --time=10", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

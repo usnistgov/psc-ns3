@@ -44,6 +44,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    openflow-switch
    point-to-point
    propagation
+   psc
    spectrum
    sixlowpan
    tap

@@ -35,52 +35,84 @@
 #include "ns3/double.h"
 #include <iomanip>
 #include "ns3/boolean.h"
+#include "ns3/enum.h"
 
-#include "psc-udp-groupecho-server.h"
+#include "udp-group-echo-server.h"
 #include <sstream>
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PscUdpGroupEchoServerApplication");
+NS_LOG_COMPONENT_DEFINE ("UdpGroupEchoServerApplication");
 
-NS_OBJECT_ENSURE_REGISTERED (PscUdpGroupEchoServer);
+namespace psc {
+
+NS_OBJECT_ENSURE_REGISTERED (UdpGroupEchoServer);
+
+// For pretty-printing of mode in logging statements below
+std::string
+ModeToString (UdpGroupEchoServer::Mode_t mode)
+{
+  if (mode == UdpGroupEchoServer::INF_SESSION)
+    {
+      return "INF_SESSION";
+    }
+  else if (mode == UdpGroupEchoServer::NO_GROUP_SESSION)
+    {
+      return "INF_SESSION";
+    }
+  else if (mode == UdpGroupEchoServer::TIMEOUT_LIMITED)
+    {
+      return "TIMEOUT_LIMITED";
+    }
+  else
+    {
+      return "UNKNOWN";
+    }
+}
 
 TypeId
-PscUdpGroupEchoServer::GetTypeId (void)
+UdpGroupEchoServer::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::PscUdpGroupEchoServer")
+  static TypeId tid = TypeId ("ns3::psc::UdpGroupEchoServer")
     .SetParent<Application> ()
-    .AddConstructor<PscUdpGroupEchoServer> ()
+    .SetGroupName ("Psc")
+    .AddConstructor<UdpGroupEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
                    UintegerValue (9),
-                   MakeUintegerAccessor (&PscUdpGroupEchoServer::m_port),
+                   MakeUintegerAccessor (&UdpGroupEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("EchoPort", "Port on which we echo packets to client.",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&PscUdpGroupEchoServer::m_port_client),
+                   MakeUintegerAccessor (&UdpGroupEchoServer::m_port_client),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("Timeout", "Inactive client session expiration time <seconds>.\nSessionTime  < 0 : Server echoes group clients indefinitely\nSessionTime == 0 : Server echoes single client (Default)\nSessionTime  > 0 : Server forwards packets to group. Session timeout units are seconds.",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&PscUdpGroupEchoServer::m_timeout),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("Echo", "Server echoes back client. True (default) | False",
+    .AddAttribute ("Mode", "Determines the mode of echo operation",
+                   EnumValue (Mode_t::NO_GROUP_SESSION),
+                   MakeEnumAccessor (&UdpGroupEchoServer::m_mode),
+                   MakeEnumChecker (Mode_t::INF_SESSION, "InfSession",
+                                    Mode_t::NO_GROUP_SESSION, "NoGroupSession",
+                                    Mode_t::TIMEOUT_LIMITED, "TimeoutLimited"))
+    .AddAttribute ("Timeout", "Inactive client session expiration time",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&UdpGroupEchoServer::m_timeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("EchoClient", "Server echoes back to the sending client",
+
                    BooleanValue (true),
-                   MakeBooleanAccessor (&PscUdpGroupEchoServer::m_echoback),
+                   MakeBooleanAccessor (&UdpGroupEchoServer::m_echoClient),
                    MakeBooleanChecker ())
     .AddTraceSource ("Rx", "A packet has been received",
-                     MakeTraceSourceAccessor (&PscUdpGroupEchoServer::m_rxTrace),
+                     MakeTraceSourceAccessor (&UdpGroupEchoServer::m_rxTrace),
                      "ns3::Packet::PacketAddressTracedCallback")
   ;
-
   return tid;
 }
 
-PscUdpGroupEchoServer::PscUdpGroupEchoServer ()
+UdpGroupEchoServer::UdpGroupEchoServer ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-PscUdpGroupEchoServer::~PscUdpGroupEchoServer ()
+UdpGroupEchoServer::~UdpGroupEchoServer ()
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
@@ -88,18 +120,18 @@ PscUdpGroupEchoServer::~PscUdpGroupEchoServer ()
 }
 
 void
-PscUdpGroupEchoServer::AddClient (const Address& address)
+UdpGroupEchoServer::AddClient (const Address& address)
 {
-  client src_client;
+  UdpGroupEchoClient src_client;
   std::ostringstream os;
   InetSocketAddress clientAddress = InetSocketAddress::ConvertFrom (address);
 
   os << clientAddress.GetIpv4 () << ":" << clientAddress.GetPort ();
   std::string ipaddrskey = os.str ();
 
-  src_client.addrs = address;
-  src_client.echo_addrs = InetSocketAddress (clientAddress.GetIpv4 (), m_port_client);
-  src_client.tstamp = Simulator::Now ();
+  src_client.m_address = address;
+  src_client.m_echo_address = InetSocketAddress (clientAddress.GetIpv4 (), m_port_client);
+  src_client.m_timestamp = Simulator::Now ();
 
   m_clients[ipaddrskey] = src_client;
 
@@ -107,17 +139,17 @@ PscUdpGroupEchoServer::AddClient (const Address& address)
 }
 
 void
-PscUdpGroupEchoServer::DoDispose (void)
+UdpGroupEchoServer::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-PscUdpGroupEchoServer::StartApplication (void)
+UdpGroupEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO ("Starting PscUdpGroupEchoServer with SessionTime: " << m_timeout);
+  NS_LOG_INFO ("Starting UdpGroupEchoServer with mode " << ModeToString (m_mode) << " session time " << m_timeout.GetSeconds ());
   if (m_socket == 0)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -160,12 +192,12 @@ PscUdpGroupEchoServer::StartApplication (void)
         }
     }
 
-  m_socket->SetRecvCallback (MakeCallback (&PscUdpGroupEchoServer::HandleRead, this));
-  m_socket6->SetRecvCallback (MakeCallback (&PscUdpGroupEchoServer::HandleRead, this));
+  m_socket->SetRecvCallback (MakeCallback (&UdpGroupEchoServer::HandleRead, this));
+  m_socket6->SetRecvCallback (MakeCallback (&UdpGroupEchoServer::HandleRead, this));
 }
 
 void
-PscUdpGroupEchoServer::StopApplication ()
+UdpGroupEchoServer::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -182,17 +214,17 @@ PscUdpGroupEchoServer::StopApplication ()
 }
 
 void
-PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
+UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 
   Ptr<Packet> packet;
-  Address from, echo_addrs;
-  std::map<std::string,client>::iterator it, tempit;
+  Address from, echo_address;
+  std::map<std::string, UdpGroupEchoClient>::iterator it, tempit;
   std::string ipaddrskey;
   std::ostringstream os;
-  client src_client;
-  double lapse;
+  UdpGroupEchoClient src_client;
+  Time lapse;
 
   while ((packet = socket->RecvFrom (from)))
     {
@@ -207,7 +239,7 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
           InetSocketAddress inet_addrs = InetSocketAddress::ConvertFrom (from);
           inet_addrs.SetPort (m_port_client);
-          echo_addrs = inet_addrs;
+          echo_address = inet_addrs;
         }
       else if (Inet6SocketAddress::IsMatchingType (from))
         {
@@ -218,7 +250,7 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
           Inet6SocketAddress inet6_addrs = Inet6SocketAddress::ConvertFrom (from);
           inet6_addrs.SetPort (m_port_client);
-          echo_addrs = inet6_addrs;
+          echo_address = inet6_addrs;
         }
 
 
@@ -236,16 +268,15 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
       if (it != m_clients.end ())
         {
           // Client is a group member. Udate timestamp.
-          NS_LOG_DEBUG ("Client found; old timestamp: " << it->second.tstamp.GetSeconds ());
-          it->second.tstamp = Simulator::Now ();
-          NS_LOG_DEBUG ("New timestamp: " << it->second.tstamp.GetSeconds ());
+          NS_LOG_DEBUG ("Client found; old timestamp: " << it->second.m_timestamp.GetSeconds ());
+          it->second.m_timestamp = Simulator::Now ();
+          NS_LOG_DEBUG ("New timestamp: " << it->second.m_timestamp.GetSeconds ());
         }
       else // Add client to group
         {
-          //client src_client;
-          src_client.addrs = from;
-          src_client.echo_addrs = echo_addrs;
-          src_client.tstamp = Simulator::Now ();
+          src_client.m_address = from;
+          src_client.m_echo_address = echo_address;
+          src_client.m_timestamp = Simulator::Now ();
           m_clients[ipaddrskey] = src_client;
         }
 
@@ -259,35 +290,35 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
        * If timestamp has expired, remove client.
        * Else, echo/fwd packet to client.*/
 
-      /* m_timeout  < 0 : Server serves group clients indefinitely
-       * m_timeout == 0 : Server behaves as single echo-client (no group echo)
-       * m_timeout  > 0 : Server group echo clients that have been active within
+      /* m_mode == INF_SESSION      : Server serves group clients indefinitely
+       * m_mode == NO_GROUP_SESSION : Server behaves as single echo-client (no group echo)
+       * m_mode == TIMEOUT_LIMITED  : Server group echo clients that have been active within
        *                 the m_timeout elapsed time.
        */
       Address addrs_dest;
-      if (m_timeout < 0)
+      if (m_mode == INF_SESSION)
         {
           // Server serves group clients indefinitely.
           for (it = m_clients.begin ();
                it != m_clients.end (); ++it)
             {
-              // If no echo back, neglect client source
-              if (!m_echoback && it->first == ipaddrskey)
+              // If no echo back to client, neglect client source
+              if (!m_echoClient && it->first == ipaddrskey)
                 {
                   continue;
                 }
 
               // Check elapsed time
-              lapse = Simulator::Now ().GetSeconds () - it->second.tstamp.GetSeconds ();
+              lapse = Simulator::Now () - it->second.m_timestamp;
 
               // Set destination address with the agreed client port.
               if (m_port_client != 0)
                 {
-                  addrs_dest = it->second.echo_addrs;
+                  addrs_dest = it->second.m_echo_address;
                 }
               else
                 {
-                  addrs_dest = it->second.addrs;
+                  addrs_dest = it->second.m_address;
                 }
 
               // Forward packet
@@ -316,20 +347,20 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
             }
         }
-      else if (m_timeout == 0)
+      else if (m_mode == NO_GROUP_SESSION)
         {
           // Only one client allowed in group.
           it = m_clients.find (ipaddrskey);
-          if (m_echoback)
+          if (m_echoClient)
             {
               // Set destination address with the agreed client port.
               if (m_port_client != 0)
                 {
-                  addrs_dest = it->second.echo_addrs;
+                  addrs_dest = it->second.m_echo_address;
                 }
               else
                 {
-                  addrs_dest = it->second.addrs;
+                  addrs_dest = it->second.m_address;
                 }
 
               // Forward packet
@@ -360,30 +391,30 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
           // Remove client
           m_clients.erase (it);
         }
-      else //if (m_timeout > 0)
+      else //if (m_mode == TIMEOUT_LIMITED)
         {
           for (it = m_clients.begin ();
                it != m_clients.end (); ++it)
             {
               // If no echo back, neglect client source
-              if (!m_echoback && it->first == ipaddrskey)
+              if (!m_echoClient && it->first == ipaddrskey)
                 {
                   continue;
                 }
 
               // Check elapsed time
-              lapse = Simulator::Now ().GetSeconds () - it->second.tstamp.GetSeconds ();
+              lapse = Simulator::Now () - it->second.m_timestamp;
 
               if (lapse < m_timeout)
                 {
                   // Set destination address with the agreed client port.
                   if (m_port_client != 0)
                     {
-                      addrs_dest = it->second.echo_addrs;
+                      addrs_dest = it->second.m_echo_address;
                     }
                   else
                     {
-                      addrs_dest = it->second.addrs;
+                      addrs_dest = it->second.m_address;
                     }
 
                   // Forward packet
@@ -425,7 +456,7 @@ PscUdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 }
 
 void
-PscUdpGroupEchoServer::PrintClients (void)
+UdpGroupEchoServer::PrintClients (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
@@ -433,26 +464,29 @@ PscUdpGroupEchoServer::PrintClients (void)
   if ( m_clients.size () > 0 )
     {
       // Check time lapse
-      double tstamp = Simulator::Now ().GetSeconds ();
-      double lapse;
+      Time tstamp = Simulator::Now ();
+      Time lapse;
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
       NS_LOG_INFO (std::setw (23) << "Client  " << std::setw (10) << "Session");
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
-      for (std::map<std::string,client>::iterator it = m_clients.begin ();
+      for (std::map<std::string, UdpGroupEchoClient>::iterator it = m_clients.begin ();
            it != m_clients.end (); ++it)
         {
-          lapse = tstamp - it->second.tstamp.GetSeconds ();
-          if (m_timeout < 0 || lapse < m_timeout)
+          lapse = tstamp - it->second.m_timestamp;
+          if (m_mode == INF_SESSION || 
+              m_mode == NO_GROUP_SESSION || 
+              (m_mode == TIMEOUT_LIMITED && lapse < m_timeout))
             {
-              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse);
+              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse.GetSeconds ());
             }
           else
             {
-              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse << " **Session Expired!**");
+              NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse.GetSeconds () << " **Session Expired!**");
             }
         }
       NS_LOG_INFO (std::setfill ('=') << std::setw (57) << "=" << std::setfill (' '));
     }
 }
 
+} // Namespace psc
 } // Namespace ns3

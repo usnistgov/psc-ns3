@@ -4,6 +4,6 @@ def build(bld):
     if not bld.env['ENABLE_EXAMPLES']:
         return;
 
-    obj = bld.create_ns3_program('example-udpgroupecho',
+    obj = bld.create_ns3_program('example-udp-group-echo',
                                  ['psc'])
-    obj.source = 'example-udpgroupecho.cc'
+    obj.source = 'example-udp-group-echo.cc'

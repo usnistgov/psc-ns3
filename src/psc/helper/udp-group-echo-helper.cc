@@ -20,37 +20,39 @@
  * Mathieu Lacage <mathieu.lacage@sophia.inria.fr>.
  */
 
-#include "psc-udp-groupecho-helper.h"
-#include "ns3/psc-udp-groupecho-server.h"
+#include "udp-group-echo-helper.h"
 #include "ns3/uinteger.h"
 #include "ns3/names.h"
 #include "ns3/boolean.h"
+#include "ns3/enum.h"
 
 namespace ns3 {
+namespace psc {
 
-PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port)
 {
-  m_factory.SetTypeId (PscUdpGroupEchoServer::GetTypeId ());
+  m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
 }
 
-PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port, double stime)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirationTime)
 {
-  m_factory.SetTypeId (PscUdpGroupEchoServer::GetTypeId ());
+  m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
-  SetAttribute ("Timeout", DoubleValue (stime));
+  SetAttribute ("Timeout", TimeValue (expirationTime));
 }
 
-PscUdpGroupEchoServerHelper::PscUdpGroupEchoServerHelper (uint16_t port, double stime, bool echoback)
+UdpGroupEchoServerHelper::UdpGroupEchoServerHelper (uint16_t port, Time expirationTime, UdpGroupEchoServer::Mode_t mode, bool echoClient)
 {
-  m_factory.SetTypeId (PscUdpGroupEchoServer::GetTypeId ());
+  m_factory.SetTypeId (UdpGroupEchoServer::GetTypeId ());
   SetAttribute ("Port", UintegerValue (port));
-  SetAttribute ("Timeout", DoubleValue (stime));
-  SetAttribute ("Echo", BooleanValue (echoback));
+  SetAttribute ("Timeout", TimeValue (expirationTime));
+  SetAttribute ("Mode", EnumValue (mode));
+  SetAttribute ("EchoClient", BooleanValue (echoClient));
 }
 
 void
-PscUdpGroupEchoServerHelper::SetAttribute (
+UdpGroupEchoServerHelper::SetAttribute (
   std::string name,
   const AttributeValue &value)
 {
@@ -58,20 +60,20 @@ PscUdpGroupEchoServerHelper::SetAttribute (
 }
 
 ApplicationContainer
-PscUdpGroupEchoServerHelper::Install (Ptr<Node> node) const
+UdpGroupEchoServerHelper::Install (Ptr<Node> node) const
 {
   return ApplicationContainer (InstallPriv (node));
 }
 
 ApplicationContainer
-PscUdpGroupEchoServerHelper::Install (std::string nodeName) const
+UdpGroupEchoServerHelper::Install (std::string nodeName) const
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
   return ApplicationContainer (InstallPriv (node));
 }
 
 ApplicationContainer
-PscUdpGroupEchoServerHelper::Install (NodeContainer c) const
+UdpGroupEchoServerHelper::Install (NodeContainer c) const
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
@@ -83,12 +85,13 @@ PscUdpGroupEchoServerHelper::Install (NodeContainer c) const
 }
 
 Ptr<Application>
-PscUdpGroupEchoServerHelper::InstallPriv (Ptr<Node> node) const
+UdpGroupEchoServerHelper::InstallPriv (Ptr<Node> node) const
 {
-  Ptr<Application> app = m_factory.Create<PscUdpGroupEchoServer> ();
+  Ptr<Application> app = m_factory.Create<UdpGroupEchoServer> ();
   node->AddApplication (app);
 
   return app;
 }
 
+} // namespace psc
 } // namespace ns3

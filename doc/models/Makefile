@@ -51,6 +51,10 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-profiling.rst \
 	$(SRC)/lte/doc/source/lte-references.rst \
 	$(SRC)/propagation/doc/propagation.rst \
+	$(SRC)/psc/doc/source/psc.rst \
+	$(SRC)/psc/doc/source/psc-design.rst \
+	$(SRC)/psc/doc/source/udp-group-echo.rst \
+	$(SRC)/psc/doc/source/psc-references.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
 	$(SRC)/network/doc/error-model.rst \
