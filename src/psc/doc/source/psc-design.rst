@@ -28,7 +28,9 @@ four |ns3| modules:
 
 All of the above mentioned features are based on development led by the
 Wireless Networks Division of the U.S. National Institute of Standards
-and Technology, described in publications ([Rou16]_ and  [Rou17]_).  
+and Technology, described in publications ([Rou16]_ and  [Rou17]_).   Users
+of the D2D features of |ns3| are requested to cite [Rou17]_
+in academic publications based on these models. 
 
 Documentation for the PSC features implemented in the |ns3| ``lte``, ``buildings``, and ``antenna`` modules is provided in the respective 
 module documentation.  This chapter documents the |ns3| ``psc`` module.

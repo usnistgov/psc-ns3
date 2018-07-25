@@ -1,6 +1,4 @@
-
 .. include:: replace.txt
-.. highlight:: cpp
 
 .. heading hierarchy:
    ------------- Chapter
@@ -18,6 +16,10 @@ of generating replies can be tailored through the use of attributes.
 The relevance of this model to public safety communications is that such
 scenarios often require a many-to-many group communications application, and
 existing |ns3| applications are not suitable to generate such traffic.
+
+The UDP group echo implementation is authored by 
+Fernando J. Cintron (fernando.cintron@nist.gov) and is derived from the
+UdpEchoServer found in the |ns3| applications module.
 
 Model Description
 =================
