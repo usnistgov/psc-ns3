@@ -1,5 +1,10 @@
 .. include:: replace.txt
 
+.. only:: html
+
+    Public Safety Communications References
+    ***************************************
+
 .. [Rou16] Rouil, R., Cintrón, F.J., Ben Mosbah, A. and Gamboa, S.,
    `"An LTE Device-to-Device module for ns-3 "
    <https://www.nist.gov/publications/lte-device-device-module-ns-3/>`_,
