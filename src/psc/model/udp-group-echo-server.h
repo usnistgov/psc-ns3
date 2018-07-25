@@ -15,6 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Modified by: NIST // Contributions may not be subject to US copyright.
+ *
  * This application, authored by Fernando J. Cintron <fernando.cintron@nist.gov>
  * is derived from udp-echo-server.h originally authored by University of Washington.
  */
