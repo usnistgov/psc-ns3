@@ -2300,9 +2300,11 @@ LteUePhy::DoSetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools)
           newpool.m_npsdch = (*poolIt)->GetNPsdch ();
           newpool.m_currentGrants.clear ();
           m_discRxPools.push_back (newpool);
-          //
+
           m_sidelinkSpectrumPhy->SetRxPool (newpool.m_pool);
-          //
+          //This is needed to configure the number of retransmissions in LteSlHarqPhy
+          //if a UE is only monitoring the discovery announcements.
+          m_sidelinkSpectrumPhy->SetDiscNumRetx(newpool.m_pool->GetNumRetx());
         }
     }
 }

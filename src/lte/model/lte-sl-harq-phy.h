@@ -91,8 +91,29 @@ public:
    */
   void ResetPrevDecoded (uint16_t rnti, uint8_t l1dst);
   /**
+   * Updates the last created harq information to indicate that the TB of this
+   * harq information has been decoded.
+   * \param rnti The UE identifier
+   * \param resPsdch The discovery resource index
+   */
+  void IndicateDiscTbPrevDecoded (uint16_t rnti, uint8_t resPsdch);
+  /**
+   * Gets the flag that indicates whether or not one of the TB's regarding this
+   * harq information has already been decoded.
+   * \param rnti The UE identifier
+   * \param resPsdch The discovery resource index
+   * \returns True, if one of the TBs has been decoded; false, otherwise.
+   */
+  bool IsDiscTbPrevDecoded (uint16_t rnti, uint8_t resPsdch);
+  /**
    * Resets the flag that indicates whether or not one of the TB's regarding
    * this harq information has already been decoded.
+   * \param rnti The UE identifier
+   * \param resPsdch The discovery resource index
+   */
+  void ResetDiscTbPrevDecoded (uint16_t rnti, uint8_t resPsdch);
+  /**
+   * Resets the TB count
    * \param rnti The UE identifier
    * \param l1dst The group identifier
    */
@@ -171,6 +192,7 @@ public:
 
 private:
   std::set<uint32_t> m_decoded;
+  std::set<uint32_t> m_discDecoded;
   std::map<uint32_t, uint32_t> m_tbIdx;
   std::map <uint16_t, std::map <uint8_t, HarqProcessInfoList_t> > m_miSlHarqProcessesInfoMap;
   std::map <uint16_t, std::map <uint8_t, HarqProcessInfoList_t> > m_miDiscHarqProcessesInfoMap;

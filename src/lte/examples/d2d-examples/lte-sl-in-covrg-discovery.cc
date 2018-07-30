@@ -48,36 +48,29 @@
 using namespace ns3;
 
 
-void
-UePacketTrace (Ptr<OutputStreamWrapper> stream, const Ipv4Address &localAddrs, std::string contex, Ptr<const Packet> p, const Address &srcAddrs, const Address &dstAddrs)
+void SlStartDiscovery (Ptr<LteHelper> helper, Ptr<NetDevice> ue, std::list<uint32_t> apps, bool rxtx)
 {
-  std::ostringstream oss;
-  *stream->GetStream () << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t" << contex << "\t" << p->GetSize () << "\t";
-  if (InetSocketAddress::IsMatchingType (srcAddrs))
-    {
-      oss << InetSocketAddress::ConvertFrom (srcAddrs).GetIpv4 ();
-      if (!oss.str ().compare ("0.0.0.0")) //srcAddrs not set
-        {
-          *stream->GetStream () << localAddrs << ":" << InetSocketAddress::ConvertFrom (srcAddrs).GetPort () << "\t" << InetSocketAddress::ConvertFrom (dstAddrs).GetIpv4 () << ":" << InetSocketAddress::ConvertFrom (dstAddrs).GetPort () << std::endl;
-        }
-      else
-        {
-          oss.str ("");
-          oss << InetSocketAddress::ConvertFrom (dstAddrs).GetIpv4 ();
-          if (!oss.str ().compare ("0.0.0.0")) //dstAddrs not set
-            {
-              *stream->GetStream () << InetSocketAddress::ConvertFrom (srcAddrs).GetIpv4 () << ":" << InetSocketAddress::ConvertFrom (srcAddrs).GetPort () << "\t" << localAddrs << ":" << InetSocketAddress::ConvertFrom (dstAddrs).GetPort () << std::endl;
-            }
-          else
-            {
-              *stream->GetStream () << InetSocketAddress::ConvertFrom (srcAddrs).GetIpv4 () << ":" << InetSocketAddress::ConvertFrom (srcAddrs).GetPort () << "\t" << InetSocketAddress::ConvertFrom (dstAddrs).GetIpv4 () << ":" << InetSocketAddress::ConvertFrom (dstAddrs).GetPort () << std::endl;
-            }
-        }
-    }
-  else
-    {
-      *stream->GetStream () << "Unknown address type!" << std::endl;
-    }
+  helper->StartDiscovery (ue, apps, rxtx);
+}
+
+void SlStopDiscovery (Ptr<LteHelper> helper, Ptr<NetDevice> ue, std::list<uint32_t> apps, bool rxtx)
+{
+  helper->StopDiscovery (ue, apps, rxtx);
+}
+
+void DiscoveryMonitoringTrace (Ptr<OutputStreamWrapper> stream, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint32_t proSeAppCode)
+{
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << imsi << "\t" << cellId << "\t" << rnti << "\t" << proSeAppCode << std::endl;
+}
+
+void DiscoveryAnnouncementPhyTrace (Ptr<OutputStreamWrapper> stream, std::string imsi, uint16_t cellId, uint16_t rnti, uint32_t proSeAppCode)
+{
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << imsi << "\t" << cellId << "\t"  << rnti << "\t" << proSeAppCode << std::endl;
+}
+
+void DiscoveryAnnouncementMacTrace (Ptr<OutputStreamWrapper> stream, std::string imsi, uint16_t rnti, uint32_t proSeAppCode)
+{
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << imsi << "\t" << rnti << "\t" << proSeAppCode << std::endl;
 }
 
 /*
@@ -85,11 +78,20 @@ UePacketTrace (Ptr<OutputStreamWrapper> stream, const Ipv4Address &localAddrs, s
  *
  *    UE2 (-10.0, 0.0, 1.5).....(10 m).....eNB (0.0, 0.0, 30.0).....(10 m).....UE1 (10.0, 0.0, 1.5)
  *
- * Please refer to the Sidelink section of the LTE user documentation for more details.
+ * This example simulates an in-coverage discovery. There are two UEs, which are attached
+ * to an eNB. Both the UEs are configured to announce and monitor the discovery messages.
+ * This example uses the default Sidelink pool of LteSlDiscResourcePoolFactory.
  *
+ * Hint: A user should pay extra attention to the error model configuration, as it
+ * influences the reception of the discovery signals, e.g., dropping the collided TBs,
+ * use of PSDCH BLER curves to compute the BLER.
+ *
+ * The example can be run as follows:
+ *
+ * ./waf --run "lte-sl-in-covrg-discovery --simTme=6"
  */
 
-NS_LOG_COMPONENT_DEFINE ("LteSlInCovrgCommMode2");
+NS_LOG_COMPONENT_DEFINE ("LteSlInCovrgDiscovery");
 
 static ns3::GlobalValue g_simTime ("simTime",
                                    "Total duration of the simulation [s]",
@@ -102,14 +104,8 @@ static ns3::GlobalValue g_enableNsLogs ("enableNsLogs",
 
 int main (int argc, char *argv[])
 {
-  //Configure the UE for UE_SELECTED scenario
-  Config::SetDefault ("ns3::LteUeMac::SlGrantMcs", UintegerValue (16));
-  Config::SetDefault ("ns3::LteUeMac::SlGrantSize", UintegerValue (5)); //The number of RBs allocated per UE for Sidelink
-  Config::SetDefault ("ns3::LteUeMac::Ktrp", UintegerValue (1));
-  Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (true)); //use default Trp index of 0
 
   //Set the frequency
-
   Config::SetDefault ("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue (100));
   Config::SetDefault ("ns3::LteUeNetDevice::DlEarfcn", UintegerValue (100));
   Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue (18100));
@@ -117,8 +113,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue (50));
 
   // Set error models
-  Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled", BooleanValue (true));
-  Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled", BooleanValue (true));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (false));
 
   CommandLine cmd;
@@ -154,7 +149,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30.0));
 
   //Sidelink bearers activation time
-    Time slBearersActivationTime = Seconds (2.0);
+  Time slBearersActivationTime = Seconds (2.0);
 
   //Create the helpers
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
@@ -210,47 +205,40 @@ int main (int argc, char *argv[])
   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNode);
   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
-  //Configure Sidelink
+  //Configure Sidelink Pool
   Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc> ();
-  enbSidelinkConfiguration->SetSlEnabled (true);
+  enbSidelinkConfiguration->SetDiscEnabled (true);
 
-  //Preconfigure pool for the group
-  LteRrcSap::SlCommTxResourcesSetup pool;
-
-  pool.setup = LteRrcSap::SlCommTxResourcesSetup::UE_SELECTED;
+  LteRrcSap::SlDiscTxResourcesSetup pool;
   pool.ueSelected.havePoolToRelease = false;
   pool.ueSelected.havePoolToAdd = true;
   pool.ueSelected.poolToAddModList.nbPools = 1;
   pool.ueSelected.poolToAddModList.pools[0].poolIdentity = 1;
-  //resource pool (default configuration is UE selected)
-  LteSlResourcePoolFactory pfactory;
-  //Control
-  pfactory.SetControlPeriod ("sf40");
-  pfactory.SetControlBitmap (0x00000000FF); //8 subframes for PSCCH
-  pfactory.SetControlOffset (0);
-  pfactory.SetControlPrbNum (22);
-  pfactory.SetControlPrbStart (0);
-  pfactory.SetControlPrbEnd (49);
 
-  //Data
-  pfactory.SetDataBitmap (0xFFFFFFFFFF);
-  pfactory.SetDataOffset (8); //After 8 subframes of PSCCH
-  pfactory.SetDataPrbNum (25);
-  pfactory.SetDataPrbStart (0);
-  pfactory.SetDataPrbEnd (49);
+  LteSlDiscResourcePoolFactory pfactory;
+  pfactory.SetDiscCpLen ("NORMAL");
+  pfactory.SetDiscPeriod ("rf32");
+  pfactory.SetNumRetx (0);
+  pfactory.SetNumRepetition (1);
+  pfactory.SetDiscPrbNum (10);
+  pfactory.SetDiscPrbStart (10);
+  pfactory.SetDiscPrbEnd (40);
+  pfactory.SetDiscOffset (0);
+  pfactory.SetDiscBitmap (0x11111);
+  pfactory.SetDiscTxProbability ("p100");
 
   pool.ueSelected.poolToAddModList.pools[0].pool =  pfactory.CreatePool ();
 
-  uint32_t groupL2Address = 255;
-
-  enbSidelinkConfiguration->AddPreconfiguredDedicatedPool (groupL2Address, pool);
+  //Install Sidelink configuration for eNBs
+  enbSidelinkConfiguration->AddDiscPool (pool);
   lteHelper->InstallSidelinkConfiguration (enbDevs, enbSidelinkConfiguration);
 
-  //pre-configuration for the UEs
+  // Install Sidelink configuration for the UEs
   Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
-  ueSidelinkConfiguration->SetSlEnabled (true);
-  LteRrcSap::SlPreconfiguration preconfiguration;
-  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
+  uint8_t nb = 3;
+  ueSidelinkConfiguration->SetDiscTxResources (nb);
+  ueSidelinkConfiguration->SetDiscInterFreq (enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
+  ueSidelinkConfiguration->SetDiscEnabled (true);
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
   //Install the IP stack on the UEs and assign IP address
@@ -272,65 +260,83 @@ int main (int argc, char *argv[])
   //Attach each UE to the best available eNB
   lteHelper->Attach (ueDevs);
 
-  ///*** Configure applications ***///
+  NS_LOG_INFO ("Configuring discovery applications");
+  std::map<Ptr<NetDevice>, std::list<uint32_t> > announceApps;
+  std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorApps;
+  for (uint32_t i = 1; i <= ueNodes.GetN (); ++i)
+    {
+      announceApps[ueDevs.Get (i - 1)].push_back ((uint32_t)i);
+      NS_LOG_DEBUG ("Ue Device " << i - 1 << " announce app = " << i);
+      for (uint32_t j = 1; j <= ueNodes.GetN (); ++j)
+        {
+          if (i != j)
+            {
+              monitorApps[ueDevs.Get (i - 1)].push_back ((uint32_t)j);
+              NS_LOG_DEBUG ("Ue Device " << i - 1 << " monitor app = " << j);
+            }
+        }
+    }
 
-  //Set Application in the UEs
-  Ipv4Address groupAddress ("225.0.0.0"); //use multicast address as destination
-  OnOffHelper sidelinkClient ("ns3::UdpSocketFactory",
-                              Address ( InetSocketAddress (groupAddress, 8000)));
-  sidelinkClient.SetConstantRate (DataRate ("16kb/s"), 200);
+  for (auto itAnnounceApps : announceApps)
+    {
+      Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itAnnounceApps.first);
+      std::list<uint32_t> apps = itAnnounceApps.second;
+      std::cout << "Scheduling " << apps.size () << " announce apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
+      std::list<uint32_t>::iterator itAppList;
+      for (auto itAppList : apps)
+        {
+          std::cout << "Announcing App code = " << itAppList << std::endl;
+        }
 
-  ApplicationContainer clientApps = sidelinkClient.Install (ueNodes.Get (0));
-  //onoff application will send the first packet at :
-  //(2.9 (App Start Time) + (1600 (Pkt size in bits) / 16000 (Data rate)) = 3.0 sec
-  clientApps.Start (slBearersActivationTime + Seconds (0.9));
-  clientApps.Stop (simTime - slBearersActivationTime + Seconds (1.0));
+      Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, lteHelper, ueNetDevice, apps, true); // true for announce
+    }
 
-  ApplicationContainer serverApps;
-  PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory",Address (InetSocketAddress (Ipv4Address::GetAny (), 8000)));
-  serverApps = sidelinkSink.Install (ueNodes.Get (1));
-  serverApps.Start (Seconds (2.0));
+  for (auto itMonitorApps : monitorApps)
+    {
+      Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itMonitorApps.first);
+      std::list<uint32_t> apps = itMonitorApps.second;
+      std::cout << "Scheduling " << apps.size () << " monitor apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
+      std::list<uint32_t>::iterator itAppList;
+      for (auto itAppList : apps)
+        {
+          std::cout << "Monitoring App code = " << itAppList << std::endl;
+        }
 
-  //Set Sidelink bearers
-  Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, groupAddress, groupL2Address);
-  proseHelper->ActivateSidelinkBearer (slBearersActivationTime, ueDevs, tft);
+      Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, lteHelper, ueNetDevice, apps, false); // false for monitor
+    }
+
   ///*** End of application configuration ***///
 
+  // Set Discovery Traces
   AsciiTraceHelper ascii;
-  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("UePacketTrace.tr");
+  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("discovery-out-monitoring.tr");
+  *stream->GetStream () << "Time\tIMSI\tCellId\tRNTI\tProSeAppCode" << std::endl;
 
-  //Trace file table header
-  *stream->GetStream () << "time(sec)\ttx/rx\tNodeID\tIMSI\tPktSize(bytes)\tIP[src]\tIP[dst]" << std::endl;
+  AsciiTraceHelper ascii1;
+  Ptr<OutputStreamWrapper> stream1 = ascii1.CreateFileStream ( "discovery-out-announcement-phy.tr");
+  *stream1->GetStream () << "Time\tIMSI\tCellId\tRNTI\tProSeAppCode" << std::endl;
+
+  AsciiTraceHelper ascii2;
+  Ptr<OutputStreamWrapper> stream2 = ascii1.CreateFileStream ( "discovery-out-announcement-mac.tr");
+  *stream2->GetStream () << "Time\tIMSI\tRNTI\tProSeAppCode" << std::endl;
 
   std::ostringstream oss;
-
-  // Set Tx traces
-  for (uint16_t ac = 0; ac < clientApps.GetN (); ac++)
+  oss.str ("");
+  for (uint32_t i = 0; i < ueDevs.GetN (); ++i)
     {
-      Ipv4Address localAddrs =  clientApps.Get (ac)->GetNode ()->GetObject<Ipv4L3Protocol> ()->GetAddress (1,0).GetLocal ();
-      std::cout << "Tx address: " << localAddrs << std::endl;
-      oss << "tx\t" << ueNodes.Get (0)->GetId () << "\t" << ueNodes.Get (0)->GetDevice (0)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      clientApps.Get (ac)->TraceConnect ("TxWithAddresses", oss.str (), MakeBoundCallback (&UePacketTrace, stream, localAddrs));
+      Ptr<LteUeRrc> ueRrc = DynamicCast<LteUeRrc> ( ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc () );
+      ueRrc->TraceConnectWithoutContext ("DiscoveryMonitoring", MakeBoundCallback (&DiscoveryMonitoringTrace, stream));
+      oss << ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
+      Ptr<LteUePhy> uePhy = DynamicCast<LteUePhy> ( ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetPhy () );
+      uePhy->TraceConnect ("DiscoveryAnnouncement", oss.str (), MakeBoundCallback (&DiscoveryAnnouncementPhyTrace, stream1));
+      Ptr<LteUeMac> ueMac = DynamicCast<LteUeMac> ( ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetMac () );
+      ueMac->TraceConnect ("DiscoveryAnnouncement", oss.str (), MakeBoundCallback (&DiscoveryAnnouncementMacTrace, stream2));
       oss.str ("");
     }
 
-  // Set Rx traces
-  for (uint16_t ac = 0; ac < serverApps.GetN (); ac++)
-    {
-      Ipv4Address localAddrs =  serverApps.Get (ac)->GetNode ()->GetObject<Ipv4L3Protocol> ()->GetAddress (1,0).GetLocal ();
-      std::cout << "Rx address: " << localAddrs << std::endl;
-      oss << "rx\t" << ueNodes.Get (1)->GetId () << "\t" << ueNodes.Get (1)->GetDevice (0)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      serverApps.Get (ac)->TraceConnect ("RxWithAddresses", oss.str (), MakeBoundCallback (&UePacketTrace, stream, localAddrs));
-      oss.str ("");
-    }
-
-  NS_LOG_INFO ("Enabling Sidelink traces...");
-
-  lteHelper->EnableSlPscchMacTraces ();
-  lteHelper->EnableSlPsschMacTraces ();
+  NS_LOG_INFO ("Enabling Sidelink discovery reception trace...");
 
   lteHelper->EnableSlRxPhyTraces ();
-  lteHelper->EnableSlPscchRxPhyTraces ();
 
   NS_LOG_INFO ("Starting simulation...");
 

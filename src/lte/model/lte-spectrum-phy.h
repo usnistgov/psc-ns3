@@ -738,6 +738,7 @@ private:
    *
    * \param sinr The SINR values
    * \param rbBitMap The vector whose size is equal to the number active RBs
+   * \return The average SINR per RB in linear scale
    */
   double GetMeanSinr (const SpectrumValue& sinr, const std::vector<int>& rbBitMap);
 
@@ -745,9 +746,17 @@ private:
    * \brief Filter Rx applications function
    *
    * \param disc The Sidelink Discovery message
+   * \return True if the discovery APP code of
+   * the received discovery message matches
+   * with the APP code of any discovery application
+   * which UE is interested to monitor.
    */
   bool FilterRxApps (SlDiscMsg disc);
 
+  /**
+   * \brief Receive discovery message function
+   */
+  void RxDiscovery ();
 
   Ptr<MobilityModel> m_mobility; ///< the mobility model
   Ptr<AntennaModel> m_antenna; ///< the antenna model
@@ -808,10 +817,10 @@ private:
   bool m_ctrlFullDuplexEnabled; ///< when true the PSCCH operates in Full Duplex mode (disabled by default).
 
   bool m_dropRbOnCollisionEnabled; ///< when true, drop all receptions on colliding RBs regardless SINR value.
-
-  bool m_nistErrorModelEnabled; ///< when true (not default) use NIST error model
+  bool m_slDataErrorModelEnabled; ///< when true (default) the PSSCH phy error model is enabled
+  bool m_slCtrlErrorModelEnabled; ///< when true (default) the PSCCH phy error model is enabled
+  bool m_slDiscoveryErrorModelEnabled; ///< when true (default) the PSDCH phy error model is enabled
   LteNistErrorModel::LteFadingModel m_fadingModel;
-  bool m_slBlerEnabled; //(true by default) when false BLER in the PSSCH is not used.
 
   uint8_t m_transmissionMode; ///< for UEs: store the transmission mode
   uint8_t m_layersNum; ///< layers num
@@ -824,9 +833,6 @@ private:
   LtePhyUlHarqFeedbackCallback m_ltePhyUlHarqFeedbackCallback; ///< the LTE phy UL HARQ feedback callback
 
   Ptr<LteSpectrumPhy> m_halfDuplexPhy;
-  bool m_errorModelHarqD2dDiscoveryEnabled;
-
-  bool m_shouldDropSlTb;
 
   std::list< Ptr<SidelinkDiscResourcePool> > m_discRxPools;
 
@@ -836,6 +842,7 @@ private:
   uint64_t m_slssId; ///< the Sidelink Synchronization Signal Identifier (SLSSID)
 
   double m_slRxGain;
+  std::map <uint16_t, uint16_t> m_slDiscTxCount;
 
   LtePhyRxSlssCallback  m_ltePhyRxSlssCallback; ///< Callback used to notify the PHY about the reception of a SLSS
 
@@ -864,11 +871,6 @@ private:
    * PhyReceptionStatParameters (see lte-common.h)
    */
   TracedCallback<SlPhyReceptionStatParameters> m_slPscchReception;
-
-  /**
-   * The `DropSlTb` trace source. Fired when the Sidelink TB is dropped.
-   */
-  TracedCallback<uint32_t> m_dropSlTb;
 
   /**
    * The `SlStartRx` trace source. Trace fired when reception at Sidelink starts.

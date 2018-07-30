@@ -76,6 +76,15 @@ def build(bld):
     obj = bld.create_ns3_program('lte-sl-out-of-covrg-comm',
                                  ['lte'])
     obj.source = 'd2d-examples/lte-sl-out-of-covrg-comm.cc'
+    obj = bld.create_ns3_program('lte-sl-in-covrg-discovery',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-discovery.cc'
+    obj = bld.create_ns3_program('lte-sl-in-covrg-discovery-collision',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-discovery-collision.cc'
+    obj = bld.create_ns3_program('lte-sl-out-of-covrg-discovery-collision',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-out-of-covrg-discovery-collision.cc'
     obj = bld.create_ns3_program('wns3-2017-discovery',
                                  ['lte'])
     obj.source = 'd2d-examples/wns3-2017-discovery.cc'

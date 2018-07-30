@@ -112,7 +112,8 @@ main (int argc, char *argv[])
   // Set the UEs power in dBm
   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
   // Use error model and HARQ for D2D Discovery (recovery process)
-  Config::SetDefault ("ns3::LteSpectrumPhy::ErrorModelHarqD2dDiscoveryEnabled", BooleanValue (useRecovery));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue (useRecovery));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (true));
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();

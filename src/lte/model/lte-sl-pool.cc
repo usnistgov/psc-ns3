@@ -1280,6 +1280,8 @@ SidelinkDiscResourcePool::SetPool (LteRrcSap::SlDiscResourcePool pool)
   //parse information
   m_discCpLen = pool.cpLen;
   m_discPeriod = pool.discPeriod;
+  NS_ABORT_MSG_IF (pool.numRetx > 3, "For discovery maximum number of retransmissions "
+                                       "should be less than "<< (uint16_t) pool.numRetx);
   m_numRetx = pool.numRetx;
   m_numRepetition = pool.numRepetition;
   m_discTfResourceConfig = pool.tfResourceConfig;
@@ -1305,6 +1307,8 @@ SidelinkDiscResourcePool::SetPool (LteRrcSap::SlPreconfigDiscPool pool)
   m_preconfigured = true;
   m_discCpLen = pool.cpLen;
   m_discPeriod = pool.discPeriod;
+  NS_ABORT_MSG_IF (pool.numRetx > 3, "For discovery maximum number of retransmissions "
+                                       "should be less than "<< (uint16_t)pool.numRetx);
   m_numRetx = pool.numRetx;
   m_numRepetition = pool.numRepetition;
   m_discTfResourceConfig = pool.tfResourceConfig;

@@ -50,8 +50,8 @@ This example is used to validate the maximum achievable data rate on the Physica
 Channel (PSSCH) between 2 UEs given a particular resource pool configuration.
 Parameters include:
 - period: duration of the Sidelink period
-- pscchLength: length of the pysical Sidelink control channel (PSCCH)
-- ktrp: repetition pattern defining how many subframe can be used for Sidelink
+- pscchLength: length of the physical Sidelink control channel (PSCCH)
+- ktrp: repetition pattern defining how many subframes can be used for Sidelink
 - mcs: modulation and coding scheme for transmission on the Sidelink shared channel
 - rbSize: allocation size in resource block (RB)
 - simTime: Simulation time in seconds
@@ -75,6 +75,12 @@ main (int argc, char *argv[])
   uint32_t ueCount = 2; // Number of UEs
   bool  enableNsLogs = false; // If enabled will output NS LOGs
   std::string SlRxOutputFilename = "SlRxPhyStats.txt";
+
+  // Set error models
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled", BooleanValue (true));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled", BooleanValue (true));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (false));
+
 
   // Command line arguments
   CommandLine cmd;

@@ -407,6 +407,7 @@ void SidelinkCommPoolPsschTestCase::DoRun ()
   uint32_t actualFrameNo = 0;
   uint32_t actualSubframeNo = 0;
   uint32_t actualRbStart = 0;
+  uint32_t actualRbCount = 0;
 
   for (std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator it = txInfo.begin (); it != txInfo.end (); it++)
     {
@@ -415,6 +416,7 @@ void SidelinkCommPoolPsschTestCase::DoRun ()
           actualFrameNo = it->subframe.frameNo;
           actualSubframeNo = it->subframe.subframeNo;
           actualRbStart = static_cast<uint32_t> (it->rbStart);
+          actualRbCount = static_cast<uint32_t> (it->nbRb);
           break;
         }
       ctr++;
@@ -424,7 +426,7 @@ void SidelinkCommPoolPsschTestCase::DoRun ()
   NS_LOG_INFO ("actualSubframeNo = " << actualSubframeNo);
   NS_LOG_INFO ("actualRbStart = " << actualRbStart);
 
-  NS_TEST_EXPECT_MSG_EQ (((m_expectedFrameNo == actualFrameNo) && (m_expectedSubframeNo == actualSubframeNo) && (m_expectedRbStart == actualRbStart)), true, "Expected and Actual Frame no, Subframe no, and rbStart for PSSCH are not equal");
+  NS_TEST_EXPECT_MSG_EQ (((m_expectedFrameNo == actualFrameNo) && (m_expectedSubframeNo == actualSubframeNo) && (m_expectedRbStart == actualRbStart) && (m_expectedNbCount == actualRbCount)), true, "Expected and Actual Frame no, Subframe no, and rbStart for PSSCH are not equal");
 }
 
 

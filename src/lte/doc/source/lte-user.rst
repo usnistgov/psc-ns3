@@ -510,7 +510,7 @@ And Finally, in SlRx file the parameters included are:
   1. Simulation time in milliseconds
   2. Cell ID (Fixed to 0 for Sidelink)
   3. unique UE ID (IMSI)
-  4. Sidelink-specific UE ID (RNTI)
+  4. Sidelink-specific UE ID (RNTI) **Note: For PSDCH reception, it is the RNTI of the UE transmitting discovery messages.**
   5. Layer of transmission
   6. MCS
   7. Transport block size in bytes
@@ -674,15 +674,26 @@ It is to be noted that using other means to configure the frequency used by the 
 See the documentation of the *buildings* module for more detailed information.
 
 
-PHY Error Model
----------------
+LTE PHY Error Model
+-------------------
 
 The Physical error model consists of the data error model and the downlink control error model, both of them active by default. It is possible to deactivate them with the ns3 attribute system, in detail::
 
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
+LTE Sidelink PHY Error Model
+----------------------------
 
+The Sidelink physical error model consists of the data, control, and the discovery error model. All of them are active by default. It is possible to deactivate them with the ns3 attribute system, in detail::
+
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled", BooleanValue (false));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue (false));
+
+Besides the error models, one more attribute, i.e., "DropRbOnCollisionEnabled" is also introduced only for the Sidelink transmissions. This is implemented by keeping in mind the scenarios in which the resources are autonomously scheduled by a UE, which increases the probability of two UEs choosing the same RBs to transmit. Therefore, causing a collision between the TBs. By using this attribute, a user can choose to drop such collided TBs. It can be configured as follows::
+
+ Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (true));
 
 
 MIMO Model
@@ -2590,14 +2601,15 @@ We use the LTE Band 1 for both LTE and Sidelink communication.
 * Configure the error models : ::
    
    // For PSSCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::NistErrorModelEnabled", 
-							BooleanValue (true));
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataBlerModelEnabled", 
-							BooleanValue (true));
+   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
+                                                        BooleanValue (true));
 
    // For PSCCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", 
-							BooleanValue (true));
+   Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
+                                                        BooleanValue (true));
+
+   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled",
+							BooleanValue (false));
 
 * Configure the transmit power of the eNB and the UEs : ::
 
@@ -2873,14 +2885,12 @@ The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e
 * Configure the error models : ::
 
    // For PSSCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::NistErrorModelEnabled", 
-							BooleanValue (true));
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataBlerModelEnabled", 
-							BooleanValue (true));
+   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
+                                                        BooleanValue (true));
 
    // For PSCCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", 
-							BooleanValue (true));
+   Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
+                                                        BooleanValue (true));
   
    Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
 							BooleanValue (false));
@@ -2965,14 +2975,12 @@ The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e
 * Configure the error models : ::
 
    // For PSSCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::NistErrorModelEnabled", 
-							BooleanValue (true));
-   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataBlerModelEnabled", 
-							BooleanValue (true));
+   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled",
+                                                        BooleanValue (true));
 
    // For PSCCH
-   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", 
-							BooleanValue (true));
+   Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled",
+                                                        BooleanValue (true));
   
    Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
 							BooleanValue (false));

@@ -54,6 +54,9 @@ cpp_examples = [
     ("wns3-2017-synch", "True", "True"),
     ("lte-3gpp-hex-topology --simTime=2 --enableChannelLogs=1 --enableLteTraces=1 --epc=1", "True", "True"),
     ("lte-wrap-around-hex-topology --simTime=2 --enableChannelLogs=1 --enableLteTraces=1 enableTopologyLogs=1", "True", "True"),
+    ("lte-sl-in-covrg-discovery", "True", "True"),
+    ("lte-sl-in-covrg-discovery-collision", "True", "True"),
+    ("lte-sl-out-of-covrg-discovery-collision", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

@@ -90,7 +90,7 @@ GRPrx=0 #Number of receiver UEs in D2D groups
 r_pck_int=0.005 #Packet interval time in seconds for responders
 r_max_pck=100000000 #Used only for constant UDP appliation; it is disregarded when onoff app is enable.
 ctrlerror=1 #0 for disabled or 1 enabled; when disabled, bypass errors in PSCCH to evaluate PSSCH only.
-droponcollisionPSCCH=0 #Drop PSCCH messages on conflicting scheduled resources
+droponcollision=0 #Drop PSCCH and PSSCH messages on conflicting scheduled resources
 enableNsLogs=0 #0 for disabled or 1 enabled; when enabled will output NS LOGs
 
 v_letter="b" #a: no wrap-around topology, b: wrap-around topology
@@ -102,7 +102,7 @@ else
   ctrlerrorstr="ctrlerroron"
 fi
 
-if [ $droponcollisionPSCCH -eq 1 ];then
+if [ $droponcollision -eq 1 ];then
   pscchdroponcolstr="pscchdroponcolon"
 else
   pscchdroponcolstr="pscchdroponcoloff"
@@ -110,7 +110,7 @@ fi
 
 ver="v${subver}_broadcast_sim_${stime}s_HD_${Rings}rings_${RESP}RESP_${GRP}GRP_ISD${isd}_MinDist${min_center_dist}_period${SL_PERIOD}_mcs${SL_MCS}_rb${SL_GRANT_RB}_ktrp${SL_KTRP}_pscchrb${PSCCH_RBs}_pscchtrp${PSCCH_TRP}_${ctrlerrorstr}_${pscchdroponcolstr}_run" #Version for logging run output
 basedir="d2d"
-arguments="--responders=$RESP --groups=$GRP --receivers=$GRPrx --ring=$Rings --isd=$isd --minDist=$min_center_dist --time=$stime --respMaxPkt=$r_max_pck --respPktSize=$r_pck_size --respPktIntvl=$r_pck_int --slPeriod=$SL_PERIOD --mcs=$SL_MCS --ktrp=$SL_KTRP --rbSize=$SL_GRANT_RB --pscchRbs=$PSCCH_RBs --pscchTrp=$PSCCH_TRP --ctrlErrorModel=$ctrlerror --ctrlDropOnCol=$droponcollisionPSCCH --enableNsLogs=$enableNsLogs"
+arguments="--responders=$RESP --groups=$GRP --receivers=$GRPrx --ring=$Rings --isd=$isd --minDist=$min_center_dist --time=$stime --respMaxPkt=$r_max_pck --respPktSize=$r_pck_size --respPktIntvl=$r_pck_int --slPeriod=$SL_PERIOD --mcs=$SL_MCS --ktrp=$SL_KTRP --rbSize=$SL_GRANT_RB --pscchRbs=$PSCCH_RBs --pscchTrp=$PSCCH_TRP --ctrlErrorModel=$ctrlerror --dropOnCol=$droponcollision --enableNsLogs=$enableNsLogs"
 linediv="\n-----------------------------------\n"
 
 for ((run=$STARTRUN; run<=$MAXRUNS; run++))

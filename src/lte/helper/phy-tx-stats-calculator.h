@@ -143,14 +143,6 @@ private:
    * files have not been opened yet
    */
   bool m_ulTxFirstWrite;
-
-  /**
-   * When writing Sidelink TX PHY statistics first time to file,
-   * columns description is added. Then next lines are
-   * appended to file. This value is true if output
-   * files have not been opened yet
-   */
-  bool m_slTxFirstWrite;
 };
 
 } // namespace ns3

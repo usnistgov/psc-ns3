@@ -116,6 +116,47 @@ void LteSlHarqPhy::ResetPrevDecoded (uint16_t rnti, uint8_t l1dst)
 }
 
 void
+LteSlHarqPhy::IndicateDiscTbPrevDecoded (uint16_t rnti, uint8_t resPsdch)
+{
+  NS_LOG_FUNCTION (this << (uint32_t)rnti << (uint32_t)resPsdch);
+
+  uint32_t decodedId = (rnti << 8) + resPsdch;
+
+  if (this->m_discDecoded.find (decodedId) == this->m_discDecoded.end ())
+    {
+      this->m_discDecoded.insert (decodedId);
+    }
+}
+
+bool
+LteSlHarqPhy::IsDiscTbPrevDecoded (uint16_t rnti, uint8_t resPsdch)
+{
+  NS_LOG_FUNCTION (this << (uint32_t)rnti << (uint32_t)resPsdch);
+
+  uint32_t decodedId = (rnti << 8) + resPsdch;
+
+  std::set<uint32_t>::iterator it = this->m_discDecoded.find (decodedId);
+
+  bool prevDecoded = (it != this->m_discDecoded.end ());
+
+  return prevDecoded;
+}
+
+void LteSlHarqPhy::ResetDiscTbPrevDecoded (uint16_t rnti, uint8_t resPsdch)
+{
+  NS_LOG_FUNCTION (this << (uint32_t)rnti << (uint32_t)resPsdch);
+
+  uint32_t decodedId = (rnti << 8) + resPsdch;
+
+  std::set<uint32_t>::iterator it = this->m_discDecoded.find (decodedId);
+
+  if (it != this->m_discDecoded.end ())
+    {
+      this->m_discDecoded.erase (it);
+    }
+}
+
+void
 LteSlHarqPhy::ResetTbIdx (uint16_t rnti, uint8_t l1dst)
 {
   NS_LOG_FUNCTION (this << (uint32_t)rnti << (uint32_t)l1dst);

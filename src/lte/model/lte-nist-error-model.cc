@@ -441,13 +441,10 @@ LteNistErrorModel::GetSinrValue (const double (*xtable)[XTABLE_SIZE], const doub
 double
 LteNistErrorModel::GetValueForIndex (uint16_t index, double min, double max, double step)
 {
-  NS_LOG_FUNCTION (index << min << max << step);
-  NS_LOG_DEBUG ("GetValueForIndex " << index << " " << min << " " << max << " " << step);
+  NS_LOG_DEBUG ("Index " << index << " Min " << min << " Max " << max << " Step " << step);
   double value = 1;
-  if (index > -1)
-    {
-      value = min + index * step;
-    }
+  value = min + index * step;
+
   return value;
 }
 

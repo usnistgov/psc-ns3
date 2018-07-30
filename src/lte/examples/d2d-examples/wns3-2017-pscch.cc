@@ -122,7 +122,7 @@ main (int argc, char *argv[])
   std::string pscchBitmapHexstring = "0x00000000FF"; // PSCCH time bitmap [40 bits]
   uint32_t slPeriod = 40;         // Length of Sidelink period in milliseconds
   bool ctrlErrorModelEnabled = true; // Enable error model in the PSCCH
-  bool ctrlDropOnCollisionEnabled = false; // Drop PSCCH messages on conflicting scheduled resources
+  bool dropOnCollisionEnabled = false; // Drop PSCCH PSSCH messages on conflicting scheduled resources
   bool  enableNsLogs = false; // If enabled will output NS LOGs
 
   // Command line arguments
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("pscchTrp", "PSCCH time bitmap", pscchBitmapHexstring);
   cmd.AddValue ("slPeriod", "Length of SL period", slPeriod );
   cmd.AddValue ("ctrlErrorModel", "Enables PSCCH error model", ctrlErrorModelEnabled);
-  cmd.AddValue ("ctrlDropOnCol", "Drop PSCCH messages on collisions", ctrlDropOnCollisionEnabled);
+  cmd.AddValue ("dropOnCol", "Drop PSCCH and PSSCH messages on collisions", dropOnCollisionEnabled);
   cmd.AddValue ("enableNsLogs", "Enable NS logs", enableNsLogs);
   cmd.Parse (argc, argv);
 
@@ -185,12 +185,12 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteUePowerControl::PscchTxPower", DoubleValue (ueTxPower));
 
   // Configure error model
-  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (ctrlErrorModelEnabled));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled", BooleanValue (ctrlErrorModelEnabled));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlFullDuplexEnabled", BooleanValue (!ctrlErrorModelEnabled));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (ctrlDropOnCollisionEnabled));
+  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (dropOnCollisionEnabled));
 
   std::cout << "CtrlErrorModel: " << ((ctrlErrorModelEnabled) ? "Enabled" : "Disabled") << std::endl;
-  std::cout << "CtrlDropOnCollision: " << ((ctrlDropOnCollisionEnabled) ? "Enabled" : "Disabled") << std::endl;
+  std::cout << "DropOnCollision: " << ((dropOnCollisionEnabled) ? "Enabled" : "Disabled") << std::endl;
 
   // Configure for UE selected
   Config::SetDefault ("ns3::LteUeMac::SlGrantSize", UintegerValue (rbSize));

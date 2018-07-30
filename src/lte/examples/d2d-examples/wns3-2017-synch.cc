@@ -119,9 +119,8 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteUePowerControl::PsschTxPower", DoubleValue (ueTxPower));
   Config::SetDefault ("ns3::LteUePowerControl::PscchTxPower", DoubleValue (ueTxPower));
 
-  // Set error models
-  Config::SetDefault ("ns3::LteSpectrumPhy::SlDataBlerModelEnabled", BooleanValue (false));
-  Config::SetDefault ("ns3::LteSpectrumPhy::NistErrorModelEnabled", BooleanValue (true));
+  // Set data error model
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::FadingModel", StringValue ("AWGN"));
 
 
@@ -151,7 +150,7 @@ main (int argc, char *argv[])
   std::string pscchTrpHexstring = "0x00000000FF";
   uint32_t slPeriod = 40;
   bool ctrlErrorModelEnabled = true;
-  bool ctrlDropOnCollisionEnabled = false;
+  bool dropOnCollisionEnabled = false;
 
   /*Synchronization*/
   int16_t syncTxThreshOoC = -60; //dBm
@@ -187,7 +186,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("pscchTrp", "PSCCH trp bitmap", pscchTrpHexstring);
   cmd.AddValue ("slPeriod", "Length of SL period", slPeriod );
   cmd.AddValue ("ctrlError", "Enables PSCCH error model", ctrlErrorModelEnabled);
-  cmd.AddValue ("ctrlDropOnCol", "Drop PSCCH messages on collisions", ctrlDropOnCollisionEnabled);
+  cmd.AddValue ("dropOnCol", "Drop PSSCH and PSCCH messages on collisions", dropOnCollisionEnabled);
   cmd.AddValue ("onoff", "Type of traffic", onoff);
 
   /*Synchronization*/
@@ -246,9 +245,10 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteUeMac::SlGrantMcs", UintegerValue (mcs));
   Config::SetDefault ("ns3::LteUeMac::Ktrp", UintegerValue (ktrp));
 
-  Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (ctrlErrorModelEnabled));
+  Config::SetDefault ("ns3::LteSpectrumPhy::SlCtrlErrorModelEnabled", BooleanValue (ctrlErrorModelEnabled));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlFullDuplexEnabled", BooleanValue (!ctrlErrorModelEnabled));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (ctrlDropOnCollisionEnabled)); //If true, PSCCH drop msg when collision occurs, regardless SINR
+  //If true, drop PSSCH and PSCCH when collision occurs, regardless of SINR
+  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (dropOnCollisionEnabled));
 
   //Convert pscchTrp string representation to decimal.
   std::stringstream ssHex;

@@ -90,7 +90,7 @@ do
 	pscchRbs=22
 	pscchTrp="0x00000000FF"
 	ctrlerror=0 #0 for disabled or 1 enabled; when disabled, bypass errors in PSCCH and PSBCH to evaluate PSSCH only.
-  droponcollisionPscch=0 #
+  dropOnCollision=0 #
   rPckSize=7 #[bytes] Responder's pck size
 	onoff=${array[5]} #On/Off traffic pattern 
 	rPckInt=0.02 #Packet interval time in seconds for responders
@@ -116,7 +116,7 @@ do
 	ver="d2d-sync-run" #Version for logging run output
 	basedir="wns3-2017-synchronization-"${evalname}"/"
 
-	arguments=" --responders=$resp --groups=$grp --ring=$rings --isd=$isd --simTime=$stime --respMaxPkt=$rMaxPck --respPktSize=$rPckSize --respPktIntvl=$rPckInt --slPeriod=$slPeriod --mcs=$slMcs --ktrp=$slKtrp --rbSize=$slGrantRbs --pscchRbs=$pscchRbs --pscchTrp=$pscchTrp --ctrlError=$ctrlerror --ctrlDropOnCol=$droponcollisionPscch --onoff=$onoff --syncTxThreshOoC=$syncTxThreshOoC --filterCoefficient=$filterCoefficient --syncRefMinHyst=$syncRefMinHyst --syncRefDiffHyst=$syncRefDiffHyst  --interScanTimeMin=$interScanTimeMin --interScanTimeMax=$interScanTimeMax --scanTime=$scanTime --measTime=$measTime --evalTime=$evalTime --firstScanTimeMin=$firstScanTimeMin --firstScanTimeMax=$firstScanTimeMax --unsyncSl=$unsyncSl --slSyncActive=$slSyncActive "
+	arguments=" --responders=$resp --groups=$grp --ring=$rings --isd=$isd --simTime=$stime --respMaxPkt=$rMaxPck --respPktSize=$rPckSize --respPktIntvl=$rPckInt --slPeriod=$slPeriod --mcs=$slMcs --ktrp=$slKtrp --rbSize=$slGrantRbs --pscchRbs=$pscchRbs --pscchTrp=$pscchTrp --ctrlError=$ctrlerror --dropOnCol=$dropOnCollision --onoff=$onoff --syncTxThreshOoC=$syncTxThreshOoC --filterCoefficient=$filterCoefficient --syncRefMinHyst=$syncRefMinHyst --syncRefDiffHyst=$syncRefDiffHyst  --interScanTimeMin=$interScanTimeMin --interScanTimeMax=$interScanTimeMax --scanTime=$scanTime --measTime=$measTime --evalTime=$evalTime --firstScanTimeMin=$firstScanTimeMin --firstScanTimeMax=$firstScanTimeMax --unsyncSl=$unsyncSl --slSyncActive=$slSyncActive "
 
 	./waf #First compilation to avoid problems of simultaneous compilation when using simultaneous execution
 

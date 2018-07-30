@@ -164,7 +164,7 @@ LteSlDiscResourcePoolFactory::CreatePool ()
       NS_FATAL_ERROR ("UNSUPPORTED POOL SELECTION");
     }
   m_pool.txParameters.ueSelectedResourceConfig.havePoolSelectionRsrpBased = m_rsrpBased;
-  if (m_rsrpBased && m_rsrpThreshLow >= 0 && m_rsrpThreshLow <= 7 && m_rsrpThreshHigh >= 0 && m_rsrpThreshHigh <= 7 && m_rsrpThreshLow <= m_rsrpThreshHigh)
+  if (m_rsrpBased && m_rsrpThreshLow <= 7 && m_rsrpThreshHigh <= 7 && m_rsrpThreshLow <= m_rsrpThreshHigh)
     {
       m_pool.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow = m_rsrpThreshLow;
       m_pool.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh = m_rsrpThreshHigh;

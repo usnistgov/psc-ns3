@@ -1323,18 +1323,21 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
           if (m_discTxPool.m_pool->GetSchedulingType () == SidelinkDiscResourcePool::UE_SELECTED)
             {
-              //use txProbability
-              DiscGrant grant;
-              double p1 = m_p1UniformVariable->GetValue (0, 1);
-              double txProbability = m_discTxPool.m_pool->GetTxProbability (); //calculate txProbability
-              NS_LOG_DEBUG("txProbability = " << txProbability << " % ");
-              if (p1 <= txProbability / 100.0)
+              if (m_discTxApps.size () > 0)
                 {
-                  grant.m_resPsdch = m_resUniformVariable->GetInteger (0, m_discTxPool.m_npsdch - 1);
-                  grant.m_rnti = m_rnti;
-                  m_discTxPool.m_nextGrant = grant;
-                  m_discTxPool.m_grant_received = true;
-                  NS_LOG_INFO ("UE selected grant: resource =" << (uint16_t) grant.m_resPsdch << "/" << m_discTxPool.m_npsdch);
+                  //use txProbability
+                  DiscGrant grant;
+                  double p1 = m_p1UniformVariable->GetValue (0, 1);
+                  double txProbability = m_discTxPool.m_pool->GetTxProbability (); //calculate txProbability
+                  NS_LOG_DEBUG("txProbability = " << txProbability << " % ");
+                  if (p1 <= txProbability / 100.0)
+                    {
+                      grant.m_resPsdch = m_resUniformVariable->GetInteger (0, m_discTxPool.m_npsdch - 1);
+                      grant.m_rnti = m_rnti;
+                      m_discTxPool.m_nextGrant = grant;
+                      m_discTxPool.m_grant_received = true;
+                      NS_LOG_INFO ("UE selected grant: resource =" << (uint16_t) grant.m_resPsdch << "/" << m_discTxPool.m_npsdch);
+                    }
                 }
             }
           else //scheduled
