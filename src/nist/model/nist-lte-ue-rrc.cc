@@ -904,7 +904,8 @@ NistLteUeRrc::DoActivateSidelinkRadioBearer (uint32_t group, bool tx, bool rx)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ASSERT (m_sidelinkConfiguration->GetSidelinkRadioBearer (m_sidelinkConfiguration->m_sourceL2Id, group) == NULL);
+  NS_ASSERT_MSG(m_sidelinkConfiguration->GetSidelinkRadioBearer (m_sidelinkConfiguration->m_sourceL2Id, group) == NULL,
+                 "Sidelink bearer with src="<< m_sidelinkConfiguration->m_sourceL2Id << " and group="<< group <<" is already installed.");
   
   switch (m_state)
     {
