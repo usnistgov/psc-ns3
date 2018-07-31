@@ -1019,9 +1019,9 @@ SidelinkCommResourcePool::GenerateGoldSequence ()
 
   //initialize x1
   x1[0] = 1;
-  for (uint32_t i = 0; i < 30; ++i)
+  for (uint32_t i = 1; i < 31; ++i)
     {
-      x1[i + 1] = 0;
+      x1[i] = 0;
     }
 
   //initialize x2
@@ -1034,7 +1034,7 @@ SidelinkCommResourcePool::GenerateGoldSequence ()
     }
 
   //once we have generated the initial values we must solve for all additional values
-  for (uint32_t i = 0; i < Nc + maxMpn + 1; ++i)
+  for (uint32_t i = 0; i < Nc + maxMpn; ++i)
     {
       x1[i + 31] = (x1[i + 3] + x1[i]) % 2;
       x2[i + 31] = (x2[i + 3] + x2[i + 2] + x2[i + 1] + x2[i]) % 2;

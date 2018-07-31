@@ -3845,49 +3845,55 @@ LteUeRrc::SendSidelinkUeInformation ()
 
       //  if configuration to transmit Sidelink communication
       //    set commTxResourceReq with Sidelink frequency and list of destination
-      if (it->second.haveSib18)
+      if (m_sidelinkConfiguration->IsSlEnabled ())
         {
-          if (m_sidelinkConfiguration->IsRxInterested ())
+          if (it->second.haveSib18)
             {
-              sidelinkUeInformation.haveCommRxInterestedFreq = true;
-              sidelinkUeInformation.commRxInterestedFreq = GetUlEarfcn ();
-            }
-          if (m_sidelinkConfiguration->IsTxInterested ())
-            {
-              std::list <uint32_t> destinations = m_sidelinkConfiguration->GetTxDestinations ();
-              sidelinkUeInformation.haveCommTxResourceReq = true;
-              sidelinkUeInformation.slCommTxResourceReq.carrierFreq = GetUlEarfcn ();
-              sidelinkUeInformation.slCommTxResourceReq.slDestinationInfoList.nbDestinations = destinations.size ();
-              std::list <uint32_t>::iterator it;
-              int index = 0;
-              for (it = destinations.begin() ; it != destinations.end() ; it++)
+              if (m_sidelinkConfiguration->IsRxInterested ())
                 {
-                  sidelinkUeInformation.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[index++] = *it;
+                  sidelinkUeInformation.haveCommRxInterestedFreq = true;
+                  sidelinkUeInformation.commRxInterestedFreq = GetUlEarfcn ();
+                }
+              if (m_sidelinkConfiguration->IsTxInterested ())
+                {
+                  std::list <uint32_t> destinations = m_sidelinkConfiguration->GetTxDestinations ();
+                  sidelinkUeInformation.haveCommTxResourceReq = true;
+                  sidelinkUeInformation.slCommTxResourceReq.carrierFreq = GetUlEarfcn ();
+                  sidelinkUeInformation.slCommTxResourceReq.slDestinationInfoList.nbDestinations = destinations.size ();
+                  std::list <uint32_t>::iterator it;
+                  int index = 0;
+                  for (it = destinations.begin (); it != destinations.end (); it++)
+                    {
+                      sidelinkUeInformation.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[index++] = *it;
+                    }
                 }
             }
         }
 
-        // similar for SIB 19
-        if (it->second.haveSib19)
-          {
-            // UE interested in monitoring discovery announcements
-            if ((m_sidelinkConfiguration->IsMonitoringInterested ()) && (m_sidelinkConfiguration->GetDiscInterFreq () ==  GetUlEarfcn ()))
-              {
-                sidelinkUeInformation.haveDiscRxInterest = true;
-                sidelinkUeInformation.discRxInterest = true;
-              }
-            // UE interested in transmit discovery announcements
-            if (m_sidelinkConfiguration->IsAnnouncingInterested ())
-              {
-                sidelinkUeInformation.haveDiscTxResourceReq = true;
-                NS_ASSERT_MSG (m_sidelinkConfiguration->GetDiscTxResources ()>0, "can't have 0 or negative resources for the discovery announcement. Check if DiscTxResources is defined for in-coverage or eNBs disabled for ou-of-coverage");
-                sidelinkUeInformation.discTxResourceReq = m_sidelinkConfiguration->GetDiscTxResources ();
-              }
-          }
-        // Record time
-        m_sidelinkConfiguration->RecordTransmissionOfSidelinkUeInformation ();
-        // send the message to eNodeB
-        m_rrcSapUser->SendSidelinkUeInformation (sidelinkUeInformation);
+      // similar for SIB 19
+      if (m_sidelinkConfiguration->IsDiscEnabled ())
+        {
+          if (it->second.haveSib19)
+            {
+              // UE interested in monitoring discovery announcements
+              if ((m_sidelinkConfiguration->IsMonitoringInterested ()) && (m_sidelinkConfiguration->GetDiscInterFreq () ==  GetUlEarfcn ()))
+                {
+                  sidelinkUeInformation.haveDiscRxInterest = true;
+                  sidelinkUeInformation.discRxInterest = true;
+                }
+              // UE interested in transmit discovery announcements
+              if (m_sidelinkConfiguration->IsAnnouncingInterested ())
+                {
+                  sidelinkUeInformation.haveDiscTxResourceReq = true;
+                  NS_ASSERT_MSG (m_sidelinkConfiguration->GetDiscTxResources () > 0, "can't have 0 or negative resources for the discovery announcement. Check if DiscTxResources is defined for in-coverage or eNBs disabled for ou-of-coverage");
+                  sidelinkUeInformation.discTxResourceReq = m_sidelinkConfiguration->GetDiscTxResources ();
+                }
+            }
+        }
+      // Record time
+      m_sidelinkConfiguration->RecordTransmissionOfSidelinkUeInformation ();
+      // send the message to eNodeB
+      m_rrcSapUser->SendSidelinkUeInformation (sidelinkUeInformation);
     }
 }
 

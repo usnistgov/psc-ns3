@@ -61,7 +61,7 @@ TypeId LteSlUeRrc::GetTypeId (void)
   return tid;
 }
 LteSlUeRrc::LteSlUeRrc ()
-  : m_slEnabled (false)
+  : m_slEnabled (false), m_discEnabled (false)
 {
   NS_LOG_FUNCTION (this);
   m_rand = CreateObject<UniformRandomVariable> ();

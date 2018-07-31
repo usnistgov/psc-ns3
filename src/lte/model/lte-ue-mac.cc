@@ -383,6 +383,7 @@ LteUeMac::LteUeMac ()
      m_freshSlBsr (false),
      m_setTrpIndex (0),
      m_useSetTrpIndex (false),
+     m_slHasDataToTx (false),
      m_sidelinkEnabled (false)
   
 {
@@ -404,6 +405,8 @@ LteUeMac::LteUeMac ()
   m_p1UniformVariable = CreateObject<UniformRandomVariable> ();
   m_resUniformVariable = CreateObject<UniformRandomVariable> ();
   m_componentCarrierId = 0;
+  m_discTxPool.m_nextDiscPeriod.frameNo = 0;
+  m_discTxPool.m_nextDiscPeriod.subframeNo = 0;
 }
 
 
@@ -890,6 +893,8 @@ LteUeMac::DoSetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool)
   //adjust because scheduler starts with frame/subframe = 1
   info.m_nextDiscPeriod.frameNo++;
   info.m_nextDiscPeriod.subframeNo++;
+  NS_ABORT_MSG_IF (info.m_nextDiscPeriod.frameNo > 1024 || info.m_nextDiscPeriod.subframeNo > 10,
+                   "Invalid frame or subframe number");
 
   info.m_grant_received = false;
   m_discTxPool = info;
@@ -942,6 +947,8 @@ LteUeMac::DoAddSlCommTxPool (uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> p
   //adjust because scheduler starts with frame/subframe = 1
   info.m_nextScPeriod.frameNo++;
   info.m_nextScPeriod.subframeNo++;
+  NS_ABORT_MSG_IF (info.m_nextScPeriod.frameNo > 1024 || info.m_nextScPeriod.subframeNo > 10,
+                   "Invalid frame or subframe number");
   info.m_grant_received = false;
 
   m_sidelinkTxPoolsMap.insert (std::pair<uint32_t, PoolInfo > (dstL2Id, info));
@@ -1310,26 +1317,27 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       NS_LOG_INFO ("Adjusted Frame no. " << frameNo << " Subframe no. " << subframeNo);
 
       //Sidelink Discovery
-
-      if (frameNo == m_discTxPool.m_nextDiscPeriod.frameNo && subframeNo == m_discTxPool.m_nextDiscPeriod.subframeNo)
+      if (m_discTxApps.size () > 0)
         {
-          //define periods and frames
-          m_discTxPool.m_currentDiscPeriod = m_discTxPool.m_nextDiscPeriod;
-          m_discTxPool.m_nextDiscPeriod = m_discTxPool.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
-          m_discTxPool.m_nextDiscPeriod.frameNo++;
-          m_discTxPool.m_nextDiscPeriod.subframeNo++;
-          NS_LOG_INFO ("Starting new discovery period " << ". Next period at " << m_discTxPool.m_nextDiscPeriod.frameNo << "/"
-                                                        << m_discTxPool.m_nextDiscPeriod.subframeNo);
-
-          if (m_discTxPool.m_pool->GetSchedulingType () == SidelinkDiscResourcePool::UE_SELECTED)
+          if (frameNo == m_discTxPool.m_nextDiscPeriod.frameNo && subframeNo == m_discTxPool.m_nextDiscPeriod.subframeNo)
             {
-              if (m_discTxApps.size () > 0)
+              //define periods and frames
+              m_discTxPool.m_currentDiscPeriod = m_discTxPool.m_nextDiscPeriod;
+              m_discTxPool.m_nextDiscPeriod = m_discTxPool.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
+              m_discTxPool.m_nextDiscPeriod.frameNo++;
+              m_discTxPool.m_nextDiscPeriod.subframeNo++;
+              NS_LOG_INFO ("Starting new discovery period " << ". Next period at " << m_discTxPool.m_nextDiscPeriod.frameNo << "/"
+                                                                          << m_discTxPool.m_nextDiscPeriod.subframeNo);
+              NS_ABORT_MSG_IF (m_discTxPool.m_nextDiscPeriod.frameNo > 1024 || m_discTxPool.m_nextDiscPeriod.subframeNo > 10,
+                               "Invalid frame or subframe number");
+
+              if (m_discTxPool.m_pool->GetSchedulingType () == SidelinkDiscResourcePool::UE_SELECTED)
                 {
                   //use txProbability
                   DiscGrant grant;
                   double p1 = m_p1UniformVariable->GetValue (0, 1);
-                  double txProbability = m_discTxPool.m_pool->GetTxProbability (); //calculate txProbability
-                  NS_LOG_DEBUG("txProbability = " << txProbability << " % ");
+                  double txProbability = m_discTxPool.m_pool->GetTxProbability ();       //calculate txProbability
+                  NS_LOG_DEBUG ("txProbability = " << txProbability << " % ");
                   if (p1 <= txProbability / 100.0)
                     {
                       grant.m_resPsdch = m_resUniformVariable->GetInteger (0, m_discTxPool.m_npsdch - 1);
@@ -1339,38 +1347,40 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       NS_LOG_INFO ("UE selected grant: resource =" << (uint16_t) grant.m_resPsdch << "/" << m_discTxPool.m_npsdch);
                     }
                 }
-            }
-          else //scheduled
-            {
-              //TODO
-              //use defined grant : SL-TF-IndexPair
-            }
-
-          //if we received a grant
-          if (m_discTxPool.m_grant_received)
-            {
-              m_discTxPool.m_currentGrant = m_discTxPool.m_nextGrant;
-              NS_LOG_INFO ("Discovery grant received resource " << (uint32_t) m_discTxPool.m_currentGrant.m_resPsdch);
-
-              SidelinkDiscResourcePool::SubframeInfo tmp;
-              tmp.frameNo = m_discTxPool.m_currentDiscPeriod.frameNo - 1;
-              tmp.subframeNo = m_discTxPool.m_currentDiscPeriod.subframeNo - 1;
-
-              m_discTxPool.m_psdchTx = m_discTxPool.m_pool->GetPsdchTransmissions (m_discTxPool.m_currentGrant.m_resPsdch);
-
-              for (std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator txIt = m_discTxPool.m_psdchTx.begin ();
-                   txIt != m_discTxPool.m_psdchTx.end (); txIt++)
+              else   //scheduled
                 {
-                  txIt->subframe = txIt->subframe + tmp;
-                  //adjust for index starting at 1
-                  txIt->subframe.frameNo++;
-                  txIt->subframe.subframeNo++;
-                  NS_LOG_INFO ("PSDCH: Subframe " << txIt->subframe.frameNo << "/" << txIt->subframe.subframeNo
-                                                  << ": rbStart=" << (uint32_t) txIt->rbStart << ", rbLen=" << (uint32_t) txIt->nbRb);
-                  //Inform PHY: find a way to inform the PHY layer of the resources
-                  m_uePhySapProvider->SetDiscGrantInfo (m_discTxPool.m_currentGrant.m_resPsdch);
-                  //clear the grant
-                  m_discTxPool.m_grant_received = false;
+                  //TODO
+                  //use defined grant : SL-TF-IndexPair
+                }
+
+              //if we received a grant
+              if (m_discTxPool.m_grant_received)
+                {
+                  m_discTxPool.m_currentGrant = m_discTxPool.m_nextGrant;
+                  NS_LOG_INFO ("Discovery grant received resource " << (uint32_t) m_discTxPool.m_currentGrant.m_resPsdch);
+
+                  SidelinkDiscResourcePool::SubframeInfo tmp;
+                  tmp.frameNo = m_discTxPool.m_currentDiscPeriod.frameNo - 1;
+                  tmp.subframeNo = m_discTxPool.m_currentDiscPeriod.subframeNo - 1;
+
+                  m_discTxPool.m_psdchTx = m_discTxPool.m_pool->GetPsdchTransmissions (m_discTxPool.m_currentGrant.m_resPsdch);
+
+                  for (std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator txIt = m_discTxPool.m_psdchTx.begin ();
+                       txIt != m_discTxPool.m_psdchTx.end (); txIt++)
+                    {
+                      txIt->subframe = txIt->subframe + tmp;
+                      //adjust for index starting at 1
+                      txIt->subframe.frameNo++;
+                      txIt->subframe.subframeNo++;
+                      NS_LOG_INFO ("PSDCH: Subframe " << txIt->subframe.frameNo << "/" << txIt->subframe.subframeNo
+                                                      << ": rbStart=" << (uint32_t) txIt->rbStart << ", rbLen=" << (uint32_t) txIt->nbRb);
+                      NS_ABORT_MSG_IF (txIt->subframe.frameNo > 1024 || txIt->subframe.subframeNo > 10,
+                                       "Invalid frame or subframe number");
+                      //Inform PHY: find a way to inform the PHY layer of the resources
+                      m_uePhySapProvider->SetDiscGrantInfo (m_discTxPool.m_currentGrant.m_resPsdch);
+                      //clear the grant
+                      m_discTxPool.m_grant_received = false;
+                    }
                 }
             }
         }
@@ -1419,6 +1429,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
               poolIt->second.m_nextScPeriod.subframeNo++;
               NS_LOG_INFO ("Starting new SC period for pool of group " << poolIt->first << ". Next period at "
                                                                        << poolIt->second.m_nextScPeriod.frameNo << "/" << poolIt->second.m_nextScPeriod.subframeNo);
+              NS_ABORT_MSG_IF (poolIt->second.m_nextScPeriod.frameNo > 1024 || poolIt->second.m_nextScPeriod.subframeNo > 10,
+                               "Invalid frame or subframe number");
 
               Ptr<PacketBurst> emptyPb = CreateObject <PacketBurst> ();
               poolIt->second.m_miSlHarqProcessPacket = emptyPb;
@@ -1576,6 +1588,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       txIt->subframe.subframeNo++;
                       NS_LOG_INFO ("PSCCH: Subframe " << txIt->subframe.frameNo << "/" << txIt->subframe.subframeNo
                                                       << ": rbStart=" << (uint32_t) txIt->rbStart << ", rbLen=" << (uint32_t) txIt->nbRb);
+                      NS_ABORT_MSG_IF (txIt->subframe.frameNo > 1024 || txIt->subframe.subframeNo > 10,
+                                       "Invalid frame or subframe number");
                       switch (tx_counter)
                         {
                         case 1:
@@ -1603,6 +1617,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       NS_LOG_INFO ("PSSCH: Subframe " << txIt->subframe.frameNo << "/"
                                                       << txIt->subframe.subframeNo << ": rbStart=" << (uint32_t) txIt->rbStart
                                                       << ", rbLen=" << (uint32_t) txIt->nbRb);
+                      NS_ABORT_MSG_IF (txIt->subframe.frameNo > 1024 || txIt->subframe.subframeNo > 10,
+                                                             "Invalid frame or subframe number");
                     }
 
                   //compute the TB size
@@ -1886,6 +1902,8 @@ LteUeMac::DoNotifyChangeOfTiming(uint32_t frameNo, uint32_t subframeNo)
       poolIt->second.m_nextScPeriod.subframeNo++;
       NS_LOG_INFO ("Adapting the period for pool of group " << poolIt->first << ". Next period at "
                    << poolIt->second.m_nextScPeriod.frameNo << "/" << poolIt->second.m_nextScPeriod.subframeNo);
+      NS_ABORT_MSG_IF (poolIt->second.m_nextScPeriod.frameNo > 1024 || poolIt->second.m_nextScPeriod.subframeNo > 10,
+                                             "Invalid frame or subframe number");
     }
 }
 

@@ -529,6 +529,8 @@ UeManager::ReleaseDataRadioBearer (uint8_t drbid)
   LteRrcSap::RrcConnectionReconfiguration msg;
   msg.haveMeasConfig = false;
   msg.haveMobilityControlInfo = false;
+  msg.haveSlCommConfig = false;
+  msg.haveSlDiscConfig = false;
   msg.radioResourceConfigDedicated = rrcd;
   msg.haveRadioResourceConfigDedicated = true;
   // ToDo: Resend in any case this configuration
@@ -1213,6 +1215,8 @@ UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
       msg2.haveMeasConfig = false;
       msg2.haveMobilityControlInfo = false;
       msg2.haveRadioResourceConfigDedicated = false;
+      msg2.haveNonCriticalExtension = false;
+      msg2.haveSlDiscConfig = false;
       msg2.haveSlCommConfig = true;
       msg2.slCommConfig = dedicatedResource;
       //RRC Connection Reconfiguration towards UE
@@ -1231,6 +1235,8 @@ UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
       msg2.haveMeasConfig = false;
       msg2.haveMobilityControlInfo = false;
       msg2.haveRadioResourceConfigDedicated = false;
+      msg2.haveNonCriticalExtension = false;
+      msg2.haveSlDiscConfig = false;
       msg2.haveSlCommConfig = true;
       msg2.slCommConfig = dedicatedResource;
       //RRC Connection Reconfiguration towards UE
@@ -1346,6 +1352,8 @@ UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
           msg.haveMeasConfig = false;
           msg.haveMobilityControlInfo = false;
           msg.haveRadioResourceConfigDedicated = false;
+          msg.haveNonCriticalExtension = false;
+          msg.haveSlCommConfig = false;
           msg.haveSlDiscConfig = true;
           msg.slDiscConfig = discResource;
           // send pool info to the mac
@@ -1360,6 +1368,8 @@ UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
           msg.haveMeasConfig = false;
           msg.haveMobilityControlInfo = false;
           msg.haveRadioResourceConfigDedicated = false;
+          msg.haveNonCriticalExtension = false;
+          msg.haveSlCommConfig = false;
           msg.haveSlDiscConfig = true;
           msg.slDiscConfig = discResource;
           m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg);
