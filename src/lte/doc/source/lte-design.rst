@@ -4920,6 +4920,13 @@ Based on the BLER computation in ``LteSpectrumPhy``, the messages received on Si
 
 For first type of messages, we compute the average SINR per RB for each received TB and sort them in the descending order of the SINR. Then, we try to decode them by computing the BLER with the help of ``LteNistErrorModel``. For the second type of signals, we have the transport block information available in ``m_expectedSlTbs`` given by ``LteUePhy`` class. With this information, we perform a TB to SINR index mapping and retrieve the SINR of the expected TB from the perceived SINR vector. Then, this SINR and the HARQ info (if it is the retransmission) along with other parameters are used to compute the BLER of this message. Finally, the third type of messages, similar to the first type, are decoded by first storing them in desending order of the SINR, since we do not have the prior information about the TB. The only difference, is that the discovery messages can be retransmitted up to 3 times, therefore, we maintain the HARQ history of each transmission and use it along with other parameters for computing the BLER. We also note that for type 1 and type 3 messages, if the received TBs collide, i.e., they use the same RBs, the UE will try to decode the sorted TBs one at a time, and if any of the TB is decoded the remaining TB(s) are marked corrupted, thus, are not received by the UE. Alternatively, by setting the ``DropRbOnCollisionEnabled`` attribute all the colliding TBs can be dropped irrespective of their perceived SINR.
 
+-----------------
+Frequency Hopping
+-----------------
+
+The D2D model also supports the frequency hopping on Sidelink PSSCH for the "UeSelected" resource scheduling, i.e., MODE 2. At the time of writing this documentation, only the *inter-subframe* hopping mode, with constant (i.e., Type 1) and pseudo-random (Type 2) is supported.
+
+**Note: The documentation for this section will be extended in the later release of the D2D code. Users, interested to gain further information are referred to** [NISTFREQHOPP]_
 
 
 .. _sec-helpers:

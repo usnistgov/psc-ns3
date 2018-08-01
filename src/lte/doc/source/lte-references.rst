@@ -178,10 +178,13 @@ References
    in Proceedings of the Workshop on ns-3, 13-14 June 2017, Porto
    (Portugal).
 
-.. [NISTBLERD2D] J. Wang, R. Rouil `"BLER Performance Evaluation of LTE Device-to-Device Communications. 
+.. [NISTBLERD2D] J. Wang, R. Rouil `"BLER Performance Evaluation of LTE Device-to-Device Communications.
    Technical Report. National Institute of Standards and Technology, Gaithersburg, MD."
    <https://www.nist.gov/publications/bler-performance-evaluation-lte-device-device-communications>`_,.
 
+.. [NISTFREQHOPP] Cintrón, F.J., `"Performance Evaluation of LTE Device-to-Device Out-of-Coverage Communication
+   with Frequency Hopping Resource Scheduling"
+   <https://nvlpubs.nist.gov/nistpubs/ir/2018/NIST.IR.8220.pdf>`_,.
 
 .. [ASHamza2013] Abdelbaset S. Hamza, Shady S. Khalifa, Haitham S. Hamza, and Khaled Elsayed, "A Survey on Inter-Cell Interference Coordination Techniques in OFDMA-based Cellular Networks", IEEE Communications Surveys & Tutorials, March 19, 2013
 

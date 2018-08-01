@@ -3347,7 +3347,9 @@ LteUeRrc::DoActivateSidelinkRadioBearer (uint32_t group, bool tx, bool rx)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ASSERT (m_sidelinkConfiguration->GetSidelinkRadioBearer (m_sidelinkConfiguration->m_sourceL2Id, group) == NULL);
+  NS_ASSERT_MSG (m_sidelinkConfiguration->GetSidelinkRadioBearer (m_sidelinkConfiguration->m_sourceL2Id, group) == NULL,
+                   "Sidelink bearer with source L2 id = "<< m_sidelinkConfiguration->m_sourceL2Id << " and group id = "
+                   << group <<" is already established.");
 
   switch (m_state)
   {
