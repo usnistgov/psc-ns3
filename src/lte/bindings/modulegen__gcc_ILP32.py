@@ -1114,6 +1114,12 @@ def register_types(module):
     module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## application.h (module 'network'): ns3::Application [class]
     module.add_class('Application', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )', u'ns3::Application::DelayAddressCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )*', u'ns3::Application::DelayAddressCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )&', u'ns3::Application::DelayAddressCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )', u'ns3::Application::StateTransitionCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )*', u'ns3::Application::StateTransitionCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )&', u'ns3::Application::StateTransitionCallback&')
     ## lte-asn1-header.h (module 'lte'): ns3::Asn1Header [class]
     module.add_class('Asn1Header', parent=root_module['ns3::Header'])
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
@@ -1415,9 +1421,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, ns3::LteUeRrc::State, ns3::LteUeRrc::State )', u'ns3::LteUeRrc::StateTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, ns3::LteUeRrc::State, ns3::LteUeRrc::State )*', u'ns3::LteUeRrc::StateTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, ns3::LteUeRrc::State, ns3::LteUeRrc::State )&', u'ns3::LteUeRrc::StateTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )', u'ns3::LteUeRrc::SCarrierConfiguredCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )*', u'ns3::LteUeRrc::SCarrierConfiguredCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )&', u'ns3::LteUeRrc::SCarrierConfiguredCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )', u'ns3::LteUeRrc::SCarrierConfiguredTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )*', u'ns3::LteUeRrc::SCarrierConfiguredTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )&', u'ns3::LteUeRrc::SCarrierConfiguredTracedCallback&')
     ## lte-rrc-protocol-ideal.h (module 'lte'): ns3::LteUeRrcProtocolIdeal [class]
     module.add_class('LteUeRrcProtocolIdeal', parent=root_module['ns3::Object'])
     ## lte-rrc-protocol-real.h (module 'lte'): ns3::LteUeRrcProtocolReal [class]
@@ -1484,6 +1490,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
@@ -14278,19 +14287,19 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
     ## channel.h (module 'network'): ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## channel.h (module 'network'): uint32_t ns3::Channel::GetNDevices() const [member function]
+    ## channel.h (module 'network'): std::size_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]

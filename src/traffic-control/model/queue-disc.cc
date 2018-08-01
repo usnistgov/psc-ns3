@@ -317,7 +317,7 @@ TypeId QueueDisc::GetTypeId (void)
     .AddTraceSource ("SojournTime",
                      "Sojourn time of the last packet dequeued from the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_sojourn),
-                     "ns3::TracedValueCallback::Time")
+                     "ns3::Time::TracedCallback")
   ;
   return tid;
 }
@@ -325,9 +325,9 @@ TypeId QueueDisc::GetTypeId (void)
 QueueDisc::QueueDisc (QueueDiscSizePolicy policy)
   :  m_nPackets (0),
      m_nBytes (0),
-     m_sojourn (0),
      m_maxSize (QueueSize ("1p")),         // to avoid that setting the mode at construction time is ignored
      m_running (false),
+     m_peeked (false),
      m_sizePolicy (policy),
      m_prohibitChangeMode (false)
 {
@@ -689,15 +689,23 @@ QueueDisc::PacketEnqueued (Ptr<const QueueDiscItem> item)
 void
 QueueDisc::PacketDequeued (Ptr<const QueueDiscItem> item)
 {
-  m_nPackets--;
-  m_nBytes -= item->GetSize ();
-  m_stats.nTotalDequeuedPackets++;
-  m_stats.nTotalDequeuedBytes += item->GetSize ();
+  // If the queue disc asked the internal queue or the child queue disc to
+  // dequeue a packet because a peek operation was requested, the packet is
+  // still held by the queue disc, hence we do not need to update statistics
+  // and fire the dequeue trace. This function will be explicitly called when
+  // the packet will be actually dequeued.
+  if (!m_peeked)
+    {
+      m_nPackets--;
+      m_nBytes -= item->GetSize ();
+      m_stats.nTotalDequeuedPackets++;
+      m_stats.nTotalDequeuedBytes += item->GetSize ();
 
-  m_sojourn = Simulator::Now () - item->GetTimeStamp ();
+      m_sojourn (Simulator::Now () - item->GetTimeStamp ());
 
-  NS_LOG_LOGIC ("m_traceDequeue (p)");
-  m_traceDequeue (item);
+      NS_LOG_LOGIC ("m_traceDequeue (p)");
+      m_traceDequeue (item);
+    }
 }
 
 void
@@ -768,6 +776,17 @@ QueueDisc::DropAfterDequeue (Ptr<const QueueDiscItem> item, const char* reason)
   else
     {
       m_stats.nDroppedBytesAfterDequeue[reason] = item->GetSize ();
+    }
+
+  // if in the context of a peek request a dequeued packet is dropped, we need
+  // to update the statistics and fire the dequeue trace before firing the drop
+  // after dequeue trace
+  if (m_peeked)
+    {
+      // temporarily set m_peeked to false, otherwise PacketDequeued does nothing
+      m_peeked = false;
+      PacketDequeued (item);
+      m_peeked = true;
     }
 
   NS_LOG_DEBUG ("Total packets/bytes dropped after dequeue: "
@@ -869,6 +888,15 @@ QueueDisc::Dequeue (void)
   if (item)
     {
       m_requeued = 0;
+      if (m_peeked)
+        {
+          // If the packet was requeued because a peek operation was requested
+          // (which is the case here because DequeuePacket calls Dequeue only
+          // when m_requeued is null), we need to explicitly call PacketDequeued
+          // to update statistics about dequeued packets and fire the dequeue trace.
+          m_peeked = false;
+          PacketDequeued (item);
+        }
     }
   else
     {
@@ -895,7 +923,13 @@ QueueDisc::DoPeek (void)
 
   if (!m_requeued)
     {
+      m_peeked = true;
       m_requeued = Dequeue ();
+      // if no packet is returned, reset the m_peeked flag
+      if (!m_requeued)
+        {
+          m_peeked = false;
+        }
     }
   return m_requeued;
 }
@@ -972,6 +1006,14 @@ QueueDisc::DequeuePacket ()
           {
             item = m_requeued;
             m_requeued = 0;
+            if (m_peeked)
+              {
+                // If the packet was requeued because a peek operation was requested
+                // we need to explicitly call PacketDequeued to update statistics
+                // about dequeued packets and fire the dequeue trace.
+                m_peeked = false;
+                PacketDequeued (item);
+              }
           }
     }
   else

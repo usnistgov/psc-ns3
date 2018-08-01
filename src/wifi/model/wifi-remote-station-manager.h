@@ -78,7 +78,7 @@ private:
   double CalculateAveragingCoefficient ();
   /// averaging coefficient depends on the memory time
   Time m_memoryTime;
-  /// when last update has occured
+  /// when last update has occurred
   Time m_lastUpdate;
   /// moving percentage of failed frames
   double m_failAvg;
@@ -520,7 +520,7 @@ public:
    */
   void AddAllSupportedMcs (Mac48Address address);
   /**
-   * Invoked in a STA or AP to delete all of the suppported MCS by a destination.
+   * Invoked in a STA or AP to delete all of the supported MCS by a destination.
    *
    * \param address the address of the station being recorded
    */
@@ -659,8 +659,10 @@ public:
    *
    * \param address the address of the receiver
    * \param header MAC header of the DATA packet
+   * \param packetSize the size of the DATA packet
    */
-  void ReportDataFailed (Mac48Address address, const WifiMacHeader *header);
+  void ReportDataFailed (Mac48Address address, const WifiMacHeader *header,
+                         uint32_t packetSize);
   /**
    * Should be invoked whenever we receive the Cts associated to an RTS
    * we just sent. Note that we also get the SNR of the RTS we sent since
@@ -683,12 +685,14 @@ public:
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
+   * \param packetSize the size of the DATA packet
    */
   void ReportDataOk (Mac48Address address, const WifiMacHeader *header,
-                     double ackSnr, WifiMode ackMode, double dataSnr);
+                     double ackSnr, WifiMode ackMode, double dataSnr,
+                     uint32_t packetSize);
   /**
    * Should be invoked after calling ReportRtsFailed if
-   * NeedRtsRetransmission returns false
+   * NeedRetransmission returns false
    *
    * \param address the address of the receiver
    * \param header MAC header of the DATA packet
@@ -696,12 +700,14 @@ public:
   void ReportFinalRtsFailed (Mac48Address address, const WifiMacHeader *header);
   /**
    * Should be invoked after calling ReportDataFailed if
-   * NeedDataRetransmission returns false
+   * NeedRetransmission returns false
    *
    * \param address the address of the receiver
    * \param header MAC header of the DATA packet
+   * \param packetSize the size of the DATA packet
    */
-  void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header);
+  void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header,
+                              uint32_t packetSize);
   /**
    * Typically called per A-MPDU, either when a Block ACK was successfully
    * received or when a BlockAckTimeout has elapsed.
@@ -753,21 +759,11 @@ public:
    * \param header MAC header
    * \param packet the packet to send
    *
-   * \return true if we want to restart a failed RTS/CTS handshake,
-   *         false otherwise.
-   */
-  bool NeedRtsRetransmission (Mac48Address address, const WifiMacHeader *header,
-                              Ptr<const Packet> packet);
-  /**
-   * \param address remote address
-   * \param header MAC header
-   * \param packet the packet to send
-   *
    * \return true if we want to resend a packet after a failed transmission attempt,
    *         false otherwise.
    */
-  bool NeedDataRetransmission (Mac48Address address, const WifiMacHeader *header,
-                               Ptr<const Packet> packet);
+  bool NeedRetransmission (Mac48Address address, const WifiMacHeader *header,
+                           Ptr<const Packet> packet);
   /**
    * \param address remote address
    * \param header MAC header
@@ -1083,30 +1079,16 @@ private:
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send
-   * \param normally indicates whether the normal 802.11 rts enable mechanism would
-   *        request that the rts is retransmitted or not.
-   *
-   * \return true if we want to restart a failed RTS/CTS handshake,
-   *         false otherwise.
-   *
-   * Note: This method is called after an rts/cts handshake has been attempted
-   *       and has failed.
-   */
-  virtual bool DoNeedRtsRetransmission (WifiRemoteStation *station,
-                                        Ptr<const Packet> packet, bool normally);
-  /**
-   * \param station the station that we need to communicate
-   * \param packet the packet to send
    * \param normally indicates whether the normal 802.11 data retransmission mechanism
    *        would request that the data is retransmitted or not.
    * \return true if we want to resend a packet after a failed transmission attempt,
    *         false otherwise.
    *
-   * Note: This method is called after a unicast packet transmission has been attempted
-   *       and has failed.
+   * Note: This method is called after any unicast packet transmission (control, management,
+   *       or data) has been attempted and has failed.
    */
-  virtual bool DoNeedDataRetransmission (WifiRemoteStation *station,
-                                         Ptr<const Packet> packet, bool normally);
+  virtual bool DoNeedRetransmission (WifiRemoteStation *station,
+                                     Ptr<const Packet> packet, bool normally);
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send

@@ -107,8 +107,9 @@ especially for queue discs for which it is not obvious what is the next
 packet that will be dequeued (e.g., queue discs having multiple internal
 queues or child queue discs or queue discs that drop packets after dequeue).
 Therefore, unless the subclass redefines the ``DoPeek`` method, calling ``Peek`` causes
-the next packet to be dequeued from the queue disc, though it is still retained
-within the queue disc.
+the next packet to be dequeued from the queue disc, though the packet is still
+considered to be part of the queue disc and the dequeue trace is fired when
+Dequeue is called and the packet is actually extracted from the queue disc.
 
 The C++ base class QueueDisc implements:
 
@@ -276,7 +277,7 @@ interface). In particular:
 
 * when notified that a netdevice queue interface has been aggregated, traffic control \
   aware devices can cache the pointer to the \
-  netdevice queue interface created by the traffic contol layer into a member variable. \
+  netdevice queue interface created by the traffic control layer into a member variable. \
   Also, multi-queue devices can set the number of device transmission queues and set the \
   select queue callback through the netdevice queue interface
 

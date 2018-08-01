@@ -438,6 +438,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
@@ -5777,19 +5780,19 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
     ## channel.h (module 'network'): ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## channel.h (module 'network'): uint32_t ns3::Channel::GetNDevices() const [member function]
+    ## channel.h (module 'network'): std::size_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]
@@ -5859,20 +5862,20 @@ def register_Ns3CsmaChannel_methods(root_module, cls):
     cls.add_method('GetNumActDevices', 
                    'uint32_t', 
                    [])
-    ## csma-channel.h (module 'csma'): uint32_t ns3::CsmaChannel::GetNDevices() const [member function]
+    ## csma-channel.h (module 'csma'): std::size_t ns3::CsmaChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::NetDevice> ns3::CsmaChannel::GetDevice(uint32_t i) const [member function]
+    ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::NetDevice> ns3::CsmaChannel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, is_virtual=True)
-    ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::CsmaNetDevice> ns3::CsmaChannel::GetCsmaDevice(uint32_t i) const [member function]
+    ## csma-channel.h (module 'csma'): ns3::Ptr<ns3::CsmaNetDevice> ns3::CsmaChannel::GetCsmaDevice(std::size_t i) const [member function]
     cls.add_method('GetCsmaDevice', 
                    'ns3::Ptr< ns3::CsmaNetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True)
     ## csma-channel.h (module 'csma'): ns3::DataRate ns3::CsmaChannel::GetDataRate() [member function]
     cls.add_method('GetDataRate', 

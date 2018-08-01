@@ -281,6 +281,12 @@ def register_types(module):
     module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## application.h (module 'network'): ns3::Application [class]
     module.add_class('Application', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )', u'ns3::Application::DelayAddressCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )*', u'ns3::Application::DelayAddressCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )&', u'ns3::Application::DelayAddressCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )', u'ns3::Application::StateTransitionCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )*', u'ns3::Application::StateTransitionCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )&', u'ns3::Application::StateTransitionCallback&')
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
@@ -410,6 +416,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')

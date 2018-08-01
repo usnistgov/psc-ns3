@@ -34,9 +34,9 @@
 #include "ns3/yans-wifi-channel.h"
 
 // This is an example that illustrates how 802.11n aggregation is configured.
-// It defines 4 independant Wi-Fi networks (working on different channels).
+// It defines 4 independent Wi-Fi networks (working on different channels).
 // Each network contains one access point and one station. Each station
-// continously transmits data packets to its respective AP.
+// continuously transmits data packets to its respective AP.
 //
 // Network topology (numbers in parentheses are channel numbers):
 //
@@ -57,7 +57,7 @@
 // The user can select the distance between the stations and the APs and can enable/disable the RTS/CTS mechanism.
 // Example: ./waf --run "wifi-aggregation --distance=10 --enableRts=0 --simulationTime=20"
 //
-// The output prints the throughput measured for the 4 cases/networks decribed above. When default aggregation parameters are enabled, the
+// The output prints the throughput measured for the 4 cases/networks described above. When default aggregation parameters are enabled, the
 // maximum A-MPDU size is 65 kB and the throughput is maximal. When aggregation is disabled, the throughput is about the half of the
 // physical bitrate as in legacy wifi networks. When only A-MSDU is enabled, the throughput is increased but is not maximal, since the maximum
 // A-MSDU size is limited to 7935 bytes (whereas the maximum A-MPDU size is limited to 65535 bytes). When A-MSDU and A-MPDU are both enabled
@@ -287,11 +287,16 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   /* Show results */
-  uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
-  double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  uint64_t totalPacketsThroughA = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughB = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughC = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughD = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
+
+  Simulator::Destroy ();
+
+  double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 59 || throughput > 60))
     {
@@ -299,8 +304,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with aggregation disabled: " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 30 || throughput > 30.5))
     {
@@ -308,8 +312,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with A-MPDU disabled and A-MSDU enabled (8kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 51 || throughput > 52))
     {
@@ -317,8 +320,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughD * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with A-MPDU enabled (32kB) and A-MSDU enabled (4kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 58 || throughput > 59))
     {

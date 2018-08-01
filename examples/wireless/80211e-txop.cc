@@ -35,7 +35,7 @@
 #include "ns3/wifi-mac.h"
 
 // This is an example that illustrates 802.11 QoS for different Access Categories.
-// It defines 4 independant Wi-Fi networks (working on different logical channels
+// It defines 4 independent Wi-Fi networks (working on different logical channels
 // on the same "ns3::YansWifiPhy" channel object).
 // Each network contains one access point and one station. Each station continuously
 // transmits data packets to its respective AP.
@@ -57,7 +57,7 @@
 // and can choose the payload size and the simulation duration.
 // Example: ./waf --run "80211e-txop --distance=10 --simulationTime=20 --payloadSize=1000"
 //
-// The output prints the throughput measured for the 4 cases/networks decribed above. When TXOP is enabled, results show
+// The output prints the throughput measured for the 4 cases/networks described above. When TXOP is enabled, results show
 // increased throughput since the channel is granted for a longer duration. TXOP is enabled by default for AC_VI and AC_VO,
 // so that they can use the channel for a longer duration than AC_BE and AC_BK.
 
@@ -315,11 +315,16 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   /* Show results */
-  uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
-  double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  uint64_t totalPacketsThroughA = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughB = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughC = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughD = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
+
+  Simulator::Destroy ();
+
+  double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_BE with default TXOP limit (0ms): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 28 || throughput > 29))
     {
@@ -327,8 +332,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_BE with non-default TXOP limit (3.008ms): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 35.5 || throughput > 36.5))
     {
@@ -336,8 +340,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_VI with default TXOP limit (3.008ms): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 36 || throughput > 37))
     {
@@ -345,8 +348,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughD * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput for AC_VI with non-default TXOP limit (0ms): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 31.5 || throughput > 32.5))
     {

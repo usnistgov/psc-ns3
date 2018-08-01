@@ -577,8 +577,8 @@ private:
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);
   /**
-   * Send LTE conrol message function
-   * \param msg The LTE control message
+   * Send LTE control message function
+   * \param msg the LTE control message
    */
   virtual void DoSendLteControlMessage (Ptr<LteControlMessage> msg);
   /**

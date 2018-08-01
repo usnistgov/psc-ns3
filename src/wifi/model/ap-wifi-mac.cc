@@ -347,7 +347,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
 
   if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
-      hdr.SetNoOrder ();
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
     }
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
@@ -403,18 +403,6 @@ ApWifiMac::GetSupportedRates (void) const
 {
   NS_LOG_FUNCTION (this);
   SupportedRates rates;
-  //If it is an HT-AP or VHT-AP or HE-AP, then add the BSSMembershipSelectorSet
-  //The standard says that the BSSMembershipSelectorSet
-  //must have its MSB set to 1 (must be treated as a Basic Rate)
-  //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
-    {
-      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
-        {
-          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
-        }
-    }
-  //
   //Send the set of supported rates and make sure that we indicate
   //the Basic Rate set in this set of supported rates.
   for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
@@ -440,7 +428,17 @@ ApWifiMac::GetSupportedRates (void) const
       NS_LOG_DEBUG ("Setting basic rate " << mode.GetUniqueName ());
       rates.SetBasicRate (modeDataRate);
     }
-
+  //If it is an HT-AP or VHT-AP or HE-AP, then add the BSSMembershipSelectorSet
+  //The standard says that the BSSMembershipSelectorSet
+  //must have its MSB set to 1 (must be treated as a Basic Rate)
+  //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
+  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+    {
+      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+        {
+          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
+        }
+    }
   return rates;
 }
 
@@ -511,7 +509,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBeCWmin (edca->GetMinCw ());
       edcaParameters.SetBeCWmax (edca->GetMaxCw ());
       edcaParameters.SetBeAifsn (edca->GetAifsn ());
-      edcaParameters.SetBeTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetBeTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_BK)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -519,7 +517,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBkCWmin (edca->GetMinCw ());
       edcaParameters.SetBkCWmax (edca->GetMaxCw ());
       edcaParameters.SetBkAifsn (edca->GetAifsn ());
-      edcaParameters.SetBkTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetBkTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_VI)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -527,7 +525,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetViCWmin (edca->GetMinCw ());
       edcaParameters.SetViCWmax (edca->GetMaxCw ());
       edcaParameters.SetViAifsn (edca->GetAifsn ());
-      edcaParameters.SetViTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetViTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_VO)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -535,7 +533,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetVoCWmin (edca->GetMinCw ());
       edcaParameters.SetVoCWmax (edca->GetMaxCw ());
       edcaParameters.SetVoAifsn (edca->GetAifsn ());
-      edcaParameters.SetVoTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetVoTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edcaParameters.SetQosInfo (0);
     }
@@ -565,6 +563,7 @@ ApWifiMac::GetHtOperation (void) const
   if (GetHtSupported ())
     {
       operation.SetHtSupported (1);
+      operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
       operation.SetRifsMode (GetRifsMode ());
       operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
       if (m_phy->GetChannelWidth () > 20)
@@ -716,7 +715,6 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtProbeResponseHeader probe;
   probe.SetSsid (GetSsid ());
@@ -773,7 +771,6 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtAssocResponseHeader assoc;
   StatusCode code;
@@ -852,7 +849,6 @@ ApWifiMac::SendOneBeacon (void)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtBeaconHeader beacon;
   beacon.SetSsid (GetSsid ());
@@ -1596,7 +1592,7 @@ ApWifiMac::GetNextAssociationId (void)
           return nextAid;
         }
     }
-  NS_ASSERT_MSG (false, "No free association ID available!");
+  NS_FATAL_ERROR ("No free association ID available!");
   return 0;
 }
 

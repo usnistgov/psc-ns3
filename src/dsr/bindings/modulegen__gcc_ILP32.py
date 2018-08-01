@@ -505,6 +505,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
@@ -6179,26 +6182,26 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('ReportRtsFailed', 
                    'void', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header, uint32_t packetSize) [member function]
     cls.add_method('ReportDataFailed', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('uint32_t', 'packetSize')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportRtsOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
     cls.add_method('ReportRtsOk', 
                    'void', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ackSnr, ns3::WifiMode ackMode, double dataSnr, uint32_t packetSize) [member function]
     cls.add_method('ReportDataOk', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')])
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr'), param('uint32_t', 'packetSize')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalRtsFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
     cls.add_method('ReportFinalRtsFailed', 
                    'void', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header, uint32_t packetSize) [member function]
     cls.add_method('ReportFinalDataFailed', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('uint32_t', 'packetSize')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportAmpduTxStatus(ns3::Mac48Address address, uint8_t tid, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr) [member function]
     cls.add_method('ReportAmpduTxStatus', 
                    'void', 
@@ -6215,12 +6218,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('NeedCtsToSelf', 
                    'bool', 
                    [param('ns3::WifiTxVector', 'txVector')])
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRtsRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('NeedRtsRetransmission', 
-                   'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedDataRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('NeedDataRetransmission', 
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('NeedRetransmission', 
                    'bool', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedFragmentation(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
@@ -6394,13 +6393,8 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'bool', 
                    [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
                    visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::DoNeedRtsRetransmission(ns3::WifiRemoteStation * station, ns3::Ptr<const ns3::Packet> packet, bool normally) [member function]
-    cls.add_method('DoNeedRtsRetransmission', 
-                   'bool', 
-                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::DoNeedDataRetransmission(ns3::WifiRemoteStation * station, ns3::Ptr<const ns3::Packet> packet, bool normally) [member function]
-    cls.add_method('DoNeedDataRetransmission', 
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::DoNeedRetransmission(ns3::WifiRemoteStation * station, ns3::Ptr<const ns3::Packet> packet, bool normally) [member function]
+    cls.add_method('DoNeedRetransmission', 
                    'bool', 
                    [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
                    visibility='private', is_virtual=True)

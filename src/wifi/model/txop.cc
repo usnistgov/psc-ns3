@@ -353,14 +353,14 @@ bool
 Txop::NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRtsRetransmission (hdr.GetAddr1 (), &hdr, packet);
+  return m_stationManager->NeedRetransmission (hdr.GetAddr1 (), &hdr, packet);
 }
 
 bool
 Txop::NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedDataRetransmission (hdr.GetAddr1 (), &hdr, packet);
+  return m_stationManager->NeedRetransmission (hdr.GetAddr1 (), &hdr, packet);
 }
 
 bool
@@ -624,7 +624,8 @@ Txop::MissedAck (void)
   if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
     {
       NS_LOG_DEBUG ("Ack Fail");
-      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                               m_currentPacket->GetSize ());
       if (!m_txFailedCallback.IsNull ())
         {
           m_txFailedCallback (m_currentHdr);
@@ -667,7 +668,8 @@ Txop::MissedCfPollResponse (bool expectedCfAck)
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
         {
           NS_LOG_DEBUG ("Ack Fail");
-          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket->GetSize ());
           m_currentPacket = 0;
         }
       else
@@ -735,7 +737,8 @@ Txop::SendCfFrame (WifiMacType frameType, Mac48Address addr)
     {
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
         {
-          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket->GetSize ());
           m_currentPacket = 0;
         }
       else
@@ -745,7 +748,7 @@ Txop::SendCfFrame (WifiMacType frameType, Mac48Address addr)
     }
   else if ((m_queue->GetNPacketsByAddress (addr) > 0) && (frameType != WIFI_MAC_CTL_END)) //if no packet for that dest, send to another dest?
     {
-      Ptr<WifiMacQueueItem> item = m_queue->DequeueByAddress (WifiMacHeader::ADDR1, addr);
+      Ptr<WifiMacQueueItem> item = m_queue->DequeueByAddress (addr);
       NS_ASSERT (item != 0);
       m_currentPacket = item->GetPacket ();
       m_currentHdr = item->GetHeader ();

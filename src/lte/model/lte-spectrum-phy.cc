@@ -852,7 +852,7 @@ LteSpectrumPhy::StartTxUlSrsFrame ()
     case RX_DATA:
     case RX_DL_CTRL:
     case RX_UL_SRS:
-      NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
+      NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel access, the physical layer for transmission cannot be used for reception");
       break;
       
     case TX_DL_CTRL:

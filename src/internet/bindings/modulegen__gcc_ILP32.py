@@ -305,6 +305,8 @@ def register_types(module):
     root_module['ns3::TracedValue< ns3::SequenceNumber<unsigned int, int> >'].implicitly_converts_to(root_module['ns3::SequenceNumber32'])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocket::TcpStates_t> [class]
     module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['ns3::TcpSocket::TcpStates_t'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::EcnState_t> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['ns3::TcpSocketState::EcnState_t'])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::TcpCongState_t> [class]
     module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['ns3::TcpSocketState::TcpCongState_t'])
     ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int> [class]
@@ -565,6 +567,11 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::TcpSocket::TcpStates_t&', u'ns3::TcpSocket::TcpStates_t&')
     ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase [class]
     module.add_class('TcpSocketBase', parent=root_module['ns3::TcpSocket'])
+    ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase::EcnMode_t [enumeration]
+    module.add_enum('EcnMode_t', ['NoEcn', 'ClassicEcn'], outer_class=root_module['ns3::TcpSocketBase'])
+    typehandlers.add_type_alias(u'ns3::TcpSocketBase::EcnMode_t', u'ns3::TcpSocketBase::EcnMode_t')
+    typehandlers.add_type_alias(u'ns3::TcpSocketBase::EcnMode_t*', u'ns3::TcpSocketBase::EcnMode_t*')
+    typehandlers.add_type_alias(u'ns3::TcpSocketBase::EcnMode_t&', u'ns3::TcpSocketBase::EcnMode_t&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )', u'ns3::TcpSocketBase::TcpTxRxTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )*', u'ns3::TcpSocketBase::TcpTxRxTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )&', u'ns3::TcpSocketBase::TcpTxRxTracedCallback&')
@@ -576,15 +583,23 @@ def register_types(module):
     module.add_enum('TcpCongState_t', ['CA_OPEN', 'CA_DISORDER', 'CA_CWR', 'CA_RECOVERY', 'CA_LOSS', 'CA_LAST_STATE'], outer_class=root_module['ns3::TcpSocketState'])
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::TcpCAEvent_t [enumeration]
     module.add_enum('TcpCAEvent_t', ['CA_EVENT_TX_START', 'CA_EVENT_CWND_RESTART', 'CA_EVENT_COMPLETE_CWR', 'CA_EVENT_LOSS', 'CA_EVENT_ECN_NO_CE', 'CA_EVENT_ECN_IS_CE', 'CA_EVENT_DELAYED_ACK', 'CA_EVENT_NON_DELAYED_ACK'], outer_class=root_module['ns3::TcpSocketState'])
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::EcnState_t [enumeration]
+    module.add_enum('EcnState_t', ['ECN_DISABLED', 'ECN_IDLE', 'ECN_CE_RCVD', 'ECN_SENDING_ECE', 'ECN_ECE_RCVD', 'ECN_CWR_SENT'], outer_class=root_module['ns3::TcpSocketState'])
     typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCongState_t', u'ns3::TcpSocketState::TcpCongState_t')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCongState_t*', u'ns3::TcpSocketState::TcpCongState_t*')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCongState_t&', u'ns3::TcpSocketState::TcpCongState_t&')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCAEvent_t', u'ns3::TcpSocketState::TcpCAEvent_t')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCAEvent_t*', u'ns3::TcpSocketState::TcpCAEvent_t*')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCAEvent_t&', u'ns3::TcpSocketState::TcpCAEvent_t&')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::EcnState_t', u'ns3::TcpSocketState::EcnState_t')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::EcnState_t*', u'ns3::TcpSocketState::EcnState_t*')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::EcnState_t&', u'ns3::TcpSocketState::EcnState_t&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )*', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )&', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )', u'ns3::TcpSocketState::EcnStatesTracedValueCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )*', u'ns3::TcpSocketState::EcnStatesTracedValueCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )&', u'ns3::TcpSocketState::EcnStatesTracedValueCallback&')
     ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxBuffer [class]
     module.add_class('TcpTxBuffer', parent=root_module['ns3::Object'])
     ## tcp-vegas.h (module 'internet'): ns3::TcpVegas [class]
@@ -905,6 +920,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
@@ -1020,6 +1038,8 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::SequenceNumber<unsigned int, int>', 'ns3::SequenceNumber<unsigned int, int>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::TcpSocket::TcpStates_t, ns3::TcpSocket::TcpStates_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::TcpSocket::TcpStates_t', 'ns3::TcpSocket::TcpStates_t', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::TcpSocketState::EcnState_t', 'ns3::TcpSocketState::EcnState_t', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::TcpSocketState::TcpCongState_t, ns3::TcpSocketState::TcpCongState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::TcpSocketState::TcpCongState_t', 'ns3::TcpSocketState::TcpCongState_t', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Time, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1069,6 +1089,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )', u'ns3::TcpCongStatesTracedValueCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )*', u'ns3::TcpCongStatesTracedValueCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )&', u'ns3::TcpCongStatesTracedValueCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )', u'ns3::EcnStatesTracedValueCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )*', u'ns3::EcnStatesTracedValueCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )&', u'ns3::EcnStatesTracedValueCallback&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocket::TcpStates_t const, ns3::TcpSocket::TcpStates_t const )', u'ns3::TcpStatesTracedValueCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocket::TcpStates_t const, ns3::TcpSocket::TcpStates_t const )*', u'ns3::TcpStatesTracedValueCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocket::TcpStates_t const, ns3::TcpSocket::TcpStates_t const )&', u'ns3::TcpStatesTracedValueCallback&')
@@ -1285,6 +1308,7 @@ def register_methods(root_module):
     register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
     register_Ns3TracedValue__Ns3SequenceNumber__lt__unsigned_int__int__gt___methods(root_module, root_module['ns3::TracedValue< ns3::SequenceNumber<unsigned int, int> >'])
     register_Ns3TracedValue__Ns3TcpSocketTcpStates_t_methods(root_module, root_module['ns3::TracedValue< ns3::TcpSocket::TcpStates_t >'])
+    register_Ns3TracedValue__Ns3TcpSocketStateEcnState_t_methods(root_module, root_module['ns3::TracedValue< ns3::TcpSocketState::EcnState_t >'])
     register_Ns3TracedValue__Ns3TcpSocketStateTcpCongState_t_methods(root_module, root_module['ns3::TracedValue< ns3::TcpSocketState::TcpCongState_t >'])
     register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -1540,6 +1564,7 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3SequenceNumber__lt__unsigned_int__int__gt___Ns3SequenceNumber__lt__unsigned_int__int__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::SequenceNumber<unsigned int, int>, ns3::SequenceNumber<unsigned int, int>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3TcpSocketTcpStates_t_Ns3TcpSocketTcpStates_t_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::TcpSocket::TcpStates_t, ns3::TcpSocket::TcpStates_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3TcpSocketStateEcnState_t_Ns3TcpSocketStateEcnState_t_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3TcpSocketStateTcpCongState_t_Ns3TcpSocketStateTcpCongState_t_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::TcpSocketState::TcpCongState_t, ns3::TcpSocketState::TcpCongState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Time_Ns3Time_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Time, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -5825,6 +5850,42 @@ def register_Ns3TracedValue__Ns3TcpSocketTcpStates_t_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::TcpSocket::TcpStates_t const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Ns3TcpSocketStateEcnState_t_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::TracedValue(ns3::TracedValue<ns3::TcpSocketState::EcnState_t> const & o) [constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::TcpSocketState::EcnState_t > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::TracedValue(ns3::TcpSocketState::EcnState_t const & v) [constructor]
+    cls.add_constructor([param('ns3::TcpSocketState::EcnState_t const &', 'v')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::TracedValue(ns3::TcpSocketState::EcnState_t const & other) [constructor]
+    cls.add_constructor([param('ns3::TcpSocketState::EcnState_t const &', 'other')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::Disconnect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): ns3::TcpSocketState::EcnState_t ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::TcpSocketState::EcnState_t', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocketState::EcnState_t>::Set(ns3::TcpSocketState::EcnState_t const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::TcpSocketState::EcnState_t const &', 'v')])
     return
 
 def register_Ns3TracedValue__Ns3TcpSocketStateTcpCongState_t_methods(root_module, cls):
@@ -10791,6 +10852,31 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'netdevice')], 
                    is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::CheckEcnCe(uint8_t tos) const [member function]
+    cls.add_method('CheckEcnCe', 
+                   'bool', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
+    ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::CheckEcnEct0(uint8_t tos) const [member function]
+    cls.add_method('CheckEcnEct0', 
+                   'bool', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
+    ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::CheckEcnEct1(uint8_t tos) const [member function]
+    cls.add_method('CheckEcnEct1', 
+                   'bool', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
+    ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::CheckNoEcn(uint8_t tos) const [member function]
+    cls.add_method('CheckNoEcn', 
+                   'bool', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
+    ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::ClearEcnBits(uint8_t tos) const [member function]
+    cls.add_method('ClearEcnBits', 
+                   'uint8_t', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
     ## tcp-socket-base.h (module 'internet'): int ns3::TcpSocketBase::Close() [member function]
     cls.add_method('Close', 
                    'int', 
@@ -10876,6 +10962,21 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'int', 
                    [], 
                    is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::MarkEcnCe(uint8_t tos) const [member function]
+    cls.add_method('MarkEcnCe', 
+                   'uint8_t', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
+    ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::MarkEcnEct0(uint8_t tos) const [member function]
+    cls.add_method('MarkEcnEct0', 
+                   'uint8_t', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
+    ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::MarkEcnEct1(uint8_t tos) const [member function]
+    cls.add_method('MarkEcnEct1', 
+                   'uint8_t', 
+                   [param('uint8_t', 'tos')], 
+                   is_const=True)
     ## tcp-socket-base.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::TcpSocketBase::Recv(uint32_t maxSize, uint32_t flags) [member function]
     cls.add_method('Recv', 
                    'ns3::Ptr< ns3::Packet >', 
@@ -10904,6 +11005,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_method('SetCongestionControlAlgorithm', 
                    'void', 
                    [param('ns3::Ptr< ns3::TcpCongestionOps >', 'algo')])
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetEcn(ns3::TcpSocketBase::EcnMode_t ecnMode) [member function]
+    cls.add_method('SetEcn', 
+                   'void', 
+                   [param('ns3::TcpSocketBase::EcnMode_t', 'ecnMode')])
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetMinRto(ns3::Time minRto) [member function]
     cls.add_method('SetMinRto', 
                    'void', 
@@ -10957,6 +11062,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_method('UpdateCwndInfl', 
                    'void', 
                    [param('uint32_t', 'oldValue'), param('uint32_t', 'newValue')])
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::UpdateEcnState(ns3::TcpSocketState::EcnState_t oldValue, ns3::TcpSocketState::EcnState_t newValue) [member function]
+    cls.add_method('UpdateEcnState', 
+                   'void', 
+                   [param('ns3::TcpSocketState::EcnState_t', 'oldValue'), param('ns3::TcpSocketState::EcnState_t', 'newValue')])
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::UpdateHighTxMark(ns3::SequenceNumber32 oldValue, ns3::SequenceNumber32 newValue) [member function]
     cls.add_method('UpdateHighTxMark', 
                    'void', 
@@ -10981,6 +11090,8 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_instance_attribute('m_cWndTrace', 'ns3::TracedCallback< unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
     ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase::m_congStateTrace [variable]
     cls.add_instance_attribute('m_congStateTrace', 'ns3::TracedCallback< ns3::TcpSocketState::TcpCongState_t, ns3::TcpSocketState::TcpCongState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
+    ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase::m_ecnStateTrace [variable]
+    cls.add_instance_attribute('m_ecnStateTrace', 'ns3::TracedCallback< ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
     ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase::m_highTxMarkTrace [variable]
     cls.add_instance_attribute('m_highTxMarkTrace', 'ns3::TracedCallback< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
     ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase::m_lastRttTrace [variable]
@@ -11214,6 +11325,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'bool', 
                    [param('uint8_t', 'kind')], 
                    is_const=True, visibility='protected')
+    ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::IsValidTcpSegment(ns3::SequenceNumber32 const seq, uint32_t const tcpHeaderSize, uint32_t const tcpPayloadSize) [member function]
+    cls.add_method('IsValidTcpSegment', 
+                   'bool', 
+                   [param('ns3::SequenceNumber32 const', 'seq'), param('uint32_t const', 'tcpHeaderSize'), param('uint32_t const', 'tcpPayloadSize')], 
+                   visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::LastAckTimeout() [member function]
     cls.add_method('LastAckTimeout', 
                    'void', 
@@ -11333,7 +11449,7 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_method('SendDataPacket', 
                    'uint32_t', 
                    [param('ns3::SequenceNumber< unsigned int, int >', 'seq'), param('uint32_t', 'maxSize'), param('bool', 'withAck')], 
-                   visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SendEmptyPacket(uint8_t flags) [member function]
     cls.add_method('SendEmptyPacket', 
                    'void', 
@@ -11488,6 +11604,8 @@ def register_Ns3TcpSocketState_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::EcnStateName [variable]
+    cls.add_static_attribute('EcnStateName', 'char const * [ 6 ] const', is_const=True)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::TcpCongStateName [variable]
     cls.add_static_attribute('TcpCongStateName', 'char const * [ 5 ] const', is_const=True)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_bytesInFlight [variable]
@@ -11500,6 +11618,8 @@ def register_Ns3TcpSocketState_methods(root_module, cls):
     cls.add_instance_attribute('m_congState', 'ns3::TracedValue< ns3::TcpSocketState::TcpCongState_t >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_currentPacingRate [variable]
     cls.add_instance_attribute('m_currentPacingRate', 'ns3::DataRate', is_const=False)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_ecnState [variable]
+    cls.add_instance_attribute('m_ecnState', 'ns3::TracedValue< ns3::TcpSocketState::EcnState_t >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_highTxMark [variable]
     cls.add_instance_attribute('m_highTxMark', 'ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_initialCWnd [variable]
@@ -12983,6 +13103,11 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::TcpSocketState::EcnState_t'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::SequenceNumber<unsigned int', u' int> '])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
@@ -13139,19 +13264,19 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
     ## channel.h (module 'network'): ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## channel.h (module 'network'): uint32_t ns3::Channel::GetNDevices() const [member function]
+    ## channel.h (module 'network'): std::size_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]
@@ -18606,15 +18731,15 @@ def register_Ns3BridgeChannel_methods(root_module, cls):
     cls.add_method('AddChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::Channel >', 'bridgedChannel')])
-    ## bridge-channel.h (module 'bridge'): uint32_t ns3::BridgeChannel::GetNDevices() const [member function]
+    ## bridge-channel.h (module 'bridge'): std::size_t ns3::BridgeChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## bridge-channel.h (module 'bridge'): ns3::Ptr<ns3::NetDevice> ns3::BridgeChannel::GetDevice(uint32_t i) const [member function]
+    ## bridge-channel.h (module 'bridge'): ns3::Ptr<ns3::NetDevice> ns3::BridgeChannel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, is_virtual=True)
     return
 
@@ -19273,6 +19398,28 @@ def register_Ns3CallbackImpl__Void_Ns3TcpSocketTcpStates_t_Ns3TcpSocketTcpStates
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::TcpSocket::TcpStates_t', 'arg0'), param('ns3::TcpSocket::TcpStates_t', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3TcpSocketStateEcnState_t_Ns3TcpSocketStateEcnState_t_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::TcpSocketState::EcnState_t, ns3::TcpSocketState::EcnState_t, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::TcpSocketState::EcnState_t arg0, ns3::TcpSocketState::EcnState_t arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::TcpSocketState::EcnState_t', 'arg0'), param('ns3::TcpSocketState::EcnState_t', 'arg1')], 
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 

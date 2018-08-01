@@ -323,11 +323,11 @@ private:
    * Randomly select and send RA preamble function
    */
   void RandomlySelectAndSendRaPreamble ();
-  /**
-   * Send RA preamble function
-   *
-   * \param contention If true randomly selects and sends the RA preamble
-   */
+ /**
+  * Send RA preamble function
+  *
+  * \param contention if true randomly select and send the RA preamble
+  */
   void SendRaPreamble (bool contention);
   /**
    * Start waiting for RA response function
@@ -339,11 +339,11 @@ private:
    * \param raResponse The random access response received
    */
   void RecvRaResponse (BuildRarListElement_s raResponse);
-  /**
-   * RA response timeout function
-   *
-   * \param contention If true randomly selects and sends the RA preamble
-   */
+ /**
+  * RA response timeout function
+  *
+  * \param contention if true randomly select and send the RA preamble
+  */
   void RaResponseTimeout (bool contention);
   /**
    * Send report buffer status
