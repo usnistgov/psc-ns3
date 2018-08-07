@@ -64,7 +64,7 @@ public:
    */
   UeMemberLteUeCmacSapProvider (LteUeMac* mac);
 
-  // inherited from LteUeCmacSapProvider
+  //inherited from LteUeCmacSapProvider
   virtual void ConfigureRach (RachConfig rc);
   virtual void StartContentionBasedRandomAccessProcedure ();
   virtual void StartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask);
@@ -86,7 +86,6 @@ public:
   virtual void SetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools);
   virtual void ModifyDiscTxApps (std::list<uint32_t> apps);
   virtual void ModifyDiscRxApps (std::list<uint32_t> apps);
-
 
 
 private:
@@ -896,7 +895,7 @@ LteUeMac::DoSetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool)
   NS_ABORT_MSG_IF (info.m_nextDiscPeriod.frameNo > 1024 || info.m_nextDiscPeriod.subframeNo > 10,
                    "Invalid frame or subframe number");
 
-  info.m_grant_received = false;
+  info.m_grantReceived = false;
   m_discTxPool = info;
 }
 
@@ -949,7 +948,7 @@ LteUeMac::DoAddSlCommTxPool (uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> p
   info.m_nextScPeriod.subframeNo++;
   NS_ABORT_MSG_IF (info.m_nextScPeriod.frameNo > 1024 || info.m_nextScPeriod.subframeNo > 10,
                    "Invalid frame or subframe number");
-  info.m_grant_received = false;
+  info.m_grantReceived = false;
 
   m_sidelinkTxPoolsMap.insert (std::pair<uint32_t, PoolInfo > (dstL2Id, info));
 }
@@ -1241,7 +1240,7 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
       grant.m_mcs = pool->GetMcs();
       grant.m_tbSize = 0; //computed later
       m_sidelinkTxPoolsMap.begin()->second.m_nextGrant = grant;
-      m_sidelinkTxPoolsMap.begin()->second.m_grant_received = true;
+      m_sidelinkTxPoolsMap.begin()->second.m_grantReceived = true;
 
       NS_LOG_INFO (this << "Received SL_DCI message rnti=" << m_rnti << " res=" << (uint16_t) dci.m_resPscch);
     }
@@ -1343,7 +1342,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       grant.m_resPsdch = m_resUniformVariable->GetInteger (0, m_discTxPool.m_npsdch - 1);
                       grant.m_rnti = m_rnti;
                       m_discTxPool.m_nextGrant = grant;
-                      m_discTxPool.m_grant_received = true;
+                      m_discTxPool.m_grantReceived = true;
                       NS_LOG_INFO ("UE selected grant: resource =" << (uint16_t) grant.m_resPsdch << "/" << m_discTxPool.m_npsdch);
                     }
                 }
@@ -1354,7 +1353,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                 }
 
               //if we received a grant
-              if (m_discTxPool.m_grant_received)
+              if (m_discTxPool.m_grantReceived)
                 {
                   m_discTxPool.m_currentGrant = m_discTxPool.m_nextGrant;
                   NS_LOG_INFO ("Discovery grant received resource " << (uint32_t) m_discTxPool.m_currentGrant.m_resPsdch);
@@ -1379,7 +1378,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       //Inform PHY: find a way to inform the PHY layer of the resources
                       m_uePhySapProvider->SetDiscGrantInfo (m_discTxPool.m_currentGrant.m_resPsdch);
                       //clear the grant
-                      m_discTxPool.m_grant_received = false;
+                      m_discTxPool.m_grantReceived = false;
                     }
                 }
             }
@@ -1521,7 +1520,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       grant.m_mcs = m_slGrantMcs;
                       grant.m_tbSize = 0; //computed later
                       poolIt->second.m_nextGrant = grant;
-                      poolIt->second.m_grant_received = true;
+                      poolIt->second.m_grantReceived = true;
                       NS_LOG_INFO ("UE selected grant: resource=" << (uint16_t) grant.m_resPscch << "/"
                                                                   << poolIt->second.m_npscch << ", rbStart=" << (uint16_t) grant.m_rbStart
                                                                   << ", rbLen=" << (uint16_t) grant.m_rbLen << ", mcs=" << (uint16_t) grant.m_mcs
@@ -1530,7 +1529,7 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                 } // end if (UE_SELECTED)
 
               //if we received a grant, compute the transmission opportunities for PSCCH and PSSCH
-              if (poolIt->second.m_grant_received)
+              if (poolIt->second.m_grantReceived)
                 {
                   if (poolIt->second.m_pool->GetSchedulingType () == SidelinkCommResourcePool::SCHEDULED)
                     {
@@ -1636,8 +1635,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                   m_slPscchScheduling (stats_params); //Trace
 
                   //clear the grant
-                  poolIt->second.m_grant_received = false;
-                } //end of if (poolIt->second.m_grant_received)
+                  poolIt->second.m_grantReceived = false;
+                } //end of if (poolIt->second.m_grantReceived)
             }
           else
             {

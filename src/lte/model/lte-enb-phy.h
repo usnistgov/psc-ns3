@@ -302,8 +302,8 @@ public:
   /**
    * \brief enable or disable enb Phy
    *
-   * \param enableEnbPhy
-   * \TODO remove it after RLF implementation
+   * \param disableEnbPhy True to disable eNB Phy to simulate out-of-coverage scenarios. False to enable
+   * Remove it after RLF implementation
    */
   void DisableEnbPhy (bool disableEnbPhy);
 
@@ -313,6 +313,7 @@ public:
    * \param [in] cellId
    * \param [in] rnti
    * \param [in] sinrLinear
+   * \param [in] componentCarrierId
    */
   typedef void (* ReportUeSinrTracedCallback)
     (uint16_t cellId, uint16_t rnti, double sinrLinear, uint8_t componentCarrierId);

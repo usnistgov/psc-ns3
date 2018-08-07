@@ -88,61 +88,78 @@ struct tbInfo_t
 
 typedef std::map<TbId_t, tbInfo_t> expectedTbs_t; ///< expectedTbs_t typedef
 
+/// SlTbId_t structure
 struct SlTbId_t
 {
-  uint16_t m_rnti; //source SL-RNTI
-  uint8_t m_l1dst; //layer 1 group Id
+  uint16_t m_rnti; ///< source SL-RNTI
+  uint8_t m_l1dst; ///< layer 1 group Id
 
   public:
   SlTbId_t ();
+  /**
+   * Constructor
+   *
+   * \param a The RNTI
+   * \param b The l1dst
+   */
   SlTbId_t (const uint16_t a, const uint8_t b);
 
   friend bool operator == (const SlTbId_t &a, const SlTbId_t &b);
   friend bool operator < (const SlTbId_t &a, const SlTbId_t &b);
 };
 
+/// SltbInfo_t structure
 struct SltbInfo_t
 {
-  uint8_t ndi;
-  uint16_t size;
-  uint8_t mcs;
-  std::vector<int> rbBitmap;
-  uint8_t rv;
-  double mi;
-  bool corrupt;
-  bool harqFeedbackSent;
-  double sinr; //mean SINR
+  uint8_t ndi; ///< ndi
+  uint16_t size; ///< TB size
+  uint8_t mcs; ///< mcs
+  std::vector<int> rbBitmap; ///< RB bitmap
+  uint8_t rv; ///< rv
+  double mi; ///< mi
+  bool corrupt; ///< whether is corrupt
+  bool harqFeedbackSent; ///< is HARQ feedback sent
+  double sinr; ///< mean SINR
 };
 
-typedef std::map<SlTbId_t, SltbInfo_t> expectedSlTbs_t;
+/// Map to store Sidelink communication expected TBs
+typedef std::map<SlTbId_t, SltbInfo_t> expectedSlTbs_t; ///< expectedSlTbs_t typedef.
 
+/// SlDiscTbId_t structure
 struct SlDiscTbId_t
 {
-  uint16_t m_rnti; //source SL-RNTI
-  uint8_t m_resPsdch;
+  uint16_t m_rnti; ///< source SL-RNTI
+  uint8_t m_resPsdch; ///< PSDCH resource number
 
   public:
   SlDiscTbId_t ();
+  /**
+   * Constructor
+   *
+   * \param a The RNTI
+   * \param b The resPsdch
+   */
   SlDiscTbId_t (const uint16_t a, const uint8_t b);
 
   friend bool operator == (const SlDiscTbId_t &a, const SlDiscTbId_t &b);
   friend bool operator < (const SlDiscTbId_t &a, const SlDiscTbId_t &b);
-
 };
 
+/// SlDisctbInfo_t structure
 struct SlDisctbInfo_t
 {
-  uint8_t ndi;
-  uint8_t resPsdch;
-  std::vector<int> rbBitmap;
-  uint8_t rv;
-  double mi;
-  bool corrupt;
-  bool harqFeedbackSent;
-  double sinr; //mean SINR
+  uint8_t ndi; ///< ndi
+  uint8_t resPsdch; ///< PSDCH resource number
+  std::vector<int> rbBitmap; ///< RB bitmap
+  uint8_t rv; ///< rv
+  double mi; ///< mi
+  bool corrupt; ///< whether is corrupt
+  bool harqFeedbackSent; ///< is HARQ feedback sent
+  double sinr; ///< mean SINR
 };
 
-typedef std::map<SlDiscTbId_t, SlDisctbInfo_t> expectedDiscTbs_t;
+/// Map to store Sidelink discovery expected TBs
+typedef std::map<SlDiscTbId_t, SlDisctbInfo_t> expectedDiscTbs_t; ///< expectedDiscTbs_t typedef.
 
 
 
@@ -159,15 +176,16 @@ struct LteSpectrumSignalParametersSlFrame;
  */
 struct SlRxPacketInfo_t
 {
-  std::vector<int> rbBitmap;
-  Ptr<PacketBurst> m_rxPacketBurst;
-  Ptr<LteControlMessage> m_rxControlMessage;
+  std::vector<int> rbBitmap;  ///< RB bitmap
+  Ptr<PacketBurst> m_rxPacketBurst;  ///< Rx packet burst
+  Ptr<LteControlMessage> m_rxControlMessage; ///< Rx control message
 };
 
+/// SlCtrlPacketInfo_t structure
 struct SlCtrlPacketInfo_t
 {
-  double sinr;
-  int index;
+  double sinr; ///< SINR
+  int index; ///< index of the packet received in the reception buffer
 
   friend bool operator == (const SlCtrlPacketInfo_t &a, const SlCtrlPacketInfo_t &b);
   friend bool operator < (const SlCtrlPacketInfo_t &a, const SlCtrlPacketInfo_t &b);
@@ -559,6 +577,7 @@ public:
    * \param size the size of the TB
    * \param mcs The MCS of the TB
    * \param map The map of RB(s) used
+   * \param rv revision
    */
    void AddExpectedTb (uint16_t  rnti, uint8_t l1dst, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t rv);
 
@@ -592,14 +611,14 @@ public:
   /**
    *
    *
-   * \param sinr vector of signal perceived per each RB per Sidelink packet
+   * \param signal vector of signal perceived per each RB per Sidelink packet
    */
    void UpdateSlSigPerceived (std::vector <SpectrumValue> signal);
 
   /**
    *
    *
-   * \param sinr vector of interference perceived per each RB per Sidelink packet
+   * \param interference vector of interference perceived per each RB per Sidelink packet
    */
   void UpdateSlIntPerceived (std::vector <SpectrumValue> interference);
 
@@ -801,7 +820,7 @@ private:
   SpectrumValue m_sinrPerceived; ///< the perceived SINR
 
   // Information for Sidelink Communication
-  Ptr<LteSlInterference> m_interferenceSl;
+  Ptr<LteSlInterference> m_interferenceSl; ///< the Sidelink interference
   std::set<uint8_t> m_l1GroupIds; ///< identifiers for D2D layer 1 filtering
   expectedSlTbs_t m_expectedSlTbs; ///< the expected Sidelink Communication TBS
   std::vector<SpectrumValue> m_slSinrPerceived; ///< SINR for each D2D packet received
@@ -810,7 +829,7 @@ private:
   std::vector<SlRxPacketInfo_t> m_rxPacketInfo; ///< Sidelink received packet information
 
   /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_random;
+  Ptr<UniformRandomVariable> m_random; ///< Uniform random variable used to toss for the reception of the TB
   bool m_dataErrorModelEnabled; ///< when true (default) the phy error model is enabled
   bool m_ctrlErrorModelEnabled; ///< when true (default) the phy error model is enabled for DL ctrl frame
   
@@ -820,11 +839,11 @@ private:
   bool m_slDataErrorModelEnabled; ///< when true (default) the PSSCH phy error model is enabled
   bool m_slCtrlErrorModelEnabled; ///< when true (default) the PSCCH phy error model is enabled
   bool m_slDiscoveryErrorModelEnabled; ///< when true (default) the PSDCH phy error model is enabled
-  LteNistErrorModel::LteFadingModel m_fadingModel;
+  LteNistErrorModel::LteFadingModel m_fadingModel; ///< Type of fading model
 
   uint8_t m_transmissionMode; ///< for UEs: store the transmission mode
   uint8_t m_layersNum; ///< layers num
-  bool m_ulDataSlCheck;
+  bool m_ulDataSlCheck; ///< Flag used to indicate the transmission of data in uplink
   std::vector <double> m_txModeGain; ///< duplicate value of LteUePhy
 
   Ptr<LteHarqPhy> m_harqPhyModule; ///< the HARQ phy module
@@ -832,17 +851,18 @@ private:
   LtePhyDlHarqFeedbackCallback m_ltePhyDlHarqFeedbackCallback; ///< the LTE phy DL HARQ feedback callback
   LtePhyUlHarqFeedbackCallback m_ltePhyUlHarqFeedbackCallback; ///< the LTE phy UL HARQ feedback callback
 
-  Ptr<LteSpectrumPhy> m_halfDuplexPhy;
+  Ptr<LteSpectrumPhy> m_halfDuplexPhy; ///< Pointer to a UL LteSpectrumPhy object
 
-  std::list< Ptr<SidelinkDiscResourcePool> > m_discRxPools;
+  std::list< Ptr<SidelinkDiscResourcePool> > m_discRxPools; ///< List of discovery Rx pools
 
-  std::list<uint32_t> m_discTxApps;
-  std::list<uint32_t> m_discRxApps;
+  std::list<uint32_t> m_discTxApps; ///< List of discovery Tx applications
+  std::list<uint32_t> m_discRxApps; ///< List of discovery Rx applications
 
   uint64_t m_slssId; ///< the Sidelink Synchronization Signal Identifier (SLSSID)
 
-  double m_slRxGain;
-  std::map <uint16_t, uint16_t> m_slDiscTxCount;
+  double m_slRxGain; ///< Sidelink Rx gain (Linear units)
+  std::map <uint16_t, uint16_t> m_slDiscTxCount; ///< Map to store the number of discovery transmissions by a UE
+                                                 ///< RNTI of a UE is used as the key of the map
 
   LtePhyRxSlssCallback  m_ltePhyRxSlssCallback; ///< Callback used to notify the PHY about the reception of a SLSS
 

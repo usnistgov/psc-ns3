@@ -415,7 +415,7 @@ LteSpectrumPhy::GetTypeId (void)
                    MakeEnumAccessor (&LteSpectrumPhy::m_fadingModel),
                    MakeEnumChecker (LteNistErrorModel::AWGN, "AWGN"))
     .AddAttribute ("HalfDuplexPhy",
-                   "a pointer to a spectrum phy object",
+                   "A pointer to a UL LteSpectrumPhy object",
                    PointerValue (),
                    MakePointerAccessor (&LteSpectrumPhy::m_halfDuplexPhy),
                    MakePointerChecker <LteSpectrumPhy> ())

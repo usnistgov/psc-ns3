@@ -170,6 +170,7 @@ struct LteSpectrumSignalParametersSlFrame : public SpectrumSignalParameters
 
   /**
   * copy constructor
+  * \param p The LteSpectrumSignalParametersSlFrame
   */
   LteSpectrumSignalParametersSlFrame (const LteSpectrumSignalParametersSlFrame& p);
 
@@ -184,8 +185,8 @@ struct LteSpectrumSignalParametersSlFrame : public SpectrumSignalParameters
    */
   std::list<Ptr<LteControlMessage> > ctrlMsgList;
   
-  uint32_t nodeId;
-  uint8_t groupId;
+  uint32_t nodeId; ///< Node id
+  uint8_t groupId; ///< Sidelink group id
 
   /**
    * The Sidelink synchronization signal identifier of the transmitting UE

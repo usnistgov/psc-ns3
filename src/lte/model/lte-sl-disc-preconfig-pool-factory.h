@@ -53,10 +53,11 @@ public:
 
   /**
    * Set the preconfigured discovery pool
+   * \return The Sidelink discovery pre-configured pool
    */
   LteRrcSap::SlPreconfigDiscPool CreatePool ();
 private:
-  LteRrcSap::SlPreconfigDiscPool m_pool;
+  LteRrcSap::SlPreconfigDiscPool m_pool; ///< The Sidelink discovery pre-configured pool
 };
 
 } // namespace ns3

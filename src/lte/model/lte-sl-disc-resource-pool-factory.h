@@ -54,6 +54,7 @@ public:
 
   /**
    * Set the discovery resource pool
+   * \return The Sidelink discovery pool
    */
   LteRrcSap::SlDiscResourcePool CreatePool ();
 
@@ -262,7 +263,7 @@ public:
   std::string GetDiscTxProbability (void);
 
 private:
-  LteRrcSap::SlDiscResourcePool m_pool;
+  LteRrcSap::SlDiscResourcePool m_pool; ///< The Sidelink discovery pool
 
 protected:
   /**

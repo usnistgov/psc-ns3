@@ -358,7 +358,7 @@ public:
   int16_t GetDataTxP0 (void);
 
 private:
-  LteRrcSap::SlCommResourcePool m_pool;
+  LteRrcSap::SlCommResourcePool m_pool; ///< Sidelink communication pool
 
 protected:
   // Control

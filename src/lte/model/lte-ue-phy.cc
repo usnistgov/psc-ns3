@@ -1205,7 +1205,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
                           {
                             SidelinkGrantInfo txInfo;
 
-                            txInfo.m_grant_received = true;
+                            txInfo.m_grantReceived = true;
                             txInfo.m_grant.m_rnti = sci.m_rnti;
                             txInfo.m_grant.m_resPscch = sci.m_resPscch;
                             txInfo.m_grant.m_rbStart = sci.m_rbStart;
@@ -1436,7 +1436,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           {
             std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator rxIt;
 
-            if (grantIt->second.m_grant_received)
+            if (grantIt->second.m_grantReceived)
               {
                 NS_LOG_INFO ("New grant received");
                 //TODO: how to identify pool if multiple are presents?
@@ -1452,7 +1452,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                     NS_LOG_INFO ("Subframe Rx" << rxIt->subframe.frameNo << "/" << rxIt->subframe.subframeNo << ": rbStart=" << (uint32_t) rxIt->rbStart << ", rbLen=" << (uint32_t) rxIt->nbRb);
                   }
 
-                grantIt->second.m_grant_received =false;
+                grantIt->second.m_grantReceived =false;
               }
 
             //now check if there is any grant for the current subframe
@@ -1714,7 +1714,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                             {
                               SidelinkGrantInfo grantInfo;
                               //this is the first transmission of PSCCH
-                              grantInfo.m_grant_received = true;
+                              grantInfo.m_grantReceived = true;
                               grantInfo.m_grant.m_rnti = sci.m_rnti;
                               grantInfo.m_grant.m_resPscch = sci.m_resPscch;
                               grantInfo.m_grant.m_rbStart = sci.m_rbStart;
@@ -1796,7 +1796,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                           if (grantIt == m_discTxPools.m_currentGrants.end ())
                             {
                               DiscGrantInfo grantInfo;
-                              grantInfo.m_grant_received = true;
+                              grantInfo.m_grantReceived = true;
                               grantInfo.m_grant.m_rnti = m_rnti;
                               grantInfo.m_grant.m_resPsdch = m_discResPsdch;
 

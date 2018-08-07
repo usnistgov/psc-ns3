@@ -226,6 +226,10 @@ private:
    * \param packet the packet
    */
   void DoRecvData (Ptr<Packet> packet);
+  /**
+   * Notify Sidelink radio bearer activated function
+   * \param group The group id
+   */
   void DoNotifySidelinkRadioBearerActivated (uint32_t group);
 
   // internal methods
@@ -279,11 +283,9 @@ private:
 
   std::list<BearerToBeActivated> m_bearersToBeActivatedList; ///< bearers to be activated list
 
-  //Sidelink bearers being setup
-  std::list<Ptr<LteSlTft> > m_pendingSlBearersList;
+  std::list<Ptr<LteSlTft> > m_pendingSlBearersList; ///< pending Sidelink bearers list
 
-  //Sidelink bearers activated
-  std::list<Ptr<LteSlTft> > m_slBearersActivatedList;
+  std::list<Ptr<LteSlTft> > m_slBearersActivatedList; ///< Sidelink bearers activated list
 
 };
 

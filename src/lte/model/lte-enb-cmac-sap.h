@@ -158,7 +158,7 @@ public:
   /**
    * Adds Sidelink Discovery pool for the given group
    *
-   * \param reReq resources requested
+   * \param resReq resources requested
    * \param pool The pool information for discovery
    */
   virtual void AddPool (uint8_t resReq, Ptr<SidelinkDiscResourcePool> pool) = 0;
@@ -166,7 +166,7 @@ public:
   /**
    * Removes Sidelink Discovery pool
    *
-   * \param reReq resources requested to be removed
+   * \param resReq resources requested to be removed
    */
   virtual void RemoveDiscPool (uint8_t resReq) = 0;
 

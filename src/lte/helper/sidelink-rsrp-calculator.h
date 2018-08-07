@@ -75,21 +75,22 @@ public:
   /**
    * Computes the S-RSRP between 2 UEs as defined in TS 36.214. Information about the uplink frequency and bandwidth is necessary to
    * be able to call the function before the simulation starts.
+   * \param lossModel The loss model to use in the calculation
    * \param txPower Transmit power for the reference signal
    * \param ulEarfcn Uplink frequency
    * \param ulBandwidth Uplink bandwidth
-   * \param txDevice Transmitter UE
-   * \param rxDevice Receiver UE
+   * \param txPhy The transmitter
+   * \param rxPhy The receiver
    *
    * \return RSRP value in dBm
    */
   static double CalcSlRsrpPsbch (Ptr<PropagationLossModel> lossModel, double txPower, double ulEarfcn, double ulBandwidth, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy);
   /**
    * Computes the S-RSRP between a transmitter UE and a receiver UE as defined in TR 36.843.
+   * \param lossModel The loss model to use in the calculation
    * \param txPower Transmit power for the reference signal
-   * \param ulEarfcn Uplink frequency
-   * \param txDevice Transmitter UE
-   * \param rxDevice Receiver UE
+   * \param txPhy The transmitter
+   * \param rxPhy The receiver
    *
    * \return RSRP value in dBm
    */

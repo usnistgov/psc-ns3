@@ -168,7 +168,6 @@ public:
   /**
    * Sets a Sidelink discovery pool
    *
-   * \param res The discovery resources
    * \param pool The transmission pool
    */
   virtual void SetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool) = 0;
@@ -178,24 +177,24 @@ public:
    */
   virtual void RemoveSlDiscTxPool () = 0;
 
- /**
+  /**
    * Sets the Sidelink discovery receiving pools
    *
    * \param pools The Sidelink discovery receiving pools
    */
   virtual void SetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools) = 0;
 
-  /*
+  /**
    * Push announcing applications to MAC
    *
    * \param apps The applications to announce
    */
   virtual void ModifyDiscTxApps (std::list<uint32_t> apps) = 0;
 
-  /*
+  /**
    * Push monitoring applications to MAC
    *
-   * \params apps The applications to monitor
+   * \param apps The applications to monitor
    */
   virtual void ModifyDiscRxApps (std::list<uint32_t> apps) = 0;
 
@@ -249,6 +248,10 @@ public:
 
   /**
    * Notify the RRC that the MAC has detected a new incoming flow for Sidelink reception
+   *
+   * \param lcId The logical channel id
+   * \param srcL2Id Sidelink source L2 id
+   * \param dstL2Id Sidelink destination L2 id
    */
   virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
 

@@ -43,7 +43,7 @@ struct HarqProcessInfoElement_t
    uint8_t m_rv; ///< RV
    uint16_t m_infoBits; ///< info bits
    uint16_t m_codeBits; ///< code bits
-   double m_sinr; //effective mean SINR for the transmission
+   double m_sinr; ///< effective mean SINR for the transmission
 };
 
 typedef std::vector <HarqProcessInfoElement_t> HarqProcessInfoList_t; ///< HarqProcessInfoList_t typedef 

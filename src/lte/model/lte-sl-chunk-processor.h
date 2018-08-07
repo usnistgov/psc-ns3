@@ -97,7 +97,7 @@ public:
   virtual void End ();
 
 private:
-  std::vector<LteSlChunkValue> m_chunkValues;
+  std::vector<LteSlChunkValue> m_chunkValues; ///< Vector to hold LteSlChunkValue of Signals received on Sidelink
 
   std::vector<LteSlChunkProcessorCallback> m_lteSlChunkProcessorCallbacks; ///< chunk processor callback
 };

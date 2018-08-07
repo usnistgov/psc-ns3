@@ -290,6 +290,7 @@ public:
   void SetFirstScanningTime(Time t);
   /**
    * Get the time in which the first SyncRef selection will be performed
+   * \return The time in which the first SyncRef selection will be performed by the UE
    */
   Time GetFirstScanningTime();
   /**
@@ -447,6 +448,8 @@ private:
 
   /**
    * Get random system frame and subframe number
+   * \param stream The first stream index to use
+   * \return The number of stream indices assigned
    */
   int64_t AssignStreams (int64_t stream);
 
@@ -554,7 +557,7 @@ private:
   /**
    * Set Sidelink Rx Pool function
    *
-   * \param pool The Sidelink Rx communication resource pool
+   * \param pools The Sidelink Rx communication resource pools
    */
   void DoSetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools);
   /**
@@ -760,87 +763,89 @@ private:
   Ptr<SpectrumValue> m_slNoisePsd; ///< Sidelink noise power spectral density for
                                    ///the configured bandwidth
 
-  /*
+  /**
    * If true the values of frameNo and subframeNo are selected randomly,
    * if false, frameNo=1 and subframeNo=1
    */
   bool m_chooseFrameAndSubframeRandomly;
 
+  /// Sidelink communication grant related  parameters
  struct SidelinkGrant
  {
    //fields common with SL_DCI
-   uint16_t m_rnti;
-   uint16_t m_resPscch;
-   uint8_t m_tpc;
-   uint8_t m_hopping;
+   uint16_t m_rnti; ///< RNTI
+   uint16_t m_resPscch; ///< PSCCH resource index
+   uint8_t m_tpc; ///< TPC
+   uint8_t m_hopping; ///< Hopping flag
    uint8_t m_rbStart; ///< models rb assignment
    uint8_t m_rbLen;   ///< models rb assignment
    uint8_t m_hoppingInfo; ///< models rb assignment when hopping is enabled
-   uint8_t m_trp;
-   uint8_t m_groupDstId;
+   uint8_t m_trp; ///< Time resourse pattern (TRP)
+   uint8_t m_groupDstId; ///< Group destination id
 
    //other fields
-   uint8_t m_mcs;
-   uint32_t m_tbSize;
+   uint8_t m_mcs; ///< MCS
+   uint32_t m_tbSize; ///< TB size
 
-   uint32_t frameNo;
-   uint32_t subframeNo;
+   uint32_t frameNo; ///< Frame number
+   uint32_t subframeNo; ///< Subframe number
  };
 
+ /// SidelinkGrantInfo structure
  struct SidelinkGrantInfo
  {
-   SidelinkGrant m_grant;
+   SidelinkGrant m_grant; ///< Sidelink communication grant
    std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_pscchTx; ///< list of PSCCH transmissions within the pool
    std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_psschTx; ///< list of PSSCH transmissions within the pool
-   bool m_grant_received;
+   bool m_grantReceived; ///< Flag to indicate the reception of Sidelink communication grant
  };
 
+ /// Sidelink pool information
  struct PoolInfo
  {
    Ptr<SidelinkCommResourcePool> m_pool; ///< the pool
    SidelinkCommResourcePool::SubframeInfo m_currentScPeriod; ///< start of current period
    SidelinkCommResourcePool::SubframeInfo m_nextScPeriod; ///< start of next period
-
    uint32_t m_npscch; ///< number of PSCCH available in the pool
-
-   //SidelinkGrant m_currentGrant; ///< grant for the current SC period
-   std::map<uint16_t, SidelinkGrantInfo> m_currentGrants;
+   std::map<uint16_t, SidelinkGrantInfo> m_currentGrants; ///< Current Sidelink communication grants
  };
 
- PoolInfo m_slTxPoolInfo;
- std::list <PoolInfo> m_sidelinkRxPools;
- std::list <uint32_t> m_destinations;
+ PoolInfo m_slTxPoolInfo; ///< Sidelink pool information
+ std::list <PoolInfo> m_sidelinkRxPools; ///< List of Sidelink communication Rx pools
+ std::list <uint32_t> m_destinations; ///< List of destinations for Sidelink communication
 
- //Sidelink discovery
+ /// Sidelink discovery grant
  struct DiscGrant
  {
-   uint16_t m_rnti;
+   uint16_t m_rnti; ///< RNTI
    uint8_t m_resPsdch; ///< m_resPsdch A randomly chosen resource index from the PSDCH resource pool
  };
 
+ /// Sidelink discovery grant info
  struct DiscGrantInfo
  {
-   DiscGrant m_grant;
-   std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> m_psdchTx; ///< list of PSDCH transmissions within the pool
-   bool m_grant_received;
+   DiscGrant m_grant; ///< Sidelink discovery grant
+   std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> m_psdchTx; ///< List of PSDCH transmissions within the pool
+   bool m_grantReceived; ///< Flag to indicate the reception of Sidelink discovery grant
  };
 
+ /// Sidelink discovery pool information
  struct DiscPoolInfo
  {
    Ptr<SidelinkDiscResourcePool> m_pool; ///< the discover resource pool
    SidelinkDiscResourcePool::SubframeInfo m_currentDiscPeriod; ///< start of current period
    SidelinkDiscResourcePool::SubframeInfo m_nextDiscPeriod; ///< start of next period
    uint32_t m_npsdch; ///< number of PSDCH available in the pool
-   std::map<uint16_t, DiscGrantInfo> m_currentGrants;
+   std::map<uint16_t, DiscGrantInfo> m_currentGrants; ///< Current Sidelink discovery grants
  };
 
- DiscPoolInfo m_discTxPools;
- std::list <DiscPoolInfo> m_discRxPools;
+ DiscPoolInfo m_discTxPools; ///< Discovery Tx pool information
+ std::list <DiscPoolInfo> m_discRxPools; ///< List of Sidelink discovery Rx pools
 
- uint8_t m_discResPsdch ;
+ uint8_t m_discResPsdch; ///< A randomly chosen resource index from the PSDCH resource pool by UE MAC
 
- std::list<uint32_t> m_discTxApps;
- std::list<uint32_t> m_discRxApps;
+ std::list<uint32_t> m_discTxApps; ///< List of discovery Tx applications
+ std::list<uint32_t> m_discRxApps; ///< List of discovery Rx applications
 
  /**
   * Summary results of measuring a specific SyncRef. Used for layer-1 filtering.
@@ -936,10 +941,9 @@ private:
   */
  struct ResyncParams
  {
-   uint16_t newSubframeNo;
-   uint16_t newFrameNo;
-   LteRrcSap::MasterInformationBlockSL syncRefMib;
-   uint16_t offset;
+   uint16_t newSubframeNo; ///< Subframe number
+   uint16_t newFrameNo; ///< frame number
+   LteRrcSap::MasterInformationBlockSL syncRefMib; ///< MIB
  };
  /**
   * Parameters to be used for the change of subframe indication upon synchronization to
@@ -1026,15 +1030,31 @@ private:
   *
   * \param frameNo The current frame number
   * \param subframeNo The current subframe number
+  * \return True if change of timings performed successfully
   */
  bool ChangeOfTiming(uint32_t frameNo, uint32_t subframeNo);
 
  // UE CPHY SAP methods related to synchronization
- // The RRC set the SLSSID value for lower layers
+ /**
+  * Do Set Sidelink synchronization id function
+  * The RRC set the SLSSID value for lower layers
+  *
+  * \param slssid The Sidelink synchronization id
+  */
  void DoSetSlssId(uint64_t slssid);
- // The RRC instructs the PHY to send a MIB-SL in the PSBCH
+ /**
+  * Do Send Sidelink synchronization signal function
+  * The RRC instructs the PHY to send a MIB-SL in the PSBCH
+  *
+  * \param mibSl The Sidelink Master Information Block
+  */
  void DoSendSlss (LteRrcSap::MasterInformationBlockSL mibSl);
- // The RRC instructs the PHY to synchronize to a given SyncRef and apply the corresponding change of timing
+ /**
+  * Do synchronize to the SyncRef function
+  * The RRC instructs the PHY to synchronize to a given SyncRef and apply the corresponding change of timing
+  *
+  * \param mibSl The Sidelink Master Information Block
+  */
  void DoSynchronizeToSyncRef (LteRrcSap::MasterInformationBlockSL mibSl);
 
 }; // end of `class LteUePhy`

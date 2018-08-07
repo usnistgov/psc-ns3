@@ -610,36 +610,46 @@ public:
     FreqInfo freqInfo; ///< frequency info
   };
 
-  /// Information Elements for SystemInformationBlockType18
-  struct SlCpLen {
-    enum {
+  /// Sidelink cyclic prefix structure
+  struct SlCpLen
+  {
+    /// Sidelink cyclic prefix type enumeration
+    enum
+    {
       NORMAL,
       EXTENDED
-    } cplen;
+    } cplen; ///< Sidelink cyclic prefix type
   };
 
+  /// SlPeriodComm structure.
   struct SlPeriodComm
   {
+    /// Sidelink communication period enumeration
     enum
-      {
-        sf40,
-        sf60,
-        sf70,
-        sf80,
-        sf120,
-        sf140,
-        sf160,
-        sf240,
-        sf280,
-        sf320
-      } period;
+    {
+      sf40,
+      sf60,
+      sf70,
+      sf80,
+      sf120,
+      sf140,
+      sf160,
+      sf240,
+      sf280,
+      sf320
+    } period; ///< Sidelink communication period in number of subframes
   };
 
-
-  static SlPeriodComm PeriodAsEnum (uint32_t p_length)
+  /**
+   * Period as enumeration function
+   *
+   * \param periodLength The duration of the Sidelink communication period in number of subframes
+   * \returns object of type SlPeriodComm
+   */
+  static SlPeriodComm PeriodAsEnum (uint32_t periodLength)
   {
     SlPeriodComm p;
-    switch (p_length)
+    switch (periodLength)
       {
       case 40:
         p.period = SlPeriodComm::sf40;
@@ -672,11 +682,18 @@ public:
         p.period = SlPeriodComm::sf320;
         break;
       default:
-        NS_FATAL_ERROR("SL PERIOD LENGTH NOT SUPPORTED: "<< p_length);
+        NS_FATAL_ERROR("SL PERIOD LENGTH NOT SUPPORTED: "<< periodLength);
       }
 
       return p;
   }
+
+  /**
+   * Period as integer function
+   *
+   * \param period The object of type SlPeriodComm
+   * \returns uint32_t value The duration of the Sidelink communication period in number of subframes
+   */
   static uint32_t PeriodAsInt (SlPeriodComm period)
   {
     uint32_t p = 0;
@@ -711,31 +728,40 @@ public:
         break;
       case SlPeriodComm::sf320:
         p = 320;
-        break;        
+        break;
       }
 
       return p;
   }
 
-  //Offset of the pool of resource relative to SFN 0 of the cell or DFN 0 when out of coverage
+  /// SlOffsetIndicator structure. The offset of the pool of resource relative to SFN 0 of the cell or DFN 0 when out of coverage
   struct SlOffsetIndicator
   {
-    uint16_t offset; //Max is 319 for communication, 10239 for discovery
+    uint16_t offset; ///< Offset. Max is 319 for communication, 10239 for discovery
   };
 
+  /// SubframeBitmapSl structure
   struct SubframeBitmapSl
   {
-    std::bitset<40> bitmap; //40 bits for FDD
+    std::bitset<40> bitmap; ///< Sidelink subframe bitmap (40 bits for FDD)
   };
   
+  /// SlTfResourceConfig structure
   struct SlTfResourceConfig
   {
-    uint8_t prbNum;
-    uint8_t prbStart;
-    uint8_t prbEnd;
-    SlOffsetIndicator offsetIndicator;
-    SubframeBitmapSl subframeBitmap;
+    uint8_t prbNum; ///< Total number of PRBs
+    uint8_t prbStart; ///< Index of the starting PRB
+    uint8_t prbEnd; ///< Index of the ending PRB
+    SlOffsetIndicator offsetIndicator; ///< Sideling offset indicator
+    SubframeBitmapSl subframeBitmap; ///< Sidelink subframe bitmap
 
+   /**
+    * Comparison operator
+    *
+    * \param lhs first Sidelink resource configuration
+    * \param rhs second Sidelink resource configuration
+    * \returns true if the resource configuration parameters are equal
+    */
     friend bool operator==(const SlTfResourceConfig& lhs, const SlTfResourceConfig& rhs)
     {
       return lhs.prbNum == rhs.prbNum && lhs.prbStart == rhs.prbStart && lhs.prbEnd == rhs.prbEnd
@@ -743,31 +769,45 @@ public:
     }
   };
 
+  /// SlHoppingConfigComm structure
   struct SlHoppingConfigComm
   {
-    uint16_t hoppingParameter; //valid range 0..504
-    enum {
+    uint16_t hoppingParameter; ///< Sidelink communication hopping parameter. Valid range 0..504
+    /// enumeration for selecting number of sub bands
+    enum
+    {
       ns1 = 1,
       ns2 = 2,
       ns4 = 4,
-    } numSubbands;
-    uint8_t rbOffset; //valid range 0..110
-    uint8_t hoppingInfo; //Information in hopping bits. Valid range [0,3]. Values 0..2 are used for Type 1 hopping.
+    } numSubbands; ///< Number of sub bands
+    uint8_t rbOffset; ///< valid range 0..110
+    uint8_t hoppingInfo; ///< Information in hopping bits. Valid range [0,3]. Values 0..2 are used for Type 1 hopping.
 
+   /**
+    * Comparison operator
+    *
+    * \param lhs first Sidelink hopping configuration
+    * \param rhs second Sidelink hopping configuration
+    * \returns true if the configuration parameters are equal"
+    */
     friend bool operator==(const SlHoppingConfigComm& lhs, const SlHoppingConfigComm& rhs)
     {
       return lhs.hoppingParameter == rhs.hoppingParameter && lhs.numSubbands == rhs.numSubbands && lhs.rbOffset == rhs.rbOffset && lhs.hoppingInfo == rhs.hoppingInfo;
     }
   };
 
+  /// SlTrptSubset structure
   struct SlTrptSubset
   {
-    std::bitset<3> subset; //3 bits for FDD to indicate the set of k values
+    std::bitset<3> subset; ///< Sidelink TRPT bit map. 3 bits for FDD to indicate the set of k values
   };
 
+  /// SlTxParameters structure
   struct SlTxParameters
   {
-    enum {
+    /// enumeration for Alpha values
+    enum
+    {
       al0,
       al04,
       al05,
@@ -776,16 +816,31 @@ public:
       al08,
       al09,
       al1
-    } alpha;
-    int16_t p0; //valid range -126..31
+    } alpha; ///< Alpha parameter for Sidelink power control
 
+    int16_t p0; ///< P0 parameter for Sidelink power control. Valid range -126..31
+
+   /**
+    * Comparison operator
+    *
+    * \param lhs first Sidelink Tx parameters
+    * \param rhs second Sidelink Tx parameters
+    * \returns true if the Sidelink Tx parameters are equal"
+    */
     friend bool operator==(const SlTxParameters& lhs, const SlTxParameters& rhs)
     {
       return lhs.alpha == rhs.alpha && lhs.p0 == rhs.p0;
     }
   };
 
-  static double AlphaAsDouble (SlTxParameters param) {
+  /**
+   * Alpha as double function
+   *
+   * \param param The object of type SlTxParameters
+   * \returns double value
+   */
+  static double AlphaAsDouble (SlTxParameters param)
+  {
     double alpha = 0;
     switch (param.alpha)
     {
@@ -817,39 +872,50 @@ public:
     return alpha;
   };
   
+  /// SlCommResourcePool structure
   struct SlCommResourcePool
   {
-    SlCpLen scCpLen;
-    SlPeriodComm scPeriod;
-    SlTfResourceConfig scTfResourceConfig;
-    SlCpLen dataCpLen;
-    SlHoppingConfigComm dataHoppingConfig;
-    bool haveUeSelectedResourceConfig;
-    struct UeSelectedResourceConfig {
-      SlTfResourceConfig dataTfResourceConfig;
-      bool haveTrptSubset;
-      SlTrptSubset trptSubset; //optional
-    } ueSelectedResourceConfig;
+    SlCpLen scCpLen; ///< Sidelink cyclic prefix length
+    SlPeriodComm scPeriod; ///< Sidelink communication period length (PSCCH + PSSCH)
+    SlTfResourceConfig scTfResourceConfig; ///< Sidelink control time and frequency resource configuration
+    SlCpLen dataCpLen; ///< Data cyclic prefix length
+    SlHoppingConfigComm dataHoppingConfig; ///< Hopping configuration for Sidelink PSSCH
+    bool haveUeSelectedResourceConfig; ///< Have UE selected resource configuration?
+    /// UeSelectedResourceConfig structure
+    struct UeSelectedResourceConfig
+    {
+      SlTfResourceConfig dataTfResourceConfig; ///< Sidelink data time and frequency resource configuration
+      bool haveTrptSubset; ///< Have TRPT subset?
+      SlTrptSubset trptSubset; ///< TRPT configuration (optional)
+    } ueSelectedResourceConfig; ///< Ue selected resource Configuration
     //rxParametersNCell not specified yet
-    bool haveTxParameters; //mandatory present when included in commTxPoolNormalDedicated, commTxPoolNormalCommon or commTxPoolExceptional
+    bool haveTxParameters; ///< Have Tx Parameters? Mandatory present when included in commTxPoolNormalDedicated, commTxPoolNormalCommon or commTxPoolExceptional
+    /// TxParameters structure
     struct TxParameters
     {
-      SlTxParameters scTxParameters;
-      SlTxParameters dataTxParameters;
-    } txParameters;
+      SlTxParameters scTxParameters; ///< Sidelink control Tx parameters
+      SlTxParameters dataTxParameters; ///< Sidelink data Tx parameters
+    } txParameters; ///< Tx parameters
 
+   /**
+    * Comparison operator
+    *
+    * \param lhs first pool
+    * \param rhs second pool
+    * \returns true if the pools are equal"
+    */
     friend bool operator==(const SlCommResourcePool& lhs, const SlCommResourcePool& rhs)
     {
       bool equal = lhs.scCpLen.cplen == rhs.scCpLen.cplen
-        && lhs.scPeriod.period == rhs.scPeriod.period
-        && lhs.scTfResourceConfig == rhs.scTfResourceConfig
-        && lhs.dataCpLen.cplen == rhs.dataCpLen.cplen
-        && lhs.dataHoppingConfig == rhs.dataHoppingConfig
-        && lhs.haveUeSelectedResourceConfig == rhs.haveUeSelectedResourceConfig;
+      && lhs.scPeriod.period == rhs.scPeriod.period
+      && lhs.scTfResourceConfig == rhs.scTfResourceConfig
+      && lhs.dataCpLen.cplen == rhs.dataCpLen.cplen
+      && lhs.dataHoppingConfig == rhs.dataHoppingConfig
+      && lhs.haveUeSelectedResourceConfig == rhs.haveUeSelectedResourceConfig;
       if (equal && lhs.haveUeSelectedResourceConfig)
         {
           equal = equal && lhs.ueSelectedResourceConfig.dataTfResourceConfig == rhs.ueSelectedResourceConfig.dataTfResourceConfig
-            && lhs.ueSelectedResourceConfig.haveTrptSubset == rhs.ueSelectedResourceConfig.haveTrptSubset;
+          && lhs.ueSelectedResourceConfig.haveTrptSubset == rhs.ueSelectedResourceConfig.haveTrptSubset;
           if (equal && lhs.ueSelectedResourceConfig.haveTrptSubset)
             {
               equal = equal && lhs.ueSelectedResourceConfig.trptSubset.subset == rhs.ueSelectedResourceConfig.trptSubset.subset;
@@ -865,106 +931,117 @@ public:
     }
   };
   
+  /// SlCommTxPoolList structure
   struct SlCommTxPoolList
   {
-    uint8_t nbPools;
-    SlCommResourcePool pools[MAXSL_TXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlCommResourcePool pools [MAXSL_TXPOOL]; ///< An array holding the Sidelink communication Tx pool configuration
   };
 
+  /// SlCommRxPoolList structure
   struct SlCommRxPoolList
   {
-    uint8_t nbPools;
-    SlCommResourcePool pools[MAXSL_RXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlCommResourcePool pools [MAXSL_RXPOOL]; ///< An array holding the Sidelink communication Rx pool configuration
   };
 
+  /// SlSyncConfigList structure
   struct SlSyncConfigList
   {
-    uint8_t nbConfig;
+    uint8_t nbConfig; ///< Number of Sidelink synchronization configuration
   };
 
+  /// SlCommConfig structure used in RRC Connection
   struct Sib18CommConfig
-  { //SlCommConfig struct used in RRC Connection
-    SlCommRxPoolList commRxPool;
-    SlCommTxPoolList commTxPoolNormalCommon; //Optional (number of pools may be 0)
-    SlCommTxPoolList commTxPoolExceptional;  //Optional (number of pools may be 0)
-    SlSyncConfigList commSyncConfig;         //Optional (number of pools may be 0)
+  {
+    SlCommRxPoolList commRxPool; ///< Sidelink communication Rx pool list
+    SlCommTxPoolList commTxPoolNormalCommon; ///< Sidelink communication Tx pool list. Optional (number of pools may be 0)
+    SlCommTxPoolList commTxPoolExceptional;  ///< ///< Sidelink communication exceptional Tx pool list. Optional (number of pools may be 0)
+    SlSyncConfigList commSyncConfig; ///< Synchronization configuration used for transmission/reception of SLSS on the given frequency. Optional (number of pools may be 0)
   };
 
-  /// SystemInformationBlockType2 structure
+  /// SystemInformationBlockType18 structure
   struct SystemInformationBlockType18
   {
-    Sib18CommConfig commConfig;
+    Sib18CommConfig commConfig; ///< SystemInformationBlockType18 configuration
   };
 
+  /// SlPreconfigGeneral structure
   struct SlPreconfigGeneral
   {
-    uint32_t carrierFreq; //ulEarfcn
-    uint8_t slBandwidth;  //nb RBs
+    uint32_t carrierFreq; ///< Sidelink carrier frequency
+    uint8_t slBandwidth;  ///< Sidelink bandwidth in RBs
   };
   
-  /*
-   * \brief Structure representing the Master Information Block Sidelink to be sent by SyncRefs
-   */
+
+  /// MasterInformationBlockSL structure, representing the Master Information Block Sidelink to be sent by SyncRefs
   struct MasterInformationBlockSL
   {
-    uint16_t  slBandwidth;  	///< Sidelink bandwidth[RBs]
-    uint16_t  directFrameNo;	///< Frame number of the frame in which is sent this MIB-SL
-    uint16_t  directSubframeNo;	///< Subframe number of the subframe in which is sent this MIB-SL
-    bool    inCoverage;			///< Indicates if the SyncRef sending the MIB-SL is in coverage
-    uint64_t  slssid;			///< SLSSID of the SyncRef sending the MIB-SL
-    Time rxTimestamp;			///< Reception timestamp filled upon reception
-    Time creationTimestamp;		///< Creation timestamp filled when created
-    uint16_t rxOffset;			///< Reception offset
+    uint16_t  slBandwidth;   ///< Sidelink bandwidth[RBs]
+    uint16_t  directFrameNo;   ///< Frame number of the frame in which is sent this MIB-SL
+    uint16_t  directSubframeNo;  ///< Subframe number of the subframe in which is sent this MIB-SL
+    bool    inCoverage;   ///< Indicates if the SyncRef sending the MIB-SL is in coverage
+    uint64_t  slssid;   ///< SLSSID of the SyncRef sending the MIB-SL
+    Time rxTimestamp;   ///< Reception timestamp filled upon reception
+    Time creationTimestamp;   ///< Creation timestamp filled when created
+    uint16_t rxOffset;   ///< Reception offset
   };
 
-  /*
-   * \brief Structure representing the Sidelink synchronization preconfigured parameters
-   * to be used in the out-of-coverage case
-   */
+  /// SlPreconfigSync structure, representing the Sidelink synchronization preconfigured parameters to be used in the out-of-coverage case
   struct SlPreconfigSync
   {
-    SlCpLen syncCPLen; 				///< Cyclic prefix length
-    uint16_t syncOffsetIndicator1;  ///< First offset indicator for transmission of SLSSs. Valid values: 0 ... 39
-    uint16_t syncOffsetIndicator2;  ///< Second offset indicator for transmission of SLSSs. Valid values: 0 ... 39
-    int16_t syncTxThreshOoC;  		///< Threshold representing inner cell boundaries of a detected SyncRef. Unit [dBm]. Valid values: -110, -105, -100, and so on (i.e. in steps of 5), -60 (+inf not represented)
-    uint16_t filterCoefficient; 	///< Filter coefficient for L3 filtering. Valid values (k): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17, 19
-    uint16_t syncRefMinHyst;    	///< Threshold representing how higher than the minimum required the SyncRef S-RSRP should be to consider it detected. Unit [dB] Valid values: 0, 3, 6, 9, 12
-    uint16_t syncRefDiffHyst;   	///< Threshold representing how higher than the (currently) selected SyncRef S-RSRP the S-RSRP of a newly detected SyncRef should be to consider a change. Unit[dB] Valid values: 0, 3, 6, 9, 12 (+inf not represented)
+    SlCpLen syncCPLen;   ///< Cyclic prefix length
+    uint16_t syncOffsetIndicator1;   ///< First offset indicator for transmission of SLSSs. Valid values: 0 ... 39
+    uint16_t syncOffsetIndicator2;   ///< Second offset indicator for transmission of SLSSs. Valid values: 0 ... 39
+    int16_t syncTxThreshOoC;   ///< Threshold representing inner cell boundaries of a detected SyncRef. Unit [dBm]. Valid values: -110, -105, -100, and so on (i.e. in steps of 5), -60 (+inf not represented)
+    uint16_t filterCoefficient;   ///< Filter coefficient for L3 filtering. Valid values (k): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17, 19
+    uint16_t syncRefMinHyst;   ///< Threshold representing how higher than the minimum required the SyncRef S-RSRP should be to consider it detected. Unit [dB] Valid values: 0, 3, 6, 9, 12
+    uint16_t syncRefDiffHyst;   ///< Threshold representing how higher than the (currently) selected SyncRef S-RSRP the S-RSRP of a newly detected SyncRef should be to consider a change. Unit[dB] Valid values: 0, 3, 6, 9, 12 (+inf not represented)
   };
 
+  /// SlPreconfigCommPool structure, representing the Sidelink communication preconfigured parameters to be used in the out-of-coverage case
   struct SlPreconfigCommPool
   {
     //Same as SlCommResourcePool with rxParametersNCell absent
-    SlCpLen scCpLen;
-    SlPeriodComm scPeriod;
-    SlTfResourceConfig scTfResourceConfig;
-    SlTxParameters scTxParameters;
-    SlCpLen dataCpLen;
-    SlHoppingConfigComm dataHoppingConfig;
-    SlTfResourceConfig dataTfResourceConfig;
-    SlTrptSubset trptSubset; //optional
-    SlTxParameters dataTxParameters;
+    SlCpLen scCpLen; ///< Cyclic prefix length
+    SlPeriodComm scPeriod; ///< Sidelink communication period length (PSCCH + PSSCH)
+    SlTfResourceConfig scTfResourceConfig; ///< Sidelink control time and frequency resource configuration
+    SlTxParameters scTxParameters; ///< Sidelink control Tx parameters
+    SlCpLen dataCpLen; ///< Data cyclic prefix length
+    SlHoppingConfigComm dataHoppingConfig; ///< Hopping configuration for Sidelink PSSCH
+    SlTfResourceConfig dataTfResourceConfig; ///< Sidelink data time and frequency resource configuration
+    SlTrptSubset trptSubset; ///< TRPT configuration (optional)
+    SlTxParameters dataTxParameters; ///< Sidelink data Tx parameters
   };
   
+  /// SlPreconfigCommPoolList structure
   struct SlPreconfigCommPoolList
   {
-    uint8_t nbPools;
-    SlPreconfigCommPool pools[MAXSL_TXPOOL];
-  };
-   // Discovery period duration
-  struct SlPeriodDisc
-  {
-    enum
-      {
-        rf32,
-        rf64,
-        rf128,
-        rf256,
-        rf512,
-        rf1024
-      } period;
+    uint8_t nbPools; ///< Number of pools
+    SlPreconfigCommPool pools [MAXSL_TXPOOL]; ///< An array holding the Sidelink communication preconfigured Tx pool configuration
   };
 
+  /// Discovery period duration
+  struct SlPeriodDisc
+  {
+    /// Sidelink discovery period enumeration
+    enum
+    {
+      rf32,
+      rf64,
+      rf128,
+      rf256,
+      rf512,
+      rf1024
+    } period;
+  };
+
+  /**
+   * Discovery period as integer function
+   *
+   * \param period The object of type SlPeriodDisc
+   * \returns uint32_t value The duration of the Sidelink discovery period in number of frames
+   */
   static uint32_t DiscPeriodAsInt (SlPeriodDisc period)
   {
     uint32_t p = 0;
@@ -993,9 +1070,10 @@ public:
       return p;
   };
 
-  // Probability of transmission for Discovery
+  /// TxProbability structure
   struct TxProbability
   {
+    /// Probability of transmission for Sidelink discovery enumeration
     enum
     {
       p25,
@@ -1005,53 +1083,67 @@ public:
     } probability;
   };
 
+  /// SlPreconfigDiscPool structure, representing the Sidelink discovery preconfigured parameters to be used in the out-of-coverage case
   struct SlPreconfigDiscPool
   {
-    SlCpLen cpLen;
-    SlPeriodDisc discPeriod;
-    int8_t numRetx; // 0..3
-    int32_t numRepetition; // 1..50
-    SlTfResourceConfig tfResourceConfig;
-    struct TxParameters {
-      SlTxParameters txParametersGeneral;
-      TxProbability txProbability; 
-    } txParameters;
+    SlCpLen cpLen; ///< Sidelink cyclic prefix length
+    SlPeriodDisc discPeriod; ///< Sidelink discovery period length
+    int8_t numRetx; ///< Total number of retransmissions. Range = 0..3
+    int32_t numRepetition; ///< Total number of repetition. Range = 1..50
+    SlTfResourceConfig tfResourceConfig; ///< Sidelink time and frequency resource configuration
+    /// TxParameters structure
+    struct TxParameters
+    {
+      SlTxParameters txParametersGeneral; ///< Tx parameter general
+      TxProbability txProbability; ///< Tx probability
+    } txParameters; ///< Tx parameters
 
+   /**
+    * Comparison operator
+    *
+    * \param lhs first pool
+    * \param rhs second pool
+    * \returns true if the pools are equal"
+    */
     friend bool operator==(const SlPreconfigDiscPool& lhs, const SlPreconfigDiscPool& rhs)
+    {
+      bool equal = lhs.cpLen.cplen == rhs.cpLen.cplen
+      && lhs.discPeriod.period == rhs.discPeriod.period
+      && lhs.numRetx == rhs.numRetx
+      && lhs.numRepetition == rhs.numRepetition
+      && lhs.tfResourceConfig == rhs.tfResourceConfig;
+      if (equal)
         {
-          bool equal = lhs.cpLen.cplen == rhs.cpLen.cplen
-            && lhs.discPeriod.period == rhs.discPeriod.period
-            && lhs.numRetx == rhs.numRetx
-            && lhs.numRepetition == rhs.numRepetition
-            && lhs.tfResourceConfig == rhs.tfResourceConfig;
-            if (equal)
-              {
-                equal = equal && lhs.txParameters.txParametersGeneral == rhs.txParameters.txParametersGeneral
-                              && lhs.txParameters.txProbability.probability == rhs.txParameters.txProbability.probability;
-              }
-            return equal;
+          equal = equal && lhs.txParameters.txParametersGeneral == rhs.txParameters.txParametersGeneral
+                        && lhs.txParameters.txProbability.probability == rhs.txParameters.txProbability.probability;
         }
+      return equal;
+    }
 
   };
   
+  /// SlPreconfigDiscPoolList structure
   struct SlPreconfigDiscPoolList
   {
-    uint8_t nbPools;
-    SlPreconfigDiscPool pools[MAXSL_TXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlPreconfigDiscPool pools [MAXSL_TXPOOL]; ///< An array holding the preconfigured discovery Tx pool configuration
   };
 
+  /// SlPreconfiguration structure
   struct SlPreconfiguration
   {
-    SlPreconfigGeneral preconfigGeneral;
+    SlPreconfigGeneral preconfigGeneral; ///< Preconfiguration general
     SlPreconfigSync preconfigSync; ///< Synchronization configuration
-    SlPreconfigCommPoolList preconfigComm;
-    SlPreconfigDiscPoolList preconfigDisc;
+    SlPreconfigCommPoolList preconfigComm; ///< List of preconfigured Sidelink communication pools
+    SlPreconfigDiscPoolList preconfigDisc; ///< List of preconfigured Sidelink discovery pools
   };
 
+  /// PeriodicBsrTimer structure
   struct PeriodicBsrTimer
   {
-
-    enum {
+    /// Sidelink buffer status report periodicity enumeration in number of subframes
+    enum
+    {
       sf5,
       sf10,
       sf16,
@@ -1070,9 +1162,12 @@ public:
     } period;
   };
 
+  /// RetxBsrTimer structure
   struct RetxBsrTimer
   {
-    enum {
+    /// Sidelink buffer status report retransmission periodicity enumeration in number of subframes
+    enum
+    {
       sf320,
       sf640,
       sf1280,
@@ -1082,100 +1177,127 @@ public:
     } period;
   };
   
+  /// SlMacMainConfigSl structure
   struct SlMacMainConfigSl //MAC-MainConfigSL-r12
   {
-    PeriodicBsrTimer periodicBsrTimer;
-    RetxBsrTimer rtxBsrTimer;
+    PeriodicBsrTimer periodicBsrTimer; ///< Timer for BSR reporting
+    RetxBsrTimer retxBsrTimer; ///< Timer for retransmitting BSR
   };
 
+  /// SlCommTxPoolToAddMod structure
   struct SlCommTxPoolToAddMod
   {
-    uint8_t poolIdentity;
-    SlCommResourcePool pool;
+    uint8_t poolIdentity; ///< Pool identity
+    SlCommResourcePool pool; ///< Sidelink communication resource pool
   };
   
+  /// SlCommTxPoolToAddModList structure
   struct SlCommTxPoolToAddModList
   {
-    uint8_t nbPools;
-    SlCommTxPoolToAddMod pools[MAXSL_TXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlCommTxPoolToAddMod pools [MAXSL_TXPOOL]; ///< An array holding the Sidelink communication Tx pool configuration
   };
 
+  /// SlTxPoolToReleaseList structure
   struct SlTxPoolToReleaseList
   {
-    uint8_t nbPools;
-    uint8_t poolIdentities[MAXSL_TXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    uint8_t poolIdentities [MAXSL_TXPOOL]; ///< An array holding the identities of Sidelink pools to be released
   };
   
+  /// SlCommConfigScheduled structure
+  /// Indicates the configuration for the case E-UTRAN schedules the transmission resources based on Sidelink specific BSR from the UE.
   struct SlCommConfigScheduled
   {
-    //Indicates the configuration for the case E-UTRAN schedules the transmission resources based on sidelink specific BSR from the UE.
-    uint16_t crnti;
-    SlMacMainConfigSl macMainConfig;
-    SlCommResourcePool commTxConfig;
-    bool haveMcs; //indicates if MCS is being set
-    uint8_t mcs; //0..28
+    uint16_t crnti; ///< RNTI of the UE
+    SlMacMainConfigSl macMainConfig; ///< Sidelink MAC main configuration
+    SlCommResourcePool commTxConfig; ///< Sidelink communication pool configuration
+    bool haveMcs; ///< Have MCS?
+    uint8_t mcs; ///< MCS. Range = 0..28
   };
   
+  /// SlCommConfigUeSelected structure
+  /// Referred as commTxPoolNormalDedicated in 3GPP 36.331 : Indicates a pool of transmission resources the UE is allowed to use while in RRC_CONNECTED.
   struct SlCommConfigUeSelected
   {
-    //commTxPoolNormalDedicated: Indicates a pool of transmission resources the UE is allowed to use while in RRC_CONNECTED.
-    bool havePoolToRelease;
-    SlTxPoolToReleaseList poolToRelease;
-    bool havePoolToAdd;
-    SlCommTxPoolToAddModList poolToAddModList;
+    bool havePoolToRelease; ///< Have pool to release?
+    SlTxPoolToReleaseList poolToRelease; ///< List of pools to release
+    bool havePoolToAdd; ///< Have Pool to add?
+    SlCommTxPoolToAddModList poolToAddModList; ///< List of pools to add
   };
 
+  /// SlCommTxResourcesSetup structure or dedicated configuration
   struct SlCommTxResourcesSetup
-  {//for dedicated configuration
+  {
+    /// enumeration to indicate which type of resources is being allocated
     enum
     {
       SCHEDULED,
       UE_SELECTED
-    } setup; //indicates which type of resources is being allocated
-    SlCommConfigScheduled scheduled;
-    SlCommConfigUeSelected ueSelected;
+    } setup; ///< Indicates which type of resources is being allocated
+    SlCommConfigScheduled scheduled; ///< Sidelink communication resource configuration for the case E-UTRAN schedules the transmission resources
+    SlCommConfigUeSelected ueSelected; ///< Sidelink communication resource configuration for the case a UE schedules its own transmission resources
   };
   
+  /// SlCommConfig structure for dedicated configuration
   struct SlCommConfig
-  {//for dedicated configuration
-    enum {
+  {
+    /// enumeration to indicate if it is allocating or releasing resources
+    enum
+    {
       RELEASE,
       SETUP
-    } commTxResources; //indicates if it is allocating or releasing resources
-    SlCommTxResourcesSetup setup; //valid only if commTxResources = setup
+    } commTxResources; ///< Indicates if it is allocating or releasing resources
+    SlCommTxResourcesSetup setup; ///< Valid only if commTxResources = setup
   };
 
+  /// SlDestinationInfoList structure
   struct SlDestinationInfoList
   {
-    int nbDestinations;
-    uint32_t SlDestinationIdentity[MAXSL_DEST]; //each destination is 24 bit long.
+    int nbDestinations; ///< Total number of destinations
+    uint32_t SlDestinationIdentity [MAXSL_DEST]; ///< An array holding the destination ids. Each destination is 24 bit long.
   };
   
+  /// SlCommTxResourceReq structure
   struct SlCommTxResourceReq
   {
-    uint32_t carrierFreq;
-    SlDestinationInfoList slDestinationInfoList;
+    uint32_t carrierFreq; ///< Carrier frequency
+    SlDestinationInfoList slDestinationInfoList; ///< Sidelink communication destination list
   };
   
-  /// end SystemInformationBlockType18
+  //end SystemInformationBlockType18
 
-  /// Start SystemInformationBlockType19
+  //Start SystemInformationBlockType19
 
   //Discovery period and probability of transmission are defined above 
   //in order to set the preconfigured pools
  
+  /// PoolSelection structure
   struct PoolSelection 
   {
-    enum {
+    /// Sidelink discovery pool selection criteria enumeration
+    enum
+    {
       RSRPBASED,
       RANDOM
-    } selection;
+    } selection; ///< Sidelink discovery pool selection criteria
   };
-  struct PoolSelectionRsrpBased {
-    uint32_t threshLow; // 0..7
-    uint32_t threshHigh; // 0..7
-  }; // Value 0 corresponds to -infinity, value 1 to -110dBm, value 2 to -100dBm, and so on (i.e. in steps of 10dBm) until value 6, which corresponds to -60dBm, while value 7 corresponds to +infinity.
 
+  /// PoolSelectionRsrpBased structure
+  /// Referred as SL-PoolSelectionConfig in 3GPP TS 36331
+  struct PoolSelectionRsrpBased
+  {
+    uint32_t threshLow; ///< Specifies the lower thresholds used to select a resource pool in RSRP based pool selection. Range = 0..7
+    uint32_t threshHigh; ///< Specifies the upper thresholds used to select a resource pool in RSRP based pool selection. Range = 0..7
+  }; // Value 0 corresponds to -infinity, value 1 to -110dBm, value 2 to -100dBm, and so on (i.e. in steps of 10dBm)
+     // until value 6, which corresponds to -60dBm, while value 7 corresponds to +infinity.
+
+  /**
+  * Rsrp value dBm function
+  *
+  * \param rsrp An integer value to retrieve the corresponding RSRP value
+  * \returns uint32_t value The RSRP value in dBm
+  */
   static uint32_t RsrpValueDbm (uint32_t rsrp)
   {
     uint32_t r = 0;
@@ -1203,8 +1325,10 @@ public:
     return r;
   }
 
-  struct SubframeAssignement
+  /// SubframeAssignment structure (TDD-Config field)
+  struct SubframeAssignment
   {
+    /// enumeration for UL/DL subframe assignment
     enum
     {
       sa0,
@@ -1214,10 +1338,13 @@ public:
       sa4,
       sa5,
       sa6
-    } sa;
+    } sa; ///< UL/ DL subframe configuration
   };
+
+  /// SpecialSubframePatterns structure (TDD-Config field)
   struct SpecialSubframePatterns
   {
+    /// enumeration for special subframe patterns
     enum
     {
       ssp0,
@@ -1229,39 +1356,51 @@ public:
       ssp6,
       ssp7,
       ssp8
-    } ssp;
+    } ssp; ///< Special subframe patterns
   };
 
+  /// SlDiscResourcePool structure
   struct SlDiscResourcePool
   {
-    SlCpLen cpLen; // defined for communication.
-    SlPeriodDisc discPeriod;
-    int8_t numRetx; // 0..3
-    int32_t numRepetition; // 1..50
-    SlTfResourceConfig tfResourceConfig; 
-    bool haveTxParameters;
+    SlCpLen cpLen; ///< Sidelink cyclic prefix length. Defined for communication
+    SlPeriodDisc discPeriod; ///< Sidelink discovery period length
+    int8_t numRetx; ///< Total number of retransmissions. Range = 0..3
+    int32_t numRepetition; ///< Total number of repetition. Range = 1..50
+    SlTfResourceConfig tfResourceConfig; ///< Sidelink time and frequency resource configuration
+    bool haveTxParameters; ///< Have Tx parameters?
+    /// TxParameters structure
     struct TxParameters
     {
-      SlTxParameters txParametersGeneral;
+      SlTxParameters txParametersGeneral; ///< Tx parameter general
+      /// UeSelectedResourceConfig structure
       struct UeSelectedResourceConfig
       {
-        PoolSelection poolSelection;
-        bool havePoolSelectionRsrpBased;
-        PoolSelectionRsrpBased poolSelectionRsrpBased; 
-        TxProbability txProbability; 
-      } ueSelectedResourceConfig;
-    } txParameters;
-    bool haveRxParameters;
+        PoolSelection poolSelection; ///< Sidelink discovery pool selection criteria
+        bool havePoolSelectionRsrpBased; ///< Have pool selection RSRP based?
+        PoolSelectionRsrpBased poolSelectionRsrpBased; ///< RSRP based pool configuration
+        TxProbability txProbability; ///< Tx probability
+      } ueSelectedResourceConfig; ///< UE selected resource configuration
+    } txParameters; ///< Tx parameters
+    bool haveRxParameters; ///< Have Rx parameters?
+    /// RxParameters structure
     struct RxParameters
     {
+      /// TddConfig structure
       struct TddConfig
       {
-        SubframeAssignement subframeAssignement;
-        SpecialSubframePatterns specialSubframePatterns;
-      } tddConfig;
-      uint32_t syncConfigIndex; // 0 .. 15
-    } rxParameters;
-  
+        SubframeAssignment subframeAssignment; ///< UL/ DL subframe configuration
+        SpecialSubframePatterns specialSubframePatterns; ///< Special subframe patterns
+      } tddConfig; ///< TDD configuration
+      uint32_t syncConfigIndex; ///< Index to the corresponding entry of SlSyncConfigList in SystemInformationBlockType19 for Sidelink discovery. Range =  0..15
+    } rxParameters; ///< Discovery Rx parameters
+
+   /**
+    * Comparison operator
+    *
+    * \param lhs first pool
+    * \param rhs second pool
+    * \returns true if the pools are equal
+    */
     friend bool operator==(const SlDiscResourcePool& lhs, const SlDiscResourcePool& rhs)
     {
       bool equal = lhs.cpLen.cplen == rhs.cpLen.cplen
@@ -1285,7 +1424,7 @@ public:
       equal = equal && lhs.haveRxParameters == rhs.haveRxParameters;
       if (equal && lhs.haveRxParameters)
         {
-          equal = equal && lhs.rxParameters.tddConfig.subframeAssignement.sa == rhs.rxParameters.tddConfig.subframeAssignement.sa
+          equal = equal && lhs.rxParameters.tddConfig.subframeAssignment.sa == rhs.rxParameters.tddConfig.subframeAssignment.sa
           && lhs.rxParameters.tddConfig.specialSubframePatterns.ssp == rhs.rxParameters.tddConfig.specialSubframePatterns.ssp
           && lhs.rxParameters.syncConfigIndex == rhs.rxParameters.syncConfigIndex;
         }
@@ -1293,122 +1432,145 @@ public:
     }
   };
 
+  /// SlDiscTxPoolList structure
   struct SlDiscTxPoolList
   {
-    uint8_t nbPools;
-    SlDiscResourcePool pools[MAXSL_TXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlDiscResourcePool pools [MAXSL_TXPOOL]; ///< An array holding the discovery Tx pool configuration
   };
 
+  /// SlDiscRxPoolList structure
   struct SlDiscRxPoolList
   {
-    uint8_t nbPools;
-    SlDiscResourcePool pools[MAXSL_RXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlDiscResourcePool pools [MAXSL_RXPOOL]; ///< An array holding the discovery Rx pool configuration
   };
 
+  /// SlDiscTxPowerInfo structure
   struct SlDiscTxPowerInfo
   {
-    uint32_t discMaxTxPower; //-30..30
+    uint32_t discMaxTxPower; ///< P-Max parameter used to calculate the maximum transmit power a UE (-30..30)
   };
 
-  // The first entry in SLDiscTxPowerInfoList corresponds to UE range class "short", the second entry corresponds to "medium" and the third entry corresponds to "long"
+  /// SlDiscTxPowerInfoList structure
+  /// The first entry in SLDiscTxPowerInfoList corresponds to UE range class "short", the second entry corresponds to "medium" and the third entry corresponds to "long"
   struct SlDiscTxPowerInfoList
   {
-    uint8_t nbPowerInfo;
-    SlDiscTxPowerInfo power[MAXSL_DISC_POWERCLASS];
+    uint8_t nbPowerInfo; ///< Total number of power classes whose power control information in included
+    SlDiscTxPowerInfo power [MAXSL_DISC_POWERCLASS]; ///< An array holding the Tx power information for each power class
   };
 
+  /// Sib19DiscConfig structure
   struct Sib19DiscConfig
-  { // SlDiscConfig struct used in RRC Connection
-    SlDiscRxPoolList discRxPool;
-    SlDiscTxPoolList discTxPoolCommon; // Optional 
-    SlDiscTxPowerInfoList discTxPowerInfo;  // Optional 
-    SlSyncConfigList discSyncConfig;         // Optional 
+  {
+    SlDiscRxPoolList discRxPool; ///< List of discovery reception pools
+    SlDiscTxPoolList discTxPoolCommon; ///< List of discovery transmission pools (Optional)
+    SlDiscTxPowerInfoList discTxPowerInfo; ///< UE transmission power information list use to transmit discovery messages (Optional)
+    SlSyncConfigList discSyncConfig; ///< Synchronization configuration used for transmission/reception of SLSS on the given frequency (Optional)
   };
   
+  /// PlmnIdentityList structure
   struct PlmnIdentityList
   {
-    int nbPlmn;
-    PlmnIdentityInfo plmnIdentityInfo[MAX_PLMN]; 
+    int nbPlmn; ///< Total number of PLMN
+    PlmnIdentityInfo plmnIdentityInfo [MAX_PLMN]; ///< An array holding the identity of each PLMN
   };
 
+  /// SlCarrierFreqInfoList structure
   struct SlCarrierFreqInfoList
   {
-    uint16_t carrierFreq;
-    PlmnIdentityList plmnIdentityList;
+    uint16_t carrierFreq; ///< Sidelink carrier frequency
+    PlmnIdentityList plmnIdentityList; ///< PLMN identity list
   };
 
+  /// SystemInformationBlockType19 structure
   struct SystemInformationBlockType19
   {
-    Sib19DiscConfig discConfig;
-    SlCarrierFreqInfoList discInterFreqList;
+    Sib19DiscConfig discConfig; ///< Sidelink discovery configuration
+    SlCarrierFreqInfoList discInterFreqList; ///< Sidelink carrier frequency information list
   };
   
+  /// SlDiscTxPoolToAddMod structure
   struct SlDiscTxPoolToAddMod
   {
-    uint8_t poolIdentity;
-    SlDiscResourcePool pool;
+    uint8_t poolIdentity; ///< Sidelink discovery pool identity
+    SlDiscResourcePool pool; ///< Configuration information for a pool of resources for Sidelink discovery.
   };
   
+  /// SlDiscTxPoolToAddModList structure
   struct SlDiscTxPoolToAddModList
   {
-    uint8_t nbPools;
-    SlDiscTxPoolToAddMod pools[MAXSL_TXPOOL];
+    uint8_t nbPools; ///< Number of pools
+    SlDiscTxPoolToAddMod pools [MAXSL_TXPOOL]; ///< An array holding the discovery Tx pool configuration
   };
 
-  struct SlTfIndexPair {
-    uint32_t discSfIndex; //1..200
-    uint32_t discPrbIndex; //1..50
+  /// SlTfIndexPair structure
+  struct SlTfIndexPair
+  {
+    uint32_t discSfIndex; ///< Starting subframe index of the discovery resources. Range = 1..200
+    uint32_t discPrbIndex; ///< Starting PRB index of the discovery resources. Range = 1..50
   };
 
+  /// SlTfIndexPairList structure
   struct SlTfIndexPairList
   {
-    uint8_t nbPair;
-    SlTfIndexPair pair[MAXSL_TF_INDEXPAIR];
+    uint8_t nbPair; ///< Number of SlTfIndexPair
+    SlTfIndexPair pair [MAXSL_TF_INDEXPAIR]; ///< An array holding the SlTfIndexPair for the discovery pool
   };
 
+  /// SlHoppingConfigDisc structure
   struct SlHoppingConfigDisc
   {
-    uint32_t a; //1..200
-    uint32_t b; //1..10
-    enum {
+    uint32_t a; ///< Per cell parameter. Range = 1..200
+    uint32_t b; ///< Per UE parameter. Range = 1..10
+    /// enumeration for Per cell parameters
+    enum
+    {
       n1,
       n5
-    } c;
+    } c; ///< Per cell parameter
   };
 
+  /// SlDiscConfigScheduled structure
   struct SlDiscConfigScheduled
   {
-    SlDiscResourcePool discTxConfig;
-    SlTfIndexPairList discTfIndexList;
-    SlHoppingConfigDisc discHoppingConfigDisc;
+    SlDiscResourcePool discTxConfig; ///< Configuration information for a pool of resources for Sidelink discovery.
+    SlTfIndexPairList discTfIndexList; ///< List of pair of indices for Sidelink resources
+    SlHoppingConfigDisc discHoppingConfigDisc; ///< Hopping configuration for Sidelink discovery
   };
 
+  /// SlDiscConfigUeSelected structure
   struct SlDiscConfigUeSelected
   {
-    bool havePoolToRelease;
-    SlTxPoolToReleaseList poolToRelease;
-    bool havePoolToAdd;
-    SlDiscTxPoolToAddModList poolToAddModList;
+    bool havePoolToRelease; ///< Have pool to release?
+    SlTxPoolToReleaseList poolToRelease; ///< List of pools to release
+    bool havePoolToAdd; ///< Have pool to add?
+    SlDiscTxPoolToAddModList poolToAddModList;  ///< List of pools to add
   };
 
+  /// SlDiscTxResourcesSetup structure
   struct SlDiscTxResourcesSetup
   {
-    enum {
+    /// enumeration to indicate which type of resources is being allocated
+    enum
+    {
       SCHEDULED,
       UE_SELECTED
-    } setup;
-    SlDiscConfigScheduled scheduled;
-    SlDiscConfigUeSelected ueSelected;
+    } setup; ///< Indicates which type of resources is being allocated
+    SlDiscConfigScheduled scheduled; ///< Configuration information for scheduled resources
+    SlDiscConfigUeSelected ueSelected; ///< Configuration information for UE selected resources
   };
   
+  /// SlDiscConfig structure
   struct SlDiscConfig
   {
+    /// enumeration to indicate if it is allocating or releasing resources
     enum
     {
       RELEASE,
       SETUP
-    } discTxResources; 
-    SlDiscTxResourcesSetup setup;
+    } discTxResources; ///< Indicates if it is allocating or releasing resources
+    SlDiscTxResourcesSetup setup; ///< Configuration information for dedicated resources
   };
 
   /// End SystemInformationBlockType19
@@ -1720,17 +1882,18 @@ public:
     MeasResults measResults; ///< measure results
   };
 
-  struct SidelinkUeInformation {
-    bool haveCommRxInterestedFreq;
-    uint32_t commRxInterestedFreq; //max value=262143
-    bool haveCommTxResourceReq;
-    SlCommTxResourceReq slCommTxResourceReq;
-    bool haveDiscRxInterest;
-    bool discRxInterest;
-    bool haveDiscTxResourceReq;
-    uint8_t discTxResourceReq; //1..63, use 0 as invalid
+  /// SidelinkUeInformation structure
+  struct SidelinkUeInformation
+  {
+    bool haveCommRxInterestedFreq; ///< Have communication Rx interested frequency?
+    uint32_t commRxInterestedFreq; ///< Frequency on which the UE is interested in receiving Sidelink communication. Max value = 262143.
+    bool haveCommTxResourceReq; ///< Have communication Tx resource request?
+    SlCommTxResourceReq slCommTxResourceReq; ///< Sidelink communication Tx Resource request
+    bool haveDiscRxInterest; ///< Have discovery Rx interested?
+    bool discRxInterest; ///< Indicates that the UE is interested in monitoring Sidelink discovery announcements.
+    bool haveDiscTxResourceReq; ///< Have discovery Tx resource request?
+    uint8_t discTxResourceReq; ///< Indicates the number of separate discovery message(s) the UE wants to transmit every discovery period. Range = 1..63, use 0 as invalid
   };
-
 };
 
 
@@ -1807,7 +1970,7 @@ public:
 
   /**
    * \brief Send a _SidelinkUeInformation_ message to the serving eNodeB
-   *        to indicate interest in sidelink transmission/reception
+   *        to indicate interest in Sidelink transmission/reception
    * \param msg the message
    */
   virtual void SendSidelinkUeInformation (SidelinkUeInformation msg) = 0;
@@ -2098,7 +2261,7 @@ public:
   virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg) = 0;
 
   /**
-   * \brief Receive a _SidelinkUeInformation_ message from a UE
+   * \brief Receive a SidelinkUeInformation message from a UE
    * \param rnti the RNTI of UE which sent the message
    * \param msg the message
    */

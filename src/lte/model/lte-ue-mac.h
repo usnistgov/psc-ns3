@@ -237,7 +237,7 @@ private:
    * Set Sidelink communication pool function
    * Sets reception pools for Sidelink communication
    *
-   * \param pool The list of reception pools for Sidelink communication
+   * \param pools The list of reception pools for Sidelink communication
    */
   void DoSetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools);
   /**
@@ -407,7 +407,7 @@ private:
   uint8_t m_raRnti; ///< RA RNTI
   bool m_waitingForRaResponse; ///< waiting for RA response
 
-  //Sidelink Communication related variables
+  /// Sidelink Communication related variables
   struct SidelinkLcIdentifier
   {
     uint8_t lcId; ///< Sidelink LCID
@@ -415,17 +415,28 @@ private:
     uint32_t dstL2Id; ///< Destination L2 group ID
   };
 
-  friend bool operator < (const SidelinkLcIdentifier &l, const SidelinkLcIdentifier &r) { return l.lcId < r.lcId || (l.lcId == r.lcId && l.srcL2Id < r.srcL2Id) || (l.lcId == r.lcId && l.srcL2Id == r.srcL2Id && l.dstL2Id < r.dstL2Id); }
+  /**
+   * Less than operator
+   *
+   * \param l first SidelinkLcIdentifier
+   * \param r second SidelinkLcIdentifier
+   * \returns true if first SidelinkLcIdentifier parameter values are less than the second SidelinkLcIdentifier parameters"
+   */
+  friend bool operator < (const SidelinkLcIdentifier &l, const SidelinkLcIdentifier &r)
+  {
+    return l.lcId < r.lcId || (l.lcId == r.lcId && l.srcL2Id < r.srcL2Id) || (l.lcId == r.lcId && l.srcL2Id == r.srcL2Id && l.dstL2Id < r.dstL2Id);
+  }
 
+  /// Sidelink grant related variables
   struct SidelinkGrant
   {
     //fields common with SL_DCI
     uint16_t m_resPscch; ///< Resource for PSCCH
     uint8_t m_tpc; ///< TPC
-    uint8_t m_hopping; //hopping flag
-    uint8_t m_rbStart; //models RB assignment
-    uint8_t m_rbLen; //models RB assignment
-    uint8_t m_hoppingInfo; //models RB assignment when hopping is enabled
+    uint8_t m_hopping; ///< hopping flag
+    uint8_t m_rbStart; ///< models RB assignment
+    uint8_t m_rbLen; ///< models RB assignment
+    uint8_t m_hoppingInfo; ///< models RB assignment when hopping is enabled
     uint8_t m_iTrp; ///< Index of Time recourse pattern (TRP)
 
     //other fields
@@ -433,6 +444,7 @@ private:
     uint32_t m_tbSize; ///< Transport Block Size
   };
 
+  /// Sidelink communication pool information
   struct PoolInfo
   {
     Ptr<SidelinkCommResourcePool> m_pool; ///< The Sidelink communication resource pool
@@ -442,7 +454,7 @@ private:
 
     uint32_t m_npscch; ///< Number of PSCCH available in the pool
 
-    bool m_grant_received; ///< True if we receive the grant
+    bool m_grantReceived; ///< True if we receive the grant
     SidelinkGrant m_nextGrant; ///< Grant received for the next SC period
 
     std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_pscchTx; ///< List of PSCCH transmissions within the pool
@@ -455,7 +467,7 @@ private:
   Time m_slBsrPeriodicity; ///< Sidelink buffer status report periodicity
   Time m_slBsrLast; ///< Time of last transmitted Sidelink buffer status report
   bool m_freshSlBsr; ///< true when a BSR has been received in the last TTI
-  std::map <SidelinkLcIdentifier, LteMacSapProvider::ReportBufferStatusParameters> m_slBsrReceived; // Sidelink BSR received from RLC (the last one)
+  std::map <SidelinkLcIdentifier, LteMacSapProvider::ReportBufferStatusParameters> m_slBsrReceived; ///< Sidelink BSR received from RLC (the last one)
 
   std::map <uint32_t, PoolInfo > m_sidelinkTxPoolsMap; ///< Map of Sidelink Tx pools with destination L2 group ID as its key
   std::list <Ptr<SidelinkRxCommResourcePool> > m_sidelinkRxPools; ///< List of Sidelink communication reception pools
@@ -471,13 +483,14 @@ private:
   uint8_t m_slGrantMcs; ///< Sidelink grant MCS
   uint8_t m_slGrantSize; ///< The number of RBs allocated per UE for Sidelink
 
-  //Sidelink discovery related variables
+  /// Sidelink discovery grant related variables
   struct DiscGrant
   {
     uint16_t m_rnti; ///< RNTI of the UE
     uint8_t m_resPsdch; ///< A randomly chosen resource index from the PSDCH resource pool
   };
 
+  /// Sidelink discovery pool information
   struct DiscPoolInfo
   {
     Ptr<SidelinkTxDiscResourcePool> m_pool; ///< The Sidelink discovery transmission pool
@@ -487,7 +500,7 @@ private:
 
     uint32_t m_npsdch; ///< Number of PSDCH available in the pool
 
-    bool m_grant_received; ///< True if UE received the grant
+    bool m_grantReceived; ///< True if UE received the grant
     DiscGrant m_nextGrant; ///< Grant received for the next discovery period
 
     std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> m_psdchTx; ///< List of PSDCH transmissions within the pool

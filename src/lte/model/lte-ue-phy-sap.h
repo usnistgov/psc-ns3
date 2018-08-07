@@ -127,13 +127,9 @@ public:
 
   /**
    * Notify the MAC that Sidelink is configured
-   *
-   * \param
    */
   virtual void NotifySidelinkEnabled () = 0;
 };
-
-
 
 } // namespace ns3
 

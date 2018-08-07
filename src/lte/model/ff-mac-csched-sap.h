@@ -196,7 +196,7 @@ public:
 
     std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendorSpecificList
 
-    std::vector <uint32_t> m_slDestinations;
+    std::vector <uint32_t> m_slDestinations; ///< List of Sidelink destinations
   };
 
   /**
@@ -241,25 +241,23 @@ public:
    */
   struct CschedPoolConfigReqParameters
   {
-    uint32_t m_group;
-
-    Ptr<SidelinkCommResourcePool> m_pool;
+    uint32_t m_group; ///< Group id
+    Ptr<SidelinkCommResourcePool> m_pool; ///< Sidelink communication resource pool
   };  
   /**
    * Parameters to release a Sidelink communication pool
    */
   struct CschedPoolReleaseReqParameters
   {
-    uint32_t m_group;
+    uint32_t m_group; ///< group id
   };
   /**
    * Parameters to setup a Sidelink discovery pool
    */
   struct CschedDiscPoolConfigReqParameters
   {
-    uint32_t m_discTxResourceReq;
-
-    Ptr<SidelinkDiscResourcePool> m_pool;
+    uint32_t m_discTxResourceReq; ///< Number of resources the UE requires every discovery period
+    Ptr<SidelinkDiscResourcePool> m_pool; ///< Sidelink discovery resource pool
   };
 
   /**
@@ -267,7 +265,7 @@ public:
    */
   struct CschedDiscPoolReleaseReqParameters
   {
-    uint32_t m_discTxResourceReq;
+    uint32_t m_discTxResourceReq; ///< Number of discovery resources to release
   };
 
   //

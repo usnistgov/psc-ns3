@@ -105,15 +105,16 @@ class LteSidelinkRadioBearerInfo : public LteRadioBearerInfo
 {
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
-  uint8_t m_logicalChannelIdentity;
-  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig;
-  uint32_t m_sourceL2Id;
-  uint32_t m_destinationL2Id;
+  uint8_t m_logicalChannelIdentity; ///< The logical channel identity
+  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; ///< The logical channel configuration
+  uint32_t m_sourceL2Id; ///< The Sidelink source L2 source id
+  uint32_t m_destinationL2Id; ///< The Side destination L2 id
 };
-
-
-
 
 } // namespace ns3
 

@@ -209,9 +209,9 @@ LteSlUeRrc::GetDiscTxResources ()
 }
 
 void
-LteSlUeRrc::SetDiscTxResources (uint8_t nb)
+LteSlUeRrc::SetDiscTxResources (uint8_t numDiscTxRes)
 {
-  m_discTxResources = nb;
+  m_discTxResources = numDiscTxRes;
 }
 
 uint16_t

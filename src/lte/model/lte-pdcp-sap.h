@@ -51,9 +51,9 @@ public:
   };
 
   /**
-   * Send a RRC PDU to the RDCP for transmission
+   * Send an RRC PDU to the PDCP for transmission
    * This method is to be called
-   * when upper RRC entity has a RRC PDU ready to send   
+   * when the upper RRC entity has an RRC PDU ready to send   
    * 
    * \param params 
    */

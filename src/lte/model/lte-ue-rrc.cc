@@ -62,13 +62,12 @@ public:
   virtual void SetTemporaryCellRnti (uint16_t rnti);
   virtual void NotifyRandomAccessSuccessful ();
   virtual void NotifyRandomAccessFailed ();
-  //Sidelink related code
   //Sidelink communication
-    virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
-    virtual void NotifyMacHasSlDataToSend ();
-    virtual void NotifyMacHasNoSlDataToSend ();
+  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
+  virtual void NotifyMacHasSlDataToSend ();
+  virtual void NotifyMacHasNoSlDataToSend ();
   //Sidelink discovery
-    virtual void NotifyDiscoveryReception (Ptr<LteControlMessage> msg);
+  virtual void NotifyDiscoveryReception (Ptr<LteControlMessage> msg);
 
 private:
   LteUeRrc* m_rrc; ///< the RRC class
@@ -599,6 +598,8 @@ LteUeRrc::DoSendData (Ptr<Packet> packet, uint8_t bid)
   params.pdcpSdu = packet;
   params.rnti = m_rnti;
   params.lcid = it->second->m_logicalChannelIdentity;
+  params.dstL2Id = 0; //Only used for Sidelink
+  params.srcL2Id = 0; //Only used for Sidelink
 
   NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending packet " << packet
                      << " on DRBID " << (uint32_t) drbid
@@ -614,13 +615,15 @@ LteUeRrc::DoSendData (Ptr<Packet> packet, uint32_t group)
   NS_LOG_FUNCTION (this << packet << "for Sidelink group " <<group);
   //Find the PDCP for Sidelink transmission
   Ptr<LteSidelinkRadioBearerInfo> slrb = m_sidelinkConfiguration->GetSidelinkRadioBearer (group);
-  //the NAS should be aware about the existance of the bearer or not
+  //the NAS should be aware about the existence of the bearer or not
   NS_ASSERT_MSG (slrb, "could not find Sidelink bearer for group == " << group);
 
   LtePdcpSapProvider::TransmitPdcpSduParameters params;
   params.pdcpSdu = packet;
   params.rnti = m_rnti;
   params.lcid = slrb->m_logicalChannelIdentity;
+  params.dstL2Id = 0; //It is set by PDCP
+  params.srcL2Id = 0; //It is set by PDCP
 
   NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending packet " << packet
                      << " on SLRBBID " << (uint32_t) group

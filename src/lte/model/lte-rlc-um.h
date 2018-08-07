@@ -36,6 +36,7 @@ namespace ns3 {
 class LteRlcUm : public LteRlc
 {
 public:
+  /// Channel type enumeration
   enum ChanType
   {
     Default = 0,
@@ -147,8 +148,8 @@ private:
    * Expected Sequence Number
    */
   SequenceNumber10 m_expectedSeqNumber;
-  bool m_rxFirstPdu;       // Indicates if the first PDU has already been received.
-  ChanType m_chanTypeSelection;       // The logical channel type.
+  bool m_rxFirstPdu; ///< Indicates if the first PDU has already been received.
+  ChanType m_chanTypeSelection; ///< The logical channel type.
 
 };
 

@@ -286,11 +286,9 @@ struct SlPhyReceptionStatParameters
    * \todo The argument should be passed by const reference, since it's large.
    */
   typedef void (* TracedCallback)(const SlPhyReceptionStatParameters params);
-
 };
 
-
-
+/// SlUeMacStatParameters structure
 struct SlUeMacStatParameters
 {
   int64_t  m_timestamp;    ///< in millisecond

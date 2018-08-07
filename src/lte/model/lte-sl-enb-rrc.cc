@@ -170,7 +170,7 @@ LteSlEnbRrc::IsPoolInList (LteRrcSap::SlCommResourcePool pool, LteRrcSap::SlComm
   bool found = false;
   for (int i = 0; i < nbPool && !found; i++)
     {
-      found =  pool == pools[i];
+      found = pool == pools[i];
     }
   return found;
 }

@@ -173,7 +173,7 @@ public:
   SlDciListElement_s GetDci (void);
 
 private:
-  SlDciListElement_s m_dci;
+  SlDciListElement_s m_dci; ///< Sidelink DCI
 };
 
 
@@ -461,7 +461,7 @@ public:
   SciListElement_s GetSci (void);
 
 private:
-  SciListElement_s m_sci;
+  SciListElement_s m_sci; ///< Sidelink control information message
 };
 
 /**
@@ -487,7 +487,7 @@ public:
   LteRrcSap::MasterInformationBlockSL GetMibSL (void);
 
 private:
-  LteRrcSap::MasterInformationBlockSL m_mibSL;
+  LteRrcSap::MasterInformationBlockSL m_mibSL; ///< Sidelink Master Information Block
 };
   
 /**
@@ -513,7 +513,7 @@ public:
   SlDiscMsg GetSlDiscMessage (void);
 
 private:
-SlDiscMsg m_discMsg;
+SlDiscMsg m_discMsg; ///< Sidelink discovery message
 
 };
 

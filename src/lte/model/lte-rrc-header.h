@@ -1164,7 +1164,7 @@ public:
   LteRrcSap::SidelinkUeInformation GetMessage () const;
 
 private:
-  LteRrcSap::SidelinkUeInformation m_sidelinkUeInformation;
+  LteRrcSap::SidelinkUeInformation m_sidelinkUeInformation; ///< Sidelink UE information
 
 };
   

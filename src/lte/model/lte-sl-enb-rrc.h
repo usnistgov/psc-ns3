@@ -51,12 +51,12 @@
 namespace ns3 {
 
 /**
-   * \ingroup lte
-   * Manages Sidelink information for this eNodeB
-   */
+  * \ingroup lte
+  * Manages Sidelink information for this eNodeB
+  */
 class LteSlEnbRrc : public Object
 {
-  friend class LteUeRrc;
+  /// allow UeManager class friend access
   friend class UeManager;
 
 public:
@@ -155,7 +155,21 @@ public:
   LteRrcSap::SystemInformationBlockType19 GetSystemInformationType19 ();
 
 private:
+  /**
+   * Is pool in list function
+   * \param pool Sidelink communication pool to check
+   * \param *pools Pointer to the list of communication pools
+   * \param nbPool Total number of pools
+   * \return True if Sidelink communication pool is in the list
+   */
   bool IsPoolInList (LteRrcSap::SlCommResourcePool pool, LteRrcSap::SlCommResourcePool *pools, int nbPool);
+  /**
+   * Is pool in list function
+   * \param pool Sidelink discovery pool to check
+   * \param *pools Pointer to the list of discovery pools
+   * \param nbPool Total number of pools
+   * \return True if Sidelink discovery pool is in the list
+   */
   bool IsPoolInList (LteRrcSap::SlDiscResourcePool pool, LteRrcSap::SlDiscResourcePool *pools, int nbPool);
 
   //Add information about pools allocated for communication and discovery
@@ -174,6 +188,7 @@ private:
   bool m_slEnabled;   ///< Indicates if Sidelink is enabled
   bool m_discEnabled;   ///< Indicates if Sidelink Discovery is enabled
 
+  /// ActivePoolInfo structure
   struct ActivePoolInfo
   {
     Ptr<SidelinkCommResourcePool> m_pool;   ///< Pointer to the pool

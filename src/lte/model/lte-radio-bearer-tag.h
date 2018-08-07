@@ -66,7 +66,6 @@ public:
    * Create a LteRadioBearerTag with the given RNTI, LC id, layer, srcL2Id and dstL2Id use for Sidelink
    * \param rnti the RNTI
    * \param lcId the LCID
-   * \param layer the layer
    * \param srcL2Id the layer2 id of the source
    * \param dstL2Id the layer2 id of the destination
   */
@@ -75,33 +74,33 @@ public:
   /**
    * Set the RNTI to the given value.
    *
-   * @param rnti the value of the RNTI to set
+   * \param rnti the value of the RNTI to set
    */
   void SetRnti (uint16_t rnti);
 
   /**
    * Set the LC id to the given value.
    *
-   * @param lcid the value of the RNTI to set
+   * \param lcid the value of the RNTI to set
    */
   void SetLcid (uint8_t lcid);
   
   /**
   * Set the layer id to the given value.
   *
-  * @param layer the value of the layer to set
+  * \param layer the value of the layer to set
   */
   void SetLayer (uint8_t layer);
 
   /**
    * Sets the source L2 Id for sidelink identification of the RLC UM and PDCP entity
-   * \param src
+   * \param src The Sidelink source layer 2 id
    */
   void SetSourceL2Id (uint32_t src);
   
   /**
    * Sets the destination L2 Id for sidelink identification of the RLC UM and PDCP entity
-   * \param src
+   * \param dst The Sidelink destination layer 2 id
    */
   void SetDestinationL2Id (uint32_t dst);
 

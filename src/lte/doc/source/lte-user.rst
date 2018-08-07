@@ -2700,7 +2700,7 @@ For configuring Sidelink parameters, the "setup" structure of the field "commTxR
    //BSR timers
    pool.scheduled.macMainConfig.periodicBsrTimer.period = 
 						LteRrcSap::PeriodicBsrTimer::sf16;
-   pool.scheduled.macMainConfig.rtxBsrTimer.period = LteRrcSap::RetxBsrTimer::sf640;
+   pool.scheduled.macMainConfig.retxBsrTimer.period = LteRrcSap::RetxBsrTimer::sf640;
    //MCS
    pool.scheduled.haveMcs = true;
    pool.scheduled.mcs = 16;

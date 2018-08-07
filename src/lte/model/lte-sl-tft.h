@@ -106,11 +106,11 @@ public:
   bool isTransmit ();
 
 private:
-  Direction m_direction; /**< whether the filter needs to be applied
-                          to uplink / downlink only, or in both cases*/
+  Direction m_direction; ///< whether the filter needs to be applied
+                         ///< to uplink / downlink only, or in both cases*/
 
-  Ipv4Address m_groupAddress;     /**< IPv4 address of the remote host  */
-  uint32_t m_groupL2Address;      /** 24 bit MAC address  **/
+  Ipv4Address m_groupAddress; ///<  IPv4 address of the group
+  uint32_t m_groupL2Address;  ///< Sidelink group L2 address (24 bit MAC address)
 
 };
 

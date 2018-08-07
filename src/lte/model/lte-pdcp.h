@@ -67,13 +67,13 @@ public:
 
   /**
    * Sets the source L2 Id for sidelink identification of the RLC UM and PDCP entity
-   * \param src
+   * \param src The Sidelink source layer 2 id
    */
   void SetSourceL2Id (uint32_t src);
    
   /**
    * Sets the source L2 Id for sidelink identification of the RLC UM PDCP entity
-   * \param src
+   * \param dst The Sidelink destination layer 2 id
    */
   void SetDestinationL2Id (uint32_t dst);
  

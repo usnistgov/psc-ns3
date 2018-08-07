@@ -65,6 +65,7 @@ public:
    * Constructor
    *
    * \param rrc ENB RRC
+   * \param componentCarrierId
    */
   EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc, uint8_t componentCarrierId);
 
@@ -724,6 +725,8 @@ UeManager::SendData (uint8_t bid, Ptr<Packet> p)
         params.pdcpSdu = p;
         params.rnti = m_rnti;
         params.lcid = Bid2Lcid (bid);
+        params.dstL2Id = 0; //Only used for Sidelink
+        params.srcL2Id = 0; //Only used for Sidelink
         uint8_t drbid = Bid2Drbid (bid);
         //Transmit PDCP sdu only if DRB ID found in drbMap
         std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.find (drbid);

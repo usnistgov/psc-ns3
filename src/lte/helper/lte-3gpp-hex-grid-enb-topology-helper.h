@@ -145,7 +145,9 @@ public:
    * within the cell range.
    *
    * \param ues The list of UEs
-   * \param buildings The vector of buildings
+   * \param w The width of each building
+   * \param l The length of each building
+   * \param h The height of each building
    *
    * \return The NetDeviceContainer with the newly created devices
    */
@@ -246,7 +248,6 @@ public:
    * \param lossModel A pointer to the propagation loss model to be used
    * \param ueDevices The UE devices to connect
    * \param enbDevices The eNB devices UEs can be connected to
-   * \param topologyHelper A Pointer to the topology helper
    */
   void AttachWithWrapAround (Ptr<PropagationLossModel> lossModel, NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
@@ -410,9 +411,8 @@ private:
    * \param xMax The x coordinate of the right boundary of the building
    * \param yMin The y coordinate of the left boundary of the building
    * \param yMax The y coordinate of the right boundary of the building
-   * \param w The width of the building
-   * \param l The length of the building
-   * \param h The height of the building
+   * \param zMin The z coordinate of the lowest boundary of the building
+   * \param zMax The z coordinate of the highest boundary of the building
    *
    * \return The pointer to the deployed buildings
    */

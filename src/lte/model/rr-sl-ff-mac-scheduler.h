@@ -380,7 +380,7 @@ private:
   std::map <uint16_t, uint8_t> m_ulHarqCurrentProcessId; ///< UL HARQ current process ID
   //HARQ status
   // 0: process Id available
-  // x>0: process Id equal to `x` trasmission count
+  // x>0: process Id equal to `x` transmission count
   std::map <uint16_t, UlHarqProcessesStatus_t> m_ulHarqProcessesStatus; ///< UL HARQ process status
   std::map <uint16_t, UlHarqProcessesDciBuffer_t> m_ulHarqProcessesDciBuffer; ///< UL HARQ process DCI buffer
 
@@ -391,6 +391,7 @@ private:
   uint8_t m_ulGrantMcs; ///< MCS for UL grant (default 0)
 
   // Sidelink attributes
+  /// PoolUserAllocation structure
   struct PoolUserAllocation
   {
     uint16_t m_rnti; ///< the RNTI of the UE
@@ -405,6 +406,7 @@ private:
     std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_psschTx; ///< list of PSSCH transmissions within the pool
   };
 
+  /// PoolInfo structure
   struct PoolInfo
   {
     Ptr<SidelinkCommResourcePool> m_pool; ///< the pool
@@ -414,17 +416,18 @@ private:
 
     std::map <uint16_t,uint32_t> m_ceSlBsrRxed; ///< map the RNTI and Sidelink BSR request
 
-    std::map <uint16_t, PoolUserAllocation> m_currentAllocation;
-    std::map <uint16_t, PoolUserAllocation> m_nextAllocation;
-    bool m_init;
+    std::map <uint16_t, PoolUserAllocation> m_currentAllocation; ///< map the RNTI and current allocation
+    std::map <uint16_t, PoolUserAllocation> m_nextAllocation; ///< map the RNTI and next allocation
+    bool m_init; ///< Flag to indicate whether the pool is initialized
   };
-  std::map <uint32_t, PoolInfo> m_poolAllocations;
+
+  std::map <uint32_t, PoolInfo> m_poolAllocations; ///< map the group id and pool info
 
   std::map <uint16_t,std::vector <uint32_t> > m_uesDestinations; ///< Destinations of the UEs
 
   // temporary variables for fixed allocation
-  uint8_t m_slItrp;
-  uint8_t m_slGrantSize;
+  uint8_t m_slItrp; ///< Sidelink TRP index
+  uint8_t m_slGrantSize; ///< Sidelink grant size in RBs
 };
 } // namespace ns3
 

@@ -53,7 +53,7 @@ public:
    */
   LteRrcSap::SlPreconfigCommPool CreatePool ();
 private:
-  LteRrcSap::SlPreconfigCommPool m_pool;
+  LteRrcSap::SlPreconfigCommPool m_pool; ///< Sidelink communication pre-configured pool
 };
 
 } // namespace ns3

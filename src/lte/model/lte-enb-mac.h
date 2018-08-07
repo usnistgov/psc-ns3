@@ -276,7 +276,7 @@ private:
    * \brief Remove Discovery pool function
    * Removes Sidelink Discovery pool
    *
-   * \param reReq The resources requested to be removed
+   * \param resReq The resources requested to be removed
    */
   void DoRemoveDiscPool (uint8_t resReq);
 

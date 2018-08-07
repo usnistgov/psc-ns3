@@ -463,24 +463,22 @@ private:
   // Sidelink communication related code
   /**
    * Notify sidelink reception function
+   * This function is called by UE MAC to notify UE RRC about the reception of
+   * sidelink communication data upon which UE RRC creates a new sidelink
+   * radio bearer.
    *
    * \param lcId logical channel id
    * \param srcL2Id source layer 2 group id
    * \param dstL2Id destination layer 2 group id
-   *
-   * This function is called by UE MAC to notify UE RRC about the reception of
-   * sidelink communication data upon which UE RRC creates a new sidelink
-   * radio bearer.
    */
   void DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
   // Sidelink discovery
   /**
    * Notify discovery reception function
+   * This function is called by UE MAC to notify UE RRC about the reception of
+   * sidelink discovery message
    *
    * \param msg sidelink discovery message
-   *
-   *This function is called by UE MAC to notify UE RRC about the reception of
-   *sidelink discovery message
    */
   void DoNotifyDiscoveryReception (Ptr<LteControlMessage> msg);
   // CMAC SAP methods related to Sidelink synchronization
@@ -921,9 +919,10 @@ private:
   /**
    * Add sidelink radio bearer function
    *
-   * \param sourse The sidelink source layer 2 id
+   * \param source The sidelink source layer 2 id
    * \param group The sidelink group layer 2 id
    * \param lcid The logical channel id
+   * \return The Sidelink radio bearer information
    */
   Ptr<LteSidelinkRadioBearerInfo> AddSlrb (uint32_t source, uint32_t group, uint8_t lcid);
 
@@ -1456,7 +1455,7 @@ private:
   struct SlssMeasValues
   {
       double srsrp; ///< Measured S-RSRP in dBm.
-      Time timestamp;
+      Time timestamp; ///< The time stamp when the S-RSRP was measured
   };
   /**
    * The MIB-SL used by the UE to obtain the synchronization information once it

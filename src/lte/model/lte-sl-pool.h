@@ -112,6 +112,10 @@ public:
 
   SidelinkCommResourcePool (void);
   virtual ~SidelinkCommResourcePool (void);
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -229,18 +233,23 @@ public:
    */
   std::vector<uint8_t> GetValidRBstart (uint8_t rbLen);
 
-  /**
+ /**
   * Computes all valid rbStart values for every Lcrb value from range [0,10]
   * \return A vector of vectors which contains valid rbStart indexes for corresponding Lcrb value
   */
   std::vector< std::vector<uint8_t> > GetValidAllocations ();
 
 protected:
+  /**
+   * Initialize the Sidelink communication pool
+   */
   void Initialize ();
 
   /**
    * Translates the filtered subframes to subframe numbers relative to the start
    * of the SC period
+   * \param info The Sidelink transmission information
+   * \return The SidelinkTransmissionInfo
    */
   SidelinkCommResourcePool::SidelinkTransmissionInfo TranslatePscch (SidelinkCommResourcePool::SidelinkTransmissionInfo info);
 
@@ -276,8 +285,10 @@ private:
 
   /**
    * Computes the nPRB for Type 2 Frequency Hopping used in PSSCH
+   * \param rbStart The starting position of the contiguous resource blocks
+   * \param rbLen The size of the contiguous resource blocks
    * \param psschTimeIndexes The absolute subframe or slot number vector in the PSSCH.
-   * \return the computed nPRB values for each nVRB on all time indexes.
+   * \return The computed nPRB values for each nVRB on all time indexes.
    */
   std::vector <std::vector <uint32_t> > GetNprbType2 (uint8_t rbStart, uint8_t rbLen, std::vector <uint32_t> psschTimeIndexes);
 
@@ -323,22 +334,22 @@ private:
    */
   TracedCallback<uint32_t, uint32_t, uint32_t> m_nextScPeriod;
 
-  uint32_t m_lpscch;
-  std::vector <uint32_t> m_lpscchVector;   //list of subframes that belong to PSCCH pool
-  uint32_t m_rbpscch;
-  std::vector <uint32_t> m_rbpscchVector;   //list of RBs that belong to PSCCH pool
-  uint32_t m_nPscchResources;   //number of resources in the PSCCH pools
+  uint32_t m_lpscch; ///< Total number of subframes that belong to a PSCCH pool
+  std::vector <uint32_t> m_lpscchVector; ///< List of subframes that belong to PSCCH pool
+  uint32_t m_rbpscch; ///< Total number of RBs that belong to a PSCCH pool
+  std::vector <uint32_t> m_rbpscchVector; ///< List of RBs that belong to PSCCH pool
+  uint32_t m_nPscchResources; ///< Number of resources in the PSCCH pools
 
-  uint32_t m_lpssch;
-  std::vector <uint32_t> m_lpsschVector;   //list of subframes that belong to PSSCH pool
-  uint32_t m_rbpssch;
-  std::vector <uint32_t> m_rbpsschVector;   //list of RBs that belong to PSSCH pool
-  std::map <uint32_t, uint32_t> m_rbpsschPoolPrbToVrbIndexMap;   //<RB_index, Pool_index>
-  std::vector <uint8_t> m_hopSequence;   //Hop sequence, holds hop distance for every subframe
-  std::vector <uint8_t> m_goldSequence;   //Pseudo random sequence used for frequency hopping Type 2.
+  uint32_t m_lpssch; ///< Total number of subframes that belong to PSSCH pool
+  std::vector <uint32_t> m_lpsschVector; ///< List of subframes that belong to PSSCH pool
+  uint32_t m_rbpssch; ///< Total number of RBs that belong to PSSCH pool
+  std::vector <uint32_t> m_rbpsschVector; ///< List of RBs that belong to PSSCH pool
+  std::map <uint32_t, uint32_t> m_rbpsschPoolPrbToVrbIndexMap;  ///< RB_index, Pool_index>
+  std::vector <uint8_t> m_hopSequence; ///< Hop sequence, holds hop distance for every subframe
+  std::vector <uint8_t> m_goldSequence; ///< Pseudo random sequence used for frequency hopping Type 2.
 
 
-  bool m_preconfigured;   //indicates if the pool is preconfigured
+  bool m_preconfigured; ///< Indicates if the pool is preconfigured
 };
 
 /**
@@ -347,6 +358,10 @@ private:
 class SidelinkRxCommResourcePool :  public SidelinkCommResourcePool
 {
 public:
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
 protected:
@@ -358,6 +373,10 @@ protected:
 class SidelinkTxCommResourcePool :  public SidelinkCommResourcePool
 {
 public:
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
 
@@ -488,6 +507,10 @@ public:
 
   SidelinkDiscResourcePool (void);
   virtual ~SidelinkDiscResourcePool (void);
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -590,10 +613,15 @@ public:
   static LteRrcSap::TxProbability TxProbabilityFromInt (uint32_t p);
 
 protected:
+  /**
+   * Initialize the PSDCH pool
+   */
   void Initialize ();
 
   /**
    * Translates the filtered subframes to subframe numbers relative to the start discovery period
+   * \param info The SidelinkTransmissionInfo
+   * \return The updated SidelinkTransmissionInfo
    */
   SidelinkDiscResourcePool::SidelinkTransmissionInfo TranslatePsdch (SidelinkDiscResourcePool::SidelinkTransmissionInfo info);
 
@@ -616,12 +644,12 @@ private:
    */
   void ComputeNumberOfPsdchResources ();
 
-  uint32_t m_lpsdch;
-  std::vector <uint32_t> m_lpsdchVector;   //list of subframes that belong to PSDCH pool
-  uint32_t m_rbpsdch;
-  std::vector <uint32_t> m_rbpsdchVector;   //list of RBs that belong to PSDCH pool
-  uint32_t m_nPsdchResources;   //number of resources in the PSDCH pools
-  bool m_preconfigured;   //indicates if the pool is preconfigured
+  uint32_t m_lpsdch; ///< Total number of subframes belong to a PSDCH pool
+  std::vector <uint32_t> m_lpsdchVector;   ///< List of subframes that belong to PSDCH pool
+  uint32_t m_rbpsdch; ///< Total number of RBs belong to a PSDCH pool
+  std::vector <uint32_t> m_rbpsdchVector;   ///< List of RBs that belong to PSDCH pool
+  uint32_t m_nPsdchResources;   ///< Number of resources in the PSDCH pools
+  bool m_preconfigured;   ///< Indicates if the pool is preconfigured
 };
 
 /**
@@ -630,6 +658,10 @@ private:
 class SidelinkRxDiscResourcePool :  public SidelinkDiscResourcePool
 {
 public:
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
 protected:
@@ -641,6 +673,10 @@ protected:
 class SidelinkTxDiscResourcePool :  public SidelinkDiscResourcePool
 {
 public:
+  /**
+   * Register this type.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
 
