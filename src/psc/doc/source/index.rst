@@ -7,13 +7,14 @@
 .. highlight:: cpp
 
 .. heading hierarchy:
-   ------------- Chapter
-   ************* Section (#.#)
-   ============= Subsection (#.#.#)
-   ############# Paragraph (no number)
+   ============= Overall title
+   ############# Chapter
+   +++++++++++++ Section
+   ============= Subsection (#.#.#) (or -----)
+   ************* Paragraph
 
 ns-3 PSC module documentation
------------------------------
+=============================
 
 This is the stand-alone version of the ns-3 PSC module documentation. 
 

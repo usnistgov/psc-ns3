@@ -44,5 +44,3 @@ In addition, attributes for mechanical and electrical tilt are defined; these
 help to adjust the azimuth angle with respect to the reference system of 
 the antenna. 
 
-.. [TR36814]  3GPP TR 36.814, "Further Advancements for E-UTRA Physical Layer Aspects (Release 9)"
-

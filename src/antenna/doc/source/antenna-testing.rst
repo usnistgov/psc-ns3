@@ -52,4 +52,4 @@ by ``CosineAntennaModel`` within a tolerance of 0.001, which accounts
 for the approximation done for the calculation of the reference
 values.
 
-.. include:: antenna-testing-parabolic.rst
+.. include:: antenna-testing-parabolic.inc

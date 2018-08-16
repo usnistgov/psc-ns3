@@ -268,4 +268,4 @@ The following pseudo-code illustrates how the different pathloss model elements 
       
 We note that OhBuildingsPropagationLossModel is a significant simplification with respect to HybridBuildingsPropagationLossModel, due to the fact that OH is used always. While this gives a less accurate model in some scenarios (especially below rooftop and indoor), it effectively avoids the issue of pathloss discontinuities that affects HybridBuildingsPropagationLossModel.
 
-.. include:: buildings-design-3gpp.rst
+.. include:: buildings-design-3gpp.inc

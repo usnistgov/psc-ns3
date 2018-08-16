@@ -1,6 +1,3 @@
-.. include:: replace.txt
-.. highlight:: cpp
-
 ------------
 LTE Sidelink
 ------------
@@ -165,7 +162,7 @@ The UE RRC now supports the creation of Sidelink bearers for both in-coverage an
 .. _fig-lte-sl-in-coverage-rx:
 
 .. figure:: figures/lte-sl-in-coverage-rx.*
-   :scale: 80 %
+   :scale: 70 %
    :align: center
 
    ns-3 LTE Sidelink in-coverage radio bearer activation (Rx)
@@ -183,7 +180,7 @@ For the out-of-coverage scenario, the Sidelink bearer activation and the resourc
 .. _fig-lte-sl-out-of-coverage-rx:
 
 .. figure:: figures/lte-sl-out-of-coverage-rx.*
-   :scale: 80 %
+   :scale: 70 %
    :align: center
 
    ns-3 LTE Sidelink out-of-coverage radio bearer activation (Rx)

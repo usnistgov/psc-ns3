@@ -162,4 +162,4 @@ References
 
 .. [DKimura2012] D. Kimura, H. Seki, "Inter-Cell Interference Coordination (ICIC) Technology", FUJITSU Sci. Tech. J., Vol. 48, No. 1 (January 2012)
 
-.. include:: lte-references-sidelink.rst
+.. include:: lte-references-sidelink.inc

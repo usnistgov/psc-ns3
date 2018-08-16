@@ -1,14 +1,9 @@
-Public Safety Communications Overview
-*************************************
-
 .. include:: replace.txt
 .. highlight:: cpp
 
-.. heading hierarchy:
-   ------------- Chapter
-   ************* Section (#.#)
-   ============= Subsection (#.#.#)
-   ############# Paragraph (no number)
++++++++++++++++++++++++++++++++++++++
+Public Safety Communications Overview
++++++++++++++++++++++++++++++++++++++
 
 |ns3| support for public safety communications (PSC) is based on 
 relatively new capabilities for 4G LTE systems introduced in 3GPP Release 12
@@ -46,13 +41,14 @@ Future extensions to this module or other related modules such as LTE are planne
 2) UE-to-network relay
 3) public safety scenario support code and example programs
 
+---------------
 Acknowledgments
-===============
+---------------
 
 Public safety communications features are based on development led by the
 Wireless Networks Division of the U.S. National Institute of Standards
-and Technology, described in publications ([Rou16]_ and  [Rou17]_).   Users
-of the D2D features of |ns3| are requested to cite [Rou17]_
+and Technology, described in publications ([NIST2016]_ and  [NIST2017]_).   Users
+of the D2D features of |ns3| are requested to cite [NIST2017]_
 in academic publications based on these models. 
 
 The following individuals are authors of the public safety communications

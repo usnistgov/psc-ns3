@@ -1,4 +1,3 @@
-
 :orphan: true
 
 .. only:: html or latex
@@ -14,4 +13,3 @@ Public Safety Communications
 
    psc-design
    udp-group-echo
-   psc-references

@@ -1,7 +1,4 @@
-﻿.. include:: replace.txt
-
-
-++++++++++++++++++
+﻿++++++++++++++++++
 User Documentation
 ++++++++++++++++++
 
@@ -429,7 +426,7 @@ And finally, in UL and DL reception files the parameters included are:
 
 .. _sec-sidelink-simulation-output:
 
-.. include:: lte-user-sidelink-traces.rst
+.. include:: lte-user-sidelink-traces.inc
 
 Fading Trace Usage
 ------------------
@@ -591,7 +588,7 @@ The Physical error model consists of the data error model and the downlink contr
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
-.. include:: lte-user-sidelink-phy-error-model.rst
+.. include:: lte-user-sidelink-phy-error-model.inc
 
 MIMO Model
 ----------
@@ -2411,7 +2408,7 @@ figures are generated. An example to run this test suite is shown in figures:
    
    Example of CA test performance in the downlink
 
-.. include:: lte-user-sidelink.rst
+.. include:: lte-user-sidelink.inc
 
 Troubleshooting and debugging tips
 ---------------------------------------------------
