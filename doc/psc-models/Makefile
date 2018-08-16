@@ -14,21 +14,19 @@ SOURCES = \
 	source/index.rst \
 	source/replace.txt \
 	source/antenna.rst \
-	$(SRC)/antenna/doc/source/antenna-design-parabolic.rst \
-	$(SRC)/antenna/doc/source/antenna-testing-parabolic.rst \
+	$(SRC)/antenna/doc/source/antenna-design-parabolic.inc \
+	$(SRC)/antenna/doc/source/antenna-testing-parabolic.inc \
 	source/buildings.rst \
-	$(SRC)/buildings/doc/source/buildings-design-3gpp.rst \
-	$(SRC)/buildings/doc/source/buildings-references-3gpp.rst \
+	$(SRC)/buildings/doc/source/buildings-design-3gpp.inc \
+	$(SRC)/buildings/doc/source/buildings-references-3gpp.inc \
 	source/lte.rst \
-	$(SRC)/lte/doc/source/lte-user-sidelink.rst \
-	$(SRC)/lte/doc/source/lte-user-sidelink-traces.rst \
-	$(SRC)/lte/doc/source/lte-user-sidelink-phy-error-model.rst \
-	$(SRC)/lte/doc/source/lte-design-sidelink.rst \
-	$(SRC)/lte/doc/source/lte-references-sidelink.rst \
-	$(SRC)/psc/doc/source/psc.rst \
+	$(SRC)/lte/doc/source/lte-user-sidelink.inc \
+	$(SRC)/lte/doc/source/lte-user-sidelink-traces.inc \
+	$(SRC)/lte/doc/source/lte-user-sidelink-phy-error-model.inc \
+	$(SRC)/lte/doc/source/lte-design-sidelink.inc \
+	$(SRC)/lte/doc/source/lte-references-sidelink.inc \
 	$(SRC)/psc/doc/source/psc-design.rst \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
-	$(SRC)/psc/doc/source/psc-references.rst \
 
 # list all model library figure files that need to be copied to 
 # $SOURCETEMP/figures.  For each figure to be included in all
@@ -83,9 +81,6 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-sl-simple-scenario.eps \
 	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.eps \
 
-# rescale pdf figures as necessary
-$(FIGURES)/helpers.pdf_width = 8cm
-
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
@@ -109,6 +104,13 @@ RESCALE = ../../utils/rescale-pdf.sh
 	@echo epstopdf $(notdir $<)
 	@$(EPSTOPDF) $< -o=$@ >/dev/null
 	@if test x$($@_width) != x; then $(RESCALE) $($@_width) $@ ; fi
+
+# rescale pdf figures as necessary
+$(FIGURES)/prose-non-roaming-arch.pdf_width = 10in
+$(FIGURES)/sidelink-scenarios-1c.pdf_width = 10cm
+$(FIGURES)/sidelink-scenarios-1a.pdf_width = 10cm
+$(FIGURES)/lte-sl-simple-scenario.pdf_width = 4in
+$(FIGURES)/lte-sl-simple-OofCovrg-scenario.pdf_width = 3in
 
 # You can set these variables from the command line.
 SPHINXOPTS    =

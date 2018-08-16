@@ -4514,4 +4514,4 @@ Another implementation is the ``RrComponentCarrierManager``, which splits the tr
 equally among carriers, by diving the buffer status report among different carriers. 
 SRB0 and SRB1 flows will be forwarded only over primary carrier.
 
-.. include:: lte-design-sidelink.rst
+.. include:: lte-design-sidelink.inc

@@ -1,35 +1,28 @@
 .. include:: replace.txt
+.. highlight:: cpp
 
-=================================
- LTE Module
-=================================
+==============
+LTE D2D Models
+==============
 
 This chapter is an excerpt of the LTE module documentation chapter,
 containing the D2D-related models that have been added to the |ns3| 
 LTE module.
 
-.. include:: replace.txt
-.. highlight:: cpp
-
 ++++++++++++++++++++
 Design Documentation
 ++++++++++++++++++++
 
-.. include:: lte-design-sidelink.rst
+.. include:: lte-design-sidelink.inc
 
 ++++++++++++++++++
 User Documentation
 ++++++++++++++++++
 
-.. include:: lte-user-sidelink-traces.rst
+.. include:: lte-user-sidelink-traces.inc
 
-.. include:: lte-user-sidelink-phy-error-model.rst
+.. include:: lte-user-sidelink-phy-error-model.inc
 
-.. include:: lte-user-sidelink.rst
+.. include:: lte-user-sidelink.inc
 
-
-++++++++++
-References
-++++++++++
-
-.. include:: lte-references-sidelink.rst
+.. include:: lte-references-sidelink.inc

@@ -1,13 +1,8 @@
 .. include:: replace.txt
 
-.. heading hierarchy:
-   ------------- Chapter
-   ************* Section (#.#)
-   ============= Subsection (#.#.#)
-   ############# Paragraph (no number)
-
++++++++++++++++++++++
 UDP Group Echo Server
-*********************
++++++++++++++++++++++
 
 The class ``ns3::UdpGroupEchoServer`` implements a group echo server that
 echoes received UDP datagrams to a set of clients.  The policy
@@ -21,8 +16,9 @@ The UDP group echo implementation is authored by
 Fernando J. Cintron (fernando.cintron@nist.gov) and is derived from the
 UdpEchoServer found in the |ns3| applications module.
 
+-----------------
 Model Description
-=================
+-----------------
 
 The implementation is provided in the following files:
 
@@ -58,9 +54,8 @@ There are a few configurable policies:
     configurable timeout period.  Furthermore, the sending client may 
     be excluded from the response. 
 
-
 Attributes
-##########
+++++++++++
 
 The following is the list of attributes:
 
@@ -71,12 +66,13 @@ The following is the list of attributes:
 * ``EchoClient``: Whether the server echoes back to the sending client, default value of true.,
 
 Trace sources
-#############
++++++++++++++
 
 The model also provides a ``Rx`` trace source for all received datagrams.
 
+-----
 Usage
-=====
+-----
 
 A simple example based on CSMA links is provided in the file ``src/psc/examples/example-udp-group-echo.cc``.
 

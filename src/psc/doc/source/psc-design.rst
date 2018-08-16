@@ -1,14 +1,9 @@
-Public Safety Communications Overview
-*************************************
-
 .. include:: replace.txt
 .. highlight:: cpp
 
-.. heading hierarchy:
-   ------------- Chapter
-   ************* Section (#.#)
-   ============= Subsection (#.#.#)
-   ############# Paragraph (no number)
++++++++++++++++++++++++++++++++++++++
+Public Safety Communications Overview
++++++++++++++++++++++++++++++++++++++
 
 |ns3| support for public safety communications (PSC) is based on 
 relatively new capabilities for 4G LTE systems introduced in 3GPP Release 12
@@ -25,12 +20,6 @@ four |ns3| modules:
 2) ``lte``:  Support for ProSe (sidelink communications).
 3) ``buildings``:  Support for pathloss models including building effects, as defined by 3GPP with relevance to public safety scenarios.
 4) ``antenna``: Parabolic antenna model as described in 3GPP document TR 36.814
-
-All of the above mentioned features are based on development led by the
-Wireless Networks Division of the U.S. National Institute of Standards
-and Technology, described in publications ([Rou16]_ and  [Rou17]_).   Users
-of the D2D features of |ns3| are requested to cite [Rou17]_
-in academic publications based on these models. 
 
 Documentation for the PSC features implemented in the |ns3| ``lte``, ``buildings``, and ``antenna`` modules is provided in the respective 
 module documentation.  This chapter documents the |ns3| ``psc`` module.
@@ -52,4 +41,27 @@ Future extensions to this module or other related modules such as LTE are planne
 2) UE-to-network relay
 3) public safety scenario support code and example programs
 
+---------------
+Acknowledgments
+---------------
 
+Public safety communications features are based on development led by the
+Wireless Networks Division of the U.S. National Institute of Standards
+and Technology, described in publications ([NIST2016]_ and  [NIST2017]_).   Users
+of the D2D features of |ns3| are requested to cite [NIST2017]_
+in academic publications based on these models. 
+
+The following individuals are authors of the public safety communications
+extensions:
+
+* Aziza Ben-Mosbah (aziza.ben.mosbah@gmail.com)
+* Fernando J. Cintron (fernando.cintron@nist.gov)
+* Samantha Gamboa (samantha.gamboa@nist.gov)
+* Richard Rouil (richard.rouil@nist.gov)
+
+This release was ported from an earlier release, based on ns-3.22, to the
+ns-3.29 release, and was integrated with the LTE and buildings module, and
+extended to include additional example programs and tests, by CTTC and the 
+University of Washington. This work was performed under the financial 
+assistance award 70NANB17H170 from U.S. Department of Commerce, National 
+Institute of Standards and Technology.

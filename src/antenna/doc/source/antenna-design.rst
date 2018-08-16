@@ -89,4 +89,6 @@ without adding an array factor at a latter stage which would in
 practice alter the effective beamwidth of the resulting radiation
 pattern.
 
-.. include:: antenna-design-parabolic.rst
+.. include:: antenna-design-parabolic.inc
+
+.. [TR36814]  3GPP TR 36.814, "Further Advancements for E-UTRA Physical Layer Aspects (Release 9)"

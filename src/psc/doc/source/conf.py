@@ -21,7 +21,7 @@ import sys, os
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+needs_sphinx = '1.4'
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -178,7 +178,7 @@ html_theme = 'default'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('psc', 'psc-module.tex', u'ns-3 Public Safety Communications', u'National Institute of Standards and Technology (NIST)', 'manual'),
+  ('psc', 'psc-module.tex', u'ns-3 Public Safety Communications module', u'National Institute of Standards and Technology (NIST)', 'manual'),
 ]
 
 latex_elements = {
