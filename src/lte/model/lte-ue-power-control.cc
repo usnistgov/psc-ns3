@@ -127,6 +127,11 @@ LteUePowerControl::GetTypeId (void)
                    DoubleValue (23.0),
                    MakeDoubleAccessor (&LteUePowerControl::m_pscchTxPower),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("PsdchTxPower",
+                   "Value of PSDCH Tx Power in dBm",
+                   DoubleValue (23.0),
+                   MakeDoubleAccessor (&LteUePowerControl::m_psdchTxPower),
+                   MakeDoubleChecker<double> ())
     .AddTraceSource ("ReportPuschTxPower",
                      "Report PUSCH TxPower in dBm",
                      MakeTraceSourceAccessor (&LteUePowerControl::m_reportPuschTxPower),

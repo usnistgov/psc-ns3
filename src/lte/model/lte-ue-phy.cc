@@ -1833,7 +1833,6 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
                           m_discTxPools.m_currentGrants.begin ()->second.m_psdchTx.erase (txIt);
 
-                          //TODO: UL power control for discovery
                           if (m_enableUplinkPowerControl)
                           {
                             m_txPower = m_powerControl->GetPsdchTxPower (slRb);
