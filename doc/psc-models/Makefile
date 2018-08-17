@@ -25,6 +25,7 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-user-sidelink-phy-error-model.inc \
 	$(SRC)/lte/doc/source/lte-design-sidelink.inc \
 	$(SRC)/lte/doc/source/lte-references-sidelink.inc \
+	source/psc.rst \
 	$(SRC)/psc/doc/source/psc-design.rst \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
 
