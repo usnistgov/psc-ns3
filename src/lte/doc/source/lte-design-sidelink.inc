@@ -239,7 +239,7 @@ MAC
 
 Among the following eNB and UE specific enhancements for ProSe, one of the important change, irrespective of the eNB or UE implementation, is the limitation to the maximum frame number, which is now set to 1024. This is because all the computations to determine correctly the boundaries of ProSe communication and discovery periods and their resource allocation considers the maximum frame number to be 1024. This limitation also helps us to implement the rollover constraints more accurately, e.g., to have a configurable offset to be applied at the beginning of each communication and discovery periods. This change mainly impacted all the schedulers. In particular, every scheduler maintains a map of uplink resource allocation using the SFnSF (i.e., combination of frame and subframe number) as an unique key to update the PUSCH based CQIs. By limiting the frame number to 1024, means that a combination could repeat after 10 sec of simulation, thus, a c++ map would not allow to insert new allocation information with the same SFnSF combination. To handle this, we appropriately remove any old allocation information before inserting a new one.
 
-eNb Mac
+eNB Mac
 -------
 
 ``LteEnbMac`` has been extended to support in-coverage ProSe communication, i.e., Mode 1 resource allocation. The SAP between the ``LteEnbRrc`` and ``LteEnbMac`` is extended to receive the pool configuration to be conveyed to the scheduler to schedule the resources. If the type of resource allocation for the configured resource pool is ``Scheduled`` the eNB MAC is now capable of receiving Sidelink Buffer status Report (SLBSR) from the UEs. To achieve this, the ``structure`` ``MacCeListElement_s`` in ``ff-mac-common.h`` file is extended to support BSR of type SLBSR. The reporting of the BSR in uplink is the same as shown in Figure :ref:`fig-ca-uplink-bsr`. To handle the scheduling of Sidelink resources for MODE 1, a scheduler ``RrSlFfMacScheduler`` based on the existing Round Robin implementation is also provided. Thus, making it the only scheduler, for the time being, in LTE module capable of supporting Sidelink and normal LTE resource scheduling. It also makes sure that Sidelink and the uplink resources are not scheduled in the same subframe.
@@ -278,7 +278,7 @@ For the Sidelink synchronization, ``LteUeMac`` receives notification from ``LteU
 PHY
 +++
 
-eNb PHY
+eNB PHY
 -------
 
 The LTE module of |ns3| at the time of writing this documentation does not support Radio Link Failure (RLF) functionality. Therefore, to simulate out-of-coverage scenarios a workaround has been implemented to disable eNB PHY layer. An eNB can be disable by configuring the attribute "DisableEnbPhy" of ``LteHelper``.

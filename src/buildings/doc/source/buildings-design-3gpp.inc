@@ -127,7 +127,7 @@ the LOS probability is computed as follows:
 
   P_\mathrm{LOS} = min(\frac{\mathrm{18}}{d},1)(1 - e^{\frac{-d}{36}}) + e^{\frac{-d}{36}}
 
-and the effective antenna height of the eNb and UE is computed as:
+and the effective antenna height of the eNB and UE is computed as:
 
 .. math::  h^{'}_\mathrm{bs} = h_{\mathrm{bs}} - 1
 
@@ -315,7 +315,7 @@ The probability of LOS is given by:
   P_\mathrm{LOS} = min(\frac{\mathrm{18}}{d},1)(1 - e^{\frac{-d}{63}}) + e^{\frac{-d}{63}}
 
 
-and the effective antenna heights of the eNb and UE are computed as:
+and the effective antenna heights of the eNB and UE are computed as:
 
 .. math::  h^{'}_\mathrm{bs} = h_{\mathrm{bs}} - 1
 
