@@ -108,34 +108,37 @@ static ns3::GlobalValue g_enableLteTraces ("enableLteTraces",
                                            ns3::BooleanValue (false),
                                            ns3::MakeBooleanChecker ());
 
+/// Pathloss structure
 struct Pathloss
 {
-  Time time;
-  double ploss;
-  Ptr<Node> n1;
-  Ptr<Node> n2;
-  double dist;
-  bool aIndoor;
-  bool bIndoor;
+  Time time; ///< Time stamp when the pathloss trace was triggered
+  double ploss; ///< Pathloss value in dB
+  Ptr<Node> n1; ///< Pointer to the first node
+  Ptr<Node> n2; ///< Pointer to the second node
+  double dist; ///< Distance between the nodes in meter
+  bool aIndoor; ///< Flag to indicate if the first node is indoor
+  bool bIndoor; ///< Flag to indicate if the second node is indoor
 };
 
+/// GainLogs structure
 struct GainLogs
 {
-  Time time;
-  Ptr<MobilityModel> tx;
-  Ptr<MobilityModel> rx;
-  double txAntennaGain;
-  double rxAntennaGain;
-  double propagationGain;
-  double pathloss;
+  Time time; ///< Time stamp when the gain trace was triggered
+  Ptr<MobilityModel> tx; ///< Pointer to the mobility model of the transmitter
+  Ptr<MobilityModel> rx; ///< Pointer to the mobility model of the receiver
+  double txAntennaGain; ///< Tx antenna gain in dB
+  double rxAntennaGain; ///< Rx antenna gain in dB
+  double propagationGain; ///< Propagation gain in dB
+  double pathloss; ///< Pathloss in dB
 };
 
+/// ConnectionLogs structure
 struct ConnectionLogs
 {
-  std::string context;
-  uint64_t imsi;
-  uint16_t cellId;
-  uint16_t rnti;
+  std::string context; ///< The context
+  uint64_t imsi; ///< IMSI of the UE
+  uint16_t cellId; ///< The cell id
+  uint16_t rnti; ///< The RNTI of the UE
 };
 
 

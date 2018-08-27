@@ -182,21 +182,29 @@ public:
 
   /**
    * Trace sink for the ns3::LteUeMac::SlPscchScheduling trace source
+   * \param macStats
+   * \param path
+   * \param params The SlUeMacStatParameters
    */
   static void SlUeCchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params);
 
   /**
    * Trace sink for the ns3::LteUeMac::SlPsschScheduling trace source
+   * \param macStats
+   * \param path
+   * \param params The SlUeMacStatParameters
    */
   static void SlUeSchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params);
 
   /**
    * Notifies the stats calculator that a Sidelink PSCCH UE MAC scheduling has occurred.
+   * \param params The SlUeMacStatParameters
    */
   void SlUeCchScheduling (SlUeMacStatParameters params);
 
    /**
    * Notifies the stats calculator that a Sidelink PSSCH UE MAC scheduling has occurred.
+   * \param params The SlUeMacStatParameters
    */
   void SlUeSchScheduling (SlUeMacStatParameters params);
 

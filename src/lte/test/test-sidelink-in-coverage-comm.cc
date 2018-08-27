@@ -58,17 +58,34 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestSidelinkInCoverageComm");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink in-coverage communication test case.
+ */
 class SidelinkInCoverageCommTestCase : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param scheduledPool Flag to indicate if the resources are scheduled
+   */
   SidelinkInCoverageCommTestCase (bool scheduledPool);
   virtual ~SidelinkInCoverageCommTestCase ();
 
 private:
-  bool m_scheduledPool;
+  bool m_scheduledPool; ///< Flag to indicate if the resources are scheduled
   virtual void DoRun (void);
+  /**
+   * \brief Sink Rx function
+   *
+   * \param p The packet
+   * \param add Address
+   */
   void SinkRxNode (Ptr<const Packet> p, const Address &add);
-  uint32_t m_numPacketRx;
+  uint32_t m_numPacketRx; ///< Total number of Rx packets
 };
 
 SidelinkInCoverageCommTestCase::SidelinkInCoverageCommTestCase (bool scheduledPool)
@@ -289,7 +306,12 @@ SidelinkInCoverageCommTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_numPacketRx, 20, "20 packets should be received at the receiver!");
 }
 
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink in-coverage communication test suite.
+ */
 class SidelinkInCoverageCommTestSuite : public TestSuite
 {
 public:

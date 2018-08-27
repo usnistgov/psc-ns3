@@ -68,10 +68,10 @@ static const uint8_t MAX_SUPPORTED_BUILDINGS = 2;
  */
 struct WrapAroundInfo_t
 {
-  uint64_t cellId;
-  Vector posUe;
-  Vector posEnb;
-  double rsrp;
+  uint64_t cellId; ///< The cell id
+  Vector posUe; ///< Position of the UE
+  Vector posEnb; ///< Position of the eNB
+  double rsrp; ///< RSRP value
 };
 
 class Lte3gppHexGridEnbTopologyHelper : public Object
@@ -80,6 +80,11 @@ public:
   Lte3gppHexGridEnbTopologyHelper (void);
   virtual ~Lte3gppHexGridEnbTopologyHelper (void);
 
+  // inherited from Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
