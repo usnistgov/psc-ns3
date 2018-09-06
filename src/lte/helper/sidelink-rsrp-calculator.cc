@@ -49,11 +49,12 @@ NS_LOG_COMPONENT_DEFINE ("SidelinkRsrpCalculator");
 
 NS_OBJECT_ENSURE_REGISTERED (SidelinkRsrpCalculator);
 
+/// BwConfs structure
 static const struct BwConfs
 {
-  double m_ulBandwidth;
-  int m_indexLowerRb; ///< index of lower RB
-  int m_indexUpperRb; ///< index of upper RB
+  double m_ulBandwidth; ///< Uplink bandwidth in RBs
+  int m_indexLowerRb; ///< Index of lower RB
+  int m_indexUpperRb; ///< Index of upper RB
 } g_bwConfs[] = {
   { 6, 0, 5},
   { 15, 4, 10},

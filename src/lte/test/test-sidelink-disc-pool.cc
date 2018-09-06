@@ -45,20 +45,44 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TestSidelinkDiscPool");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidlelink discovery pool next frame and subframe test case.
+ */
 class SidlelinkDiscPoolNextFrameSubframeTestCase : public TestCase
 {
 public:
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \returns the name string
+   */
   static std::string BuildNameString (LteSlDiscResourcePoolFactory pfactory,uint32_t frameNo,uint32_t subframeNo);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \param expectedNextFrameNo Expected next frame number
+   * \param expectedNextSubframeNo Expected subframe number
+   */
   SidlelinkDiscPoolNextFrameSubframeTestCase (LteSlDiscResourcePoolFactory pfactory,uint32_t frameNo,
                                               uint32_t subframeNo, uint32_t expectedNextFrameNo, uint32_t expectedNextSubframeNo);
 
 private:
   virtual void DoRun (void);
-  LteSlDiscResourcePoolFactory m_pfactory;
-  uint32_t m_frameNo;
-  uint32_t m_subframeNo;
-  uint32_t m_expectedNextFrameNo;
-  uint32_t m_expectedNextSubframeNo;
+  LteSlDiscResourcePoolFactory m_pfactory; ///< LteSlDiscResourcePoolFactory
+  uint32_t m_frameNo; ///< Frame number
+  uint32_t m_subframeNo; ///< Subframe number
+  uint32_t m_expectedNextFrameNo; ///< Expected next frame number
+  uint32_t m_expectedNextSubframeNo; ///< Expected next subframe number
 };
 
 std::string SidlelinkDiscPoolNextFrameSubframeTestCase::BuildNameString (LteSlDiscResourcePoolFactory pfactory,uint32_t frameNo, uint32_t subframeNo)
@@ -117,25 +141,46 @@ void SidlelinkDiscPoolNextFrameSubframeTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (((m_expectedNextFrameNo == actualNextDiscPeriod.frameNo)&&(m_expectedNextSubframeNo == actualNextDiscPeriod.subframeNo)), true, "Expected and Actual Next Frame & Subframe numbers are not equal");
 }
 
-
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidlelink discovery pool resource opportunity test case.
+ */
 class SidelinkDiscPoolResourceOpportunityTestCase : public TestCase
 {
 public:
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param psdchResourceNo PSDCH resource number
+   * \returns the name string
+   */
   static std::string BuildNameString (LteSlDiscResourcePoolFactory pfactory, uint32_t psdchResourceNo);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param psdchResourceNo PSDCH resource number
+   * \param expectedFrameNo Expected frame number
+   * \param expectedSubframeNo Expected subframe number
+   * \param expectedRbStart Expected RB index
+   * \param expectedNbCount Expected total number of RBs
+   */
   SidelinkDiscPoolResourceOpportunityTestCase (LteSlDiscResourcePoolFactory pfactory, uint32_t psdchResourceNo,
                                                uint32_t expectedFrameNo, uint32_t expectedSubframeNo,
                                                uint32_t expectedRbStart, uint32_t expectedNbCount);
 
 private:
   virtual void DoRun (void);
-  LteSlDiscResourcePoolFactory m_pfactory;
-  uint32_t m_psdchResourceNo;
-  uint32_t m_expectedFrameNo;
-  uint32_t m_expectedSubframeNo;
-  uint32_t m_expectedRbStart;
-  uint32_t m_expectedNbCount;
+  LteSlDiscResourcePoolFactory m_pfactory; ///< LteSlDiscResourcePoolFactory
+  uint32_t m_psdchResourceNo; ///< PSDCH resource number
+  uint32_t m_expectedFrameNo; ///< Expected frame number
+  uint32_t m_expectedSubframeNo; ///< Expected subframe number
+  uint32_t m_expectedRbStart; ///< Expected RB start
+  uint32_t m_expectedNbCount; ///< Expected total number of RBs
 };
 
 std::string SidelinkDiscPoolResourceOpportunityTestCase::BuildNameString (LteSlDiscResourcePoolFactory pfactory,uint32_t psdchResourceNo)
@@ -214,23 +259,45 @@ void SidelinkDiscPoolResourceOpportunityTestCase::DoRun ()
 }
 
 
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidlelink discovery pool resource block per subframe test case.
+ */
 class SidlelinkDiscPoolRbsPerSubframeTestCase : public TestCase
 {
 public:
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \returns the name string
+   */
   static std::string BuildNameString (LteSlDiscResourcePoolFactory pfactory,uint32_t frameNo,uint32_t subframeNo);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \param expectedTotalRbs Expected total RBs
+   * \param expectedRbIndex Indices of the expected RBs
+   */
   SidlelinkDiscPoolRbsPerSubframeTestCase (LteSlDiscResourcePoolFactory pfactory,uint32_t frameNo,
                                            uint32_t subframeNo, uint32_t expectedTotalRbs,
                                            std::vector <uint32_t> expectedRbIndex);
 
 private:
   virtual void DoRun (void);
-  LteSlDiscResourcePoolFactory m_pfactory;
-  uint32_t m_frameNo;
-  uint32_t m_subframeNo;
-  uint32_t m_expectedTotalRbs;
-  std::vector <uint32_t> m_expectedRbIndex;
+  LteSlDiscResourcePoolFactory m_pfactory; ///< LteSlDiscResourcePoolFactory
+  uint32_t m_frameNo; ///< Frame number
+  uint32_t m_subframeNo; ///< Subframe number
+  uint32_t m_expectedTotalRbs; ///< Expected Total RBs
+  std::vector <uint32_t> m_expectedRbIndex; ///< Expected RB index
 };
 
 std::string SidlelinkDiscPoolRbsPerSubframeTestCase::BuildNameString (LteSlDiscResourcePoolFactory pfactory,
@@ -305,8 +372,12 @@ void SidlelinkDiscPoolRbsPerSubframeTestCase::DoRun ()
 }
 
 
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidlelink discovery pool test suite.
+ */
 class SidelinkDiscPoolTestSuite : public TestSuite
 {
 public:
