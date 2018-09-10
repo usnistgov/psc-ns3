@@ -122,8 +122,8 @@ struct Pathloss
 struct GainLogs
 {
   Time time;
-  Ptr<MobilityModel> tx;
-  Ptr<MobilityModel> rx;
+  Ptr<const MobilityModel> tx;
+  Ptr<const MobilityModel> rx;
   double txAntennaGain;
   double rxAntennaGain;
   double propagationGain;
@@ -179,7 +179,7 @@ GetPathlossTrace (bool isDownlink, std::string context, const double ploss, Ptr<
 }
 
 void
-GetGainTrace (bool isDownlink, std::string context, Ptr<MobilityModel> tx,Ptr<MobilityModel> rx, double txAntennaGain, double rxAntennaGain, double propagationGain, double pathloss)
+GetGainTrace (bool isDownlink, std::string context, Ptr<const MobilityModel> tx,Ptr<const MobilityModel> rx, double txAntennaGain, double rxAntennaGain, double propagationGain, double pathloss)
 {
 
   if (isDownlink)

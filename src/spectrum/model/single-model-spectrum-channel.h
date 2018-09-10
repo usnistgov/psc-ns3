@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
- * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef SINGLE_MODEL_SPECTRUM_CHANNEL_H
@@ -26,7 +25,6 @@
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-model.h>
 #include <ns3/traced-callback.h>
-#include <ns3/mobility-model.h>
 
 namespace ns3 {
 
@@ -35,7 +33,7 @@ namespace ns3 {
 /**
  * \ingroup spectrum
  *
- * @brief SpectrumChannel implementation which handles a single spectrum model
+ * \brief SpectrumChannel implementation which handles a single spectrum model
  *
  * All SpectrumPhy layers attached to this SpectrumChannel
  */
@@ -52,9 +50,6 @@ public:
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumChannel
-  virtual void AddPropagationLossModel (Ptr<PropagationLossModel> loss);
-  virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
-  virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
   virtual void StartTx (Ptr<SpectrumSignalParameters> params);
 
@@ -66,20 +61,14 @@ public:
   /// Container: SpectrumPhy objects
   typedef std::vector<Ptr<SpectrumPhy> > PhyList;
 
-  /**
-   * Get the frequency-dependent propagation loss model.
-   * \returns a pointer to the propagation loss model.
-   */
-  virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
-
 private:
   virtual void DoDispose ();
 
   /**
    * Used internally to reschedule transmission after the propagation delay.
    *
-   * @param params
-   * @param receiver
+   * \param params
+   * \param receiver
    */
   void StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver);
 
@@ -93,50 +82,8 @@ private:
    */
   Ptr<const SpectrumModel> m_spectrumModel;
 
-
-  /**
-   * Propagation delay model to be used with this channel.
-   */
-  Ptr<PropagationDelayModel> m_propagationDelay;
-
-
-  /**
-   * Single-frequency propagation loss model to be used with this channel.
-   */
-  Ptr<PropagationLossModel> m_propagationLoss;
-
-  /**
-   * Frequency-dependent propagation loss model to be used with this channel.
-   */
-  Ptr<SpectrumPropagationLossModel> m_spectrumPropagationLoss;
-
-
-  /**
-   * Maximum loss [dB].
-   *
-   * Any device above this loss is considered out of range.
-   */
-  double m_maxLossDb;
-
-  /**
-   * \deprecated The non-const \c Ptr<SpectrumPhy> argument
-   * is deprecated and will be changed to \c Ptr<const SpectrumPhy>
-   * in a future release.
-   */
-  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
-
-  /**
-   * The `Gain` trace source. Fired whenever a new path loss value
-   * is calculated. Exporting pointer to the mobility model of the transmitter and
-   * the receiver, tx antenna gain, rx antenna gain, propagation gain and pathloss
-   */
-   TracedCallback<Ptr<MobilityModel>, Ptr<MobilityModel>, double, double, double, double> m_gainTrace;
 };
 
-
-
 }
-
-
 
 #endif /* SINGLE_MODEL_SPECTRUM_CHANNEL_H */
