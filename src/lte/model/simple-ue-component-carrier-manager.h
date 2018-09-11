@@ -52,8 +52,6 @@ public:
   static TypeId GetTypeId ();
 
   // inherited from LteComponentCarrierManager
-  virtual void SetLteCcmRrcSapUser (LteUeCcmRrcSapUser* s);
-  virtual LteUeCcmRrcSapProvider* GetLteCcmRrcSapProvider ();
   virtual LteMacSapProvider* GetLteMacSapProvider ();
 
 
@@ -125,8 +123,6 @@ protected:
    * \returns updated LC list
    */
   std::vector<uint16_t> DoRemoveLc (uint8_t lcid);
-  /// Notify connection reconfiguration message
-  void DoNotifyConnectionReconfigurationMsg ();
   /**
    * \brief Configure signal bearer function
    * \param lcId the LCID
@@ -135,13 +131,16 @@ protected:
    * \returns LteMacSapUser *
    */
   LteMacSapUser* DoConfigureSignalBearer (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  /**
+   * \brief Reset LC map
+   *
+   */
+  void DoReset ();
   
 private:
   
-  LteUeCcmRrcSapUser* m_ccmRrcSapUser;//!< Interface to the eNodeB RRC instance.
-  LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; //!< Receive API calls from the eNodeB RRC instance.
-  LteMacSapUser* m_ccmMacSapUser;//!< Interface to the eNodeB RLC instance.
-  LteMacSapProvider* m_ccmMacSapProvider; //!< Receive API calls from the eNodeB RLC instance
+  LteMacSapUser* m_ccmMacSapUser;//!< Interface to the UE RLC instance.
+  LteMacSapProvider* m_ccmMacSapProvider; //!< Receive API calls from the UE RLC instance
 
 }; // end of class SimpleUeComponentCarrierManager
 

@@ -9,8 +9,8 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3.29
-============
+Release 3-dev
+=============
 
 Availability
 ------------
@@ -20,18 +20,43 @@ Supported platforms
 -------------------
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.29
+============
+
+This release is dedicated to the memory of project co-founder George Riley.
+
+Availability
+------------
+This release is available from:
+https://www.nsnam.org/release/ns-allinone-3.29.tar.bz2
+
+Supported platforms
+-------------------
+This release is intended to work on systems with the following minimal
+requirements (Note:  not all features available on all platforms):
 - g++-4.9 or later
 - Apple LLVM version 7.0.2 or later 
 - clang-3.3 or later
 
-In addition, Python 2.7 (Python 2 series) or Python 3.4-3.6 (Python 3 series) 
-- Note: Python 3.7 is not yet supported
+In addition, Python 2.7 (Python 2 series) or Python 3.4-3.7 (Python 3 series) 
 
 This release has been tested on the following platforms:
 - Ubuntu 18.04 (64 bit) with g++-7.3.0 and Python 2.7.15
-- Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12
-- Fedora Core 28 (64 bit) with g++-8.1.1 and Python 2.7.15
-- Fedora Core 26 (64 bit) with g++-7.3.1 and g++-7.1.1, and Python 2.7.14
+- Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12/3.5.2
+- Fedora Core 28 (64 bit) with g++-8.1.1 and Python 2.7.15/3.7.0
+- Fedora Core 26 (64 bit) with g++-7.3.1 and Python 2.7.14/3.6.5
 - macOS High Sierra 10.13.5 with Xcode 9.4.1, Apple LLVM version 9.1.0, Python 2.7.10
 
 New user-visible features
@@ -47,6 +72,10 @@ New user-visible features
   to the start times of applications in a container.
 - (network) Add a method to check whether a node with a given ID is within
   a NodeContainer.
+- (spectrum) A new trace source named "Gain" is added to the SpectrumChannel class.
+  This trace is fired whenever a new path loss value is calculated. It exports pointers
+  to the mobility model of the transmitter and the receiver, Tx antenna gain, Rx antenna gain,
+  propagation gain and the pathloss value.
 
 Bugs fixed
 ----------
@@ -79,6 +108,7 @@ Bugs fixed
 - Bug 2948 - network: SetPriority does not support value 7
 - Bug 2949 - test: Exit test.py if incorrect fullness option used
 - Bug 2964 - wifi: IdealWifiManager keeps using the same MCS when all transmissions fail
+- Bug 2974 - lte: Inconsistent declaration of IPV6 methods
 
 Known issues
 ------------

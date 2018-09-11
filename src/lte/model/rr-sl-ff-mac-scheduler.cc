@@ -1863,7 +1863,6 @@ RrSlFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sch
             return;
           }
       }
-    case FfMacScheduler::ALL_UL_CQI:
       break;
 
     default:
