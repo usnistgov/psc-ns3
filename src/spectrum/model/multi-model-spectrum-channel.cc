@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
- * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include <ns3/object.h>
@@ -29,13 +28,14 @@
 #include <ns3/double.h>
 #include <ns3/mobility-model.h>
 #include <ns3/spectrum-phy.h>
+#include <ns3/spectrum-converter.h>
+#include <ns3/spectrum-propagation-loss-model.h>
 #include <ns3/propagation-loss-model.h>
+#include <ns3/propagation-delay-model.h>
 #include <ns3/antenna-model.h>
 #include <ns3/angles.h>
 #include <iostream>
 #include <utility>
-#include "ns3/pointer.h"
-
 #include "multi-model-spectrum-channel.h"
 
 
@@ -90,9 +90,6 @@ void
 MultiModelSpectrumChannel::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_propagationDelay = 0;
-  m_propagationLoss = 0;
-  m_spectrumPropagationLoss = 0;
   m_txSpectrumModelInfoMap.clear ();
   m_rxSpectrumModelInfoMap.clear ();
   SpectrumChannel::DoDispose ();
@@ -105,60 +102,7 @@ MultiModelSpectrumChannel::GetTypeId (void)
     .SetParent<SpectrumChannel> ()
     .SetGroupName ("Spectrum")
     .AddConstructor<MultiModelSpectrumChannel> ()
-    .AddAttribute ("MaxLossDb",
-                   "If a single-frequency PropagationLossModel is used, "
-                   "this value represents the maximum loss in dB for which "
-                   "transmissions will be passed to the receiving PHY.  "
-                   "Signals for which the PropagationLossModel returns "
-                   "a loss bigger than this value will not be propagated "
-                   "to the receiver.  This parameter is to be used to reduce "
-                   "the computational load by not propagating signals that "
-                   "are far beyond the interference range. Note that the "
-                   "default value corresponds to considering all signals "
-                   "for reception. Tune this value with care. ",
-                   DoubleValue (1.0e9),
-                   MakeDoubleAccessor (&MultiModelSpectrumChannel::m_maxLossDb),
-                   MakeDoubleChecker<double> ())
 
-    .AddAttribute ("PropagationLossModel",
-                   "A pointer to the propagation loss model attached to this channel.",
-                   PointerValue (0),
-                   MakePointerAccessor (&MultiModelSpectrumChannel::m_propagationLoss),
-                   MakePointerChecker<PropagationLossModel> ())
-
-    .AddTraceSource ("Gain",
-                     "This trace is fired whenever a new path loss value "
-                     "is calculated. The parameters to this trace are : "
-                     "Pointer to the mobility model of the transmitter"
-                     "Pointer to the mobility model of the receiver"
-                     "Tx antenna gain"
-                     "Rx antenna gain"
-                     "Propagation gain"
-                     "Pathloss",
-                     MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_gainTrace),
-                     "ns3::SpectrumChannel::GainTracedCallback")
-
-    .AddTraceSource ("PathLoss",
-                     "This trace is fired whenever a new path loss value "
-                     "is calculated. The first and second parameters "
-                     "to the trace are pointers respectively to the "
-                     "TX and RX SpectrumPhy instances, whereas the "
-                     "third parameters is the loss value in dB.  "
-                     "Note that the loss value reported by this trace is "
-                     "the single-frequency loss value obtained by evaluating "
-                     "only the TX and RX AntennaModels and the "
-                     "PropagationLossModel. In particular, note that "
-                     "SpectrumPropagationLossModel (even if present) "
-                     "is never used to evaluate the loss value "
-                     "reported in this trace. ",
-                     MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_pathLossTrace),
-                     "ns3::SpectrumChannel::LossTracedCallback")
-    .AddTraceSource ("TxSigParams",
-                     "This trace is fired whenever a signal is transmitted. "
-                     "The sole parameter is a pointer to a copy of the "
-                     "SpectrumSignalParameters provided by the transmitter.",
-                     MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_txSigParamsTrace),
-                     "ns3::MultiModelSpectrumChannel::SignalParametersTracedCallback")
   ;
   return tid;
 }
@@ -349,14 +293,12 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   double rxAntennaGain = 0;
                   double propagationGainDb = 0;
                   double pathLossDb = 0;
-
                   if (rxParams->txAntenna != 0)
                     {
                       Angles txAngles (receiverMobility->GetPosition (), txMobility->GetPosition ());
                       txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
                       NS_LOG_LOGIC ("txAntennaGain = " << txAntennaGain << " dB");
                       pathLossDb -= txAntennaGain;
-                      NS_LOG_LOGIC ("pathLossDb = " << pathLossDb << " dB");
                     }
                   Ptr<AntennaModel> rxAntenna = (*rxPhyIterator)->GetRxAntenna ();
                   if (rxAntenna != 0)
@@ -365,20 +307,17 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                       rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
                       NS_LOG_LOGIC ("rxAntennaGain = " << rxAntennaGain << " dB");
                       pathLossDb -= rxAntennaGain;
-                      NS_LOG_LOGIC ("pathLossDb = " << pathLossDb << " dB");
                     }
                   if (m_propagationLoss)
                     {
                       propagationGainDb = m_propagationLoss->CalcRxPower (0, txMobility, receiverMobility);
                       NS_LOG_LOGIC ("propagationGainDb = " << propagationGainDb << " dB");
                       pathLossDb -= propagationGainDb;
-                      NS_LOG_LOGIC ("pathLossDb = " << pathLossDb << " dB");
                     }                    
-                  NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");    
-
+                  NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");
                   // Gain trace
                   m_gainTrace (txMobility, receiverMobility, txAntennaGain, rxAntennaGain, propagationGainDb, pathLossDb);
-
+                  // Pathloss trace
                   m_pathLossTrace (txParams->txPhy, *rxPhyIterator, pathLossDb);
                   if ( pathLossDb > m_maxLossDb)
                     {
@@ -440,7 +379,7 @@ MultiModelSpectrumChannel::GetDevice (std::size_t i) const
   // this method implementation is computationally intensive. This
   // method would be faster if we actually used a std::vector for
   // storing devices, which we don't due to the need to have fast 
-  // SpectrumModel conversions and to allow PHY devices to changea
+  // SpectrumModel conversions and to allow PHY devices to change a
   // SpectrumModel at run time. Note that having this method slow is
   // acceptable as it is not used much at run time (often not at all).
   // On the other hand, having slow SpectrumModel conversion would be
@@ -464,44 +403,5 @@ MultiModelSpectrumChannel::GetDevice (std::size_t i) const
   NS_FATAL_ERROR ("m_numDevice > actual number of devices");
   return 0;
 }
-
-
-
-void
-MultiModelSpectrumChannel::AddPropagationLossModel (Ptr<PropagationLossModel> loss)
-{
-  NS_LOG_FUNCTION (this << loss);
-  if (m_propagationLoss)
-    {
-      loss->SetNext (m_propagationLoss);
-    }
-  m_propagationLoss = loss;
-}
-
-void
-MultiModelSpectrumChannel::AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss)
-{
-  NS_LOG_FUNCTION (this << loss);
-  if (m_spectrumPropagationLoss)
-    {
-      loss->SetNext (m_spectrumPropagationLoss);
-    }
-  m_spectrumPropagationLoss = loss;
-}
-
-void
-MultiModelSpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
-{
-  NS_ASSERT (m_propagationDelay == 0);
-  m_propagationDelay = delay;
-}
-
-Ptr<SpectrumPropagationLossModel>
-MultiModelSpectrumChannel::GetSpectrumPropagationLossModel (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_spectrumPropagationLoss;
-}
-
 
 } // namespace ns3

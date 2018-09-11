@@ -124,8 +124,8 @@ struct Pathloss
 struct GainLogs
 {
   Time time; ///< Time stamp when the gain trace was triggered
-  Ptr<MobilityModel> tx; ///< Pointer to the mobility model of the transmitter
-  Ptr<MobilityModel> rx; ///< Pointer to the mobility model of the receiver
+  Ptr<const MobilityModel> tx; ///< Pointer to the mobility model of the transmitter
+  Ptr<const MobilityModel> rx; ///< Pointer to the mobility model of the receiver
   double txAntennaGain; ///< Tx antenna gain in dB
   double rxAntennaGain; ///< Rx antenna gain in dB
   double propagationGain; ///< Propagation gain in dB
@@ -182,7 +182,7 @@ GetPathlossTrace (bool isDownlink, std::string context, const double ploss, Ptr<
 }
 
 void
-GetGainTrace (bool isDownlink, std::string context, Ptr<MobilityModel> tx,Ptr<MobilityModel> rx, double txAntennaGain, double rxAntennaGain, double propagationGain, double pathloss)
+GetGainTrace (bool isDownlink, std::string context, Ptr<const MobilityModel> tx,Ptr<const MobilityModel> rx, double txAntennaGain, double rxAntennaGain, double propagationGain, double pathloss)
 {
 
   if (isDownlink)

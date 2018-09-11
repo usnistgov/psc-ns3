@@ -555,7 +555,8 @@ LteUeRrc::DoInitialize (void)
   lcConfig.prioritizedBitRateKbps = 65535; // maximum
   lcConfig.bucketSizeDurationMs = 65535; // maximum
   lcConfig.logicalChannelGroup = 0; // all SRBs mapped to LCG 0
-  m_cmacSapProvider.at(0)->AddLc (lcid, lcConfig, rlc->GetLteMacSapUser ());
+  LteMacSapUser* msu = m_ccmRrcSapProvider->ConfigureSignalBearer(lcid, lcConfig, rlc->GetLteMacSapUser ());
+  m_cmacSapProvider.at (0)->AddLc (lcid, lcConfig, msu);
 }
 
 void
@@ -1211,8 +1212,13 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           SwitchToState (CONNECTED_HANDOVER);
           const LteRrcSap::MobilityControlInfo& mci = msg.mobilityControlInfo;
           m_handoverStartTrace (m_imsi, m_cellId, m_rnti, mci.targetPhysCellId);
-          m_cmacSapProvider.at(0)->Reset ();
-          m_cphySapProvider.at(0)->Reset ();
+          //We should reset the MACs and PHYs for all the component carriers
+          for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+            {
+              m_cmacSapProvider.at(i)->Reset ();
+              m_cphySapProvider.at(i)->Reset ();
+            }
+          m_ccmRrcSapProvider->Reset();
           m_cellId = mci.targetPhysCellId;
           NS_ASSERT (mci.haveCarrierFreq);
           NS_ASSERT (mci.haveCarrierBandwidth);
@@ -1237,6 +1243,11 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
 
           m_drbMap.clear (); // dispose all DRBs
           ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+          if (msg.haveNonCriticalExtension)
+            {
+              NS_LOG_DEBUG (this << "RNTI " << m_rnti << " Handover. Configuring secondary carriers");
+              ApplyRadioResourceConfigDedicatedSecondaryCarrier (msg.nonCriticalExtension);
+            }
 
           if (msg.haveMeasConfig)
             {
@@ -1251,7 +1262,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           if (msg.haveNonCriticalExtension)
             {
               ApplyRadioResourceConfigDedicatedSecondaryCarrier (msg.nonCriticalExtension);
-              NS_LOG_FUNCTION ( this << "RNTI " << m_rnti << " Configured for CA" );
+              NS_LOG_DEBUG (this << "RNTI " << m_rnti << " Configured for CA" );
             }
           if (msg.haveRadioResourceConfigDedicated)
             {
@@ -1352,11 +1363,20 @@ LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
 {
   NS_LOG_FUNCTION (this);
   m_connectionTimeout.Cancel ();
-
-  m_cmacSapProvider.at (0)->Reset ();       // reset the MAC
+  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+    {
+      m_cmacSapProvider.at(i)->Reset (); // reset the MAC
+    }
   m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
   SwitchToState (IDLE_CAMPED_NORMALLY);
   m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
+}
+
+void
+LteUeRrc::DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers)
+{
+  NS_LOG_FUNCTION (this);
+  m_numberOfComponentCarriers = noOfComponentCarriers;
 }
 
 
@@ -1571,7 +1591,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           lcConfig.prioritizedBitRateKbps = stamIt->logicalChannelConfig.prioritizedBitRateKbps;
           lcConfig.bucketSizeDurationMs = stamIt->logicalChannelConfig.bucketSizeDurationMs;
           lcConfig.logicalChannelGroup = stamIt->logicalChannelConfig.logicalChannelGroup;
-          m_cmacSapProvider.at (0)->AddLc (lcid, lcConfig, rlc->GetLteMacSapUser ());
+          LteMacSapUser* msu = m_ccmRrcSapProvider->ConfigureSignalBearer(lcid, lcConfig, rlc->GetLteMacSapUser ());
+          m_cmacSapProvider.at (0)->AddLc (lcid, lcConfig, msu);
           ++stamIt;
           NS_ASSERT_MSG (stamIt == rrcd.srbToAddModList.end (), "at most one SrbToAdd supported");
           
@@ -1659,17 +1680,26 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           lcConfig.priority = dtamIt->logicalChannelConfig.priority;
           lcConfig.prioritizedBitRateKbps = dtamIt->logicalChannelConfig.prioritizedBitRateKbps;
           lcConfig.bucketSizeDurationMs = dtamIt->logicalChannelConfig.bucketSizeDurationMs;
-          lcConfig.logicalChannelGroup = dtamIt->logicalChannelConfig.logicalChannelGroup;      
+          lcConfig.logicalChannelGroup = dtamIt->logicalChannelConfig.logicalChannelGroup;
 
-          for (uint32_t i = 0; i < m_numberOfComponentCarriers; i++)
-          {
-            m_cmacSapProvider.at (i)->AddLc (dtamIt->logicalChannelIdentity,
-                                    lcConfig,
-                                    rlc->GetLteMacSapUser ());
-            // added function to handle priority in the MAC layer of UE
-            /// \todo check if it is needed
-           // m_cmacSapProvider.at (i)->AddLCPriority (m_rnti, dtamIt->logicalChannelIdentity, dtamIt->logicalChannelConfig.priority);
-          }
+          NS_LOG_DEBUG (this << " UE RRC RNTI " << m_rnti << " Number Of Component Carriers "<<m_numberOfComponentCarriers<< " lcID " << (uint16_t) dtamIt->logicalChannelIdentity);
+          //Call AddLc of UE component carrier manager
+          std::vector <LteUeCcmRrcSapProvider::LcsConfig> lcOnCcMapping = m_ccmRrcSapProvider->AddLc (dtamIt->logicalChannelIdentity, lcConfig, rlc->GetLteMacSapUser ());
+
+         NS_LOG_DEBUG ("Size of lcOnCcMapping vector "<<lcOnCcMapping.size());
+         std::vector<LteUeCcmRrcSapProvider::LcsConfig>::iterator itLcOnCcMapping = lcOnCcMapping.begin ();
+         NS_ASSERT_MSG (itLcOnCcMapping != lcOnCcMapping.end (), "Component carrier manager failed to add LC for data radio bearer");
+
+         for (itLcOnCcMapping = lcOnCcMapping.begin (); itLcOnCcMapping != lcOnCcMapping.end (); ++itLcOnCcMapping)
+           {
+             NS_LOG_DEBUG ("RNTI " << m_rnti <<" LCG id " << (uint16_t) itLcOnCcMapping->lcConfig.logicalChannelGroup
+                                                       <<" ComponentCarrierId " << itLcOnCcMapping->componentCarrierId);
+             uint8_t index = itLcOnCcMapping->componentCarrierId;
+             LteUeCmacSapProvider::LogicalChannelConfig lcConfigFromCcm = itLcOnCcMapping->lcConfig;
+             LteMacSapUser *msu = itLcOnCcMapping->msu;
+             m_cmacSapProvider.at (index)->AddLc (dtamIt->logicalChannelIdentity, lcConfigFromCcm, msu);
+           }
+
           rlc->Initialize ();
         }
       else
@@ -1843,6 +1873,11 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
     {
       NS_LOG_LOGIC (this << " setting quantityConfig");
       m_varMeasConfig.quantityConfig = mc.quantityConfig;
+      //Convey the filter coefficient to PHY layer so it can configure the power control parameter
+      for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+        {
+          m_cphySapProvider.at (i)->SetRsrpFilterCoefficient (mc.quantityConfig.filterCoefficientRSRP);
+        }
       // we calculate here the coefficient a used for Layer 3 filtering, see 3GPP TS 36.331 section 5.5.3.2
       m_varMeasConfig.aRsrp = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRP / 4.0);
       m_varMeasConfig.aRsrq = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRQ / 4.0);
@@ -3199,7 +3234,10 @@ void
 LteUeRrc::ConnectionTimeout ()
 {
   NS_LOG_FUNCTION (this << m_imsi);
-  m_cmacSapProvider.at (0)->Reset ();       // reset the MAC
+  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+    {
+      m_cmacSapProvider.at(i)->Reset (); // reset the MAC
+    }
   m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
   SwitchToState (IDLE_CAMPED_NORMALLY);
   m_connectionTimeoutTrace (m_imsi, m_cellId, m_rnti);
@@ -3277,11 +3315,6 @@ LteUeRrc::SwitchToState (State newState)
     }
 }
 
-void
-LteUeRrc::DoComponentCarrierEnabling (std::vector<uint8_t> res)
-  {
-    NS_LOG_INFO (this);
-  }
 
 void
 LteUeRrc::SaveScellUeMeasurements (uint16_t sCellId, double rsrp, double rsrq,

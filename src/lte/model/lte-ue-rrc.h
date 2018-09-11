@@ -680,7 +680,7 @@ private:
    * RRC CCM SAP USER Method
    * \param res
    */
-  void DoComponentCarrierEnabling (std::vector<uint8_t> res);
+  void DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
  
   // INTERNAL METHODS

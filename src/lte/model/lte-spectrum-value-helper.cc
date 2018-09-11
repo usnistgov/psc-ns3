@@ -333,7 +333,7 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint32_t earfcn, uint8_t t
   return txPsd;
 }
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 LteSpectrumValueHelper::CreateUlTxPowerSpectralDensity (uint16_t earfcn, uint8_t txBandwidthConfiguration, double powerTx, std::vector <int> activeRbs)
 {
   NS_LOG_FUNCTION (earfcn << (uint16_t) txBandwidthConfiguration << powerTx << activeRbs);

@@ -623,7 +623,7 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 {
   NS_LOG_FUNCTION (this);
   LteSpectrumValueHelper psdHelper;
-  Ptr<SpectrumValue> psd = psdHelper.CreateTxPowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_txPower, GetSubChannelsForTransmission ());
+  Ptr<SpectrumValue> psd = psdHelper.CreateUlTxPowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_txPower, GetSubChannelsForTransmission ());
 
   return psd;
 }
@@ -2131,6 +2131,13 @@ LteUePhy::DoSetPa (double pa)
 }
 
 void 
+LteUePhy::DoSetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) (rsrpFilterCoefficient));
+  m_powerControl->SetRsrpFilterCoefficient (rsrpFilterCoefficient);
+}
+
+void
 LteUePhy::SetTxMode1Gain (double gain)
 {
   SetTxModeGain (1, gain);

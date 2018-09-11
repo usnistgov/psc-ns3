@@ -210,6 +210,15 @@ public:
     * \param mibSl The MIB-SL containing the information of the selected SyncRef
     */
    virtual void SynchronizeToSyncRef (LteRrcSap::MasterInformationBlockSL mibSl) = 0;
+
+  /**
+   * \param rsrpFilterCoefficient value. Determines the strength of
+   * smoothing effect induced by layer 3 filtering of RSRP
+   * used for uplink power control in all attached UE.
+   * If equals to 0, no layer 3 filtering is applicable.
+   */
+  virtual void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient) = 0;
+
 };
 
 
@@ -369,6 +378,7 @@ public:
   virtual void SendSlss (LteRrcSap::MasterInformationBlockSL mibSl);
   virtual void SynchronizeToSyncRef (LteRrcSap::MasterInformationBlockSL mibSl);
 
+  virtual void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient);
 
 private:
   MemberLteUeCphySapProvider ();
@@ -461,6 +471,13 @@ void
 MemberLteUeCphySapProvider<C>::SetPa (double pa)
 {
   m_owner->DoSetPa (pa);
+}
+
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient)
+{
+  m_owner->DoSetRsrpFilterCoefficient (rsrpFilterCoefficient);
 }
 
 
