@@ -46,19 +46,43 @@ NS_LOG_COMPONENT_DEFINE ("TestSidelinkCommPool");
 
 using namespace ns3;
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink communication pool next frame subframe test case.
+ */
 class SidelinkCommPoolNextFrameSubframeTestCase : public TestCase
 {
 public:
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \returns the name string
+   */
   static std::string BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t frameNo, uint32_t subframeNo);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \param expectedNextFrameNo Expected frame number
+   * \param expectedNextSubframeNo Expected subframe number
+   */
   SidelinkCommPoolNextFrameSubframeTestCase (LteSlResourcePoolFactory pfactory, uint32_t frameNo,
                                              uint32_t subframeNo, uint32_t expectedNextFrameNo, uint32_t expectedNextSubframeNo);
 private:
   virtual void DoRun (void);
-  LteSlResourcePoolFactory m_pfactory;
-  uint32_t m_frameNo;
-  uint32_t m_subframeNo;
-  uint32_t m_expectedNextFrameNo;
-  uint32_t m_expectedNextSubframeNo;
+  LteSlResourcePoolFactory m_pfactory; ///< LteSlResourcePoolFactory
+  uint32_t m_frameNo; ///< Frame number
+  uint32_t m_subframeNo; ///< Subframe number
+  uint32_t m_expectedNextFrameNo; ///< Expected next frame number
+  uint32_t m_expectedNextSubframeNo; ///< Expected next subframe number
 };
 
 std::string SidelinkCommPoolNextFrameSubframeTestCase::BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t frameNo, uint32_t subframeNo)
@@ -110,24 +134,48 @@ void SidelinkCommPoolNextFrameSubframeTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (((m_expectedNextFrameNo == actualNextScPeriod.frameNo) && (m_expectedNextSubframeNo == actualNextScPeriod.subframeNo)), true, "Expected and Actual Next Frame & Subframe numbers are not equal");
 }
 
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink pool resource opportunity test case.
+ */
 class SidelinkCommPoolResourceOpportunityTestCase : public TestCase
 {
 public:
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param pscchResourceNo PSCCH resource number
+   * \param pscchTransmissionNo PSCCH transmission number
+   * \returns the name string
+   */
   static std::string BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t pscchResourceNo,uint32_t pscchTransmissionNo);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param pscchResourceNo PSCCH resource number
+   * \param pscchTransmissionNo PSCCH transmission number
+   * \param expectedFrameNo Expected frame number
+   * \param expectedSubframeNo Expected subframe number
+   * \param expectedRbStart Expected index of the starting RB
+   * \param expectedNbCount Expected total number of RBs
+   */
   SidelinkCommPoolResourceOpportunityTestCase (LteSlResourcePoolFactory pfactory, uint32_t pscchResourceNo, uint32_t pscchTransmissionNo,
                                                uint32_t expectedFrameNo, uint32_t expectedSubframeNo, uint32_t expectedRbStart, uint32_t expectedNbCount);
 
 private:
   virtual void DoRun (void);
-  LteSlResourcePoolFactory m_pfactory;
-  uint32_t m_pscchResourceNo;
-  uint32_t m_pscchTransmissionNo;
-  uint32_t m_expectedFrameNo;
-  uint32_t m_expectedSubframeNo;
-  uint32_t m_expectedRbStart;
-  uint32_t m_expectedNbCount;
+  LteSlResourcePoolFactory m_pfactory; ///< LteSlResourcePoolFactory
+  uint32_t m_pscchResourceNo; ///< PSCCH resource number
+  uint32_t m_pscchTransmissionNo; ///< PSCCH transmission number
+  uint32_t m_expectedFrameNo; ///< Expected frame number
+  uint32_t m_expectedSubframeNo; ///< Expected subframe number
+  uint32_t m_expectedRbStart; ///< Expected RB index
+  uint32_t m_expectedNbCount; ///< Expected total number of RBs
 };
 
 std::string SidelinkCommPoolResourceOpportunityTestCase::BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t pscchResourceNo, uint32_t pscchTransmissionNo)
@@ -207,22 +255,45 @@ void SidelinkCommPoolResourceOpportunityTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (((m_expectedFrameNo == actualFrameNo) && (m_expectedSubframeNo == actualSubframeNo) && (m_expectedRbStart == actualRbStart) && (m_expectedNbCount == actualRbCount)), true, "Expected and Actual Frame no, Subframe no, rbStart and NbCount are not equal");
 }
 
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink communication pool subframe opportunity test case.
+ */
 class SidelinkCommPoolSubframeOpportunityTestCase : public TestCase
 {
 public:
+
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \returns the name string
+   */
   static std::string BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t frameNo, uint32_t subframeNo);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \param expectedPscchSubframeOp1 Expected PSCCH subframe opportunity 1
+   * \param expectedPscchSubframeOp2 Expected PSCCH subframe opportunity 2
+   */
   SidelinkCommPoolSubframeOpportunityTestCase (LteSlResourcePoolFactory pfactory, uint32_t frameNo, uint32_t subframeNo,
                                                int32_t expectedPscchSubframeOp1, int32_t expectedPscchSubframeOp2);
 
 private:
   virtual void DoRun (void);
-  LteSlResourcePoolFactory m_pfactory;
-  uint32_t m_frameNo;
-  uint32_t m_subframeNo;
-  int32_t m_expectedPscchSubframeOp1;
-  int32_t m_expectedPscchSubframeOp2;
+  LteSlResourcePoolFactory m_pfactory; ///< LteSlResourcePoolFactory
+  uint32_t m_frameNo; ///< Frame number
+  uint32_t m_subframeNo; ///< Subframe number
+  int32_t m_expectedPscchSubframeOp1; ///< Expected PSCCH subframe opportunity 1
+  int32_t m_expectedPscchSubframeOp2; ///< Expected PSCCH subframe opportunity 2
 };
 
 std::string SidelinkCommPoolSubframeOpportunityTestCase::BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t frameNo,uint32_t subframeNo)
@@ -315,30 +386,61 @@ void SidelinkCommPoolSubframeOpportunityTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (flag, true, "Expected and Actual PSCCH opportunities for subframe are not equal");
 }
 
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink communication pool PSSCH test case.
+ */
 class SidelinkCommPoolPsschTestCase : public TestCase
 {
 public:
-  static std::string BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t m_frameNo, uint32_t m_subframeNo,
-                                      uint32_t m_iTrp, uint32_t m_rbStart, uint32_t m_rbLen, uint32_t m_psschTransmissionNo);
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \param iTrp Time resource pattern index
+   * \param rbStart Starting RB index
+   * \param rbLen Total number of RBs
+   * \param psschTransmissionNo PSSCH transmission number
+   * \returns the name string
+   */
+  static std::string BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t frameNo, uint32_t subframeNo,
+                                      uint32_t iTrp, uint32_t rbStart, uint32_t rbLen, uint32_t psschTransmissionNo);
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlResourcePoolFactory
+   * \param frameNo Frame number
+   * \param subframeNo Subframe number
+   * \param iTrp Time resource pattern index
+   * \param rbStart Starting RB index
+   * \param rbLen Total number of RBs
+   * \param psschTransmissionNo PSSCH transmission number
+   * \param expectedFrameNo Expected frame number
+   * \param expectedSubframeNo Expected subframe number
+   * \param expectedRbStart Expected RB index
+   * \param expectedNbCount Expected total number of RBs
+   */
   SidelinkCommPoolPsschTestCase (LteSlResourcePoolFactory pfactory,uint32_t frameNo, uint32_t subframeNo, uint32_t iTrp,
                                  uint32_t rbStart, uint32_t rbLen, uint32_t psschTransmissionNo, uint32_t expectedFrameNo,
                                  uint32_t expectedSubframeNo, uint32_t expectedRbStart, uint32_t expectedNbCount);
 
 private:
   virtual void DoRun (void);
-  LteSlResourcePoolFactory m_pfactory;
-  uint32_t m_frameNo;
-  uint32_t m_subframeNo;
-  uint32_t m_iTrp;
-  uint32_t m_rbStart;
-  uint32_t m_rbLen;
-  uint32_t m_psschTransmissionNo;
-  uint32_t m_expectedFrameNo;
-  uint32_t m_expectedSubframeNo;
-  uint32_t m_expectedRbStart;
-  uint32_t m_expectedNbCount;
+  LteSlResourcePoolFactory m_pfactory; ///< LteSlResourcePoolFactory
+  uint32_t m_frameNo; ///< Frame number
+  uint32_t m_subframeNo; ///< Subframe number
+  uint32_t m_iTrp; ///< Time resource pattern index
+  uint32_t m_rbStart; ///< Starting RB index
+  uint32_t m_rbLen; ///< Total number of RBs
+  uint32_t m_psschTransmissionNo; ///< PSCCH transmission number
+  uint32_t m_expectedFrameNo; ///< Expected Frame number
+  uint32_t m_expectedSubframeNo; ///< Expected subframe number
+  uint32_t m_expectedRbStart; ///< Expected RB index
+  uint32_t m_expectedNbCount; ///< Expected total number of RBs
 };
 
 std::string SidelinkCommPoolPsschTestCase::BuildNameString (LteSlResourcePoolFactory pfactory, uint32_t frameNo,
@@ -429,8 +531,12 @@ void SidelinkCommPoolPsschTestCase::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (((m_expectedFrameNo == actualFrameNo) && (m_expectedSubframeNo == actualSubframeNo) && (m_expectedRbStart == actualRbStart) && (m_expectedNbCount == actualRbCount)), true, "Expected and Actual Frame no, Subframe no, and rbStart for PSSCH are not equal");
 }
 
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidelink Communication pool test suite.
+ */
 class SidelinkCommPoolTestSuite : public TestSuite
 {
 public:

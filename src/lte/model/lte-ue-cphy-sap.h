@@ -218,6 +218,7 @@ public:
    * If equals to 0, no layer 3 filtering is applicable.
    */
   virtual void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient) = 0;
+
 };
 
 

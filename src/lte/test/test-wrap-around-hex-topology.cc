@@ -58,15 +58,21 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WrapAroundTopologyTest");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Wrap around topology test case.
+ */
 class WrapAroundTopologyTestCase : public TestCase
 {
 public:
   /**
    * Constructor
    *
-   * \param nRings, Number of Rings of hexagonal cells
-   * \param nUesPerSector, Number of UEs per sector of a hexagonal cells
-   * \param simulationDuration duration of the simulation
+   * \param nRings Number of Rings of hexagonal cells
+   * \param nUesPerSector Number of UEs per sector of a hexagonal cells
+   * \param simulationDuration Duration of the simulation
    */
   WrapAroundTopologyTestCase (uint32_t nRings,uint32_t nUesPerSector, Time simulationDuration)
     : TestCase ("Verifying that the calculated pathloss and the distance from a wrap-around eNB is less than the pathloss from eNB's original location in central cluster"),
@@ -78,13 +84,20 @@ public:
 
 private:
   virtual void DoRun (void);
-
+  /**
+   * \brief Evaluate function
+   *
+   * \param enbDevs eNB net device container
+   * \param ueDevs UE net device container
+   * \param wrapAroundAttachInfo Wrap-around attachment information
+   * \param lossModel The pathloss model
+   */
   void Evaluate (NetDeviceContainer enbDevs, NetDeviceContainer ueDevs,
                  std::map<uint64_t,WrapAroundInfo_t> wrapAroundAttachInfo, Ptr<PropagationLossModel> lossModel);
 
-  uint32_t m_nRings;
-  uint32_t m_nUesPerSector;
-  Time m_simulationDuration;
+  uint32_t m_nRings; ///< Number of Rings of hexagonal cells
+  uint32_t m_nUesPerSector; ///< Number of UEs per sector of a hexagonal cells
+  Time m_simulationDuration; ///< Duration of the simulation
 };
 
 void
@@ -258,7 +271,12 @@ WrapAroundTopologyTestCase::DoRun ()
 
 }
 
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Wrap around topology test suite.
+ */
 class WrapAroundTopologyTestSuite : public TestSuite
 {
 public:

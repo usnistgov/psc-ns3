@@ -71,6 +71,11 @@ public:
   LteSidelinkHelper (void);
   virtual ~LteSidelinkHelper (void);
 
+  // inherited from Object
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
@@ -190,7 +195,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  Ptr<LteHelper> m_lteHelper;
+  Ptr<LteHelper> m_lteHelper; ///< Pointer to the LteHelper
   Ptr<UniformRandomVariable> m_uniformRandomVariable; ///< Provides uniform random variables
 };
 

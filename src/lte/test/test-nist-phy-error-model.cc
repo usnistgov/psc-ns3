@@ -56,24 +56,65 @@ enum NistPhyErrorModelTestCondition
   EQUAL = 0
 };
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte Nist physical error model test case.
+ */
 class LteNistPhyErrorModelTestCase : public TestCase
 {
 public:
-  static std::string BuildNameString (LteNistErrorModel::LtePhyChannel channel, LteNistErrorModel::LteFadingModel fadingChannel, LteNistErrorModel::LteTxMode txmode, uint16_t mcs, double newSinr, HarqProcessInfoList_t harqHistory);
-  LteNistPhyErrorModelTestCase (LteNistErrorModel::LtePhyChannel channel, LteNistErrorModel::LteFadingModel fadingChannel, LteNistErrorModel::LteTxMode txmode, uint16_t mcs, double newSinr, HarqProcessInfoList_t harqHistory, double expectedBler, NistPhyErrorModelTestCondition cond);
+  /**
+   * Build name string function
+   *
+   * \param channel The type of physical channel
+   * \param fadingChannel The fading channel
+   * \param txMode The transmission mode
+   * \param mcs The MCS
+   * \param newSinr The SINR
+   * \param harqHistory The HARQ history
+   * \returns the name string
+   */
+  static std::string BuildNameString (LteNistErrorModel::LtePhyChannel channel,
+                                      LteNistErrorModel::LteFadingModel fadingChannel,
+                                      LteNistErrorModel::LteTxMode txMode,
+                                      uint16_t mcs,
+                                      double newSinr,
+                                      HarqProcessInfoList_t harqHistory);
+  /**
+   * Constructor
+   *
+   * \param channel The type of physical channel
+   * \param fadingChannel The fading channel
+   * \param txMode The transmission mode
+   * \param mcs The MCS
+   * \param newSinr The SINR
+   * \param harqHistory The HARQ history
+   * \param expectedBler The expected BLER value
+   * \param cond The test condition
+   */
+  LteNistPhyErrorModelTestCase (LteNistErrorModel::LtePhyChannel channel,
+                                LteNistErrorModel::LteFadingModel fadingChannel,
+                                LteNistErrorModel::LteTxMode txMode,
+                                uint16_t mcs,
+                                double newSinr,
+                                HarqProcessInfoList_t harqHistory,
+                                double expectedBler,
+                                NistPhyErrorModelTestCondition cond);
 
 
 private:
   virtual void DoRun (void);
 
-  LteNistErrorModel::LtePhyChannel m_channel;
-  LteNistErrorModel::LteFadingModel m_fadingChannel;
-  LteNistErrorModel::LteTxMode m_txmode;
-  uint16_t m_mcs;
-  double m_newSinr;
-  HarqProcessInfoList_t m_harqHistory;
-  double m_expectedBler;
-  NistPhyErrorModelTestCondition m_cond;
+  LteNistErrorModel::LtePhyChannel m_channel; ///< The type of physical channel
+  LteNistErrorModel::LteFadingModel m_fadingChannel; ///< The fading channel
+  LteNistErrorModel::LteTxMode m_txmode; ///< The transmission mode
+  uint16_t m_mcs; ///< The MCS
+  double m_newSinr; ///< The SINR
+  HarqProcessInfoList_t m_harqHistory; ///< The HARQ history
+  double m_expectedBler; ///< The expected BLER value
+  NistPhyErrorModelTestCondition m_cond; ///< The test condition
 };
 
 std::string LteNistPhyErrorModelTestCase::BuildNameString (LteNistErrorModel::LtePhyChannel channel, LteNistErrorModel::LteFadingModel fadingChannel, LteNistErrorModel::LteTxMode txmode, uint16_t mcs, double newSinr, HarqProcessInfoList_t harqHistory)
@@ -170,9 +211,12 @@ LteNistPhyErrorModelTestCase::DoRun ()
     }
 }
 
-
-
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Lte Nist physical error model test suite.
+ */
 class LteNistPhyErrorModelTestSuite : public TestSuite
 {
 public:

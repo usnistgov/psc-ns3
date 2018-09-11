@@ -82,6 +82,10 @@ public:
   };
 
   // inherited from Object
+ /**
+  * \brief Get the type ID.
+  * \return the object TypeId
+  */
   static TypeId GetTypeId (void);
   IndoorToIndoorPropagationLossModel ();
   virtual ~IndoorToIndoorPropagationLossModel ();
@@ -103,9 +107,9 @@ private:
                                 Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
 
-  double m_frequency;
-  Ptr<UniformRandomVariable> m_rand;
-  mutable std::map<MobilityDuo, double> m_randomMap;
+  double m_frequency; ///< The propagation frequency in Hz
+  Ptr<UniformRandomVariable> m_rand; ///< Random number to generate
+  mutable std::map<MobilityDuo, double> m_randomMap; ///< Map to keep track of random numbers generated per pair of nodes
 };
 
 } // namespace ns3
