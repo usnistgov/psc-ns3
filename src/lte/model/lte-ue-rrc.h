@@ -535,7 +535,7 @@ private:
    * \param packet the packet
    * \param group the group id
    */
-  void DoSendData (Ptr<Packet> packet, uint32_t group);
+  void DoSendDataToGroup (Ptr<Packet> packet, uint32_t group);
   // Sidelink communication related code
   /**
    * Send activate sidelink radio bearer function
