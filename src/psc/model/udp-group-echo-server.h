@@ -102,13 +102,13 @@ private:
    */
   void HandleRead (Ptr<Socket> socket);
   /**
-   * \brief Print client information.
+   * \brief Log client information.
    *
-   * This function prints the number of clients and their session information.
-   * To log the output NS_LOG_INFO must be enabled for this class.
+   * This function logs the number of clients and their session information.
+   * To log the output, at least NS_LOG_INFO must be enabled for this class.
    *
    */
-  void PrintClients (void);
+  void LogClients (void);
 
   Mode_t m_mode; ///< Mode of echo operation
   uint16_t m_port; ///< Port on which we listen for incoming packets.

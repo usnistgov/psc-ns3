@@ -137,7 +137,7 @@ UdpGroupEchoServer::AddClient (const Address& address)
 
   m_clients[ipaddrskey] = src_client;
 
-  this->PrintClients ();
+  this->LogClients ();
 }
 
 void
@@ -284,7 +284,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
       if (g_log.IsEnabled (LOG_DEBUG))
         {
-          this->PrintClients ();
+          this->LogClients ();
         }
 
       /* Echoing packet to group.
@@ -458,7 +458,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 }
 
 void
-UdpGroupEchoServer::PrintClients (void)
+UdpGroupEchoServer::LogClients (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
