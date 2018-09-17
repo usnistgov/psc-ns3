@@ -225,7 +225,7 @@ EpcUeNas::Send (Ptr<Packet> packet)
           {
             if ((*it)->Matches(ipv4Header.GetDestination ())) {
               //Found sidelink
-              m_asSapProvider->SendData (packet, (*it)->GetGroupL2Address());
+              m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address());
               return true;
             }
           }
@@ -267,7 +267,7 @@ EpcUeNas::Send (Ptr<Packet> packet)
           {
             if ((*it)->Matches(ipv4Header.GetDestination ())) {
               //Found sidelink
-              m_asSapProvider->SendData (packet, (*it)->GetGroupL2Address());
+              m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address());
               return true;
             }
           } 

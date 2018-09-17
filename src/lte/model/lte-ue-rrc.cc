@@ -610,7 +610,7 @@ LteUeRrc::DoSendData (Ptr<Packet> packet, uint8_t bid)
 }
 
 void
-LteUeRrc::DoSendData (Ptr<Packet> packet, uint32_t group)
+LteUeRrc::DoSendDataToGroup (Ptr<Packet> packet, uint32_t group)
 {
   NS_LOG_FUNCTION (this << packet << "for Sidelink group " <<group);
   //Find the PDCP for Sidelink transmission

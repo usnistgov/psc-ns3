@@ -91,7 +91,7 @@ public:
    * \param packet the packet
    * \param group The L2 group address
    */
-  virtual void SendData (Ptr<Packet> packet, uint32_t group) = 0;
+  virtual void SendDataToGroup (Ptr<Packet> packet, uint32_t group) = 0;
 
 
   /** 
@@ -205,7 +205,7 @@ public:
   virtual void ForceCampedOnEnb (uint16_t cellId, uint32_t dlEarfcn);
   virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
-  virtual void SendData (Ptr<Packet> packet, uint32_t group);
+  virtual void SendDataToGroup (Ptr<Packet> packet, uint32_t group);
   virtual void Disconnect ();
   //communication
   virtual void ActivateSidelinkRadioBearer (uint32_t group, bool tx, bool rx);
@@ -267,9 +267,9 @@ MemberLteAsSapProvider<C>::SendData (Ptr<Packet> packet, uint8_t bid)
 
 template <class C>
 void
-MemberLteAsSapProvider<C>::SendData (Ptr<Packet> packet, uint32_t group)
+MemberLteAsSapProvider<C>::SendDataToGroup (Ptr<Packet> packet, uint32_t group)
 {
-  m_owner->DoSendData (packet, group);
+  m_owner->DoSendDataToGroup (packet, group);
 }
 
 template <class C>
