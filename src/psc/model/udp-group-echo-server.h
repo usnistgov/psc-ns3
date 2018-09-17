@@ -76,7 +76,7 @@ public:
     INF_SESSION,       /**<  Group echo with no session expiration time */
     NO_GROUP_SESSION,  /**<  Server echoes single client only           */
     TIMEOUT_LIMITED    /**<  Server forwards to group within timeout    */
-  } Mode_t ;
+  } Mode_t;
 
   UdpGroupEchoServer ();
   virtual ~UdpGroupEchoServer ();
