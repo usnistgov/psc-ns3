@@ -137,7 +137,7 @@ UdpGroupEchoServer::AddClient (const Address& address)
 
   m_clients[ipaddrskey] = src_client;
 
-  this->PrintClients ();
+  LogClients ();
 }
 
 void
@@ -284,7 +284,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
       if (g_log.IsEnabled (LOG_DEBUG))
         {
-          this->PrintClients ();
+          LogClients ();
         }
 
       /* Echoing packet to group.
@@ -458,7 +458,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 }
 
 void
-UdpGroupEchoServer::PrintClients (void)
+UdpGroupEchoServer::LogClients (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
@@ -475,9 +475,9 @@ UdpGroupEchoServer::PrintClients (void)
            it != m_clients.end (); ++it)
         {
           lapse = tstamp - it->second.m_timestamp;
-          if (m_mode == INF_SESSION || 
-              m_mode == NO_GROUP_SESSION || 
-              (m_mode == TIMEOUT_LIMITED && lapse < m_timeout))
+          if (m_mode == INF_SESSION
+              || m_mode == NO_GROUP_SESSION
+              || (m_mode == TIMEOUT_LIMITED && lapse < m_timeout))
             {
               NS_LOG_INFO (std::setw (23) << it->first << " " << std::setw (10) << lapse.GetSeconds ());
             }
