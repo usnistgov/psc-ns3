@@ -40,8 +40,6 @@
 #include <cmath>
 #include "scm-urbanmacrocell-propagation-loss-model.h"
 #include <ns3/node.h>
-#include <ns3/lte-enb-net-device.h>
-#include <ns3/lte-ue-net-device.h>
 #include <ns3/pointer.h>
 #include <ns3/object-map.h>
 #include <ns3/object-factory.h>

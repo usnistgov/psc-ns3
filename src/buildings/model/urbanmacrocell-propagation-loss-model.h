@@ -38,6 +38,7 @@
 
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/propagation-environment.h>
+#include <ns3/traced-callback.h>
 
 namespace ns3 {
 
@@ -151,7 +152,7 @@ private:
   Ptr<UniformRandomVariable> m_rand; ///< Random number to generate
   mutable std::map<MobilityDuo, double> m_randomMap; ///< Map to keep track of random numbers generated per pair of nodes
   mutable std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> > m_shadowingLossMap; ///< Map to keep track of shadowing values
-  TracedCallback<Ptr<MobilityModel>, Ptr<MobilityModel>, double, double, double, double> m_losTrace; ///< Trace
+  TracedCallback<Ptr<const MobilityModel>, Ptr<const MobilityModel>, double, double, double, double> m_losTrace; ///< Trace
 
 };
 

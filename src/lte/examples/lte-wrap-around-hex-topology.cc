@@ -387,7 +387,7 @@ SaveNodesPositions (std::string fileName)
 }
 
 void
-SaveWrapAroundPositions (std::string filename, std::map<std::vector<double>,std::vector<Vector> > mapOfWAround )
+SaveWrapAroundPositions (std::string filename, std::map<std::vector<double>,WrapAroundReplicas> mapOfWAround)
 {
   NS_LOG_DEBUG ("Printing wrap-around position map of size " << mapOfWAround.size ());
 
@@ -401,7 +401,7 @@ SaveWrapAroundPositions (std::string filename, std::map<std::vector<double>,std:
   outFile << "Node\tsiteCounter\tX\tY" << std::endl;
   for (auto const &i : mapOfWAround)
     {
-      for (auto const &k : i.second)
+      for (auto const &k : i.second.positions)
         {
           outFile << "enb\t" << siteCounter << "\t" << k.x << "\t" << k.y << std::endl;
           siteCounter++;
@@ -547,7 +547,7 @@ int main (int argc, char *argv[])
   topoHelper->AttachWithWrapAround (lossModel, ueDevs, enbDevs);
   NS_LOG_DEBUG ("Attached UE's to the eNB with wrap-around");
 
-  std::map<std::vector<double>,std::vector<Vector> > mapOfWAround = topoHelper->GetWrapAroundPositions ();
+  std::map<std::vector<double>,WrapAroundReplicas> mapOfWAround = topoHelper->GetWrapAroundPositions ();
   std::map<uint64_t,WrapAroundInfo_t> wrapAroundAttachInfo = topoHelper->GetWrapAroundAttachInfo ();
 
   std::string frAlgorithmType = lteHelper->GetFfrAlgorithmType ();

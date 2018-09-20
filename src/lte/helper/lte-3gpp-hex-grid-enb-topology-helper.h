@@ -74,6 +74,11 @@ struct WrapAroundInfo_t
   double rsrp; ///< RSRP value
 };
 
+struct WrapAroundReplicas
+{
+  std::vector<Vector> positions;
+};
+
 class Lte3gppHexGridEnbTopologyHelper : public Object
 {
 public:
@@ -274,11 +279,12 @@ public:
   /**
    * Returns a map containing the position of each hexagon and its six replicas in wrap-around
    * map key value: a vector containing the coordinates of a hexagon in central cluster
-   * map mapped value: a vector containing the coordinates of all the six replicas
+   * map mapped value: an object of WrapAroundReplicas, which is a vector containing theç
+   * coordinates of all the six replicas
    *
    * \return A map containing the position of each hexagon and its six replicas in wrap-around
    */
-  std::map<std::vector<double>,std::vector<Vector> > GetWrapAroundPositions ();
+  std::map<std::vector <double>,WrapAroundReplicas> GetWrapAroundPositions ();
 
   /**
    * Returns a map containing the info of all the UEs and the eNBs attached in wrap-around
@@ -445,7 +451,7 @@ private:
   Ptr<UniformRandomVariable> m_uniformRandomVariable; ///< Provides uniform random variables.
   std::vector<double> m_enbPositionsCCluster; ///< Stores the position of an eNB in the central cluster of hexagonal grid
   std::vector<Vector> m_wAroundReplica; ///< Stores the coordinates of all the six replicas
-  std::map<std::vector<double>,std::vector<Vector> > m_mapForWAround; ///< A map for storing position of each hexagon and its six replicas in wrap-around
+  std::map<std::vector<double>,WrapAroundReplicas> m_mapForWAround; ///< A map for storing position of each hexagon and its six replicas in wrap-around
   uint64_t m_imsi; ///< IMSI of the UE attached to an eNB in the wrap-around
   WrapAroundInfo_t m_wrapAroundInfo; ///< structure object to hold the wrap-around info of the UE
   std::map<uint64_t,WrapAroundInfo_t> m_mapForWrapAroundInfo; ///< map to store wrap-around info of the UE
