@@ -38,6 +38,7 @@
 
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/propagation-environment.h>
+#include <ns3/mobility-model.h>
 #include <ns3/traced-callback.h>
 #include "ns3/node.h"
 

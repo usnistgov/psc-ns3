@@ -34,7 +34,6 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/mobility-model.h"
 #include "ns3/double.h"
 #include "ns3/outdoor-to-outdoor-propagation-loss-model.h"
 #include "ns3/indoor-to-indoor-propagation-loss-model.h"
