@@ -4899,10 +4899,6 @@ def register_Ns3Hybrid3gppPropagationLossModel_methods(root_module, cls):
     cls.add_method('SetHeightThreshold', 
                    'void', 
                    [param('double', 'threshold')])
-    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): void ns3::Hybrid3gppPropagationLossModel::SetRooftopHeight(double rooftopHeight) [member function]
-    cls.add_method('SetRooftopHeight', 
-                   'void', 
-                   [param('double', 'rooftopHeight')])
     return
 
 def register_Ns3Hybrid3gppPropagationLossModelMobilityDuo_methods(root_module, cls):
