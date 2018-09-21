@@ -228,7 +228,6 @@ WrapAroundTopologyTestCase::DoRun ()
   topoHelper->AttachWithWrapAround (lossModel, ueDevs, enbDevs);
   NS_LOG_INFO ("Attached UE's to the eNB with wrap-around");
 
-  std::map<std::vector<double>,std::vector<Vector> > mapOfWAround = topoHelper->GetWrapAroundPositions ();
   std::map<uint64_t,WrapAroundInfo_t> wrapAroundAttachInfo = topoHelper->GetWrapAroundAttachInfo ();
 
 

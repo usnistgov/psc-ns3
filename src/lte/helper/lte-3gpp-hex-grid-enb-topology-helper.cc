@@ -836,7 +836,9 @@ Lte3gppHexGridEnbTopologyHelper::GetClosestPositionInWrapAround (Vector txPos, V
       minPos = pos;
     }
 
-  std::pair<std::map<std::vector<double>,std::vector<Vector> >::iterator,bool> insertion = m_mapForWAround.insert (std::make_pair (m_enbPositionsCCluster,m_wAroundReplica));
+  WrapAroundReplicas replicas;
+  replicas.positions = m_wAroundReplica;
+  std::pair<std::map<std::vector<double>,WrapAroundReplicas >::iterator,bool> insertion = m_mapForWAround.insert (std::make_pair (m_enbPositionsCCluster, replicas));
   m_enbPositionsCCluster.erase (m_enbPositionsCCluster.begin (),m_enbPositionsCCluster.end ());
   m_wAroundReplica.erase (m_wAroundReplica.begin (), m_wAroundReplica.end ());
 
@@ -1009,8 +1011,8 @@ Lte3gppHexGridEnbTopologyHelper::AssignStreams (int64_t stream)
   return 1;
 }
 
-std::map<std::vector<double>,std::vector<Vector> >
-Lte3gppHexGridEnbTopologyHelper::GetWrapAroundPositions ()
+std::map<std::vector<double>,WrapAroundReplicas>
+Lte3gppHexGridEnbTopologyHelper:: GetWrapAroundPositions ()
 {
   NS_LOG_FUNCTION (this);
   return m_mapForWAround;
