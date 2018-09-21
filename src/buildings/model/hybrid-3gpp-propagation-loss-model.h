@@ -137,13 +137,6 @@ public:
   bool IsMacroComm (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
   /**
-   * set the rooftop height
-   *
-   * \param rooftopHeight the rooftop height in meters
-   */
-  void SetRooftopHeight (double rooftopHeight);
-
-  /**
    * Compute the pathloss based on the positions of the two nodes
    *
    * \param a the mobility model of the source

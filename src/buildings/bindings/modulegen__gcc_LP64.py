@@ -4816,10 +4816,6 @@ def register_Ns3Hybrid3gppPropagationLossModel_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True)
-    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): void ns3::Hybrid3gppPropagationLossModel::SetRooftopHeight(double rooftopHeight) [member function]
-    cls.add_method('SetRooftopHeight', 
-                   'void', 
-                   [param('double', 'rooftopHeight')])
     ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): double ns3::Hybrid3gppPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('GetLoss', 
                    'double', 
