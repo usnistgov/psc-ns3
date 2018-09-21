@@ -90,7 +90,7 @@ UrbanMacroCellPropagationLossModel::GetTypeId (void)
                      "The trace export mobility of the transmitter and receiver, pathloss, shadowing, probLos"
                      "and the random number used to decide LOS and NLOS",
                      MakeTraceSourceAccessor (&UrbanMacroCellPropagationLossModel::m_losTrace),
-                     "ns3::SpectrumChannel::LosTracedCallback")
+                     "ns3::SpectrumChannel::GainTracedCallback")
   ;
 
   return tid;
