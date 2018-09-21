@@ -299,8 +299,16 @@ def register_types(module):
     module.add_class('GridPositionAllocator', import_from_module='ns.mobility', parent=root_module['ns3::PositionAllocator'])
     ## position-allocator.h (module 'mobility'): ns3::GridPositionAllocator::LayoutType [enumeration]
     module.add_enum('LayoutType', ['ROW_FIRST', 'COLUMN_FIRST'], outer_class=root_module['ns3::GridPositionAllocator'], import_from_module='ns.mobility')
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel [class]
+    module.add_class('Hybrid3gppPropagationLossModel', parent=root_module['ns3::BuildingsPropagationLossModel'])
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel::MobilityDuo [struct]
+    module.add_class('MobilityDuo', outer_class=root_module['ns3::Hybrid3gppPropagationLossModel'])
     ## hybrid-buildings-propagation-loss-model.h (module 'buildings'): ns3::HybridBuildingsPropagationLossModel [class]
     module.add_class('HybridBuildingsPropagationLossModel', parent=root_module['ns3::BuildingsPropagationLossModel'])
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel [class]
+    module.add_class('IndoorToIndoorPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel::MobilityDuo [struct]
+    module.add_class('MobilityDuo', outer_class=root_module['ns3::IndoorToIndoorPropagationLossModel'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
     module.add_class('Ipv4AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue [class]
@@ -333,6 +341,11 @@ def register_types(module):
     module.add_class('MatrixPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## mobility-building-info.h (module 'buildings'): ns3::MobilityBuildingInfo [class]
     module.add_class('MobilityBuildingInfo', parent=root_module['ns3::Object'])
+    ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
+    module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )', u'ns3::MobilityModel::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )*', u'ns3::MobilityModel::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )&', u'ns3::MobilityModel::TracedCallback&')
     ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel [class]
     module.add_class('NakagamiPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## net-device.h (module 'network'): ns3::NetDevice [class]
@@ -368,6 +381,14 @@ def register_types(module):
     module.add_class('OhBuildingsPropagationLossModel', parent=root_module['ns3::BuildingsPropagationLossModel'])
     ## building-position-allocator.h (module 'buildings'): ns3::OutdoorPositionAllocator [class]
     module.add_class('OutdoorPositionAllocator', parent=root_module['ns3::PositionAllocator'])
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel [class]
+    module.add_class('OutdoorToIndoorPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo [struct]
+    module.add_class('MobilityDuo', outer_class=root_module['ns3::OutdoorToIndoorPropagationLossModel'])
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel [class]
+    module.add_class('OutdoorToOutdoorPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo [struct]
+    module.add_class('MobilityDuo', outer_class=root_module['ns3::OutdoorToOutdoorPropagationLossModel'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
@@ -390,12 +411,24 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel [class]
+    module.add_class('ScmUrbanMacroCellPropagationLossModel', parent=root_module['ns3::BuildingsPropagationLossModel'])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo [struct]
+    module.add_class('MobilityDuo', outer_class=root_module['ns3::ScmUrbanMacroCellPropagationLossModel'])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType [struct]
+    module.add_class('PathlossType', outer_class=root_module['ns3::ScmUrbanMacroCellPropagationLossModel'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
     module.add_class('TypeIdChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## type-id.h (module 'core'): ns3::TypeIdValue [class]
     module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel [class]
+    module.add_class('UrbanMacroCellPropagationLossModel', parent=root_module['ns3::BuildingsPropagationLossModel'])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::MobilityDuo [struct]
+    module.add_class('MobilityDuo', outer_class=root_module['ns3::UrbanMacroCellPropagationLossModel'])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::PathlossType [struct]
+    module.add_class('PathlossType', outer_class=root_module['ns3::UrbanMacroCellPropagationLossModel'])
     ## vector.h (module 'core'): ns3::Vector2DChecker [class]
     module.add_class('Vector2DChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## vector.h (module 'core'): ns3::Vector2DValue [class]
@@ -410,6 +443,12 @@ def register_types(module):
     module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'double', 'ns3::Ptr<ns3::Node>', 'ns3::Ptr<ns3::Node>', 'double', 'bool', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::Ptr<const ns3::MobilityModel>', 'double', 'double', 'double', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -599,7 +638,11 @@ def register_methods(root_module):
     register_Ns3GammaRandomVariable_methods(root_module, root_module['ns3::GammaRandomVariable'])
     register_Ns3GridBuildingAllocator_methods(root_module, root_module['ns3::GridBuildingAllocator'])
     register_Ns3GridPositionAllocator_methods(root_module, root_module['ns3::GridPositionAllocator'])
+    register_Ns3Hybrid3gppPropagationLossModel_methods(root_module, root_module['ns3::Hybrid3gppPropagationLossModel'])
+    register_Ns3Hybrid3gppPropagationLossModelMobilityDuo_methods(root_module, root_module['ns3::Hybrid3gppPropagationLossModel::MobilityDuo'])
     register_Ns3HybridBuildingsPropagationLossModel_methods(root_module, root_module['ns3::HybridBuildingsPropagationLossModel'])
+    register_Ns3IndoorToIndoorPropagationLossModel_methods(root_module, root_module['ns3::IndoorToIndoorPropagationLossModel'])
+    register_Ns3IndoorToIndoorPropagationLossModelMobilityDuo_methods(root_module, root_module['ns3::IndoorToIndoorPropagationLossModel::MobilityDuo'])
     register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
     register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
     register_Ns3Ipv4MaskChecker_methods(root_module, root_module['ns3::Ipv4MaskChecker'])
@@ -616,6 +659,7 @@ def register_methods(root_module):
     register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
     register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3MobilityBuildingInfo_methods(root_module, root_module['ns3::MobilityBuildingInfo'])
+    register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
@@ -625,11 +669,21 @@ def register_methods(root_module):
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3OhBuildingsPropagationLossModel_methods(root_module, root_module['ns3::OhBuildingsPropagationLossModel'])
     register_Ns3OutdoorPositionAllocator_methods(root_module, root_module['ns3::OutdoorPositionAllocator'])
+    register_Ns3OutdoorToIndoorPropagationLossModel_methods(root_module, root_module['ns3::OutdoorToIndoorPropagationLossModel'])
+    register_Ns3OutdoorToIndoorPropagationLossModelMobilityDuo_methods(root_module, root_module['ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo'])
+    register_Ns3OutdoorToOutdoorPropagationLossModel_methods(root_module, root_module['ns3::OutdoorToOutdoorPropagationLossModel'])
+    register_Ns3OutdoorToOutdoorPropagationLossModelMobilityDuo_methods(root_module, root_module['ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
+    register_Ns3ScmUrbanMacroCellPropagationLossModel_methods(root_module, root_module['ns3::ScmUrbanMacroCellPropagationLossModel'])
+    register_Ns3ScmUrbanMacroCellPropagationLossModelMobilityDuo_methods(root_module, root_module['ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo'])
+    register_Ns3ScmUrbanMacroCellPropagationLossModelPathlossType_methods(root_module, root_module['ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
+    register_Ns3UrbanMacroCellPropagationLossModel_methods(root_module, root_module['ns3::UrbanMacroCellPropagationLossModel'])
+    register_Ns3UrbanMacroCellPropagationLossModelMobilityDuo_methods(root_module, root_module['ns3::UrbanMacroCellPropagationLossModel::MobilityDuo'])
+    register_Ns3UrbanMacroCellPropagationLossModelPathlossType_methods(root_module, root_module['ns3::UrbanMacroCellPropagationLossModel::PathlossType'])
     register_Ns3Vector2DChecker_methods(root_module, root_module['ns3::Vector2DChecker'])
     register_Ns3Vector2DValue_methods(root_module, root_module['ns3::Vector2DValue'])
     register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
@@ -637,6 +691,9 @@ def register_methods(root_module):
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
     register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Double_Ns3Ptr__lt__ns3Node__gt___Ns3Ptr__lt__ns3Node__gt___Double_Bool_Bool_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Ptr__lt__const_ns3MobilityModel__gt___Double_Double_Double_Double_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3HashImplementation_methods(root_module, root_module['ns3::Hash::Implementation'])
@@ -4160,23 +4217,38 @@ def register_Ns3Building_methods(root_module, cls):
     return
 
 def register_Ns3BuildingsPropagationLossModel_methods(root_module, cls):
-    ## buildings-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::BuildingsPropagationLossModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     ## buildings-propagation-loss-model.h (module 'buildings'): ns3::BuildingsPropagationLossModel::BuildingsPropagationLossModel() [constructor]
     cls.add_constructor([])
-    ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('GetLoss', 
-                   'double', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, is_virtual=True)
+    ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::GetShadowing(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetShadowing', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## buildings-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::BuildingsPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## buildings-propagation-loss-model.h (module 'buildings'): int64_t ns3::BuildingsPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='protected', is_virtual=True)
+    ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::EvaluateSigma(ns3::Ptr<ns3::MobilityBuildingInfo> a, ns3::Ptr<ns3::MobilityBuildingInfo> b) const [member function]
+    cls.add_method('EvaluateSigma', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
+                   is_const=True, visibility='protected', is_virtual=True)
     ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::ExternalWallLoss(ns3::Ptr<ns3::MobilityBuildingInfo> a) const [member function]
     cls.add_method('ExternalWallLoss', 
                    'double', 
@@ -4192,21 +4264,6 @@ def register_Ns3BuildingsPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
                    is_const=True, visibility='protected')
-    ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::GetShadowing(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('GetShadowing', 
-                   'double', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, visibility='protected')
-    ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::EvaluateSigma(ns3::Ptr<ns3::MobilityBuildingInfo> a, ns3::Ptr<ns3::MobilityBuildingInfo> b) const [member function]
-    cls.add_method('EvaluateSigma', 
-                   'double', 
-                   [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
-                   is_const=True, visibility='protected')
-    ## buildings-propagation-loss-model.h (module 'buildings'): int64_t ns3::BuildingsPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
-    cls.add_method('DoAssignStreams', 
-                   'int64_t', 
-                   [param('int64_t', 'stream')], 
-                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3CallbackChecker_methods(root_module, cls):
@@ -4271,6 +4328,26 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::NetDevice::PacketType'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::MobilityModel const> '])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'double'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::Node> '])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'bool'])
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -4782,6 +4859,61 @@ def register_Ns3GridPositionAllocator_methods(root_module, cls):
                    [param('uint32_t', 'n')])
     return
 
+def register_Ns3Hybrid3gppPropagationLossModel_methods(root_module, cls):
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel::Hybrid3gppPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): void ns3::Hybrid3gppPropagationLossModel::EnableShadowing(bool enableShadowing) [member function]
+    cls.add_method('EnableShadowing', 
+                   'void', 
+                   [param('bool', 'enableShadowing')])
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): double ns3::Hybrid3gppPropagationLossModel::EvaluateSigma(ns3::Ptr<ns3::MobilityBuildingInfo> a, ns3::Ptr<ns3::MobilityBuildingInfo> b) const [member function]
+    cls.add_method('EvaluateSigma', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): double ns3::Hybrid3gppPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): double ns3::Hybrid3gppPropagationLossModel::GetShadowing(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetShadowing', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::Hybrid3gppPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): bool ns3::Hybrid3gppPropagationLossModel::IsMacroComm(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('IsMacroComm', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): void ns3::Hybrid3gppPropagationLossModel::SetFrequency(double freq) [member function]
+    cls.add_method('SetFrequency', 
+                   'void', 
+                   [param('double', 'freq')])
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): void ns3::Hybrid3gppPropagationLossModel::SetHeightThreshold(double threshold) [member function]
+    cls.add_method('SetHeightThreshold', 
+                   'void', 
+                   [param('double', 'threshold')])
+    return
+
+def register_Ns3Hybrid3gppPropagationLossModelMobilityDuo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel::MobilityDuo::MobilityDuo() [constructor]
+    cls.add_constructor([])
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel::MobilityDuo::MobilityDuo(ns3::Hybrid3gppPropagationLossModel::MobilityDuo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Hybrid3gppPropagationLossModel::MobilityDuo const &', 'arg0')])
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel::MobilityDuo::a [variable]
+    cls.add_instance_attribute('a', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    ## hybrid-3gpp-propagation-loss-model.h (module 'buildings'): ns3::Hybrid3gppPropagationLossModel::MobilityDuo::b [variable]
+    cls.add_instance_attribute('b', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    return
+
 def register_Ns3HybridBuildingsPropagationLossModel_methods(root_module, cls):
     ## hybrid-buildings-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::HybridBuildingsPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -4811,6 +4943,44 @@ def register_Ns3HybridBuildingsPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, is_virtual=True)
+    return
+
+def register_Ns3IndoorToIndoorPropagationLossModel_methods(root_module, cls):
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel::IndoorToIndoorPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): std::pair<double, bool> ns3::IndoorToIndoorPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'std::pair< double, bool >', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::IndoorToIndoorPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): int64_t ns3::IndoorToIndoorPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): double ns3::IndoorToIndoorPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3IndoorToIndoorPropagationLossModelMobilityDuo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel::MobilityDuo::MobilityDuo() [constructor]
+    cls.add_constructor([])
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel::MobilityDuo::MobilityDuo(ns3::IndoorToIndoorPropagationLossModel::MobilityDuo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::IndoorToIndoorPropagationLossModel::MobilityDuo const &', 'arg0')])
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel::MobilityDuo::a [variable]
+    cls.add_instance_attribute('a', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    ## indoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::IndoorToIndoorPropagationLossModel::MobilityDuo::b [variable]
+    cls.add_instance_attribute('b', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
     return
 
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
@@ -5183,6 +5353,10 @@ def register_Ns3MobilityBuildingInfo_methods(root_module, cls):
     cls.add_method('GetFloorNumber', 
                    'uint8_t', 
                    [])
+    ## mobility-building-info.h (module 'buildings'): bool ns3::MobilityBuildingInfo::GetMobilityModelConsistentFlag() [member function]
+    cls.add_method('GetMobilityModelConsistentFlag', 
+                   'bool', 
+                   [])
     ## mobility-building-info.h (module 'buildings'): uint8_t ns3::MobilityBuildingInfo::GetRoomNumberX() [member function]
     cls.add_method('GetRoomNumberX', 
                    'uint8_t', 
@@ -5212,10 +5386,79 @@ def register_Ns3MobilityBuildingInfo_methods(root_module, cls):
     cls.add_method('SetIndoor', 
                    'void', 
                    [param('uint8_t', 'nfloor'), param('uint8_t', 'nroomx'), param('uint8_t', 'nroomy')])
+    ## mobility-building-info.h (module 'buildings'): void ns3::MobilityBuildingInfo::SetMobilityModelConsistentFlag() [member function]
+    cls.add_method('SetMobilityModelConsistentFlag', 
+                   'void', 
+                   [])
     ## mobility-building-info.h (module 'buildings'): void ns3::MobilityBuildingInfo::SetOutdoor() [member function]
     cls.add_method('SetOutdoor', 
                    'void', 
                    [])
+    return
+
+def register_Ns3MobilityModel_methods(root_module, cls):
+    ## mobility-model.h (module 'mobility'): ns3::MobilityModel::MobilityModel(ns3::MobilityModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MobilityModel const &', 'arg0')])
+    ## mobility-model.h (module 'mobility'): ns3::MobilityModel::MobilityModel() [constructor]
+    cls.add_constructor([])
+    ## mobility-model.h (module 'mobility'): int64_t ns3::MobilityModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetDistanceFrom(ns3::Ptr<const ns3::MobilityModel> position) const [member function]
+    cls.add_method('GetDistanceFrom', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'position')], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::GetPosition() const [member function]
+    cls.add_method('GetPosition', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): double ns3::MobilityModel::GetRelativeSpeed(ns3::Ptr<const ns3::MobilityModel> other) const [member function]
+    cls.add_method('GetRelativeSpeed', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'other')], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): static ns3::TypeId ns3::MobilityModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::GetVelocity() const [member function]
+    cls.add_method('GetVelocity', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True)
+    ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::SetPosition(ns3::Vector const & position) [member function]
+    cls.add_method('SetPosition', 
+                   'void', 
+                   [param('ns3::Vector const &', 'position')])
+    ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::NotifyCourseChange() const [member function]
+    cls.add_method('NotifyCourseChange', 
+                   'void', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## mobility-model.h (module 'mobility'): int64_t ns3::MobilityModel::DoAssignStreams(int64_t start) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'start')], 
+                   visibility='private', is_virtual=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetPosition() const [member function]
+    cls.add_method('DoGetPosition', 
+                   'ns3::Vector', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetVelocity() const [member function]
+    cls.add_method('DoGetVelocity', 
+                   'ns3::Vector', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
+    cls.add_method('DoSetPosition', 
+                   'void', 
+                   [param('ns3::Vector const &', 'position')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
@@ -5636,6 +5879,82 @@ def register_Ns3OutdoorPositionAllocator_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::RandomVariableStream >', 'z')])
     return
 
+def register_Ns3OutdoorToIndoorPropagationLossModel_methods(root_module, cls):
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel::OutdoorToIndoorPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): double ns3::OutdoorToIndoorPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::OutdoorToIndoorPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): int64_t ns3::OutdoorToIndoorPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): double ns3::OutdoorToIndoorPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3OutdoorToIndoorPropagationLossModelMobilityDuo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo::MobilityDuo() [constructor]
+    cls.add_constructor([])
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo::MobilityDuo(ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo const &', 'arg0')])
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo::a [variable]
+    cls.add_instance_attribute('a', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    ## outdoor-to-indoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToIndoorPropagationLossModel::MobilityDuo::b [variable]
+    cls.add_instance_attribute('b', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    return
+
+def register_Ns3OutdoorToOutdoorPropagationLossModel_methods(root_module, cls):
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel::OutdoorToOutdoorPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): double ns3::OutdoorToOutdoorPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::OutdoorToOutdoorPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): int64_t ns3::OutdoorToOutdoorPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): double ns3::OutdoorToOutdoorPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3OutdoorToOutdoorPropagationLossModelMobilityDuo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo::MobilityDuo() [constructor]
+    cls.add_constructor([])
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo::MobilityDuo(ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo const &', 'arg0')])
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo::a [variable]
+    cls.add_instance_attribute('a', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    ## outdoor-to-outdoor-propagation-loss-model.h (module 'buildings'): ns3::OutdoorToOutdoorPropagationLossModel::MobilityDuo::b [variable]
+    cls.add_instance_attribute('b', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    return
+
 def register_Ns3Packet_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## packet.h (module 'network'): ns3::Packet::Packet() [constructor]
@@ -5878,6 +6197,62 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3ScmUrbanMacroCellPropagationLossModel_methods(root_module, cls):
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::ScmUrbanMacroCellPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::ScmUrbanMacroCellPropagationLossModel::EvaluateSigma(ns3::Ptr<ns3::MobilityBuildingInfo> a, ns3::Ptr<ns3::MobilityBuildingInfo> b) const [member function]
+    cls.add_method('EvaluateSigma', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::ScmUrbanMacroCellPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::ScmUrbanMacroCellPropagationLossModel::GetShadowing(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetShadowing', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::ScmUrbanMacroCellPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): int64_t ns3::ScmUrbanMacroCellPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ScmUrbanMacroCellPropagationLossModelMobilityDuo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo::MobilityDuo() [constructor]
+    cls.add_constructor([])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo::MobilityDuo(ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo const &', 'arg0')])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo::a [variable]
+    cls.add_instance_attribute('a', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::MobilityDuo::b [variable]
+    cls.add_instance_attribute('b', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    return
+
+def register_Ns3ScmUrbanMacroCellPropagationLossModelPathlossType_methods(root_module, cls):
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType::PathlossType() [constructor]
+    cls.add_constructor([])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType::PathlossType(ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType const &', 'arg0')])
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType::loss [variable]
+    cls.add_instance_attribute('loss', 'double', is_const=False)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType::plos [variable]
+    cls.add_instance_attribute('plos', 'double', is_const=False)
+    ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::ScmUrbanMacroCellPropagationLossModel::PathlossType::r [variable]
+    cls.add_instance_attribute('r', 'double', is_const=False)
+    return
+
 def register_Ns3TimeValue_methods(root_module, cls):
     ## nstime.h (module 'core'): ns3::TimeValue::TimeValue() [constructor]
     cls.add_constructor([])
@@ -5949,6 +6324,66 @@ def register_Ns3TypeIdValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::TypeId const &', 'value')])
+    return
+
+def register_Ns3UrbanMacroCellPropagationLossModel_methods(root_module, cls):
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::UrbanMacroCellPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): void ns3::UrbanMacroCellPropagationLossModel::EnableShadowing(bool enableShadowing) [member function]
+    cls.add_method('EnableShadowing', 
+                   'void', 
+                   [param('bool', 'enableShadowing')])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::UrbanMacroCellPropagationLossModel::EvaluateSigma(ns3::Ptr<ns3::MobilityBuildingInfo> a, ns3::Ptr<ns3::MobilityBuildingInfo> b) const [member function]
+    cls.add_method('EvaluateSigma', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::UrbanMacroCellPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::UrbanMacroCellPropagationLossModel::GetShadowing(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetShadowing', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): static ns3::TypeId ns3::UrbanMacroCellPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): int64_t ns3::UrbanMacroCellPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
+    cls.add_method('DoAssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   visibility='private', is_virtual=True)
+    return
+
+def register_Ns3UrbanMacroCellPropagationLossModelMobilityDuo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::MobilityDuo::MobilityDuo() [constructor]
+    cls.add_constructor([])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::MobilityDuo::MobilityDuo(ns3::UrbanMacroCellPropagationLossModel::MobilityDuo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::UrbanMacroCellPropagationLossModel::MobilityDuo const &', 'arg0')])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::MobilityDuo::a [variable]
+    cls.add_instance_attribute('a', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::MobilityDuo::b [variable]
+    cls.add_instance_attribute('b', 'ns3::Ptr< ns3::MobilityModel >', is_const=False)
+    return
+
+def register_Ns3UrbanMacroCellPropagationLossModelPathlossType_methods(root_module, cls):
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::PathlossType::PathlossType() [constructor]
+    cls.add_constructor([])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::PathlossType::PathlossType(ns3::UrbanMacroCellPropagationLossModel::PathlossType const & arg0) [constructor]
+    cls.add_constructor([param('ns3::UrbanMacroCellPropagationLossModel::PathlossType const &', 'arg0')])
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::PathlossType::loss [variable]
+    cls.add_instance_attribute('loss', 'double', is_const=False)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::PathlossType::probLos [variable]
+    cls.add_instance_attribute('probLos', 'double', is_const=False)
+    ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): ns3::UrbanMacroCellPropagationLossModel::PathlossType::rand [variable]
+    cls.add_instance_attribute('rand', 'double', is_const=False)
     return
 
 def register_Ns3Vector2DChecker_methods(root_module, cls):
@@ -6090,6 +6525,72 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('operator()', 
                    'ns3::ObjectBase *', 
                    [], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Double_Ns3Ptr__lt__ns3Node__gt___Ns3Ptr__lt__ns3Node__gt___Double_Bool_Bool_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, double, ns3::Ptr< ns3::Node >, ns3::Ptr< ns3::Node >, double, bool, bool, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, double, ns3::Ptr<ns3::Node>, ns3::Ptr<ns3::Node>, double, bool, bool, ns3::empty, ns3::empty, ns3::empty>::operator()(double arg0, ns3::Ptr<ns3::Node> arg1, ns3::Ptr<ns3::Node> arg2, double arg3, bool arg4, bool arg5) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('double', 'arg0'), param('ns3::Ptr< ns3::Node >', 'arg1'), param('ns3::Ptr< ns3::Node >', 'arg2'), param('double', 'arg3'), param('bool', 'arg4'), param('bool', 'arg5')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Ptr__lt__const_ns3MobilityModel__gt___Double_Double_Double_Double_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const >, double, double, double, double, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::MobilityModel> arg0, ns3::Ptr<const ns3::MobilityModel> arg1, double arg2, double arg3, double arg4, double arg5) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'arg0'), param('ns3::Ptr< ns3::MobilityModel const >', 'arg1'), param('double', 'arg2'), param('double', 'arg3'), param('double', 'arg4'), param('double', 'arg5')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::MobilityModel const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::MobilityModel> arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'arg0')], 
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 

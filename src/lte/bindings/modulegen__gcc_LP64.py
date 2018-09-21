@@ -1091,6 +1091,8 @@ def register_types(module):
     module.add_class('VendorSpecificListElement_s')
     ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): ns3::WrapAroundInfo_t [struct]
     module.add_class('WrapAroundInfo_t')
+    ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): ns3::WrapAroundReplicas [struct]
+    module.add_class('WrapAroundReplicas')
     ## empty.h (module 'core'): ns3::empty [class]
     module.add_class('empty', import_from_module='ns.core')
     ## fdbet-ff-mac-scheduler.h (module 'lte'): ns3::fdbetsFlowPerf_t [struct]
@@ -2204,6 +2206,7 @@ def register_types(module):
     module.add_container('std::vector< ns3::LteUeCphySapUser::UeSlssMeasurementsElement >', 'ns3::LteUeCphySapUser::UeSlssMeasurementsElement', container_type=u'vector')
     module.add_container('std::vector< ns3::HigherLayerSelected_s >', 'ns3::HigherLayerSelected_s', container_type=u'vector')
     module.add_container('std::vector< ns3::SiMessageListElement_s >', 'ns3::SiMessageListElement_s', container_type=u'vector')
+    module.add_container('std::vector< ns3::Vector3D >', 'ns3::Vector3D', container_type=u'vector')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'list')
     module.add_container('std::list< ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo >', 'ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo', container_type=u'list')
     module.add_container('std::vector< std::vector< unsigned char > >', 'std::vector< unsigned char >', container_type=u'vector')
@@ -2213,9 +2216,8 @@ def register_types(module):
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
     module.add_container('std::map< unsigned char, ns3::ComponentCarrier >', ('unsigned char', 'ns3::ComponentCarrier'), container_type=u'map')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
-    module.add_container('std::vector< ns3::Vector3D >', 'ns3::Vector3D', container_type=u'vector')
     module.add_container('std::vector< ns3::Ptr< ns3::Building > >', 'ns3::Ptr< ns3::Building >', container_type=u'vector')
-    module.add_container('std::map< std::vector< double >, std::vector< ns3::Vector3D > >', ('std::vector< double >', 'std::vector< ns3::Vector3D >'), container_type=u'map')
+    module.add_container('std::map< std::vector< double >, ns3::WrapAroundReplicas >', ('std::vector< double >', 'ns3::WrapAroundReplicas'), container_type=u'map')
     module.add_container('std::map< unsigned long, ns3::WrapAroundInfo_t >', ('long unsigned int', 'ns3::WrapAroundInfo_t'), container_type=u'map')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type=u'list')
@@ -2901,6 +2903,7 @@ def register_methods(root_module):
     register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
     register_Ns3VendorSpecificListElement_s_methods(root_module, root_module['ns3::VendorSpecificListElement_s'])
     register_Ns3WrapAroundInfo_t_methods(root_module, root_module['ns3::WrapAroundInfo_t'])
+    register_Ns3WrapAroundReplicas_methods(root_module, root_module['ns3::WrapAroundReplicas'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3FdbetsFlowPerf_t_methods(root_module, root_module['ns3::fdbetsFlowPerf_t'])
     register_Ns3FdtbfqsFlowPerf_t_methods(root_module, root_module['ns3::fdtbfqsFlowPerf_t'])
@@ -12795,6 +12798,15 @@ def register_Ns3WrapAroundInfo_t_methods(root_module, cls):
     cls.add_instance_attribute('rsrp', 'double', is_const=False)
     return
 
+def register_Ns3WrapAroundReplicas_methods(root_module, cls):
+    ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): ns3::WrapAroundReplicas::WrapAroundReplicas() [constructor]
+    cls.add_constructor([])
+    ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): ns3::WrapAroundReplicas::WrapAroundReplicas(ns3::WrapAroundReplicas const & arg0) [constructor]
+    cls.add_constructor([param('ns3::WrapAroundReplicas const &', 'arg0')])
+    ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): ns3::WrapAroundReplicas::positions [variable]
+    cls.add_instance_attribute('positions', 'std::vector< ns3::Vector3D >', is_const=False)
+    return
+
 def register_Ns3Empty_methods(root_module, cls):
     ## empty.h (module 'core'): ns3::empty::empty() [constructor]
     cls.add_constructor([])
@@ -20458,9 +20470,9 @@ def register_Ns3Lte3gppHexGridEnbTopologyHelper_methods(root_module, cls):
     cls.add_method('GetWrapAroundAttachInfo', 
                    'std::map< unsigned long, ns3::WrapAroundInfo_t >', 
                    [])
-    ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): std::map<std::vector<double, std::allocator<double> >, std::vector<ns3::Vector3D, std::allocator<ns3::Vector3D> >, std::less<std::vector<double, std::allocator<double> > >, std::allocator<std::pair<const std::vector<double, std::allocator<double> >, std::vector<ns3::Vector3D, std::allocator<ns3::Vector3D> > > > > ns3::Lte3gppHexGridEnbTopologyHelper::GetWrapAroundPositions() [member function]
+    ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): std::map<std::vector<double, std::allocator<double> >, ns3::WrapAroundReplicas, std::less<std::vector<double, std::allocator<double> > >, std::allocator<std::pair<const std::vector<double, std::allocator<double> >, ns3::WrapAroundReplicas> > > ns3::Lte3gppHexGridEnbTopologyHelper::GetWrapAroundPositions() [member function]
     cls.add_method('GetWrapAroundPositions', 
-                   'std::map< std::vector< double >, std::vector< ns3::Vector3D > >', 
+                   'std::map< std::vector< double >, ns3::WrapAroundReplicas >', 
                    [])
     ## lte-3gpp-hex-grid-enb-topology-helper.h (module 'lte'): std::vector<ns3::Ptr<ns3::Building>, std::allocator<ns3::Ptr<ns3::Building> > > ns3::Lte3gppHexGridEnbTopologyHelper::InstallWrapAroundBuildings(std::vector<ns3::Ptr<ns3::Building>, std::allocator<ns3::Ptr<ns3::Building> > > buildings) [member function]
     cls.add_method('InstallWrapAroundBuildings', 

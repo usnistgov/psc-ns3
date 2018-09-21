@@ -38,6 +38,7 @@
 
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/propagation-environment.h>
+#include <ns3/mobility-model.h>
 #include <ns3/traced-callback.h>
 #include "ns3/node.h"
 
@@ -130,13 +131,6 @@ public:
    * \returns true if it is Macro cell communication else it returns false
    */
   bool IsMacroComm (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-
-  /**
-   * set the rooftop height
-   *
-   * \param rooftopHeight the rooftop height in meters
-   */
-  void SetRooftopHeight (double rooftopHeight);
 
   /**
    * Compute the pathloss based on the positions of the two nodes
