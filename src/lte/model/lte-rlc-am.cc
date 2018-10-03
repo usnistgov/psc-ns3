@@ -187,27 +187,27 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
  */
 
 void
-LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid)
+LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << txOpParams.bytes);
 
-  if (bytes < 4)
+  if (txOpParams.bytes < 4)
     {
       // Stingy MAC: In general, we need more bytes.
       // There are a more restrictive test for each particular case
-      NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small");
-      NS_ASSERT_MSG (false, "TxOpportunity (size = " << bytes << ") too small.\n"
+      NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small");
+      NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small.\n"
                          << "Your MAC scheduler is assigned too few resource blocks.");
       return;
     }
 
   if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
     {
-      if (bytes < m_statusPduBufferSize)
+      if (txOpParams.bytes < m_statusPduBufferSize)
         {
           // Stingy MAC: We need more bytes for the STATUS PDU
-          NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")");
-          NS_ASSERT_MSG (false, "TxOpportunity (size = " << bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")\n"
+          NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")");
+          NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")\n"
                              << "Your MAC scheduler is assigned too few resource blocks.");
           return;
         }
@@ -225,7 +225,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
       for (sn = m_vrR; sn < m_vrMs; sn++) 
         {
           NS_LOG_LOGIC ("SN = " << sn);          
-          if (!rlcAmHeader.OneMoreNackWouldFitIn (bytes))
+          if (!rlcAmHeader.OneMoreNackWouldFitIn (txOpParams.bytes))
             {
               NS_LOG_LOGIC ("Can't fit more NACKs in STATUS PDU");
               break;
@@ -270,9 +270,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
       params.lcid = m_lcid;
       params.srcL2Id = m_srcL2Id;
       params.dstL2Id = m_dstL2Id;
-      params.layer = layer;
-      params.harqProcessId = harqId;
-      params.componentCarrierId = componentCarrierId;
+      params.layer = txOpParams.layer;
+      params.harqProcessId = txOpParams.harqId;
+      params.componentCarrierId = txOpParams.componentCarrierId;
 
       m_macSapProvider->TransmitPdu (params);
 
@@ -299,7 +299,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
 
               Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
               
-              if (( packet->GetSize () <= bytes )
+              if (( packet->GetSize () <= txOpParams.bytes )
                   || m_txOpportunityForRetxAlwaysBigEnough)
                 {
                   // According to 5.2.1, the data field is left as is, but we rebuild the header
@@ -358,9 +358,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
                   params.lcid = m_lcid;
                   params.srcL2Id = m_srcL2Id;
                   params.dstL2Id = m_dstL2Id;
-                  params.layer = layer;
-                  params.harqProcessId = harqId;
-                  params.componentCarrierId = componentCarrierId;
+                  params.layer = txOpParams.layer;
+                  params.harqProcessId = txOpParams.harqId;
+                  params.componentCarrierId = txOpParams.componentCarrierId;
                   
                   m_macSapProvider->TransmitPdu (params);
 
@@ -386,7 +386,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
                 }
               else
                 {
-                  NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
+                  NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small for retransmission of the packet (size = " << packet->GetSize () << ")");
                   NS_LOG_LOGIC ("Waiting for bigger TxOpportunity");
                   return;
                 }
@@ -396,11 +396,11 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
     }
   else if ( m_txonBufferSize > 0 )
     {
-      if (bytes < 7)
+      if (txOpParams.bytes < 7)
       {
         // Stingy MAC: We need more bytes for new DATA PDUs.
-        NS_LOG_LOGIC ("TxOpportunity (size = " << bytes << ") too small for DATA PDU");
-        NS_ASSERT_MSG (false, "TxOpportunity (size = " << bytes << ") too small for DATA PDU\n"
+        NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small for DATA PDU");
+        NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small for DATA PDU\n"
                            << "Your MAC scheduler is assigned too few resource blocks.");
         return;
       }
@@ -431,7 +431,7 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
   rlcAmHeader.SetDataPdu ();
 
   // Build Data field
-  uint32_t nextSegmentSize = bytes - 4;
+  uint32_t nextSegmentSize = txOpParams.bytes - 4;
   uint32_t nextSegmentId = 1;
   uint32_t dataFieldTotalSize = 0;
   uint32_t dataFieldAddedSize = 0;
@@ -741,9 +741,9 @@ LteRlcAm::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, 
   params.lcid = m_lcid;
   params.srcL2Id = m_srcL2Id;
   params.dstL2Id = m_dstL2Id;
-  params.layer = layer;
-  params.harqProcessId = harqId;
-  params.componentCarrierId = componentCarrierId;
+  params.layer = txOpParams.layer;
+  params.harqProcessId = txOpParams.harqId;
+  params.componentCarrierId = txOpParams.componentCarrierId;
 
   m_macSapProvider->TransmitPdu (params);
 }
@@ -756,21 +756,21 @@ LteRlcAm::DoNotifyHarqDeliveryFailure ()
 
 
 void
-LteRlcAm::DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid)
+LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << rxPduParams.p->GetSize ());
 
   // Receiver timestamp
   RlcTag rlcTag;
   Time delay;
-  NS_ASSERT_MSG (p->PeekPacketTag (rlcTag), "RlcTag is missing");
-  p->RemovePacketTag (rlcTag);
+  NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
+  rxPduParams.p->RemovePacketTag (rlcTag);
   delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
-  m_rxPdu (m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
+  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
 
   // Get RLC header parameters
   LteRlcAmHeader rlcAmHeader;
-  p->PeekHeader (rlcAmHeader);
+  rxPduParams.p->PeekHeader (rlcAmHeader);
   NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
 
   if ( rlcAmHeader.IsDataPdu () )
@@ -896,7 +896,7 @@ LteRlcAm::DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid)
           else
             {
               NS_LOG_LOGIC ("Place PDU in the reception buffer ( SN = " << seqNumber << " )");
-              m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.push_back (p);
+              m_rxonBuffer[ seqNumber.GetValue () ].m_byteSegments.push_back (rxPduParams.p);
               m_rxonBuffer[ seqNumber.GetValue () ].m_pduComplete = true;
             }
 
