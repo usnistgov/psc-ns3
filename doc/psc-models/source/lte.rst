@@ -25,4 +25,10 @@ User Documentation
 
 .. include:: lte-user-sidelink.inc
 
++++++++++++++++++++++
+Testing Documentation
++++++++++++++++++++++
+
+.. include:: lte-testing-sidelink.inc
+
 .. include:: lte-references-sidelink.inc
