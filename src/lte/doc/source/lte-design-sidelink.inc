@@ -1,10 +1,10 @@
-------------
+++++++++++++
 LTE Sidelink
-------------
+++++++++++++
 
-
+--------
 Overview
-++++++++
+--------
 
 This section describes the |ns3| support for LTE Device to Device (D2D) communication based on the model published in [NIST2016]_ [NIST2017]_.
 
@@ -64,17 +64,18 @@ At this stage, the model has been tested for scenario 1A and 1C. The Table :ref:
 The model is developed in a way that simulating the above ProSe services are not interdependent. In the following, we describe all the changes introduced in the |ns3| LTE architecture and its protocol stack to realize Sidelink functionality.
 
 
+------------
 Architecture
-++++++++++++
+------------
 
 
 eNB architecture
-----------------
+++++++++++++++++
 There is no change in the eNB data (:ref:`fig-ca-enb-data-plane`), control (:ref:`fig-ca-enb-ctrl-plane`) plane and neither in its PHY/channel (:ref:`fig-lte-enb-phy`) model.
 
 
 UE architecture
----------------
++++++++++++++++
 
 There is no change in the UE data (:ref:`fig-ca-ue-data-plane`) and control (:ref:`fig-ca-ue-ctrl-plane`) plane. However, in order to receive packets transmitted by other UEs in the uplink channel a new instance of the ``SpectrumPhy`` class, as shown in Figure :ref:`fig-lte-sl-ue-phy`, is added to the PHY/channel architecture of the UE.
 

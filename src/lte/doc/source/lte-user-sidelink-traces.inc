@@ -1,5 +1,6 @@
-﻿Sidelink
-********
+--------------------------
+﻿Sidelink simulation output
+--------------------------
 
 Similarly, for the Sidelink the LTE model currently supports the output to file of PHY and MAC level KPIs. You can enable them in the following way::
 

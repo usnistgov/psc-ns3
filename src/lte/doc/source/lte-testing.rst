@@ -6,9 +6,9 @@
 Testing Documentation
 +++++++++++++++++++++
 
-
+--------
 Overview
-********
+--------
 
 To test and validate the ns-3 LTE module, several test suites are provided which are integrated with the ns-3 test framework.
 To run them, you need to have configured the build of the simulator in this way::
@@ -31,12 +31,12 @@ You can run each test suite separately using this command::
 For more details about ``test.py`` and the ns-3 testing framework, please refer to the ns-3 manual.
 
 
-
+------------------------------
 Description of the test suites
-******************************
+------------------------------
 
 Unit Tests
-~~~~~~~~~~
+++++++++++
 
 SINR calculation in the Downlink
 --------------------------------
@@ -114,7 +114,7 @@ each element in the test vector.
 
 
 System Tests
-~~~~~~~~~~~~
+++++++++++++
 
 Dedicated Bearer Deactivation Tests
 -----------------------------------
