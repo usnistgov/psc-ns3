@@ -2,17 +2,15 @@
 User Documentation
 ++++++++++++++++++
 
-
+----------
 Background
 ----------
-
-
 
 We assume the reader is already familiar with how to use the ns-3
 simulator to run generic simulation programs. If this is not the case,
 we strongly recommend the reader to consult [ns3tutorial]_.
 
-  
+--------------  
 Usage Overview
 --------------
 
@@ -38,6 +36,7 @@ of practical examples.
 
 .. _sec-basic-simulation-program:
 
+------------------------
 Basic simulation program
 ------------------------
 
@@ -135,7 +134,7 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
 For how to compile and run simulation programs, please refer to [ns3tutorial]_.
 
-
+-------------------------------------
 Configuration of LTE model parameters
 -------------------------------------
 
@@ -187,6 +186,7 @@ note that the above will put in the file ``input-defaults.txt`` *all*
 the default values that are registered in your particular build of the
 simulator, including lots of non-LTE attributes.
 
+---------------------------
 Configure LTE MAC Scheduler
 ---------------------------
 
@@ -266,6 +266,7 @@ You can try also with other LTE and EPC objects, like this::
 
 .. _sec-simulation-output:
 
+-----------------
 Simulation Output
 -----------------
 
@@ -428,14 +429,14 @@ And finally, in UL and DL reception files the parameters included are:
 
 .. include:: lte-user-sidelink-traces.inc
 
+------------------
 Fading Trace Usage
 ------------------
 
 In this section we will describe how to use fading traces within LTE simulations.
 
 Fading Traces Generation
-************************
-
+++++++++++++++++++++++++
 
 It is possible to generate fading traces by using a dedicated matlab script provided with the code (``/lte/model/fading-traces/fading-trace-generator.m``). This script already includes the typical taps configurations for three 3GPP scenarios (i.e., pedestrian, vehicular and urban as defined in Annex B.2 of [TS36104]_); however users can also introduce their specific configurations. The list of the configurable parameters is provided in the following:
 
@@ -450,7 +451,7 @@ The file generated contains ASCII-formatted real values organized in a matrix fa
 It has to be noted that the ns-3 LTE module is able to work with any fading trace file that complies with the above described ASCII format. Hence, other external tools can be used to generate custom fading traces, such as for example other simulators or experimental devices.
 
 Fading Traces Usage
-*******************
++++++++++++++++++++
 
 When using a fading trace, it is of paramount importance to specify correctly the trace parameters in the simulation, so that the fading model can load and use it correctly.
 The parameters to be configured are:
@@ -506,7 +507,7 @@ The simulator provide natively three fading traces generated according to the co
 
    Excerpt of the fading trace included in the simulator for an urban  scenario (speed of 3 kmph).
 
-
+-----------------------------
 Mobility Model with Buildings
 -----------------------------
 
@@ -579,7 +580,7 @@ It is to be noted that using other means to configure the frequency used by the 
 
 See the documentation of the *buildings* module for more detailed information.
 
-
+-------------------
 LTE PHY Error Model
 -------------------
 
@@ -590,6 +591,7 @@ The Physical error model consists of the data error model and the downlink contr
 
 .. include:: lte-user-sidelink-phy-error-model.inc
 
+----------
 MIMO Model
 ----------
 
@@ -627,7 +629,7 @@ Finally, the model implemented can be reconfigured according to different MIMO m
 
 
 
-
+-------------------
 Use of AntennaModel
 -------------------
 
@@ -658,6 +660,7 @@ with different antenna orientations to be installed on each node.
 
 .. _sec-radio-environment-maps:
 
+----------------------
 Radio Environment Maps
 ----------------------
 
@@ -750,7 +753,7 @@ location of UEs, eNBs and buildings on top of the REM::
    gnuplot -p enbs.txt ues.txt buildings.txt my_plot_script
 
 
-
+-----------------------------
 AMC Model and CQI Calculation
 -----------------------------
 
@@ -773,6 +776,7 @@ Finally, the required efficiency of the ``PiroEW2010`` AMC module can be tuned t
 
 .. _sec-evolved-packet-core:
 
+-------------------------
 Evolved Packet Core (EPC)
 -------------------------
 
@@ -928,7 +932,7 @@ That's all! You can now start your simulation as usual::
   Simulator::Run ();
 
 
-
+---------------------------------
 Using the EPC with emulation mode
 ---------------------------------
 
@@ -1019,6 +1023,7 @@ transport network.
 
 .. _sec-network-attachment:
 
+------------------
 Network Attachment
 ------------------
 
@@ -1030,7 +1035,7 @@ There are 2 possible ways of network attachment. The first method is the
 of them will be covered in this section.
 
 Manual attachment
-*****************
++++++++++++++++++
 
 This method uses the ``LteHelper::Attach`` function mentioned above. It has been
 the only available network attachment method in earlier versions of LTE module.
@@ -1062,7 +1067,7 @@ attachment method uses more *"automatic"* approach to network attachment, as
 will be described next.
 
 Automatic attachment using Idle mode cell selection procedure
-*************************************************************
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The strength of the received signal is the standard criterion used for selecting
 the best cell to attach to. The use of this criterion is implemented in the
@@ -1084,7 +1089,7 @@ It is important to note that this method only works in EPC-enabled simulations.
 LTE-only simulations must resort to manual attachment method.
 
 Closed Subscriber Group
-***********************
++++++++++++++++++++++++
 
 An interesting use case of the initial cell selection process is to setup a
 simulation environment with Closed Subscriber Group (CSG).
@@ -1123,6 +1128,7 @@ will disable the restriction, i.e., any UEs can connect to this eNodeB.
 
 .. _sec-configure-ue-measurements:
 
+-------------------------
 Configure UE measurements
 -------------------------
 
@@ -1230,6 +1236,7 @@ decision:
 
 .. _sec-x2-based-handover:
 
+-----------------
 X2-based handover
 -----------------
 
@@ -1265,7 +1272,7 @@ subsections.
 
 
 Manual handover trigger
-***********************
++++++++++++++++++++++++
 
 Handover event can be triggered "manually" within the simulation program by
 scheduling an explicit handover event. The ``LteHelper`` object provides a
@@ -1290,7 +1297,7 @@ example program.
 .. _sec-automatic-handover:
 
 Automatic handover trigger
-**************************
+++++++++++++++++++++++++++
 
 Handover procedure can also be triggered "automatically" by the serving eNodeB 
 of the UE. The logic behind the trigger depends on the handover algorithm
@@ -1354,7 +1361,7 @@ in the ``lena-x2-handover-measures`` example program.
 .. _sec-tuning-handover-simulation:
 
 Tuning simulation with handover
-*******************************
++++++++++++++++++++++++++++++++
 
 As mentioned in the Design Documentation, the current implementation of handover
 model may produce unpredicted behaviour when handover failure occurs. This
@@ -1414,7 +1421,7 @@ model.
 .. _sec-handover-traces:
 
 Handover traces
-***************
++++++++++++++++
 
 The RRC model, in particular the ``LteEnbRrc`` and ``LteUeRrc``
 objects, provide some useful traces which can be hooked up to some
@@ -1528,7 +1535,7 @@ cell bandwidth greater or equal than 15 RBs. This limitation is caused by requir
 that at least three continuous RBs have to be assigned to UE for transmission.
 
 Manual configuration
-********************
+++++++++++++++++++++
 
 Frequency reuse algorithm can be configured "manually" within the simulation 
 program by setting type of FR algorithm and all its attributes. Currently, 
@@ -1562,7 +1569,7 @@ configure required values for ``LteEnbNetDevice``::
 Now, each FR algorithms configuration will be described. 
 
 Hard Frequency Reuse Algorithm
-++++++++++++++++++++++++++++++
+------------------------------
 
 As described in Section :ref:`sec-fr-hard-algorithm` of the Design Documentation 
 ``ns3::LteFrHardAlgorithm`` uses one sub-band. To configure this sub-band user need 
@@ -1589,7 +1596,7 @@ bandwidth is 25.
 
 
 Strict Frequency Reuse Algorithm
-++++++++++++++++++++++++++++++++
+--------------------------------
 
 Strict Frequency Reuse Algorithm uses two sub-bands: one common for each cell and one 
 private. There is also RSRQ threshold, which is needed to decide within which sub-band 
@@ -1634,7 +1641,7 @@ private sub-band in DL and UL, RSRQ threshold is 20 dB, power in center area equ
 
 
 Soft Frequency Reuse Algorithm
-++++++++++++++++++++++++++++++
+------------------------------
 
 With Soft Frequency Reuse Algorithm, eNb uses entire cell bandwidth, but there are two 
 sub-bands, within UEs are served with different power level. 
@@ -1674,7 +1681,7 @@ equals ``LteEnbPhy::TxPower``, power in edge area equals ``LteEnbPhy::TxPower + 
 
 
 Soft Fractional Frequency Reuse Algorithm
-+++++++++++++++++++++++++++++++++++++++++
+-----------------------------------------
 
 Soft Fractional Frequency Reuse (SFFR) uses three sub-bands: center, medium (common)
 and edge. User have to configure only two of them: common and edge. Center sub-band
@@ -1730,7 +1737,7 @@ Power in center area equals ``LteEnbPhy::TxPower - 3dB``, power in medium area e
 
 
 Enhanced Fractional Frequency Reuse Algorithm
-+++++++++++++++++++++++++++++++++++++++++++++
+---------------------------------------------
 
 Enhanced Fractional Frequency Reuse (EFFR) reserve part of system bandwidth for each cell
 (typically there are 3 cell types and each one gets 1/3 of system bandwidth). Then part of
@@ -1788,7 +1795,7 @@ power in edge area equals ``LteEnbPhy::TxPower + 0dB``::
 
 
 Distributed Fractional Frequency Reuse Algorithm
-++++++++++++++++++++++++++++++++++++++++++++++++
+------------------------------------------------
 
 Distributed Fractional Frequency Reuse requires X2 interface between all eNB to be installed. 
 X2 interfaces can be installed only when EPC is configured, so this FFR scheme can be used only with
@@ -1832,7 +1839,7 @@ Power in center area equals ``LteEnbPhy::TxPower - 0dB``, power in edge area equ
 
 
 Automatic configuration
-***********************
++++++++++++++++++++++++
 
 Frequency Reuse algorithms can also be configured in more “automatic” way by setting 
 only the bandwidth and FrCellTypeId. During initialization of FR instance, configuration 
@@ -1855,7 +1862,7 @@ Example below show automatic FR algorithm configuration::
 
 
 Uplink Power Control
---------------------
+++++++++++++++++++++
 
 Uplink Power Control functionality is enabled by default. User can disable it by setting 
 the boolean attribute ``ns3::LteUePhy::EnableUplinkPowerControl`` to true.
@@ -1904,14 +1911,14 @@ As an example, user can take a look and run the lena-uplink-power-control progra
 
 
 Examples Programs
------------------
++++++++++++++++++
 
 The directory ``src/lte/examples/`` contains some example simulation programs that
 show how to simulate different LTE scenarios. 
 
 
 Reference scenarios
--------------------
++++++++++++++++++++
 
 There is a vast amount of reference LTE simulation scenarios which can
 be found in the literature. Here we list some of them: 
@@ -1931,7 +1938,7 @@ be found in the literature. Here we list some of them:
 
 
 Handover simulation campaign
-****************************
+----------------------------
 
 In this subsection, we will demonstrate an example of running a simulation
 campaign using the LTE module of |ns3|. The objective of the campaign is to
@@ -2220,7 +2227,7 @@ with home eNodeBs deployment.
 
 
 Frequency Reuse examples
-**********************************
+------------------------
 
 There are two examples showing Frequency Reuse Algorithms functionality.
 
@@ -2340,7 +2347,7 @@ below. These RB were selected because each one is used by different FR cell type
 
 
 Carrier aggregation examples
-------------------------------------------
+-----------------------------
 The carrier aggregation feature is not enabled by default. The user can enable it by setting the boolean attribute 
 ``ns3::LteHelper::UseCa`` to true. The number of component carriers to be used in carrier aggregation can 
 be configured by setting the attribute ``ns3::LteHelper::NumberOfComponentCarriers``. Currently the 
@@ -2411,7 +2418,7 @@ figures are generated. An example to run this test suite is shown in figures:
 .. include:: lte-user-sidelink.inc
 
 Troubleshooting and debugging tips
----------------------------------------------------
+-----------------------------------
 
 Many users post on the ns-3-users mailing list asking, for example, 
 why they do not get any traffic in their simulation, or maybe only 

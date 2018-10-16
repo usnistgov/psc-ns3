@@ -1,3 +1,4 @@
+------------
 ﻿LTE Sidelink
 ------------
 
@@ -39,7 +40,7 @@ In general, all the D2D examples are highly parameterizable and could be divided
 In the following, we will discuss all the examples from the "Simple examples" category and the two examples from "Detailed examples" category, which are wns3-2017-synch and wns3-2017-discovery. We choose wns3-2017-synch, since it also simulates the PSCCH and PSSCH.
 
 lte-sl-in-covrg-comm-mode1
-**************************
+++++++++++++++++++++++++++
 
 This example simulates an in-coverage MODE 1 ProSe communication by using the following scenario.  
 
@@ -60,7 +61,7 @@ The simulation time is in seconds. Moreover, this example only supports IPV4 tra
 
 
 Configuration of LTE and Sidelink default parameters
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------
 
 The simulation script begins with the configuration of the parameters of the Sidelink scheduler as follows.
  
@@ -103,7 +104,7 @@ We use the LTE Band 1 for both LTE and Sidelink communication.
 The powers configured are in dBm.
 
 Topology configuration
-++++++++++++++++++++++
+----------------------
 
 * Instantiating LTE, EPC and Sidelink helpers : ::
 
@@ -168,7 +169,7 @@ Topology configuration
    NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
 Sidelink pool configuration
-+++++++++++++++++++++++++++
+---------------------------
 
 This example simulates an in-coverage scenario, therefore, the eNB will be configured with a pre-configured dedicated Sidelink pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlEnbRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlEnbRrc`` as an indication that the Sidelink is enabled. It is configured as follows::
 
@@ -340,7 +341,7 @@ For more information related to the above files please refer to the :ref:`sec-si
 The first row shows that the UE 1 with node id 2 and IMSI 1 transmits a multicast packet of 200 bytes and the UE 2 receives the packet transmitted by the UE 1. As per the client's application data rate and ON time, i.e., 16 kb/s and 2 seconds, respectively, a total of 20 packets are sent and received by the transmitting and the receiving UE.
 
 lte-sl-in-covrg-comm-mode2
-**************************
+++++++++++++++++++++++++++
 
 This example simulates an in-coverage MODE 2 ProSe communication using the same scenario :ref:`fig-lte-sl-simple-scenario`, used for previous example. The only difference is that the resources are not scheduled by the eNB, instead, the UE 1 selects the resources autonomously from a pool specified by the eNB through ``RrcConnectionReconfiguration`` message. Besides using the same scenario, this example also has the same application, therefore, in the following, we will discuss only those configurations, which are MODE 2 specific. A user can run the simulation as follows::
 
@@ -351,7 +352,7 @@ The simulation time is in seconds. Similarly, this example only supports IPV4.
 .. highlight:: none
 
 Configuration of LTE and Sidelink default parameters
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------
 
 * Configuring parameters for PSSCH resource selection : ::
   
@@ -382,7 +383,7 @@ The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e
 Along with the error model configuration, by setting the "DropRbOnCollisionEnabled" attribute all the TBs collided in time and frequency are dropped. This attribute could be of particular interest for the users, e.g., to study the impact of collisions in MODE 2. In this example, this attribute has no impact as only one UE is acting as a transmitter. It is included just to make the users aware of this attribute.
 
 Topology configuration
-++++++++++++++++++++++
+----------------------
 
 * Configuring the scheduler : ::
 
@@ -390,7 +391,7 @@ Topology configuration
    resource selection.
 
 Sidelink pool configuration
-+++++++++++++++++++++++++++
+---------------------------
 
 The Sidelink pool configuration is similar to the MODE 1 configuration, e.g., the configuration for Sidelink control is the same. However, the following additional configurations are needed for in-coverage MODE 2. ::
 
@@ -414,7 +415,7 @@ Compared to MODE 1, the pool resources are now indicated as "UE_SELECTED" along 
 Finally, at the end of the simulation the trace files, similar to the previous example, can be found in the repository's root folder. One important difference, compared to MODE 1, is that in the trace files "SlUeMacStats.txt" and "SlPscchRxPhyStats.txt" the parameters, e.g., PSCCH resource index and the starting RB for PSSCH are randomly selected by the UE for every SC period. Furthermore, a similar amount of packets, i.e. 20, are sent and received by the UEs.
 
 lte-sl-out-of-covrg-comm
-************************
+++++++++++++++++++++++++
 
 This example simulates an out-of-coverage MODE 2 ProSe communication by using the following scenario.  
 
@@ -434,7 +435,7 @@ The simulation time is in seconds, and at this stage, only IPV4 is supported.
 .. highlight:: none
 
 Configuration of LTE and Sidelink default parameters
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------------
 
 * Configuring parameters for PSSCH resource selection : ::
   
@@ -478,7 +479,7 @@ Along with the error model configuration, by setting the "DropRbOnCollisionEnabl
 The power configured is in dBm.
 
 Topology configuration
-++++++++++++++++++++++
+----------------------
 
 * Instantiating LTE, EPC and Sidelink helpers : ::
 
@@ -553,7 +554,7 @@ The use of eNB nodes can be bypassed by using the above commands strictly in the
    NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
 Sidelink pool configuration
-+++++++++++++++++++++++++++
+---------------------------
 
 This example simulates an out-of-coverage scenario, therefore, both the UEs are configured with a pre-configured Sidelink communication pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that the Sidelink is enabled. It is configured as follows::
 
@@ -717,12 +718,12 @@ The first row shows that the UE 1 with node id 1 and IMSI 1 transmits a multicas
 In the following we will discuss the detailed examples mentioned above, however, we will mainly discuss about the topology and the Sidelink configuration, since the example scripts already contain the details of the default attributes and also, most of them are already covered by the previous examples.
 
 wns3-2017-synch
-***************
++++++++++++++++
 
 The scenario in this example is composed of 1 hexagonal cell site divided into 3 sectors. Each sector has 1 UE, i.e., 3 in total, which are randomly dropped. These UEs are then grouped in a single group by choosing randomly one UE as a transmitter while the other 2 UEs act as receivers.
 
 Topology configuration
-+++++++++++++++++++++++
+----------------------
 
 In the following, we walk through the example line by line and discuss each important topology configuration. However, some configuration parameters are skipped, which are already elaborated in the previous sections of LTE. Therefore, it is highly recommended for the new users to go through the basic LTE configuration before digging into D2D examples.
 
@@ -882,7 +883,7 @@ Finally, a ``PacketSink`` application is installed as a server application in th
 
 
 Sidelink pool configuration
-+++++++++++++++++++++++++++
+---------------------------
 
 This example simulates an out-of-coverage scenario, therefore, all the UEs will be configured with a pre-configured Sidelink pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that the Sidelink is enabled. It is configured as follows::
 
@@ -1204,12 +1205,12 @@ The first row shows that the first UE with node id 4 and IMSI 1 acts as a transm
 It can be observed that UE with IMSI 1 being a SyncRef is transmitting SLSS with a fixed periodicity of 40 ms. Moreover, at the time when this UE chose to become a SyncRef it randomly selects one of the two configured offsets, i.e., syncOffsetIndicator1 and syncOffsetIndicator2. In this example, it has selected syncOffsetIndicator2, which is set to 29 ms.
 
 wns3-2017-discovery
-*******************
++++++++++++++++++++
 
 This example deploys 10 out-of-coverage UEs, distributed randomly within an area of 100 m x 100 m. This example script also illustrates how an out-of-coverage Sidelink related simulation can be performed without instantiating the eNB nodes.
 
 Topology configuration
-++++++++++++++++++++++
+----------------------
 
 Compared to the topology of the synchronization example that we discussed before, this example is very simple. For instance, it does not use hexagonal topology or form groups of UEs, i.e, it does not use ``Lte3gppHexGridEnbTopologyHelper`` and ``LteSidelinkHelper``. The ``LteHelper`` and ``PointToPointEpcHelper`` are initialized in the same way like any other LTE example with EPC. Also, the call to disable the eNB PHY can also be skipped, since it does not instantiates the eNB nodes. Moreover, this example only focuses on simulating ProSe out-of-coverage discovery, therefore, there is no need to configure the IP of the UEs since discovery is purely a MAC layer application where the messages are filtered on the basis of ProSeAppCode.
 
@@ -1314,7 +1315,7 @@ The above commands will simply create 10 UEs and position each UE at a random lo
 Given the broadcast nature of the discovery process, the applications are configured such that each UE will be able to transmit discovery messages with one ProSeAppCode, i.e., one announce app and will be able to monitor/receive the discovery messages from all other UEs (Notice the two ``for`` loops at the beginning). The UE device index in the ``NetDeviceContainer`` is used as a ProSeAppCode, which is later in ``LteUeRrc`` is converted into a 184 bitset [TS23003]_. Finally, at 2 sec the method "SlStartDiscovery" implemented in this example calls the ``StartDiscovery`` of ``LteHelper`` class to start the discovery process.
 
 Sidelink pool configuration
-+++++++++++++++++++++++++++
+---------------------------
 
 This example simulates an out-of-coverage scenario, therefore, all the UEs will be configured with a pre-configured Sidelink discovery pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that the Sidelink discovery is enabled. It is configured as follows::
 

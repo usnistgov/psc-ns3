@@ -20,21 +20,21 @@ SOURCES = \
 	source/traffic-control.rst \
 	$(SRC)/antenna/doc/source/antenna.rst \
 	$(SRC)/antenna/doc/source/antenna-design.rst \
-	$(SRC)/antenna/doc/source/antenna-design-parabolic.rst \
+	$(SRC)/antenna/doc/source/antenna-design-parabolic.inc \
 	$(SRC)/antenna/doc/source/antenna-user.rst \
 	$(SRC)/antenna/doc/source/antenna-testing.rst \
-	$(SRC)/antenna/doc/source/antenna-testing-parabolic.rst \
+	$(SRC)/antenna/doc/source/antenna-testing-parabolic.inc \
 	$(SRC)/aodv/doc/aodv.rst \
 	$(SRC)/applications/doc/applications.rst \
 	$(SRC)/bridge/doc/bridge.rst \
 	$(SRC)/brite/doc/brite.rst \
 	$(SRC)/buildings/doc/source/buildings.rst \
 	$(SRC)/buildings/doc/source/buildings-design.rst \
-	$(SRC)/buildings/doc/source/buildings-design-3gpp.rst \
+	$(SRC)/buildings/doc/source/buildings-design-3gpp.inc \
 	$(SRC)/buildings/doc/source/buildings-user.rst \
 	$(SRC)/buildings/doc/source/buildings-testing.rst \
 	$(SRC)/buildings/doc/source/buildings-references.rst \
-	$(SRC)/buildings/doc/source/buildings-references-3gpp.rst \
+	$(SRC)/buildings/doc/source/buildings-references-3gpp.inc \
 	$(SRC)/click/doc/click.rst \
 	$(SRC)/csma/doc/csma.rst \
 	$(SRC)/dsdv/doc/dsdv.rst \
@@ -50,15 +50,16 @@ SOURCES = \
 	$(SRC)/mesh/doc/source/mesh-testing.rst \
 	$(SRC)/lte/doc/source/lte.rst \
 	$(SRC)/lte/doc/source/lte-user.rst \
-	$(SRC)/lte/doc/source/lte-user-sidelink.rst \
-	$(SRC)/lte/doc/source/lte-user-sidelink-traces.rst \
-	$(SRC)/lte/doc/source/lte-user-sidelink-phy-error-model.rst \
+	$(SRC)/lte/doc/source/lte-user-sidelink.inc \
+	$(SRC)/lte/doc/source/lte-user-sidelink-traces.inc \
+	$(SRC)/lte/doc/source/lte-user-sidelink-phy-error-model.inc \
 	$(SRC)/lte/doc/source/lte-design.rst \
-	$(SRC)/lte/doc/source/lte-design-sidelink.rst \
+	$(SRC)/lte/doc/source/lte-design-sidelink.inc \
 	$(SRC)/lte/doc/source/lte-testing.rst \
+	$(SRC)/lte/doc/source/lte-testing-sidelink.inc \
 	$(SRC)/lte/doc/source/lte-profiling.rst \
 	$(SRC)/lte/doc/source/lte-references.rst \
-	$(SRC)/lte/doc/source/lte-references-sidelink.rst \
+	$(SRC)/lte/doc/source/lte-references-sidelink.inc \
 	$(SRC)/propagation/doc/propagation.rst \
 	$(SRC)/psc/doc/source/psc.rst \
 	$(SRC)/psc/doc/source/psc-design.rst \
