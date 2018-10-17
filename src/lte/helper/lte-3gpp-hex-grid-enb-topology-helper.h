@@ -74,9 +74,14 @@ struct WrapAroundInfo_t
   double rsrp; ///< RSRP value
 };
 
+/**
+ * struct for storing the positions of
+ * all the six replicas of a hexagon
+ * in wrap-around
+ */
 struct WrapAroundReplicas
 {
-  std::vector<Vector> positions;
+  std::vector<Vector> positions; ///< A vector to store the coordinates of all the six replicas
 };
 
 class Lte3gppHexGridEnbTopologyHelper : public Object
