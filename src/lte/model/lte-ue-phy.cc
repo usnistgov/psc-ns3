@@ -2086,17 +2086,22 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 void 
 LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth)
 {
-  m_ulEarfcn = ulEarfcn;
-  m_ulBandwidth = ulBandwidth;
-  m_ulConfigured = true;
+  NS_LOG_FUNCTION (this << " Uplink : EARFCN = " << ulEarfcn
+                  << " bandwidth = " << (uint32_t) ulBandwidth);
 
-  //configure Sidelink with UL
-  if (m_sidelinkSpectrumPhy)
+  if ((m_ulEarfcn != ulEarfcn) || (m_ulBandwidth != ulBandwidth) || (!m_ulConfigured))
     {
-      NS_LOG_DEBUG ("Adding Sidelink Spectrum phy to the channel");
-      m_slNoisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
-      m_sidelinkSpectrumPhy->SetNoisePowerSpectralDensity (m_slNoisePsd);
-      m_sidelinkSpectrumPhy->GetChannel ()->AddRx (m_sidelinkSpectrumPhy);
+      m_ulEarfcn = ulEarfcn;
+      m_ulBandwidth = ulBandwidth;
+      m_ulConfigured = true;
+      //configure Sidelink with UL
+      if (m_sidelinkSpectrumPhy)
+        {
+          NS_LOG_DEBUG ("Adding Sidelink Spectrum phy to the channel");
+          m_slNoisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
+          m_sidelinkSpectrumPhy->SetNoisePowerSpectralDensity (m_slNoisePsd);
+          m_sidelinkSpectrumPhy->GetChannel ()->AddRx (m_sidelinkSpectrumPhy);
+        }
     }
 }
 
