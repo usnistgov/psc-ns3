@@ -538,6 +538,9 @@ Ptr<NetDevice>
 LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
   NS_LOG_FUNCTION (this << n);
+
+  NS_ABORT_MSG_IF (m_noOfCcs > 1 && m_useSidelink == true, "CA cannot be used concurrently with Sidelink");
+
   uint16_t cellId = m_cellIdCounter; // \todo Remove, eNB has no cell ID
 
   Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
@@ -798,6 +801,8 @@ Ptr<NetDevice>
 LteHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
   NS_LOG_FUNCTION (this);
+
+  NS_ABORT_MSG_IF (m_noOfCcs > 1 && m_useSidelink == true, "CA cannot be used concurrently with Sidelink");
 
   Ptr<LteUeNetDevice> dev = m_ueNetDeviceFactory.Create<LteUeNetDevice> ();
 

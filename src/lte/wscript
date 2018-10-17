@@ -214,6 +214,7 @@ def build(bld):
         'test/test-sidelink-comm-pool.cc',
         'test/test-sidelink-disc-pool.cc',
         'test/test-sidelink-in-coverage-comm.cc',
+        'test/test-sidelink-out-of-coverage-comm.cc',
         'test/test-wrap-around-hex-topology.cc'
         ]
 

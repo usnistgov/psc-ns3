@@ -740,6 +740,8 @@ LteUeMac::RecvRaResponse (BuildRarListElement_s raResponse)
       txOpParams.componentCarrierId = m_componentCarrierId;
       txOpParams.rnti = m_rnti;
       txOpParams.lcid = lc0Lcid;
+      txOpParams.srcL2Id = 0;
+      txOpParams.dstL2Id = 0;
       lc0InfoIt->second.macSapUser->NotifyTxOpportunity (txOpParams);
       lc0BsrIt->second.txQueueSize = 0;
     }
@@ -996,6 +998,8 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
               rxPduParams.p = p;
               rxPduParams.rnti = m_rnti;
               rxPduParams.lcid = tag.GetLcid ();
+              rxPduParams.srcL2Id = 0;
+              rxPduParams.dstL2Id = 0;
               it->second.macSapUser->ReceivePdu (rxPduParams);
             }
           else
@@ -1037,6 +1041,8 @@ LteUeMac::DoReceivePhyPdu (Ptr<Packet> p)
             rxPduParams.p = p;
             rxPduParams.rnti = m_rnti;
             rxPduParams.lcid = tag.GetLcid ();
+            rxPduParams.srcL2Id = tag.GetSourceL2Id ();
+            rxPduParams.dstL2Id = tag.GetDestinationL2Id ();
             it->second.macSapUser->ReceivePdu (rxPduParams);
             found = true;
             break;
@@ -1121,6 +1127,8 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                       txOpParams.componentCarrierId = m_componentCarrierId;
                       txOpParams.rnti = m_rnti;
                       txOpParams.lcid = (*it).first;
+                      txOpParams.srcL2Id = 0;
+                      txOpParams.dstL2Id = 0;
                       (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                       NS_LOG_LOGIC (this << "\t" << bytesPerActiveLc << " send  " << (*itBsr).second.statusPduSize << " status bytes to LC " << (uint32_t)(*it).first << " statusQueue " << (*itBsr).second.statusPduSize << " retxQueue" << (*itBsr).second.retxQueueSize << " txQueue" <<  (*itBsr).second.txQueueSize);
                       (*itBsr).second.statusPduSize = 0;
@@ -1138,6 +1146,8 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                           txOpParams.componentCarrierId = m_componentCarrierId;
                           txOpParams.rnti = m_rnti;
                           txOpParams.lcid = (*it).first;
+                          txOpParams.srcL2Id = 0;
+                          txOpParams.dstL2Id = 0;
                           (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                           bytesForThisLc -= (*itBsr).second.statusPduSize;
                           NS_LOG_DEBUG (this << " serve STATUS " << (*itBsr).second.statusPduSize);
@@ -1164,6 +1174,8 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                               txOpParams.componentCarrierId = m_componentCarrierId;
                               txOpParams.rnti = m_rnti;
                               txOpParams.lcid = (*it).first;
+                              txOpParams.srcL2Id = 0;
+                              txOpParams.dstL2Id = 0;
                               (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                               if ((*itBsr).second.retxQueueSize >= bytesForThisLc)
                                 {
@@ -1198,6 +1210,8 @@ LteUeMac::DoReceiveLteControlMessage (Ptr<LteControlMessage> msg)
                               txOpParams.componentCarrierId = m_componentCarrierId;
                               txOpParams.rnti = m_rnti;
                               txOpParams.lcid = (*it).first;
+                              txOpParams.srcL2Id = 0;
+                              txOpParams.dstL2Id = 0;
                               (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                               if ((*itBsr).second.txQueueSize >= bytesForThisLc - rlcOverhead)
                                 {
@@ -1808,6 +1822,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                                   txOpParams.componentCarrierId = m_componentCarrierId;
                                   txOpParams.rnti = m_rnti;
                                   txOpParams.lcid = (*itBsr).first.lcId;
+                                  txOpParams.srcL2Id = (*itBsr).first.srcL2Id;
+                                  txOpParams.dstL2Id = (*itBsr).first.dstL2Id;
                                   (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                                   bytesForThisLc -= (*itBsr).second.statusPduSize; //decrement size available for data
                                   NS_LOG_DEBUG ("Serve STATUS PDU" << (*itBsr).second.statusPduSize);
@@ -1835,6 +1851,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                                       txOpParams.componentCarrierId = m_componentCarrierId;
                                       txOpParams.rnti = m_rnti;
                                       txOpParams.lcid = (*itBsr).first.lcId;
+                                      txOpParams.srcL2Id = (*itBsr).first.srcL2Id;
+                                      txOpParams.dstL2Id = (*itBsr).first.dstL2Id;
                                       (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                                       if ((*itBsr).second.retxQueueSize >= bytesForThisLc)
                                         {
@@ -1857,6 +1875,8 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                                       txOpParams.componentCarrierId = m_componentCarrierId;
                                       txOpParams.rnti = m_rnti;
                                       txOpParams.lcid = (*itBsr).first.lcId;
+                                      txOpParams.srcL2Id = (*itBsr).first.srcL2Id;
+                                      txOpParams.dstL2Id = (*itBsr).first.dstL2Id;
                                       (*it).second.macSapUser->NotifyTxOpportunity (txOpParams);
                                       if ((*itBsr).second.txQueueSize >= bytesForThisLc - rlcOverhead)
                                         {

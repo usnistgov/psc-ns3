@@ -810,6 +810,8 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
   rxPduParams.p = p;
   rxPduParams.rnti = rnti;
   rxPduParams.lcid = lcid;
+  rxPduParams.srcL2Id = 0;
+  rxPduParams.dstL2Id = 0;
 
   //Receive PDU only if LCID is found
   if (lcidIt != rntiIt->second.end ())
@@ -1153,6 +1155,8 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                   txOpParams.componentCarrierId = m_componentCarrierId;
                   txOpParams.rnti = rnti;
                   txOpParams.lcid = lcid;
+                  txOpParams.srcL2Id = 0;
+                  txOpParams.dstL2Id = 0;
                   (*lcidIt).second->NotifyTxOpportunity (txOpParams);
                 }
               else

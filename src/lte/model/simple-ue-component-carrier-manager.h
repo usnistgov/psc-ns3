@@ -113,6 +113,16 @@ protected:
    */
   std::vector<LteUeCcmRrcSapProvider::LcsConfig> DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   /**
+   * \brief Add Sideklink LC function
+   * \param slLcId the Sidelink LCID
+   * \param srcL2Id is the Source L2 ID
+   * \param dstL2Id is the Destination L2 ID
+   * \param lcConfig the logical channel config
+   * \param msu the MSU
+   * \returns updated LC config list
+   */
+  std::vector<LteUeCcmRrcSapProvider::LcsConfig> DoAddSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  /**
    * \brief Remove LC function
    * \param lcid the LCID
    * \returns updated LC list

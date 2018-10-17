@@ -71,7 +71,24 @@ public:
    * The Logical Channel configurations for each component carrier depend on the 
    * algorithm used to split the traffic between the component carriers themself.
    */
-  virtual  std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu) = 0;
+  virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu) = 0;
+
+  /**
+   * add a new Sidelink Logical Channel (LC)
+   *
+   * \param slLcId is the Sidelink Logical Channel Id
+   * \param srcL2Id is the Source L2 ID
+   * \param dstL2Id is the Destination L2 ID
+   * \param slLcConfig is a single structure contains logical Channel Id, Logical Channel config and Component Carrier Id
+   * \param msu is the pointer to LteMacSapUser related to the Rlc instance
+   * \return vector of LcsConfig contains the lc configuration for each Mac
+   *                the size of the vector is equal to the number of component
+   *                carrier enabled.
+   *
+   * The Logical Channel configurations for each component carrier depend on the
+   * algorithm used to split the traffic between the component carriers themself.
+   */
+  virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id,  LteUeCmacSapProvider::LogicalChannelConfig slLcConfig, LteMacSapUser* msu) = 0;
 
   /**
    * \brief Remove an existing Logical Channel for a Ue in the LteUeComponentCarrierManager
@@ -117,6 +134,7 @@ public:
   virtual std::vector<uint16_t> RemoveLc (uint8_t lcid);
   virtual void Reset ();
   virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id,  LteUeCmacSapProvider::LogicalChannelConfig slLcConfig, LteMacSapUser* msu);
   virtual void NotifyConnectionReconfigurationMsg ();
   virtual LteMacSapUser* ConfigureSignalBearer (uint8_t lcid,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   
@@ -147,6 +165,12 @@ template <class C>
 std::vector<LteUeCcmRrcSapProvider::LcsConfig> MemberLteUeCcmRrcSapProvider<C>::AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu)
 {
   return m_owner->DoAddLc (lcId, lcConfig, msu);
+}
+
+template <class C>
+std::vector<LteUeCcmRrcSapProvider::LcsConfig> MemberLteUeCcmRrcSapProvider<C>::AddSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id,  LteUeCmacSapProvider::LogicalChannelConfig slLcConfig, LteMacSapUser* msu)
+{
+  return m_owner->DoAddSlLc (slLcId, srcL2Id, dstL2Id, slLcConfig, msu);
 }
 
 template <class C>

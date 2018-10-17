@@ -107,12 +107,14 @@ public:
    */
   struct TxOpportunityParameters
   {
-    uint32_t bytes;  /**< the number of bytes to transmit */
+    uint32_t bytes; /**< the number of bytes to transmit */
     uint8_t layer; /**<  the layer of transmission (MIMO) */
     uint8_t harqId; /**< the HARQ ID */
     uint8_t componentCarrierId; /**< the component carrier id */
     uint16_t rnti; /**< the C-RNTI identifying the UE */
     uint8_t lcid; /**< the logical channel id */
+    uint32_t srcL2Id; /**< Source L2 ID (24 bits) */
+    uint32_t dstL2Id; /**< Destination L2 ID (24 bits) */
   };
   /**
    * Called by the MAC to notify the RLC that the scheduler granted a
@@ -136,9 +138,11 @@ public:
    */
   struct ReceivePduParameters
   {
-    Ptr<Packet> p;  /**< the RLC PDU to be received */
+    Ptr<Packet> p; /**< the RLC PDU to be received */
     uint16_t rnti; /**< the C-RNTI identifying the UE */
     uint8_t lcid; /**< the logical channel id */
+    uint32_t srcL2Id; /**< Source L2 ID (24 bits) */
+    uint32_t dstL2Id; /**< Destination L2 ID (24 bits) */
   };
   /**
    * Called by the MAC to notify the RLC of the reception of a new PDU

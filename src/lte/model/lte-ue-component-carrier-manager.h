@@ -109,6 +109,43 @@ protected:
   uint16_t m_noOfComponentCarriers; //!<// The number of component carriers that this UE can support.
   std::map <uint8_t, LteMacSapProvider*> m_macSapProvidersMap; //!< Map of pointers to SAP to interfaces of the MAC instance if the flows of this UE.
 
+  /// UE Component Carrier Manager Sidelink Logical Channel Identifier
+  struct UeCcmSidelinkLcIdentifier
+  {
+    uint8_t lcId; ///< Sidelink LCID
+    uint32_t srcL2Id; ///< Source L2 ID
+    uint32_t dstL2Id; ///< Destination L2 ID
+  };
+
+  /**
+   * Less than operator
+   *
+   * \param l first SidelinkLcIdentifier
+   * \param r second SidelinkLcIdentifier
+   * \returns true if first SidelinkLcIdentifier parameter values are less than the second SidelinkLcIdentifier parameters"
+   */
+  friend bool operator < (const UeCcmSidelinkLcIdentifier &l, const UeCcmSidelinkLcIdentifier &r)
+  {
+    return l.lcId < r.lcId || (l.lcId == r.lcId && l.srcL2Id < r.srcL2Id) || (l.lcId == r.lcId && l.srcL2Id == r.srcL2Id && l.dstL2Id < r.dstL2Id);
+  }
+  /// Ue CCM LcInfo structure
+  struct UeCcmLcInfo
+  {
+    LteUeCmacSapProvider::LogicalChannelConfig lcConfig; ///< logical channel config
+    LteMacSapUser* macSapUser; ///< MAC SAP user
+  };
+
+  /**
+   * \brief Sidelink logical channel configuration per
+   * component carrier Id of this UE.
+   * Key : Component carrier id
+   * Mapped value: A map whose key is a struct
+   * object of type UeCcmSidelinkLcIdentifier
+   * and mapped value is a LteMacSapProvider pointer
+   */
+  std::map<uint8_t, std::map<UeCcmSidelinkLcIdentifier, LteMacSapProvider*> > m_slComponentCarrierLcMap;
+  std::map <UeCcmSidelinkLcIdentifier, UeCcmLcInfo> m_slLcInfoMap; ///< Sidelink logical channel info map
+
 }; // end of class LteUeComponentCarrierManager
 
 

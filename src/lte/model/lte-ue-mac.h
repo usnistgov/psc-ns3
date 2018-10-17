@@ -201,8 +201,8 @@ private:
    * Adds a new Logical Channel (LC) used for Sidelink
    *
    * \param lcId The ID of the logical channel
-   * \param srcL2Id The L2 group id of the source
-   * \param dstL2Id The L2 group id of the destination
+   * \param srcL2Id The L2 id of the source
+   * \param dstL2Id The L2 id of the destination
    * \param lcConfig The LC configuration provided by the RRC
    * \param msu The corresponding LteMacSapUser
    */
@@ -211,8 +211,8 @@ private:
    * Removes an existing Sidelink LC
    *
    * \param lcId The LC ID
-   * \param srcL2Id The L2 group id of the source
-   * \param dstL2Id The L2 group id of the destination
+   * \param srcL2Id The L2 id of the source
+   * \param dstL2Id The L2 id of the destination
    */
   void DoRemoveSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
 
@@ -222,7 +222,7 @@ private:
    * Add Sidelink communication transmission pool function
    * Adds transmission pool for Sidelink communication
    *
-   * \param dstL2Id The destination Layer 2 group ID
+   * \param dstL2Id The destination Layer 2 ID
    * \param pool The pointer to the SidelinkTxCommResourcePool
    */
   void DoAddSlCommTxPool (uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> pool);
@@ -230,7 +230,7 @@ private:
    * Remove Sidelink communication transmission pool function
    * Removes transmission pool for Sidelink communication
    *
-   * \param dstL2Id The destination Layer 2 group ID
+   * \param dstL2Id The destination Layer 2 ID
    */
   void DoRemoveSlCommTxPool (uint32_t dstL2Id);
   /**
@@ -244,14 +244,14 @@ private:
    * Add Sidelink destination function
    * Adds a new destination for Sidelink communication to listen
    *
-   * \param destination The destination Layer 2 group ID
+   * \param destination The destination Layer 2 ID
    */
   void DoAddSlDestination (uint32_t destination);
   /**
    * Remove Sidelink destination function
    * Removes a destination from the list destinations of Sidelink communication
    *
-   * \param destination The destination Layer 2 group ID
+   * \param destination The destination Layer 2 ID
    */
   void DoRemoveSlDestination (uint32_t destination);
 
@@ -411,8 +411,8 @@ private:
   struct SidelinkLcIdentifier
   {
     uint8_t lcId; ///< Sidelink LCID
-    uint32_t srcL2Id; ///< Source L2 group ID
-    uint32_t dstL2Id; ///< Destination L2 group ID
+    uint32_t srcL2Id; ///< Source L2 ID
+    uint32_t dstL2Id; ///< Destination L2 ID
   };
 
   /**
@@ -469,7 +469,7 @@ private:
   bool m_freshSlBsr; ///< true when a BSR has been received in the last TTI
   std::map <SidelinkLcIdentifier, LteMacSapProvider::ReportBufferStatusParameters> m_slBsrReceived; ///< Sidelink BSR received from RLC (the last one)
 
-  std::map <uint32_t, PoolInfo > m_sidelinkTxPoolsMap; ///< Map of Sidelink Tx pools with destination L2 group ID as its key
+  std::map <uint32_t, PoolInfo > m_sidelinkTxPoolsMap; ///< Map of Sidelink Tx pools with destination L2 ID as its key
   std::list <Ptr<SidelinkRxCommResourcePool> > m_sidelinkRxPools; ///< List of Sidelink communication reception pools
   std::list <uint32_t> m_sidelinkDestinations; ///< List of Sidelink communication destinations
 

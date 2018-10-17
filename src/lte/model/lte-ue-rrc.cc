@@ -3566,11 +3566,32 @@ LteUeRrc::AddSlrb (uint32_t source, uint32_t destination, uint8_t lcid)
   lcConfig.bucketSizeDurationMs = 65535;
   lcConfig.logicalChannelGroup = 3; // as per 36.331 9.1.1.6
 
-  m_cmacSapProvider.at (0)->AddSlLc (slbInfo->m_logicalChannelIdentity,
-                               slbInfo->m_sourceL2Id,
-                               slbInfo->m_destinationL2Id,
-                               lcConfig,
-                               rlc->GetLteMacSapUser ());
+  NS_LOG_DEBUG (this << " UE RRC RNTI " << m_rnti << " Number Of Component Carriers "
+                << m_numberOfComponentCarriers<< " lcID " << (uint16_t) slbInfo->m_logicalChannelIdentity);
+
+  //Call AddSlLc of UE component carrier manager
+  std::vector <LteUeCcmRrcSapProvider::LcsConfig> slLcOnCcMapping = m_ccmRrcSapProvider->AddSlLc (slbInfo->m_logicalChannelIdentity,
+                                                                                                  slbInfo->m_sourceL2Id,
+                                                                                                  slbInfo->m_destinationL2Id,
+                                                                                                  lcConfig, rlc->GetLteMacSapUser ());
+
+ NS_LOG_DEBUG ("Size of lcOnCcMapping vector " << slLcOnCcMapping.size());
+ std::vector<LteUeCcmRrcSapProvider::LcsConfig>::iterator itLcOnCcMapping = slLcOnCcMapping.begin ();
+ NS_ASSERT_MSG (itLcOnCcMapping != slLcOnCcMapping.end (), "Component carrier manager failed to add Sl LC for SL radio bearer");
+
+ NS_LOG_DEBUG ("RNTI " << m_rnti <<" LCG id " << (uint16_t) itLcOnCcMapping->lcConfig.logicalChannelGroup
+                                                <<" ComponentCarrierId " << itLcOnCcMapping->componentCarrierId);
+ uint8_t componentCarrierId = itLcOnCcMapping->componentCarrierId;
+
+ NS_ABORT_MSG_IF (componentCarrierId != 0, "CA is not supported for Sidelink. Component carrier id should be 0");
+
+ LteUeCmacSapProvider::LogicalChannelConfig lcConfigFromCcm = itLcOnCcMapping->lcConfig;
+ LteMacSapUser *msu = itLcOnCcMapping->msu;
+ m_cmacSapProvider.at (componentCarrierId)->AddSlLc (slbInfo->m_logicalChannelIdentity,
+                                             slbInfo->m_sourceL2Id,
+                                             slbInfo->m_destinationL2Id,
+                                             lcConfigFromCcm,
+                                             msu);
   return slbInfo;
 }
 
