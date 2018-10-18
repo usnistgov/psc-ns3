@@ -56,8 +56,8 @@ public:
   /** 
    * Send a preamble on the PRACH
    * 
-   * \param prachId The ID of the preamble
-   * \param raRnti The RA RNTI
+   * \param prachId the ID of the preamble
+   * \param raRnti the RA RNTI
    */
   virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti) = 0;
 
