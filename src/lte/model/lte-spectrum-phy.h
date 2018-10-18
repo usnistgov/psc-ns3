@@ -111,12 +111,12 @@ struct SlTbId_t
 /// SltbInfo_t structure
 struct SltbInfo_t
 {
-  uint8_t ndi; ///< ndi
-  uint16_t size; ///< TB size
-  uint8_t mcs; ///< mcs
-  std::vector<int> rbBitmap; ///< RB bitmap
-  uint8_t rv; ///< rv
-  double mi; ///< mi
+  uint8_t ndi; ///< New data indicator
+  uint16_t size; ///< Transport block size
+  uint8_t mcs; ///< MCS
+  std::vector<int> rbBitmap; ///< Resource block bitmap
+  uint8_t rv; ///< The redundancy version
+  double mi; ///< Mutual information
   bool corrupt; ///< whether is corrupt
   bool harqFeedbackSent; ///< is HARQ feedback sent
   double sinr; ///< mean SINR
@@ -148,11 +148,11 @@ struct SlDiscTbId_t
 /// SlDisctbInfo_t structure
 struct SlDisctbInfo_t
 {
-  uint8_t ndi; ///< ndi
+  uint8_t ndi; ///< New data indicator
   uint8_t resPsdch; ///< PSDCH resource number
   std::vector<int> rbBitmap; ///< RB bitmap
-  uint8_t rv; ///< rv
-  double mi; ///< mi
+  uint8_t rv; ///< The redundancy version
+  double mi; ///< Mutual information
   bool corrupt; ///< whether is corrupt
   bool harqFeedbackSent; ///< is HARQ feedback sent
   double sinr; ///< mean SINR
@@ -577,7 +577,7 @@ public:
    * \param size the size of the TB
    * \param mcs The MCS of the TB
    * \param map The map of RB(s) used
-   * \param rv revision
+   * \param rv The redundancy version
    */
    void AddExpectedTb (uint16_t  rnti, uint8_t l1dst, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t rv);
 
@@ -589,7 +589,7 @@ public:
     * \param resPsdch The PSDCH resource identifier
     * \param ndi The new data indicator flag
     * \param map map of RBs used
-    * \param rv revision
+    * \param rv The redundancy version
     */
    void AddExpectedTb (uint16_t  rnti, uint8_t resPsdch, uint8_t ndi, std::vector<int> map, uint8_t rv);
 

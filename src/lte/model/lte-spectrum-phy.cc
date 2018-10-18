@@ -1849,6 +1849,8 @@ LteSpectrumPhy::EndRxSlData ()
                 }
             }
 
+          NS_LOG_DEBUG (this << " HARQ buffer size = " << harqInfoList.size ());
+
 
           // fire traces on SL reception PHY stats
           PhyReceptionStatParameters params;
@@ -1864,7 +1866,6 @@ LteSpectrumPhy::EndRxSlData ()
           params.m_ndi = (*itTb).second.ndi;
           params.m_correctness = (uint8_t) !(*itTb).second.corrupt;
           params.m_sinrPerRb = GetMeanSinr (m_slSinrPerceived[(*itSinr).second] * m_slRxGain, (*itTb).second.rbBitmap);
-          params.m_rv = harqInfoList.size ();
           m_slPhyReception (params);
         }
 

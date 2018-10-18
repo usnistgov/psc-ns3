@@ -1488,10 +1488,18 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                   {
                     rbMap.push_back (i);
                   }
+                //Compute redundancy version number
+                uint8_t rv = grantIt->second.m_psschTx.size () % 4;
+                rv = rv == 0 ? rv : 4 - rv;
 
-                m_sidelinkSpectrumPhy->AddExpectedTb (grantIt->second.m_grant.m_rnti, grantIt->second.m_grant.m_groupDstId,
-                                                      grantIt->second.m_psschTx.size () % 4 == 0, grantIt->second.m_grant.m_tbSize,
-                                                      grantIt->second.m_grant.m_mcs, rbMap, (4 - grantIt->second.m_psschTx.size () % 4));
+                NS_LOG_DEBUG ("RV = " << (uint16_t) rv << " Number of PSSCH transmissions "
+                                                                << grantIt->second.m_psschTx.size ());
+
+                m_sidelinkSpectrumPhy->AddExpectedTb (grantIt->second.m_grant.m_rnti,
+                                                      grantIt->second.m_grant.m_groupDstId,
+                                                      grantIt->second.m_psschTx.size () % 4 == 0,
+                                                      grantIt->second.m_grant.m_tbSize,
+                                                      grantIt->second.m_grant.m_mcs, rbMap, rv);
                 //remove reception information
                 grantIt->second.m_psschTx.erase (rxIt);
 
