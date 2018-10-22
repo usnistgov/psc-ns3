@@ -144,18 +144,26 @@ LteSlEnbRrc::GetSystemInformationType18 ()
               sib18.commConfig.commRxPool.nbPools++;
             }
         }
-      else if (it->second.m_poolSetup.ueSelected.havePoolToAdd)
+      else if (it->second.m_poolSetup.setup == LteRrcSap::SlCommTxResourcesSetup::UE_SELECTED)
         {
-          //check all pools
-          for (int i = 0; i < it->second.m_poolSetup.ueSelected.poolToAddModList.nbPools; i++)
+          if (it->second.m_poolSetup.ueSelected.havePoolToAdd)
             {
-              if (!IsPoolInList (it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool, sib18.commConfig.commRxPool.pools, sib18.commConfig.commRxPool.nbPools))
+              //check all pools
+              for (int i = 0; i < it->second.m_poolSetup.ueSelected.poolToAddModList.nbPools; i++)
                 {
-                  //add pool
-                  sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools] = it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool;
-                  sib18.commConfig.commRxPool.nbPools++;
+                  if (!IsPoolInList (it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool, sib18.commConfig.commRxPool.pools, sib18.commConfig.commRxPool.nbPools))
+                    {
+                      //add pool
+                      sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools] = it->second.m_poolSetup.ueSelected.poolToAddModList.pools[i].pool;
+                      sib18.commConfig.commRxPool.nbPools++;
+                    }
                 }
             }
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Unable to find resource allocation type while building SIB 18."
+              " Please make sure to properly configure the resource allocation type while configuring the pool");
         }
     }
 
@@ -253,18 +261,26 @@ LteSlEnbRrc::GetSystemInformationType19 ()
           sib19.discConfig.discRxPool.nbPools++;
         }
     }
-  else if (m_discPoolList.ueSelected.havePoolToAdd)
+  else if (m_discPoolList.setup == LteRrcSap::SlDiscTxResourcesSetup::UE_SELECTED)
     {
-      //check all pools
-      for (int i = 0; i < m_discPoolList.ueSelected.poolToAddModList.nbPools; i++)
+      if (m_discPoolList.ueSelected.havePoolToAdd)
         {
-          if (!IsPoolInList (m_discPoolList.ueSelected.poolToAddModList.pools[i].pool, sib19.discConfig.discRxPool.pools, sib19.discConfig.discRxPool.nbPools))
+          //check all pools
+          for (int i = 0; i < m_discPoolList.ueSelected.poolToAddModList.nbPools; i++)
             {
-              //add pool
-              sib19.discConfig.discRxPool.pools[sib19.discConfig.discRxPool.nbPools] = m_discPoolList.ueSelected.poolToAddModList.pools[i].pool;
-              sib19.discConfig.discRxPool.nbPools++;
+              if (!IsPoolInList (m_discPoolList.ueSelected.poolToAddModList.pools[i].pool, sib19.discConfig.discRxPool.pools, sib19.discConfig.discRxPool.nbPools))
+                {
+                  //add pool
+                  sib19.discConfig.discRxPool.pools[sib19.discConfig.discRxPool.nbPools] = m_discPoolList.ueSelected.poolToAddModList.pools[i].pool;
+                  sib19.discConfig.discRxPool.nbPools++;
+                }
             }
         }
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Unable to find resource allocation type while building SIB 19."
+                      " Please make sure to properly configure the resource allocation type while configuring the pool");
     }
 
   return sib19;
