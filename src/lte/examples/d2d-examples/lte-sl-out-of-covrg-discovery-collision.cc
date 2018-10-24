@@ -115,17 +115,16 @@ void DiscoveryAnnouncementMacTrace (Ptr<OutputStreamWrapper> stream, std::string
 
 NS_LOG_COMPONENT_DEFINE ("LteSlOutOfCovrgDiscoveryCollision");
 
-static ns3::GlobalValue g_simTime ("simTime",
-                                   "Total duration of the simulation [s]",
-                                   ns3::TimeValue (Seconds (3.0)),
-                                   ns3::MakeTimeChecker ());
-static ns3::GlobalValue g_enableNsLogs ("enableNsLogs",
-                                        "Enable NS Logs",
-                                        ns3::BooleanValue (false),
-                                        ns3::MakeBooleanChecker ());
-
 int main (int argc, char *argv[])
 {
+  Time simTime = Seconds (3);
+  bool enableNsLogs = false;
+
+  CommandLine cmd;
+  cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
+  cmd.AddValue ("enableNsLogs", "Enable ns-3 logging (debug builds)", enableNsLogs);
+  cmd.Parse (argc, argv);
+
   // Set error models
   Config::SetDefault ("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (true));
@@ -133,18 +132,10 @@ int main (int argc, char *argv[])
   //Set the UEs power in dBm
   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
 
-  CommandLine cmd;
-  cmd.Parse (argc, argv);
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
   // parse again so we can override input file default values via command line
   cmd.Parse (argc, argv);
-
-  TimeValue timeValue;
-  BooleanValue booleanValue;
-
-  GlobalValue::GetValueByName ("enableNsLogs", booleanValue);
-  bool enableNsLogs = booleanValue.Get ();
 
   if (enableNsLogs)
     {
@@ -158,9 +149,6 @@ int main (int argc, char *argv[])
       LogComponentEnable ("LteUePhy", logLevel);
       LogComponentEnable ("LteEnbPhy", logLevel);
     }
-
-  GlobalValue::GetValueByName ("simTime", timeValue);
-  Time simTime = timeValue.Get ();
 
   //Create the helpers
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();

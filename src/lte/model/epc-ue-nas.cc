@@ -28,6 +28,9 @@
 #include "epc-ue-nas.h"
 #include "lte-as-sap.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/ipv6-header.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/packet.h"
 
 namespace ns3 {
@@ -62,9 +65,9 @@ NS_OBJECT_ENSURE_REGISTERED (EpcUeNas);
 
 EpcUeNas::EpcUeNas ()
   : m_state (OFF),
-    m_csgId (0),
-    m_asSapProvider (0),
-    m_bidCounter (0)
+  m_csgId (0),
+  m_asSapProvider (0),
+  m_bidCounter (0)
 {
   NS_LOG_FUNCTION (this);
   m_asSapUser = new MemberLteAsSapUser<EpcUeNas> (this);
@@ -88,7 +91,7 @@ EpcUeNas::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcUeNas")
     .SetParent<Object> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<EpcUeNas> ()
     .AddTraceSource ("StateTransition",
                      "fired upon every UE NAS state transition",
@@ -98,14 +101,14 @@ EpcUeNas::GetTypeId (void)
   return tid;
 }
 
-void 
+void
 EpcUeNas::SetDevice (Ptr<NetDevice> dev)
 {
   NS_LOG_FUNCTION (this << dev);
   m_device = dev;
 }
 
-void 
+void
 EpcUeNas::SetImsi (uint64_t imsi)
 {
   NS_LOG_FUNCTION (this << imsi);
@@ -155,7 +158,7 @@ EpcUeNas::StartCellSelection (uint32_t dlEarfcn)
   m_asSapProvider->StartCellSelection (dlEarfcn);
 }
 
-void 
+void
 EpcUeNas::Connect ()
 {
   NS_LOG_FUNCTION (this);
@@ -177,7 +180,7 @@ EpcUeNas::Connect (uint16_t cellId, uint32_t dlEarfcn)
 }
 
 
-void 
+void
 EpcUeNas::Disconnect ()
 {
   NS_LOG_FUNCTION (this);
@@ -186,7 +189,7 @@ EpcUeNas::Disconnect ()
 }
 
 
-void 
+void
 EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -215,29 +218,60 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
     case ACTIVE:
       {
         //First Check if there is any sidelink bearer for the destination
-        //otherwise it may use the default bearer 
+        //otherwise it may use the default bearer
         Ptr<Packet> pCopy = packet->Copy ();
-        Ipv4Header ipv4Header;
-        pCopy->RemoveHeader (ipv4Header);
-        for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
-             it != m_slBearersActivatedList.end ();
-             it++)
+        if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
           {
-            if ((*it)->Matches(ipv4Header.GetDestination ())) {
-              //Found sidelink
-              m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address());
-              return true;
-            }
-          }
-        //check if pending
-        for (std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
-             it != m_pendingSlBearersList.end ();
-             it++)
-          {
-            if ((*it)->Matches(ipv4Header.GetDestination ()))
+            Ipv4Header ipv4Header;
+            pCopy->RemoveHeader (ipv4Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
               {
-                NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
-                return false;
+                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    return true;
+                  }
+              }
+            //check if pending
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
+                 it != m_pendingSlBearersList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                  {
+                    NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
+                    return false;
+                  }
+              }
+          }
+        if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+          {
+            Ipv6Header ipv6Header;
+            pCopy->RemoveHeader (ipv6Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    return true;
+                  }
+              }
+            //check if pending
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
+                 it != m_pendingSlBearersList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                  {
+                    NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
+                    return false;
+                  }
               }
           }
         //No sidelink found
@@ -250,7 +284,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
           }
         else
           {
-            m_asSapProvider->SendData (packet, bid); 
+            m_asSapProvider->SendData (packet, bid);
             return true;
           }
       }
@@ -259,18 +293,38 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
       {
         //Check if there is any sidelink bearer for the destination
         Ptr<Packet> pCopy = packet->Copy ();
-        Ipv4Header ipv4Header;
-        pCopy->RemoveHeader (ipv4Header);
-        for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
-             it != m_slBearersActivatedList.end ();
-             it++)
+        if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
           {
-            if ((*it)->Matches(ipv4Header.GetDestination ())) {
-              //Found sidelink
-              m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address());
-              return true;
-            }
-          } 
+            Ipv4Header ipv4Header;
+            pCopy->RemoveHeader (ipv4Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    return true;
+                  }
+              }
+          }
+        if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+          {
+            Ipv6Header ipv6Header;
+            pCopy->RemoveHeader (ipv6Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    return true;
+                  }
+              }
+          }
       }
     default:
       NS_LOG_WARN (this << " NAS neither OFF nor ACTIVE, or Sidelink bearer not found, discarding packet");
@@ -279,7 +333,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
     }
 }
 
-void 
+void
 EpcUeNas::DoNotifyConnectionSuccessful ()
 {
   NS_LOG_FUNCTION (this);
@@ -303,14 +357,14 @@ EpcUeNas::DoRecvData (Ptr<Packet> packet)
   m_forwardUpCallback (packet);
 }
 
-void 
+void
 EpcUeNas::DoNotifyConnectionReleased ()
 {
   NS_LOG_FUNCTION (this);
   SwitchToState (OFF);
 }
 
-void 
+void
 EpcUeNas::DoActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -326,7 +380,7 @@ EpcUeNas::GetState () const
   return m_state;
 }
 
-void 
+void
 EpcUeNas::SwitchToState (State newState)
 {
   NS_LOG_FUNCTION (this << ToString (newState));
@@ -353,7 +407,7 @@ EpcUeNas::SwitchToState (State newState)
 
 }
 
-void 
+void
 EpcUeNas::ActivateSidelinkBearer (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -361,10 +415,10 @@ EpcUeNas::ActivateSidelinkBearer (Ptr<LteSlTft> tft)
   //for in coverage case, it will trigger communication with the eNodeb
   //for out of coverage, it will trigger the use of preconfiguration
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateSidelinkRadioBearer (tft->GetGroupL2Address(), tft->isTransmit(), tft->isReceive()); 
+  m_asSapProvider->ActivateSidelinkRadioBearer (tft->GetGroupL2Address (), tft->isTransmit (), tft->isReceive ());
 }
 
-void 
+void
 EpcUeNas::DeactivateSidelinkBearer (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -372,40 +426,44 @@ EpcUeNas::DeactivateSidelinkBearer (Ptr<LteSlTft> tft)
        it != m_slBearersActivatedList.end ();
        it++)
     {
-      if (*it==tft) {
-        NS_LOG_LOGIC ("Found tft to remove for group " << tft->GetGroupL2Address());
-        //found the sidelink to remove
-        m_asSapProvider->DeactivateSidelinkRadioBearer (tft->GetGroupL2Address());
-        m_slBearersActivatedList.erase (it);
-        break;
-      }
-    } 
+      if (*it == tft)
+        {
+          NS_LOG_LOGIC ("Found tft to remove for group " << tft->GetGroupL2Address ());
+          //found the sidelink to remove
+          m_asSapProvider->DeactivateSidelinkRadioBearer (tft->GetGroupL2Address ());
+          m_slBearersActivatedList.erase (it);
+          break;
+        }
+    }
 }
-  
-void 
+
+void
 EpcUeNas::DoNotifySidelinkRadioBearerActivated (uint32_t group)
 {
   NS_LOG_FUNCTION (this);
-  
+
   std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
   while (it != m_pendingSlBearersList.end ())
     {
-      if ((*it)->GetGroupL2Address()==group) {
-        //Found sidelink
-        m_slBearersActivatedList.push_back (*it);
-        it = m_pendingSlBearersList.erase (it);
-      } else {
-        it++; 
-      }
+      if ((*it)->GetGroupL2Address () == group)
+        {
+          //Found sidelink
+          m_slBearersActivatedList.push_back (*it);
+          it = m_pendingSlBearersList.erase (it);
+        }
+      else
+        {
+          it++;
+        }
     }
 }
-  
-void 
+
+void
 EpcUeNas::AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
 {
   m_asSapProvider->AddDiscoveryApps (apps, rxtx);
 }
-void 
+void
 EpcUeNas::RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
 {
   m_asSapProvider->RemoveDiscoveryApps (apps, rxtx);
