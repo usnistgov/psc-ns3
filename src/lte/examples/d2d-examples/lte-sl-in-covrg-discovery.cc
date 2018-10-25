@@ -197,6 +197,7 @@ int main (int argc, char *argv[])
   enbSidelinkConfiguration->SetDiscEnabled (true);
 
   LteRrcSap::SlDiscTxResourcesSetup pool;
+  pool.setup = LteRrcSap::SlDiscTxResourcesSetup::UE_SELECTED;
   pool.ueSelected.havePoolToRelease = false;
   pool.ueSelected.havePoolToAdd = true;
   pool.ueSelected.poolToAddModList.nbPools = 1;
