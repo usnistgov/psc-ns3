@@ -14,4 +14,5 @@ Public Safety Communications
 
    psc-design
    udp-group-echo
+   uav-mobility-energy
    psc-references
