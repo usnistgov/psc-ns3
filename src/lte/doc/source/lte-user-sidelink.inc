@@ -55,7 +55,9 @@ Both the UEs are in-coverage of the eNB where UE1 sends the data to UE2 via Side
 
 ./waf --run "lte-sl-in-covrg-comm-mode1 --simTime=7 --enableNsLogs=false"
 
-The simulation time is in seconds. Moreover, this example only supports IPV4 traffic flows.
+The simulation time is in seconds. Moreover, this example can support IPv6
+instead of the default IPv4 if the ``--useIPv6`` command-line argument
+is provided.
 
 .. highlight:: none
 
@@ -244,11 +246,16 @@ The above configuration is similar to any usual LTE example with EPC.
 
    lteHelper->Attach (ueDevs);
 
-* Installing applications and activating Sidelink radio bearers : ::
+* Installing applications and activating Sidelink radio bearers. Note that
+  two configuration options (IPv4 and IPv6) are supported; we only document
+  below the IPv4 path through the code : ::
 
-   Ipv4Address groupAddress ("225.0.0.0"); //use multicast address as destination
-   OnOffHelper sidelinkClient("ns3::UdpSocketFactory",
-                             Address ( InetSocketAddress (groupAddress, 8000)));
+   Ipv4Address groupAddress4 ("225.0.0.0"); //use multicast address as destination
+   ...
+   remoteAddress = InetSocketAddress (groupAddress4, 8000);
+   localAddress = InetSocketAddress (Ipv4Address::GetAny (), 8000);
+   ...
+   OnOffHelper sidelinkClient("ns3::UdpSocketFactory", remoteAddress);
    sidelinkClient.SetConstantRate (DataRate ("16kb/s"), 200);
 
    ApplicationContainer clientApps = sidelinkClient.Install (ueNodes.Get (0));
@@ -258,8 +265,7 @@ The above configuration is similar to any usual LTE example with EPC.
    clientApps.Stop (simTime - slBearersActivationTime + Seconds (1.0));
 
    ApplicationContainer serverApps;
-   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory",
-                         Address (InetSocketAddress (Ipv4Address::GetAny (), 8000)));
+   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory", localAddress);
    serverApps = sidelinkSink.Install (ueNodes.Get (1));
    serverApps.Start(Seconds (2.0));
 
@@ -269,7 +275,7 @@ The Sidelink radio bearers are activated by calling the ``ActivateSidelinkBearer
 
    //Set Sidelink bearers
    Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, 
-                                                     groupAddress, groupL2Address);
+                                                     groupAddress4, groupL2Address);
    proseHelper->ActivateSidelinkBearer (Seconds (2.0), ueDevs, tft);
 
 The ``ActivateSidelinkBearer`` method takes the following three parameters as input,
@@ -347,7 +353,8 @@ This example simulates an in-coverage MODE 2 ProSe communication using the same 
 
 ./waf --run "lte-sl-in-covrg-comm-mode2 --simTime=7 --enableNsLogs=false"
 
-The simulation time is in seconds. Similarly, this example only supports IPV4.
+The simulation time is in seconds. Similarly, this example supports IPv6 as
+an option if the ``--useIPv6`` argument is provided.
 
 .. highlight:: none
 
@@ -385,10 +392,8 @@ Along with the error model configuration, by setting the "DropRbOnCollisionEnabl
 Topology configuration
 ----------------------
 
-* Configuring the scheduler : ::
-
-   There is no need to configure the scheduler, since this example uses MODE 2 for 
-   resource selection.
+* There is no need to configure the scheduler, since this example uses MODE 2 
+  for resource selection.
 
 Sidelink pool configuration
 ---------------------------
@@ -430,7 +435,8 @@ This example allows a user to configure the simulation time and the output of NS
 
 ./waf --run "lte-sl-out-of-covrg-comm --simTime=7 --enableNsLogs=false"
 
-The simulation time is in seconds, and at this stage, only IPV4 is supported.
+The simulation time is in seconds, and ``--useIPv6`` can be used to run
+the example with IPv6 instead of IPv4.
 
 .. highlight:: none
 
@@ -501,7 +507,7 @@ Topology configuration
    (1)
 
      lteHelper->SetAttribute ("PathlossModel", 
-                                    StringValue ("ns3::Cost231PropagationLossModel"));
+                              StringValue ("ns3::Cost231PropagationLossModel"));
 
    (2)
 
@@ -513,14 +519,14 @@ Topology configuration
      NS_LOG_LOGIC ("UL freq: " << ulFreq);
      Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
      Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->
-                                                   GetObject<PropagationLossModel> ();
+                                             GetObject<PropagationLossModel> ();
      NS_ABORT_MSG_IF (lossModel == NULL, "No PathLossModel");
      bool ulFreqOk = uplinkPathlossModel->
-                             SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+                       SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
 
      if (!ulFreqOk)
        {
-         NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
+       NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
        }
 
 
@@ -593,10 +599,16 @@ For configuring Sidelink communication pre-configured pool parameters, the IE "S
 
 In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2 introduces another level of subframe filtering for the subframe pool via "DataBitmap" to limit the number of possible values for iTRP. The PSSCH transmission occurs on the filtered subframes after applying TRP bitmap on this "DataBitmap". Users interested to learn about how it is applied are referred to :ref:`SidelinkCommPoolPsschTestCase`.
 
-* Installing the IP stack on the UEs and assigning IP address : ::
+* Installing the IP stack on the UEs and assigning IP addresses (IPv4
+  code statements shown below) : ::
 
    InternetStackHelper internet;
    internet.Install (ueNodes);
+   uint32_t groupL2Address = 255;
+   Ipv4Address groupAddress4 ("225.0.0.0");     //use multicast address as destination
+   remoteAddress = InetSocketAddress (groupAddress4, 8000);
+   localAddress = InetSocketAddress (Ipv4Address::GetAny (), 8000);
+   ...
    Ipv4InterfaceContainer ueIpIface;
    ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
    Ipv4StaticRoutingHelper ipv4RoutingHelper;
@@ -605,19 +617,16 @@ In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2 
        Ptr<Node> ueNode = ueNodes.Get (u);
        // Set the default gateway for the UE
        Ptr<Ipv4StaticRouting> ueStaticRouting = 
-                      ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
-       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+                ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
+       ueStaticRouting->SetDefaultRoute 
+                                  (epcHelper->GetUeDefaultGatewayAddress (), 1);
      }
   
 
 * Installing applications and activating Sidelink radio bearers : ::
 
-   uint32_t groupL2Address = 255;
-
    //Set Application in the UEs
-   Ipv4Address groupAddress ("225.0.0.0"); //use multicast address as destination
-   OnOffHelper sidelinkClient("ns3::UdpSocketFactory",
-                             Address ( InetSocketAddress (groupAddress, 8000)));
+   OnOffHelper sidelinkClient("ns3::UdpSocketFactory", remoteAddress);
    sidelinkClient.SetConstantRate (DataRate ("16kb/s"), 200);
 
    ApplicationContainer clientApps = sidelinkClient.Install (ueNodes.Get (0));
@@ -627,15 +636,9 @@ In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2 
    clientApps.Stop (simTime - slBearersActivationTime + Seconds (1.0));
 
    ApplicationContainer serverApps;
-   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory",
-                          Address (InetSocketAddress (Ipv4Address::GetAny (), 8000)));
+   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory", localAddress);
    serverApps = sidelinkSink.Install (ueNodes.Get (1));
    serverApps.Start(Seconds (2.0));
-
-   //Set Sidelink bearers
-   Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL,
-                                                        groupAddress, groupL2Address);
-   proseHelper->ActivateSidelinkBearer (Seconds (2.0), ueDevs, tft);
 
 In this example, an "OnOff" application is installed in the UE 1, which sends a 200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE 2 is configured with the "PacketSink" application.
 
@@ -643,7 +646,7 @@ The Sidelink radio bearers are activated by calling the ``ActivateSidelinkBearer
 
    //Set Sidelink bearers
    Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL,
-                                                        groupAddress, groupL2Address);
+                                                 groupAddress4, groupL2Address);
    proseHelper->ActivateSidelinkBearer (Seconds (2.0), ueDevs, tft);
 
 The ``ActivateSidelinkBearer`` method takes the following three parameters as input,
@@ -744,7 +747,7 @@ As mentioned in the design documentation :ref:`sec-lte-sl-ue-phy-sync`, by defau
 * Instantiating ``Lte3gppHexGridEnbTopologyHelper`` and setting ``LteHelper`` ::
 
     Ptr<Lte3gppHexGridEnbTopologyHelper> topoHelper =
-                                      CreateObject<Lte3gppHexGridEnbTopologyHelper> ();
+                               CreateObject<Lte3gppHexGridEnbTopologyHelper> ();
     topoHelper->SetLteHelper (lteHelper);
 
 * Disabling the eNB for out-of-coverage scenario : ::
