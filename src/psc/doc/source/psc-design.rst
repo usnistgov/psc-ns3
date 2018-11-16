@@ -29,15 +29,20 @@ found in the ProSe implementation in the ``lte`` module.  This is because
 the ProSe services of sidelink communications, discovery, and synchronization
 are deeply connected to the LTE models and difficult to factor into a
 separate module.   Features intrisic to the low-level operation of ProSe in 
-LTE are found in the ``lte`` module. 
+LTE are found in the ``lte`` module.
+
+The ``psc`` module now includes an extensive model of mission-critical
+push-to-talk (MCPTT) for use in off-network scenarios, an energy consumption
+model for flying a (single/multi)rotor unmanned aerial vehicle (UAV), and
+a UDP-based application to generate many-to-many traffic models in a scenario.  
 
 There is no support for legacy public safety communications such as land
-mobile radio system (LMRS), and only IPv4 (and not IPv6) is presently
-supported.
+mobile radio system (LMRS).  While IPv4 has been the main focus of development,
+some of the LTE sidelink example programs now feature an option to use IPv6.
 
 Future extensions to this module or other related modules such as LTE are planned for the following features:
 
-1) mission-critical push-to-talk (MCPTT) and possibly other public safety applications
+1) support for on-network modes of MCPTT, and possibly other public safety applications
 2) UE-to-network relay
 3) public safety scenario support code and example programs
 
