@@ -59,20 +59,39 @@ namespace psc {
 class UavMobilityEnergyModel: public DeviceEnergyModel
 {
  public:
- /**
-  * Detected mobility state from the attached MobilityModel
-  */
+  /**
+   * Detected mobility state from the attached MobilityModel
+   */
   enum State:int { ASCEND, DESCEND, HOVER, MOVE, STOP };
 
-/**
- * \brief Signature for simple Callbacks of this class
- * 
- * \param model The model in the state that caused the callback
- */
+  /**
+   * \brief Signature for simple Callbacks of this class
+   * 
+   * \param model The model in the state that caused the callback
+   */
   typedef void (*BasicCallback)(Ptr<const UavMobilityEnergyModel> model);
+  /**
+   * \brief Signature for state change callback
+   * 
+   * \param oldState the old state
+   * \param newState the new state
+   * \param velocity the new velocity
+   */
   typedef void (*StateChangedCallback)(State oldState, State newState, Vector velocity);
+  /**
+   * \brief Signature for current change callback
+   * 
+   * \param oldCurrent the old current
+   * \param newCurrent the new current
+   * \param velocity the new velocity
+   */
   typedef void (*CurrentChangedCallback) (double oldCurrent, double newCurrent, Vector velocity);
 
+  /**
+   * \brief Get the class TypeId
+   * 
+   * \return the TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -128,6 +147,7 @@ class UavMobilityEnergyModel: public DeviceEnergyModel
 
   /**
    * Gets the current movement state of the model
+   * \return the movement state
    */
   State GetState (void) const;
 
@@ -268,24 +288,25 @@ class UavMobilityEnergyModel: public DeviceEnergyModel
   void ConnectMobility (Ptr<Node> node);
 
  private:
-  Time m_lastUpdateTime {Seconds (0)};
-  Ptr<MobilityModel> m_mobility;
-  Ptr<EnergySource> m_source;
-  State m_state {State::STOP};
-  double m_current {0};
-  TracedValue<double> m_totalEnergyConsumption {0};
-  double m_ascendEnergyConversionFactor;
-  double m_descendEnergyConversionFactor;
-  double m_moveEnergyConversionFactor;
-  double m_hoverEnergyCurrent;
+  Time m_lastUpdateTime {Seconds (0)}; //!< tracks last energy update time 
+  Ptr<MobilityModel> m_mobility; //!< Ptr to the mobility model
+  Ptr<EnergySource> m_source; //!< Ptr to the energy source
+  State m_state {State::STOP}; //!< The state of the model
+  double m_current {0};  //!< The current in amperes
+  TracedValue<double> m_totalEnergyConsumption {0};  //!< Trace of energy consumption
+  double m_ascendEnergyConversionFactor;  //!< variable implementing AscendEnergyConversionFactor attribute
+  double m_descendEnergyConversionFactor; //!< variable implementing DescendEnergyConversionFactor attribute
+  double m_moveEnergyConversionFactor; //!< variable implementing MoveEnergyConversionFactor attribute
+  double m_hoverEnergyCurrent; //!< variable implementing HoverCurrent attribute
 
-  TracedCallback<State, State, Vector> m_stateChangedTrace;
-  TracedCallback<double, double, Vector> m_currentChangedTrace;
-  TracedCallback<Ptr<const UavMobilityEnergyModel>> m_energyDepletionTrace;
-  TracedCallback<Ptr<const UavMobilityEnergyModel>> m_energyRechargedTrace;
+  TracedCallback<State, State, Vector> m_stateChangedTrace; //!< Variable storing state change callback
+  TracedCallback<double, double, Vector> m_currentChangedTrace; //!< Variable storing current change callback
+  TracedCallback<Ptr<const UavMobilityEnergyModel>> m_energyDepletionTrace; //!< variable storing energy depletion trace callback
+  TracedCallback<Ptr<const UavMobilityEnergyModel>> m_energyRechargedTrace; //!< variable storing energy recharged trace callback
 
   /**
    * Gets the current draw of this model in amperes
+   * \return the current draw in amperes
    */
   double DoGetCurrentA (void) const override;
 
@@ -302,6 +323,7 @@ class UavMobilityEnergyModel: public DeviceEnergyModel
    * Handle if the Node changes Velocity
    *
    * Use to set our energy consumption mode
+   * \param model pointer to the mobility model
    */
   void CourseChangeCallback (Ptr<const MobilityModel> model);
 

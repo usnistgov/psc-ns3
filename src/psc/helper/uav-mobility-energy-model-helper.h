@@ -245,9 +245,9 @@ public:
 
 
 private:
-  ObjectFactory m_energyModel;
-  ObjectFactory m_energySource;
-  ObjectFactory m_mobilityModel;
+  ObjectFactory m_energyModel; //!< object factory for creating energy model
+  ObjectFactory m_energySource; //!< object factory for creating energy source
+  ObjectFactory m_mobilityModel; //!< object factory for creating mobility model
 
   /**
    * Checks if a MobilityModel is installed on node

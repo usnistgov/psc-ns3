@@ -13,3 +13,6 @@ Public Safety Communications
 
    psc-design
    udp-group-echo
+   uav-mobility-energy
+   mcptt
+   psc-references

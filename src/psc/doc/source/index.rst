@@ -24,4 +24,5 @@ This is the stand-alone version of the ns-3 PSC module documentation.
    psc-design
    udp-group-echo
    uav-mobility-energy
+   mcptt
    psc-references

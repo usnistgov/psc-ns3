@@ -29,6 +29,9 @@ SOURCES = \
 	source/psc.rst \
 	$(SRC)/psc/doc/source/psc-design.rst \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
+	$(SRC)/psc/doc/source/uav-mobility-energy.rst \
+	$(SRC)/psc/doc/source/mcptt.rst \
+	$(SRC)/psc/doc/source/psc-references.rst \
 
 # list all model library figure files that need to be copied to 
 # $SOURCETEMP/figures.  For each figure to be included in all

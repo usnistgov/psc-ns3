@@ -55,8 +55,10 @@ The following individuals are authors of the public safety communications
 extensions:
 
 * Aziza Ben-Mosbah (aziza.ben.mosbah@gmail.com)
+* Evan Black (evan.black@nist.gov)
 * Fernando J. Cintron (fernando.cintron@nist.gov)
 * Samantha Gamboa (samantha.gamboa@nist.gov)
+* Wesley Garey (wesley.garey@nist.gov)
 * Richard Rouil (richard.rouil@nist.gov)
 
 This release was ported from an earlier release, based on ns-3.22, to the

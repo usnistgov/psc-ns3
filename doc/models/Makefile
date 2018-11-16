@@ -64,6 +64,8 @@ SOURCES = \
 	$(SRC)/psc/doc/source/psc.rst \
 	$(SRC)/psc/doc/source/psc-design.rst \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
+	$(SRC)/psc/doc/source/uav-mobility-energy.rst \
+	$(SRC)/psc/doc/source/mcptt.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \

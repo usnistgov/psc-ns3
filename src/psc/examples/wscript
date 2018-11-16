@@ -11,3 +11,7 @@ def build(bld):
     obj = bld.create_ns3_program('uav-mobility-energy-example', 
                                  ['core', 'energy', 'mobility', 'psc'])
     obj.source = 'uav-mobility-energy-example.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-wifi-adhoc',
+                                 ['psc', 'wifi'])
+    obj.source = 'example-mcptt-wifi-adhoc.cc'
