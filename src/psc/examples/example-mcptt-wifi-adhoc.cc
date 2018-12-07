@@ -53,14 +53,9 @@ SimTimeUpdate (void)
 
 int main (int argc, char *argv[])
 {
-  // Disable fragmentation
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
-
   uint32_t appCount;
   uint32_t groupCount = 1;
   uint32_t usersPerGroup = 2;
-  TypeId appTid = McpttPttApp::GetTypeId ();
   DataRate dataRate = DataRate ("24kb/s");
   TypeId floorTid = McpttFloorMachine::GetTypeId ();
   double maxX = 5.0;
@@ -158,42 +153,26 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Creating applications...");
   ApplicationContainer clientApps;
   McpttHelper mcpttHelper;
-  mcpttHelper.SetAppTid (appTid);
-  mcpttHelper.SetAppAttribute ("PeerAddress", Ipv4AddressValue (peerAddress));
-  mcpttHelper.SetAppAttribute ("PushOnStart", BooleanValue (true));
-  mcpttHelper.SetMediaSrcAttribute ("Bytes", UintegerValue (msgSize));
-  mcpttHelper.SetMediaSrcAttribute ("DataRate", DataRateValue (dataRate));
-  mcpttHelper.SetPusherAttribute ("Rnd", PointerValue (CreateObjectWithAttributes<ExponentialRandomVariable> ("Mean", DoubleValue(onOffMean))));
+  mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+                         "PeerAddress", Ipv4AddressValue (peerAddress),
+                         "PushOnStart", BooleanValue (true));
+  mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+                         "Bytes", UintegerValue (msgSize),
+                         "DataRate", DataRateValue (dataRate));
+  mcpttHelper.SetPusher ("ns3::McpttPusher",
+                         "Automatic", BooleanValue (true));
+  mcpttHelper.SetPusherPushVariable ("ns3::NormalRandomVariable",
+                         "Mean", DoubleValue (onOffMean),
+                         "Variance", DoubleValue (2.0));
+  mcpttHelper.SetPusherReleaseVariable ("ns3::NormalRandomVariable",
+                         "Mean", DoubleValue (onOffMean),
+                         "Variance", DoubleValue (2.0));
 
   clientApps.Add (mcpttHelper.Install (nodes));
   clientApps.Start (start);
   clientApps.Stop (stop);
 
-  uint32_t groupId = 1;
-  ObjectFactory callFac;
-  ObjectFactory floorFac;
-  Ptr<RandomVariableStream> seqRnd = CreateObject<SequentialRandomVariable> ();
-  seqRnd->SetAttribute ("Min", DoubleValue (1.0));
-  for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
-    {
-      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp, Application> (clientApps.Get (idx));
-
-      callFac.SetTypeId (McpttCallMachineGrpBasic::GetTypeId ());
-      callFac.Set ("GroupId", UintegerValue (groupId));
-
-      floorFac.SetTypeId (McpttFloorMachineBasic::GetTypeId ());
-
-      pttApp->CreateCall (callFac, floorFac);
-      pttApp->SelectCall (0);
-      Ptr<McpttCall> call = pttApp->GetSelectedCall();
-      Ptr<McpttCallMachineGrpBasic> callMachine = DynamicCast<McpttCallMachineGrpBasic, McpttCallMachine> (call->GetCallMachine ());
-      callMachine->SetRndCallId (seqRnd);
- 
-      if ((idx + 1) % usersPerGroup == 0)
-        {
-          groupId += 1;
-        }
-    }
+  mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttHelper.EnableMsgTraces ();

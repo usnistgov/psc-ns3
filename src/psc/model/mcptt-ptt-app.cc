@@ -453,6 +453,12 @@ McpttPttApp::SelectCall (uint32_t callIdx)
 }
 
 void
+McpttPttApp::SelectLastCall (void)
+{
+  SelectCall (GetCalls ().size () - 1);
+}
+
+void
 McpttPttApp::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);

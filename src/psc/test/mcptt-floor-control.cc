@@ -2149,7 +2149,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueBQueue->SetAttribute ("Capacity", UintegerValue (1));
 
   ueAPusher->SchedulePush (Seconds (2.04179));
-  ueBPusher->SetAttribute ("Rnd", PointerValue (CreateObjectWithAttributes<ConstantRandomVariable> ("Constant", DoubleValue(0.90))));
+  ueBPusher->SetAttribute ("ReleaseVariable", StringValue ("ns3::ConstantRandomVariable[Constant=0.90]"));
 
   ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("25b/s")));
   ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
@@ -3594,6 +3594,8 @@ McpttFloorReleaseAfterReq::Configure (void)
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
+  Ptr<McpttMediaSrc> ueBMediaSrc = ueBPttApp->GetMediaSrc ();
+
   Ptr<McpttPusher> ueAPttAppPusher = ueAPttApp->GetPusher ();
   Ptr<McpttPusher> ueBPttAppPusher = ueBPttApp->GetPusher ();
 
@@ -3609,6 +3611,9 @@ McpttFloorReleaseAfterReq::Configure (void)
   uint32_t ueAId = ueAPttApp->GetUserId ();
 
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue ();
+
+  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("8b/s")));
+  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueAMachine->SetStartState (McpttFloorMachineBasicStatePendReq::GetInstance ());

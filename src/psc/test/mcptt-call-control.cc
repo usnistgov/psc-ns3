@@ -2423,7 +2423,7 @@ McpttCallRelease::Configure (void)
   ueBMachine->SetCallId (callId);
   ueBMachine->SetGrpId (grpId);
   ueBMachine->SetOrigId (origId);
-  ueBMachine->SetRefInt (900);
+  ueBMachine->SetRefInt (1000);
   ueBMachine->SetSdp (sdp);
   ueBMachine->SetStartTime (startTime);
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());

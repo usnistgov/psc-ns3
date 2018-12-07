@@ -69,11 +69,18 @@ public:
   * \brief Creates an instance of the McpttHelper class.
   */
  McpttHelper (void);
-  /**
+ /**
   * \brief Destructor of the McpttHelper class.
   */
  virtual ~McpttHelper (void);
-/**
+ /**
+  * Configures and selects a call for a set of MCPTT applications.
+  * \param apps The application container with the set of apps to configure.
+  * \param usersPerGroup The number of users to put in each group.
+  * \param baseGroupId The starting group ID.
+  */
+ virtual void ConfigureBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
+ /**
   * \brief Install an ns3::McpttPttApp on each node of the input container.
   *
   * \param c NodeContainer of the set of nodes on which an McpttPttApp 
@@ -104,38 +111,150 @@ public:
   */
  virtual void EnableStateMachineTraces (void);
  /**
-  * Sets the attribute of the created MCPTT applications.
-  * \param name The name of the attribute.
-  * \param value The value of the attribute.
+  * Configures the MCPTT PTT app.
+  * \param name the name of the model to set
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  * \param n4 the name of the attribute to set
+  * \param v4 the value of the attribute to set
+  * \param n5 the name of the attribute to set
+  * \param v5 the value of the attribute to set
+  * \param n6 the name of the attribute to set
+  * \param v6 the value of the attribute to set
+  * \param n7 the name of the attribute to set
+  * \param v7 the value of the attribute to set
   */
- virtual void SetAppAttribute (const std::string& name, const AttributeValue& value);
+ virtual void SetPttApp (std::string tid,
+                         std::string n0 = "", const AttributeValue& v0 = EmptyAttributeValue (),
+                         std::string n1 = "", const AttributeValue& v1 = EmptyAttributeValue (),
+                         std::string n2 = "", const AttributeValue& v2 = EmptyAttributeValue (),
+                         std::string n3 = "", const AttributeValue& v3 = EmptyAttributeValue (),
+                         std::string n4 = "", const AttributeValue& v4 = EmptyAttributeValue (),
+                         std::string n5 = "", const AttributeValue& v5 = EmptyAttributeValue (),
+                         std::string n6 = "", const AttributeValue& v6 = EmptyAttributeValue (),
+                         std::string n7 = "", const AttributeValue& v7 = EmptyAttributeValue ());
  /**
-  * Sets the type ID of the MCPTT applicaton to create.
-  * \param appTid The type ID of the MCPTT application.
+  * Configures the media source model.
+  * \param name the name of the model to set
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  * \param n4 the name of the attribute to set
+  * \param v4 the value of the attribute to set
+  * \param n5 the name of the attribute to set
+  * \param v5 the value of the attribute to set
+  * \param n6 the name of the attribute to set
+  * \param v6 the value of the attribute to set
+  * \param n7 the name of the attribute to set
+  * \param v7 the value of the attribute to set
   */
- virtual void SetAppTid (const TypeId& appTid);
+ virtual void SetMediaSrc (std::string tid,
+                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
-  * Sets the attribute of the pushers that will be created.
-  * \param name The name of the attribute.
-  * \param value The value of the attribute.
+  * Configures the pusher model.
+  * \param name the name of the model to set
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  * \param n4 the name of the attribute to set
+  * \param v4 the value of the attribute to set
+  * \param n5 the name of the attribute to set
+  * \param v5 the value of the attribute to set
+  * \param n6 the name of the attribute to set
+  * \param v6 the value of the attribute to set
+  * \param n7 the name of the attribute to set
+  * \param v7 the value of the attribute to set
   */
- virtual void SetPusherAttribute (const std::string& name, const AttributeValue& value);
+ virtual void SetPusher (std::string tid,
+                         std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                         std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                         std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                         std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                         std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                         std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                         std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                         std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
-  * Sets the type ID of the pusher to create.
-  * \param pusherTid The typeId.
+  * Configures the MCPTT pusher's push variable.
+  * \param name the name of the model to set
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  * \param n4 the name of the attribute to set
+  * \param v4 the value of the attribute to set
+  * \param n5 the name of the attribute to set
+  * \param v5 the value of the attribute to set
+  * \param n6 the name of the attribute to set
+  * \param v6 the value of the attribute to set
+  * \param n7 the name of the attribute to set
+  * \param v7 the value of the attribute to set
   */
- virtual void SetPusherTid (const TypeId& pusherTid);
+ virtual void SetPusherPushVariable (std::string tid,
+                                     std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                                     std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                                     std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                                     std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                                     std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                                     std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                                     std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                                     std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
-  * Sets the attribute of the requesters that will be created.
-  * \param name The name of the attribute.
-  * \param value The value of the attribute.
+  * Configures the MCPTT pusher's release variable.
+  * \param name the name of the model to set
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  * \param n4 the name of the attribute to set
+  * \param v4 the value of the attribute to set
+  * \param n5 the name of the attribute to set
+  * \param v5 the value of the attribute to set
+  * \param n6 the name of the attribute to set
+  * \param v6 the value of the attribute to set
+  * \param n7 the name of the attribute to set
+  * \param v7 the value of the attribute to set
   */
- virtual void SetMediaSrcAttribute (const std::string& name, const AttributeValue& value);
- /**
-  * Sets the type ID of the requester to create.
-  * \param requesterTid The type ID.
-  */
- virtual void SetMediaSrcTid (const TypeId& requesterTid);
+ virtual void SetPusherReleaseVariable (std::string tid,
+                                        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                                        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                                        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                                        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                                        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                                        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                                        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                                        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 protected:
  /**
   * \brief Install an ns3::McpttPttApp on the node.
@@ -145,8 +264,12 @@ protected:
   */
  virtual Ptr<Application> InstallPriv (const Ptr<Node>& node);
 private:
+ bool m_pushConfigured; //!< Indicates if the pusher's push variable was explicity configured.
+ bool m_releaseConfigured; //!< Indicates if the pusher's release variable was explicity configured.
  ObjectFactory m_appFac; //!< The MCPTT application object factory.
  ObjectFactory m_pusherFac; //!< The MCPTT pusher object factory.
+ ObjectFactory m_pusherPushFac; //!< The MCPTT pusher's push variable object factory.
+ ObjectFactory m_pusherReleaseFac; //!< The MCPTT pusher's relase variable object factory.
  ObjectFactory m_mediaSrcFac; //!< The MCPTT send requester object factory.
  Ptr<McpttMsgStats> m_msgTracer; //!< The object used to trace MCPTT messages.
  Ptr<McpttStateMachineStats> m_stateMachineTracer; //!< The object used to trace MCPTT state machine traces.

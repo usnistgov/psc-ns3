@@ -134,7 +134,9 @@ private:
   * The flag that indicates if the button should automatically be pushed/released.
   */
  bool m_automatic;
-  /* NOTE:
+ Ptr<RandomVariableStream> m_pushVariable; //!< The random variable used for automatic pushes.
+ Ptr<RandomVariableStream> m_releaseVariable; //!< The random variable used for automatic releases.
+ /* NOTE:
   * Using a raw pointer here because this type represents
   * an interface that does not inherit from any of the ns3
   * base classes. Therefore, this class should not allocate
@@ -146,7 +148,6 @@ private:
  McpttPushable* m_pushable; //!< A pointer to the pushable.
  TracedValue <bool> m_pushing; //!< A flag used to indicate if the pusher is in the "pushing" state.
  std::set<EventId> m_pushReleaseEvents;   //!< EventIds of push/release events
- Ptr<RandomVariableStream> m_rnd; //!< The random variable stream used for random numbers.
 public:
  /**
   * \brief Gets the object with the button to push.

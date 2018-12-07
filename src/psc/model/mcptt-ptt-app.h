@@ -179,6 +179,10 @@ public:
   */
  virtual void SelectCall (uint32_t callIdx);
  /**
+  * Selects the last call in the list of calls.
+  */
+ virtual void SelectLastCall (void);
+ /**
   * Sends a call control message.
   * \param msg The message to send.
   */

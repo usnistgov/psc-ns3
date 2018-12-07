@@ -110,7 +110,7 @@ McpttTestCaseConfig::Configure (void)
 
   ApplicationContainer clientApps;
   McpttHelper mcpttHelper;
-  mcpttHelper.SetAppTid (appTid);
+  mcpttHelper.SetPttApp (appTid.GetName ());
 
   clientApps.Add (mcpttHelper.Install (nodes));
   

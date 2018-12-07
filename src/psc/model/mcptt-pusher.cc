@@ -60,9 +60,13 @@ McpttPusher::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttPusher::m_automatic),
                    MakeBooleanChecker ())
-    .AddAttribute ("Rnd", "The random variable used to automatically schedule events.",
-                   PointerValue (CreateObjectWithAttributes<NormalRandomVariable> ("Mean", DoubleValue(5.0), "Variance", DoubleValue (2.0))),
-                   MakePointerAccessor (&McpttPusher::m_rnd),
+    .AddAttribute ("PushVariable", "The variable used for automatic pushes.",
+                   StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
+                   MakePointerAccessor (&McpttPusher::m_pushVariable),
+                   MakePointerChecker<RandomVariableStream> ())
+    .AddAttribute ("ReleaseVariable", "The variable used for automatic releases.",
+                   StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
+                   MakePointerAccessor (&McpttPusher::m_releaseVariable),
                    MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("PushingState", "Trace state changes of 'pushing' state",
                      MakeTraceSourceAccessor (&McpttPusher::m_pushing),
@@ -140,7 +144,7 @@ void
 McpttPusher::SchedulePush (void)
 {
   NS_LOG_FUNCTION (this);
-  double rv = m_rnd->GetValue ();
+  double rv = m_pushVariable->GetValue ();
   if (rv < 0)
     {
       rv = 0;
@@ -162,7 +166,7 @@ void
 McpttPusher::ScheduleRelease (void)
 {
   NS_LOG_FUNCTION (this);
-  double rv = m_rnd->GetValue ();
+  double rv = m_releaseVariable->GetValue ();
   if (rv < 0)
     {
       rv = 0;
@@ -212,7 +216,8 @@ McpttPusher::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   SetPushable (0);
-  m_rnd = 0;
+  m_pushVariable = 0;
+  m_releaseVariable = 0;
   Object::DoDispose ();
 }
 

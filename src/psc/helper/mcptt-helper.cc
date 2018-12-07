@@ -106,23 +106,45 @@ McpttHelper::GetNextUserId (void)
 }
 
 McpttHelper::McpttHelper (void)
-  : m_appFac (ObjectFactory ()),
-    m_pusherFac (ObjectFactory ()),
-    m_mediaSrcFac (ObjectFactory ()),
+  : m_pushConfigured (false),
+    m_releaseConfigured (false),
     m_msgTracer (0),
     m_stateMachineTracer (0)
 { 
   m_appFac.SetTypeId (McpttPttApp::GetTypeId ());
   m_pusherFac.SetTypeId (McpttPusher::GetTypeId ());
   m_mediaSrcFac.SetTypeId (McpttMediaSrc::GetTypeId ());
-
-  m_pusherFac.Set ("Rnd", PointerValue (CreateObjectWithAttributes<NormalRandomVariable> ("Mean", DoubleValue(5.0), "Variance", DoubleValue (2.0))));
-  m_mediaSrcFac.Set ("Bytes", UintegerValue (1));
-  m_mediaSrcFac.Set ("DataRate", DataRateValue (DataRate ("8b/s")));
 }
 
 McpttHelper::~McpttHelper ()
 { }
+
+void
+McpttHelper::ConfigureBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId)
+{
+  uint32_t groupId = baseGroupId;
+
+  ObjectFactory callFac;
+  callFac.SetTypeId ("ns3::McpttCallMachineGrpBasic");
+
+  ObjectFactory floorFac;
+  floorFac.SetTypeId ("ns3::McpttFloorMachineBasic");
+
+  for (uint32_t idx = 0; idx < apps.GetN (); idx++)
+    {
+      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp, Application> (apps.Get (idx));
+
+      callFac.Set ("GroupId", UintegerValue (groupId));
+
+      pttApp->CreateCall (callFac, floorFac);
+      pttApp->SelectLastCall ();
+ 
+      if ((idx + 1) % usersPerGroup == 0)
+        {
+          groupId += 1;
+        }
+    }
+}
 
 ApplicationContainer
 McpttHelper::Install (const Ptr<Node>& node)
@@ -175,51 +197,125 @@ McpttHelper::EnableStateMachineTraces (void)
 }
 
 void
-McpttHelper::SetAppAttribute (const std::string& name, const AttributeValue& value)
+McpttHelper::SetPttApp (std::string name,
+                        std::string n0, const AttributeValue& v0,
+                        std::string n1, const AttributeValue& v1,
+                        std::string n2, const AttributeValue& v2,
+                        std::string n3, const AttributeValue& v3,
+                        std::string n4, const AttributeValue& v4,
+                        std::string n5, const AttributeValue& v5,
+                        std::string n6, const AttributeValue& v6,
+                        std::string n7, const AttributeValue& v7)
 {
-  m_appFac.Set (name, value);
+  ObjectFactory factory;
+  factory.SetTypeId (name);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  m_appFac = factory;
 }
 
 void
-McpttHelper::SetAppTid (const TypeId& appTid)
+McpttHelper::SetMediaSrc (std::string name,
+                          std::string n0, const AttributeValue& v0,
+                          std::string n1, const AttributeValue& v1,
+                          std::string n2, const AttributeValue& v2,
+                          std::string n3, const AttributeValue& v3,
+                          std::string n4, const AttributeValue& v4,
+                          std::string n5, const AttributeValue& v5,
+                          std::string n6, const AttributeValue& v6,
+                          std::string n7, const AttributeValue& v7)
 {
-  TypeId pttAppTid = McpttPttApp::GetTypeId ();
-
-  NS_ASSERT_MSG ((appTid == pttAppTid || appTid.IsChildOf (pttAppTid)), "The given type ID is not that of a " << pttAppTid.GetName () << ".");
-
-  m_appFac.SetTypeId (appTid);
+  ObjectFactory factory;
+  factory.SetTypeId (name);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  m_mediaSrcFac = factory;
 }
 
 void
-McpttHelper::SetPusherAttribute (const std::string& name, const AttributeValue& value)
+McpttHelper::SetPusher (std::string name,
+                        std::string n0, const AttributeValue& v0,
+                        std::string n1, const AttributeValue& v1,
+                        std::string n2, const AttributeValue& v2,
+                        std::string n3, const AttributeValue& v3,
+                        std::string n4, const AttributeValue& v4,
+                        std::string n5, const AttributeValue& v5,
+                        std::string n6, const AttributeValue& v6,
+                        std::string n7, const AttributeValue& v7)
 {
-  m_pusherFac.Set (name, value);
+  ObjectFactory factory;
+  factory.SetTypeId (name);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  m_pusherFac = factory;
 }
 
 void
-McpttHelper::SetPusherTid (const TypeId& pusherTid)
+McpttHelper::SetPusherPushVariable (std::string name,
+                                    std::string n0, const AttributeValue& v0,
+                                    std::string n1, const AttributeValue& v1,
+                                    std::string n2, const AttributeValue& v2,
+                                    std::string n3, const AttributeValue& v3,
+                                    std::string n4, const AttributeValue& v4,
+                                    std::string n5, const AttributeValue& v5,
+                                    std::string n6, const AttributeValue& v6,
+                                    std::string n7, const AttributeValue& v7)
 {
-  TypeId mcpttPusherTid = McpttPusher::GetTypeId ();
-
-  NS_ASSERT_MSG ((pusherTid == mcpttPusherTid || pusherTid.IsChildOf (mcpttPusherTid)), "The given type ID is not that of a " << mcpttPusherTid.GetName () << ".");
-
-  m_pusherFac.SetTypeId (pusherTid);
+  m_pushConfigured = true;
+  ObjectFactory factory;
+  factory.SetTypeId (name);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  m_pusherPushFac = factory;
 }
 
 void
-McpttHelper::SetMediaSrcAttribute (const std::string& name, const AttributeValue& value)
+McpttHelper::SetPusherReleaseVariable (std::string name,
+                                       std::string n0, const AttributeValue& v0,
+                                       std::string n1, const AttributeValue& v1,
+                                       std::string n2, const AttributeValue& v2,
+                                       std::string n3, const AttributeValue& v3,
+                                       std::string n4, const AttributeValue& v4,
+                                       std::string n5, const AttributeValue& v5,
+                                       std::string n6, const AttributeValue& v6,
+                                       std::string n7, const AttributeValue& v7)
 {
-  m_mediaSrcFac.Set (name, value);
-}
-
-void
-McpttHelper::SetMediaSrcTid (const TypeId& requesterTid)
-{
-  TypeId mcpttMediaSrcTid = McpttMediaSrc::GetTypeId ();
-
-  NS_ASSERT_MSG ((mcpttMediaSrcTid == requesterTid || requesterTid.IsChildOf (mcpttMediaSrcTid)), "The given type ID is not that of a " << mcpttMediaSrcTid.GetName () << ".");
-
-  m_mediaSrcFac.SetTypeId (requesterTid);
+  m_releaseConfigured = true;
+  ObjectFactory factory;
+  factory.SetTypeId (name);
+  factory.Set (n0, v0);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  m_pusherReleaseFac = factory;
 }
 
 Ptr<Application>
@@ -230,6 +326,16 @@ McpttHelper::InstallPriv (const Ptr<Node>& node)
   Ptr<McpttPttApp> app = m_appFac.Create<McpttPttApp> ();
   Ptr<McpttMediaSrc> requester = m_mediaSrcFac.Create<McpttMediaSrc> ();
   Ptr<McpttPusher> pusher = m_pusherFac.Create<McpttPusher> ();
+
+  if (m_pushConfigured == true)
+    {
+      pusher->SetAttribute ("PushVariable", PointerValue (m_pusherPushFac.Create<RandomVariableStream> ()));
+    }
+
+  if (m_releaseConfigured == true)
+    {
+      pusher->SetAttribute ("ReleaseVariable", PointerValue (m_pusherReleaseFac.Create<RandomVariableStream> ()));
+    }
 
   app->SetUserId (userId);
   app->SetMediaSrc (requester);
