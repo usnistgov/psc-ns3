@@ -37,7 +37,7 @@ namespace ns3 {
 /**
  * \ingroup mcptt
  *
- * This interface proveds an API for the implementation of objects that
+ * This interface provides an API for the implementation of objects that
  * handle push and release events. Intended to be paired with an
  * ns3::McpttPusher that makes push and release requests.
  */

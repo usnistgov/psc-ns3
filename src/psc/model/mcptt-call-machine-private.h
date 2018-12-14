@@ -167,12 +167,12 @@ public:
  virtual void Receive (const McpttMediaMsg& msg);
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL ACCEPT ACK" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAcceptAck (const McpttCallMsgPrivateAcceptAck& msg);
  /**
@@ -197,32 +197,32 @@ public:
  virtual void ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg);
  /**
   * Reception of a media message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveMedia (const McpttMediaMsg& msg);
  /**
   * Reception of a "PRIVATE CALL REJECT" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReject (const McpttCallMsgPrivateReject& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (const McpttCallMsgPrivateRelease& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE ACK" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReleaseAck (const McpttCallMsgPrivateReleaseAck& msg);
  /**
   * Reception of a "PRIVATE CALL RINGING" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRinging (const McpttCallMsgPrivateRinging& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (const McpttCallMsgPrivateSetupReq& msg);
  /**

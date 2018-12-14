@@ -222,7 +222,7 @@ protected:
  virtual void NewCallCb (uint16_t callId);
  /**
   * Receives a call control packet.
-  * \param pkt The call control packet that was recieved.
+  * \param pkt The call control packet that was received.
   */
  virtual void ReceiveCallPkt (Ptr<Packet>  pkt);
  /**

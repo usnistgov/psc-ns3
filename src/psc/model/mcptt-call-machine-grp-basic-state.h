@@ -59,11 +59,11 @@ class McpttCallMachineGrpBasic;
  *    message and is waiting for a "GROUP CALL ANNOUNCEMENT" message
  *
  * S3: part of ongoing call
- *  - This state exists for UE, when the UE is part of an going group call
+ *  - This state exists for UE, when the UE is part of an ongoing group call
  *
  * S4: pending user action without confirm indication
  *  - This state exists for UE, when the UE has presented a notification to
- *    the MCPTT user for the recieved "GROUP CALL ANNOUNCEMENT" message, is
+ *    the MCPTT user for the received "GROUP CALL ANNOUNCEMENT" message, is
  *    waiting for a response and is not expected to send confirm indication
  *
  * S5: pending user action with confirm indication
@@ -78,7 +78,7 @@ class McpttCallMachineGrpBasic;
  *
  * S7: waiting for call anouncement after call release
  *  - This state exists for UE, when the group call was released, "GROUP CALL
- *    ANNOUNCEMENT" message was neither sent nor recieved and "GROUP CALL
+ *    ANNOUNCEMENT" message was neither sent nor received and "GROUP CALL
  *    PROBE" was sent
  */
 class McpttCallMachineGrpBasicState : public SimpleRefCount<McpttCallMachineGrpBasicState>
@@ -148,7 +148,7 @@ public:
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
  /**
@@ -219,7 +219,7 @@ public:
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
 };
@@ -267,7 +267,7 @@ public:
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
  /**
@@ -333,7 +333,7 @@ public:
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
  /**
@@ -511,7 +511,7 @@ public:
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
 };
@@ -560,7 +560,7 @@ public:
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
 };

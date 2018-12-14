@@ -112,37 +112,37 @@ public:
  virtual bool IsStarted (void) const;
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL ACCEPT ACK" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAcceptAck (const McpttCallMsgPrivateAcceptAck& msg);
  /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancel (const McpttCallMsgPrivateEmergCancel& msg);
  /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL ACK" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancelAck (const McpttCallMsgPrivateEmergCancelAck& msg);
  /**
   * Reception of a "PRIVATE CALL REJECT" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReject (const McpttCallMsgPrivateReject& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (const McpttCallMsgPrivateRelease& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (const McpttCallMsgPrivateSetupReq& msg);
  /**

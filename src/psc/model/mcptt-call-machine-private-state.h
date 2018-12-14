@@ -139,49 +139,49 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL ACCEPT ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAcceptAck (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateAcceptAck& msg);
  /**
   * Reception of a media message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveMedia (McpttCallMachinePrivate& machine, const McpttMediaMsg& msg);
  /**
   * Reception of a "PRIVATE CALL REJECT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReject (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateReject& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateRelease& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReleaseAck (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateReleaseAck& msg);
  /**
   * Reception of a "PRIVATE CALL RINGING" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRinging (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateRinging& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
  /**
@@ -247,7 +247,7 @@ public:
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
 };
@@ -296,13 +296,13 @@ public:
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateRelease& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
 };
@@ -351,19 +351,19 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL REJECT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReject (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateReject& msg);
  /**
   * Reception of a "PRIVATE CALL RINGING" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRinging (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateRinging& msg);
  /**
@@ -412,7 +412,7 @@ public:
  /**
   * Reception of a "PRIVATE CALL RELEASE ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReleaseAck (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateReleaseAck& msg);
 };
@@ -472,7 +472,7 @@ public:
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateRelease& msg);
  /**
@@ -531,19 +531,19 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAcceptAck (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateAcceptAck& msg);
  /**
   * Reception of a media message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveMedia (McpttCallMachinePrivate& machine, const McpttMediaMsg& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (McpttCallMachinePrivate& machine, const McpttCallMsgPrivateRelease& msg);
  /**

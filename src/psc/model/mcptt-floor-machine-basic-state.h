@@ -75,7 +75,7 @@ class McpttFloorMachineBasic;
  *    request" message.
  *
  * 'O: pending granted'
- *  - In this state the MCPTT client is waiting for another cline to take
+ *  - In this state the MCPTT client is waiting for another client to take
  *    over the role of floor controller.
  *
  * 'O: queued'
@@ -169,7 +169,7 @@ public:
   */
  virtual void ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePosReq& msg) const;
  /**
-  * Recieves a floor queue position info message.
+  * Receives a floor queue position info message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
@@ -187,7 +187,7 @@ public:
   */
  virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
-  * Recieves a floor taken message.
+  * Receives a floor taken message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
@@ -294,7 +294,7 @@ public:
   */
  virtual void ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const;
  /**
-  * Recieves a floor taken message.
+  * Receives a floor taken message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
@@ -584,7 +584,7 @@ public:
   */
  virtual void ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const;
  /**
-  * Recieves a floor queue position info message.
+  * Receives a floor queue position info message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
@@ -596,7 +596,7 @@ public:
   */
  virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
-  * Recieves a floor taken message.
+  * Receives a floor taken message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
@@ -676,7 +676,7 @@ public:
   */
  virtual void ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const;
  /**
-  * Recieves a floor queue position info message.
+  * Receives a floor queue position info message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
@@ -747,7 +747,7 @@ public:
   */
  virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
-  * Recieves a floor taken message.
+  * Receives a floor taken message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */

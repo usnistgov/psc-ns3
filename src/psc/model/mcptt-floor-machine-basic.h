@@ -173,7 +173,7 @@ public:
   */
  virtual void ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePosReq& msg);
  /**
-  * Recieves a floor queue position info message.
+  * Receives a floor queue position info message.
   * \param msg The received message.
   */
  virtual void ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueueInfo& msg);
@@ -188,7 +188,7 @@ public:
   */
  virtual void ReceiveFloorReq (const McpttFloorMsgRequest& msg);
  /**
-  * Recieves a floor taken message.
+  * Receives a floor taken message.
   * \param msg The received message.
   */
  virtual void ReceiveFloorTaken (const McpttFloorMsgTaken& msg);

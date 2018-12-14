@@ -100,43 +100,43 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL ACCEPT ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAcceptAck (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateAcceptAck& msg);
  /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancel (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateEmergCancel& msg);
  /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancelAck (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateEmergCancelAck& msg);
  /**
   * Reception of a "PRIVATE CALL REJECT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReject (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateReject& msg);
  /**
   * Reception of a "PRIVATE CALL RELEASE" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveRelease (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateRelease& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
  /**
@@ -203,19 +203,19 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL ACCEPT ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAcceptAck (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateAcceptAck& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
 };
@@ -259,25 +259,25 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateAccept& msg);
  /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancel (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateEmergCancel& msg);
  /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL ACK" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancelAck (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateEmergCancelAck& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
  /**
@@ -342,25 +342,25 @@ public:
  /**
   * Reception of a "PRIVATE CALL ACCEPT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveAccept (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateAccept& msg);
   /**
   * Reception of a "PRIVATE CALL EMERGENCY CANCEL" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveEmergencyCancel (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateEmergCancel& msg);
 /**
   * Reception of a "PRIVATE CALL REJECT" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveReject (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateReject& msg);
  /**
   * Reception of a "PRIVATE CALL SETUP REQUEST" message.
   * \param machine The state machine that the action is for.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveSetupRequest (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg);
  /**

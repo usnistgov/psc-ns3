@@ -231,7 +231,7 @@ public:
  virtual void ReceiveGrpCallAccept (const McpttCallMsgGrpAccept& msg);
  /**
   * Reception of a "GROUP CALL ANNOUNCEMENT" message.
-  * \param msg The recieved message.
+  * \param msg The received message.
   */
  virtual void ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun& msg);
  /**
