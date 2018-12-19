@@ -70,10 +70,14 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttCallMachineGrpBasicState", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMachineGrpBroadcast", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMachineGrpBroadcastState", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttCallMachinePrivate", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttCallMachinePrivateState", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMsg", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMsgField", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallTypeMachine", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallTypeMachineGrpBasic", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttCallTypeMachinePrivate", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttCallTypeMachinePrivateState", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttChan", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCounter", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttEmergAlertMachineBasic", LOG_LEVEL_ALL);
@@ -84,7 +88,6 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttFloorMsg", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorMsgField", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorQueue", LOG_LEVEL_ALL);
-  LogComponentEnable ("McpttInfo", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttMediaMsg", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttMediaSrc", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttMsg", LOG_LEVEL_ALL);
