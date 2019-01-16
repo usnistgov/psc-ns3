@@ -338,20 +338,143 @@ User Documentation
 Examples
 ########
 
-There are three examples in the 'psc/examples' folder:
+There are two MCPTT examples in the 'psc/examples' folder:
   * ``example-mcptt.cc`` is a basic scenario with two users deployed randomly
-    using the *SimpleWireless* module which models a very simplistic wireless
-    communications channel for two devices,
-  * ``example-mcptt-prose.cc`` is simple as well but is deployed over ProSe
-    instead of the *SimpleWireless* module, and
-  * ``mcptt-setup-delay.cc`` is a scenario configured specifically for
-    simulating a single PTT to determine how long it would take a user to
-    join a call or request the floor while communicating over ProSe.
+    using the |ns3| WiFi module in Adhoc mode,
+  * ``mcptt-lte-sl-out-of-covrg-comm.cc`` is an adaptation of the LTE Sidelink
+    example ``lte-sl-out-of-covrg-comm`` Mode 2 ProSe example, and
+..
+   Note: the below is commented out until this program is made available
 
-For the setup delay example, one can use the message and state machine traces
-to compute there own metrics or if the log component ``McpttProseExample`` is
-enabled at the "logic" level, the user will see the computed setup delays and
-reported error cases.
+   * ``mcptt-setup-delay.cc`` is a scenario configured specifically for
+     simulating a single PTT to determine how long it would take a user to
+     join a call or request the floor while communicating over ProSe.
+
+   For the setup delay example, one can use the message and state machine traces
+   to compute there own metrics or if the log component ``McpttProseExample`` is
+   enabled at the "logic" level, the user will see the computed setup delays and
+   reported error cases.
+
+mcptt-lte-sl-out-of-covrg-comm
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The program ``mcptt-lte-sl-out-of-covrg-comm.cc`` is an adaptation of the
+LTE Sidelink example ``lte-sl-out-of-covrg-comm.cc`` documented in the
+LTE module.  The example was adapted to replace the simple UDP application
+with MCPTT.  The following code excerpts highlight the main aspects of
+configuring MCPTT in a program.
+
+The first block of code below highlights the use of the class
+``ns3::McpttHelper`` to encapsulate configuration statements on the key
+objects involved in the MCPTT service.  The helper exposes some methods
+that allow for custom configuration of the PttApp class and attributes,
+MediaSrc class and attributes, and Pusher class and attributes.  In the
+below, the configuration of ``ns3::McpttPusher`` to Automatic operation
+means that the pushing and releasing times will be driven by random
+variables, and additional methods to easily configure these random variables
+are provided.  Following the configuration of these objects, the usual
+pattern in |ns3| for using the application helper to install onto the
+set of ueNodes, configure a start time, and configure a stop time are
+followed.
+
+.. sourcecode:: cpp
+
+   ApplicationContainer clientApps;
+   McpttHelper mcpttHelper;
+   if (enableNsLogs)
+     {
+       mcpttHelper.EnableLogComponents ();
+     }
+   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+                          "PeerAddress", Ipv4AddressValue (peerAddress),
+                          "PushOnStart", BooleanValue (true));
+   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+                          "Bytes", UintegerValue (msgSize),
+                          "DataRate", DataRateValue (dataRate));
+   mcpttHelper.SetPusher ("ns3::McpttPusher",
+                          "Automatic", BooleanValue (true));
+   mcpttHelper.SetPusherPushVariable ("ns3::NormalRandomVariable",
+                          "Mean", DoubleValue (pushTimeMean),
+                          "Variance", DoubleValue (pushTimeVariance));
+   mcpttHelper.SetPusherReleaseVariable ("ns3::NormalRandomVariable",
+                          "Mean", DoubleValue (releaseTimeMean),
+                          "Variance", DoubleValue (releaseTimeVariance));
+ 
+   clientApps.Add (mcpttHelper.Install (ueNodes));
+   clientApps.Start (startTime);
+   clientApps.Stop (stopTime);
+
+The above will prepare each UE for the service, but call configuration
+remains to be configured.  For a basic group call type, using the
+basic floor machine, the helper provides a single statement to configure
+the call, as follows.
+ 
+.. sourcecode:: cpp
+
+   mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);
+
+This method encapsulates the following operations:
+
+*  sets the call control state machine type to ``ns3::McpttCallMachineGrpBasic``
+*  sets the floor control state machine type to ``ns3::McpttFloorMachineBasic``
+*  iterates across the clientApps in the provided application container.  If
+   the provided ``usersPerGroup`` value is equal to or greater than the size
+   of the ``clientApps`` container, all instances of ``McpttPttApp`` will 
+   be included in a call with the same GroupId.  If ``usersPerGroup`` is
+   less than the size of ``clientApps``, the first ``usersPerGroup`` will
+   be placed into a call with the first GroupId, the second ``usersPerGroup``
+   will be placed into a call with the second GroupId, and so on until the
+   ``clientApps`` have all been handled.  The base GroupId is an optional
+   argument to this method, but defaults to the value of 1 if not provided.
+*  creates the call instance on each ``McpttPttApp``
+
+The various configuration variables used in the above are set near the top
+of the main program, as follows.
+
+.. sourcecode:: cpp
+
+   // MCPTT configuration
+   uint32_t usersPerGroup = 2;
+   DataRate dataRate = DataRate ("24kb/s");
+   uint32_t msgSize = 60; //60 + RTP header = 60 + 12 = 72
+   double pushTimeMean = 5.0; // seconds
+   double pushTimeVariance = 2.0; // seconds
+   double releaseTimeMean = 5.0; // seconds
+   double releaseTimeVariance = 2.0; // seconds
+   Ipv4Address peerAddress = Ipv4Address ("225.0.0.0");
+   Time startTime = Seconds (2);
+   Time stopTime = simTime;
+
+Here, it is worth noting that the configuration sets two users per group,
+and the example only has two UEs, so both UEs will belong to the same GroupId.
+Also, the peerAddress value is set to an IPv4 multicast address.  This value
+should not be changed without similarly changing the IPv4 group address of
+the TFT configuration further down in the LTE configuration part of
+the program.  The TFT controls the mapping of IP packets to sidelink
+bearers.  If the packets are sent to a peer address for which a suitable
+TFT is not configured, they will be dropped in the sending UE's stack. 
+
+Another difference with respect to the D2D example is that, presently,
+only IPv4 addressing is supported, so there is no command-line option to 
+use IPv6.
+
+A further difference with respect to the D2D example is that the command-line
+option to enable |ns3| logging, ``--enableNsLogs``, will not enable LTE
+logging as in the LTE D2D example, but will instead enable all MCPTT logs,
+as shown above.
+
+Finally, we note two tracing statements inserted near the bottom of the
+program: 
+ 
+.. sourcecode:: cpp
+
+   NS_LOG_INFO ("Enabling MCPTT traces...");
+   mcpttHelper.EnableMsgTraces ();
+   mcpttHelper.EnableStateMachineTraces ();
+
+These statements are explained in the next section.  Some other aspects
+of LTE tracing are omitted in this modified example, in order to focus on
+the MCPTT configuration.
 
 Traces
 ######

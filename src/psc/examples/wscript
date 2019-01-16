@@ -15,3 +15,7 @@ def build(bld):
     obj = bld.create_ns3_program('example-mcptt-wifi-adhoc',
                                  ['psc', 'wifi'])
     obj.source = 'example-mcptt-wifi-adhoc.cc'
+
+    obj = bld.create_ns3_program('mcptt-lte-sl-out-of-covrg-comm',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'mcptt-lte-sl-out-of-covrg-comm.cc'
