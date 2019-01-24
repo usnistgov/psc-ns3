@@ -1422,7 +1422,8 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
             //adjust because scheduler starts with frame/subframe = 1
             m_discTxPools.m_nextDiscPeriod.frameNo++;
             m_discTxPools.m_nextDiscPeriod.subframeNo++;
-            NS_LOG_INFO ("Discovery Tx Pool initialized");
+            NS_LOG_INFO ("Discovery Tx Pool initialized" << ". Next period at " << m_discTxPools.m_nextDiscPeriod.frameNo
+                           << "/" << m_discTxPools.m_nextDiscPeriod.subframeNo);
           }
         //Check if this is a new discovery period
         if (frameNo == m_discTxPools.m_nextDiscPeriod.frameNo && subframeNo == m_discTxPools.m_nextDiscPeriod.subframeNo)
@@ -1432,13 +1433,18 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
             //adjust because scheduler starts with frame/subframe = 1
             m_discTxPools.m_nextDiscPeriod.frameNo++;
             m_discTxPools.m_nextDiscPeriod.subframeNo++;
-            NS_LOG_INFO ("Starting new discovery period for TX pool " << ". Next period at " << m_discTxPools.m_nextDiscPeriod.frameNo << "/" << m_discTxPools.m_nextDiscPeriod.subframeNo);
+            NS_LOG_INFO ("At " << Simulator::Now ().GetMilliSeconds ()
+                               << " ms Starting new discovery period for TX pool"
+                               << ". Next period at " << m_discTxPools.m_nextDiscPeriod.frameNo
+                               << "/" << m_discTxPools.m_nextDiscPeriod.subframeNo);
 
             //clear any previous grant
             m_discTxPools.m_currentGrants.clear ();
 
           }
       }
+
+    InitializeDiscRxPool (frameNo, subframeNo);
 
     //check if we received grants for Sidelink
     //compute the reception slots for the PSSCH. Do this here because
@@ -2316,6 +2322,7 @@ void
 LteUePhy::DoSetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools)
 {
   NS_LOG_FUNCTION (this);
+
   std::list<Ptr<SidelinkRxDiscResourcePool> >::iterator poolIt;
   for (poolIt = pools.begin (); poolIt != pools.end (); poolIt++)
     {
@@ -2334,12 +2341,51 @@ LteUePhy::DoSetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools)
           newpool.m_pool = *poolIt;
           newpool.m_npsdch = (*poolIt)->GetNPsdch ();
           newpool.m_currentGrants.clear ();
+          newpool.m_nextDiscPeriod.frameNo = 0;
+          newpool.m_nextDiscPeriod.subframeNo = 0;
           m_discRxPools.push_back (newpool);
 
           m_sidelinkSpectrumPhy->SetRxPool (newpool.m_pool);
           //This is needed to configure the number of retransmissions in LteSlHarqPhy
           //if a UE is only monitoring the discovery announcements.
           m_sidelinkSpectrumPhy->SetDiscNumRetx(newpool.m_pool->GetNumRetx());
+        }
+    }
+}
+
+void
+LteUePhy::InitializeDiscRxPool (uint32_t frameNo, uint32_t subframeNo)
+{
+  NS_LOG_FUNCTION (this);
+
+  for (auto &it : m_discRxPools)
+    {
+      if (it.m_nextDiscPeriod.frameNo == 0)
+        {
+          //pool not initialized yet
+          it.m_nextDiscPeriod = it.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
+          it.m_nextDiscPeriod.frameNo++;
+          it.m_nextDiscPeriod.subframeNo++;
+          NS_LOG_DEBUG ("Total discovery RX pool = " << m_discRxPools.size ());
+          NS_LOG_DEBUG ("At " << Simulator::Now().GetMilliSeconds ()
+                              << " ms Discovery Rx Pool initialized"
+                              << ". Next period at " << it.m_nextDiscPeriod.frameNo
+                              << "/" << it.m_nextDiscPeriod.subframeNo);
+        }
+      //Check if this is a new discovery period
+      if (frameNo == it.m_nextDiscPeriod.frameNo && subframeNo == it.m_nextDiscPeriod.subframeNo)
+        {
+          //clear the info from expextedTb and Tx count map of previous discovery period
+          m_sidelinkSpectrumPhy->ClearExpectedDiscTb ();
+          it.m_currentDiscPeriod = it.m_nextDiscPeriod;
+          it.m_nextDiscPeriod = it.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
+          //adjust because scheduler starts with frame/subframe = 1
+          it.m_nextDiscPeriod.frameNo++;
+          it.m_nextDiscPeriod.subframeNo++;
+          NS_LOG_DEBUG ("At " << Simulator::Now ().GetMilliSeconds ()
+                              << " ms Starting new discovery period for RX pool"
+                              << ". Next period at " << it.m_nextDiscPeriod.frameNo
+                              << "/" << it.m_nextDiscPeriod.subframeNo);
         }
     }
 }

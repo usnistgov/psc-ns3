@@ -653,12 +653,18 @@ LteSpectrumPhy::ClearExpectedSlTb ()
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("Expected TBs: " << m_expectedSlTbs.size ());
   m_expectedSlTbs.clear ();
-  NS_LOG_DEBUG ("After clearing Expected TBs size: " << m_expectedSlTbs.size ());
+  NS_LOG_DEBUG ("After clearing SL expected TBs map. Map size : " << m_expectedSlTbs.size ());
 }
 
-
-
-
+void
+LteSpectrumPhy::ClearExpectedDiscTb ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("Expected TBs: " << m_expectedDiscTbs.size ());
+  m_expectedDiscTbs.clear ();
+  m_slDiscTxCount.clear ();
+  NS_LOG_DEBUG ("After clearing expected discovery TB map. Map size : " << m_expectedDiscTbs.size ());
+}
 
 bool
 LteSpectrumPhy::StartTxDataFrame (Ptr<PacketBurst> pb, std::list<Ptr<LteControlMessage> > ctrlMsgList, Time duration)
@@ -2675,7 +2681,6 @@ LteSpectrumPhy::RxDiscovery ()
       params.m_ndi = (*itTbDisc).second.ndi;
       params.m_correctness = (uint8_t) !(*itTbDisc).second.corrupt;
       params.m_sinrPerRb = GetMeanSinr (m_slSinrPerceived[(*itSinrDisc).second] * m_slRxGain, (*itTbDisc).second.rbBitmap);
-      params.m_rv = harqInfoList.size ();
       m_slPhyReception (params);
     }
 

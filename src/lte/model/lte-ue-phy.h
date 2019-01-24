@@ -454,6 +454,13 @@ private:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * Initialize discovery reception pool function
+   * \param frameNo The frame number
+   * \param subframeNo The subframe number
+   */
+  void InitializeDiscRxPool (uint32_t frameNo, uint32_t subframeNo);
+
 
 
   // UE CPHY SAP methods

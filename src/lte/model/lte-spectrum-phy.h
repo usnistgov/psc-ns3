@@ -341,6 +341,12 @@ public:
    *
    */
   void ClearExpectedSlTb ();
+
+  /**
+   * Clear expected discovery TBs
+   *
+   */
+  void ClearExpectedDiscTb ();
  
   /**
    * set the AntennaModel to be used
@@ -861,8 +867,8 @@ private:
   uint64_t m_slssId; ///< the Sidelink Synchronization Signal Identifier (SLSSID)
 
   double m_slRxGain; ///< Sidelink Rx gain (Linear units)
-  std::map <uint16_t, uint16_t> m_slDiscTxCount; ///< Map to store the number of discovery transmissions by a UE
-                                                 ///< RNTI of a UE is used as the key of the map
+  std::map <uint16_t, uint16_t> m_slDiscTxCount; ///< Map to store the count of discovery transmissions
+                                                 ///< by a UE. The RNTI of a UE is used as the key of this map
 
   LtePhyRxSlssCallback  m_ltePhyRxSlssCallback; ///< Callback used to notify the PHY about the reception of a SLSS
 
