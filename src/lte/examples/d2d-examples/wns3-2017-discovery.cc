@@ -167,6 +167,10 @@ main (int argc, char *argv[])
 
   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ues);
 
+  //Fix the random number stream
+  uint16_t randomStream = 1;
+  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
+
   AsciiTraceHelper asc;
   Ptr<OutputStreamWrapper> st = asc.CreateFileStream ("discovery_nodes.txt");
   *st->GetStream () << "id\tx\ty" << std::endl;

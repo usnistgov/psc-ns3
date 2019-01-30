@@ -1655,9 +1655,11 @@ LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
           Ptr<LteSpectrumPhy> dlPhy = it->second->GetPhy ()->GetDownlinkSpectrumPhy ();
           Ptr<LteSpectrumPhy> ulPhy = it->second->GetPhy ()->GetUplinkSpectrumPhy ();
           Ptr<LteUeMac> ueMac = lteUe->GetMac ();
+          Ptr<LteUePhy> uePhy = lteUe->GetPhy ();
           currentStream += dlPhy->AssignStreams (currentStream);
           currentStream += ulPhy->AssignStreams (currentStream);
           currentStream += ueMac->AssignStreams (currentStream);
+          currentStream += uePhy->AssignStreams (currentStream);
         }
     }
   return (currentStream - stream);

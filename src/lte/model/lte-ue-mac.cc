@@ -2019,10 +2019,10 @@ LteUeMac::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
   m_raPreambleUniformVariable->SetStream (stream);
-  m_ueSelectedUniformVariable->SetStream (stream);
-  m_p1UniformVariable->SetStream (stream);
-  m_resUniformVariable->SetStream (stream);
-  return 1;
+  m_ueSelectedUniformVariable->SetStream (stream + 1);
+  m_p1UniformVariable->SetStream (stream + 2);
+  m_resUniformVariable->SetStream (stream + 3);
+  return 4;
 }
 
 } // namespace ns3

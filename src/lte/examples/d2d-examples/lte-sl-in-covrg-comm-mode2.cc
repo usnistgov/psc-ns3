@@ -221,9 +221,12 @@ int main (int argc, char *argv[])
   mobilityUe2.SetPositionAllocator (positionAllocUe2);
   mobilityUe2.Install (ueNodes.Get (1));
 
-  //Install LTE devices to the nodes
+  //Install LTE devices to the nodes and fix the random number stream
+  int64_t randomStream = 1;
   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNode);
+  randomStream += lteHelper->AssignStreams (enbDevs, randomStream);
   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
 
   //Configure Sidelink
   Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc> ();

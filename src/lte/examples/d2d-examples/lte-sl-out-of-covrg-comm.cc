@@ -225,6 +225,10 @@ int main (int argc, char *argv[])
   //Install LTE UE devices to the nodes
   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
+  //Fix the random number stream
+  uint16_t randomStream = 1;
+  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
+
   //Sidelink pre-configuration for the UEs
   Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
   ueSidelinkConfiguration->SetSlEnabled (true);

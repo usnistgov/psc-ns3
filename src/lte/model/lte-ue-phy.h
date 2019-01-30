@@ -278,6 +278,13 @@ public:
   State GetState () const;
 
   /**
+   * Get random system frame and subframe number
+   * \param stream The first stream index to use
+   * \return The number of stream indices assigned
+   */
+  int64_t AssignStreams (int64_t stream);
+
+  /**
    * Set the time in which the first SyncRef selection will be performed by the UE
    *
    * \param t The time to perform the first SyncRef selection (relative to the
@@ -446,13 +453,6 @@ private:
    * \param s The destination state
    */
   void SwitchToState (State s);
-
-  /**
-   * Get random system frame and subframe number
-   * \param stream The first stream index to use
-   * \return The number of stream indices assigned
-   */
-  int64_t AssignStreams (int64_t stream);
 
   /**
    * Initialize discovery reception pool function

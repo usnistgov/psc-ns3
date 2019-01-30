@@ -169,6 +169,10 @@ main (int argc, char *argv[])
   NetDeviceContainer ueRespondersDevs = lteHelper->InstallUeDevice (ueResponders);
   ueDevs.Add (ueRespondersDevs);
 
+  //Fix the random number stream
+  uint16_t randomStream = 1;
+  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
+
   NS_LOG_INFO ("Installing IP stack...");
   InternetStackHelper internet;
   internet.Install (ueResponders);

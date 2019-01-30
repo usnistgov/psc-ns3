@@ -3098,7 +3098,8 @@ LteUePhy::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
   m_uniformRandomVariable->SetStream (stream);
-  return 1;
+  m_nextScanRdm->SetStream (stream + 1);
+  return 2;
 }
 
 } // namespace ns3

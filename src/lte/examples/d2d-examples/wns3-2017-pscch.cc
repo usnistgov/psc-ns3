@@ -254,6 +254,7 @@ main (int argc, char *argv[])
   // Compute the position of each site and antenna orientation
   NetDeviceContainer enbDevs = topoHelper->SetPositionAndInstallEnbDevice (sectorNodes);
 
+
   // Create node container to hold all UEs
   NodeContainer ueAllNodes;
 
@@ -292,6 +293,10 @@ main (int argc, char *argv[])
   NetDeviceContainer ueRespondersDevs = topoHelper->DropUEsUniformlyPerSector (ueResponders);
   NetDeviceContainer ueDevs;
   ueDevs.Add (ueRespondersDevs);
+
+  //Fix the random number stream
+  int64_t randomStream = 1;
+  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
 
   // Save nodes' positions
   std::ofstream outFile;

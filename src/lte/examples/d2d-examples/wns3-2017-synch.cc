@@ -315,6 +315,10 @@ main (int argc, char *argv[])
   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
   NetDeviceContainer ueRespondersDevs = topoHelper->DropUEsUniformlyPerSector (ueResponders);
 
+  //Fix the random number stream
+  uint16_t randomStream = 1;
+  randomStream += lteHelper->AssignStreams (ueRespondersDevs, randomStream);
+
 
   // Save the nodes positions
   std::ofstream m_outFile;

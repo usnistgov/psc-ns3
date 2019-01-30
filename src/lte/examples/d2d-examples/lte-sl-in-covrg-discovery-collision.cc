@@ -203,9 +203,12 @@ int main (int argc, char *argv[])
       mobilityUes.Install (ueNodes.Get (i));
     }
 
-  //Install LTE devices to the nodes
+  //Install LTE devices to the nodes and fix the random number stream
+  int64_t randomStream = 1;
   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNode);
+  randomStream += lteHelper->AssignStreams (enbDevs, randomStream);
   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
 
   //Configure Sidelink Pool
   Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc> ();
