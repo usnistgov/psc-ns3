@@ -34,6 +34,7 @@
  */
 
 
+#include <sstream>
 #include "ns3/object.h"
 #include "ns3/test.h"
 #include "ns3/lte-helper.h"
@@ -283,8 +284,10 @@ SidelinkInCoverageCommTestCase::DoRun (void)
   PacketSinkHelper sidelinkSink ("ns3::UdpSocketFactory",Address (InetSocketAddress (Ipv4Address::GetAny (), 8000)));
   serverApps = sidelinkSink.Install (ueNodes.Get (1));
   serverApps.Get (0)->SetStartTime (Seconds (3.0));
-  //Trace receptions
-  Config::ConnectWithoutContext ("/NodeList/3/ApplicationList/0/$ns3::PacketSink/Rx", MakeCallback (&SidelinkInCoverageCommTestCase::SinkRxNode,this));
+  //Trace receptions; use the following to be robust to node ID changes
+  std::ostringstream oss;
+  oss << "/NodeList/" << ueNodes.Get (1)->GetId () << "/ApplicationList/0/$ns3::PacketSink/Rx";
+  Config::ConnectWithoutContext (oss.str (), MakeCallback (&SidelinkInCoverageCommTestCase::SinkRxNode,this));
   //                                        ^
   //                                        |
   //adding more eNB nodes would increase the node id of the receiving UE. Therefore, this number should be incremented
