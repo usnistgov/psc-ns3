@@ -73,13 +73,13 @@ public:
    * \brief Neighbor Discovery node constants: max unicast solicitations.
    * \returns The max unicast solicitations number.
    */
-  uint8_t GetMaxUnicastSolicit () const;;
+  uint8_t GetMaxUnicastSolicit () const;
 
   /**
    * \brief Neighbor Discovery node constants: reachable time.
    * \returns The Reachable time for an Neighbor cache entry.
    */
-  Time GetReachableTime () const;;
+  Time GetReachableTime () const;
 
   /**
    * \brief Neighbor Discovery node constants: retransmission timer.
@@ -116,7 +116,7 @@ public:
   void SetNode (Ptr<Node> node);
 
   /**
-   * \brief This method is called by AddAgregate and completes the aggregation
+   * \brief This method is called by AggregateObject and completes the aggregation
    * by setting the node in the ICMPv6 stack and adding ICMPv6 factory to
    * IPv6 stack connected to the node.
    */

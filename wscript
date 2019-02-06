@@ -457,6 +457,19 @@ def configure(conf):
     else:
         Logs.warn("CXX Standard flag " + Options.options.cxx_standard + " was not recognized, using compiler's default")
 
+    # Find Boost libraries by modules
+    conf.env['REQUIRED_BOOST_LIBS'] = []
+    for modules_dir in ['src', 'contrib']:
+        conf.recurse (modules_dir, name="get_required_boost_libs", mandatory=False)
+
+    if conf.env['REQUIRED_BOOST_LIBS'] is not []:
+        conf.load('boost')
+        conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), mandatory=False)
+        if not conf.env['LIB_BOOST']:
+            conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), libpath="/usr/lib64", mandatory=False)
+            if not conf.env['LIB_BOOST']:
+                conf.env['LIB_BOOST'] = []
+
     # Set this so that the lists won't be printed at the end of this
     # configure command.
     conf.env['PRINT_BUILT_MODULES_AT_END'] = False
@@ -620,7 +633,7 @@ def configure(conf):
     conf.find_program('libgcrypt-config', var='LIBGCRYPT_CONFIG', msg="python-config", mandatory=False)
     if env.LIBGCRYPT_CONFIG:
         conf.check_cfg(path=env.LIBGCRYPT_CONFIG, msg="Checking for libgcrypt", args='--cflags --libs', package='',
-                                     define_name="HAVE_CRYPTO", global_define=True, uselib_store='GCRYPT', mandatory=False)
+                                     define_name="HAVE_GCRYPT", global_define=True, uselib_store='GCRYPT', mandatory=False)
     conf.report_optional_feature("libgcrypt", "Gcrypt library",
                                  conf.env.HAVE_GCRYPT, "libgcrypt not found: you can use libgcrypt-config to find its location.")
 

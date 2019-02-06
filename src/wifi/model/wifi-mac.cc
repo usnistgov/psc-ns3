@@ -23,6 +23,10 @@
 #include "wifi-mac.h"
 #include "txop.h"
 #include "ssid.h"
+#include "wifi-net-device.h"
+#include "ht-configuration.h"
+#include "vht-configuration.h"
+#include "he-configuration.h"
 
 namespace ns3 {
 
@@ -88,14 +92,14 @@ WifiMac::GetDefaultCtsAckTimeout (void)
 Time
 WifiMac::GetDefaultBasicBlockAckDelay (void)
 {
-  //This value must be rivisited
+  //This value must be revisited
   return MicroSeconds (250);
 }
 
 Time
 WifiMac::GetDefaultCompressedBlockAckDelay (void)
 {
-  //This value must be rivisited
+  //This value must be revisited
   //CompressedBlockAckSize 32 * 8 * time it takes to transfer at the lowest rate (at 6 Mbit/s) + aPhy-StartDelay (33)
   return MicroSeconds (76);
 }
@@ -205,6 +209,24 @@ WifiMac::GetTypeId (void)
                      "ns3::Packet::TracedCallback")
   ;
   return tid;
+}
+
+void
+WifiMac::DoDispose ()
+{
+  m_device = 0;
+}
+
+void
+WifiMac::SetDevice (const Ptr<NetDevice> device)
+{
+  m_device = device;
+}
+
+Ptr<NetDevice>
+WifiMac::GetDevice (void) const
+{
+  return m_device;
 }
 
 void
@@ -393,6 +415,7 @@ WifiMac::Configure80211ax_5Ghz (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211ac ();
+  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + MicroSeconds (85) + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void
@@ -450,6 +473,27 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
       NS_FATAL_ERROR ("I don't know what to do with this");
       break;
     }
+}
+
+Ptr<HtConfiguration>
+WifiMac::GetHtConfiguration (void) const
+{
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      return device->GetHtConfiguration ();
+}
+
+Ptr<VhtConfiguration>
+WifiMac::GetVhtConfiguration (void) const
+{
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      return device->GetVhtConfiguration ();
+}
+
+Ptr<HeConfiguration>
+WifiMac::GetHeConfiguration (void) const
+{
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      return device->GetHeConfiguration ();
 }
 
 } //namespace ns3

@@ -403,7 +403,7 @@ WifiPhyStateHelper::SwitchToRx (Time rxDuration)
         m_stateLogger (ccaStart, now - ccaStart, WifiPhyState::CCA_BUSY);
       } break;
     default:
-      NS_FATAL_ERROR ("Invalid WifiPhy state.");
+      NS_FATAL_ERROR ("Invalid WifiPhy state " << GetState ());
       break;
     }
   m_previousStateChangeTime = now;
@@ -480,7 +480,7 @@ WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
   DoSwitchFromRx ();
   if (!m_rxErrorCallback.IsNull ())
     {
-      m_rxErrorCallback ();
+      m_rxErrorCallback (packet);
     }
 }
 
@@ -517,6 +517,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
     {
       m_startCcaBusy = now;
     }
+  m_stateLogger (now, duration, WifiPhyState::CCA_BUSY);
   m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
 }
 

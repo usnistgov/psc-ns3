@@ -23,6 +23,7 @@
 
 #include <map>
 #include "ns3/nstime.h"
+#include "ns3/traced-callback.h"
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "block-ack-type.h"
@@ -193,6 +194,15 @@ public:
    */
   void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
+   * \param recipient Sender of the expected block ack frame.
+   * \param tid Traffic ID.
+   *
+   * Invoked upon missed reception of a block ack frame. Typically, this function, is called
+   * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
+   * with ack policy set to Block Ack, should be placed in the retransmission queue.
+   */
+  void NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid);
+  /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
@@ -225,11 +235,27 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
    *
-   * Marks an agreement as unsuccessful. This happens if <i>recipient</i> station reject block ack setup
+   * Marks an agreement as rejected. This happens if <i>recipient</i> station reject block ack setup
    * by an ADDBA Response frame with a failure status code. For now we assume that every QoS station accepts
    * a block ack setup.
    */
-  void NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t tid);
+  void NotifyAgreementRejected (Mac48Address recipient, uint8_t tid);
+  /**
+   * \param recipient Address of peer station involved in block ack mechanism.
+   * \param tid Traffic ID of transmitted packet.
+   *
+   * Marks an agreement after not receiving response to ADDBA request. During this state
+   * any packets in queue will be transmitted using normal MPDU. This also unblock
+   * recipient adress.
+   */
+  void NotifyAgreementNoReply (Mac48Address recipient, uint8_t tid);
+  /**
+   * \param recipient Address of peer station involved in block ack mechanism.
+   * \param tid Traffic ID of transmitted packet.
+   *
+   * Set BA agreement to a transitory state to reset it after not receiving response to ADDBA request.
+   */
+  void NotifyAgreementReset (Mac48Address recipient, uint8_t tid);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
@@ -361,6 +387,15 @@ public:
    * \returns true if BAR retransmission needed
    */
   bool NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient);
+  /**
+   * This function returns the buffer size negociated with the recipient.
+   *
+   * \param tid Traffic ID
+   * \param recipient MAC address
+   *
+   * \returns the buffer size negociated with the recipient
+   */
+  uint16_t GetRecipientBufferSize (Mac48Address recipient, uint8_t tid) const;
 
   /**
    * typedef for a callback to invoke when a
@@ -382,6 +417,16 @@ public:
    * packet transmission was completed unsuccessfully.
    */
   void SetTxFailedCallback (TxFailed callback);
+
+  /**
+   * TracedCallback signature for state changes.
+   *
+   * \param [in] now Time when the \p state changed.
+   * \param [in] recipient MAC address of the recipient.
+   * \param [in] tid the TID.
+   * \param [in] state The state.
+   */
+  typedef void (* AgreementStateTracedCallback)(Time now, Mac48Address recipient, uint8_t tid, OriginatorBlockAckAgreement::State state);
 
 
 private:
@@ -504,6 +549,11 @@ private:
   TxOk m_txOkCallback; ///< transmit ok callback
   TxFailed m_txFailedCallback; ///< transmit failed callback
   Ptr<WifiRemoteStationManager> m_stationManager; ///< the station manager
+
+  /**
+   * The trace source fired when a state transition occured.
+   */
+  TracedCallback<Time, Mac48Address, uint8_t, OriginatorBlockAckAgreement::State> m_agreementState;
 };
 
 } //namespace ns3

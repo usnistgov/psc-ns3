@@ -22,9 +22,12 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
+#include "wifi-preamble.h"
+#include "wifi-mode.h"
 
 namespace ns3 {
 
+class WifiNetDevice;
 class WifiMacHeader;
 class WifiMode;
 class Packet;
@@ -76,12 +79,52 @@ bool Is5Ghz (double frequency);
  * Convert the guard interval to nanoseconds based on the wifimode.
  *
  * \param mode the wifimode
+ * \param device pointer to the WifiNetDevice object
+ *
+ * \return the guard interval duration in nanoseconds
+ */
+uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, const Ptr<WifiNetDevice> device);
+/**
+ * Convert the guard interval to nanoseconds based on the wifimode.
+ *
+ * \param mode the wifimode
  * \param htShortGuardInterval whether HT/VHT short guard interval is enabled
  * \param heGuardInterval the HE guard interval duration
  *
  * \return the guard interval duration in nanoseconds
  */
 uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Time heGuardInterval);
+/**
+ * Return the preamble to be used for the transmission.
+ *
+ * \param modulation the modulation selected for the transmission
+ * \param useShortPreamble whether short preamble should be used
+ * \param useGreenfield whether HT greenfield should be used
+ *
+ * \return the preamble to be used for the transmission
+ */
+WifiPreamble GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble, bool useGreenfield);
+/**
+ * Return the channel width that corresponds to the selected mode (instead of
+ * letting the PHY's default channel width). This is especially useful when using
+ * non-HT modes with HT/VHT/HE capable stations (with default width above 20 MHz).
+ *
+ * \param mode selected WifiMode
+ * \param maxSupportedChannelWidth maximum channel width supported by the PHY layer
+ * \return channel width adapted to the selected mode
+ */
+uint16_t GetChannelWidthForTransmission (WifiMode mode, uint16_t maxSupportedChannelWidth);
+/**
+ * Return whether the modulation class of the selected mode for the
+ * control answer frame is allowed.
+ *
+ * \param modClassReq modulation class of the request frame
+ * \param modClassAnswer modulation class of the answer frame
+ *
+ * \return true if the modulation class of the selected mode for the
+ * control answer frame is allowed, false otherwise
+ */
+bool IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer);
 /**
  * Return the total ACK size (including FCS trailer).
  *
@@ -110,7 +153,7 @@ uint32_t GetCtsSize (void);
 /**
  * \param seq MPDU sequence number
  * \param winstart sequence number window start
- * \param winsize the size of the sequence number window (currently default is 64)
+ * \param winsize the size of the sequence number window
  * \returns true if in the window
  *
  * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not

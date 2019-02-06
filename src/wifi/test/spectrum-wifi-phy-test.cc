@@ -79,8 +79,9 @@ protected:
   void SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
   /**
    * Spectrum wifi receive failure function
-   */
-  void SpectrumWifiPhyRxFailure (void);
+   * \param p the packet
+-   */
+  void SpectrumWifiPhyRxFailure (Ptr<Packet> p);
   uint32_t m_count; ///< count
 
 private:
@@ -144,9 +145,9 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, W
 }
 
 void
-SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (void)
+SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p);
   m_count++;
 }
 
@@ -167,8 +168,6 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   m_phy->SetFrequency (FREQUENCY);
   m_phy->SetReceiveOkCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure, this));
-  //Bug 2460: CcaMode1Threshold default should be set to -62 dBm when using Spectrum
-  m_phy->SetCcaMode1Threshold (-62.0);
 }
 
 // Test that the expected number of packet receptions occur.

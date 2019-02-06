@@ -175,7 +175,6 @@ The following details pertain to the physical layer and channel models:
 * 802.11 PCF implementation currently assumes a DTIM interval equal to the beacon interval
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported
 * The current implementation assumes that secondary channels are always higher than primary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
@@ -284,8 +283,7 @@ The PHY layer can be in one of six states:
 #. SLEEP: the PHY is in a power save mode and cannot send nor receive frames.
 
 Packet reception works as follows.  The ``YansWifiPhy`` attribute 
-CcaMode1Threshold 
-corresponds to what the standard calls the "ED threshold" for CCA Mode 1.  
+CcaEdThreshold corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
 In section 16.4.8.5:  "CCA Mode 1: Energy above threshold. CCA shall report 
 a busy medium upon detection of any energy above the ED threshold."  
 
@@ -295,33 +293,32 @@ However, the model doesn't support this, because there are no 'foreign'
 signals in the YansWifi model-- everything is a Wi-Fi signal.
 
 In the standard, there is also what is called the "minimum modulation
-and coding rate sensitivity" in section 18.3.10.6 CCA requirements. This is 
-the -82 dBm requirement for 20 MHz channels.  This is analogous to the 
-EnergyDetectionThreshold attribute in ``YansWifiPhy``.  CCA busy state is 
-not raised in this model when this threshold is exceeded but instead RX 
-state is immediately reached, since it is assumed that PLCP sync always 
-succeeds in this model.  Even if the PLCP header reception fails, the 
-channel state is still held in RX until YansWifiPhy::EndReceive().
+and coding rate sensitivity" in section 18.3.10.6 CCA requirements. 
+This is analogous to the RxSensitivity attribute in ``YansWifiPhy``.
+CCA busy state is not raised in this model when this threshold is exceeded
+but instead RX state is immediately reachedif PHY preamble detection is successful.
+Even if the PHY header reception fails, the channel state is still held
+in RX until YansWifiPhy::EndReceive().
 
-In ns-3, the values of these attributes are set to small default values 
-(-96 dBm for EnergyDetectionThreshold and -99 dBm for CcaMode1Threshold).  
-So, if a signal comes in at > -96 dBm and the state is IDLE or CCA BUSY, 
-this model will lock onto it for the signal duration and raise RX state.  
-If it comes in at <= -96 dBm but >= -99 dBm, it will definitely raise 
-CCA BUSY but not RX state.  If it comes in < -99 dBm, it gets added to 
-the interference tracker and, by itself, it will not raise CCA BUSY, but 
-maybe a later signal will contribute more power so that the threshold 
-of -99 dBm is reached at a later time.
+In ns-3, the values of these attributes are -101 dBm for RxSensitivity
+and -62 dBm for CcaEdThreshold.  
+So, if a signal comes in at > -101 dBm and the state is IDLE or CCA BUSY, 
+this model will lock onto it for the signal duration and raise RX state.
 
 The energy of the signal intended to be received is 
 calculated from the transmission power and adjusted based on the Tx gain
 of the transmitter, Rx gain of the receiver, and any path loss propagation
 model in effect.
 
-The packet reception occurs in two stages.   First, an event is scheduled
-for when the PLCP header has been received. PLCP header is often transmitted
+The packet reception occurs in three stages. First, an event is scheduled
+for when PHY preamble has been detected. This decides whether the preamble
+can be detected, by calling a preamble detection model. In case there is no
+preamble detection model attached to the PHY, it assumes preamble is always detected.
+Currently, there is only a simple threshold-based preamble detection model in ns-3,
+called ``ThresholdPreambleDetectionModel``. If PHY preamble has been successfully detected,
+it schedules a second event for when PHY header has been received. PHY header is often transmitted
 at a lower modulation rate than is the payload.  The portion of the packet
-corresponding to the PLCP header is evaluated for probability of error 
+corresponding to the PHY header is evaluated for probability of error
 based on the observed SNR.  The InterferenceHelper object returns a value
 for "probability of error (PER)" for this header based on the SNR that has
 been tracked by the InterferenceHelper.  The ``YansWifiPhy`` then draws
@@ -443,12 +440,9 @@ add their received power to the noise, in the same way that
 unintended Wi-Fi signals (perhaps from a different SSID or arriving
 late from a hidden node) are added to the noise.
 
-Third, the default value for CcaMode1Threshold attribute is -62 dBm
-rather than the value of -99 dBm used for YansWifiPhy.  This is because,
-unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
-will be raised for foreign signals that are higher than this 'energy
-detection' threshold (see section 16.4.8.5 in the 802.11-2012 standard
-for definition of CCA Mode 1).  
+Unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
+will be raised for foreign signals that are higher than CcaEdThreshold
+(see section 16.4.8.5 in the 802.11-2012 standard for definition of CCA Mode 1).  
 
 To support the Spectrum channel, the ``YansWifiPhy`` transmit and receive methods
 were adapted to use the Spectrum channel API.  This required developing

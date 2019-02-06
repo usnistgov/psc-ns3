@@ -27,6 +27,9 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"
+#include "ht-configuration.h"
+#include "vht-configuration.h"
+#include "he-configuration.h"
 
 namespace ns3 {
 
@@ -65,6 +68,21 @@ WifiNetDevice::GetTypeId (void)
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
+    .AddAttribute ("HtConfiguration",
+                   "The HtConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetHtConfiguration),
+                   MakePointerChecker<HtConfiguration> ())
+    .AddAttribute ("VhtConfiguration",
+                   "The VhtConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetVhtConfiguration),
+                   MakePointerChecker<VhtConfiguration> ())
+    .AddAttribute ("HeConfiguration",
+                   "The HeConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetHeConfiguration),
+                   MakePointerChecker<HeConfiguration> ())
   ;
   return tid;
 }
@@ -85,12 +103,36 @@ WifiNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
-  m_mac->Dispose ();
-  m_phy->Dispose ();
-  m_stationManager->Dispose ();
-  m_mac = 0;
-  m_phy = 0;
-  m_stationManager = 0;
+  if (m_mac)
+    {
+      m_mac->Dispose ();
+      m_mac = 0;
+    }
+  if (m_phy)
+    {
+      m_phy->Dispose ();
+      m_phy = 0;
+    }
+  if (m_stationManager)
+    {
+      m_stationManager->Dispose ();
+      m_stationManager = 0;
+    }
+  if (m_htConfiguration)
+    {
+      m_htConfiguration->Dispose ();
+      m_htConfiguration = 0;
+    }
+  if (m_vhtConfiguration)
+    {
+      m_vhtConfiguration->Dispose ();
+      m_vhtConfiguration = 0;
+    }
+  if (m_heConfiguration)
+    {
+      m_heConfiguration->Dispose ();
+      m_heConfiguration = 0;
+    }
   NetDevice::DoDispose ();
 }
 
@@ -392,6 +434,42 @@ bool
 WifiNetDevice::SupportsSendFrom (void) const
 {
   return m_mac->SupportsSendFrom ();
+}
+
+void
+WifiNetDevice::SetHtConfiguration (Ptr<HtConfiguration> htConfiguration)
+{
+  m_htConfiguration = htConfiguration;
+}
+
+Ptr<HtConfiguration>
+WifiNetDevice::GetHtConfiguration (void) const
+{
+  return m_htConfiguration;
+}
+
+void
+WifiNetDevice::SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration)
+{
+  m_vhtConfiguration = vhtConfiguration;
+}
+
+Ptr<VhtConfiguration>
+WifiNetDevice::GetVhtConfiguration (void) const
+{
+  return m_vhtConfiguration;
+}
+
+void
+WifiNetDevice::SetHeConfiguration (Ptr<HeConfiguration> heConfiguration)
+{
+  m_heConfiguration = heConfiguration;
+}
+
+Ptr<HeConfiguration>
+WifiNetDevice::GetHeConfiguration (void) const
+{
+  return m_heConfiguration;
 }
 
 } //namespace ns3

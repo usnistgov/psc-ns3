@@ -26,6 +26,10 @@
 #include "infrastructure-wifi-mac.h"
 #include "mgt-headers.h"
 
+class TwoLevelAggregationTest;
+class AmpduAggregationTest;
+class HeAggregationTest;
+
 namespace ns3  {
 
 class SupportedRates;
@@ -102,6 +106,12 @@ struct ApInfo
 class StaWifiMac : public InfrastructureWifiMac
 {
 public:
+  /// Allow test cases to access private members
+  friend class ::TwoLevelAggregationTest;
+  /// Allow test cases to access private members
+  friend class ::AmpduAggregationTest;
+  /// Allow test cases to access private members
+  friend class ::HeAggregationTest;
   /**
    * \brief Get the type ID.
    * \return the object TypeId

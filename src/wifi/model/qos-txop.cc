@@ -21,6 +21,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
 #include "qos-txop.h"
@@ -52,14 +53,32 @@ QosTxop::GetTypeId (void)
     .SetParent<ns3::Txop> ()
     .SetGroupName ("Wifi")
     .AddConstructor<QosTxop> ()
-    .AddTraceSource ("BackoffTrace",
-                     "Trace source for backoff values",
-                     MakeTraceSourceAccessor (&QosTxop::m_backoffTrace),
-                     "ns3::TracedValueCallback::Uint32")
-    .AddTraceSource ("CwTrace",
-                     "Trace source for contention window values",
-                     MakeTraceSourceAccessor (&QosTxop::m_cwTrace),
-                     "ns3::TracedValueCallback::Uint32")
+    .AddAttribute ("UseExpliciteBarAfterMissedBlockAck",
+                   "Specify whether explicit Block Ack Request should be sent upon missed Block Ack Response.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&QosTxop::m_useExplicitBarAfterMissedBlockAck),
+                   MakeBooleanChecker ())
+    .AddAttribute ("AddBaResponseTimeout",
+                   "The timeout to wait for ADDBA response after the ACK to "
+                   "ADDBA request is received.",
+                   TimeValue (MilliSeconds (1)),
+                   MakeTimeAccessor (&QosTxop::SetAddBaResponseTimeout,
+                                     &QosTxop::GetAddBaResponseTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("FailedAddBaTimeout",
+                   "The timeout after a failed BA agreement. During this "
+                   "timeout, the originator resumes sending packets using normal "
+                   "MPDU. After that, BA agreement is reset and the originator "
+                   "will retry BA negotiation.",
+                   TimeValue (MilliSeconds (200)),
+                   MakeTimeAccessor (&QosTxop::SetFailedAddBaTimeout,
+                                     &QosTxop::GetFailedAddBaTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("BlockAckManager",
+                   "The BlockAckManager object.",
+                   PointerValue (),
+                   MakePointerAccessor (&QosTxop::m_baManager),
+                   MakePointerChecker<BlockAckManager> ())
     .AddTraceSource ("TxopTrace",
                      "Trace source for txop start and duration times",
                      MakeTraceSourceAccessor (&QosTxop::m_txopTrace),
@@ -106,15 +125,21 @@ QosTxop::DoDispose (void)
 }
 
 bool
-QosTxop::GetBaAgreementExists (Mac48Address address, uint8_t tid) const
+QosTxop::GetBaAgreementEstablished (Mac48Address address, uint8_t tid) const
 {
-  return m_baManager->ExistsAgreement (address, tid);
+  return m_baManager->ExistsAgreementInState (address, tid, OriginatorBlockAckAgreement::ESTABLISHED);
 }
 
 void
 QosTxop::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
 {
   m_baManager->CompleteAmpduExchange (recipient, tid);
+}
+
+uint16_t
+QosTxop::GetBaBufferSize (Mac48Address address, uint8_t tid) const
+{
+  return m_baManager->GetRecipientBufferSize (address, tid);
 }
 
 void
@@ -196,7 +221,8 @@ QosTxop::NotifyAccessGranted (void)
           m_currentPacketTimestamp = item->GetTimeStamp ();
           if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
               && m_stationManager->GetQosSupported (m_currentHdr.GetAddr1 ())
-              && !m_baManager->ExistsAgreement (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ())
+              && (!m_baManager->ExistsAgreement (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ())
+                  || m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (), OriginatorBlockAckAgreement::RESET))
               && SetupBlockAckIfNeeded ())
             {
               return;
@@ -283,7 +309,8 @@ QosTxop::NotifyAccessGranted (void)
               Ptr<Packet> currentAggregatedPacket = Create<Packet> ();
               m_msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
                                            MapSrcAddressForAggregation (peekedHdr),
-                                           MapDestAddressForAggregation (peekedHdr));
+                                           MapDestAddressForAggregation (peekedHdr),
+                                           GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
               bool aggregated = false;
               bool isAmsdu = false;
               Ptr<const WifiMacQueueItem> peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
@@ -293,7 +320,8 @@ QosTxop::NotifyAccessGranted (void)
                   peekedHdr = peekedItem->GetHeader ();
                   aggregated = m_msduAggregator->Aggregate (peekedItem->GetPacket (), currentAggregatedPacket,
                                                             MapSrcAddressForAggregation (peekedHdr),
-                                                            MapDestAddressForAggregation (peekedHdr));
+                                                            MapDestAddressForAggregation (peekedHdr),
+                                                            GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
                   if (aggregated)
                     {
                       isAmsdu = true;
@@ -409,8 +437,9 @@ void QosTxop::NotifyInternalCollision (void)
           UpdateFailedCw ();
         }
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -418,8 +447,9 @@ void
 QosTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -442,11 +472,11 @@ QosTxop::MissedCts (void)
           uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
           m_low->FlushAggregateQueue (tid);
 
-          if (GetBaAgreementExists (m_currentHdr.GetAddr1 (), tid))
+          if (GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), tid))
             {
               NS_LOG_DEBUG ("Transmit Block Ack Request");
               CtrlBAckRequestHeader reqHdr;
-              reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+              reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
               reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
               reqHdr.SetTidInfo (tid);
               reqHdr.SetHtImmediateAck (true);
@@ -481,8 +511,9 @@ QosTxop::MissedCts (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -505,18 +536,29 @@ QosTxop::GotAck (void)
           WifiActionHeader actionHdr;
           Ptr<Packet> p = m_currentPacket->Copy ();
           p->RemoveHeader (actionHdr);
-          if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK
-              && actionHdr.GetAction ().blockAck == WifiActionHeader::BLOCK_ACK_DELBA)
+          if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK)
             {
-              MgtDelBaHeader delBa;
-              p->PeekHeader (delBa);
-              if (delBa.IsByOriginator ())
+              if (actionHdr.GetAction ().blockAck == WifiActionHeader::BLOCK_ACK_DELBA)
                 {
-                  m_baManager->DestroyAgreement (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                  MgtDelBaHeader delBa;
+                  p->PeekHeader (delBa);
+                  if (delBa.IsByOriginator ())
+                    {
+                      m_baManager->DestroyAgreement (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                    }
+                  else
+                    {
+                      m_low->DestroyBlockAckAgreement (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                    }
                 }
-              else
+              else if (actionHdr.GetAction ().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
                 {
-                  m_low->DestroyBlockAckAgreement (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                  // Setup addba response timeout
+                  MgtAddBaRequestHeader addBa;
+                  p->PeekHeader (addBa);
+                  Simulator::Schedule (m_addBaResponseTimeout,
+                                       &QosTxop::AddBaResponseTimeout, this,
+                                       m_currentHdr.GetAddr1 (), addBa.GetTid ());
                 }
             }
         }
@@ -529,8 +571,9 @@ QosTxop::GotAck (void)
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
             }
           m_cwTrace = GetCw ();
-          m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-          StartBackoffNow (m_backoffTrace);
+          m_backoff = m_rng->GetInteger (0, GetCw ());
+          m_backoffTrace (m_backoff);
+          StartBackoffNow (m_backoff);
           RestartAccessIfNeeded ();
         }
     }
@@ -543,8 +586,9 @@ QosTxop::GotAck (void)
             {
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
               m_cwTrace = GetCw ();
-              m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-              StartBackoffNow (m_backoffTrace);
+              m_backoff = m_rng->GetInteger (0, GetCw ());
+              m_backoffTrace (m_backoff);
+              StartBackoffNow (m_backoff);
               m_fragmentNumber++;
               RestartAccessIfNeeded ();
             }
@@ -567,16 +611,30 @@ QosTxop::MissedAck (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
+      if (m_currentHdr.IsAction ())
+        {
+          WifiActionHeader actionHdr;
+          m_currentPacket->PeekHeader (actionHdr);
+          if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK)
+            {
+              uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
+              if (m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), tid, OriginatorBlockAckAgreement::PENDING))
+                {
+                  NS_LOG_DEBUG ("No ACK after ADDBA request");
+                  m_baManager->NotifyAgreementNoReply (m_currentHdr.GetAddr1 (), tid);
+                  Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, m_currentHdr.GetAddr1 (), tid);
+                }
+            }
+        }
       if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
         {
           uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
-
-          if (GetBaAgreementExists (m_currentHdr.GetAddr1 (), tid))
+          if (GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), tid))
             {
               //send Block ACK Request in order to shift WinStart at the receiver
               NS_LOG_DEBUG ("Transmit Block Ack Request");
               CtrlBAckRequestHeader reqHdr;
-              reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+              reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
               reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
               reqHdr.SetTidInfo (tid);
               reqHdr.SetHtImmediateAck (true);
@@ -609,12 +667,15 @@ QosTxop::MissedAck (void)
   else
     {
       NS_LOG_DEBUG ("Retransmit");
+      m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                          m_currentPacket->GetSize ());
       m_currentHdr.SetRetry ();
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -627,68 +688,144 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
     {
       m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus, 0, 0);
     }
-  if (NeedBarRetransmission ())
+  if (m_useExplicitBarAfterMissedBlockAck || m_currentHdr.IsBlockAckReq ())
     {
-      if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
+      if (NeedBarRetransmission ())
         {
-          //should i report this to station addressed by ADDR1?
-          NS_LOG_DEBUG ("Retransmit block ack request");
-          m_currentHdr.SetRetry ();
+          if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
+            {
+              //should i report this to station addressed by ADDR1?
+              NS_LOG_DEBUG ("Retransmit block ack request");
+              m_currentHdr.SetRetry ();
+            }
+          else
+            {
+              //standard says when losing a BlockAck originator may send a BAR page 139
+              NS_LOG_DEBUG ("Transmit Block Ack Request");
+              CtrlBAckRequestHeader reqHdr;
+              reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
+              if (m_currentHdr.IsQosData ())
+                {
+                  reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
+                }
+              else if (m_currentHdr.IsBlockAckReq ())
+                {
+                  CtrlBAckRequestHeader baReqHdr;
+                  m_currentPacket->PeekHeader (baReqHdr);
+                  reqHdr.SetStartingSequence (baReqHdr.GetStartingSequence ());
+                }
+              else if (m_currentHdr.IsBlockAck ())
+                {
+                  CtrlBAckResponseHeader baRespHdr;
+                  m_currentPacket->PeekHeader (baRespHdr);
+                  reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
+                }
+              reqHdr.SetTidInfo (tid);
+              reqHdr.SetHtImmediateAck (true);
+              Ptr<Packet> bar = Create<Packet> ();
+              bar->AddHeader (reqHdr);
+              Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
+              m_currentBar = request;
+              WifiMacHeader hdr;
+              hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+              hdr.SetAddr1 (request.recipient);
+              hdr.SetAddr2 (m_low->GetAddress ());
+              hdr.SetAddr3 (m_low->GetBssid ());
+              hdr.SetDsNotTo ();
+              hdr.SetDsNotFrom ();
+              hdr.SetNoRetry ();
+              hdr.SetNoMoreFragments ();
+
+              m_currentPacket = request.bar;
+              m_currentHdr = hdr;
+            }
+          UpdateFailedCw ();
+          m_cwTrace = GetCw ();
         }
       else
         {
-          //standard says when losing a BlockAck originator may send a BAR page 139
-          NS_LOG_DEBUG ("Transmit Block Ack Request");
-          CtrlBAckRequestHeader reqHdr;
-          reqHdr.SetType (COMPRESSED_BLOCK_ACK);
-          if (m_currentHdr.IsQosData ())
-            {
-              reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
-            }
-          else if (m_currentHdr.IsBlockAckReq ())
-            {
-              CtrlBAckRequestHeader baReqHdr;
-              m_currentPacket->PeekHeader (baReqHdr);
-              reqHdr.SetStartingSequence (baReqHdr.GetStartingSequence ());
-            }
-          else if (m_currentHdr.IsBlockAck ())
-            {
-              CtrlBAckResponseHeader baRespHdr;
-              m_currentPacket->PeekHeader (baRespHdr);
-              reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
-            }
-          reqHdr.SetTidInfo (tid);
-          reqHdr.SetHtImmediateAck (true);
-          Ptr<Packet> bar = Create<Packet> ();
-          bar->AddHeader (reqHdr);
-          Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
-          m_currentBar = request;
-          WifiMacHeader hdr;
-          hdr.SetType (WIFI_MAC_CTL_BACKREQ);
-          hdr.SetAddr1 (request.recipient);
-          hdr.SetAddr2 (m_low->GetAddress ());
-          hdr.SetAddr3 (m_low->GetBssid ());
-          hdr.SetDsNotTo ();
-          hdr.SetDsNotFrom ();
-          hdr.SetNoRetry ();
-          hdr.SetNoMoreFragments ();
-
-          m_currentPacket = request.bar;
-          m_currentHdr = hdr;
+          NS_LOG_DEBUG ("Block Ack Request Fail");
+          //to reset the dcf.
+          m_currentPacket = 0;
+          ResetCw ();
+          m_cwTrace = GetCw ();
         }
-      UpdateFailedCw ();
-      m_cwTrace = GetCw ();
     }
-  else
+  else //implicit BAR
     {
-      NS_LOG_DEBUG ("Block Ack Request Fail");
-      //to reset the dcf.
-      m_currentPacket = 0;
-      ResetCw ();
-      m_cwTrace = GetCw ();
+      if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
+        {
+          NS_LOG_DEBUG ("Block Ack Fail");
+          bool resetCurrentPacket = true;
+          if (!m_txFailedCallback.IsNull ())
+            {
+              m_txFailedCallback (m_currentHdr);
+            }
+          if (m_currentHdr.IsAction ())
+            {
+              WifiActionHeader actionHdr;
+              m_currentPacket->PeekHeader (actionHdr);
+              if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK)
+                {
+                  uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
+                  if (m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), tid, OriginatorBlockAckAgreement::PENDING))
+                    {
+                      NS_LOG_DEBUG ("No ACK after ADDBA request");
+                      m_baManager->NotifyAgreementNoReply (m_currentHdr.GetAddr1 (), tid);
+                      Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, m_currentHdr.GetAddr1 (), tid);
+                    }
+                }
+            }
+          if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
+            {
+              uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
+              if (GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), tid))
+                {
+                  //send Block ACK Request in order to shift WinStart at the receiver
+                  NS_LOG_DEBUG ("Transmit Block Ack Request");
+                  CtrlBAckRequestHeader reqHdr;
+                  reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
+                  reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
+                  reqHdr.SetTidInfo (tid);
+                  reqHdr.SetHtImmediateAck (true);
+                  Ptr<Packet> bar = Create<Packet> ();
+                  bar->AddHeader (reqHdr);
+                  Bar request (bar, m_currentHdr.GetAddr1 (), tid, reqHdr.MustSendHtImmediateAck ());
+                  m_currentBar = request;
+                  WifiMacHeader hdr;
+                  hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+                  hdr.SetAddr1 (request.recipient);
+                  hdr.SetAddr2 (m_low->GetAddress ());
+                  hdr.SetAddr3 (m_low->GetBssid ());
+                  hdr.SetDsNotTo ();
+                  hdr.SetDsNotFrom ();
+                  hdr.SetNoRetry ();
+                  hdr.SetNoMoreFragments ();
+                  m_currentPacket = request.bar;
+                  m_currentHdr = hdr;
+                  resetCurrentPacket = false;
+                }
+            }
+          //to reset the dcf.
+          if (resetCurrentPacket == true)
+            {
+              m_currentPacket = 0;
+            }
+          ResetCw ();
+          m_cwTrace = GetCw ();
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Retransmit");
+          m_baManager->NotifyMissedBlockAck (m_currentHdr.GetAddr1 (), tid);
+          m_currentPacket = 0;
+          UpdateFailedCw ();
+          m_cwTrace = GetCw ();
+        }
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -941,8 +1078,9 @@ QosTxop::EndTxNoAck (void)
   m_currentPacket = 0;
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   StartAccessIfNeeded ();
 }
 
@@ -950,13 +1088,13 @@ bool
 QosTxop::NeedFragmentation (void) const
 {
   NS_LOG_FUNCTION (this);
-  if (m_stationManager->HasVhtSupported ()
-      || m_stationManager->HasHeSupported ()
+  if (m_stationManager->GetVhtSupported ()
+      || m_stationManager->GetHeSupported ()
       || GetAmpduExist (m_currentHdr.GetAddr1 ())
-      || (m_stationManager->HasHtSupported ()
+      || (m_stationManager->GetHtSupported ()
           && m_currentHdr.IsQosData ()
-          && GetBaAgreementExists (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
-          && GetMpduAggregator ()->GetMaxAmpduSize () >= m_currentPacket->GetSize ()))
+          && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
+          && GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (GetTid (m_currentPacket, m_currentHdr))) >= m_currentPacket->GetSize ()))
     {
       //MSDU is not fragmented when it is transmitted using an HT-immediate or
       //HT-delayed Block Ack agreement or when it is carried in an A-MPDU.
@@ -1226,20 +1364,16 @@ void
 QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient)
 {
   NS_LOG_FUNCTION (this << respHdr << recipient);
-  NS_LOG_DEBUG ("received ADDBA response from " << recipient);
   uint8_t tid = respHdr->GetTid ();
-  if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING))
+  if (respHdr->GetStatusCode ().IsSuccess ())
     {
-      if (respHdr->GetStatusCode ().IsSuccess ())
-        {
-          NS_LOG_DEBUG ("block ack agreement established with " << recipient);
-          m_baManager->UpdateAgreement (respHdr, recipient);
-        }
-      else
-        {
-          NS_LOG_DEBUG ("discard ADDBA response" << recipient);
-          m_baManager->NotifyAgreementUnsuccessful (recipient, tid);
-        }
+      NS_LOG_DEBUG ("block ack agreement established with " << recipient);
+      m_baManager->UpdateAgreement (respHdr, recipient);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("discard ADDBA response" << recipient);
+      m_baManager->NotifyAgreementRejected (recipient, tid);
     }
   RestartAccessIfNeeded ();
 }
@@ -1271,8 +1405,9 @@ QosTxop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recip
           m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
         }
       m_cwTrace = GetCw ();
-      m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-      StartBackoffNow (m_backoffTrace);
+      m_backoff = m_rng->GetInteger (0, GetCw ());
+      m_backoffTrace (m_backoff);
+      StartBackoffNow (m_backoff);
       RestartAccessIfNeeded ();
     }
 }
@@ -1289,7 +1424,7 @@ QosTxop::VerifyBlockAck (void)
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
     }
   if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
-      && (GetMpduAggregator () == 0 || GetMpduAggregator ()->GetMaxAmpduSize () == 0))
+      && (GetMpduAggregator () == 0 || GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) == 0))
     {
       m_currentHdr.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
     }
@@ -1346,9 +1481,9 @@ QosTxop::SetupBlockAckIfNeeded (void)
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient);
   if ((GetBlockAckThreshold () > 0 && packets >= GetBlockAckThreshold ())
-      || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize () > 0 && packets > 1)
-      || m_stationManager->HasVhtSupported ()
-      || m_stationManager->HasHeSupported ())
+      || (m_mpduAggregator != 0 && GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) > 0 && packets > 1)
+      || m_stationManager->GetVhtSupported ()
+      || m_stationManager->GetHeSupported ())
     {
       /* Block ack setup */
       uint16_t startingSequence = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
@@ -1385,7 +1520,14 @@ QosTxop::SendBlockAckRequest (const Bar &bar)
         }
       else if (m_blockAckType == COMPRESSED_BLOCK_ACK)
         {
-          m_currentParams.EnableCompressedBlockAck ();
+          if (GetBaBufferSize (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr)) > 64)
+            {
+              m_currentParams.EnableExtendedCompressedBlockAck ();
+            }
+          else
+            {
+              m_currentParams.EnableCompressedBlockAck ();
+            }
         }
       else if (m_blockAckType == MULTI_TID_BLOCK_ACK)
         {
@@ -1535,8 +1677,9 @@ QosTxop::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
 }
 
 void
@@ -1559,6 +1702,58 @@ QosTxop::BaTxFailed (const WifiMacHeader &hdr)
     }
 }
 
+void
+QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  // If agreement is still pending, ADDBA response is not received
+  if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING))
+    {
+      m_baManager->NotifyAgreementNoReply (recipient, tid);
+      Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
+      m_backoff = m_rng->GetInteger (0, GetCw ());
+      m_backoffTrace (m_backoff);
+      StartBackoffNow (m_backoff);
+      RestartAccessIfNeeded ();
+    }
+}
+
+void
+QosTxop::ResetBa (Mac48Address recipient, uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  if (!m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
+    {
+      m_baManager->NotifyAgreementReset (recipient, tid);
+    }
+}
+
+void
+QosTxop::SetAddBaResponseTimeout (Time addBaResponseTimeout)
+{
+  NS_LOG_FUNCTION (this << addBaResponseTimeout);
+  m_addBaResponseTimeout = addBaResponseTimeout;
+}
+
+Time
+QosTxop::GetAddBaResponseTimeout (void) const
+{
+  return m_addBaResponseTimeout;
+}
+
+void
+QosTxop::SetFailedAddBaTimeout (Time failedAddBaTimeout)
+{
+  NS_LOG_FUNCTION (this << failedAddBaTimeout);
+  m_failedAddBaTimeout = failedAddBaTimeout;
+}
+
+Time
+QosTxop::GetFailedAddBaTimeout (void) const
+{
+  return m_failedAddBaTimeout;
+}
+
 bool
 QosTxop::IsQosTxop (void) const
 {
@@ -1566,4 +1761,3 @@ QosTxop::IsQosTxop (void) const
 }
 
 } //namespace ns3
-

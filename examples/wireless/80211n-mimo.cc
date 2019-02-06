@@ -137,8 +137,6 @@ int main (int argc, char *argv[])
           YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
           phy.SetChannel (channel.Create ());
 
-          // Set guard interval
-          phy.Set ("ShortGuardEnabled", BooleanValue (shortGuardInterval));
           // Set MIMO capabilities
           phy.Set ("Antennas", UintegerValue (nStreams));
           phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (nStreams));
@@ -161,8 +159,18 @@ int main (int argc, char *argv[])
               return 0;
             }
 
-          wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (modes[i]),
-                                        "ControlMode", StringValue (modes[i]));
+          StringValue ctrlRate;
+          if (frequency == 2.4)
+            {
+                ctrlRate = StringValue ("ErpOfdmRate24Mbps");
+            }
+          else
+            {
+                ctrlRate = StringValue ("OfdmRate24Mbps");
+            }
+          wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                        "DataMode", StringValue (modes[i]),
+                                        "ControlMode", ctrlRate);
 
           Ssid ssid = Ssid ("ns3-80211n");
 
@@ -183,6 +191,9 @@ int main (int argc, char *argv[])
             {
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
             }
+
+          // Set guard interval
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (shortGuardInterval));
 
           // mobility.
           MobilityHelper mobility;
