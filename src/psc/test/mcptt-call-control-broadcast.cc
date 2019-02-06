@@ -84,7 +84,7 @@ public:
  virtual void SetPreTimerExpCb (const Callback<void, const BroadcastTestCallMachine&, const McpttTimer&>  timerExpCb);
  virtual void SetPreTxCb (const Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>  preTxCb);
  virtual void SetStartState (Ptr<McpttCallMachineGrpBroadcastState>  startState);
- virtual void SetStateChangeCb (const Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState> , Ptr<McpttCallMachineGrpBroadcastState> >  stateChangeCb);
+ virtual void SetStateChangeTestCb (const Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState> , Ptr<McpttCallMachineGrpBroadcastState> >  stateChangeCb);
 };
 
 /**
@@ -483,7 +483,7 @@ BroadcastTestCallMachine::SetStartState (Ptr<McpttCallMachineGrpBroadcastState> 
 }
 
 void
-BroadcastTestCallMachine::SetStateChangeCb (const Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState> , Ptr<McpttCallMachineGrpBroadcastState> >  stateChangeCb)
+BroadcastTestCallMachine::SetStateChangeTestCb (const Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState> , Ptr<McpttCallMachineGrpBroadcastState> >  stateChangeCb)
 {
   m_stateChangeCb = stateChangeCb;
 }
@@ -518,14 +518,14 @@ BroadcastCallScenario1::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario1::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario1::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario1::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario1::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario1::UeATimerExpCb, this));
 
   // UE B
   ueBMachine->SetStartState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario1::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario1::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario1::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario1::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario1::UeBTimerExpCb, this));
   ueBMachine->SetAttribute ("UserAckRequired", BooleanValue (true));
 
@@ -533,7 +533,7 @@ BroadcastCallScenario1::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario1::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario1::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario1::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario1::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario1::UeCTimerExpCb, this));
 
 
@@ -779,14 +779,14 @@ BroadcastCallScenario2::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario2::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario2::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario2::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario2::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario2::UeATimerExpCb, this));
 
   // UE B
   ueBMachine->SetStartState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario2::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario2::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario2::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario2::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario2::UeBTimerExpCb, this));
   ueBMachine->SetNewCallCb (MakeCallback (&BroadcastCallScenario2::UeBNewCallCb, this));
   ueBMachine->SetAttribute ("UserAckRequired", BooleanValue ((true)));
@@ -795,7 +795,7 @@ BroadcastCallScenario2::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBroadcastStateB1::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario2::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario2::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario2::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario2::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario2::UeCTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -1083,7 +1083,7 @@ BroadcastCallScenario3::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario3::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario3::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario3::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario3::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario3::UeATimerExpCb, this));
 
   // UE B
@@ -1096,7 +1096,7 @@ BroadcastCallScenario3::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario3::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario3::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario3::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario3::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario3::UeBTimerExpCb, this));
 
   // UE C
@@ -1109,7 +1109,7 @@ BroadcastCallScenario3::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario3::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario3::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario3::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario3::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario3::UeCTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueATfb1);
@@ -1399,7 +1399,7 @@ BroadcastCallScenario4::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario4::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario4::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario4::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario4::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario4::UeATimerExpCb, this));
 
   // UE B
@@ -1413,7 +1413,7 @@ BroadcastCallScenario4::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario4::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario4::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario4::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario4::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario4::UeBTimerExpCb, this));
 
   // UE C
@@ -1427,7 +1427,7 @@ BroadcastCallScenario4::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&BroadcastCallScenario4::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&BroadcastCallScenario4::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&BroadcastCallScenario4::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&BroadcastCallScenario4::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&BroadcastCallScenario4::UeCTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueATfb1);

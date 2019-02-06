@@ -87,7 +87,7 @@ public:
  virtual void SetPreRxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  preRxCb);
  virtual void SetPreTimerExpCb (const Callback<void, const TestCallTypeMachine&, const McpttTimer&>  timerExpCb);
  virtual void SetPreTxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  preTxCb);
- virtual void SetStateChangeCb (const Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>  stateChangeCb);
+ virtual void SetStateChangeTestCb (const Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>  stateChangeCb);
 };
 
 class McpttCallTypeInitEstabNewCall : public McpttTestCase
@@ -763,7 +763,7 @@ TestCallTypeMachine::SetPreTxCb (const Callback<void, const TestCallTypeMachine&
 }
 
 void
-TestCallTypeMachine::SetStateChangeCb (const Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
+TestCallTypeMachine::SetStateChangeTestCb (const Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
 {
   m_stateChangeCb = stateChangeCb;
 }
@@ -803,21 +803,21 @@ McpttCallTypeInitEstabNewCall::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeATimerExpCb, this));
 
   // UE B
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeBRxCb, this));
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeBTxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeBTimerExpCb, this));
 
   // UE C
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeCRxCb, this));
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeCTxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitEstabNewCall::UeCTimerExpCb, this));
 
   Simulator::Schedule (startTime, &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -1032,7 +1032,7 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeATimerExpCb, this));
 
   ueATfg1->SetDelay (Seconds (1.0));
@@ -1057,7 +1057,7 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -1084,7 +1084,7 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCall::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -1320,7 +1320,7 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeATimerExpCb, this));
 
   ueATfg1->SetDelay (Seconds (1.0));
@@ -1345,7 +1345,7 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -1372,7 +1372,7 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinImmPerilCall::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -1605,7 +1605,7 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeATimerExpCb, this));
 
   ueATfg1->SetDelay (Seconds (1.0));
@@ -1630,7 +1630,7 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -1656,7 +1656,7 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinBasicCall::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -1888,7 +1888,7 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeATimerExpCb, this));
 
   ueATfg1->SetDelay (Seconds (1.0));
@@ -1913,7 +1913,7 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -1940,7 +1940,7 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCallUserAck::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -2181,7 +2181,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T0);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeATimerExpCb, this));
 
   ueATfg1->SetDelay (Seconds (1.0));
@@ -2206,7 +2206,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -2233,7 +2233,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeInitJoinEmergCallNoUserAck::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -2485,7 +2485,7 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -2511,7 +2511,7 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -2537,7 +2537,7 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeUpgradeFromBasicCall::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -2892,7 +2892,7 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -2919,7 +2919,7 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -2946,7 +2946,7 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeUpgradeFromImmPerilCall::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -3312,7 +3312,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -3339,7 +3339,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -3366,7 +3366,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromEmerg::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -3732,7 +3732,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -3759,7 +3759,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -3786,7 +3786,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeExplicitDowngradeFromImmPeril::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -4147,7 +4147,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -4174,7 +4174,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -4201,7 +4201,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromEmerg::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -4451,7 +4451,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -4478,7 +4478,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -4505,7 +4505,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeImplicitDowngradeFromImmPeril::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -4752,7 +4752,7 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -4779,7 +4779,7 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -4805,7 +4805,7 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeReleaseAfterCallEstab::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (ueCMachine->CalcDelayForPeriodicAnnoun ());
@@ -5023,7 +5023,7 @@ McpttCallTypeMerge::Configure (void)
   ueATypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T2);
   ueATypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeMerge::UeATxCb, this));
   ueATypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeMerge::UeARxCb, this));
-  ueATypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeMerge::UeAStateChangeCb, this));
+  ueATypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeMerge::UeAStateChangeCb, this));
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeMerge::UeATimerExpCb, this));
 
   ueATfg2->SetDelay (ueAMachine->CalcDelayForPeriodicAnnoun ());
@@ -5049,7 +5049,7 @@ McpttCallTypeMerge::Configure (void)
   ueBTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T3);
   ueBTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeMerge::UeBTxCb, this));
   ueBTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeMerge::UeBRxCb, this));
-  ueBTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeMerge::UeBStateChangeCb, this));
+  ueBTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeMerge::UeBStateChangeCb, this));
   ueBTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeMerge::UeBTimerExpCb, this));
 
   ueBTfg2->SetDelay (ueBMachine->CalcDelayForPeriodicAnnoun ());
@@ -5075,7 +5075,7 @@ McpttCallTypeMerge::Configure (void)
   ueCTypeMachine->SetStateId (McpttCallTypeMachineGrpBasic::T1);
   ueCTypeMachine->SetPostTxCb (MakeCallback (&McpttCallTypeMerge::UeCTxCb, this));
   ueCTypeMachine->SetPostRxCb (MakeCallback (&McpttCallTypeMerge::UeCRxCb, this));
-  ueCTypeMachine->SetStateChangeCb (MakeCallback (&McpttCallTypeMerge::UeCStateChangeCb, this));
+  ueCTypeMachine->SetStateChangeTestCb (MakeCallback (&McpttCallTypeMerge::UeCStateChangeCb, this));
   ueCTypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypeMerge::UeCTimerExpCb, this));
 
   ueCTfg2->SetDelay (Seconds (2.0));

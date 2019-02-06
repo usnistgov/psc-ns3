@@ -196,7 +196,7 @@ McpttRtpHeader::Deserialize (Buffer::Iterator start)
 TypeId
 McpttRtpHeader::GetInstanceTypeId (void) const
 {
-  return McpttRtpHeader::GetInstanceTypeId ();
+  return McpttRtpHeader::GetTypeId ();
 }
 
 uint32_t

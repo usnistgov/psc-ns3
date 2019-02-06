@@ -85,7 +85,7 @@ public:
  virtual void SetPreTimerExpCb (const Callback<void, const PrivateTestCallMachine&, const McpttTimer&>  timerExpCb);
  virtual void SetPreTxCb (const Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>  preTxCb);
  virtual void SetStartState (Ptr<McpttCallMachinePrivateState>  startState);
- virtual void SetStateChangeCb (const Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState> , Ptr<McpttCallMachinePrivateState> >  stateChangeCb);
+ virtual void SetStateChangeTestCb (const Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState> , Ptr<McpttCallMachinePrivateState> >  stateChangeCb);
 };
 
 class PrivateCallSetupAuto1 : public McpttTestCase
@@ -584,7 +584,7 @@ PrivateTestCallMachine::SetStartState (Ptr<McpttCallMachinePrivateState>  startS
 }
 
 void
-PrivateTestCallMachine::SetStateChangeCb (const Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState> , Ptr<McpttCallMachinePrivateState> >  stateChangeCb)
+PrivateTestCallMachine::SetStateChangeTestCb (const Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState> , Ptr<McpttCallMachinePrivateState> >  stateChangeCb)
 {
   m_stateChangeCb = stateChangeCb;
 }
@@ -624,7 +624,7 @@ PrivateCallSetupAuto1::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupAuto1::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupAuto1::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupAuto1::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupAuto1::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupAuto1::UeATimerExpCb, this));
 
   // UE B
@@ -632,7 +632,7 @@ PrivateCallSetupAuto1::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupAuto1::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupAuto1::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupAuto1::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupAuto1::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupAuto1::UeBTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -1030,7 +1030,7 @@ PrivateCallSetupAuto3::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupAuto3::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupAuto3::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupAuto3::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupAuto3::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupAuto3::UeATimerExpCb, this));
 
   // UE B
@@ -1038,7 +1038,7 @@ PrivateCallSetupAuto3::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupAuto3::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupAuto3::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupAuto3::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupAuto3::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupAuto3::UeBTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -1454,7 +1454,7 @@ PrivateCallSetupManual1::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupManual1::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupManual1::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupManual1::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupManual1::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupManual1::UeATimerExpCb, this));
 
   // UE B
@@ -1462,7 +1462,7 @@ PrivateCallSetupManual1::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupManual1::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupManual1::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupManual1::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupManual1::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupManual1::UeBTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -1897,7 +1897,7 @@ PrivateCallSetupManual3::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupManual3::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupManual3::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupManual3::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupManual3::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupManual3::UeATimerExpCb, this));
 
   // UE B
@@ -1905,7 +1905,7 @@ PrivateCallSetupManual3::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupManual3::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupManual3::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupManual3::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupManual3::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupManual3::UeBTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -2354,7 +2354,7 @@ PrivateCallSetupFailure::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupFailure::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupFailure::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupFailure::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupFailure::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupFailure::UeATimerExpCb, this));
 
   // UE B
@@ -2363,7 +2363,7 @@ PrivateCallSetupFailure::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP0::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallSetupFailure::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallSetupFailure::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallSetupFailure::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallSetupFailure::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallSetupFailure::UeBTimerExpCb, this));
 
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -2745,7 +2745,7 @@ PrivateCallCancel1::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP4::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallCancel1::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallCancel1::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallCancel1::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallCancel1::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallCancel1::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -2766,7 +2766,7 @@ PrivateCallCancel1::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP4::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallCancel1::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallCancel1::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallCancel1::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallCancel1::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallCancel1::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -3155,7 +3155,7 @@ PrivateCallCancel2::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP4::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallCancel2::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallCancel2::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallCancel2::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallCancel2::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallCancel2::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -3177,7 +3177,7 @@ PrivateCallCancel2::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP4::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallCancel2::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallCancel2::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallCancel2::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallCancel2::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallCancel2::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -3431,7 +3431,7 @@ PrivateCallExpiration::Configure (void)
   ueAMachine->SetStartState (McpttCallMachinePrivateStateP4::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&PrivateCallExpiration::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&PrivateCallExpiration::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&PrivateCallExpiration::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallExpiration::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallExpiration::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -3454,7 +3454,7 @@ PrivateCallExpiration::Configure (void)
   ueBMachine->SetStartState (McpttCallMachinePrivateStateP4::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&PrivateCallExpiration::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&PrivateCallExpiration::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&PrivateCallExpiration::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&PrivateCallExpiration::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&PrivateCallExpiration::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);

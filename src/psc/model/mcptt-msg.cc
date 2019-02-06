@@ -59,7 +59,7 @@ McpttMsg::~McpttMsg (void)
 TypeId
 McpttMsg::GetInstanceTypeId (void) const
 {
-  return McpttMsg::GetInstanceTypeId ();
+  return McpttMsg::GetTypeId ();
 }
 
 bool

@@ -90,7 +90,7 @@ public:
  virtual void SetPreTimerExpCb (const Callback<void, const TestFloorMachine&, Ptr<McpttTimer> >  timerExpCb);
  virtual void SetPreTxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  preTxCb);
  virtual void SetStartState (Ptr<McpttFloorMachineBasicState>  startState);
- virtual void SetStateChangeCb (const Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >  stateChangeCb);
+ virtual void SetStateChangeTestCb (const Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >  stateChangeCb);
 };
 
 /**
@@ -565,7 +565,7 @@ TestFloorMachine::TestFloorMachine (void)
   SetPreRxCb (MakeNullCallback<void, const TestFloorMachine&, const McpttMsg&> ());
   SetPreTimerExpCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttTimer> > ());
   SetPreTxCb (MakeNullCallback<void, const TestFloorMachine&, const McpttMsg&> ());
-  SetStateChangeCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> > ());
+  SetStateChangeTestCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> > ());
 }
 
 TestFloorMachine::~TestFloorMachine (void)
@@ -864,7 +864,7 @@ TestFloorMachine::SetStartState (Ptr<McpttFloorMachineBasicState>  startState)
 }
 
 void
-TestFloorMachine::SetStateChangeCb (const Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >  stateChangeCb)
+TestFloorMachine::SetStateChangeTestCb (const Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >  stateChangeCb)
 {
   m_stateChangeCb = stateChangeCb;
 }
@@ -907,19 +907,19 @@ McpttFloorRequestIdle::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdle::TxCb, this));
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestIdle::RxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestIdle::StateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdle::StateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdle::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdle::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestIdle::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdle::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueCMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdle::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdle::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestIdle::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdle::UeCStateChangeCb, this));
 
   Ptr<McpttPusher> ueAPusher = ueAPttApp->GetPusher ();
   ueAPusher->SchedulePush (Seconds (2.1));
@@ -1254,7 +1254,7 @@ McpttFloorRequestDenied::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestDenied::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestDenied::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestDenied::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestDenied::UeAStateChangeCb, this));
 
   ueAT201->SetDelay (Seconds (0.120));
 
@@ -1262,13 +1262,13 @@ McpttFloorRequestDenied::Configure (void)
   ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestDenied::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestDenied::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestDenied::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestDenied::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestDenied::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestDenied::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestDenied::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestDenied::UeCStateChangeCb, this));
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
 
   ueAPusher->SchedulePush (Seconds (2.1));
@@ -1635,7 +1635,7 @@ McpttFloorRequestPreemptive::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestPreemptive::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestPreemptive::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestPreemptive::UeAStateChangeCb, this));
 
   ueAT201->SetDelay (Seconds (0.160));
 
@@ -1644,7 +1644,7 @@ McpttFloorRequestPreemptive::Configure (void)
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestPreemptive::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeBRxCb, this));
   ueBMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeBPreRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestPreemptive::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestPreemptive::UeBStateChangeCb, this));
 
   ueBT205->SetDelay (Seconds (0.120));
 
@@ -1652,7 +1652,7 @@ McpttFloorRequestPreemptive::Configure (void)
   ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestPreemptive::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestPreemptive::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestPreemptive::UeCStateChangeCb, this));
 
   ueAPusher->SchedulePush (Seconds (2.24));
 
@@ -2121,7 +2121,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestQueued::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestQueued::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestQueued::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestQueued::UeAStateChangeCb, this));
   ueAMachine->SetPreTimerExpCb (MakeCallback (&McpttFloorRequestQueued::UeATimerExpCb, this));
 
   ueAT201->SetDelay (Seconds (0.160));
@@ -2130,7 +2130,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestQueued::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestQueued::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestQueued::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestQueued::UeBStateChangeCb, this));
   ueBMachine->SetPreTimerExpCb (MakeCallback (&McpttFloorRequestQueued::UeBTimerExpCb, this));
 
   ueBT205->SetDelay (Seconds (0.120));
@@ -2139,7 +2139,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestQueued::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestQueued::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestQueued::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestQueued::UeCStateChangeCb, this));
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
 
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
@@ -2615,19 +2615,19 @@ McpttSessionInitNormal::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitNormal::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitNormal::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitNormal::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitNormal::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttSessionInitNormal::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttSessionInitNormal::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitNormal::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitNormal::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueCMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttSessionInitNormal::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttSessionInitNormal::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitNormal::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitNormal::UeCStateChangeCb, this));
 }
 
 void
@@ -2985,19 +2985,19 @@ McpttSessionInitLoss::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitLoss::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitLoss::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueCMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitLoss::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeCStateChangeCb, this));
 }
 
 void
@@ -3353,13 +3353,13 @@ McpttFloorReleaseNormal::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseNormal::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseNormal::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseNormal::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseNormal::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseNormal::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseNormal::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseNormal::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseNormal::UeBStateChangeCb, this));
 
   ueAMachine->SetCurrentSsrc (ueAMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueAMachine->GetTxSsrc ());
@@ -3619,7 +3619,7 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStatePendReq::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseAfterReq::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseAfterReq::UeAStateChangeCb, this));
 
   ueAT201->SetDelay (Seconds (0.160));
 
@@ -3627,13 +3627,13 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCStateChangeCb, this));
 
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
@@ -4027,7 +4027,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeARxCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeATimerExpCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb, this));
 
   ueAT201->SetDelay (Seconds (0.160));
 
@@ -4037,7 +4037,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBRxCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBTimerExpCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb, this));
 
   ueBT205->SetDelay (Seconds (0.120));
 
@@ -4046,7 +4046,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCRxCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCTimerExpCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb, this));
 
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
@@ -4668,19 +4668,19 @@ McpttFloorReleaseWhileQueued::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateQueued::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCRxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCStateChangeCb, this));
 
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
@@ -4993,7 +4993,7 @@ McpttFloorRequestIdleBis::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdleBis::UeATxCb, this));
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestIdleBis::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeAStateChangeCb, this));
 
   ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("8b/s")));
   ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
@@ -5008,7 +5008,7 @@ McpttFloorRequestIdleBis::Configure (void)
   ueBMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdleBis::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestIdleBis::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeBStateChangeCb, this));
 
   ueBT230->SetDelay (Seconds (0.050));
 
@@ -5018,7 +5018,7 @@ McpttFloorRequestIdleBis::Configure (void)
   ueCMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdleBis::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorRequestIdleBis::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeCStateChangeCb, this));
 
   ueCT201->SetDelay (Seconds (0.160));
   ueCT204->SetDelay (Seconds (0.160));
@@ -5323,7 +5323,7 @@ McpttSessionInitPrivateCall::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitPrivateCall::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitPrivateCall::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitPrivateCall::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitPrivateCall::UeAStateChangeCb, this));
 
   ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("8b/s")));
   ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
@@ -5337,7 +5337,7 @@ McpttSessionInitPrivateCall::Configure (void)
   ueBMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttSessionInitPrivateCall::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttSessionInitPrivateCall::UeBRxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttSessionInitPrivateCall::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitPrivateCall::UeBStateChangeCb, this));
 
   ueBCallMachine->SetAttribute ("CallType", UintegerValue (McpttCallMsgFieldCallType::PRIVATE));
 
@@ -5550,7 +5550,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   ueAMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeATxCb, this));
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeAStateChangeCb, this));
   ueAMachine->SetCurrentSsrc (ueAMachine->GetTxSsrc ());
 
   ueAT205->SetDelay (Seconds (0.120));
@@ -5559,7 +5559,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   ueBMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBStateChangeCb, this));
   ueBMachine->SetCurrentSsrc (ueAMachine->GetTxSsrc ());
   ueBMachine->SetPriority (7);
 
@@ -5570,7 +5570,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCStateChangeCb, this));
   ueCMachine->SetCurrentSsrc (ueAMachine->GetTxSsrc ());
 
   ueCT201->SetDelay (Seconds (0.160));

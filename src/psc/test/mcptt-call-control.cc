@@ -87,7 +87,7 @@ public:
  virtual void SetPreTimerExpCb (const Callback<void, const TestCallMachine&, const McpttTimer&>  timerExpCb);
  virtual void SetPreTxCb (const Callback<void, const TestCallMachine&, const McpttCallMsg&>  preTxCb);
  virtual void SetStartState (Ptr<McpttCallMachineGrpBasicState>  startState);
- virtual void SetStateChangeCb (const Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState> , Ptr<McpttCallMachineGrpBasicState> >  stateChangeCb);
+ virtual void SetStateChangeTestCb (const Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState> , Ptr<McpttCallMachineGrpBasicState> >  stateChangeCb);
 };
 
 class McpttCallSetupJoinCall : public McpttTestCase
@@ -711,7 +711,7 @@ TestCallMachine::SetStartState (Ptr<McpttCallMachineGrpBasicState>  startState)
 }
 
 void
-TestCallMachine::SetStateChangeCb (const Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState> , Ptr<McpttCallMachineGrpBasicState> >  stateChangeCb)
+TestCallMachine::SetStateChangeTestCb (const Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState> , Ptr<McpttCallMachineGrpBasicState> >  stateChangeCb)
 {
   m_stateChangeCb = stateChangeCb;
 }
@@ -783,7 +783,7 @@ McpttCallSetupJoinCall::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallSetupJoinCall::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallSetupJoinCall::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallSetupJoinCall::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallSetupJoinCall::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallSetupJoinCall::UeATimerExpCb, this));
 
   // UE B
@@ -796,7 +796,7 @@ McpttCallSetupJoinCall::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallSetupJoinCall::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallSetupJoinCall::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallSetupJoinCall::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallSetupJoinCall::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallSetupJoinCall::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -825,7 +825,7 @@ McpttCallSetupJoinCall::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallSetupJoinCall::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallSetupJoinCall::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallSetupJoinCall::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallSetupJoinCall::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallSetupJoinCall::UeCTimerExpCb, this));
 
   ueCEmergMachine->SetEmerg (false);
@@ -1247,21 +1247,21 @@ McpttCallSetupNewCall::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallSetupNewCall::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallSetupNewCall::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallSetupNewCall::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallSetupNewCall::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallSetupNewCall::UeATimerExpCb, this));
 
   // UE B
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallSetupNewCall::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallSetupNewCall::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallSetupNewCall::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallSetupNewCall::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallSetupNewCall::UeBTimerExpCb, this));
 
   // UE C
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallSetupNewCall::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallSetupNewCall::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallSetupNewCall::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallSetupNewCall::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallSetupNewCall::UeCTimerExpCb, this));
 
   Simulator::Schedule (startTime, &McpttPttApp::TakePushNotification, ueAPttApp);
@@ -1812,7 +1812,7 @@ McpttCallMerge::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallMerge::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallMerge::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallMerge::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallMerge::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallMerge::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -1842,7 +1842,7 @@ McpttCallMerge::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallMerge::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallMerge::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallMerge::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallMerge::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallMerge::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -1864,7 +1864,7 @@ McpttCallMerge::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallMerge::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallMerge::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallMerge::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallMerge::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallMerge::UeCTimerExpCb, this));
 
   Simulator::Schedule (startTime, &McpttTimer::Start, ueATfg2);
@@ -2400,7 +2400,7 @@ McpttCallRelease::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallRelease::UeARxCb, this));
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallRelease::UeATxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallRelease::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallRelease::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallRelease::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -2429,7 +2429,7 @@ McpttCallRelease::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallRelease::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallRelease::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallRelease::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallRelease::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallRelease::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -2457,7 +2457,7 @@ McpttCallRelease::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallRelease::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallRelease::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallRelease::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallRelease::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallRelease::UeCTimerExpCb, this));
 
   ueCEmergMachine->SetEmerg (false);
@@ -2818,7 +2818,7 @@ McpttCallReleaseAfterProbe::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS2::GetInstance ());
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseAfterProbe::UeARxCb, this));
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseAfterProbe::UeATxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseAfterProbe::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseAfterProbe::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseAfterProbe::UeATimerExpCb, this));
 
   // UE B
@@ -2831,7 +2831,7 @@ McpttCallReleaseAfterProbe::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseAfterProbe::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseAfterProbe::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseAfterProbe::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseAfterProbe::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseAfterProbe::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -2859,7 +2859,7 @@ McpttCallReleaseAfterProbe::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseAfterProbe::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseAfterProbe::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseAfterProbe::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseAfterProbe::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseAfterProbe::UeCTimerExpCb, this));
 
   ueCEmergMachine->SetEmerg (false);
@@ -3103,7 +3103,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS4::GetInstance ());
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeARxCb, this));
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeATxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -3129,7 +3129,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -3157,7 +3157,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleasePendingUserAction1::UeCTimerExpCb, this));
 
   ueCEmergMachine->SetEmerg (false);
@@ -3394,7 +3394,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS5::GetInstance ());
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeARxCb, this));
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeATxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -3428,7 +3428,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -3457,7 +3457,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleasePendingUserAction2::UeCTimerExpCb, this));
 
   ueCEmergMachine->SetEmerg (false);
@@ -3811,7 +3811,7 @@ McpttCallReleaseMaxDuration::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseMaxDuration::UeARxCb, this));
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseMaxDuration::UeATxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseMaxDuration::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseMaxDuration::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseMaxDuration::UeATimerExpCb, this));
 
   ueAEmergMachine->SetEmerg (false);
@@ -3839,7 +3839,7 @@ McpttCallReleaseMaxDuration::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseMaxDuration::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseMaxDuration::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseMaxDuration::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseMaxDuration::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseMaxDuration::UeBTimerExpCb, this));
 
   ueBEmergMachine->SetEmerg (false);
@@ -3867,7 +3867,7 @@ McpttCallReleaseMaxDuration::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS3::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseMaxDuration::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseMaxDuration::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseMaxDuration::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseMaxDuration::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseMaxDuration::UeCTimerExpCb, this));
 
   ueCEmergMachine->SetEmerg (false);
@@ -4102,21 +4102,21 @@ McpttCallReleaseAndSetup::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseAndSetup::UeARxCb, this));
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseAndSetup::UeATxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseAndSetup::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseAndSetup::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseAndSetup::UeATimerExpCb, this));
 
   // UE B
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseAndSetup::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseAndSetup::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseAndSetup::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseAndSetup::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseAndSetup::UeBTimerExpCb, this));
 
   // UE C
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallReleaseAndSetup::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallReleaseAndSetup::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallReleaseAndSetup::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReleaseAndSetup::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReleaseAndSetup::UeCTimerExpCb, this));
 
   // Events
@@ -4343,7 +4343,7 @@ McpttCallReject::Configure (void)
   ueAMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttCallReject::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttCallReject::UeARxCb, this));
-  ueAMachine->SetStateChangeCb (MakeCallback (&McpttCallReject::UeAStateChangeCb, this));
+  ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReject::UeAStateChangeCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReject::UeATimerExpCb, this));
 
   // UE B
@@ -4353,7 +4353,7 @@ McpttCallReject::Configure (void)
   ueBMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttCallReject::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttCallReject::UeBTxCb, this));
-  ueBMachine->SetStateChangeCb (MakeCallback (&McpttCallReject::UeBStateChangeCb, this));
+  ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReject::UeBStateChangeCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReject::UeBTimerExpCb, this));
 
   // UE C
@@ -4364,7 +4364,7 @@ McpttCallReject::Configure (void)
   ueCMachine->SetStartState (McpttCallMachineGrpBasicStateS1::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttCallReject::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttCallReject::UeCTxCb, this));
-  ueCMachine->SetStateChangeCb (MakeCallback (&McpttCallReject::UeCStateChangeCb, this));
+  ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttCallReject::UeCStateChangeCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttCallReject::UeCTimerExpCb, this));
 
   Simulator::Schedule (startTime, &McpttPttApp::TakePushNotification, ueAPttApp);
