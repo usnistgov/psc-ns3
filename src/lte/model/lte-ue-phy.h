@@ -278,7 +278,10 @@ public:
   State GetState () const;
 
   /**
-   * Get random system frame and subframe number
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
    * \param stream The first stream index to use
    * \return The number of stream indices assigned
    */
