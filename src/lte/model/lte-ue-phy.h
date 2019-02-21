@@ -254,6 +254,12 @@ public:
    */
   void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
 
+  /**
+   * \brief Trigger the SubframeIndication method
+   * by choosing the frame and subframe number
+   * randomly.
+   */
+  void StartRandomInitialSubframeIndication ();
 
   /**
    * \brief Send the SRS signal in the last symbols of the frame

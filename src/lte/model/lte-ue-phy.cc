@@ -426,41 +426,47 @@ void
 LteUePhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  bool haveNodeId = false;
-  uint32_t nodeId = 0;
-  uint32_t frameNo = 1;
-  uint32_t subframeNo = 1;
+
+  NS_ABORT_MSG_IF (m_netDevice == nullptr, "LteNetDevice is not available in LteUePhy");
+  Ptr<Node> node = m_netDevice->GetNode ();
+  NS_ABORT_MSG_IF (node == nullptr, "Node is not available in the LteNetDevice of LteUePhy");
+  uint32_t nodeId = node->GetId ();
 
   if (m_chooseFrameAndSubframeRandomly)
     {
-      m_uniformRandomVariable->SetAttribute("Min", DoubleValue(1));
-      m_uniformRandomVariable->SetAttribute("Max", DoubleValue(1024));
-      frameNo = m_uniformRandomVariable->GetInteger();
-      m_uniformRandomVariable->SetAttribute("Min", DoubleValue(1));
-      m_uniformRandomVariable->SetAttribute("Max", DoubleValue(10));
-      subframeNo = m_uniformRandomVariable->GetInteger();
+      Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteUePhy::StartRandomInitialSubframeIndication, this);
     }
-
-  NS_LOG_LOGIC ("frameNo = "<<frameNo<<" subframeNo = "<<subframeNo);
-
-  if (m_netDevice != 0)
+  else
     {
-      Ptr<Node> node = m_netDevice->GetNode ();
-      if (node != 0)
-        {
-          nodeId = node->GetId ();
-          haveNodeId = true;
-        }
-    }
-  if (haveNodeId)
-    {
+      uint32_t frameNo = 1;
+      uint32_t subframeNo = 1;
+      NS_LOG_LOGIC ("Fixed initial frameNo = " << frameNo << " and subframeNo = " << subframeNo);
+
       Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteUePhy::SubframeIndication, this, frameNo, subframeNo);
     }
-    else
-      {
-        Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, frameNo, subframeNo);
-      }
+
   LtePhy::DoInitialize ();
+}
+
+void
+LteUePhy::StartRandomInitialSubframeIndication ()
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t frameNo = 1;
+  uint32_t subframeNo = 1;
+
+  m_uniformRandomVariable->SetAttribute ("Min", DoubleValue (1));
+  m_uniformRandomVariable->SetAttribute ("Max", DoubleValue (1024));
+  frameNo = m_uniformRandomVariable->GetInteger ();
+  m_uniformRandomVariable->SetAttribute ("Min", DoubleValue (1));
+  m_uniformRandomVariable->SetAttribute ("Max", DoubleValue (10));
+  subframeNo = m_uniformRandomVariable->GetInteger ();
+
+  NS_LOG_DEBUG ("Stream used = " << m_uniformRandomVariable->GetStream ());
+
+  NS_LOG_LOGIC ("Random initial frameNo = " << frameNo << " and subframeNo = " << subframeNo);
+
+  Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, frameNo, subframeNo);
 }
 
 void
