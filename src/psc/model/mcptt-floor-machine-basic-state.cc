@@ -173,7 +173,7 @@ McpttFloorMachineBasicState::ReceiveFloorGranted (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePosReq& msg) const
+McpttFloorMachineBasicState::ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -181,7 +181,7 @@ McpttFloorMachineBasicState::ReceiveFloorQueuePositionReq (McpttFloorMachineBasi
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueueInfo& msg) const
+McpttFloorMachineBasicState::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -197,7 +197,7 @@ McpttFloorMachineBasicState::ReceiveFloorRelease (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttFloorMachineBasicState::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -221,7 +221,7 @@ McpttFloorMachineBasicState::ReceiveMedia (McpttFloorMachineBasic& floorMachine,
 }
 
 void
-McpttFloorMachineBasicState::SendFloorQueuePosReq (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMachineBasicState::SendFloorQueuePositionRequest (McpttFloorMachineBasic& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -734,7 +734,7 @@ McpttFloorMachineBasicStateHasPerm::HasFloor (const McpttFloorMachineBasic& floo
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePosReq& msg) const
+McpttFloorMachineBasicStateHasPerm::ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -749,12 +749,12 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorQueuePositionReq (McpttFloorMach
   queue->View (msgUserId, userInfo, position);
 
   uint32_t queuedUserSsrc = userInfo.GetSsrc ();
-  McpttFloorMsgFieldQueueInfo infoField = userInfo.GetInfo ();
+  McpttFloorMsgFieldQueuePositionInfo infoField = userInfo.GetInfo ();
   McpttFloorMsgFieldQueuedUserId queuedUserIdField = userInfo.GetUserId ();
 
-  McpttFloorMsgQueueInfo infoMsg (txSsrc);
+  McpttFloorMsgQueuePositionInfo infoMsg (txSsrc);
   infoMsg.SetQueuedUserId (queuedUserIdField);
-  infoMsg.SetQueueInfo (infoField);
+  infoMsg.SetQueuePositionInfo (infoField);
   infoMsg.SetQueuedSsrc (queuedUserSsrc);
   infoMsg.SetUserId (myUserId);
 
@@ -778,7 +778,7 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorRelease (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttFloorMachineBasicStateHasPerm::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -905,12 +905,12 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorReq (McpttFloorMachineBasic& flo
       queue->View (msgUserId, userInfo, position);
 
       uint32_t queuedUserSsrc = userInfo.GetSsrc ();
-      McpttFloorMsgFieldQueueInfo infoField = userInfo.GetInfo ();
+      McpttFloorMsgFieldQueuePositionInfo infoField = userInfo.GetInfo ();
       McpttFloorMsgFieldQueuedUserId queuedUserIdField = userInfo.GetUserId ();
 
-      McpttFloorMsgQueueInfo infoMsg (txSsrc);
+      McpttFloorMsgQueuePositionInfo infoMsg (txSsrc);
       infoMsg.SetQueuedUserId (queuedUserIdField);
-      infoMsg.SetQueueInfo (infoField);
+      infoMsg.SetQueuePositionInfo (infoField);
       infoMsg.SetQueuedSsrc (queuedUserSsrc);
       infoMsg.SetUserId (msgUserId);
 
@@ -929,17 +929,17 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorReq (McpttFloorMachineBasic& flo
       uint8_t position = queue->GetCount ();
       uint32_t queuedUserId = userIdField.GetUserId ();
       uint8_t sentPriority = priorityField.GetPriority ();
-      McpttFloorMsgFieldQueueInfo queueInfo (position, sentPriority);
+      McpttFloorMsgFieldQueuePositionInfo queueInfo (position, sentPriority);
       McpttFloorMsgFieldQueuedUserId queuedUserIdField (queuedUserId);
     
       McpttQueuedUserInfo userInfo (rxSsrc, queuedUserId, queueInfo);
       queue->Enqueue (userInfo);
 
-      McpttFloorMsgQueueInfo queueInfoMsg (txSsrc);
+      McpttFloorMsgQueuePositionInfo queueInfoMsg (txSsrc);
       queueInfoMsg.SetUserId (userIdField);
       queueInfoMsg.SetQueuedSsrc (rxSsrc);
       queueInfoMsg.SetQueuedUserId (queuedUserIdField);
-      queueInfoMsg.SetQueueInfo (queueInfo);
+      queueInfoMsg.SetQueuePositionInfo (queueInfo);
 
       floorMachine.Send (queueInfoMsg);
     }
@@ -1216,7 +1216,7 @@ McpttFloorMachineBasicStatePendGrant::ReceiveFloorRelease (McpttFloorMachineBasi
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttFloorMachineBasicStatePendGrant::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1533,7 +1533,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorGranted (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueueInfo& msg) const
+McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1593,7 +1593,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMac
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttFloorMachineBasicStatePendReq::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1816,7 +1816,7 @@ McpttFloorMachineBasicStateQueued::ExpiryOfT204 (McpttFloorMachineBasic& floorMa
     }
   else
     {   
-      McpttFloorMsgQueuePosReq reqMsg (txSsrc);
+      McpttFloorMsgQueuePositionRequest reqMsg (txSsrc);
       reqMsg.SetUserId (myUserId);
 
       c204->Increment ();
@@ -1970,7 +1970,7 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorGranted (McpttFloorMachineBasic& 
 }
 
 void
-McpttFloorMachineBasicStateQueued::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueueInfo& msg) const
+McpttFloorMachineBasicStateQueued::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2060,7 +2060,7 @@ McpttFloorMachineBasicStateQueued::ReleaseRequest (McpttFloorMachineBasic& floor
 }
 
 void
-McpttFloorMachineBasicStateQueued::SendFloorQueuePosReq (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMachineBasicStateQueued::SendFloorQueuePositionRequest (McpttFloorMachineBasic& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -2070,13 +2070,13 @@ McpttFloorMachineBasicStateQueued::SendFloorQueuePosReq (McpttFloorMachineBasic&
   uint32_t txSsrc = floorMachine.GetTxSsrc ();
   uint32_t myUserId = floorMachine.GetOwner ()->GetOwner ()->GetUserId ();
 
-  McpttFloorMsgQueuePosReq queuePosReqMsg (txSsrc);
-  queuePosReqMsg.SetUserId (McpttFloorMsgFieldUserId (myUserId));
+  McpttFloorMsgQueuePositionRequest queuePositionRequestMsg (txSsrc);
+  queuePositionRequestMsg.SetUserId (McpttFloorMsgFieldUserId (myUserId));
 
   c204->Reset ();
   t204->Start ();
 
-  floorMachine.Send (queuePosReqMsg);
+  floorMachine.Send (queuePositionRequestMsg);
 }
 /** McpttFloorMachineBasicStateQueued - end **/
 
@@ -2155,7 +2155,7 @@ McpttFloorMachineBasicStateSilence::ReceiveFloorGranted (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStateSilence::ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttFloorMachineBasicStateSilence::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 

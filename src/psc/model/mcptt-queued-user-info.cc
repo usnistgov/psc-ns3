@@ -57,16 +57,16 @@ McpttQueuedUserInfo::GetTypeId (void)
 
 McpttQueuedUserInfo::McpttQueuedUserInfo (void)
   : ObjectBase (),
-    m_info (McpttFloorMsgFieldQueueInfo ()),
+    m_info (McpttFloorMsgFieldQueuePositionInfo ()),
     m_ssrc (0),
     m_userId (McpttFloorMsgFieldQueuedUserId ())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttQueuedUserInfo::McpttQueuedUserInfo (uint32_t ssrc, const McpttFloorMsgFieldQueuedUserId& userId, const McpttFloorMsgFieldQueueInfo& info)
+McpttQueuedUserInfo::McpttQueuedUserInfo (uint32_t ssrc, const McpttFloorMsgFieldQueuedUserId& userId, const McpttFloorMsgFieldQueuePositionInfo& info)
   : ObjectBase (),
-    m_info (McpttFloorMsgFieldQueueInfo ()),
+    m_info (McpttFloorMsgFieldQueuePositionInfo ()),
     m_ssrc (0),
     m_userId (McpttFloorMsgFieldQueuedUserId ())
 {
@@ -92,7 +92,7 @@ McpttQueuedUserInfo::Deserialize (Buffer::Iterator& buff)
   NS_LOG_LOGIC ("McpttQueuedUserInfo deserializing...");
 
   McpttFloorMsgFieldQueuedUserId userId;
-  McpttFloorMsgFieldQueueInfo info;
+  McpttFloorMsgFieldQueuePositionInfo info;
 
   uint32_t ssrc = buff.ReadNtohU32 ();
   bytesRead += 4;
@@ -116,7 +116,7 @@ McpttQueuedUserInfo::GetSerializedSize (void) const
 
   uint32_t size = 0;
   McpttFloorMsgFieldQueuedUserId userId = GetUserId ();
-  McpttFloorMsgFieldQueueInfo info = GetInfo ();
+  McpttFloorMsgFieldQueuePositionInfo info = GetInfo ();
 
   size += 4; // 4 bytes for the SSRC.
   size += userId.GetSerializedSize ();
@@ -142,7 +142,7 @@ McpttQueuedUserInfo::Print (std::ostream& os) const
 
   uint32_t ssrc = GetSsrc ();
   McpttFloorMsgFieldQueuedUserId userId = GetUserId ();
-  McpttFloorMsgFieldQueueInfo info = GetInfo ();
+  McpttFloorMsgFieldQueuePositionInfo info = GetInfo ();
 
   os << "McpttQueuedUserInfo(";
   os << "ssrc=" << ssrc << ";";
@@ -160,7 +160,7 @@ McpttQueuedUserInfo::Serialize (Buffer::Iterator& buff) const
 
   uint32_t ssrc = GetSsrc ();
   McpttFloorMsgFieldQueuedUserId userId = GetUserId ();
-  McpttFloorMsgFieldQueueInfo info = GetInfo ();
+  McpttFloorMsgFieldQueuePositionInfo info = GetInfo ();
 
   buff.WriteHtonU32 (ssrc);
 
@@ -170,7 +170,7 @@ McpttQueuedUserInfo::Serialize (Buffer::Iterator& buff) const
   info.Serialize (buff);
 }
 
-McpttFloorMsgFieldQueueInfo
+McpttFloorMsgFieldQueuePositionInfo
 McpttQueuedUserInfo::GetInfo (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -195,7 +195,7 @@ McpttQueuedUserInfo::GetUserId (void) const
 }
 
 void
-McpttQueuedUserInfo::SetInfo (const McpttFloorMsgFieldQueueInfo& info)
+McpttQueuedUserInfo::SetInfo (const McpttFloorMsgFieldQueuePositionInfo& info)
 {
   NS_LOG_FUNCTION (this << info);
 

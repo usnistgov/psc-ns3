@@ -167,13 +167,13 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePosReq& msg) const;
+ virtual void ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const;
  /**
   * Receives a floor queue position info message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueueInfo& msg) const;
+ virtual void ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const;
  /**
   * Receives a floor release message.
   * \param floorMachine The FSM.
@@ -185,7 +185,7 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a floor taken message.
   * \param floorMachine The FSM.
@@ -202,7 +202,7 @@ public:
   * Sends a floor queue position request message.
   * \param floorMachine The FSM.
   */
- virtual void SendFloorQueuePosReq (McpttFloorMachineBasic& floorMachine) const;
+ virtual void SendFloorQueuePositionRequest (McpttFloorMachineBasic& floorMachine) const;
  /**
   * Notifies the floor machine that media is ready to be sent.
   * \param floorMachine The FSM.
@@ -431,7 +431,7 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePosReq& msg) const;
+ virtual void ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const;
  /**
   * Receives a floor release message.
   * \param floorMachine The FSM.
@@ -443,7 +443,7 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
   * Notifies the floor machine that media is ready to be sent.
   * \param floorMachine The FSM.
@@ -523,7 +523,7 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a media message.
   * \param floorMachine The FSM.
@@ -588,13 +588,13 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueueInfo& msg) const;
+ virtual void ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const;
  /**
   * Receives a floor request message.
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a floor taken message.
   * \param floorMachine The FSM.
@@ -680,7 +680,7 @@ public:
   * \param floorMachine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueueInfo& msg) const;
+ virtual void ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const;
  /**
   * Receives a media message.
   * \param floorMachine The FSM.
@@ -696,7 +696,7 @@ public:
   * Sends a floor queue position request message.
   * \param floorMachine The FSM.
   */
- virtual void SendFloorQueuePosReq (McpttFloorMachineBasic& floorMachine) const;
+ virtual void SendFloorQueuePositionRequest (McpttFloorMachineBasic& floorMachine) const;
 };
 /**
  * \ingroup mcptt
@@ -745,7 +745,7 @@ public:
   * \param msg The received message.
   * \note
   */
- virtual void ReceiveFloorReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a floor taken message.
   * \param floorMachine The FSM.

@@ -78,17 +78,17 @@ public:
  virtual void DoRun (void);
 };
 
-class FloorMsgQueuePosReqTest : public TestCase
+class FloorMsgQueuePositionRequestTest : public TestCase
 {
 public:
- FloorMsgQueuePosReqTest (void);
+ FloorMsgQueuePositionRequestTest (void);
  virtual void DoRun (void);
 };
 
-class FloorMsgQueueInfoTest : public TestCase
+class FloorMsgQueuePositionInfoTest : public TestCase
 {
 public:
- FloorMsgQueueInfoTest (void);
+ FloorMsgQueuePositionInfoTest (void);
  virtual void DoRun (void);
 };
 
@@ -174,7 +174,7 @@ FloorMsgGrantedTest::DoRun (void)
   McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
   id.SetUserId (9);
 
-  McpttFloorMsgFieldQueueInfo queuedInfoField;
+  McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
   queuedInfoField.SetPosition (0);
   queuedInfoField.SetPriority (1);
 
@@ -341,13 +341,13 @@ FloorMsgTakenTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-FloorMsgQueuePosReqTest::FloorMsgQueuePosReqTest (void)
+FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest (void)
   : TestCase ("Queue Position Request")
 {
 }
 
 void
-FloorMsgQueuePosReqTest::DoRun (void)
+FloorMsgQueuePositionRequestTest::DoRun (void)
 {
   McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
   id.SetUserId (9);
@@ -356,8 +356,8 @@ FloorMsgQueuePosReqTest::DoRun (void)
   trackInfo.SetQueueCap (0);
   trackInfo.AddRef (5);
 
-  McpttFloorMsgQueuePosReq dstMsg;
-  McpttFloorMsgQueuePosReq srcMsg;
+  McpttFloorMsgQueuePositionRequest dstMsg;
+  McpttFloorMsgQueuePositionRequest srcMsg;
   srcMsg.SetUserId (id);
   srcMsg.UpdateTrackInfo (trackInfo);
 
@@ -377,18 +377,18 @@ FloorMsgQueuePosReqTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-FloorMsgQueueInfoTest::FloorMsgQueueInfoTest (void)
+FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest (void)
   : TestCase ("Queue Info")
 {
 }
 
 void
-FloorMsgQueueInfoTest::DoRun (void)
+FloorMsgQueuePositionInfoTest::DoRun (void)
 {
   McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
   id.SetUserId (9);
 
-  McpttFloorMsgFieldQueueInfo queuedInfoField;
+  McpttFloorMsgFieldQueuePositionInfo queuedInfoField;
   queuedInfoField.SetPosition (0);
   queuedInfoField.SetPriority (1);
 
@@ -400,12 +400,12 @@ FloorMsgQueueInfoTest::DoRun (void)
   McpttFloorMsgFieldTrackInfo trackInfo = McpttFloorMsgFieldTrackInfo ();
   trackInfo.AddRef (5);
 
-  McpttFloorMsgQueueInfo dstMsg;
-  McpttFloorMsgQueueInfo srcMsg;
+  McpttFloorMsgQueuePositionInfo dstMsg;
+  McpttFloorMsgQueuePositionInfo srcMsg;
   srcMsg.SetUserId (id);
   srcMsg.SetQueuedSsrc (queuedSsrc);
   srcMsg.SetQueuedUserId (queuedId);
-  srcMsg.SetQueueInfo (queuedInfoField);
+  srcMsg.SetQueuePositionInfo (queuedInfoField);
   srcMsg.UpdateTrackInfo (trackInfo);
 
   Ptr<Packet> p = Create<Packet> ();
@@ -432,7 +432,7 @@ McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite (void)
   AddTestCase (new FloorMsgDenyTest (), TestCase::QUICK);
   AddTestCase (new FloorMsgReleaseTest (), TestCase::QUICK);
   AddTestCase (new FloorMsgTakenTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgQueuePosReqTest (), TestCase::QUICK);
-  AddTestCase (new FloorMsgQueueInfoTest (), TestCase::QUICK);
+  AddTestCase (new FloorMsgQueuePositionRequestTest (), TestCase::QUICK);
+  AddTestCase (new FloorMsgQueuePositionInfoTest (), TestCase::QUICK);
 }
 

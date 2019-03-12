@@ -144,7 +144,7 @@ public:
  /**
   * Sends a floor queue position request message.
   */
- virtual void SendFloorQueuePosReq (void) = 0;
+ virtual void SendFloorQueuePositionRequest (void) = 0;
  /**
   * Sets the callback used to indicate that the floor has been granted.
   * \param floorGrantedCb The callback to set
@@ -284,7 +284,7 @@ public:
  /**
   * Sends a floor queue position request message.
   */
- virtual void SendFloorQueuePosReq (void);
+ virtual void SendFloorQueuePositionRequest (void);
  /**
   * Sets the callback used to indicate that the floor has been granted.
   * \param floorGrantedCb The callback to set

@@ -106,7 +106,7 @@ McpttFloorQueue::Dequeue (void)
 
   McpttQueuedUserInfo user = Peek ();
 
-  McpttFloorMsgFieldQueueInfo queueInfo = user.GetInfo ();
+  McpttFloorMsgFieldQueuePositionInfo queueInfo = user.GetInfo ();
   queueInfo.SetPosition (0);
   user.SetInfo (queueInfo);
 
@@ -183,7 +183,7 @@ McpttFloorQueue::Peek (void) const
 {
   McpttQueuedUserInfo next = m_users.front ();
 
-  McpttFloorMsgFieldQueueInfo queueInfo = next.GetInfo ();
+  McpttFloorMsgFieldQueuePositionInfo queueInfo = next.GetInfo ();
   queueInfo.SetPosition (1);
   next.SetInfo (queueInfo);
 
@@ -236,7 +236,7 @@ McpttFloorQueue::View (uint32_t userId, McpttQueuedUserInfo& info, uint16_t& pos
           position = count;
           info = *it;
 
-          McpttFloorMsgFieldQueueInfo queueInfo = info.GetInfo ();
+          McpttFloorMsgFieldQueuePositionInfo queueInfo = info.GetInfo ();
           queueInfo.SetPosition (position);
           info.SetInfo (queueInfo);
         }

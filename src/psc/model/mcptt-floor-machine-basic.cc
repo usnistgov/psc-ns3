@@ -456,7 +456,7 @@ McpttFloorMachineBasic::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePosReq& msg)
+McpttFloorMachineBasic::ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePositionRequest& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -474,7 +474,7 @@ McpttFloorMachineBasic::ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePo
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueueInfo& msg)
+McpttFloorMachineBasic::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -510,7 +510,7 @@ McpttFloorMachineBasic::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorReq (const McpttFloorMsgRequest& msg)
+McpttFloorMachineBasic::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -519,7 +519,7 @@ McpttFloorMachineBasic::ReceiveFloorReq (const McpttFloorMsgRequest& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
   Ptr<McpttFloorMachineBasicState> state = GetState ();
-  state->ReceiveFloorReq (*this, msg);
+  state->ReceiveFloorRequest (*this, msg);
 
   if (!m_rxCb.IsNull ())
     {
@@ -620,7 +620,7 @@ McpttFloorMachineBasic::Send (const McpttFloorMsg& msg)
 }
 
 void
-McpttFloorMachineBasic::SendFloorQueuePosReq (void)
+McpttFloorMachineBasic::SendFloorQueuePositionRequest (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -633,7 +633,7 @@ McpttFloorMachineBasic::SendFloorQueuePosReq (void)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " requesting queue position" << ".");
 
   Ptr<McpttFloorMachineBasicState> state = GetState ();
-  state->SendFloorQueuePosReq (*this);
+  state->SendFloorQueuePositionRequest (*this);
 }
 
 void

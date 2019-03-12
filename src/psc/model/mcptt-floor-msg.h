@@ -434,6 +434,10 @@ public:
   */
  static const uint8_t SUBTYPE;
  /**
+  * The subtype of the MCPTT floor granted message with acknowledgement.
+  */
+ static const uint8_t SUBTYPE_ACK;
+ /**
   * Gets the type ID of the McpttFloorMsgGranted class.
   * \return the TypeId of the class
   */
@@ -623,6 +627,10 @@ public:
   */
  static const uint8_t SUBTYPE;
  /**
+  * The subtype of the MCPTT floor granted message with acknowledgement.
+  */
+ static const uint8_t SUBTYPE_ACK;
+ /**
   * Gets the type ID of thie McpttFloorMsgDeny class.
   * \returns The type ID.
   */
@@ -750,6 +758,10 @@ public:
   */
  static const uint8_t SUBTYPE;
  /**
+  * The subtype of the MCPTT floor granted message with acknowledgement.
+  */
+ static const uint8_t SUBTYPE_ACK;
+ /**
   * Gets the type ID of the McpttFloorMsgRelease class.
   * \returns The type ID.
   */
@@ -831,7 +843,245 @@ protected:
   */
  virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
 };
-
+/**
+ * A class used to represent an MCPTT Floor Revoke message.
+ *
+ * Subytype = 00110
+ *
+ * Coding:
+ *  0                   1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |V=2|P| Subtype |   PT=APP=204  |            length             |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                SSRC of floor control server                   |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                          name=MCPT                            |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                      Reject Cause field                       |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                       Track Info field                        |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                    Floor Indicator field                      |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 
+ * Subtype: The subtype shall be coded according to table 8.2.2-1.
+ * Length: The length shall be coded as specified in to subclause 8.1.2.
+ * SSRC: The SSRC field shall carry the SSRC of the floor control server.
+ * Reject Cause: The Reject Cause field includes the reason for the rejecting the floor request and can be followed by a text-string explaining why the floor request was rejected. Therefore the length of the packet will vary depending on the size of the application dependent field.
+ * Track Info: The Track Info field shall be included when an MCPTT call involves a non-Controlling function. The coding of the Track Info field is described in subclause 8.2.3.13.
+ */
+class McpttFloorMsgRevoke : public McpttFloorMsg
+{
+public:
+ /**
+  * The subtype of the MCPTT Floor Revoke message.
+  */
+ static const uint8_t SUBTYPE;
+ /**
+  * Gets the type ID of thie McpttFloorMsgRevoke class.
+  * \returns The type ID.
+  */
+ static TypeId GetTypeId (void);
+ /**
+  * Creates an instance of the McpttFloorMsgRevoke class.
+  * \param ssrc The synchronization source.
+  */
+ McpttFloorMsgRevoke (uint32_t ssrc = 0);
+ /**
+  * The destructor of the McpttFloorMsgRevoke class.
+  */
+ virtual ~McpttFloorMsgRevoke (void);
+ /**
+  * Reads the application-dependent data of the message from the byte stream.
+  * \param buff The buffer to read from.
+  * \returns The number of bytes that were read.
+  */
+ virtual uint32_t ReadData (Buffer::Iterator& buff);
+ /**
+  * Gets the type ID of this instance.
+  * \returns The type ID.
+  */
+ virtual TypeId GetInstanceTypeId (void) const;
+ /**
+  * Prints the contents of the header to the given output stream.
+  * \param os The output stream to write to.
+  */
+ virtual void Print (std::ostream& os) const;
+ /**
+  * Writes the application-dependent data of the message to the byte stream.
+  * \param buff The byte stream to write to.
+  */
+ virtual void WriteData (Buffer::Iterator& buff) const;
+ /**
+  * Updates the track info field.
+  * \param trackInfo The track info field.
+  */
+ virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
+ /**
+  * Visits the given floor machine.
+  * \param floorMachine The floor machine to visit.
+  */
+ virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+private:
+ McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
+ McpttFloorMsgFieldRejectCause m_rejCause; //!< The reject cause field.
+ McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
+public:
+ /**
+  * Gets the floor indicator field.
+  * \returns The floor indicator field.
+  */
+ virtual McpttFloorMsgFieldIndic GetIndicator (void) const;
+ /**
+  * Gets the reject cause field.
+  * \returns The reject cause field.
+  */
+ virtual McpttFloorMsgFieldRejectCause GetRejCause (void) const;
+ /**
+  * Gets the track info field.
+  * \returns The track info field.
+  */
+ virtual McpttFloorMsgFieldTrackInfo GetTrackInfo (void) const;
+ /**
+  * Sets the floor indicator field.
+  * \param indicator The floor indicator field.
+  */
+ virtual void SetIndicator (const McpttFloorMsgFieldIndic& indicator);
+ /**
+  * Sets the reject cause field.
+  * \param rejCause The reject cause field.
+  */
+ virtual void SetRejCause (const McpttFloorMsgFieldRejectCause& rejCause);
+protected:
+ /**
+  * Sets the track info field.
+  * \param trackInfo The track info field.
+  */
+ virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
+};
+/**
+ * A class used to represent an MCPTT Floor Idle message.
+ *
+ * Subtype = x0101
+ *
+ * Coding:
+ *  0                   1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |V=2|P| Subtype |   PT=APP=204  |           length              |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                SSRC of floor control server                   |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                          name=MCPT                            |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                 Message Sequence Number field                 |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                       Track Info field                        |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                    Floor Indicator field                      |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 
+ * Subtype:The subtype shall be coded according to table 8.2.2-1.
+ * Length: The length shall be coded as specified in to subclause 8.1.2.
+ * SSRC: The SSRC field shall carry the SSRC of the floor control server.
+ * Message Sequence Number: The Message Sequence Number field shall be coded as specified in to subclause 8.2.3.10.
+ * Track Info: The Track Info field shall be included when an MCPTT call involves a non-Controlling function. The coding of the Track Info field is described in subclause 8.2.3.13.
+ * Floor Indicator: The Floor Indicator field shall be coded as described in subclause 8.2.3.15.
+ */
+class McpttFloorMsgIdle : public McpttFloorMsg
+{
+public:
+ /**
+  * The subtype of the MCPTT Floor Idle message.
+  */
+ static const uint8_t SUBTYPE;
+ /**
+  * The subtype of the MCPTT floor granted message with acknowledgement.
+  */
+ static const uint8_t SUBTYPE_ACK;
+ /**
+  * Gets the type ID of the McpttFloorMsgIdle class.
+  * \returns The type ID.
+  */
+ static TypeId GetTypeId (void);
+ /**
+  * Creates an instance of the McpttFloorMsgIdle class.
+  * \param ssrc The SSRC of the floor control server.
+  */
+ McpttFloorMsgIdle (uint32_t ssrc = 0);
+ /**
+  * The destructor of the McpttFloorMsgIdle class.
+  */
+ virtual ~McpttFloorMsgIdle (void);
+ /**
+  * Reads the application-dependent data of the message from the byte stream.
+  * \param buff The buffer to read from.
+  * \returns The number of bytes that were read.
+  */
+ virtual uint32_t ReadData (Buffer::Iterator& buff);
+ /**
+  * Gets the type ID of this instance.
+  * \returns The type ID.
+  */
+ virtual TypeId GetInstanceTypeId (void) const;
+ /**
+  * Prints the contents of the header to the given output stream.
+  * \param os The output stream to write to.
+  */
+ virtual void Print (std::ostream& os) const;
+ /**
+  * Writes the application-dependent data of the message to the byte stream.
+  * \param buff The byte stream to write to.
+  */
+ virtual void WriteData (Buffer::Iterator& buff) const;
+ /**
+  * Updates the track info field.
+  * \param trackInfo The track info field.
+  */
+ virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
+ /**
+  * Visits the given floor machine.
+  * \param floorMachine The floor machine to visit.
+  */
+ virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+private:
+ McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
+ McpttFloorMsgFieldSeqNum m_seqNum; //!< The message sequence number field.
+ McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
+public:
+ /**
+  * Gets the floor indicator field.
+  * \returns The floor indicator field.
+  */
+ virtual McpttFloorMsgFieldIndic GetIndicator (void) const;
+ /**
+  * Gets the message sequence number field.
+  * \returns The message sequence number field.
+  */
+ virtual McpttFloorMsgFieldSeqNum GetSeqNum (void) const;
+ /**
+  * Gets the track info field.
+  * \returns The track info field.
+  */
+ virtual McpttFloorMsgFieldTrackInfo GetTrackInfo (void) const;
+ /**
+  * Sets the floor indicator field.
+  * \param indicator The floor indicator field.
+  */
+ virtual void SetIndicator (const McpttFloorMsgFieldIndic& indicator);
+ /**
+  * Sets the message sequence number field.
+  * \param seqNum The message sequence number field.
+  */
+ virtual void SetSeqNum (const McpttFloorMsgFieldSeqNum& seqNum);
+protected:
+ /**
+  * Sets the track info field.
+  * \param trackInfo The track info field.
+  */
+ virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
+};
 /**
  * A class used to represent an MCPTT Floor Taken message.
  *
@@ -877,6 +1127,10 @@ public:
   * The subtype of the MCPTT Floor Taken message.
   */
  static const uint8_t SUBTYPE;
+ /**
+  * The subtype of the MCPTT floor granted message with acknowledgement.
+  */
+ static const uint8_t SUBTYPE_ACK;
  /**
   * Gets the type ID of the McpttFloorMsgTaken class.
   * \returns The type ID.
@@ -1015,7 +1269,7 @@ protected:
  * User ID: The User ID field is used in off-network only. It shall carry the MCPTT user ID of the floor participant sending the Floor Queue Position Request message.
  * Track Info: The Track Info field shall be included when an MCPTT call involves a non-Controlling function.
  */
-class McpttFloorMsgQueuePosReq : public McpttFloorMsg
+class McpttFloorMsgQueuePositionRequest : public McpttFloorMsg
 {
 public:
  /**
@@ -1023,19 +1277,19 @@ public:
   */
  static const uint8_t SUBTYPE;
  /**
-  * Gets the type ID of the McpttFloorMsgQueuePosReq class.
+  * Gets the type ID of the McpttFloorMsgQueuePositionRequest class.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttFloorMsgQueuePosReq class.
+  * Creates an instance of the McpttFloorMsgQueuePositionRequest class.
   * \param ssrc The SSRC of the floor control server.
   */
- McpttFloorMsgQueuePosReq (uint32_t ssrc = 0);
+ McpttFloorMsgQueuePositionRequest (uint32_t ssrc = 0);
  /**
-  * The destructor of the McpttFloorMsgQueuePosReq class.
+  * The destructor of the McpttFloorMsgQueuePositionRequest class.
   */
- virtual ~McpttFloorMsgQueuePosReq (void);
+ virtual ~McpttFloorMsgQueuePositionRequest (void);
  /**
   * Reads the application-dependent data of the message from the byte stream.
   * \param buff The buffer to read from.
@@ -1127,7 +1381,7 @@ protected:
  * Queue Info: The Queue Info field is only applicable in off-network and defines the queue position and granted floor priority in the queue.
  * Track Info: The Track Info field shall be included when an MCPTT call involves a non-Controlling function.
  */
-class McpttFloorMsgQueueInfo : public McpttFloorMsg
+class McpttFloorMsgQueuePositionInfo : public McpttFloorMsg
 {
 public:
  /**
@@ -1135,19 +1389,23 @@ public:
   */
  static const uint8_t SUBTYPE;
  /**
-  * Gets the type ID of the McpttFloorMsgQueueInfo class.
+  * The subtype of the MCPTT floor granted message with acknowledgement.
+  */
+ static const uint8_t SUBTYPE_ACK;
+ /**
+  * Gets the type ID of the McpttFloorMsgQueuePositionInfo class.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttFloorMsgQueueInfo class.
+  * Creates an instance of the McpttFloorMsgQueuePositionInfo class.
   * \param ssrc The SSRC of the floor control server.
   */
- McpttFloorMsgQueueInfo (uint32_t ssrc = 0);
+ McpttFloorMsgQueuePositionInfo (uint32_t ssrc = 0);
  /**
-  * The destructor of the McpttFloorMsgQueueInfo class.
+  * The destructor of the McpttFloorMsgQueuePositionInfo class.
   */
- virtual ~McpttFloorMsgQueueInfo (void);
+ virtual ~McpttFloorMsgQueuePositionInfo (void);
  /**
   * Reads the application-dependent data of the message from the byte stream.
   * \param buff The buffer to read from.
@@ -1183,7 +1441,7 @@ private:
  McpttFloorMsgFieldUserId m_userId; //!< The MCPTT ID of the floor participant that sent this message.
  uint32_t m_queuedSsrc; //!< The SSRC of the queued floor participant.
  McpttFloorMsgFieldQueuedUserId m_queuedUserId; //!< The MCPTT ID of the queued floor participant.
- McpttFloorMsgFieldQueueInfo m_queueInfo; //!< Defines the queue position and granted floor priority.
+ McpttFloorMsgFieldQueuePositionInfo m_queueInfo; //!< Defines the queue position and granted floor priority.
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
 public:
@@ -1206,7 +1464,7 @@ public:
   * Gets the field that the defines the queue position and granted floor priority.
   * \returns The queue info.
   */
- virtual McpttFloorMsgFieldQueueInfo GetQueueInfo (void) const;
+ virtual McpttFloorMsgFieldQueuePositionInfo GetQueuePositionInfo (void) const;
  /**
   * Gets the track info field.
   * \returns The track info field.
@@ -1236,12 +1494,131 @@ public:
   * Sets the field that defines the queue position and granted floor priority.
   * \param queueInfo The queue info.
   */
- virtual void SetQueueInfo (const McpttFloorMsgFieldQueueInfo& queueInfo);
+ virtual void SetQueuePositionInfo (const McpttFloorMsgFieldQueuePositionInfo& queueInfo);
  /**
   * Sets the floor indicator field.
   * \param indicator The floor indicator field.
   */
  virtual void SetIndicator (const McpttFloorMsgFieldIndic& indicator);
+protected:
+ /**
+  * Sets the track info field.
+  * \param trackInfo The track info field.
+  */
+ virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
+};
+/**
+ * A class used to represent an MCPTT Floor Ack message.
+ *
+ * Subtype = 01010
+ *
+ * Coding:
+ *  0                   1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |V=2|P| Subtype |   PT=APP=204  |           length              |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                SSRC of floor control server                   |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                          name=MCPT                            |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                         Source field                          |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                      Message Type field                       |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |                       Track Info field                        |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 
+ * Subtype:The subtype shall be coded according to table 8.2.2-1.
+ * Length: The length shall be coded as specified in to subclause 8.1.2.
+ * SSRC: The SSRC field shall carry the SSRC of the floor control server.
+ * Source: The Message Type Number field shall be coded as specified in to subclause 8.2.3.12.
+ * Message Type: The Message Type Number field shall be coded as specified in to subclause 8.2.3.14.
+ * Track Info: The Track Info field shall be included when an MCPTT call involves a non-Controlling function. The coding of the Track Info field is described in subclause 8.2.3.13.
+ * Floor Indicator: The Floor Indicator field shall be coded as described in subclause 8.2.3.15.
+ */
+class McpttFloorMsgAck : public McpttFloorMsg
+{
+public:
+ /**
+  * The subtype of the MCPTT Floor Ack message.
+  */
+ static const uint8_t SUBTYPE;
+ /**
+  * Gets the type ID of the McpttFloorMsgAck class.
+  * \returns The type ID.
+  */
+ static TypeId GetTypeId (void);
+ /**
+  * Creates an instance of the McpttFloorMsgAck class.
+  * \param ssrc The SSRC of the floor control server.
+  */
+ McpttFloorMsgAck (uint32_t ssrc = 0);
+ /**
+  * The destructor of the McpttFloorMsgAck class.
+  */
+ virtual ~McpttFloorMsgAck (void);
+ /**
+  * Reads the application-dependent data of the message from the byte stream.
+  * \param buff The buffer to read from.
+  * \returns The number of bytes that were read.
+  */
+ virtual uint32_t ReadData (Buffer::Iterator& buff);
+ /**
+  * Gets the type ID of this instance.
+  * \returns The type ID.
+  */
+ virtual TypeId GetInstanceTypeId (void) const;
+ /**
+  * Prints the contents of the header to the given output stream.
+  * \param os The output stream to write to.
+  */
+ virtual void Print (std::ostream& os) const;
+ /**
+  * Writes the application-dependent data of the message to the byte stream.
+  * \param buff The byte stream to write to.
+  */
+ virtual void WriteData (Buffer::Iterator& buff) const;
+ /**
+  * Updates the track info field.
+  * \param trackInfo The track info field.
+  */
+ virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
+ /**
+  * Visits the given floor machine.
+  * \param floorMachine The floor machine to visit.
+  */
+ virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+private:
+ McpttFloorMsgFieldSource m_source; //!< The source field.
+ McpttFloorMsgFieldType m_msgType; //!< The message type field.
+ McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
+public:
+ /**
+  * Gets the source field.
+  * \returns The source field.
+  */
+ virtual McpttFloorMsgFieldSource GetSource (void) const;
+ /**
+  * Gets the message type field.
+  * \returns The message type field.
+  */
+ virtual McpttFloorMsgFieldType GetMsgType (void) const;
+ /**
+  * Gets the track info field.
+  * \returns The track info field.
+  */
+ virtual McpttFloorMsgFieldTrackInfo GetTrackInfo (void) const;
+ /**
+  * Sets the source field.
+  * \param source The source field.
+  */
+ virtual void SetSource (const McpttFloorMsgFieldSource& source);
+ /**
+  * Sets the message type field.
+  * \param msgType The message type field.
+  */
+ virtual void SetMsgType (const McpttFloorMsgFieldType& msgType);
 protected:
  /**
   * Sets the track info field.

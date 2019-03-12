@@ -423,28 +423,28 @@ public:
  * The <Queue Position Info> value is a binary value. It shall have value 254 if the MCPTT client is not queued. It shall have the max value (255) if the MCPTT client is queued but the MCPTT server is unable to determine the queue position or if MCPTT server policy is not to release information of the queue position to the MCPTT client.
  * The <Queue Priority Level> value is coded as the <Floor Priority> value
  */
-class McpttFloorMsgFieldQueueInfo : public McpttFloorMsgField
+class McpttFloorMsgFieldQueuePositionInfo : public McpttFloorMsgField
 {
 public:
  /**
-  * Gets the type ID of the McpttFloorMsgFieldQueueInfo class.
+  * Gets the type ID of the McpttFloorMsgFieldQueuePositionInfo class.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttFloorMsgFieldQueueInfo class.
+  * Creates an instance of the McpttFloorMsgFieldQueuePositionInfo class.
   */
- McpttFloorMsgFieldQueueInfo (void);
+ McpttFloorMsgFieldQueuePositionInfo (void);
  /**
-  * Creates an instance of the McpttFloorMsgFieldQueueInfo class.
+  * Creates an instance of the McpttFloorMsgFieldQueuePositionInfo class.
   * \param position The queue position value.
   * \param priority The queue priority value.
   */
- McpttFloorMsgFieldQueueInfo (uint8_t position, uint8_t priority);
+ McpttFloorMsgFieldQueuePositionInfo (uint8_t position, uint8_t priority);
  /**
-  * The destructor of the McpttFloorMsgFieldQueueInfo class.
+  * The destructor of the McpttFloorMsgFieldQueuePositionInfo class.
   */
- virtual ~McpttFloorMsgFieldQueueInfo (void);
+ virtual ~McpttFloorMsgFieldQueuePositionInfo (void);
  /**
   * Reads the contents of the field from the byte stream.
   * \param buff The buffer to read from.
@@ -973,6 +973,10 @@ public:
 class McpttFloorMsgFieldSource : public McpttFloorMsgField
 {
 public:
+  static const uint16_t FLOOR_PARTICIPANT; //!< The floor participant source value.
+  static const uint16_t PARTICIPATING_FUNCTION; //!< The participating MCPTT function source value.
+  static const uint16_t CONTROLLING_FUNCTION; //!< The controlling MCPTT function source value.
+  static const uint16_t NONCONTROLLING_FUNCTION; //!< The non-controlling MCPTT function source value.
  /**
   * Gets the type Id of the McpttFloorMsgFieldSource class.
   * \returns The type ID.

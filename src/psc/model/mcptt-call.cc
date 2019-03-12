@@ -315,15 +315,15 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
       pkt->RemoveHeader (takenMsg);
       Receive (takenMsg);
     }
-  else if (subtype == McpttFloorMsgQueuePosReq::SUBTYPE)
+  else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
     {
-      McpttFloorMsgQueuePosReq queuePosReqMsg;
-      pkt->RemoveHeader (queuePosReqMsg);
-      Receive (queuePosReqMsg);
+      McpttFloorMsgQueuePositionRequest queuePositionRequestMsg;
+      pkt->RemoveHeader (queuePositionRequestMsg);
+      Receive (queuePositionRequestMsg);
     }
-  else if (subtype == McpttFloorMsgQueueInfo::SUBTYPE)
+  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE)
     {
-      McpttFloorMsgQueueInfo queueInfoMsg;
+      McpttFloorMsgQueuePositionInfo queueInfoMsg;
       pkt->RemoveHeader (queueInfoMsg);
       Receive (queueInfoMsg);
     }

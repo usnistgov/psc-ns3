@@ -209,7 +209,7 @@ McpttFloorMachineNull::ReleaseRequest (void)
 }
 
 void
-McpttFloorMachineNull::SendFloorQueuePosReq (void)
+McpttFloorMachineNull::SendFloorQueuePositionRequest (void)
 {
   NS_LOG_FUNCTION (this);
 }

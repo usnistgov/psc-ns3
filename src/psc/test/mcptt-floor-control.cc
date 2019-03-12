@@ -2225,7 +2225,7 @@ void McpttFloorRequestQueued::UeARxCb (const TestFloorMachine& machine, const Mc
       NS_TEST_ASSERT_MSG_EQ (t233->IsRunning (), false, "Timer " << *t233 << " is running.");
       NS_TEST_ASSERT_MSG_LT (c201->GetValue (), 4, "Counter C201 was not reset.");
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueueInfo::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueARxRtp, true, "UE A has not received any RTP media packets yet.");
       m_ueARxInfo = true;
@@ -2461,7 +2461,7 @@ McpttFloorRequestQueued::UeBTxCb (const TestFloorMachine& machine, const McpttMs
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (msg.GetInstanceTypeId () == McpttFloorMsgQueueInfo::GetTypeId ())
+  if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       m_ueBTxInfo = true;
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
@@ -2525,7 +2525,7 @@ McpttFloorRequestQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMs
       m_ueCRxGrant = true;
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueueInfo::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, true, "UE C has not seen a received request message yet.");
       m_ueCRxInfo = true;
@@ -3640,7 +3640,7 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
-  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueueInfo (1, 7)));
+  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
 
   ueAPttAppPusher->NotifyPushed ();
   ueAPttAppPusher->ScheduleRelease (Seconds (2.041));
@@ -4053,7 +4053,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
-  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueueInfo (1, 7)));
+  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
 
   Simulator::Schedule (Seconds (2.037), &McpttFloorMachine::ReleaseRequest, ueAMachine);
 
@@ -4687,7 +4687,7 @@ McpttFloorReleaseWhileQueued::Configure (void)
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
-  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueueInfo (1, 7)));
+  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
 
   Simulator::Schedule (Seconds (2.037), &McpttFloorMachine::ReleaseRequest, ueAMachine);
 
@@ -5032,7 +5032,7 @@ McpttFloorRequestIdleBis::Configure (void)
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueCT230);
   Simulator::Schedule (Seconds (2.1), &McpttFloorMachine::TakePushNotification, ueCMachine);
   Simulator::Schedule (Seconds (2.14), &McpttFloorMachine::TakePushNotification, ueAMachine);
-  Simulator::Schedule (Seconds (3.0), &McpttFloorMachine::SendFloorQueuePosReq, ueCMachine);
+  Simulator::Schedule (Seconds (3.0), &McpttFloorMachine::SendFloorQueuePositionRequest, ueCMachine);
   Simulator::Schedule (Seconds (4.0), &McpttFloorMachine::TakeReleaseNotification, ueAMachine);
 }
 
@@ -5046,33 +5046,33 @@ McpttFloorRequestIdleBis::Execute (void)
 
   NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToPendGrant, true, "UE A never made transition from " << McpttFloorMachineBasicStateHasPerm::GetStateId () << " to " << McpttFloorMachineBasicStatePendGrant::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToHasPerm, true, "UE A never made transition from " << McpttFloorMachineBasicStatePendReq::GetStateId () << " to " << McpttFloorMachineBasicStateHasPerm::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueARxQueuePosInfoReq, true, "UE A never received " << McpttFloorMsgQueueInfo::GetTypeId ().GetName () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueARxQueuePosInfoReq, true, "UE A never received " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxReq, 3, "UE A never received 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToStartStop, true, "UE A never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateStartStop::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToPendReq, true, "UE A never made transition from " << McpttFloorMachineBasicStateStartStop::GetStateId () << " to " << McpttFloorMachineBasicStatePendReq::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxGranted, true, "UE A never sent 2 " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxReq, 3, "UE A never sent 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxTaken, true, "UE A never sent " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueATxQueuePosInfo, 2, "UE A never sent 2 " << McpttFloorMsgQueueInfo::GetTypeId ().GetName () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueATxQueuePosInfo, 2, "UE A never sent 2 " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxGranted, true, "UE B never received " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBRxQueuePosInfo, 2, "UE B never received 2 " << McpttFloorMsgQueueInfo::GetTypeId ().GetName () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBRxQueuePosInfo, 2, "UE B never received 2 " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxReq, 6, "UE B never received 6 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToStartStop, true, "UE B never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateStartStop::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToNoPerm, true, "UE B never made transition from " << McpttFloorMachineBasicStateStartStop::GetStateId () << " to " << McpttFloorMachineBasicStateNoPerm::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBRxQueuePosInfoReq, true, "UE B never received " << McpttFloorMsgQueuePosReq::GetTypeId ().GetName () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBRxQueuePosInfoReq, true, "UE B never received " << McpttFloorMsgQueuePositionRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxTaken, true, "UE B never received " << McpttFloorMsgTaken::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRtp, 2, "UE B received more than 2 " << McpttMediaMsg::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCPendReqToQueued, true, "UE C never made transition from " << McpttFloorMachineBasicStatePendReq::GetStateId () << " to " << McpttFloorMachineBasicStateQueued::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCQueuedToSilence, true, "UE C never made transition from " << McpttFloorMachineBasicStateQueued::GetStateId () << " to " << McpttFloorMachineBasicStateSilence::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxGranted, true, "UE C never received " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCRxQueuePosInfo, 2, "UE C never received 2 " << McpttFloorMsgQueueInfo::GetTypeId ().GetName () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCRxQueuePosInfo, 2, "UE C never received 2 " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, 3, "UE C never received 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRtp, 2, "UE C never received 2 " << McpttMediaMsg::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxTaken, true, "UE C never received " << McpttFloorMsgTaken::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToPendReq, true, "UE C never made transition from " << McpttFloorMachineBasicStateStartStop::GetStateId () << " to " << McpttFloorMachineBasicStatePendReq::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToStartStop, true, "UE C never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateStartStop::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCTxReq, 3, "UE C never sent 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCTxQueuePosInfoReq, true, "UE C never sent " << McpttFloorMsgQueuePosReq::GetTypeId ().GetName () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCTxQueuePosInfoReq, true, "UE C never sent " << McpttFloorMsgQueuePositionRequest::GetTypeId ().GetName () << ".");
 }
 
 void
@@ -5082,7 +5082,7 @@ McpttFloorRequestIdleBis::UeARxCb (const TestFloorMachine& machine, const McpttM
     {
       m_ueARxReq += 1;
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePosReq::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionRequest::GetTypeId ())
     {
       m_ueARxQueuePosInfoReq = true;
     }
@@ -5128,7 +5128,7 @@ McpttFloorRequestIdleBis::UeATxCb (const TestFloorMachine& machine, const McpttM
     {
       m_ueATxTaken = true;
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueueInfo::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       m_ueATxQueuePosInfo += 1;
     }
@@ -5157,11 +5157,11 @@ McpttFloorRequestIdleBis::UeBRxCb (const TestFloorMachine& machine, const McpttM
     {
       m_ueBRxRtp += 1;
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePosReq::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionRequest::GetTypeId ())
     {
       m_ueBRxQueuePosInfoReq = true;
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueueInfo::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       m_ueBRxQueuePosInfo += 1;
     }
@@ -5221,7 +5221,7 @@ McpttFloorRequestIdleBis::UeCRxCb (const TestFloorMachine& machine, const McpttM
     {
       m_ueCRxRtp += 1;
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueueInfo::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       m_ueCRxQueuePosInfo += 1;
     }
@@ -5268,7 +5268,7 @@ McpttFloorRequestIdleBis::UeCTxCb (const TestFloorMachine& machine, const McpttM
     {
       m_ueCTxReq += 1;
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePosReq::GetTypeId ())
+  else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionRequest::GetTypeId ())
     {
       m_ueCTxQueuePosInfoReq = true;
     }

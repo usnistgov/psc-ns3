@@ -171,12 +171,12 @@ public:
   * Receives Floor Queue Position Request message.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePosReq& msg);
+ virtual void ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePositionRequest& msg);
  /**
   * Receives a floor queue position info message.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueueInfo& msg);
+ virtual void ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg);
  /**
   * Receives a floor release message.
   * \param msg The received message.
@@ -186,7 +186,7 @@ public:
   * Receives a floor request message.
   * \param msg The received message.
   */
- virtual void ReceiveFloorReq (const McpttFloorMsgRequest& msg);
+ virtual void ReceiveFloorRequest (const McpttFloorMsgRequest& msg);
  /**
   * Receives a floor taken message.
   * \param msg The received message.
@@ -213,7 +213,7 @@ public:
  /**
   * Sends a floor queue position request message.
   */
- virtual void SendFloorQueuePosReq (void);
+ virtual void SendFloorQueuePositionRequest (void);
  /**
   * Sets the delay for timer T201.
   * \param delayT201 The delay to use.

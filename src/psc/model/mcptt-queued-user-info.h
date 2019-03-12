@@ -68,7 +68,7 @@ public:
   * \param userId The queued user ID field.
   * \param info The queue info field.
   */
- McpttQueuedUserInfo (uint32_t ssrc, const McpttFloorMsgFieldQueuedUserId& userId, const McpttFloorMsgFieldQueueInfo& info);
+ McpttQueuedUserInfo (uint32_t ssrc, const McpttFloorMsgFieldQueuedUserId& userId, const McpttFloorMsgFieldQueuePositionInfo& info);
  /**
   * The destructor of the McpttQueuedUserInfo class.
   */
@@ -100,7 +100,7 @@ public:
   */
  virtual void Serialize (Buffer::Iterator& buff) const;
 private:
- McpttFloorMsgFieldQueueInfo m_info; //!< The queue info field.
+ McpttFloorMsgFieldQueuePositionInfo m_info; //!< The queue info field.
  uint32_t m_ssrc; //!< The SSRC of the queued floor participant.
  McpttFloorMsgFieldQueuedUserId m_userId; //!< The queued user ID field.
 public:
@@ -108,7 +108,7 @@ public:
   * Gets the queue info field.
   * \returns The queue info field.
   */
- virtual McpttFloorMsgFieldQueueInfo GetInfo (void) const;
+ virtual McpttFloorMsgFieldQueuePositionInfo GetInfo (void) const;
  /**
   * Gets the SSRC of the queued floor participant.
   * \returns The SSRC.
@@ -123,7 +123,7 @@ public:
   * Sets the queue info field.
   * \param info The queue info field.
   */
- virtual void SetInfo (const McpttFloorMsgFieldQueueInfo& info);
+ virtual void SetInfo (const McpttFloorMsgFieldQueuePositionInfo& info);
  /**
   * Sets the SSRC of the queued floor particpant.
   * \param ssrc The SSRC.

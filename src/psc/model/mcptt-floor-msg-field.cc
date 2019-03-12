@@ -544,24 +544,24 @@ McpttFloorMsgFieldRejectCause::SetCause (uint16_t cause)
 }
 /** McpttFloorMsgFieldRejectCause - end **/
 
-/** McpttFloorMsgFieldQueueInfo - begin **/
+/** McpttFloorMsgFieldQueuePositionInfo - begin **/
 
-NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgFieldQueueInfo);
+NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgFieldQueuePositionInfo);
 
 TypeId
-McpttFloorMsgFieldQueueInfo::GetTypeId (void)
+McpttFloorMsgFieldQueuePositionInfo::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldQueueInfo")
+  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldQueuePositionInfo")
     .SetParent<McpttFloorMsgField> ()
-    .AddConstructor<McpttFloorMsgFieldQueueInfo> ()
+    .AddConstructor<McpttFloorMsgFieldQueuePositionInfo> ()
   ;
 
   return tid;
 }
 
-McpttFloorMsgFieldQueueInfo::McpttFloorMsgFieldQueueInfo (void)
+McpttFloorMsgFieldQueuePositionInfo::McpttFloorMsgFieldQueuePositionInfo (void)
   : McpttFloorMsgField (3, 2),
     m_position (255),
     m_priority (7)
@@ -569,7 +569,7 @@ McpttFloorMsgFieldQueueInfo::McpttFloorMsgFieldQueueInfo (void)
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMsgFieldQueueInfo::McpttFloorMsgFieldQueueInfo (uint8_t position, uint8_t priority)
+McpttFloorMsgFieldQueuePositionInfo::McpttFloorMsgFieldQueuePositionInfo (uint8_t position, uint8_t priority)
   : McpttFloorMsgField (3, 2),
     m_position (position),
     m_priority (priority)
@@ -577,17 +577,17 @@ McpttFloorMsgFieldQueueInfo::McpttFloorMsgFieldQueueInfo (uint8_t position, uint
   NS_LOG_FUNCTION (this << (uint32_t)position << (uint32_t)priority);
 }
 
-McpttFloorMsgFieldQueueInfo::~McpttFloorMsgFieldQueueInfo (void)
+McpttFloorMsgFieldQueuePositionInfo::~McpttFloorMsgFieldQueuePositionInfo (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint32_t
-McpttFloorMsgFieldQueueInfo::Deserialize (Buffer::Iterator& buff)
+McpttFloorMsgFieldQueuePositionInfo::Deserialize (Buffer::Iterator& buff)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC ("McpttFloorMsgFieldQueueInfo deserializing...");
+  NS_LOG_LOGIC ("McpttFloorMsgFieldQueuePositionInfo deserializing...");
 
   uint32_t bytesRead = McpttFloorMsgField::Deserialize (buff);
 
@@ -604,19 +604,19 @@ McpttFloorMsgFieldQueueInfo::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgFieldQueueInfo::GetInstanceTypeId (void) const
+McpttFloorMsgFieldQueuePositionInfo::GetInstanceTypeId (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return McpttFloorMsgFieldQueueInfo::GetTypeId ();
+  return McpttFloorMsgFieldQueuePositionInfo::GetTypeId ();
 }
 
 void
-McpttFloorMsgFieldQueueInfo::Print (std::ostream& os) const
+McpttFloorMsgFieldQueuePositionInfo::Print (std::ostream& os) const
 {
   NS_LOG_FUNCTION (this);
 
-  os << "McpttFloorMsgFieldQueueInfo(";
+  os << "McpttFloorMsgFieldQueuePositionInfo(";
 
   McpttFloorMsgField::Print (os);
 
@@ -630,11 +630,11 @@ McpttFloorMsgFieldQueueInfo::Print (std::ostream& os) const
 }
 
 void
-McpttFloorMsgFieldQueueInfo::Serialize (Buffer::Iterator& buff) const
+McpttFloorMsgFieldQueuePositionInfo::Serialize (Buffer::Iterator& buff) const
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC ("McpttFloorMsgFieldQueueInfo serializing...");
+  NS_LOG_LOGIC ("McpttFloorMsgFieldQueuePositionInfo serializing...");
 
   McpttFloorMsgField::Serialize (buff);
 
@@ -644,11 +644,11 @@ McpttFloorMsgFieldQueueInfo::Serialize (Buffer::Iterator& buff) const
   buff.WriteU8 (position);
   buff.WriteU8 (priority);
 
-  NS_LOG_LOGIC ("McpttFloorMsgFieldQueueInfo wrote two bytes (position=" << (uint32_t)position << ";priority=" << (uint32_t)priority << ";)");
+  NS_LOG_LOGIC ("McpttFloorMsgFieldQueuePositionInfo wrote two bytes (position=" << (uint32_t)position << ";priority=" << (uint32_t)priority << ";)");
 }
 
 uint8_t
-McpttFloorMsgFieldQueueInfo::GetPosition (void) const
+McpttFloorMsgFieldQueuePositionInfo::GetPosition (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -656,7 +656,7 @@ McpttFloorMsgFieldQueueInfo::GetPosition (void) const
 }
 
 uint8_t
-McpttFloorMsgFieldQueueInfo::GetPriority (void) const
+McpttFloorMsgFieldQueuePositionInfo::GetPriority (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -664,7 +664,7 @@ McpttFloorMsgFieldQueueInfo::GetPriority (void) const
 }
 
 void
-McpttFloorMsgFieldQueueInfo::SetPosition (uint8_t position)
+McpttFloorMsgFieldQueuePositionInfo::SetPosition (uint8_t position)
 {
   NS_LOG_FUNCTION (this << (uint32_t)position);
 
@@ -672,7 +672,7 @@ McpttFloorMsgFieldQueueInfo::SetPosition (uint8_t position)
 }
 
 void
-McpttFloorMsgFieldQueueInfo::SetPriority (uint8_t priority)
+McpttFloorMsgFieldQueuePositionInfo::SetPriority (uint8_t priority)
 {
   NS_LOG_FUNCTION (this << (uint32_t)priority);
 
@@ -1328,6 +1328,11 @@ McpttFloorMsgFieldQueuedUserId::Serialize (Buffer::Iterator& buff) const
 
 /** McpttFloorMsgFieldSource - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgFieldSource);
+
+const uint16_t McpttFloorMsgFieldSource::FLOOR_PARTICIPANT = 0;
+const uint16_t McpttFloorMsgFieldSource::PARTICIPATING_FUNCTION = 1;
+const uint16_t McpttFloorMsgFieldSource::CONTROLLING_FUNCTION = 2;
+const uint16_t McpttFloorMsgFieldSource::NONCONTROLLING_FUNCTION = 3;
 
 TypeId
 McpttFloorMsgFieldSource::GetTypeId (void)
