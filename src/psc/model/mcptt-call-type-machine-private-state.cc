@@ -36,7 +36,7 @@
 #include "mcptt-call-msg.h"
 #include "mcptt-call-machine-private.h"
 #include "mcptt-call-type-machine-private.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-ptt-app.h"
 
 #include "mcptt-call-type-machine-private-state.h"

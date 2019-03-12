@@ -31,7 +31,7 @@
 
 #include <ns3/callback.h>
 #include <ns3/core-module.h>
-#include <ns3/mcptt-floor-machine-basic.h>
+#include <ns3/mcptt-off-network-floor-participant.h>
 #include <ns3/mcptt-floor-msg.h>
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config.h"
@@ -43,14 +43,14 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("McpttFloorControlTest");
 
-class TestFloorMachine : public McpttFloorMachineBasic
+class TestFloorMachine : public McpttOffNetworkFloorParticipant
 {
 public:
  static TypeId GetTypeId (void);
  TestFloorMachine (void);
  virtual ~TestFloorMachine (void);
  virtual void AddDropper (Ptr<McpttMsgDropper>  dropper);
- virtual void ChangeState (Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void ChangeState (Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void ExpiryOfT201 (void);
  virtual void ExpiryOfT203 (void);
  virtual void ExpiryOfT205 (void);
@@ -69,8 +69,8 @@ private:
  Callback<void, const TestFloorMachine&, const McpttMsg&> m_preRxCb;
  Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > m_preTimerExpCb;
  Callback<void, const TestFloorMachine&, const McpttMsg&> m_preTxCb;
- Ptr<McpttFloorMachineBasicState> m_startState;
- Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> > m_stateChangeCb;
+ Ptr<McpttOffNetworkFloorParticipantState> m_startState;
+ Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> > m_stateChangeCb;
 protected:
  virtual std::vector<Ptr<McpttMsgDropper> >* GetDroppers (void) const; 
  virtual void SetDroppers (std::vector<Ptr<McpttMsgDropper> >* const& droppers);
@@ -81,16 +81,16 @@ public:
  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPreRxCb (void) const;
  virtual Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > GetPreTimerExpCb (void) const;
  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPreTxCb (void) const;
- virtual Ptr<McpttFloorMachineBasicState> GetStartState(void) const;
- virtual Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> > GetStateChangeCb (void) const;
+ virtual Ptr<McpttOffNetworkFloorParticipantState> GetStartState(void) const;
+ virtual Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> > GetStateChangeCb (void) const;
  virtual void SetPostRxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  postRxCb);
  virtual void SetPostTimerExpCb (const Callback<void, const TestFloorMachine&, Ptr<McpttTimer> >  timerExpCb);
  virtual void SetPostTxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  postTxCb);
  virtual void SetPreRxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  preRxCb);
  virtual void SetPreTimerExpCb (const Callback<void, const TestFloorMachine&, Ptr<McpttTimer> >  timerExpCb);
  virtual void SetPreTxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  preTxCb);
- virtual void SetStartState (Ptr<McpttFloorMachineBasicState>  startState);
- virtual void SetStateChangeTestCb (const Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >  stateChangeCb);
+ virtual void SetStartState (Ptr<McpttOffNetworkFloorParticipantState>  startState);
+ virtual void SetStateChangeTestCb (const Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> >  stateChangeCb);
 };
 
 /**
@@ -106,14 +106,14 @@ protected:
  virtual void IncrementReqCount (const uint32_t& amount = 1);
  virtual void IncrementTakenCount (const uint32_t& amount = 1);
  virtual void RxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void StateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void StateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void TxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
 private:
  bool m_pendReqToHasPerm;
  uint32_t m_reqCount;
@@ -138,13 +138,13 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_hasNoPermToPendReq;
@@ -169,14 +169,14 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBPreRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueANoPermToPendReq;
@@ -205,15 +205,15 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueANoPermToPendReq;
@@ -246,13 +246,13 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueATxGrant;
@@ -274,13 +274,13 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueATxGrant;
@@ -302,10 +302,10 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueATxRelease;
@@ -323,13 +323,13 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueATxRelease;
@@ -349,15 +349,15 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeATimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCTimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer);
 private:
@@ -387,13 +387,13 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueATxRelease;
@@ -413,14 +413,14 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCFloorGrantedCb (void);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueAHasPermToPendGrant;
@@ -462,10 +462,10 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueAHasPermToSilence;
@@ -495,13 +495,13 @@ protected:
  virtual void Configure (void);
  virtual void Execute (void);
  virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
  virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
- virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState);
+ virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
  virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
 private:
  bool m_ueAHasPermToPendGrant;
@@ -547,7 +547,7 @@ TypeId
 TestFloorMachine::GetTypeId (void)
 {
   static TypeId tid = TypeId ("TestFloorMachine")
-    .SetParent<McpttFloorMachineBasic> ()
+    .SetParent<McpttOffNetworkFloorParticipant> ()
     .AddConstructor<TestFloorMachine> ()
   ;
 
@@ -555,9 +555,9 @@ TestFloorMachine::GetTypeId (void)
 }
 
 TestFloorMachine::TestFloorMachine (void)
-  : McpttFloorMachineBasic (),
+  : McpttOffNetworkFloorParticipant (),
     m_droppers (new std::vector<Ptr<McpttMsgDropper> > ()),
-    m_startState (McpttFloorMachineBasicStateStartStop::GetInstance ())
+    m_startState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ())
 {
   SetPostRxCb (MakeNullCallback<void, const TestFloorMachine&, const McpttMsg&> ());
   SetPostTimerExpCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttTimer> > ());
@@ -565,7 +565,7 @@ TestFloorMachine::TestFloorMachine (void)
   SetPreRxCb (MakeNullCallback<void, const TestFloorMachine&, const McpttMsg&> ());
   SetPreTimerExpCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttTimer> > ());
   SetPreTxCb (MakeNullCallback<void, const TestFloorMachine&, const McpttMsg&> ());
-  SetStateChangeTestCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> > ());
+  SetStateChangeTestCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> > ());
 }
 
 TestFloorMachine::~TestFloorMachine (void)
@@ -580,12 +580,12 @@ TestFloorMachine::AddDropper (Ptr<McpttMsgDropper>  dropper)
 }
 
 void
-TestFloorMachine::ChangeState (Ptr<McpttFloorMachineBasicState>  newState)
+TestFloorMachine::ChangeState (Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  Ptr<McpttFloorMachineBasicState> oldState = GetState ();
-  Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> > stateChangeCb = GetStateChangeCb ();
+  Ptr<McpttOffNetworkFloorParticipantState> oldState = GetState ();
+  Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> > stateChangeCb = GetStateChangeCb ();
 
-  McpttFloorMachineBasic::ChangeState (newState);
+  McpttOffNetworkFloorParticipant::ChangeState (newState);
 
   if (!stateChangeCb.IsNull ()
       && oldState->GetInstanceStateId () != newState->GetInstanceStateId ())
@@ -605,7 +605,7 @@ TestFloorMachine::ExpiryOfT201 (void)
       preTimerExpCb (*this, GetT201 ());
     }
 
-  McpttFloorMachineBasic::ExpiryOfT201 ();
+  McpttOffNetworkFloorParticipant::ExpiryOfT201 ();
 
   if (!postTimerExpCb.IsNull ())
     {
@@ -624,7 +624,7 @@ TestFloorMachine::ExpiryOfT203 (void)
       preTimerExpCb (*this, GetT203 ());
     }
 
-  McpttFloorMachineBasic::ExpiryOfT203 ();
+  McpttOffNetworkFloorParticipant::ExpiryOfT203 ();
 
   if (!postTimerExpCb.IsNull ())
     {
@@ -643,7 +643,7 @@ TestFloorMachine::ExpiryOfT205 (void)
       preTimerExpCb (*this, GetT205 ());
     }
 
-  McpttFloorMachineBasic::ExpiryOfT205 ();
+  McpttOffNetworkFloorParticipant::ExpiryOfT205 ();
 
   if (!postTimerExpCb.IsNull ())
     {
@@ -677,7 +677,7 @@ TestFloorMachine::Receive (const McpttFloorMsg& msg)
           preRxCb (*this, msg);
         }
 
-      McpttFloorMachineBasic::Receive (msg);
+      McpttOffNetworkFloorParticipant::Receive (msg);
 
       if (!postRxCb.IsNull ())
         {
@@ -706,7 +706,7 @@ TestFloorMachine::Receive (const McpttMediaMsg& msg)
           preRxCb (*this, msg);
         }
 
-      McpttFloorMachineBasic::ReceiveMedia (msg);
+      McpttOffNetworkFloorParticipant::ReceiveMedia (msg);
 
       if (!postRxCb.IsNull ())
         {
@@ -726,7 +726,7 @@ TestFloorMachine::Send (const McpttFloorMsg& msg)
       preTxCb (*this, msg);
     }
 
-  McpttFloorMachineBasic::Send (msg);
+  McpttOffNetworkFloorParticipant::Send (msg);
 
   if (!postTxCb.IsNull ())
     {
@@ -737,11 +737,11 @@ TestFloorMachine::Send (const McpttFloorMsg& msg)
 void
 TestFloorMachine::Start (void)
 {
-  Ptr<McpttFloorMachineBasicState> startState = GetStartState ();
+  Ptr<McpttOffNetworkFloorParticipantState> startState = GetStartState ();
 
   SetState (startState);
 
-  McpttFloorMachineBasic::Start ();
+  McpttOffNetworkFloorParticipant::Start ();
 }
 
 void
@@ -757,7 +757,7 @@ TestFloorMachine::DoDispose (void)
 
   SetDroppers (0);
 
-  McpttFloorMachineBasic::DoDispose ();
+  McpttOffNetworkFloorParticipant::DoDispose ();
 }
 
 std::vector<Ptr<McpttMsgDropper> >*
@@ -809,13 +809,13 @@ TestFloorMachine::GetPreTxCb (void) const
   return m_preTxCb;
 }
 
-Ptr<McpttFloorMachineBasicState>
+Ptr<McpttOffNetworkFloorParticipantState>
 TestFloorMachine::GetStartState (void) const
 {
   return m_startState;
 }
 
-Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >
+Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> >
 TestFloorMachine::GetStateChangeCb (void) const
 {
   return m_stateChangeCb;
@@ -858,13 +858,13 @@ TestFloorMachine::SetPreTxCb (const Callback<void, const TestFloorMachine&, cons
 }
 
 void
-TestFloorMachine::SetStartState (Ptr<McpttFloorMachineBasicState>  startState)
+TestFloorMachine::SetStartState (Ptr<McpttOffNetworkFloorParticipantState>  startState)
 {
   m_startState = startState;
 }
 
 void
-TestFloorMachine::SetStateChangeTestCb (const Callback<void, const TestFloorMachine&, Ptr<McpttFloorMachineBasicState> , Ptr<McpttFloorMachineBasicState> >  stateChangeCb)
+TestFloorMachine::SetStateChangeTestCb (const Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState> , Ptr<McpttOffNetworkFloorParticipantState> >  stateChangeCb)
 {
   m_stateChangeCb = stateChangeCb;
 }
@@ -895,28 +895,28 @@ McpttFloorRequestIdle::Configure (void)
 
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT230 = ueAMachine->GetT230 ();
   Ptr<McpttTimer> ueBT230 = ueBMachine->GetT230 ();
   Ptr<McpttTimer> ueCT230 = ueCMachine->GetT230 ();
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdle::TxCb, this));
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestIdle::RxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdle::StateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdle::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdle::UeBTxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdle::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdle::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdle::UeCTxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdle::UeCStateChangeCb, this));
@@ -962,20 +962,20 @@ McpttFloorRequestIdle::RxCb (const TestFloorMachine& machine, const McpttMsg& ms
 }
 
 void
-McpttFloorRequestIdle::StateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestIdle::StateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_startStopToPendReq, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       m_startStopToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId () && !m_pendReqToHasPerm)
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () && !m_pendReqToHasPerm)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_startStopToPendReq, true, "UE A already made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_startStopToPendReq, true, "UE A already made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "'.");
       m_pendReqToHasPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -989,7 +989,7 @@ void
 McpttFloorRequestIdle::TxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
   TypeId msgTypeId = msg.GetInstanceTypeId ();
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1010,11 +1010,11 @@ McpttFloorRequestIdle::TxCb (const TestFloorMachine& machine, const McpttMsg& ms
     {
       if (c201Val == 1)
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "Floor machine not in '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "' after floor request was sent.");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "Floor machine not in '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "' after floor request was sent.");
         }
       else
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendReq::GetStateId (), "Floor machine not in '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "' after floor request was sent.");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendReq::GetStateId (), "Floor machine not in '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "' after floor request was sent.");
         }
 
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), true, "Timer T201 is not running.");
@@ -1025,7 +1025,7 @@ McpttFloorRequestIdle::TxCb (const TestFloorMachine& machine, const McpttMsg& ms
     }
   else if (msgTypeId == McpttFloorMsgTaken::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendReq::GetStateId (), "Floor machine not in '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "' after floor taken was sent.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendReq::GetStateId (), "Floor machine not in '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "' after floor taken was sent.");
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer T201 is still running.");
       NS_TEST_ASSERT_MSG_EQ (c201Val, 3, "The counter C201 was reset.");
 
@@ -1051,7 +1051,7 @@ void
 McpttFloorRequestIdle::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
   TypeId msgTid = msg.GetInstanceTypeId ();
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1069,7 +1069,7 @@ McpttFloorRequestIdle::UeBRxCb (const TestFloorMachine& machine, const McpttMsg&
   if (msgTid == McpttFloorMsgRequest::GetTypeId ())
     {
       m_ueBRxReq = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
@@ -1077,7 +1077,7 @@ McpttFloorRequestIdle::UeBRxCb (const TestFloorMachine& machine, const McpttMsg&
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxReq, true, "UE B never received a floor request message.");
       m_ueBRxTaken = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
       if (m_ueCRxTaken == true)
@@ -1110,15 +1110,15 @@ McpttFloorRequestIdle::UeBTxCb (const TestFloorMachine& machine, const McpttMsg&
 }
 
 void
-McpttFloorRequestIdle::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestIdle::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from " << *oldState << " to " << *newState << ".");
       m_ueBSilenceToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1132,7 +1132,7 @@ void
 McpttFloorRequestIdle::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
   TypeId msgTid = msg.GetInstanceTypeId ();
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1150,7 +1150,7 @@ McpttFloorRequestIdle::UeCRxCb (const TestFloorMachine& machine, const McpttMsg&
   if (msgTid == McpttFloorMsgRequest::GetTypeId ())
     {
       m_ueCRxReq = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE C in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
@@ -1158,7 +1158,7 @@ McpttFloorRequestIdle::UeCRxCb (const TestFloorMachine& machine, const McpttMsg&
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, true, "UE C never received a floor request message.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       m_ueCRxTaken = true;
       if (m_ueBRxTaken == true)
@@ -1191,15 +1191,15 @@ McpttFloorRequestIdle::UeCTxCb (const TestFloorMachine& machine, const McpttMsg&
 }
 
 void
-McpttFloorRequestIdle::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestIdle::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from " << *oldState << " to " << *newState << ".");
       m_ueCSilenceToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1235,9 +1235,9 @@ McpttFloorRequestDenied::Configure (void)
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT201 = ueAMachine->GetT201 ();
   Ptr<McpttTimer> ueAT203 = ueAMachine->GetT203 ();
@@ -1251,7 +1251,7 @@ McpttFloorRequestDenied::Configure (void)
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestDenied::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestDenied::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestDenied::UeAStateChangeCb, this));
@@ -1259,13 +1259,13 @@ McpttFloorRequestDenied::Configure (void)
   ueAT201->SetDelay (Seconds (0.120));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestDenied::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestDenied::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestDenied::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestDenied::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestDenied::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestDenied::UeCStateChangeCb, this));
@@ -1299,7 +1299,7 @@ McpttFloorRequestDenied::Execute (void)
 void
 McpttFloorRequestDenied::UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1318,7 +1318,7 @@ McpttFloorRequestDenied::UeARxCb (const TestFloorMachine& machine, const McpttMs
     {
       NS_TEST_ASSERT_MSG_EQ (m_rxOfFloorDeny, false, "Received more than one floor deny message.");
       m_rxOfFloorDeny = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << ".");
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is still running.");
       NS_TEST_ASSERT_MSG_EQ (c201->GetValue (), 1, "Counter C201 was not reset.");
 
@@ -1344,23 +1344,23 @@ McpttFloorRequestDenied::UeARxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorRequestDenied::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestDenied::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_hasNoPermToPendReq, false, "A transition was already made from " << *oldState << " to " << *newState << ".");
-      NS_TEST_ASSERT_MSG_EQ (m_pendReqToNoPerm, false, "A transition was already made from '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_pendReqToNoPerm, false, "A transition was already made from '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
 
       m_hasNoPermToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_pendReqToNoPerm, false, "A transition was already made from " << *oldState << " to " << *newState << ".");
-      NS_TEST_ASSERT_MSG_EQ (m_hasNoPermToPendReq, true, "A transition was never made from '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_hasNoPermToPendReq, true, "A transition was never made from '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "'.");
       m_pendReqToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1373,7 +1373,7 @@ McpttFloorRequestDenied::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<
 void
 McpttFloorRequestDenied::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1390,7 +1390,7 @@ McpttFloorRequestDenied::UeATxCb (const TestFloorMachine& machine, const McpttMs
 
   if (msg.GetInstanceTypeId () == McpttFloorMsgRequest::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (m_txOfFloorReq, false, "A floor request message has already been sent.");
       m_txOfFloorReq = true;
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), true, "Timer " << *t201 << " is not running.");
@@ -1455,10 +1455,10 @@ McpttFloorRequestDenied::UeBRxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorRequestDenied::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestDenied::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1513,7 +1513,7 @@ McpttFloorRequestDenied::UeBTxCb (const TestFloorMachine& machine, const McpttMs
 void
 McpttFloorRequestDenied::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1533,7 +1533,7 @@ McpttFloorRequestDenied::UeCRxCb (const TestFloorMachine& machine, const McpttMs
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxOfFloorReq, true, "UE C has not seen a floor request message yet.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxOfFloorDeny, false, "UE C saw more than one floor deny message.");
       m_ueCRxOfFloorDeny = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       if (m_rxOfFloorDeny == true)
         {
           Stop ();
@@ -1543,7 +1543,7 @@ McpttFloorRequestDenied::UeCRxCb (const TestFloorMachine& machine, const McpttMs
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxOfFloorReq, false, "UE C saw more than one floor request message.");
       m_ueCRxOfFloorReq = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
     }
   else
     {
@@ -1564,10 +1564,10 @@ McpttFloorRequestDenied::UeCRxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorRequestDenied::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestDenied::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1611,16 +1611,16 @@ McpttFloorRequestPreemptive::Configure (void)
   config->SetStart (Seconds (2.0));
   config->SetStop (Seconds (2.5));
 
-  Config::SetDefault ("ns3::McpttFloorMachineBasic::T201", TimeValue (Time ("120ms")));
+  Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::T201", TimeValue (Time ("120ms")));
 
   McpttTestCase::Configure ();
 
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT201 = ueAMachine->GetT201 ();
   Ptr<McpttTimer> ueBT205 = ueBMachine->GetT205 ();
@@ -1632,7 +1632,7 @@ McpttFloorRequestPreemptive::Configure (void)
   Ptr<McpttMediaSrc> ueBMediaSrc = ueBPttApp->GetMediaSrc ();
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (true));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestPreemptive::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestPreemptive::UeAStateChangeCb, this));
@@ -1640,7 +1640,7 @@ McpttFloorRequestPreemptive::Configure (void)
   ueAT201->SetDelay (Seconds (0.160));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (true));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestPreemptive::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeBRxCb, this));
   ueBMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeBPreRxCb, this));
@@ -1649,7 +1649,7 @@ McpttFloorRequestPreemptive::Configure (void)
   ueBT205->SetDelay (Seconds (0.120));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestPreemptive::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestPreemptive::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestPreemptive::UeCStateChangeCb, this));
@@ -1694,7 +1694,7 @@ McpttFloorRequestPreemptive::Execute (void)
 void
 McpttFloorRequestPreemptive::UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1712,9 +1712,9 @@ McpttFloorRequestPreemptive::UeARxCb (const TestFloorMachine& machine, const Mcp
   if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
       m_ueARxRtp = true;
-      bool validState = (state->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ());
+      bool validState = (state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ());
 
-      if (!validState && state->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+      if (!validState && state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
         {
           validState = true;
           NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), true, "Timer " << *t201 << " is not running.");
@@ -1729,7 +1729,7 @@ McpttFloorRequestPreemptive::UeARxCb (const TestFloorMachine& machine, const Mcp
       m_ueARxGrant = true;
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), true, "Timer " << *t206 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (m_ueATxReq, true, "UE A has not sent floor request yet.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "Not in '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "' state.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "Not in '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "' state.");
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is still running.");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is still running.");
     }
@@ -1750,23 +1750,23 @@ McpttFloorRequestPreemptive::UeARxCb (const TestFloorMachine& machine, const Mcp
 }
 
 void
-McpttFloorRequestPreemptive::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestPreemptive::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueANoPermToPendReq, false, "Invalid sequence of state transitions.");
 
       m_ueANoPermToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueANoPermToPendReq, true, "Invalid sequence of state transitions.");
       NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToHasPerm, false, "Invalid sequence of state transitions.");
 
       m_ueAPendReqToHasPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1779,7 +1779,7 @@ McpttFloorRequestPreemptive::UeAStateChangeCb (const TestFloorMachine& machine, 
 void
 McpttFloorRequestPreemptive::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1797,7 +1797,7 @@ McpttFloorRequestPreemptive::UeATxCb (const TestFloorMachine& machine, const Mcp
   if (msg.GetInstanceTypeId () == McpttFloorMsgRequest::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueARxRtp, true, "UE A has not received any RTP packets yet.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "Invalid state " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "Invalid state " << *state << ".");
       m_ueATxReq = true;
     }
   else
@@ -1822,7 +1822,7 @@ McpttFloorRequestPreemptive::UeATxCb (const TestFloorMachine& machine, const Mcp
 void
 McpttFloorRequestPreemptive::UeBPreRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1843,7 +1843,7 @@ McpttFloorRequestPreemptive::UeBPreRxCb (const TestFloorMachine& machine, const 
 
       m_ueBRxReq = true;
 
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "Invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "Invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t204->IsRunning (), false, "Timer " << *t204 << " is running.");
@@ -1861,7 +1861,7 @@ McpttFloorRequestPreemptive::UeBPreRxCb (const TestFloorMachine& machine, const 
 void
 McpttFloorRequestPreemptive::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1886,7 +1886,7 @@ McpttFloorRequestPreemptive::UeBRxCb (const TestFloorMachine& machine, const Mcp
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t205->IsRunning (), false, "Timer " << *t205 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "Invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "Invalid state: " << *state << ".");
       m_ueBRxRtp = true;
       if (m_ueCRxRtp == true)
         {
@@ -1909,23 +1909,23 @@ McpttFloorRequestPreemptive::UeBRxCb (const TestFloorMachine& machine, const Mcp
 }
 
 void
-McpttFloorRequestPreemptive::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestPreemptive::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToPendGrant, false, "Invalid sequence of state transitions.");
 
       m_ueBHasPermToPendGrant = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToPendGrant, true, "Invalid sequence of state transitions.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBPendGrantToNoPerm, false, "Invalid sequence of state transitions.");
 
       m_ueBPendGrantToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -1938,7 +1938,7 @@ McpttFloorRequestPreemptive::UeBStateChangeCb (const TestFloorMachine& machine, 
 void
 McpttFloorRequestPreemptive::UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1957,7 +1957,7 @@ McpttFloorRequestPreemptive::UeBTxCb (const TestFloorMachine& machine, const Mcp
     {
       m_ueBTxGrant = true;
 
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "Invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "Invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t205->IsRunning (), true, "Timer " << *t205 << " is not running.");
     }
   else
@@ -1980,7 +1980,7 @@ McpttFloorRequestPreemptive::UeBTxCb (const TestFloorMachine& machine, const Mcp
 void
 McpttFloorRequestPreemptive::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -1999,18 +1999,18 @@ McpttFloorRequestPreemptive::UeCRxCb (const TestFloorMachine& machine, const Mcp
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, true, "UE C has not seen a floor request message yet.");
       m_ueCRxGrant = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
     }
   else if (msg.GetInstanceTypeId () == McpttFloorMsgRequest::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxRtp, true, "UE C has not seen any RTP media messages yet.");
       m_ueCRxReq = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" <<  McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" <<  McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
     }
   else if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
       m_ueCRxRtp = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       if (m_ueBRxRtp == true)
         {
           Stop ();
@@ -2035,10 +2035,10 @@ McpttFloorRequestPreemptive::UeCRxCb (const TestFloorMachine& machine, const Mcp
 }
 
 void
-McpttFloorRequestPreemptive::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestPreemptive::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -2092,9 +2092,9 @@ void McpttFloorRequestQueued::Configure (void)
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT201 = ueAMachine->GetT201 ();
   Ptr<McpttTimer> ueAT203 = ueAMachine->GetT203 ();
@@ -2118,7 +2118,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueBMachine->AddDropper (ueBPttAppMcpttMsgDropper);
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (true));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestQueued::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestQueued::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestQueued::UeAStateChangeCb, this));
@@ -2127,7 +2127,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueAT201->SetDelay (Seconds (0.160));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (true));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestQueued::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestQueued::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestQueued::UeBStateChangeCb, this));
@@ -2136,7 +2136,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueBT205->SetDelay (Seconds (0.120));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestQueued::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestQueued::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestQueued::UeCStateChangeCb, this));
@@ -2191,7 +2191,7 @@ void McpttFloorRequestQueued::Execute (void)
 
 void McpttFloorRequestQueued::UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2210,9 +2210,9 @@ void McpttFloorRequestQueued::UeARxCb (const TestFloorMachine& machine, const Mc
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxReq, true, "UE A has not sent 'Floor Request' message yet.");
 
-      bool validState = (state->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId ());
+      bool validState = (state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId ());
 
-      if (!validState && state->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+      if (!validState && state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
         {
           validState = true;
           NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), true, "Timer " << *t201 << " is not running.");
@@ -2230,7 +2230,7 @@ void McpttFloorRequestQueued::UeARxCb (const TestFloorMachine& machine, const Mc
       NS_TEST_ASSERT_MSG_EQ (m_ueARxRtp, true, "UE A has not received any RTP media packets yet.");
       m_ueARxInfo = true;
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateQueued::GetStateId (), "Invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateQueued::GetStateId (), "Invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t233->IsRunning (), false, "Timer " << *t233 << " is running.");
@@ -2241,7 +2241,7 @@ void McpttFloorRequestQueued::UeARxCb (const TestFloorMachine& machine, const Mc
       NS_TEST_ASSERT_MSG_EQ (m_ueARxRtp, true, "UE A has not received any RTP media packets yet.");
       m_ueARxGrant = true;
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateQueued::GetStateId (), "Invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateQueued::GetStateId (), "Invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t233->IsRunning (), true, "Timer " << *t233 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (c201->GetValue (), 1, "Counter C201 was not reset.");
@@ -2260,24 +2260,24 @@ void McpttFloorRequestQueued::UeARxCb (const TestFloorMachine& machine, const Mc
 }
 
 void
-McpttFloorRequestQueued::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestQueued::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       m_ueANoPermToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueANoPermToPendReq, true, "UE A made invalid state transition.");
       m_ueAPendReqToQueued = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToQueued, true, "UE A made invalid state transition.");
       m_ueAQueuedToHasPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -2306,7 +2306,7 @@ McpttFloorRequestQueued::UeATimerExpCb (const TestFloorMachine& machine, Ptr<Mcp
 void
 McpttFloorRequestQueued::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2325,11 +2325,11 @@ McpttFloorRequestQueued::UeATxCb (const TestFloorMachine& machine, const McpttMs
     {
       if (c201->GetValue () == 1)
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
         }
       else
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendReq::GetStateId (), "UE A in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendReq::GetStateId (), "UE A in invalid state: " << *state << ".");
         }
       m_ueATxReq = true;
     }
@@ -2354,7 +2354,7 @@ McpttFloorRequestQueued::UeATxCb (const TestFloorMachine& machine, const McpttMs
 void
 McpttFloorRequestQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2372,7 +2372,7 @@ McpttFloorRequestQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMs
   if (msg.GetInstanceTypeId () == McpttFloorMsgRequest::GetTypeId ())
     {
       m_ueBRxReq = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), true, "Timer " << *t206 << " is not running.");
     }
@@ -2380,7 +2380,7 @@ McpttFloorRequestQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMs
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBTxGrant, true, "UE B has not sent a 'Floor Granted' message yet.");
       m_ueBRxRtp = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
       if (m_ueBRxRtp == true)
@@ -2405,19 +2405,19 @@ McpttFloorRequestQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorRequestQueued::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestQueued::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ())
     {
       m_ueBHasPermToPendGrant = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToPendGrant, true, "UE B has not transition from 'O: has permission' to 'O: pending grant'.");
       m_ueBPendGrantToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -2446,7 +2446,7 @@ McpttFloorRequestQueued::UeBTimerExpCb (const TestFloorMachine& machine, Ptr<Mcp
 void
 McpttFloorRequestQueued::UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2464,7 +2464,7 @@ McpttFloorRequestQueued::UeBTxCb (const TestFloorMachine& machine, const McpttMs
   if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       m_ueBTxInfo = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t205->IsRunning (), false, "Timer " << *t205 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), true, "Timer " << *t206 << " is not running.");
     }
@@ -2476,11 +2476,11 @@ McpttFloorRequestQueued::UeBTxCb (const TestFloorMachine& machine, const McpttMs
 
       if (c205->GetValue () == 1)
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
         }
       else
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
         }
 
       m_ueBTxGrant = true;
@@ -2504,7 +2504,7 @@ McpttFloorRequestQueued::UeBTxCb (const TestFloorMachine& machine, const McpttMs
 void
 McpttFloorRequestQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2523,23 +2523,23 @@ McpttFloorRequestQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMs
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxInfo, true, "UE C has not seen a queue position info message yet.");
       m_ueCRxGrant = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
     }
   else if (msg.GetInstanceTypeId () == McpttFloorMsgQueuePositionInfo::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, true, "UE C has not seen a received request message yet.");
       m_ueCRxInfo = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
     }
   else if (msg.GetInstanceTypeId () == McpttFloorMsgRequest::GetTypeId ())
     {
       m_ueCRxReq = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
     }
   else if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
       m_ueCRxRtp = true;
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       if (m_ueBRxRtp == true)
         {
           Stop ();
@@ -2564,10 +2564,10 @@ McpttFloorRequestQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorRequestQueued::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestQueued::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -2606,25 +2606,25 @@ McpttSessionInitNormal::Configure (void)
 
   McpttTestCase::Configure ();
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueAMachine->SetOriginator (true);
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitNormal::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitNormal::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitNormal::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttSessionInitNormal::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttSessionInitNormal::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitNormal::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttSessionInitNormal::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttSessionInitNormal::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitNormal::UeCStateChangeCb, this));
@@ -2639,13 +2639,13 @@ McpttSessionInitNormal::Execute (void)
   Simulator::Destroy ();
 
   NS_TEST_ASSERT_MSG_EQ (m_ueATxGrant, true, "UE A never sent the grant message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, true, "UE A never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, true, "UE A never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxGrant, true, "UE B never saw the grant message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrant, true, "UE C never saw the grant message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made the transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made the transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
 }
 
 void
@@ -2655,7 +2655,7 @@ McpttSessionInitNormal::UeARxCb (const TestFloorMachine& machine, const McpttMsg
 }
 
 void
-McpttSessionInitNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
@@ -2671,7 +2671,7 @@ McpttSessionInitNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<M
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       m_ueAStartStopToHasPerm = true;
@@ -2697,7 +2697,7 @@ McpttSessionInitNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<M
 void
 McpttSessionInitNormal::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2715,7 +2715,7 @@ McpttSessionInitNormal::UeATxCb (const TestFloorMachine& machine, const McpttMsg
   if (msg.GetInstanceTypeId () == McpttFloorMsgGranted::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxGrant, false, "UE A already sent " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateStartStop::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateStartStop::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueATxGrant = true;
     }
   else
@@ -2739,7 +2739,7 @@ McpttSessionInitNormal::UeATxCb (const TestFloorMachine& machine, const McpttMsg
 void
 McpttSessionInitNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2757,7 +2757,7 @@ McpttSessionInitNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMsg
   if (msg.GetInstanceTypeId () == McpttFloorMsgGranted::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxGrant, false, "UE B already received " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       m_ueBRxGrant = true;
       if (m_ueCRxGrant == true)
         {
@@ -2783,7 +2783,7 @@ McpttSessionInitNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMsg
 }
 
 void
-McpttSessionInitNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2798,24 +2798,24 @@ McpttSessionInitNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<M
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, false, "UE B already made transition from " << *oldState << " to " << *newState << ".");
-      NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       m_ueBStartStopToSilence = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from " << *oldState << " to " << *newState << ".");
       m_ueBSilenceToNoPerm = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -2844,7 +2844,7 @@ McpttSessionInitNormal::UeBTxCb (const TestFloorMachine& machine, const McpttMsg
 void
 McpttSessionInitNormal::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2862,7 +2862,7 @@ McpttSessionInitNormal::UeCRxCb (const TestFloorMachine& machine, const McpttMsg
   if (msg.GetInstanceTypeId () == McpttFloorMsgGranted::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrant, false, "UE C already received " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       m_ueCRxGrant = true;
       if (m_ueBRxGrant == true)
         {
@@ -2888,7 +2888,7 @@ McpttSessionInitNormal::UeCRxCb (const TestFloorMachine& machine, const McpttMsg
 }
 
 void
-McpttSessionInitNormal::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitNormal::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -2903,24 +2903,24 @@ McpttSessionInitNormal::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<M
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, false, "UE C already made transition from " << *oldState << " to " << *newState << ".");
-      NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       m_ueCStartStopToSilence = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from " << *oldState << " to " << *newState << ".");
       m_ueCSilenceToNoPerm = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -2970,9 +2970,9 @@ McpttSessionInitLoss::Configure (void)
   Ptr<McpttPttApp> ueBPttApp = GetApp (1);
   Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttMsgDropperImpl> ueBPttAppDropper = Create<McpttMsgDropperImpl> (2, McpttFloorMsgGranted::GetTypeId ());
   Ptr<McpttMsgDropperImpl> ueCPttAppDropper = Create<McpttMsgDropperImpl> (2, McpttFloorMsgGranted::GetTypeId ());
@@ -2982,19 +2982,19 @@ McpttSessionInitLoss::Configure (void)
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (true));
   ueAMachine->SetOriginator (true);
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeCStateChangeCb, this));
@@ -3009,13 +3009,13 @@ McpttSessionInitLoss::Execute (void)
   Simulator::Destroy ();
 
   NS_TEST_ASSERT_MSG_EQ (m_ueATxGrant, true, "UE A never sent the grant message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, true, "UE A never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, true, "UE A never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRtp, true, "UE B never saw the RTP message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRtp, true, "UE C never saw the RTP message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made the transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" <<  McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made the transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" <<  McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
 }
 
 void
@@ -3025,7 +3025,7 @@ McpttSessionInitLoss::UeARxCb (const TestFloorMachine& machine, const McpttMsg& 
 }
 
 void
-McpttSessionInitLoss::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitLoss::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
@@ -3041,14 +3041,14 @@ McpttSessionInitLoss::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<Mcp
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       m_ueAStartStopToHasPerm = true;
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), true, "Timer " << *t206 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
     }
@@ -3072,7 +3072,7 @@ McpttSessionInitLoss::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<Mcp
 void
 McpttSessionInitLoss::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3090,7 +3090,7 @@ McpttSessionInitLoss::UeATxCb (const TestFloorMachine& machine, const McpttMsg& 
   if (msg.GetInstanceTypeId () == McpttFloorMsgGranted::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxGrant, false, "UE A already sent " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateStartStop::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateStartStop::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueATxGrant = true;
     }
   else
@@ -3114,7 +3114,7 @@ McpttSessionInitLoss::UeATxCb (const TestFloorMachine& machine, const McpttMsg& 
 void
 McpttSessionInitLoss::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3132,7 +3132,7 @@ McpttSessionInitLoss::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& 
   if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRtp, false, "UE B already received " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE B not in '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "' state.");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B not in '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' state.");
       m_ueBRxRtp = true;
       if (m_ueCRxRtp == true)
         {
@@ -3158,7 +3158,7 @@ McpttSessionInitLoss::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& 
 }
 
 void
-McpttSessionInitLoss::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitLoss::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3173,24 +3173,24 @@ McpttSessionInitLoss::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<Mcp
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, false, "UE B already made transition from " << *oldState << " to " << *newState << ".");
-      NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       m_ueBStartStopToSilence = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToSilence, true, "UE B never made transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToNoPerm, false, "UE B already made transition from " << *oldState << " to " << *newState << ".");
       m_ueBSilenceToNoPerm = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
     }
@@ -3219,7 +3219,7 @@ McpttSessionInitLoss::UeBTxCb (const TestFloorMachine& machine, const McpttMsg& 
 void
 McpttSessionInitLoss::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3236,7 +3236,7 @@ McpttSessionInitLoss::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& 
 
   if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueCRxRtp = true;
       if (m_ueBRxRtp == true)
         {
@@ -3262,7 +3262,7 @@ McpttSessionInitLoss::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& 
 }
 
 void
-McpttSessionInitLoss::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitLoss::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3277,22 +3277,22 @@ McpttSessionInitLoss::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<Mcp
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, false, "UE C already made transition from " << *oldState << " to " << *newState << ".");
-      NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
       m_ueCStartStopToSilence = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToSilence, true, "UE C never made transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from " << *oldState << " to " << *newState << ".");
       m_ueCSilenceToNoPerm = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
     }
@@ -3337,8 +3337,8 @@ McpttFloorReleaseNormal::Configure (void)
 
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
 
   Ptr<McpttTimer> ueAT206 = ueAMachine->GetT206 ();
   Ptr<McpttTimer> ueBT203 = ueBMachine->GetT203 ();
@@ -3350,13 +3350,13 @@ McpttFloorReleaseNormal::Configure (void)
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueAMachine->SetOriginator (false);
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseNormal::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseNormal::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseNormal::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseNormal::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseNormal::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseNormal::UeBStateChangeCb, this));
@@ -3377,9 +3377,9 @@ McpttFloorReleaseNormal::Execute (void)
   Simulator::Destroy ();
 
   NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToSilence, true, "UE A never made transition from '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToSilence, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received release message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToSilence, true, "UE B never made transition from '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToSilence, true, "UE B never made transition from '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
 }
 
 void
@@ -3389,7 +3389,7 @@ McpttFloorReleaseNormal::UeARxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorReleaseNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
@@ -3405,14 +3405,14 @@ McpttFloorReleaseNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToSilence, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       m_ueAHasPermToSilence = true;
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
     }
@@ -3436,7 +3436,7 @@ McpttFloorReleaseNormal::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<
 void
 McpttFloorReleaseNormal::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3454,7 +3454,7 @@ McpttFloorReleaseNormal::UeATxCb (const TestFloorMachine& machine, const McpttMs
   if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, false, "UE A already sent " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueATxRelease = true;
     }
   else
@@ -3478,7 +3478,7 @@ McpttFloorReleaseNormal::UeATxCb (const TestFloorMachine& machine, const McpttMs
 void
 McpttFloorReleaseNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3496,7 +3496,7 @@ McpttFloorReleaseNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMs
   if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, false, "UE B already received " << msg << ".");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueBRxRelease = true;
     }
   else
@@ -3518,7 +3518,7 @@ McpttFloorReleaseNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMs
 }
 
 void
-McpttFloorReleaseNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
@@ -3534,7 +3534,7 @@ McpttFloorReleaseNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToSilence, false, "UE B already made transition from " << *oldState << " to " << *newState << ".");
       m_ueBNoPermToSilence = true;
@@ -3542,8 +3542,8 @@ McpttFloorReleaseNormal::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<
 
       Stop ();
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
     }
@@ -3599,9 +3599,9 @@ McpttFloorReleaseAfterReq::Configure (void)
   Ptr<McpttPusher> ueAPttAppPusher = ueAPttApp->GetPusher ();
   Ptr<McpttPusher> ueBPttAppPusher = ueBPttApp->GetPusher ();
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT201 = ueAMachine->GetT201 ();
   Ptr<McpttTimer> ueAT203 = ueAMachine->GetT203 ();
@@ -3616,7 +3616,7 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStatePendReq::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseAfterReq::UeAStateChangeCb, this));
@@ -3624,13 +3624,13 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueAT201->SetDelay (Seconds (0.160));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (true));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseAfterReq::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseAfterReq::UeCStateChangeCb, this));
@@ -3660,7 +3660,7 @@ McpttFloorReleaseAfterReq::Execute (void)
 
   Simulator::Run ();
 
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue (); //!< The floor queue.
 
   NS_TEST_ASSERT_MSG_EQ (ueBMachineQueue->GetCount (), 0, "UE B did not remove UE a from the queue.");
@@ -3669,8 +3669,8 @@ McpttFloorReleaseAfterReq::Execute (void)
 
   NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxRtp, true, "UE A never received RTP media.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToSilence, true, "UE A never made transition from '" << McpttFloorMachineBasicStatePendGrant::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToNoPerm, true, "UE A never made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToSilence, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToNoPerm, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received release message.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, true, "UE C never received release message.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRtp, true, "UE C never received RTP media.");
@@ -3679,7 +3679,7 @@ McpttFloorReleaseAfterReq::Execute (void)
 void
 McpttFloorReleaseAfterReq::UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3696,7 +3696,7 @@ McpttFloorReleaseAfterReq::UeARxCb (const TestFloorMachine& machine, const Mcptt
 
  if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
-      if (state->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+      if (state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
         {
           m_ueARxRtp = true;
           NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is running.");
@@ -3705,7 +3705,7 @@ McpttFloorReleaseAfterReq::UeARxCb (const TestFloorMachine& machine, const Mcptt
               Stop ();
             }
         }
-      else if (state->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+      else if (state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
         {
           // Do nothing.
           NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), true, "Timer " << *t201 << " is not running.");
@@ -3733,7 +3733,7 @@ McpttFloorReleaseAfterReq::UeARxCb (const TestFloorMachine& machine, const Mcptt
 }
 
 void
-McpttFloorReleaseAfterReq::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseAfterReq::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
@@ -3749,23 +3749,23 @@ McpttFloorReleaseAfterReq::UeAStateChangeCb (const TestFloorMachine& machine, Pt
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
- if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+ if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToSilence, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       m_ueAPendReqToSilence = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToSilence, true, "UE A never made transition from '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+      NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToSilence, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToNoPerm, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       m_ueASilenceToNoPerm = true;
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
     }
- else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-     && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+ else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+     && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
   {
     // Do nothing.
     NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
@@ -3790,7 +3790,7 @@ McpttFloorReleaseAfterReq::UeAStateChangeCb (const TestFloorMachine& machine, Pt
 void
 McpttFloorReleaseAfterReq::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3810,7 +3810,7 @@ McpttFloorReleaseAfterReq::UeATxCb (const TestFloorMachine& machine, const Mcptt
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, false, "UE B already received release message.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, false, "UE C already received release message.");
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, false, "UE A already sent release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendReq::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendReq::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueATxRelease = true;
     }
   else
@@ -3834,7 +3834,7 @@ McpttFloorReleaseAfterReq::UeATxCb (const TestFloorMachine& machine, const Mcptt
 void
 McpttFloorReleaseAfterReq::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3853,7 +3853,7 @@ McpttFloorReleaseAfterReq::UeBRxCb (const TestFloorMachine& machine, const Mcptt
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, false, "UE B already received release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       m_ueBRxRelease = true;
     }
   else
@@ -3875,10 +3875,10 @@ McpttFloorReleaseAfterReq::UeBRxCb (const TestFloorMachine& machine, const Mcptt
 }
 
 void
-McpttFloorReleaseAfterReq::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseAfterReq::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-     && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+     && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -3897,7 +3897,7 @@ McpttFloorReleaseAfterReq::UeBTxCb (const TestFloorMachine& machine, const Mcptt
 void
 McpttFloorReleaseAfterReq::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -3916,7 +3916,7 @@ McpttFloorReleaseAfterReq::UeCRxCb (const TestFloorMachine& machine, const Mcptt
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent floor release message.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, false, "UE C already recieved release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       m_ueCRxRelease = true;
     }
   else if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
@@ -3928,7 +3928,7 @@ McpttFloorReleaseAfterReq::UeCRxCb (const TestFloorMachine& machine, const Mcptt
         {
           NS_TEST_ASSERT_MSG_EQ (m_ueCRxRtp, false, "UE C already received RTP media.");
           NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, false, "UE C already received release message.");
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
           m_ueCRxRtp = true;
         }
       if (m_ueARxRtp == true)
@@ -3955,10 +3955,10 @@ McpttFloorReleaseAfterReq::UeCRxCb (const TestFloorMachine& machine, const Mcptt
 }
 
 void
-McpttFloorReleaseAfterReq::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseAfterReq::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-     && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+     && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       // Do nothing.
     }
@@ -4008,9 +4008,9 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   Ptr<McpttPusher> ueAPttAppPusher = ueAPttApp->GetPusher ();
   Ptr<McpttPusher> ueBPttAppPusher = ueBPttApp->GetPusher ();
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT201 = ueAMachine->GetT201 ();
   Ptr<McpttTimer> ueAT203 = ueAMachine->GetT203 ();
@@ -4023,7 +4023,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue ();
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateQueued::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateQueued::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeARxCb, this));
   ueAMachine->SetPostTimerExpCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeATimerExpCb, this));
@@ -4033,7 +4033,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetAttribute ("C205", UintegerValue (2));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBRxCb, this));
   ueBMachine->SetPostTimerExpCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeBTimerExpCb, this));
@@ -4042,7 +4042,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueBT205->SetDelay (Seconds (0.120));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCRxCb, this));
   ueCMachine->SetPostTimerExpCb (MakeCallback (&McpttFloorReleaseDuringGrantWhileQueued::UeCTimerExpCb, this));
@@ -4055,7 +4055,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
   ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
 
-  Simulator::Schedule (Seconds (2.037), &McpttFloorMachine::ReleaseRequest, ueAMachine);
+  Simulator::Schedule (Seconds (2.037), &McpttFloorParticipant::ReleaseRequest, ueAMachine);
 
   ueBPttAppPusher->NotifyPushed ();
   ueBPttAppPusher->ScheduleRelease (Seconds (2.036));
@@ -4073,7 +4073,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Execute (void)
 
   Simulator::Run ();
 
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue (); //!< The floor queue.
 
   NS_TEST_ASSERT_MSG_EQ (ueBMachineQueue->GetCount (), 0, "UE B did not remove UE a from the queue.");
@@ -4082,16 +4082,16 @@ McpttFloorReleaseDuringGrantWhileQueued::Execute (void)
 
   NS_TEST_ASSERT_MSG_EQ (m_ueAExpT203, true, "UE A timer T203 never expired.");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAQueuedToNoPerm, true, "UE A never made transition from '" << McpttFloorMachineBasicStateQueued::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAQueuedToNoPerm, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStateQueued::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxGrant, 2, "UE A never received 3 grant messages.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueANoPermToSilence, true, "UE A never made transition from '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueANoPermToSilence, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBTxGrant, 2, "UE B never sent 2 grant messages.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToPendGrant, true, "UE B never made transition from '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStatePendGrant::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToPendGrant, true, "UE B never made transition from '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received a release message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBPendGrantToSilence, true, "UE B never made transition from '" << McpttFloorMachineBasicStatePendGrant::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBPendGrantToSilence, true, "UE B never made transition from '" << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCExpT203, true, "UE C timer T203 never expired.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCNoPermToSilence, 2, "UE C never made transition from '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' 2 times.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCNoPermToSilence, 2, "UE C never made transition from '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' 2 times.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrant, 2, "UE C never received 3 grant messages.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, true, "UE C never received release message.");
 }
@@ -4099,7 +4099,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Execute (void)
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeATimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4118,7 +4118,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeATimerExpCb (const TestFloorMachine& 
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAExpT203, false, "UE A timer " << *timer << " already expired.");
       NS_TEST_ASSERT_MSG_EQ (m_ueARxGrant, 2, "UE A never received 3 floor grant message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueAExpT203 = true;
     }
   else
@@ -4142,7 +4142,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeATimerExpCb (const TestFloorMachine& 
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4161,7 +4161,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeARxCb (const TestFloorMachine& machin
     {
       NS_TEST_ASSERT_MSG_LT (m_ueARxGrant, 3, "UE A received too many grant messages.");
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueARxGrant += 1;
     }
   else
@@ -4183,7 +4183,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeARxCb (const TestFloorMachine& machin
 }
 
 void
-McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4198,8 +4198,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb (const TestFloorMachin
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId ()
-     && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId ()
+     && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAQueuedToNoPerm, false, "UE A already made transition from '" << oldState->GetInstanceStateId () << "' to '" << newState->GetInstanceStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
@@ -4207,8 +4207,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb (const TestFloorMachin
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
       m_ueAQueuedToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueANoPermToSilence, false, "UE A already made transition from '" << oldState->GetInstanceStateId () << "' to '" << newState->GetInstanceStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueARxGrant, 2, "UE A never received 3 grant messages.");
@@ -4235,7 +4235,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeAStateChangeCb (const TestFloorMachin
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4253,7 +4253,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeATxCb (const TestFloorMachine& machin
    if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, false, "UE A already sent floor release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateQueued::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateQueued::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueATxRelease = true;
     }
   else
@@ -4277,7 +4277,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeATxCb (const TestFloorMachine& machin
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4296,7 +4296,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBRxCb (const TestFloorMachine& machin
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, false, "UE B already received floor release message.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBTxGrant, 1, "UE B never sent first floor granted message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
       m_ueBRxRelease = true;
     }
   else
@@ -4318,7 +4318,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBRxCb (const TestFloorMachine& machin
 }
 
 void
-McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4333,8 +4333,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb (const TestFloorMachin
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-     && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+     && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToPendGrant, false, "UE B already made transition from '" << oldState->GetInstanceStateId () << "' to '" << newState->GetInstanceStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBTxGrant, 1, "UE B never sent first grant message.");
@@ -4342,8 +4342,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb (const TestFloorMachin
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
       m_ueBHasPermToPendGrant = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBPendGrantToSilence, false, "UE B already made transition from '" << oldState->GetInstanceStateId () << "' to '" << newState->GetInstanceStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueBTxGrant, 2, "UE B never sent 2 grant messages.");
@@ -4374,7 +4374,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBStateChangeCb (const TestFloorMachin
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeBTimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4396,7 +4396,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBTimerExpCb (const TestFloorMachine& 
           NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received floor release message.");
           NS_TEST_ASSERT_MSG_EQ (c205->GetValue (), 1, "Counter C205 is not one.");
           NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE B in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE B in invalid state: " << *state << ".");
           NS_TEST_ASSERT_MSG_EQ (t205->IsRunning (), false, "Timer " << *t205 << " is running.");
           m_ueBExpT205 += 1;
         }
@@ -4406,7 +4406,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBTimerExpCb (const TestFloorMachine& 
           NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received floor release message.");
           NS_TEST_ASSERT_MSG_EQ (t205->IsRunning (), true, "Timer " << *t205 << " is not running.");
           NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
           m_ueBExpT205 += 1;
          }
     }
@@ -4428,7 +4428,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBTimerExpCb (const TestFloorMachine& 
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4448,11 +4448,11 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBTxCb (const TestFloorMachine& machin
       NS_TEST_ASSERT_MSG_LT (m_ueBTxGrant, 3, "UE B sent too many floor grant message.");
       if (m_ueBTxGrant == 0)
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
         }
       else
         {
-          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
+          NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStatePendGrant::GetStateId (), "UE B in invalid state: " << *state << ".");
         }
       m_ueBTxGrant += 1;
     }
@@ -4477,7 +4477,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeBTxCb (const TestFloorMachine& machin
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeCTimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4496,7 +4496,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCTimerExpCb (const TestFloorMachine& 
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCExpT203, false, "UE C timer " << *timer << " already expired.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrant, 2, "UE C never received 3 floor grant message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE C in invalid state: " << *state << ".");
       m_ueCExpT203 = true;
     }
   else
@@ -4520,7 +4520,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCTimerExpCb (const TestFloorMachine& 
 void
 McpttFloorReleaseDuringGrantWhileQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4538,7 +4538,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCRxCb (const TestFloorMachine& machin
   if (msg.GetInstanceTypeId () == McpttFloorMsgGranted::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_LT (m_ueCRxGrant, 3, "UE C received too many floor grant message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
       m_ueCRxGrant += 1;
@@ -4546,7 +4546,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCRxCb (const TestFloorMachine& machin
   else if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, false, "UE C already received floor release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateSilence::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateSilence::GetStateId (), "UE C in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
       m_ueCRxRelease = true;
@@ -4568,7 +4568,7 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCRxCb (const TestFloorMachine& machin
 }
 
 void
-McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4583,8 +4583,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb (const TestFloorMachin
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-     && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+     && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_LT (m_ueCNoPermToSilence, 2, "UE C made too many transitions from '" << oldState->GetInstanceStateId () << "' to '" << newState->GetInstanceStateId () << "'.");
       NS_TEST_ASSERT_MSG_GT (m_ueCRxGrant, 0, "UE C never received any granted message.");
@@ -4597,8 +4597,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb (const TestFloorMachin
           Stop ();
         }
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, false, "UE C already made transition from '" << oldState->GetInstanceStateId () << "' to '" << newState->GetInstanceStateId () << "'.");
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrant, 1, "UE C never received 3 grant messages.");
@@ -4652,9 +4652,9 @@ McpttFloorReleaseWhileQueued::Configure (void)
   Ptr<McpttPusher> ueAPttAppPusher = ueAPttApp->GetPusher ();
   Ptr<McpttPusher> ueBPttAppPusher = ueBPttApp->GetPusher ();
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT203 = ueAMachine->GetT203 ();
   Ptr<McpttTimer> ueBT206 = ueBMachine->GetT206 ();
@@ -4665,19 +4665,19 @@ McpttFloorReleaseWhileQueued::Configure (void)
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue ();
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateQueued::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateQueued::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeAStateChangeCb, this));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeBStateChangeCb, this));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCTxCb, this));
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCRxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleaseWhileQueued::UeCStateChangeCb, this));
@@ -4689,7 +4689,7 @@ McpttFloorReleaseWhileQueued::Configure (void)
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
   ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
 
-  Simulator::Schedule (Seconds (2.037), &McpttFloorMachine::ReleaseRequest, ueAMachine);
+  Simulator::Schedule (Seconds (2.037), &McpttFloorParticipant::ReleaseRequest, ueAMachine);
 
   Simulator::Schedule (Seconds (1.9), &McpttTimer::Start, ueAT203);
   Simulator::Schedule (Seconds (1.9), &McpttTimer::Start, ueBT206);
@@ -4705,7 +4705,7 @@ McpttFloorReleaseWhileQueued::Execute (void)
 
   Simulator::Run ();
 
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue (); //!< The floor queue.
 
   NS_TEST_ASSERT_MSG_EQ (ueBMachineQueue->GetCount (), 0, "UE B did not remove UE a from the queue.");
@@ -4713,7 +4713,7 @@ McpttFloorReleaseWhileQueued::Execute (void)
   Simulator::Destroy ();
 
   NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAQueuedToNoPerm, true, "UE A never made transition from '" << McpttFloorMachineBasicStateQueued::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAQueuedToNoPerm, true, "UE A never made transition from '" << McpttOffNetworkFloorParticipantStateQueued::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received release message.");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, true, "UE C never received release message.");
 }
@@ -4725,7 +4725,7 @@ McpttFloorReleaseWhileQueued::UeARxCb (const TestFloorMachine& machine, const Mc
 }
 
 void
-McpttFloorReleaseWhileQueued::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseWhileQueued::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4740,8 +4740,8 @@ McpttFloorReleaseWhileQueued::UeAStateChangeCb (const TestFloorMachine& machine,
   Ptr<McpttCounter> c204 = machine.GetC204 ();
   Ptr<McpttCounter> c205 = machine.GetC205 ();
 
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueAQueuedToNoPerm, false, "UE A already made transition from " << *oldState << " to " << *newState << ".");
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent release message.");
@@ -4768,7 +4768,7 @@ McpttFloorReleaseWhileQueued::UeAStateChangeCb (const TestFloorMachine& machine,
 void
 McpttFloorReleaseWhileQueued::UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4786,7 +4786,7 @@ McpttFloorReleaseWhileQueued::UeATxCb (const TestFloorMachine& machine, const Mc
   if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, false, "UE A already sent release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateQueued::GetStateId (), "UE A in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateQueued::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueATxRelease = true;
     }
   else
@@ -4810,7 +4810,7 @@ McpttFloorReleaseWhileQueued::UeATxCb (const TestFloorMachine& machine, const Mc
 void
 McpttFloorReleaseWhileQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4828,7 +4828,7 @@ McpttFloorReleaseWhileQueued::UeBRxCb (const TestFloorMachine& machine, const Mc
   if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, false, "UE B already received release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       m_ueBRxRelease = true;
       if (m_ueCRxRelease == true)
         {
@@ -4854,7 +4854,7 @@ McpttFloorReleaseWhileQueued::UeBRxCb (const TestFloorMachine& machine, const Mc
 }
 
 void
-McpttFloorReleaseWhileQueued::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseWhileQueued::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   NS_TEST_ASSERT_MSG_EQ (true, false, "UE B made unexpected state transition from " << *oldState << " to " << *newState << ".");
 }
@@ -4868,7 +4868,7 @@ McpttFloorReleaseWhileQueued::UeBTxCb (const TestFloorMachine& machine, const Mc
 void
 McpttFloorReleaseWhileQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg)
 {
-  Ptr<McpttFloorMachineBasicState> state = machine.GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = machine.GetState ();
 
   Ptr<McpttTimer> t201 = machine.GetT201 ();
   Ptr<McpttTimer> t203 = machine.GetT203 ();
@@ -4886,7 +4886,7 @@ McpttFloorReleaseWhileQueued::UeCRxCb (const TestFloorMachine& machine, const Mc
    if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, false, "UE C already recieved release message.");
-      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttFloorMachineBasicStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
+      NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       m_ueCRxRelease = true;
       if (m_ueBRxRelease == true)
         {
@@ -4912,7 +4912,7 @@ McpttFloorReleaseWhileQueued::UeCRxCb (const TestFloorMachine& machine, const Mc
 }
 
 void
-McpttFloorReleaseWhileQueued::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleaseWhileQueued::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
   NS_TEST_ASSERT_MSG_EQ (true, false, "UE C made unexpected state transition from " << *oldState << " to " << *newState << ".");
 }
@@ -4969,9 +4969,9 @@ McpttFloorRequestIdleBis::Configure (void)
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttMediaSrc> ueAMediaSrc = ueAPttApp->GetMediaSrc ();
 
@@ -4990,7 +4990,7 @@ McpttFloorRequestIdleBis::Configure (void)
   ueAPttApp->SetUserId (ueCPttApp->GetUserId () + 1);
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (true));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdleBis::UeATxCb, this));
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeAStateChangeCb, this));
@@ -5005,7 +5005,7 @@ McpttFloorRequestIdleBis::Configure (void)
   ueAQueue->SetAttribute ("Capacity", UintegerValue (1));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdleBis::UeBTxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeBStateChangeCb, this));
@@ -5015,7 +5015,7 @@ McpttFloorRequestIdleBis::Configure (void)
   ueCPttApp->SetFloorGrantedCb ((MakeCallback (&McpttFloorRequestIdleBis::UeCFloorGrantedCb, this)));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorRequestIdleBis::UeCTxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeCStateChangeCb, this));
@@ -5030,10 +5030,10 @@ McpttFloorRequestIdleBis::Configure (void)
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueAT230);
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueBT230);
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueCT230);
-  Simulator::Schedule (Seconds (2.1), &McpttFloorMachine::TakePushNotification, ueCMachine);
-  Simulator::Schedule (Seconds (2.14), &McpttFloorMachine::TakePushNotification, ueAMachine);
-  Simulator::Schedule (Seconds (3.0), &McpttFloorMachine::SendFloorQueuePositionRequest, ueCMachine);
-  Simulator::Schedule (Seconds (4.0), &McpttFloorMachine::TakeReleaseNotification, ueAMachine);
+  Simulator::Schedule (Seconds (2.1), &McpttFloorParticipant::PttPush, ueCMachine);
+  Simulator::Schedule (Seconds (2.14), &McpttFloorParticipant::PttPush, ueAMachine);
+  Simulator::Schedule (Seconds (3.0), &McpttFloorParticipant::SendFloorQueuePositionRequest, ueCMachine);
+  Simulator::Schedule (Seconds (4.0), &McpttFloorParticipant::PttRelease, ueAMachine);
 }
 
 void 
@@ -5044,12 +5044,12 @@ McpttFloorRequestIdleBis::Execute (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToPendGrant, true, "UE A never made transition from " << McpttFloorMachineBasicStateHasPerm::GetStateId () << " to " << McpttFloorMachineBasicStatePendGrant::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToHasPerm, true, "UE A never made transition from " << McpttFloorMachineBasicStatePendReq::GetStateId () << " to " << McpttFloorMachineBasicStateHasPerm::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToPendGrant, true, "UE A never made transition from " << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << " to " << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAPendReqToHasPerm, true, "UE A never made transition from " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxQueuePosInfoReq, true, "UE A never received " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxReq, 3, "UE A never received 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToStartStop, true, "UE A never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateStartStop::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToPendReq, true, "UE A never made transition from " << McpttFloorMachineBasicStateStartStop::GetStateId () << " to " << McpttFloorMachineBasicStatePendReq::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToStartStop, true, "UE A never made transition from " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToPendReq, true, "UE A never made transition from " << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << " to " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxGranted, true, "UE A never sent 2 " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxReq, 3, "UE A never sent 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxTaken, true, "UE A never sent " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
@@ -5057,20 +5057,20 @@ McpttFloorRequestIdleBis::Execute (void)
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxGranted, true, "UE B never received " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxQueuePosInfo, 2, "UE B never received 2 " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxReq, 6, "UE B never received 6 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToStartStop, true, "UE B never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateStartStop::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToNoPerm, true, "UE B never made transition from " << McpttFloorMachineBasicStateStartStop::GetStateId () << " to " << McpttFloorMachineBasicStateNoPerm::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToStartStop, true, "UE B never made transition from " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToNoPerm, true, "UE B never made transition from " << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxQueuePosInfoReq, true, "UE B never received " << McpttFloorMsgQueuePositionRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxTaken, true, "UE B never received " << McpttFloorMsgTaken::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRtp, 2, "UE B received more than 2 " << McpttMediaMsg::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCPendReqToQueued, true, "UE C never made transition from " << McpttFloorMachineBasicStatePendReq::GetStateId () << " to " << McpttFloorMachineBasicStateQueued::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCQueuedToSilence, true, "UE C never made transition from " << McpttFloorMachineBasicStateQueued::GetStateId () << " to " << McpttFloorMachineBasicStateSilence::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCPendReqToQueued, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateQueued::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCQueuedToSilence, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStateQueued::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxGranted, true, "UE C never received " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxQueuePosInfo, 2, "UE C never received 2 " << McpttFloorMsgQueuePositionInfo::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, 3, "UE C never received 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRtp, 2, "UE C never received 2 " << McpttMediaMsg::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxTaken, true, "UE C never received " << McpttFloorMsgTaken::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToPendReq, true, "UE C never made transition from " << McpttFloorMachineBasicStateStartStop::GetStateId () << " to " << McpttFloorMachineBasicStatePendReq::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToStartStop, true, "UE C never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateStartStop::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCStartStopToPendReq, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << " to " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToStartStop, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCTxReq, 3, "UE C never sent 3 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCTxQueuePosInfoReq, true, "UE C never sent " << McpttFloorMsgQueuePositionRequest::GetTypeId ().GetName () << ".");
 }
@@ -5093,21 +5093,21 @@ McpttFloorRequestIdleBis::UeARxCb (const TestFloorMachine& machine, const McpttM
 }
 
 void
-McpttFloorRequestIdleBis::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestIdleBis::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       m_ueASilenceToStartStop = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       m_ueAStartStopToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       m_ueAPendReqToHasPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ())
     {
       m_ueAHasPermToPendGrant = true;
     }
@@ -5176,15 +5176,15 @@ McpttFloorRequestIdleBis::UeBRxCb (const TestFloorMachine& machine, const McpttM
 }
 
 void
-McpttFloorRequestIdleBis::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestIdleBis::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       m_ueBSilenceToStartStop = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       m_ueBStartStopToNoPerm = true;
     }
@@ -5236,21 +5236,21 @@ McpttFloorRequestIdleBis::UeCRxCb (const TestFloorMachine& machine, const McpttM
 }
 
 void
-McpttFloorRequestIdleBis::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorRequestIdleBis::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ())
     {
       m_ueCSilenceToStartStop = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       m_ueCStartStopToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId ())
     {
       m_ueCPendReqToQueued = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateQueued::GetStateId () && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateQueued::GetStateId () && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       m_ueCQueuedToSilence = true;
       Stop ();
@@ -5307,8 +5307,8 @@ McpttSessionInitPrivateCall::Configure (void)
 
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
 
   Ptr<McpttMediaSrc> ueAMediaSrc = ueAPttApp->GetMediaSrc ();
 
@@ -5320,7 +5320,7 @@ McpttSessionInitPrivateCall::Configure (void)
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (true));
   ueAMachine->SetOriginator (true);
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitPrivateCall::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitPrivateCall::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitPrivateCall::UeAStateChangeCb, this));
@@ -5334,7 +5334,7 @@ McpttSessionInitPrivateCall::Configure (void)
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetOriginator (false);
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
   ueBMachine->SetPostTxCb (MakeCallback (&McpttSessionInitPrivateCall::UeBTxCb, this));
   ueBMachine->SetPostRxCb (MakeCallback (&McpttSessionInitPrivateCall::UeBRxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitPrivateCall::UeBStateChangeCb, this));
@@ -5343,8 +5343,8 @@ McpttSessionInitPrivateCall::Configure (void)
 
   ueBT201->SetDelay (Seconds (0.160));
 
-  Simulator::Schedule (Seconds (2.1), &McpttFloorMachine::TakeReleaseNotification, ueAMachine);
-  Simulator::Schedule (Seconds (2.2), &McpttFloorMachine::TakePushNotification, ueBMachine);
+  Simulator::Schedule (Seconds (2.1), &McpttFloorParticipant::PttRelease, ueAMachine);
+  Simulator::Schedule (Seconds (2.2), &McpttFloorParticipant::PttPush, ueBMachine);
 }
 
 void
@@ -5355,16 +5355,16 @@ McpttSessionInitPrivateCall::Execute (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToSilence, true, "UE A never made the transition from '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToSilence, true, "UE A never made the transition from '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxReq, true, "UE A never received " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToPendGrant, true, "UE A never made the transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStatePendGrant::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, true, "UE A never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueASilenceToPendGrant, true, "UE A never made the transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAStartStopToHasPerm, true, "UE A never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxGrant, 2, "UE A never sent 2 " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxRelease, true, "UE A never sent " << McpttFloorMsgRelease::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToSilence, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "' to '" << McpttFloorMachineBasicStateSilence::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBPendReqToHasPerm, true, "UE B never made the transition from '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "' to '" << McpttFloorMachineBasicStateHasPerm::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToPendReq, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateSilence::GetStateId () << "' to '" << McpttFloorMachineBasicStatePendReq::GetStateId () << "'.");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToNoPerm, true, "UE B never made the transition from '" << McpttFloorMachineBasicStateStartStop::GetStateId () << "' to '" << McpttFloorMachineBasicStateNoPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToSilence, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBPendReqToHasPerm, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBSilenceToPendReq, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << "'.");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBStartStopToNoPerm, true, "UE B never made the transition from '" << McpttOffNetworkFloorParticipantStateStartStop::GetStateId () << "' to '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxGrant, 2, "UE B never received 2 " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRtp, true, "UE B never received " << McpttMediaMsg::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, true, "UE B never received " << McpttFloorMsgRelease::GetTypeId ().GetName () << ".");
@@ -5386,20 +5386,20 @@ McpttSessionInitPrivateCall::UeARxCb (const TestFloorMachine& machine, const Mcp
 }
 
 void
-McpttSessionInitPrivateCall::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitPrivateCall::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       m_ueAStartStopToHasPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       m_ueAHasPermToSilence = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ())
     {
       m_ueASilenceToPendGrant = true;
     }
@@ -5448,25 +5448,25 @@ McpttSessionInitPrivateCall::UeBRxCb (const TestFloorMachine& machine, const Mcp
 }
 
 void
-McpttSessionInitPrivateCall::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttSessionInitPrivateCall::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateStartStop::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateStartStop::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       m_ueBStartStopToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       m_ueBNoPermToSilence = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       m_ueBSilenceToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       m_ueBPendReqToHasPerm = true;
       Stop ();
@@ -5532,9 +5532,9 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
-  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (0));
-  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (1));
-  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorMachine> (GetFloorMachine (2));
+  Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
+  Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
+  Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
 
   Ptr<McpttTimer> ueAT201 = ueAMachine->GetT201 ();
   Ptr<McpttTimer> ueAT205 = ueAMachine->GetT205 ();
@@ -5547,7 +5547,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   Ptr<McpttTimer> ueCT205 = ueCMachine->GetT205 ();
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueAMachine->SetStartState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
   ueAMachine->SetPostTxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeATxCb, this));
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeAStateChangeCb, this));
@@ -5556,7 +5556,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   ueAT205->SetDelay (Seconds (0.120));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueBMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueBMachine->SetPostRxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBRxCb, this));
   ueBMachine->SetPostTxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBTxCb, this));
   ueBMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeBStateChangeCb, this));
@@ -5567,7 +5567,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   ueBT205->SetDelay (Seconds (0.120));
 
   ueCMachine->SetAttribute ("GenMedia", BooleanValue (false));
-  ueCMachine->SetStartState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  ueCMachine->SetStartState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
   ueCMachine->SetPostRxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCRxCb, this));
   ueCMachine->SetPostTxCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCTxCb, this));
   ueCMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorReleasePreemptedFloorArbitrator::UeCStateChangeCb, this));
@@ -5579,9 +5579,9 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueAT206);
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueBT203);
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueCT203);
-  Simulator::Schedule (Seconds (2.1), &McpttFloorMachine::TakePushNotification, ueBMachine);
-  Simulator::Schedule (Seconds (2.2), &McpttFloorMachine::TakePushNotification, ueCMachine);
-  Simulator::Schedule (Seconds (2.3), &McpttFloorMachine::TakeReleaseNotification, ueBMachine);
+  Simulator::Schedule (Seconds (2.1), &McpttFloorParticipant::PttPush, ueBMachine);
+  Simulator::Schedule (Seconds (2.2), &McpttFloorParticipant::PttPush, ueCMachine);
+  Simulator::Schedule (Seconds (2.3), &McpttFloorParticipant::PttRelease, ueBMachine);
 }
 
 void 
@@ -5592,26 +5592,26 @@ McpttFloorReleasePreemptedFloorArbitrator::Execute (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToPendGrant, true, "UE A never made transition from " << McpttFloorMachineBasicStateHasPerm::GetStateId () << " to " << McpttFloorMachineBasicStatePendGrant::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueAPendGrantToSilence, true, "UE A never made transition from " << McpttFloorMachineBasicStatePendGrant::GetStateId () << " to " << McpttFloorMachineBasicStateSilence::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAHasPermToPendGrant, true, "UE A never made transition from " << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << " to " << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueAPendGrantToSilence, true, "UE A never made transition from " << McpttOffNetworkFloorParticipantStatePendGrant::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxDeny, true, "UE A never received " << McpttFloorMsgDeny::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxRelease, true, "UE A never received " << McpttFloorMsgRelease::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueARxReq, 2, "UE A never received 2 " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxDeny, true, "UE A never sent " << McpttFloorMsgDeny::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueATxGrant, 4, "UE A never sent 4 " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToPendReq, true, "UE B never made transition from " << McpttFloorMachineBasicStateNoPerm::GetStateId () << " to " << McpttFloorMachineBasicStatePendReq::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBPendReqToHasPerm, true, "UE B never made transition from " << McpttFloorMachineBasicStatePendReq::GetStateId () << " to " << McpttFloorMachineBasicStateHasPerm::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToSilence, true, "UE B never made transition from " << McpttFloorMachineBasicStateHasPerm::GetStateId () << " to " << McpttFloorMachineBasicStateSilence::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBNoPermToPendReq, true, "UE B never made transition from " << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << " to " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBPendReqToHasPerm, true, "UE B never made transition from " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueBHasPermToSilence, true, "UE B never made transition from " << McpttOffNetworkFloorParticipantStateHasPerm::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxDeny, true, "UE B never received " << McpttFloorMsgDeny::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxGrant, 4, "UE B never received 4 " << McpttFloorMsgGranted::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBRxReq, true, "UE B never received " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBTxDeny, true, "UE B never sent " << McpttFloorMsgDeny::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBTxReq, true, "UE B never sent " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueBTxRelease, true, "UE B never sent " << McpttFloorMsgRelease::GetTypeId ().GetName () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCNoPermToPendReq, true, "UE C never made transition from " << McpttFloorMachineBasicStateNoPerm::GetStateId () << " to " << McpttFloorMachineBasicStatePendReq::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCPendReqToNoPerm, true, "UE C never made transition from " << McpttFloorMachineBasicStatePendReq::GetStateId () << " to " << McpttFloorMachineBasicStateNoPerm::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCNoPermToSilence, true, "UE C never made transition from " << McpttFloorMachineBasicStateNoPerm::GetStateId () << " to " << McpttFloorMachineBasicStateSilence::GetStateId () << ".");
-  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made transition from " << McpttFloorMachineBasicStateSilence::GetStateId () << " to " << McpttFloorMachineBasicStateNoPerm::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCNoPermToPendReq, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << " to " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCPendReqToNoPerm, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStatePendReq::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCNoPermToSilence, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << ".");
+  NS_TEST_ASSERT_MSG_EQ (m_ueCSilenceToNoPerm, true, "UE C never made transition from " << McpttOffNetworkFloorParticipantStateSilence::GetStateId () << " to " << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, true, "UE A never received " << McpttFloorMsgRelease::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxDeny, 2, "UE C never received 2 " << McpttFloorMsgDeny::GetTypeId ().GetName () << ".");
   NS_TEST_ASSERT_MSG_EQ (m_ueCRxReq, true, "UE C never received " << McpttFloorMsgRequest::GetTypeId ().GetName () << ".");
@@ -5641,15 +5641,15 @@ McpttFloorReleasePreemptedFloorArbitrator::UeARxCb (const TestFloorMachine& mach
 }
 
 void
-McpttFloorReleasePreemptedFloorArbitrator::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleasePreemptedFloorArbitrator::UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ())
     {
       m_ueAHasPermToPendGrant = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendGrant::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       m_ueAPendGrantToSilence = true;
       Stop ();
@@ -5699,20 +5699,20 @@ McpttFloorReleasePreemptedFloorArbitrator::UeBRxCb (const TestFloorMachine& mach
 }
 
 void
-McpttFloorReleasePreemptedFloorArbitrator::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleasePreemptedFloorArbitrator::UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       m_ueBNoPermToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
     {
       m_ueBPendReqToHasPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       m_ueBHasPermToSilence = true;
     }
@@ -5769,25 +5769,25 @@ McpttFloorReleasePreemptedFloorArbitrator::UeCRxCb (const TestFloorMachine& mach
 }
 
 void
-McpttFloorReleasePreemptedFloorArbitrator::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttFloorMachineBasicState>  oldState, Ptr<McpttFloorMachineBasicState>  newState)
+McpttFloorReleasePreemptedFloorArbitrator::UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState)
 {
-  if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ())
+  if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ())
     {
       m_ueCNoPermToPendReq = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStatePendReq::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStatePendReq::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       m_ueCPendReqToNoPerm = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ())
     {
       m_ueCNoPermToSilence = true;
     }
-  else if (oldState->GetInstanceStateId () == McpttFloorMachineBasicStateSilence::GetStateId ()
-      && newState->GetInstanceStateId () == McpttFloorMachineBasicStateNoPerm::GetStateId ())
+  else if (oldState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateSilence::GetStateId ()
+      && newState->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ())
     {
       m_ueCSilenceToNoPerm = true;
     }

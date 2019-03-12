@@ -39,88 +39,88 @@
 #include "mcptt-counter.h"
 #include "mcptt-call-machine.h"
 #include "mcptt-call-type-machine.h"
-#include "mcptt-floor-machine.h"
-#include "mcptt-floor-machine-basic-state.h"
+#include "mcptt-floor-participant.h"
+#include "mcptt-off-network-floor-participant-state.h"
 #include "mcptt-floor-queue.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
 
-#include "mcptt-floor-machine-basic.h"
+#include "mcptt-off-network-floor-participant.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("McpttFloorMachineBasic");
+NS_LOG_COMPONENT_DEFINE ("McpttOffNetworkFloorParticipant");
 
-/** McpttFloorMachineBasic - begin **/
-NS_OBJECT_ENSURE_REGISTERED (McpttFloorMachineBasic);
+/** McpttOffNetworkFloorParticipant - begin **/
+NS_OBJECT_ENSURE_REGISTERED (McpttOffNetworkFloorParticipant);
 
 TypeId
-McpttFloorMachineBasic::GetTypeId (void)
+McpttOffNetworkFloorParticipant::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttFloorMachineBasic")
-    .SetParent<Object> ()
-    .AddConstructor<McpttFloorMachineBasic>()
+  static TypeId tid = TypeId ("ns3::McpttOffNetworkFloorParticipant")
+    .SetParent<McpttFloorParticipant> ()
+    .AddConstructor<McpttOffNetworkFloorParticipant>()
     .AddAttribute ("C201", "The initial limit of counter C201.",
                    UintegerValue (3),
-                   MakeUintegerAccessor (&McpttFloorMachineBasic::SetLimitC201),
+                   MakeUintegerAccessor (&McpttOffNetworkFloorParticipant::SetLimitC201),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("C204", "The initial limit of counter C204.",
                    UintegerValue (3),
-                   MakeUintegerAccessor (&McpttFloorMachineBasic::SetLimitC204),
+                   MakeUintegerAccessor (&McpttOffNetworkFloorParticipant::SetLimitC204),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("C205", "The initial limit of counter C205.",
                    UintegerValue (4),
-                   MakeUintegerAccessor (&McpttFloorMachineBasic::SetLimitC205),
+                   MakeUintegerAccessor (&McpttOffNetworkFloorParticipant::SetLimitC205),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("GenMedia", "The flag that indicates if the floor machine should generate media when it has permission.",
                    BooleanValue (true),
-                   MakeBooleanAccessor (&McpttFloorMachineBasic::m_genMedia),
+                   MakeBooleanAccessor (&McpttOffNetworkFloorParticipant::m_genMedia),
                    MakeBooleanChecker ())
     .AddAttribute ("T201", "The delay to use for timer T201 (Time value)",
                    TimeValue (MilliSeconds (40)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT201),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT201),
                    MakeTimeChecker ())
     .AddAttribute ("T203", "The delay to use for timer T203 (Time value)",
                    TimeValue (Seconds (4)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT203),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT203),
                    MakeTimeChecker ())
     .AddAttribute ("T204", "The delay to use for timer T204 (Time value)",
                    TimeValue (MilliSeconds (80)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT204),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT204),
                    MakeTimeChecker ())
     .AddAttribute ("T205", "The delay to use for timer T205 (Time value)",
                    TimeValue (MilliSeconds (80)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT205),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT205),
                    MakeTimeChecker ())
     .AddAttribute ("T206", "The delay to use for timer T206 (Time value)",
                    TimeValue (Seconds (27)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT206),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT206),
                    MakeTimeChecker ())
     .AddAttribute ("T207", "The delay to use for timer T207 (Time value)",
                    TimeValue (Seconds (3)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT207),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT207),
                    MakeTimeChecker ())
     .AddAttribute ("T230", "The delay to use for timer T230 (Time value)",
                    TimeValue (Seconds (600)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT230),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT230),
                    MakeTimeChecker ())
     .AddAttribute ("T233", "The delay to use for timer T233 (Time value)",
                    TimeValue (Seconds (3)),
-                   MakeTimeAccessor (&McpttFloorMachineBasic::SetDelayT233),
+                   MakeTimeAccessor (&McpttOffNetworkFloorParticipant::SetDelayT233),
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace",
                       "The trace for capturing state changes.",
-                      MakeTraceSourceAccessor (&McpttFloorMachineBasic::m_stateChangeTrace),
-                      "ns3::McpttFloorMachineBasic::StateChangeTrace")
+                      MakeTraceSourceAccessor (&McpttOffNetworkFloorParticipant::m_stateChangeTrace),
+                      "ns3::McpttOffNetworkFloorParticipant::StateChangeTrace")
     ;
   
   return tid;
 }
 
-McpttFloorMachineBasic::McpttFloorMachineBasic (void)
-  : McpttFloorMachine (),
+McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant (void)
+  : McpttFloorParticipant (),
     m_c201 (CreateObject<McpttCounter> (McpttEntityId (1, "C201"))),
     m_c204 (CreateObject<McpttCounter> (McpttEntityId (4, "C204"))),
     m_c205 (CreateObject<McpttCounter> (McpttEntityId (5, "C205"))),
@@ -134,7 +134,7 @@ McpttFloorMachineBasic::McpttFloorMachineBasic (void)
     m_setupDelayStartTime (Seconds (0)),
     m_setupDelayCb (MakeNullCallback<void, const Time&> ()),
     m_started (false),
-    m_state (McpttFloorMachineBasicStateStartStop::GetInstance ()),
+    m_state (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
     m_candidateSsrc (0),
     m_currentSsrc (0),
@@ -150,34 +150,34 @@ McpttFloorMachineBasic::McpttFloorMachineBasic (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_t201->Link (&McpttFloorMachineBasic::ExpiryOfT201, this);
-  m_t203->Link (&McpttFloorMachineBasic::ExpiryOfT203, this);
-  m_t204->Link (&McpttFloorMachineBasic::ExpiryOfT204, this);
-  m_t205->Link (&McpttFloorMachineBasic::ExpiryOfT205, this);
-  m_t206->Link (&McpttFloorMachineBasic::ExpiryOfT206, this);
-  m_t207->Link (&McpttFloorMachineBasic::ExpiryOfT207, this);
-  m_t230->Link (&McpttFloorMachineBasic::ExpiryOfT230, this);
-  m_t233->Link (&McpttFloorMachineBasic::ExpiryOfT233, this);
+  m_t201->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT201, this);
+  m_t203->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT203, this);
+  m_t204->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT204, this);
+  m_t205->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT205, this);
+  m_t206->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT206, this);
+  m_t207->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT207, this);
+  m_t230->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT230, this);
+  m_t233->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT233, this);
 }
 
-McpttFloorMachineBasic::~McpttFloorMachineBasic (void)
+McpttOffNetworkFloorParticipant::~McpttOffNetworkFloorParticipant (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasic::AcceptGrant (void)
+McpttOffNetworkFloorParticipant::AcceptGrant (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " accepting grant" << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " accepting grant" << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->AcceptGrant (*this);
 }
 
 void
-McpttFloorMachineBasic::ChangeState (Ptr<McpttFloorMachineBasicState>  state)
+McpttOffNetworkFloorParticipant::ChangeState (Ptr<McpttOffNetworkFloorParticipantState>  state)
 {
   NS_LOG_FUNCTION (this << state);
 
@@ -188,7 +188,7 @@ McpttFloorMachineBasic::ChangeState (Ptr<McpttFloorMachineBasicState>  state)
     }
 
   McpttEntityId stateId = state->GetInstanceStateId ();
-  Ptr<McpttFloorMachineBasicState> curr = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> curr = GetState ();
 
   McpttEntityId currStateId = curr->GetInstanceStateId ();
 
@@ -202,7 +202,7 @@ McpttFloorMachineBasic::ChangeState (Ptr<McpttFloorMachineBasicState>  state)
       SetState (state);
       state->Selected (*this);
 
-      if (state->GetInstanceStateId () == McpttFloorMachineBasicStateHasPerm::GetStateId ())
+      if (state->GetInstanceStateId () == McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ())
         {
           Time start = GetSetupDelayStartTime ();
           Time stop = Simulator::Now ();
@@ -223,7 +223,7 @@ McpttFloorMachineBasic::ChangeState (Ptr<McpttFloorMachineBasicState>  state)
 }
 
 void
-McpttFloorMachineBasic::ClearCandidateSsrc (void)
+McpttOffNetworkFloorParticipant::ClearCandidateSsrc (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -231,7 +231,7 @@ McpttFloorMachineBasic::ClearCandidateSsrc (void)
 }
 
 void
-McpttFloorMachineBasic::ClearCurrentSsrc (void)
+McpttOffNetworkFloorParticipant::ClearCurrentSsrc (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -239,7 +239,7 @@ McpttFloorMachineBasic::ClearCurrentSsrc (void)
 }
 
 uint8_t
-McpttFloorMachineBasic::GetCallTypeId (void) const
+McpttOffNetworkFloorParticipant::GetCallTypeId (void) const
 {
   McpttCall* owner = GetOwner ();
   Ptr<McpttCallMachine> callMachine = owner->GetCallMachine ();
@@ -251,7 +251,7 @@ McpttFloorMachineBasic::GetCallTypeId (void) const
  
 
 McpttFloorMsgFieldIndic
-McpttFloorMachineBasic::GetIndicator (void) const
+McpttOffNetworkFloorParticipant::GetIndicator (void) const
 {
   McpttFloorMsgFieldIndic indicator;
   Ptr<McpttFloorQueue> queue = GetQueue ();
@@ -291,22 +291,22 @@ McpttFloorMachineBasic::GetIndicator (void) const
 }
 
 TypeId
-McpttFloorMachineBasic::GetInstanceTypeId (void) const
+McpttOffNetworkFloorParticipant::GetInstanceTypeId (void) const
 {
-  return McpttFloorMachineBasic::GetTypeId ();
+  return McpttOffNetworkFloorParticipant::GetTypeId ();
 }
 
 McpttEntityId
-McpttFloorMachineBasic::GetStateId (void) const
+McpttOffNetworkFloorParticipant::GetStateId (void) const
 {
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   McpttEntityId stateId = state->GetInstanceStateId ();
 
   return stateId;
 }
 
 uint32_t
-McpttFloorMachineBasic::GetTxSsrc () const
+McpttOffNetworkFloorParticipant::GetTxSsrc () const
 {
   uint32_t txSsrc = GetOwner ()->GetOwner ()-> GetUserId ();
 
@@ -314,7 +314,7 @@ McpttFloorMachineBasic::GetTxSsrc () const
 }
 
 bool
-McpttFloorMachineBasic::HasCandidateSsrc (void) const
+McpttOffNetworkFloorParticipant::HasCandidateSsrc (void) const
 {
   uint32_t candidateSsrc = GetCandidateSsrc ();
 
@@ -324,7 +324,7 @@ McpttFloorMachineBasic::HasCandidateSsrc (void) const
 }
 
 bool
-McpttFloorMachineBasic::HasCurrentSsrc (void) const
+McpttOffNetworkFloorParticipant::HasCurrentSsrc (void) const
 {
   uint32_t currentSsrc = GetCurrentSsrc ();
 
@@ -334,19 +334,19 @@ McpttFloorMachineBasic::HasCurrentSsrc (void) const
 }
 
 bool
-McpttFloorMachineBasic::HasFloor (void) const
+McpttOffNetworkFloorParticipant::HasFloor (void) const
 {
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   bool hasFloor = state->HasFloor (*this);
 
-  // NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << GetOwner ()->GetOwner ()-> GetUserId () << " does" << (hasFloor ? " " : " not ") << "have floor.");
+  // NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()-> GetUserId () << " does" << (hasFloor ? " " : " not ") << "have floor.");
 
   return hasFloor;
 }
 
 bool
-McpttFloorMachineBasic::IsOriginator (void) const
+McpttOffNetworkFloorParticipant::IsOriginator (void) const
 {
   bool isOriginator = GetOriginator ();
 
@@ -354,7 +354,7 @@ McpttFloorMachineBasic::IsOriginator (void) const
 }
 
 bool
-McpttFloorMachineBasic::IsStarted (void) const
+McpttOffNetworkFloorParticipant::IsStarted (void) const
 {
   bool isStarted = GetStarted ();
 
@@ -362,7 +362,7 @@ McpttFloorMachineBasic::IsStarted (void) const
 }
 
 void
-McpttFloorMachineBasic::MediaReady (McpttMediaMsg& msg)
+McpttOffNetworkFloorParticipant::MediaReady (McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this);
 
@@ -373,15 +373,15 @@ McpttFloorMachineBasic::MediaReady (McpttMediaMsg& msg)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << myUserId << "'s client is about to send media.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << myUserId << "'s client is about to send media.");
 
   state->MediaReady (*this, msg);
 }
 
 void
-McpttFloorMachineBasic::NotifyFloorGranted (void)
+McpttOffNetworkFloorParticipant::NotifyFloorGranted (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -392,7 +392,7 @@ McpttFloorMachineBasic::NotifyFloorGranted (void)
 }
 
 void
-McpttFloorMachineBasic::Receive (const McpttFloorMsg& msg)
+McpttOffNetworkFloorParticipant::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -406,7 +406,7 @@ McpttFloorMachineBasic::Receive (const McpttFloorMsg& msg)
 }
 
 void
-McpttFloorMachineBasic::Receive (const McpttMediaMsg& msg)
+McpttOffNetworkFloorParticipant::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -420,15 +420,24 @@ McpttFloorMachineBasic::Receive (const McpttMediaMsg& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorAck (const McpttFloorMsgAck& msg)
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+
+  NS_ABORT_MSG (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " should never receive " << msg.GetInstanceTypeId () << ".");
+}
+
+void
+McpttOffNetworkFloorParticipant::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorDeny (*this, msg);
 
   if (!m_rxCb.IsNull ())
@@ -438,15 +447,15 @@ McpttFloorMachineBasic::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorGranted (*this, msg);
 
   if (!m_rxCb.IsNull ())
@@ -456,16 +465,25 @@ McpttFloorMachineBasic::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePositionRequest& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+
+  NS_ABORT_MSG (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " should never receive " << msg.GetInstanceTypeId () << ".");
+}
+
+void
+McpttOffNetworkFloorParticipant::ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
-  state->ReceiveFloorQueuePositionReq (*this, msg);
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
+  state->ReceiveFloorQueuePositionRequest (*this, msg);
 
   if (!m_rxCb.IsNull ())
     {
@@ -474,15 +492,15 @@ McpttFloorMachineBasic::ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePo
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorQueuePositionInfo (*this, msg);
 
   if (!m_rxCb.IsNull ())
@@ -492,15 +510,15 @@ McpttFloorMachineBasic::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueueP
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorRelease (*this, msg);
 
   if (!m_rxCb.IsNull ())
@@ -510,15 +528,15 @@ McpttFloorMachineBasic::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorRequest (*this, msg);
 
   if (!m_rxCb.IsNull ())
@@ -528,15 +546,25 @@ McpttFloorMachineBasic::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveFloorTaken (const McpttFloorMsgTaken& msg)
+McpttOffNetworkFloorParticipant::ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_ABORT_MSG (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " should never receive " << msg.GetInstanceTypeId () << ".");
+}
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+void
+McpttOffNetworkFloorParticipant::ReceiveFloorTaken (const McpttFloorMsgTaken& msg)
+{
+  NS_LOG_FUNCTION (this << msg);
+
+  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
+
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorTaken (*this, msg);
 
   if (!m_rxCb.IsNull ())
@@ -546,20 +574,20 @@ McpttFloorMachineBasic::ReceiveFloorTaken (const McpttFloorMsgTaken& msg)
 }
 
 void
-McpttFloorMachineBasic::ReceiveMedia (const McpttMediaMsg& msg)
+McpttOffNetworkFloorParticipant::ReceiveMedia (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << userId << " received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveMedia (*this, msg);
 }
 
 void
-McpttFloorMachineBasic::ReleaseRequest (void)
+McpttOffNetworkFloorParticipant::ReleaseRequest (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -569,14 +597,14 @@ McpttFloorMachineBasic::ReleaseRequest (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " releasing request" << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " releasing request" << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReleaseRequest (*this);
 }
 
 void
-McpttFloorMachineBasic::ResetCounters (void)
+McpttOffNetworkFloorParticipant::ResetCounters (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -590,7 +618,7 @@ McpttFloorMachineBasic::ResetCounters (void)
 }
 
 void
-McpttFloorMachineBasic::Send (const McpttFloorMsg& msg)
+McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -609,7 +637,7 @@ McpttFloorMachineBasic::Send (const McpttFloorMsg& msg)
       SetLastGrantMsg (grantedMsg);
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
 
   owner->Send (msg);
 
@@ -620,7 +648,7 @@ McpttFloorMachineBasic::Send (const McpttFloorMsg& msg)
 }
 
 void
-McpttFloorMachineBasic::SendFloorQueuePositionRequest (void)
+McpttOffNetworkFloorParticipant::SendFloorQueuePositionRequest (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -630,14 +658,14 @@ McpttFloorMachineBasic::SendFloorQueuePositionRequest (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " requesting queue position" << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " requesting queue position" << ".");
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->SendFloorQueuePositionRequest (*this);
 }
 
 void
-McpttFloorMachineBasic::SetDelayT201 (const Time& delayT201)
+McpttOffNetworkFloorParticipant::SetDelayT201 (const Time& delayT201)
 {
   NS_LOG_FUNCTION (this << delayT201);
 
@@ -645,7 +673,7 @@ McpttFloorMachineBasic::SetDelayT201 (const Time& delayT201)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT203 (const Time& delayT203)
+McpttOffNetworkFloorParticipant::SetDelayT203 (const Time& delayT203)
 {
   NS_LOG_FUNCTION (this << delayT203);
 
@@ -653,7 +681,7 @@ McpttFloorMachineBasic::SetDelayT203 (const Time& delayT203)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT204 (const Time& delayT204)
+McpttOffNetworkFloorParticipant::SetDelayT204 (const Time& delayT204)
 {
   NS_LOG_FUNCTION (this << delayT204);
 
@@ -661,7 +689,7 @@ McpttFloorMachineBasic::SetDelayT204 (const Time& delayT204)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT205 (const Time& delayT205)
+McpttOffNetworkFloorParticipant::SetDelayT205 (const Time& delayT205)
 {
   NS_LOG_FUNCTION (this << delayT205);
 
@@ -669,7 +697,7 @@ McpttFloorMachineBasic::SetDelayT205 (const Time& delayT205)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT206 (const Time& delayT206)
+McpttOffNetworkFloorParticipant::SetDelayT206 (const Time& delayT206)
 {
   NS_LOG_FUNCTION (this << delayT206);
 
@@ -677,7 +705,7 @@ McpttFloorMachineBasic::SetDelayT206 (const Time& delayT206)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT207 (const Time& delayT207)
+McpttOffNetworkFloorParticipant::SetDelayT207 (const Time& delayT207)
 {
   NS_LOG_FUNCTION (this << delayT207);
 
@@ -685,7 +713,7 @@ McpttFloorMachineBasic::SetDelayT207 (const Time& delayT207)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT230 (const Time& delayT230)
+McpttOffNetworkFloorParticipant::SetDelayT230 (const Time& delayT230)
 {
   NS_LOG_FUNCTION (this << delayT230);
 
@@ -693,7 +721,7 @@ McpttFloorMachineBasic::SetDelayT230 (const Time& delayT230)
 }
 
 void
-McpttFloorMachineBasic::SetDelayT233 (const Time& delayT233)
+McpttOffNetworkFloorParticipant::SetDelayT233 (const Time& delayT233)
 {
   NS_LOG_FUNCTION (this << delayT233);
 
@@ -701,7 +729,7 @@ McpttFloorMachineBasic::SetDelayT233 (const Time& delayT233)
 }
 
 void
-McpttFloorMachineBasic::SetLimitC201 (uint32_t limitC201)
+McpttOffNetworkFloorParticipant::SetLimitC201 (uint32_t limitC201)
 {
   NS_LOG_FUNCTION (this << limitC201);
 
@@ -709,7 +737,7 @@ McpttFloorMachineBasic::SetLimitC201 (uint32_t limitC201)
 }
 
 void
-McpttFloorMachineBasic::SetLimitC204 (uint32_t limitC204)
+McpttOffNetworkFloorParticipant::SetLimitC204 (uint32_t limitC204)
 {
   NS_LOG_FUNCTION (this << limitC204);
 
@@ -717,7 +745,7 @@ McpttFloorMachineBasic::SetLimitC204 (uint32_t limitC204)
 }
 
 void
-McpttFloorMachineBasic::SetLimitC205 (uint32_t limitC205)
+McpttOffNetworkFloorParticipant::SetLimitC205 (uint32_t limitC205)
 {
   NS_LOG_FUNCTION (this << limitC205);
 
@@ -725,21 +753,21 @@ McpttFloorMachineBasic::SetLimitC205 (uint32_t limitC205)
 }
 
 bool
-McpttFloorMachineBasic::ShouldGenMedia (void) const
+McpttOffNetworkFloorParticipant::ShouldGenMedia (void) const
 {
   return m_genMedia;
 }
 
 void
-McpttFloorMachineBasic::Start (void)
+McpttOffNetworkFloorParticipant::Start (void)
 {
   Stop ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " started.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " started.");
 
   SetStarted (true);
 
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   state->Selected (*this);
 
@@ -747,20 +775,20 @@ McpttFloorMachineBasic::Start (void)
 }
 
 void
-McpttFloorMachineBasic::Stop (void)
+McpttOffNetworkFloorParticipant::Stop (void)
 {
   NS_LOG_FUNCTION (this);
   if (IsStarted ())
     {
-      Ptr<McpttFloorMachineBasicState> state = GetState ();
+      Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttFloorMachineBasic " << GetOwner ()->GetOwner ()->GetUserId () << " stopped.");
+      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " stopped.");
 
       state->Stop (*this);
 
       state->Unselected (*this);
 
-      SetState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+      SetState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
 
       StopTimers ();
       ResetCounters ();
@@ -773,7 +801,7 @@ McpttFloorMachineBasic::Stop (void)
 }
 
 void
-McpttFloorMachineBasic::StopTimers (void)
+McpttOffNetworkFloorParticipant::StopTimers (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -821,7 +849,7 @@ McpttFloorMachineBasic::StopTimers (void)
 }
 
 void
-McpttFloorMachineBasic::TakePushNotification (void)
+McpttOffNetworkFloorParticipant::PttPush (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -835,9 +863,9 @@ McpttFloorMachineBasic::TakePushNotification (void)
   Ptr<McpttCall> call = GetOwner ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
   uint32_t userId = pttApp->GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << userId << " taking push notification.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << userId << " taking push notification.");
 
   if (callTypeId == McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
@@ -846,7 +874,7 @@ McpttFloorMachineBasic::TakePushNotification (void)
       //The originating user (or the user that started the call)
       //should have been given an implicit grant and thus should not
       //being making PTT request.
-      NS_LOG_LOGIC ("McpttFloorMachineBasic " << userId << " denied locally since termintating users can't make PTT request when part of a 'BROADCAST GROUP CALL'.");
+      NS_LOG_LOGIC ("McpttOffNetworkFloorParticipant " << userId << " denied locally since termintating users can't make PTT request when part of a 'BROADCAST GROUP CALL'.");
 
       if (pttApp->IsPushed ())
         {
@@ -856,12 +884,12 @@ McpttFloorMachineBasic::TakePushNotification (void)
   else
     {
       SetSetupDelayStartTime (Simulator::Now ());
-      state->TakePushNotification (*this);
+      state->PttPush (*this);
     }
 }
 
 void
-McpttFloorMachineBasic::TakeReleaseNotification (void)
+McpttOffNetworkFloorParticipant::PttRelease (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -872,15 +900,15 @@ McpttFloorMachineBasic::TakeReleaseNotification (void)
     }
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << userId << " taking release notification.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << userId << " taking release notification.");
 
-  state->TakeReleaseNotification (*this);
+  state->PttRelease (*this);
 }
 
 void
-McpttFloorMachineBasic::DoDispose (void)
+McpttOffNetworkFloorParticipant::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -901,7 +929,7 @@ McpttFloorMachineBasic::DoDispose (void)
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT201 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT201 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -912,16 +940,16 @@ McpttFloorMachineBasic::ExpiryOfT201 (void)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   Ptr<McpttCounter> c201 = GetC201 ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << myUserId << " T201 expired " << c201->GetValue () << " times.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T201 expired " << c201->GetValue () << " times.");
 
   state->ExpiryOfT201 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT203 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT203 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -932,15 +960,15 @@ McpttFloorMachineBasic::ExpiryOfT203 (void)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << myUserId << " T203 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T203 expired.");
 
   state->ExpiryOfT203 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT204 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT204 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -951,16 +979,16 @@ McpttFloorMachineBasic::ExpiryOfT204 (void)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   Ptr<McpttCounter> c204 = GetC204 ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << myUserId << " T204 expired " << c204->GetValue () << " times.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T204 expired " << c204->GetValue () << " times.");
 
   state->ExpiryOfT204 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT205 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT205 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -971,16 +999,16 @@ McpttFloorMachineBasic::ExpiryOfT205 (void)
     }
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   Ptr<McpttCounter> c205 = GetC205 ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << userId << " T205 expired " << c205->GetValue () << " times.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << userId << " T205 expired " << c205->GetValue () << " times.");
 
   state->ExpiryOfT205 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT206 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT206 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -991,15 +1019,15 @@ McpttFloorMachineBasic::ExpiryOfT206 (void)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << myUserId << " T206 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T206 expired.");
 
   state->ExpiryOfT206 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT207 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT207 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1010,15 +1038,15 @@ McpttFloorMachineBasic::ExpiryOfT207 (void)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << myUserId << " T207 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T207 expired.");
 
   state->ExpiryOfT207 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT230 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT230 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1029,15 +1057,15 @@ McpttFloorMachineBasic::ExpiryOfT230 (void)
     }
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << userId << " T230 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << userId << " T230 expired.");
 
   state->ExpiryOfT230 (*this);
 }
 
 void
-McpttFloorMachineBasic::ExpiryOfT233 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT233 (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1048,15 +1076,15 @@ McpttFloorMachineBasic::ExpiryOfT233 (void)
     }
 
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
-  Ptr<McpttFloorMachineBasicState> state = GetState ();
+  Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttFloorMachineBasic " << myUserId << " T233 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T233 expired.");
 
   state->ExpiryOfT233 (*this);
 }
 
 void
-McpttFloorMachineBasic::SetStarted (const bool& started)
+McpttOffNetworkFloorParticipant::SetStarted (const bool& started)
 {
   NS_LOG_FUNCTION (this << started);
 
@@ -1064,133 +1092,133 @@ McpttFloorMachineBasic::SetStarted (const bool& started)
 }
 
 McpttFloorMsgGranted
-McpttFloorMachineBasic::GetLastGrantMsg (void) const
+McpttOffNetworkFloorParticipant::GetLastGrantMsg (void) const
 {
   return m_lastGrantMsg;
 }
 
 bool
-McpttFloorMachineBasic::GetStarted (void) const
+McpttOffNetworkFloorParticipant::GetStarted (void) const
 {
   return m_started;
 }
 
 Ptr<McpttCounter>
-McpttFloorMachineBasic::GetC201 (void) const
+McpttOffNetworkFloorParticipant::GetC201 (void) const
 {
   return m_c201;
 }
 
 Ptr<McpttCounter>
-McpttFloorMachineBasic::GetC204 (void) const
+McpttOffNetworkFloorParticipant::GetC204 (void) const
 {
   return m_c204;
 }
 
 Ptr<McpttCounter>
-McpttFloorMachineBasic::GetC205 (void) const
+McpttOffNetworkFloorParticipant::GetC205 (void) const
 {
   return m_c205;
 }
 
 bool
-McpttFloorMachineBasic::GetOriginator (void) const
+McpttOffNetworkFloorParticipant::GetOriginator (void) const
 {
   return m_originator;
 }
 
 McpttCall*
-McpttFloorMachineBasic::GetOwner (void) const
+McpttOffNetworkFloorParticipant::GetOwner (void) const
 {
   return m_owner;
 }
 
 uint8_t
-McpttFloorMachineBasic::GetPriority (void) const
+McpttOffNetworkFloorParticipant::GetPriority (void) const
 {
   return m_priority;
 }
 
 Ptr<McpttFloorQueue>
-McpttFloorMachineBasic::GetQueue (void) const
+McpttOffNetworkFloorParticipant::GetQueue (void) const
 {
   return m_queue;
 }
 
 Time
-McpttFloorMachineBasic::GetSetupDelayStartTime (void) const
+McpttOffNetworkFloorParticipant::GetSetupDelayStartTime (void) const
 {
   return m_setupDelayStartTime;
 }
 
-Ptr<McpttFloorMachineBasicState>
-McpttFloorMachineBasic::GetState (void) const
+Ptr<McpttOffNetworkFloorParticipantState>
+McpttOffNetworkFloorParticipant::GetState (void) const
 {
   return m_state;
 }
 
 uint32_t
-McpttFloorMachineBasic::GetCandidateSsrc (void) const
+McpttOffNetworkFloorParticipant::GetCandidateSsrc (void) const
 {
   return m_candidateSsrc;
 }
 
 uint32_t
-McpttFloorMachineBasic::GetCurrentSsrc (void) const
+McpttOffNetworkFloorParticipant::GetCurrentSsrc (void) const
 {
   return m_currentSsrc;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT201 (void) const
+McpttOffNetworkFloorParticipant::GetT201 (void) const
 {
   return m_t201;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT203 (void) const
+McpttOffNetworkFloorParticipant::GetT203 (void) const
 {
   return m_t203;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT204 (void) const
+McpttOffNetworkFloorParticipant::GetT204 (void) const
 {
   return m_t204;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT205 (void) const
+McpttOffNetworkFloorParticipant::GetT205 (void) const
 {
   return m_t205;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT206 (void) const
+McpttOffNetworkFloorParticipant::GetT206 (void) const
 {
   return m_t206;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT207 (void) const
+McpttOffNetworkFloorParticipant::GetT207 (void) const
 {
   return m_t207;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT230 (void) const
+McpttOffNetworkFloorParticipant::GetT230 (void) const
 {
   return m_t230;
 }
 
 Ptr<McpttTimer>
-McpttFloorMachineBasic::GetT233 (void) const
+McpttOffNetworkFloorParticipant::GetT233 (void) const
 {
   return m_t233;
 }
 
 void
-McpttFloorMachineBasic::SetC201 (Ptr<McpttCounter>  c201)
+McpttOffNetworkFloorParticipant::SetC201 (Ptr<McpttCounter>  c201)
 {
   NS_LOG_FUNCTION (this << c201);
 
@@ -1198,7 +1226,7 @@ McpttFloorMachineBasic::SetC201 (Ptr<McpttCounter>  c201)
 }
 
 void
-McpttFloorMachineBasic::SetC204 (Ptr<McpttCounter>  c204)
+McpttOffNetworkFloorParticipant::SetC204 (Ptr<McpttCounter>  c204)
 {
   NS_LOG_FUNCTION (this << c204);
 
@@ -1206,7 +1234,7 @@ McpttFloorMachineBasic::SetC204 (Ptr<McpttCounter>  c204)
 }
 
 void
-McpttFloorMachineBasic::SetC205 (Ptr<McpttCounter>  c205)
+McpttOffNetworkFloorParticipant::SetC205 (Ptr<McpttCounter>  c205)
 {
   NS_LOG_FUNCTION (this << c205);
 
@@ -1214,7 +1242,7 @@ McpttFloorMachineBasic::SetC205 (Ptr<McpttCounter>  c205)
 }
 
 void
-McpttFloorMachineBasic::SetFloorGrantedCb (const Callback<void>  floorGrantedCb)
+McpttOffNetworkFloorParticipant::SetFloorGrantedCb (const Callback<void>  floorGrantedCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1222,7 +1250,7 @@ McpttFloorMachineBasic::SetFloorGrantedCb (const Callback<void>  floorGrantedCb)
 }
 
 void
-McpttFloorMachineBasic::SetLastGrantMsg (const McpttFloorMsgGranted& msg)
+McpttOffNetworkFloorParticipant::SetLastGrantMsg (const McpttFloorMsgGranted& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -1230,7 +1258,7 @@ McpttFloorMachineBasic::SetLastGrantMsg (const McpttFloorMsgGranted& msg)
 }
 
 void
-McpttFloorMachineBasic::SetOriginator (const bool& originator)
+McpttOffNetworkFloorParticipant::SetOriginator (const bool& originator)
 {
   NS_LOG_FUNCTION (this << originator);
 
@@ -1238,7 +1266,7 @@ McpttFloorMachineBasic::SetOriginator (const bool& originator)
 }
 
 void
-McpttFloorMachineBasic::SetOwner (McpttCall* const& owner)
+McpttOffNetworkFloorParticipant::SetOwner (McpttCall* const& owner)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1246,7 +1274,7 @@ McpttFloorMachineBasic::SetOwner (McpttCall* const& owner)
 }
 
 void
-McpttFloorMachineBasic::SetPriority (uint8_t priority)
+McpttOffNetworkFloorParticipant::SetPriority (uint8_t priority)
 {
   NS_LOG_FUNCTION (this << +priority);
 
@@ -1254,7 +1282,7 @@ McpttFloorMachineBasic::SetPriority (uint8_t priority)
 }
 
 void
-McpttFloorMachineBasic::SetQueue (Ptr<McpttFloorQueue>  queue)
+McpttOffNetworkFloorParticipant::SetQueue (Ptr<McpttFloorQueue>  queue)
 {
   NS_LOG_FUNCTION (this << queue);
 
@@ -1262,7 +1290,7 @@ McpttFloorMachineBasic::SetQueue (Ptr<McpttFloorQueue>  queue)
 }
 
 void
-McpttFloorMachineBasic::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
+McpttOffNetworkFloorParticipant::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1270,7 +1298,7 @@ McpttFloorMachineBasic::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxC
 }
 
 void
-McpttFloorMachineBasic::SetSetupDelayStartTime (const Time& startTime)
+McpttOffNetworkFloorParticipant::SetSetupDelayStartTime (const Time& startTime)
 {
   NS_LOG_FUNCTION (this << startTime);
 
@@ -1278,7 +1306,7 @@ McpttFloorMachineBasic::SetSetupDelayStartTime (const Time& startTime)
 }
 
 void
-McpttFloorMachineBasic::SetSetupDelayCb (const Callback<void, const Time&>  setupDelayCb)
+McpttOffNetworkFloorParticipant::SetSetupDelayCb (const Callback<void, const Time&>  setupDelayCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1286,7 +1314,7 @@ McpttFloorMachineBasic::SetSetupDelayCb (const Callback<void, const Time&>  setu
 }
 
 void
-McpttFloorMachineBasic::SetState (Ptr<McpttFloorMachineBasicState>  state)
+McpttOffNetworkFloorParticipant::SetState (Ptr<McpttOffNetworkFloorParticipantState>  state)
 {
   NS_LOG_FUNCTION (this << state);
 
@@ -1294,7 +1322,7 @@ McpttFloorMachineBasic::SetState (Ptr<McpttFloorMachineBasicState>  state)
 }
 
 void
-McpttFloorMachineBasic::SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
+McpttOffNetworkFloorParticipant::SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1302,7 +1330,7 @@ McpttFloorMachineBasic::SetStateChangeCb (const Callback<void, const McpttEntity
 }
 
 void
-McpttFloorMachineBasic::SetCandidateSsrc (uint32_t candidateSsrc)
+McpttOffNetworkFloorParticipant::SetCandidateSsrc (uint32_t candidateSsrc)
 {
   NS_LOG_FUNCTION (this << candidateSsrc);
 
@@ -1310,7 +1338,7 @@ McpttFloorMachineBasic::SetCandidateSsrc (uint32_t candidateSsrc)
 }
 
 void
-McpttFloorMachineBasic::SetCurrentSsrc (uint32_t currentSsrc)
+McpttOffNetworkFloorParticipant::SetCurrentSsrc (uint32_t currentSsrc)
 {
   NS_LOG_FUNCTION (this << currentSsrc);
 
@@ -1318,7 +1346,7 @@ McpttFloorMachineBasic::SetCurrentSsrc (uint32_t currentSsrc)
 }
 
 void
-McpttFloorMachineBasic::SetT201 (Ptr<McpttTimer>  t201)
+McpttOffNetworkFloorParticipant::SetT201 (Ptr<McpttTimer>  t201)
 {
   NS_LOG_FUNCTION (this << t201);
 
@@ -1326,7 +1354,7 @@ McpttFloorMachineBasic::SetT201 (Ptr<McpttTimer>  t201)
 }
 
 void
-McpttFloorMachineBasic::SetT203 (Ptr<McpttTimer>  t203)
+McpttOffNetworkFloorParticipant::SetT203 (Ptr<McpttTimer>  t203)
 {
   NS_LOG_FUNCTION (this << t203);
 
@@ -1334,7 +1362,7 @@ McpttFloorMachineBasic::SetT203 (Ptr<McpttTimer>  t203)
 }
 
 void
-McpttFloorMachineBasic::SetT204 (Ptr<McpttTimer>  t204)
+McpttOffNetworkFloorParticipant::SetT204 (Ptr<McpttTimer>  t204)
 {
   NS_LOG_FUNCTION (this << t204);
 
@@ -1342,7 +1370,7 @@ McpttFloorMachineBasic::SetT204 (Ptr<McpttTimer>  t204)
 }
 
 void
-McpttFloorMachineBasic::SetT205 (Ptr<McpttTimer>  t205)
+McpttOffNetworkFloorParticipant::SetT205 (Ptr<McpttTimer>  t205)
 {
   NS_LOG_FUNCTION (this << t205);
 
@@ -1350,7 +1378,7 @@ McpttFloorMachineBasic::SetT205 (Ptr<McpttTimer>  t205)
 }
 
 void
-McpttFloorMachineBasic::SetT206 (Ptr<McpttTimer>  t206)
+McpttOffNetworkFloorParticipant::SetT206 (Ptr<McpttTimer>  t206)
 {
   NS_LOG_FUNCTION (this << t206);
 
@@ -1358,7 +1386,7 @@ McpttFloorMachineBasic::SetT206 (Ptr<McpttTimer>  t206)
 }
 
 void
-McpttFloorMachineBasic::SetT207 (Ptr<McpttTimer>  t207)
+McpttOffNetworkFloorParticipant::SetT207 (Ptr<McpttTimer>  t207)
 {
   NS_LOG_FUNCTION (this << t207);
 
@@ -1366,7 +1394,7 @@ McpttFloorMachineBasic::SetT207 (Ptr<McpttTimer>  t207)
 }
 
 void
-McpttFloorMachineBasic::SetT230 (Ptr<McpttTimer>  t230)
+McpttOffNetworkFloorParticipant::SetT230 (Ptr<McpttTimer>  t230)
 {
   NS_LOG_FUNCTION (this << t230);
 
@@ -1374,7 +1402,7 @@ McpttFloorMachineBasic::SetT230 (Ptr<McpttTimer>  t230)
 }
 
 void
-McpttFloorMachineBasic::SetT233 (Ptr<McpttTimer>  t233)
+McpttOffNetworkFloorParticipant::SetT233 (Ptr<McpttTimer>  t233)
 {
   NS_LOG_FUNCTION (this << t233);
 
@@ -1382,13 +1410,13 @@ McpttFloorMachineBasic::SetT233 (Ptr<McpttTimer>  t233)
 }
 
 void
-McpttFloorMachineBasic::SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb)
+McpttOffNetworkFloorParticipant::SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb)
 {
   NS_LOG_FUNCTION (this);
 
   m_txCb = txCb;
 }
-/** McpttFloorMachineBasic - end **/
+/** McpttOffNetworkFloorParticipant - end **/
 
 } // namespace ns3
 

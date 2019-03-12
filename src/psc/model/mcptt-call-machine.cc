@@ -35,7 +35,7 @@
 
 #include "mcptt-ptt-app.h"
 #include "mcptt-call.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 
 #include "mcptt-call-machine.h"
 
@@ -350,7 +350,7 @@ McpttCallMachineNull::Start (void)
 
   pttApp->GetAttribute ("PeerAddress", grpAddr);
 
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   call->OpenFloorChan (grpAddr.Get (), m_floorPort);
   call->OpenMediaChan (grpAddr.Get (), m_mediaPort);
@@ -365,7 +365,7 @@ McpttCallMachineNull::Stop (void)
 
   McpttCall* call = GetOwner ();
 
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   call->CloseFloorChan ();
   call->CloseMediaChan ();

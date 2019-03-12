@@ -29,8 +29,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_FLOOR_MACHINE_BASIC_H
-#define MCPTT_FLOOR_MACHINE_BASIC_H
+#ifndef MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_H
+#define MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_H
 
 #include <ns3/object.h>
 #include <ns3/ptr.h>
@@ -38,9 +38,10 @@
 #include <ns3/type-id.h>
 
 #include "mcptt-counter.h"
-#include "mcptt-floor-machine.h"
-#include "mcptt-floor-machine-basic-state.h"
+#include "mcptt-floor-participant.h"
+#include "mcptt-off-network-floor-participant-state.h"
 #include "mcptt-floor-msg.h"
+#include "mcptt-floor-msg-sink.h"
 #include "mcptt-floor-queue.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-timer.h"
@@ -55,22 +56,22 @@ class McpttCall;
  * This class represents the MCPTT floor control state mahine described in TS
  * 24.380 v14.4.0.
  */
-class McpttFloorMachineBasic : public McpttFloorMachine
+class McpttOffNetworkFloorParticipant : public McpttFloorParticipant
 {
 public:
  /**
-  * \brief Gets the ID of the McpttFloorMachineBasic type.
+  * \brief Gets the ID of the McpttOffNetworkFloorParticipant type.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * \brief Creates an instance of the McpttFloorMachineBasic class.
+  * \brief Creates an instance of the McpttOffNetworkFloorParticipant class.
   */
- McpttFloorMachineBasic (void);
+ McpttOffNetworkFloorParticipant (void);
  /**
-  * \brief The destructor of the McpttFloorMachineBasic class.
+  * \brief The destructor of the McpttOffNetworkFloorParticipant class.
   */
- virtual ~McpttFloorMachineBasic (void);
+ virtual ~McpttOffNetworkFloorParticipant (void);
  /**
   * Accepts the floor grant.
   */
@@ -79,7 +80,7 @@ public:
   * Changes the state of the floor machine.
   * \param state The state to change to.
   */
- virtual void ChangeState (Ptr<McpttFloorMachineBasicState>  state);
+ virtual void ChangeState (Ptr<McpttOffNetworkFloorParticipantState>  state);
  /**
   * Clears the SSRC stored for the candidate arbitrator.
   */
@@ -99,7 +100,7 @@ public:
   */
  virtual McpttFloorMsgFieldIndic GetIndicator (void) const;
  /**
-  * Gets the type ID of this McpttFloorMachine instance.
+  * Gets the type ID of this McpttOffNetworkFloorParticipant instance.
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
@@ -147,7 +148,7 @@ public:
   * Notifes the floor machine that it has been granted the floor.
   */
  virtual void NotifyFloorGranted (void);
-  /**
+ /**
   * \brief Receives a message.
   * \param msg The message that was received.
   */
@@ -163,15 +164,25 @@ public:
   */
  virtual void ReceiveFloorDeny (const McpttFloorMsgDeny& msg);
  /**
+  * Receives a floor acknowledgement message.
+  * \param msg The received message.
+  */
+ virtual void ReceiveFloorAck (const McpttFloorMsgAck& msg);
+ /**
   * Receives a floor granted message.
   * \param msg The received message.
   */
  virtual void ReceiveFloorGranted (const McpttFloorMsgGranted& msg);
  /**
+  * Receives a floor idle message.
+  * \param msg The received message.
+  */
+ virtual void ReceiveFloorIdle (const McpttFloorMsgIdle& msg);
+ /**
   * Receives Floor Queue Position Request message.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionReq (const McpttFloorMsgQueuePositionRequest& msg);
+ virtual void ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg);
  /**
   * Receives a floor queue position info message.
   * \param msg The received message.
@@ -187,6 +198,11 @@ public:
   * \param msg The received message.
   */
  virtual void ReceiveFloorRequest (const McpttFloorMsgRequest& msg);
+ /**
+  * Receives a floor revoke message.
+  * \param msg The received message.
+  */
+ virtual void ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg);
  /**
   * Receives a floor taken message.
   * \param msg The received message.
@@ -289,11 +305,11 @@ public:
  /**
   * Notifies this machine that the button has been pushed.
   */
- virtual void TakePushNotification (void);
+ virtual void PttPush (void);
  /**
   * Notifies this machine that the button has been released.
   */
- virtual void TakeReleaseNotification (void);
+ virtual void PttRelease (void);
 protected:
  /**
   * \brief Disposes of the McpttLfloorMachine.
@@ -355,7 +371,7 @@ private:
  Time m_setupDelayStartTime; //!< The setup delay time.
  Callback<void, const Time&> m_setupDelayCb; //!< The setup delay call back.
  bool m_started; //!< A flag that indicates whether or not the floor machine has started.
- Ptr<McpttFloorMachineBasicState> m_state; //!< The state of the floor machine.
+ Ptr<McpttOffNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change call back.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  uint32_t m_candidateSsrc; //!< The SSRC of the candidate arbitrator.
@@ -430,7 +446,7 @@ public:
   * Gets the state of the floor machine.
   * \returns The state.
   */
- virtual Ptr<McpttFloorMachineBasicState> GetState (void) const;
+ virtual Ptr<McpttOffNetworkFloorParticipantState> GetState (void) const;
  /**
   * Gets the SSRC stored for the candidate arbitrator.
   * \returns The SSRC.
@@ -545,7 +561,7 @@ public:
   * Sets the state of the floor machine.
   * \param state The state.
   */
- virtual void SetState (Ptr<McpttFloorMachineBasicState>  state);
+ virtual void SetState (Ptr<McpttOffNetworkFloorParticipantState>  state);
  /**
   * Sets the state change call back.
   * \param stateChangeCb The setup delay callback.
@@ -610,5 +626,5 @@ public:
 
 } // namespace ns3
 
-#endif /* MCPTT_FLOOR_MACHINE_BASIC_H */
+#endif /* MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_H */
 

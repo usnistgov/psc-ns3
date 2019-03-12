@@ -36,27 +36,27 @@
 
 #include "mcptt-call-msg-field.h"
 #include "mcptt-entity-id.h"
-#include "mcptt-floor-machine-basic.h"
+#include "mcptt-off-network-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-queue.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-media-src.h"
 #include "mcptt-ptt-app.h"
 
-#include "mcptt-floor-machine-basic-state.h"
+#include "mcptt-off-network-floor-participant.h"
 
 namespace ns3 {
 
-/** McpttFloorMachineBasicState - begin **/
-NS_LOG_COMPONENT_DEFINE ("McpttFloorMachineBasicState");
+/** McpttOffNetworkFloorParticipantState - begin **/
+NS_LOG_COMPONENT_DEFINE ("McpttOffNetworkFloorParticipantState");
 
-McpttFloorMachineBasicState::~McpttFloorMachineBasicState (void)
+McpttOffNetworkFloorParticipantState::~McpttOffNetworkFloorParticipantState (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicState::AcceptGrant (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::AcceptGrant (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -64,7 +64,7 @@ McpttFloorMachineBasicState::AcceptGrant (McpttFloorMachineBasic& floorMachine) 
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT201 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT201 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -72,7 +72,7 @@ McpttFloorMachineBasicState::ExpiryOfT201 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT203 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT203 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -80,7 +80,7 @@ McpttFloorMachineBasicState::ExpiryOfT203 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT204 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT204 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -88,7 +88,7 @@ McpttFloorMachineBasicState::ExpiryOfT204 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT205 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT205 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -96,7 +96,7 @@ McpttFloorMachineBasicState::ExpiryOfT205 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT206 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT206 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -104,7 +104,7 @@ McpttFloorMachineBasicState::ExpiryOfT206 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT207 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT207 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -112,7 +112,7 @@ McpttFloorMachineBasicState::ExpiryOfT207 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT230 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT230 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -120,7 +120,7 @@ McpttFloorMachineBasicState::ExpiryOfT230 (McpttFloorMachineBasic& floorMachine)
 }
 
 void
-McpttFloorMachineBasicState::ExpiryOfT233 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ExpiryOfT233 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -128,19 +128,19 @@ McpttFloorMachineBasicState::ExpiryOfT233 (McpttFloorMachineBasic& floorMachine)
 }
 
 McpttEntityId
-McpttFloorMachineBasicState::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantState::GetInstanceStateId (void) const
 {
   return McpttEntityId ();
 }
 
 bool
-McpttFloorMachineBasicState::HasFloor (const McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::HasFloor (const McpttOffNetworkFloorParticipant& floorMachine) const
 {
   return false;
 }
 
 void
-McpttFloorMachineBasicState::ReceiveCallRelease (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ReceiveCallRelease (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this);
   McpttCall* callOwner = floorMachine.GetOwner ();
@@ -154,10 +154,10 @@ McpttFloorMachineBasicState::ReceiveCallRelease (McpttFloorMachineBasic& floorMa
   floorMachine.StopTimers ();
   floorMachine.ResetCounters ();
 
-  floorMachine.SetState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  floorMachine.SetState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
 }
 void
-McpttFloorMachineBasicState::ReceiveFloorDeny (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgDeny& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorDeny (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgDeny& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -165,7 +165,7 @@ McpttFloorMachineBasicState::ReceiveFloorDeny (McpttFloorMachineBasic& floorMach
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -173,7 +173,7 @@ McpttFloorMachineBasicState::ReceiveFloorGranted (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -181,7 +181,7 @@ McpttFloorMachineBasicState::ReceiveFloorQueuePositionReq (McpttFloorMachineBasi
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorQueuePositionInfo (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -189,7 +189,7 @@ McpttFloorMachineBasicState::ReceiveFloorQueuePositionInfo (McpttFloorMachineBas
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorRelease (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRelease& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -197,7 +197,7 @@ McpttFloorMachineBasicState::ReceiveFloorRelease (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -205,7 +205,7 @@ McpttFloorMachineBasicState::ReceiveFloorRequest (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicState::ReceiveFloorTaken (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgTaken& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -213,7 +213,7 @@ McpttFloorMachineBasicState::ReceiveFloorTaken (McpttFloorMachineBasic& floorMac
 }
 
 void
-McpttFloorMachineBasicState::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantState::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -221,7 +221,7 @@ McpttFloorMachineBasicState::ReceiveMedia (McpttFloorMachineBasic& floorMachine,
 }
 
 void
-McpttFloorMachineBasicState::SendFloorQueuePositionRequest (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::SendFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -229,7 +229,7 @@ McpttFloorMachineBasicState::SendFloorQueuePositionRequest (McpttFloorMachineBas
 }
 
 void
-McpttFloorMachineBasicState::MediaReady (McpttFloorMachineBasic& floorMachine, McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantState::MediaReady (McpttOffNetworkFloorParticipant& floorMachine, McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -237,7 +237,7 @@ McpttFloorMachineBasicState::MediaReady (McpttFloorMachineBasic& floorMachine, M
 }
 
 void
-McpttFloorMachineBasicState::ReleaseRequest (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::ReleaseRequest (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -245,19 +245,19 @@ McpttFloorMachineBasicState::ReleaseRequest (McpttFloorMachineBasic& floorMachin
 }
 
 void
-McpttFloorMachineBasicState::Selected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::Selected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 }
 
 void
-McpttFloorMachineBasicState::Start (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::Start (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 }
 
 void
-McpttFloorMachineBasicState::Stop (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::Stop (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -265,7 +265,7 @@ McpttFloorMachineBasicState::Stop (McpttFloorMachineBasic& floorMachine) const
 }
 
 void
-McpttFloorMachineBasicState::TakePushNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::PttPush (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -273,7 +273,7 @@ McpttFloorMachineBasicState::TakePushNotification (McpttFloorMachineBasic& floor
 }
 
 void
-McpttFloorMachineBasicState::TakeReleaseNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::PttRelease (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -281,59 +281,59 @@ McpttFloorMachineBasicState::TakeReleaseNotification (McpttFloorMachineBasic& fl
 }
 
 void
-McpttFloorMachineBasicState::Unselected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantState::Unselected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 }
 
-McpttFloorMachineBasicState::McpttFloorMachineBasicState (void)
-  : SimpleRefCount<McpttFloorMachineBasicState> ()
+McpttOffNetworkFloorParticipantState::McpttOffNetworkFloorParticipantState (void)
+  : SimpleRefCount<McpttOffNetworkFloorParticipantState> ()
 {
   NS_LOG_FUNCTION (this);
 }
-/** McpttFloorMachineBasicState - end **/
+/** McpttOffNetworkFloorParticipantState - end **/
 
 std::ostream&
-operator<< (std::ostream& os, const ns3::McpttFloorMachineBasicState& state)
+operator<< (std::ostream& os, const ns3::McpttOffNetworkFloorParticipantState& state)
 {
   return os << state.GetInstanceStateId ();
 }
 
-/** McpttFloorMachineBasicStateStartStop - begin **/
-Ptr<McpttFloorMachineBasicStateStartStop>
-McpttFloorMachineBasicStateStartStop::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStateStartStop - begin **/
+Ptr<McpttOffNetworkFloorParticipantStateStartStop>
+McpttOffNetworkFloorParticipantStateStartStop::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStateStartStop> instance = Create<McpttFloorMachineBasicStateStartStop> ();
+  static Ptr<McpttOffNetworkFloorParticipantStateStartStop> instance = Create<McpttOffNetworkFloorParticipantStateStartStop> ();
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateStartStop::GetStateId (void)
+McpttOffNetworkFloorParticipantStateStartStop::GetStateId (void)
 {
   static McpttEntityId id (0, "'Start-stop'");
 
   return id;
 }
 
-McpttFloorMachineBasicStateStartStop::McpttFloorMachineBasicStateStartStop (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStateStartStop::McpttOffNetworkFloorParticipantStateStartStop (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStateStartStop::~McpttFloorMachineBasicStateStartStop (void)
+McpttOffNetworkFloorParticipantStateStartStop::~McpttOffNetworkFloorParticipantStateStartStop (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateStartStop::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStateStartStop::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStateStartStop::GetStateId ();
+  return McpttOffNetworkFloorParticipantStateStartStop::GetStateId ();
 }
 
 void
-McpttFloorMachineBasicStateStartStop::ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const
+McpttOffNetworkFloorParticipantStateStartStop::ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
   
@@ -344,11 +344,11 @@ McpttFloorMachineBasicStateStartStop::ReceiveFloorGranted (McpttFloorMachineBasi
   floorMachine.SetCurrentSsrc (grantedSsrc);
   t203->Start ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateStartStop::ReceiveFloorTaken (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgTaken& msg) const
+McpttOffNetworkFloorParticipantStateStartStop::ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -359,11 +359,11 @@ McpttFloorMachineBasicStateStartStop::ReceiveFloorTaken (McpttFloorMachineBasic&
   floorMachine.SetCurrentSsrc (grantedSsrc);
   t203->Start ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateStartStop::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStateStartStop::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -375,11 +375,11 @@ McpttFloorMachineBasicStateStartStop::ReceiveMedia (McpttFloorMachineBasic& floo
   floorMachine.SetCurrentSsrc (rxSsrc);
   t203->Restart ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateStartStop::Start (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateStartStop::Start (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -403,25 +403,25 @@ McpttFloorMachineBasicStateStartStop::Start (McpttFloorMachineBasic& floorMachin
 
       floorMachine.Send (grantedMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
     }
   else if (callType.GetType () == McpttCallMsgFieldCallType::BASIC_GROUP)
     {
       t230->Start ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
   else if (callType.GetType () == McpttCallMsgFieldCallType::PRIVATE)
     {
       t203->Start ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
     }
   else if (indicator.IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
       t203->Start ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
     }
    else //Assume this is a private call since there is no indicator for a private call.
     {
@@ -430,7 +430,7 @@ McpttFloorMachineBasicStateStartStop::Start (McpttFloorMachineBasic& floorMachin
 }
 
 void
-McpttFloorMachineBasicStateStartStop::TakePushNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateStartStop::PttPush (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -452,40 +452,40 @@ McpttFloorMachineBasicStateStartStop::TakePushNotification (McpttFloorMachineBas
 
   floorMachine.Send (reqMsg);
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStatePendReq::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
 }
-/** McpttFloorMachineBasicStateStartStop - end **/
+/** McpttOffNetworkFloorParticipantStateStartStop - end **/
 
-/** McpttFloorMachineBasicStateNoPerm - begin **/
-Ptr<McpttFloorMachineBasicStateNoPerm>
-McpttFloorMachineBasicStateNoPerm::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStateNoPerm - begin **/
+Ptr<McpttOffNetworkFloorParticipantStateNoPerm>
+McpttOffNetworkFloorParticipantStateNoPerm::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStateNoPerm> instance = Create<McpttFloorMachineBasicStateNoPerm> ();
+  static Ptr<McpttOffNetworkFloorParticipantStateNoPerm> instance = Create<McpttOffNetworkFloorParticipantStateNoPerm> ();
 
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateNoPerm::GetStateId (void)
+McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (void)
 {
   static McpttEntityId id (1, "'O: has no permission'");
 
   return id;
 }
 
-McpttFloorMachineBasicStateNoPerm::McpttFloorMachineBasicStateNoPerm (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStateNoPerm::McpttOffNetworkFloorParticipantStateNoPerm (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStateNoPerm::~McpttFloorMachineBasicStateNoPerm (void)
+McpttOffNetworkFloorParticipantStateNoPerm::~McpttOffNetworkFloorParticipantStateNoPerm (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicStateNoPerm::ExpiryOfT203 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateNoPerm::ExpiryOfT203 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -497,17 +497,17 @@ McpttFloorMachineBasicStateNoPerm::ExpiryOfT203 (McpttFloorMachineBasic& floorMa
 
   floorMachine.ClearCurrentSsrc ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateNoPerm::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStateNoPerm::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStateNoPerm::GetStateId ();
+  return McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ();
 }
 
 void
-McpttFloorMachineBasicStateNoPerm::ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const
+McpttOffNetworkFloorParticipantStateNoPerm::ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -537,7 +537,7 @@ McpttFloorMachineBasicStateNoPerm::ReceiveFloorGranted (McpttFloorMachineBasic& 
 }
 
 void
-McpttFloorMachineBasicStateNoPerm::ReceiveFloorRelease (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRelease& msg) const
+McpttOffNetworkFloorParticipantStateNoPerm::ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -555,12 +555,12 @@ McpttFloorMachineBasicStateNoPerm::ReceiveFloorRelease (McpttFloorMachineBasic& 
       floorMachine.ClearCandidateSsrc ();
       floorMachine.ClearCurrentSsrc ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
 }
 
 void
-McpttFloorMachineBasicStateNoPerm::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStateNoPerm::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -590,7 +590,7 @@ McpttFloorMachineBasicStateNoPerm::ReceiveMedia (McpttFloorMachineBasic& floorMa
 }
 
 void
-McpttFloorMachineBasicStateNoPerm::Selected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateNoPerm::Selected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -603,7 +603,7 @@ McpttFloorMachineBasicStateNoPerm::Selected (McpttFloorMachineBasic& floorMachin
 }
 
 void
-McpttFloorMachineBasicStateNoPerm::TakePushNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateNoPerm::PttPush (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -625,40 +625,40 @@ McpttFloorMachineBasicStateNoPerm::TakePushNotification (McpttFloorMachineBasic&
 
   floorMachine.Send (reqMsg);
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStatePendReq::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
 }
-/** McpttFloorMachineBasicStateNoPerm - end **/
+/** McpttOffNetworkFloorParticipantStateNoPerm - end **/
 
-/** McpttFloorMachineBasicStateHasPerm - begin **/
-Ptr<McpttFloorMachineBasicStateHasPerm>
-McpttFloorMachineBasicStateHasPerm::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStateHasPerm - begin **/
+Ptr<McpttOffNetworkFloorParticipantStateHasPerm>
+McpttOffNetworkFloorParticipantStateHasPerm::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStateHasPerm> instance = Create<McpttFloorMachineBasicStateHasPerm> ();
+  static Ptr<McpttOffNetworkFloorParticipantStateHasPerm> instance = Create<McpttOffNetworkFloorParticipantStateHasPerm> ();
 
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateHasPerm::GetStateId (void)
+McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (void)
 {
   static McpttEntityId id (2, "'O: has permission'");
 
   return id;
 }
 
-McpttFloorMachineBasicStateHasPerm::McpttFloorMachineBasicStateHasPerm (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStateHasPerm::McpttOffNetworkFloorParticipantStateHasPerm (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStateHasPerm::~McpttFloorMachineBasicStateHasPerm (void)
+McpttOffNetworkFloorParticipantStateHasPerm::~McpttOffNetworkFloorParticipantStateHasPerm (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ExpiryOfT206 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateHasPerm::ExpiryOfT206 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -670,7 +670,7 @@ McpttFloorMachineBasicStateHasPerm::ExpiryOfT206 (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ExpiryOfT207 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateHasPerm::ExpiryOfT207 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -703,7 +703,7 @@ McpttFloorMachineBasicStateHasPerm::ExpiryOfT207 (McpttFloorMachineBasic& floorM
 
       floorMachine.Send (grantedMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStatePendGrant::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendGrant::GetInstance ());
     }
   else
     {
@@ -717,24 +717,24 @@ McpttFloorMachineBasicStateHasPerm::ExpiryOfT207 (McpttFloorMachineBasic& floorM
 
       floorMachine.Send (releaseMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateHasPerm::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStateHasPerm::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStateHasPerm::GetStateId ();
+  return McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ();
 }
 
 bool
-McpttFloorMachineBasicStateHasPerm::HasFloor (const McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateHasPerm::HasFloor (const McpttOffNetworkFloorParticipant& floorMachine) const
 {
   return true;
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ReceiveFloorQueuePositionReq (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const
+McpttOffNetworkFloorParticipantStateHasPerm::ReceiveFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -762,7 +762,7 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorQueuePositionReq (McpttFloorMach
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ReceiveFloorRelease (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRelease& msg) const
+McpttOffNetworkFloorParticipantStateHasPerm::ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -778,7 +778,7 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorRelease (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttOffNetworkFloorParticipantStateHasPerm::ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -884,7 +884,7 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorRequest (McpttFloorMachineBasic&
 
       floorMachine.Send (grantedMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStatePendGrant::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendGrant::GetInstance ());
     }
   else if (!queue->IsEnabled ()
       || !indicField.IsIndicated (McpttFloorMsgFieldIndic::QUEUING_SUPP))
@@ -946,7 +946,7 @@ McpttFloorMachineBasicStateHasPerm::ReceiveFloorRequest (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::MediaReady (McpttFloorMachineBasic& floorMachine, McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStateHasPerm::MediaReady (McpttOffNetworkFloorParticipant& floorMachine, McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -968,7 +968,7 @@ McpttFloorMachineBasicStateHasPerm::MediaReady (McpttFloorMachineBasic& floorMac
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::Selected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateHasPerm::Selected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -989,7 +989,7 @@ McpttFloorMachineBasicStateHasPerm::Selected (McpttFloorMachineBasic& floorMachi
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::TakeReleaseNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateHasPerm::PttRelease (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1034,7 +1034,7 @@ McpttFloorMachineBasicStateHasPerm::TakeReleaseNotification (McpttFloorMachineBa
 
       floorMachine.Send (grantedMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStatePendGrant::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendGrant::GetInstance ());
     }
   else
     {
@@ -1048,12 +1048,12 @@ McpttFloorMachineBasicStateHasPerm::TakeReleaseNotification (McpttFloorMachineBa
 
       floorMachine.Send (releaseMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
 }
 
 void
-McpttFloorMachineBasicStateHasPerm::Unselected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateHasPerm::Unselected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1070,38 +1070,38 @@ McpttFloorMachineBasicStateHasPerm::Unselected (McpttFloorMachineBasic& floorMac
       mediaSrc->StopMakingReq ();
     }
 }
-/** McpttFloorMachineBasicStateHasPerm - end **/
+/** McpttOffNetworkFloorParticipantStateHasPerm - end **/
 
-/** McpttFloorMachineBasicStatePendGrant - begin **/
-Ptr<McpttFloorMachineBasicStatePendGrant>
-McpttFloorMachineBasicStatePendGrant::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStatePendGrant - begin **/
+Ptr<McpttOffNetworkFloorParticipantStatePendGrant>
+McpttOffNetworkFloorParticipantStatePendGrant::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStatePendGrant> instance = Create<McpttFloorMachineBasicStatePendGrant> ();
+  static Ptr<McpttOffNetworkFloorParticipantStatePendGrant> instance = Create<McpttOffNetworkFloorParticipantStatePendGrant> ();
 
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStatePendGrant::GetStateId (void)
+McpttOffNetworkFloorParticipantStatePendGrant::GetStateId (void)
 {
   static McpttEntityId id (3, "'O: pending granted'");
 
   return id;
 }
 
-McpttFloorMachineBasicStatePendGrant::McpttFloorMachineBasicStatePendGrant (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStatePendGrant::McpttOffNetworkFloorParticipantStatePendGrant (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStatePendGrant::~McpttFloorMachineBasicStatePendGrant (void)
+McpttOffNetworkFloorParticipantStatePendGrant::~McpttOffNetworkFloorParticipantStatePendGrant (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::ExpiryOfT205 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStatePendGrant::ExpiryOfT205 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1125,7 +1125,7 @@ McpttFloorMachineBasicStatePendGrant::ExpiryOfT205 (McpttFloorMachineBasic& floo
 
           floorMachine.ClearCurrentSsrc ();
 
-          floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
         }
     }
   else
@@ -1140,7 +1140,7 @@ McpttFloorMachineBasicStatePendGrant::ExpiryOfT205 (McpttFloorMachineBasic& floo
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::ExpiryOfT233 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStatePendGrant::ExpiryOfT233 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1183,24 +1183,24 @@ McpttFloorMachineBasicStatePendGrant::ExpiryOfT233 (McpttFloorMachineBasic& floo
 
       floorMachine.ClearCurrentSsrc ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
 }
 
 McpttEntityId
-McpttFloorMachineBasicStatePendGrant::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStatePendGrant::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStatePendGrant::GetStateId ();
+  return McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ();
 }
 
 bool
-McpttFloorMachineBasicStatePendGrant::HasFloor (const McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStatePendGrant::HasFloor (const McpttOffNetworkFloorParticipant& floorMachine) const
 {
   return true;
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::ReceiveFloorRelease (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRelease& msg) const
+McpttOffNetworkFloorParticipantStatePendGrant::ReceiveFloorRelease (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1216,7 +1216,7 @@ McpttFloorMachineBasicStatePendGrant::ReceiveFloorRelease (McpttFloorMachineBasi
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttOffNetworkFloorParticipantStatePendGrant::ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1235,7 +1235,7 @@ McpttFloorMachineBasicStatePendGrant::ReceiveFloorRequest (McpttFloorMachineBasi
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStatePendGrant::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1255,11 +1255,11 @@ McpttFloorMachineBasicStatePendGrant::ReceiveMedia (McpttFloorMachineBasic& floo
   
   t203->Start ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStatePendGrant::Unselected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStatePendGrant::Unselected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1271,38 +1271,38 @@ McpttFloorMachineBasicStatePendGrant::Unselected (McpttFloorMachineBasic& floorM
       queue->Clear ();
     }
 }
-/** McpttFloorMachineBasicStatePendGrant - end **/
+/** McpttOffNetworkFloorParticipantStatePendGrant - end **/
 
-/** McpttFloorMachineBasicStatePendReq - begin **/
-Ptr<McpttFloorMachineBasicStatePendReq>
-McpttFloorMachineBasicStatePendReq::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStatePendReq - begin **/
+Ptr<McpttOffNetworkFloorParticipantStatePendReq>
+McpttOffNetworkFloorParticipantStatePendReq::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStatePendReq> instance = Create<McpttFloorMachineBasicStatePendReq> ();
+  static Ptr<McpttOffNetworkFloorParticipantStatePendReq> instance = Create<McpttOffNetworkFloorParticipantStatePendReq> ();
 
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStatePendReq::GetStateId (void)
+McpttOffNetworkFloorParticipantStatePendReq::GetStateId (void)
 {
   static McpttEntityId id (4, "'O: pending request'");
 
   return id;
 }
 
-McpttFloorMachineBasicStatePendReq::McpttFloorMachineBasicStatePendReq (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStatePendReq::McpttOffNetworkFloorParticipantStatePendReq (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStatePendReq::~McpttFloorMachineBasicStatePendReq (void)
+McpttOffNetworkFloorParticipantStatePendReq::~McpttOffNetworkFloorParticipantStatePendReq (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ExpiryOfT201 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStatePendReq::ExpiryOfT201 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1330,7 +1330,7 @@ McpttFloorMachineBasicStatePendReq::ExpiryOfT201 (McpttFloorMachineBasic& floorM
 
       floorMachine.Send (takenMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
     }
   else
     {
@@ -1347,13 +1347,13 @@ McpttFloorMachineBasicStatePendReq::ExpiryOfT201 (McpttFloorMachineBasic& floorM
 }
 
 McpttEntityId
-McpttFloorMachineBasicStatePendReq::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStatePendReq::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStatePendReq::GetStateId ();
+  return McpttOffNetworkFloorParticipantStatePendReq::GetStateId ();
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorDeny (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgDeny& msg) const
+McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorDeny (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgDeny& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1378,7 +1378,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorDeny (McpttFloorMachineBasic& fl
               //Provide floor deny notification to user.
               t203->Restart ();
               //Display floor deny reason to the user.
-              floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+              floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
             }
         }
       else if (floorMachine.HasCandidateSsrc ())
@@ -1391,7 +1391,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorDeny (McpttFloorMachineBasic& fl
               t203->Restart ();
               //Provide floor deny notification to user.
               //Display floor deny reason to the user.
-              floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+              floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
             }
          }
       else
@@ -1401,13 +1401,13 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorDeny (McpttFloorMachineBasic& fl
 
           floorMachine.SetCurrentSsrc (rxSsrc);
 
-          floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
         }
     }
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const
+McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1444,7 +1444,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorGranted (McpttFloorMachineBasic&
                   //Provide a notification to the user indicating the type of call.
                 }
               
-              floorMachine.ChangeState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+              floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
             }
         }
       else if (floorMachine.HasCandidateSsrc ())
@@ -1465,7 +1465,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorGranted (McpttFloorMachineBasic&
                   //Provide a notification to the user indicating the type of call.
                 }
               
-              floorMachine.ChangeState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+              floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
              }
         }
       else
@@ -1486,7 +1486,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorGranted (McpttFloorMachineBasic&
               //Provide a notification to the user indicating the type of call.
             }
  
-          floorMachine.ChangeState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
         }
       //TODO: Not in standard - update local queue of floor requests when a 'Floor Granted' message is received.
       if (queue->IsEnabled ())
@@ -1533,7 +1533,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorGranted (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
+McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorQueuePositionInfo (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1558,7 +1558,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMac
               
               t201->Stop ();
 
-              floorMachine.ChangeState (McpttFloorMachineBasicStateQueued::GetInstance ());
+              floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateQueued::GetInstance ());
             }
         }
       else if (floorMachine.HasCandidateSsrc ())
@@ -1574,7 +1574,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMac
           
               t201->Stop ();
 
-              floorMachine.ChangeState (McpttFloorMachineBasicStateQueued::GetInstance ());
+              floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateQueued::GetInstance ());
             }
         }
       else
@@ -1587,13 +1587,13 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorQueuePositionInfo (McpttFloorMac
           
           t201->Stop ();
 
-          floorMachine.ChangeState (McpttFloorMachineBasicStateQueued::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateQueued::GetInstance ());
         }
     }
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1621,7 +1621,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorRequest (McpttFloorMachineBasic&
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveFloorTaken (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgTaken& msg) const
+McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1637,7 +1637,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveFloorTaken (McpttFloorMachineBasic& f
 }
 
 void
-McpttFloorMachineBasicStatePendReq::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStatePendReq::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1679,7 +1679,7 @@ McpttFloorMachineBasicStatePendReq::ReceiveMedia (McpttFloorMachineBasic& floorM
 }
 
 void
-McpttFloorMachineBasicStatePendReq::TakeReleaseNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStatePendReq::PttRelease (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1706,40 +1706,40 @@ McpttFloorMachineBasicStatePendReq::TakeReleaseNotification (McpttFloorMachineBa
 
   floorMachine.Send (releaseMsg);
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
 }
-/** McpttFloorMachineBasicStatePendReq - end **/
+/** McpttOffNetworkFloorParticipantStatePendReq - end **/
 
-/** McpttFloorMachineBasicStateQueued - begin **/
-Ptr<McpttFloorMachineBasicStateQueued>
-McpttFloorMachineBasicStateQueued::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStateQueued - begin **/
+Ptr<McpttOffNetworkFloorParticipantStateQueued>
+McpttOffNetworkFloorParticipantStateQueued::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStateQueued> instance = Create<McpttFloorMachineBasicStateQueued> ();
+  static Ptr<McpttOffNetworkFloorParticipantStateQueued> instance = Create<McpttOffNetworkFloorParticipantStateQueued> ();
 
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateQueued::GetStateId (void)
+McpttOffNetworkFloorParticipantStateQueued::GetStateId (void)
 {
   static McpttEntityId id (5, "'O: queued'");
 
   return id;
 }
 
-McpttFloorMachineBasicStateQueued::McpttFloorMachineBasicStateQueued (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStateQueued::McpttOffNetworkFloorParticipantStateQueued (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStateQueued::~McpttFloorMachineBasicStateQueued (void)
+McpttOffNetworkFloorParticipantStateQueued::~McpttOffNetworkFloorParticipantStateQueued (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicStateQueued::AcceptGrant (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateQueued::AcceptGrant (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1761,11 +1761,11 @@ McpttFloorMachineBasicStateQueued::AcceptGrant (McpttFloorMachineBasic& floorMac
       queue->UpdateUsers (users);
     }
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateHasPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateQueued::ExpiryOfT203 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateQueued::ExpiryOfT203 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1788,11 +1788,11 @@ McpttFloorMachineBasicStateQueued::ExpiryOfT203 (McpttFloorMachineBasic& floorMa
 
   floorMachine.Send (requestMsg);
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStatePendReq::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateQueued::ExpiryOfT204 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateQueued::ExpiryOfT204 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1812,7 +1812,7 @@ McpttFloorMachineBasicStateQueued::ExpiryOfT204 (McpttFloorMachineBasic& floorMa
 
       floorMachine.ClearCurrentSsrc ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
   else
     {   
@@ -1827,7 +1827,7 @@ McpttFloorMachineBasicStateQueued::ExpiryOfT204 (McpttFloorMachineBasic& floorMa
 }
 
 void
-McpttFloorMachineBasicStateQueued::ExpiryOfT233 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateQueued::ExpiryOfT233 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -1837,17 +1837,17 @@ McpttFloorMachineBasicStateQueued::ExpiryOfT233 (McpttFloorMachineBasic& floorMa
   t203->Stop ();
   t230->Start ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateSilence::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateQueued::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStateQueued::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStateQueued::GetStateId ();
+  return McpttOffNetworkFloorParticipantStateQueued::GetStateId ();
 }
 
 void
-McpttFloorMachineBasicStateQueued::ReceiveFloorDeny (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgDeny& msg) const
+McpttOffNetworkFloorParticipantStateQueued::ReceiveFloorDeny (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgDeny& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1872,7 +1872,7 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorDeny (McpttFloorMachineBasic& flo
           //Provide floor deny notification to the user.
           //Display floor deny reason.
 
-          floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
         }
       else if (candidateSsrc == rxSsrc)
         {
@@ -1887,13 +1887,13 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorDeny (McpttFloorMachineBasic& flo
           //Provide floor deny notification to the user.
           //Display floor deny reason.
 
-          floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
          }
     }
 }
 
 void
-McpttFloorMachineBasicStateQueued::ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const
+McpttOffNetworkFloorParticipantStateQueued::ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -1928,7 +1928,7 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorGranted (McpttFloorMachineBasic& 
                 }
 
               floorMachine.SetLastGrantMsg (msg);
-              Simulator::Schedule (Seconds (0), &McpttFloorMachineBasic::NotifyFloorGranted, &floorMachine);
+              Simulator::Schedule (Seconds (0), &McpttOffNetworkFloorParticipant::NotifyFloorGranted, &floorMachine);
             }
         }
       else if (floorMachine.HasCandidateSsrc ())
@@ -1951,7 +1951,7 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorGranted (McpttFloorMachineBasic& 
                 }
 
               floorMachine.SetLastGrantMsg (msg);
-              Simulator::Schedule (Seconds (0), &McpttFloorMachineBasic::NotifyFloorGranted, &floorMachine);
+              Simulator::Schedule (Seconds (0), &McpttOffNetworkFloorParticipant::NotifyFloorGranted, &floorMachine);
             }
         }
     }
@@ -1970,7 +1970,7 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorGranted (McpttFloorMachineBasic& 
 }
 
 void
-McpttFloorMachineBasicStateQueued::ReceiveFloorQueuePositionInfo (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
+McpttOffNetworkFloorParticipantStateQueued::ReceiveFloorQueuePositionInfo (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgQueuePositionInfo& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2009,7 +2009,7 @@ McpttFloorMachineBasicStateQueued::ReceiveFloorQueuePositionInfo (McpttFloorMach
 }
 
 void
-McpttFloorMachineBasicStateQueued::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStateQueued::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2037,7 +2037,7 @@ McpttFloorMachineBasicStateQueued::ReceiveMedia (McpttFloorMachineBasic& floorMa
 }
 
 void
-McpttFloorMachineBasicStateQueued::ReleaseRequest (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateQueued::ReleaseRequest (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -2056,11 +2056,11 @@ McpttFloorMachineBasicStateQueued::ReleaseRequest (McpttFloorMachineBasic& floor
 
   floorMachine.Send (releaseMsg);
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateQueued::SendFloorQueuePositionRequest (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateQueued::SendFloorQueuePositionRequest (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -2070,63 +2070,63 @@ McpttFloorMachineBasicStateQueued::SendFloorQueuePositionRequest (McpttFloorMach
   uint32_t txSsrc = floorMachine.GetTxSsrc ();
   uint32_t myUserId = floorMachine.GetOwner ()->GetOwner ()->GetUserId ();
 
-  McpttFloorMsgQueuePositionRequest queuePositionRequestMsg (txSsrc);
-  queuePositionRequestMsg.SetUserId (McpttFloorMsgFieldUserId (myUserId));
+  McpttFloorMsgQueuePositionRequest queuePosReqMsg (txSsrc);
+  queuePosReqMsg.SetUserId (McpttFloorMsgFieldUserId (myUserId));
 
   c204->Reset ();
   t204->Start ();
 
-  floorMachine.Send (queuePositionRequestMsg);
+  floorMachine.Send (queuePosReqMsg);
 }
-/** McpttFloorMachineBasicStateQueued - end **/
+/** McpttOffNetworkFloorParticipantStateQueued - end **/
 
-/** McpttFloorMachineBasicStateSilence - begin **/
-Ptr<McpttFloorMachineBasicStateSilence>
-McpttFloorMachineBasicStateSilence::GetInstance (void)
+/** McpttOffNetworkFloorParticipantStateSilence - begin **/
+Ptr<McpttOffNetworkFloorParticipantStateSilence>
+McpttOffNetworkFloorParticipantStateSilence::GetInstance (void)
 {
-  static Ptr<McpttFloorMachineBasicStateSilence> instance = Create<McpttFloorMachineBasicStateSilence> ();
+  static Ptr<McpttOffNetworkFloorParticipantStateSilence> instance = Create<McpttOffNetworkFloorParticipantStateSilence> ();
 
   return instance;
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateSilence::GetStateId (void)
+McpttOffNetworkFloorParticipantStateSilence::GetStateId (void)
 {
   static McpttEntityId id (6, "'O: silence'");
 
   return id;
 }
 
-McpttFloorMachineBasicStateSilence::McpttFloorMachineBasicStateSilence (void)
-  : McpttFloorMachineBasicState ()
+McpttOffNetworkFloorParticipantStateSilence::McpttOffNetworkFloorParticipantStateSilence (void)
+  : McpttOffNetworkFloorParticipantState ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMachineBasicStateSilence::~McpttFloorMachineBasicStateSilence (void)
+McpttOffNetworkFloorParticipantStateSilence::~McpttOffNetworkFloorParticipantStateSilence (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorMachineBasicStateSilence::ExpiryOfT230 (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateSilence::ExpiryOfT230 (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
   //Shall indicate to call control that T230 expired.
   //TODO: Indicate to call control tha T230 has expired.
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateStartStop::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
 }
 
 McpttEntityId
-McpttFloorMachineBasicStateSilence::GetInstanceStateId (void) const
+McpttOffNetworkFloorParticipantStateSilence::GetInstanceStateId (void) const
 {
-  return McpttFloorMachineBasicStateSilence::GetStateId ();
+  return McpttOffNetworkFloorParticipantStateSilence::GetStateId ();
 }
 
 void
-McpttFloorMachineBasicStateSilence::ReceiveFloorGranted (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgGranted& msg) const
+McpttOffNetworkFloorParticipantStateSilence::ReceiveFloorGranted (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2150,12 +2150,12 @@ McpttFloorMachineBasicStateSilence::ReceiveFloorGranted (McpttFloorMachineBasic&
       t230->Stop ();
       t203->Start ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
     }
 }
 
 void
-McpttFloorMachineBasicStateSilence::ReceiveFloorRequest (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgRequest& msg) const
+McpttOffNetworkFloorParticipantStateSilence::ReceiveFloorRequest (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2180,12 +2180,12 @@ McpttFloorMachineBasicStateSilence::ReceiveFloorRequest (McpttFloorMachineBasic&
 
       floorMachine.Send (grantedMsg);
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStatePendGrant::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendGrant::GetInstance ());
     }
 }
 
 void
-McpttFloorMachineBasicStateSilence::ReceiveFloorTaken (McpttFloorMachineBasic& floorMachine, const McpttFloorMsgTaken& msg) const
+McpttOffNetworkFloorParticipantStateSilence::ReceiveFloorTaken (McpttOffNetworkFloorParticipant& floorMachine, const McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2199,11 +2199,11 @@ McpttFloorMachineBasicStateSilence::ReceiveFloorTaken (McpttFloorMachineBasic& f
   t230->Stop ();
   t203->Start ();
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }
 
 void
-McpttFloorMachineBasicStateSilence::ReceiveMedia (McpttFloorMachineBasic& floorMachine, const McpttMediaMsg& msg) const
+McpttOffNetworkFloorParticipantStateSilence::ReceiveMedia (McpttOffNetworkFloorParticipant& floorMachine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
@@ -2222,7 +2222,7 @@ McpttFloorMachineBasicStateSilence::ReceiveMedia (McpttFloorMachineBasic& floorM
           t203->Restart ();
           t230->Stop ();
 
-          floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+          floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
         }
     }
   else
@@ -2233,12 +2233,12 @@ McpttFloorMachineBasicStateSilence::ReceiveMedia (McpttFloorMachineBasic& floorM
 
       t203->Restart ();
 
-      floorMachine.ChangeState (McpttFloorMachineBasicStateNoPerm::GetInstance ());
+      floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
     }
 }
 
 void
-McpttFloorMachineBasicStateSilence::Selected (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateSilence::Selected (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -2251,7 +2251,7 @@ McpttFloorMachineBasicStateSilence::Selected (McpttFloorMachineBasic& floorMachi
 }
 
 void
-McpttFloorMachineBasicStateSilence::TakePushNotification (McpttFloorMachineBasic& floorMachine) const
+McpttOffNetworkFloorParticipantStateSilence::PttPush (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
@@ -2274,9 +2274,9 @@ McpttFloorMachineBasicStateSilence::TakePushNotification (McpttFloorMachineBasic
 
   floorMachine.Send (reqMsg);
 
-  floorMachine.ChangeState (McpttFloorMachineBasicStatePendReq::GetInstance ());
+  floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
 }
-/** McpttFloorMachineBasicStateSilence - end **/
+/** McpttOffNetworkFloorParticipantStateSilence - end **/
 
 } //namespace ns3
 

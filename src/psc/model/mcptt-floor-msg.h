@@ -46,7 +46,7 @@
 
 namespace ns3 {
 
-class McpttFloorMachineBasic;
+class McpttFloorMsgSink;
 
 /**
  * MCPTT Floor Message information.
@@ -144,9 +144,9 @@ public:
  virtual void Serialize (Buffer::Iterator start) const;
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 protected:
  /**
   * Reads the data of the message from the byte stream.
@@ -320,9 +320,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldPriority m_priority; //!< The floor priority field.
@@ -493,9 +493,9 @@ public:
  virtual void UpdateUsers (const std::list<McpttQueuedUserInfo>& users);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldDuration m_duration; //!< The duration field.
  uint32_t m_grantedSsrc; //!< The SSRC of the granted floor participant.
@@ -672,9 +672,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldRejectCause m_rejCause; //!< The reject cause field.
@@ -803,9 +803,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
@@ -920,9 +920,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldRejectCause m_rejCause; //!< The reject cause field.
@@ -1042,9 +1042,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldSeqNum m_seqNum; //!< The message sequence number field.
@@ -1173,9 +1173,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldGrantedPartyId m_partyId; //!< The granted party's ID field.
@@ -1318,9 +1318,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
  McpttFloorMsgFieldUserId m_userId; //!< The user ID field.
@@ -1434,9 +1434,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldUserId m_userId; //!< The MCPTT ID of the floor participant that sent this message.
  uint32_t m_queuedSsrc; //!< The SSRC of the queued floor participant.
@@ -1586,9 +1586,9 @@ public:
  virtual void UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
   * Visits the given floor machine.
-  * \param floorMachine The floor machine to visit.
+  * \param floorMsgSink The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldSource m_source; //!< The source field.
  McpttFloorMsgFieldType m_msgType; //!< The message type field.

@@ -138,7 +138,7 @@ push the PTT button.
   callFac.SetTypeId (McpttCallMachineGrpBasic::GetTypeId ());
   callFac.Set ("GroupId", UintegerValue (1));
   ObjectFactory floorFac;
-  floorFac.SetTypeId (McpttFloorMachineBasic::GetTypeId ());
+  floorFac.SetTypeId (McpttOffNetworkFloorParticipant::GetTypeId ());
 
   for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
     {
@@ -205,15 +205,15 @@ machine. For example, the class ``ns3::McpttCallMachineGrpBroadcastStateB1``
 is a model of the "B1: start-stop" state of the Broadcast call control state
 machine from the 3GPP standard describing call control.
 
-The ``ns3::McpttFloorMachine`` is an interface created to represent the floor
+The ``ns3::McpttFloorParticipant`` is an interface created to represent the floor
 control protocol. There are two subclasses:
-- ``ns3::McpttFloorMachineBasic`` for the floor control protocol
-- ``ns3::McpttFloorMachineNull`` to "turn-off" floor control
+- ``ns3::McpttOffNetworkFloorParticipant`` for the floor control protocol
+- ``ns3::McpttFloorParticipantNull`` to "turn-off" floor control
 
 Just like the state machines for call control, the
-``ns3:McpttFloorMachineBasic`` class has an
-``ns3::McpttFloorMachineBasicState`` member which is derived by many classes
-such as ``ns3:McpttFloorMachineBasicStateHasPerm`` to represent the different
+``ns3:McpttOffNetworkFloorParticipant`` class has an
+``ns3::McpttOffNetworkFloorParticipantState`` member which is derived by many classes
+such as ``ns3:McpttOffNetworkFloorParticipantStateHasPerm`` to represent the different
 states of the floor control state machine.
 
 The ``ns3::McpttEmergAlertMachine`` is an interface to represent the state
@@ -416,7 +416,7 @@ the call, as follows.
 This method encapsulates the following operations:
 
 *  sets the call control state machine type to ``ns3::McpttCallMachineGrpBasic``
-*  sets the floor control state machine type to ``ns3::McpttFloorMachineBasic``
+*  sets the floor control state machine type to ``ns3::McpttOffNetworkFloorParticipant``
 *  iterates across the clientApps in the provided application container.  If
    the provided ``usersPerGroup`` value is equal to or greater than the size
    of the ``clientApps`` container, all instances of ``McpttPttApp`` will 

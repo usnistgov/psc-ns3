@@ -51,8 +51,8 @@
 #include "mcptt-call-machine-grp-basic.h"
 #include "mcptt-call-machine-grp-broadcast.h"
 #include "mcptt-chan.h"
-#include "mcptt-floor-machine.h"
-#include "mcptt-floor-machine-basic.h"
+#include "mcptt-floor-participant.h"
+#include "mcptt-off-network-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-ptt-app.h"
@@ -154,7 +154,7 @@ McpttPttApp::AcceptFloorGrant (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
   
   if (call != 0)
@@ -171,7 +171,7 @@ McpttPttApp::BeginEmergAlert (void)
   NS_LOG_FUNCTION (this);
 
   Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
   
   if (call != 0)
@@ -189,7 +189,7 @@ McpttPttApp::CancelEmergAlert (void)
   NS_LOG_FUNCTION (this);
 
   Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
    
   if (call != 0)
@@ -212,7 +212,7 @@ McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac)
   Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
   Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
   Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
-  Ptr<McpttFloorMachine> floorMachine = floorFac.Create<McpttFloorMachine> ();
+  Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
 
   call->SetCallMachine (callMachine);
   call->SetFloorChan (floorChan);
@@ -379,7 +379,7 @@ McpttPttApp::ReleaseRequest (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
   
   if (call != 0)
@@ -427,9 +427,9 @@ McpttPttApp::SelectCall (uint32_t callIdx)
   uint16_t newCallId = 0;
   Ptr<McpttCall> newCall = 0;
   Ptr<McpttCallMachine> oldCallMachine = 0;
-  Ptr<McpttFloorMachine> oldFloorMachine = 0;
+  Ptr<McpttFloorParticipant> oldFloorMachine = 0;
   Ptr<McpttCallMachine> newCallMachine = 0;
-  Ptr<McpttFloorMachine> newFloorMachine = 0;
+  Ptr<McpttFloorParticipant> newFloorMachine = 0;
   Ptr<McpttCall> oldCall = GetSelectedCall ();
   std::vector<Ptr<McpttCall> > calls = GetCalls ();
 
@@ -494,7 +494,7 @@ McpttPttApp::TakePushNotification (void)
   NS_LOG_FUNCTION (this);
   Ptr<McpttCall> call = GetSelectedCall ();
   Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -504,7 +504,7 @@ McpttPttApp::TakePushNotification (void)
 
       if (callMachine->IsCallOngoing ())
         {
-          floorMachine->TakePushNotification ();
+          floorMachine->PttPush ();
         }
       else
         {
@@ -520,7 +520,7 @@ McpttPttApp::TakeReleaseNotification (void)
 
   uint32_t myUserId = GetUserId ();
   Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
   
   if (call != 0)
@@ -530,7 +530,7 @@ McpttPttApp::TakeReleaseNotification (void)
 
       Released ();
 
-      floorMachine->TakeReleaseNotification ();
+      floorMachine->PttRelease ();
 
       //Broadcast calls should be released when the originator is done talking.
       if (callMachine->GetInstanceTypeId () == McpttCallMachineGrpBroadcast::GetTypeId ()
@@ -549,7 +549,7 @@ McpttPttApp::TakeSendReq (McpttMediaMsg& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp taking request to send " << msg << ".");
 
   bool sent = false;
-  Ptr<McpttFloorMachine> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call != 0)

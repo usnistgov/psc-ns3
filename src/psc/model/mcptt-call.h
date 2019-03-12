@@ -40,7 +40,7 @@
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-chan.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 
@@ -156,7 +156,7 @@ protected:
  private:
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
- Ptr<McpttFloorMachine> m_floorMachine; //!< The floor state machine.
+ Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
  McpttPttApp* m_owner; //!< The owner of this call.
  Callback<void, const McpttCall&, const McpttMsg&> m_rxCb; //!< The received message callback.
@@ -176,7 +176,7 @@ public:
   * Gets the floor machine.
   * \returns The floor machine.
   */
- Ptr<McpttFloorMachine> GetFloorMachine (void) const;
+ Ptr<McpttFloorParticipant> GetFloorMachine (void) const;
  /**
   * Gets the channel to use for floor control messages.
   * \returns The channel.
@@ -201,7 +201,7 @@ public:
   * Sets the floor machine.
   * \param floorMachine The floor machine.
   */
- void SetFloorMachine (Ptr<McpttFloorMachine>  floorMachine);
+ void SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine);
  /**
   * Sets the channel to use for media messages.
   * \param mediaChan The channel.

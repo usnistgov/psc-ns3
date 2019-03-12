@@ -35,7 +35,7 @@
 
 #include "mcptt-call-machine-grp-basic.h"
 #include "mcptt-call-msg.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-ptt-app.h"
 
 #include "mcptt-call-machine-grp-basic-state.h"
@@ -250,7 +250,7 @@ McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
   McpttCall* call = machine.GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   //TODO: The following check should make sure that the received group ID
   //TODO: does not match the group ID of any other call machines that may
@@ -370,7 +370,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4AddressValue grpAddress;
   Ipv4Address origAddress = pttApp->GetLocalAddress ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
   McpttCallMsgFieldRefreshInterval selectedRefInt = machine.GetRefInt ();
   McpttCallMsgFieldUserId lastChgUserId = typeMachine->GetLastChgUserId ();
   McpttCallMsgFieldLastChgTime lastChgTime = typeMachine->GetLastChgTime ();
@@ -478,7 +478,7 @@ McpttCallMachineGrpBasicStateS2::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
   McpttCallMsgFieldStartTime theirStartTime = msg.GetStartTime ();
   McpttCallMsgFieldRefreshInterval theirRefInt = msg.GetRefInt ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
   uint16_t floorPort = theirSdp.GetFloorPort ();
   Ipv4Address grpAddr = theirSdp.GetGrpAddr ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
@@ -609,7 +609,7 @@ McpttCallMachineGrpBasicStateS3::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   McpttCall* parent = machine.GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
 
@@ -681,7 +681,7 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
   McpttCallMsgFieldLastChgTime theirLastChgTime = msg.GetLastChgTime ();
 
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
   uint16_t floorPort = theirSdp.GetFloorPort ();
   Ipv4Address grpAddr = theirSdp.GetGrpAddr ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
@@ -787,7 +787,7 @@ McpttCallMachineGrpBasicStateS3::ReleaseCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
   McpttCall* parent = machine.GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
 
@@ -852,7 +852,7 @@ McpttCallMachineGrpBasicStateS4::AcceptCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
   McpttCall* parent = machine.GetOwner ();
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   Ipv4Address grpAddr = mySdp.GetGrpAddr ();
@@ -924,7 +924,7 @@ McpttCallMachineGrpBasicStateS4::ReleaseCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   McpttCall* parent = machine.GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
 
@@ -989,7 +989,7 @@ McpttCallMachineGrpBasicStateS5::AcceptCall (McpttCallMachineGrpBasic& machine)
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
   McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
   McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
   Ptr<McpttCallTypeMachineGrpBasic> typeMachine = machine.GetTypeMachine ();
   McpttCallMsgFieldCallType myCallType = typeMachine->GetCallType ();
 
@@ -1071,7 +1071,7 @@ McpttCallMachineGrpBasicStateS5::ReleaseCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   McpttCall* parent = machine.GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
 
@@ -1171,7 +1171,7 @@ McpttCallMachineGrpBasicStateS6::InitiateCall (McpttCallMachineGrpBasic& machine
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
   McpttCall* parent = machine.GetOwner ();
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
-  Ptr<McpttFloorMachine> floorMachine = parent->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   Ipv4Address grpAddr = mySdp.GetGrpAddr ();

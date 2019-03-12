@@ -40,7 +40,7 @@
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-chan.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-ptt-app.h"
@@ -67,7 +67,7 @@ McpttCall::GetTypeId (void)
     .AddAttribute ("FloorMachine", "The floor machine of the call.",
                    PointerValue (0),
                    MakePointerAccessor (&McpttCall::m_floorMachine),
-                   MakePointerChecker<McpttFloorMachine> ())
+                   MakePointerChecker<McpttFloorParticipant> ())
   ;
 
   return tid;
@@ -185,7 +185,7 @@ McpttCall::Receive (const McpttFloorMsg& msg)
       m_rxCb (*this, msg);
     }
 
-  Ptr<McpttFloorMachine> floorMachine = GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
   floorMachine->Receive (msg);
 }
 
@@ -200,7 +200,7 @@ McpttCall::Receive (const McpttMediaMsg& msg)
     }
 
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
-  Ptr<McpttFloorMachine> floorMachine = GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
 
   callMachine->Receive (msg);
   floorMachine->Receive (msg);
@@ -245,7 +245,7 @@ McpttCall::Send (const McpttMediaMsg& msg)
 
   Ptr<Packet> pkt = Create<Packet> ();
   Ptr<McpttChan> mediaChan = GetMediaChan ();
-  Ptr<McpttFloorMachine> floorMachine = GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
 
   McpttMediaMsg txMsg (msg);
 
@@ -357,7 +357,7 @@ McpttCall::GetFloorChan (void) const
   return m_floorChan;
 }
 
-Ptr<McpttFloorMachine>
+Ptr<McpttFloorParticipant>
 McpttCall::GetFloorMachine (void) const
 {
   return m_floorMachine;
@@ -402,7 +402,7 @@ McpttCall::SetFloorChan (Ptr<McpttChan>  floorChan)
 }
 
 void
-McpttCall::SetFloorMachine (Ptr<McpttFloorMachine>  floorMachine)
+McpttCall::SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine)
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 

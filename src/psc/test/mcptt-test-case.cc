@@ -60,12 +60,12 @@ McpttTestCase::GetCallMachine (uint32_t index)
   return machine;
 }
 
-Ptr<McpttFloorMachine>
+Ptr<McpttFloorParticipant>
 McpttTestCase::GetFloorMachine (uint32_t index)
 {
   Ptr<McpttPttApp> pttApp = GetApp (index);
   Ptr<McpttCall> call = pttApp->GetSelectedCall ();
-  Ptr<McpttFloorMachine> machine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> machine = call->GetFloorMachine ();
 
   return machine;
 }

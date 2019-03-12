@@ -37,7 +37,7 @@
 #include <ns3/internet-module.h>
 #include <ns3/mcptt-helper.h>
 #include <ns3/mcptt-call-machine.h>
-#include <ns3/mcptt-floor-machine.h>
+#include <ns3/mcptt-floor-participant.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/network-module.h>
 
@@ -49,7 +49,7 @@ McpttTestCaseConfig::McpttTestCaseConfig (void)
   : m_appCount (2),
     m_appTid (McpttPttApp::GetTypeId ()),
     m_callTid (McpttCallMachineNull::GetTypeId ()),
-    m_floorTid (McpttFloorMachineNull::GetTypeId ()),
+    m_floorTid (McpttFloorParticipantNull::GetTypeId ()),
     m_start (Seconds (2)),
     m_stop (Seconds (20))
 { }

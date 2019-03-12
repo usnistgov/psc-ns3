@@ -879,7 +879,7 @@ McpttCallMachinePrivate::Stop (void)
   Ptr<McpttTimer> tfp8 = GetTfp8 ();
   Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = GetTypeMachine ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " stopped.");
 

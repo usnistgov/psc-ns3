@@ -37,7 +37,7 @@
 #include "mcptt-call-msg.h"
 #include "mcptt-call-msg-field.h"
 #include "mcptt-call-type-machine-private.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-ptt-app.h"
 
 #include "mcptt-call-machine-private-state.h"
@@ -692,7 +692,7 @@ McpttCallMachinePrivateStateP2::ReceiveAccept (McpttCallMachinePrivate& machine,
   Ptr<McpttTimer> tfp1 = machine.GetTfp1 ();
   Ptr<McpttTimer> tfp2 = machine.GetTfp2 ();
   Ptr<McpttTimer> tfp5 = machine.GetTfp5 ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   McpttCallMsgFieldSdp theirSdp = msg.GetSdp ();
   McpttCallMsgFieldUserId callerId = machine.GetCallerId ();
@@ -1251,7 +1251,7 @@ McpttCallMachinePrivateStateP5::ReceiveAcceptAck (McpttCallMachinePrivate& machi
   McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
   McpttCallMsgFieldUserId myCallerId = machine.GetCallerId ();
   McpttCallMsgFieldUserId theirCallerId = msg.GetCallerId ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ()
       && myCallerId.GetId () == theirCallerId.GetId ())
@@ -1278,7 +1278,7 @@ McpttCallMachinePrivateStateP5::ReceiveMedia (McpttCallMachinePrivate& machine, 
 
   uint32_t theirSsrc = msg.GetSsrc ();
   McpttCallMsgFieldUserId myCallerId = machine.GetCallerId ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   //Check if the call is from the originator
   if (myCallerId.GetId () == theirSsrc)

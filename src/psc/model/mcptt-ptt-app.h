@@ -120,7 +120,7 @@ public:
  /**
   * Creates a call.
   * \param callFac The factory used to create an ns3::McpttCallMachine.
-  * \param floorFac The factory used to create an ns3::McpttFloorMachine.
+  * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
   */
  virtual void CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac);
  /**

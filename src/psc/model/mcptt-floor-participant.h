@@ -29,17 +29,14 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_FLOOR_MACHINE_H
-#define MCPTT_FLOOR_MACHINE_H
+#ifndef MCPTT_FLOOR_PARTICIPANT_H
+#define MCPTT_FLOOR_PARTICIPANT_H
 
-#include <ns3/object.h>
-#include <ns3/ptr.h>
 #include <ns3/nstime.h>
+#include <ns3/object.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-entity-id.h"
-#include "mcptt-floor-msg.h"
-#include "mcptt-floor-queue.h"
+#include "mcptt-floor-msg-sink.h"
 #include "mcptt-media-msg.h"
 
 namespace ns3 {
@@ -49,69 +46,34 @@ class McpttCall;
 /**
  * \ingroup mcptt
  *
- * This interface exists to create a common API for the MCPTT floor control
- * state machine described in TS 24.380 v14.4.0.
+ * This interface exists to create a common API for the MCPTT floor participants
+ * described in TS 24.380.
  */
-class McpttFloorMachine : public Object
+class McpttFloorParticipant : public Object, public McpttFloorMsgSink
 {
 public:
  /**
-  * \brief Gets the ID of the McpttFloorMachine type.
+  * \brief Gets the ID of the McpttFloorParticipant type.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * \brief Creates an instance of the McpttFloorMachine class.
+  * \brief Creates an instance of the McpttFloorParticipant class.
   */
- McpttFloorMachine (void);
+ McpttFloorParticipant (void);
  /**
-  * \brief The destructor of the McpttFloorMachine class.
+  * \brief The destructor of the McpttFloorParticipant class.
   */
- virtual ~McpttFloorMachine (void);
+ virtual ~McpttFloorParticipant (void);
  /**
   * Accepts the floor grant.
   */
  virtual void AcceptGrant (void) = 0;
  /**
-  * Gets the SSRC stored for the current arbitrator.
-  * \returns The SSRC.
-  */
- virtual uint32_t GetCurrentSsrc (void) const = 0;
- /**
-  * Gets the type ID of this McpttFloorMachine instance.
+  * Gets the type ID of this McpttFloorParticipant instance.
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Gets the current priority of the floor.
-  * \returns The current priority.
-  */
- virtual uint8_t GetPriority (void) const = 0;
-/**
-  * Gets the queue.
-  * \returns The queue.
-  */
- virtual Ptr<McpttFloorQueue> GetQueue (void) const = 0;
- /**
-  * Gets the setup delay.
-  * \returns The setup delay time.
-  */
- virtual Time GetSetupDelayStartTime (void) const = 0;
- /**
-  * Gets the ID of the state.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetStateId (void) const = 0;
- /**
-  * Gets the SSRC to use when sending a message.
-  * \returns The SSRC to use when sending a message.
-  */
- virtual uint32_t GetTxSsrc (void) const = 0;
- /**
-  * Indicates if an SSRC is stored for the current arbitrator.
-  * \returns True, if an SSRC is stored; otherwise false.
-  */
- virtual bool HasCurrentSsrc (void) const = 0;
  /**
   * Indicates whether or not the current participant is the acting arbitrator.
   * \returns True, if the current participant is the acting arbitrator.
@@ -127,16 +89,6 @@ public:
   * \param msg The media that is ready to be sent.
   */
  virtual void MediaReady (McpttMediaMsg& msg) = 0;
-  /**
-  * Receives a message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttFloorMsg& msg) = 0;
- /**
-  * Receives a message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttMediaMsg& msg) = 0;
   /**
   * Releases a request.
   */
@@ -176,82 +128,42 @@ public:
  /**
   * Notifies this machine that the button has been pushed.
   */
- virtual void TakePushNotification (void) = 0;
+ virtual void PttPush (void) = 0;
  /**
   * Notifies this machine that the button has been released.
   */
- virtual void TakeReleaseNotification (void) = 0;
+ virtual void PttRelease (void) = 0;
 };
 
 /**
  * \ingroup mcptt
  * \brief A class that represents an MCPTT floor machine.
  */
-class McpttFloorMachineNull : public McpttFloorMachine
+class McpttFloorParticipantNull : public McpttFloorParticipant
 {
 public:
  /**
-  * Gets the state ID of the null state.
-  * \returns The null state ID.
-  */
- static McpttEntityId GetNullStateId (void);
- /**
-  * \brief Gets the ID of the McpttFloorMachineNull type.
+  * \brief Gets the ID of the McpttFloorParticipant type.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * \brief Creates an instance of the McpttFloorMachineNull class.
+  * \brief Creates an instance of the McpttFloorParticipantNull class.
   */
- McpttFloorMachineNull (void);
+ McpttFloorParticipantNull (void);
  /**
-  * \brief The destructor of the McpttFloorMachineNull class.
+  * \brief The destructor of the McpttFloorParticipantNull class.
   */
- virtual ~McpttFloorMachineNull (void);
+ virtual ~McpttFloorParticipantNull (void);
  /**
   * Accepts the floor grant.
   */
  virtual void AcceptGrant (void);
  /**
-  * Gets the SSRC stored for the current arbitrator.
-  * \returns The SSRC.
-  */
- virtual uint32_t GetCurrentSsrc (void) const;
- /**
-  * Gets the type ID of this McpttFloorMachine instance.
+  * Gets the type ID of this McpttFloorParticipant instance.
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Gets the current priority of the floor.
-  * \returns The current priority.
-  */
- virtual uint8_t GetPriority (void) const;
-/**
-  * Gets the queue.
-  * \returns The queue.
-  */
- virtual Ptr<McpttFloorQueue> GetQueue (void) const;
- /**
-  * Gets the setup delay.
-  * \returns The setup delay time.
-  */
- virtual Time GetSetupDelayStartTime (void) const;
- /**
-  * Gets the ID of the state.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetStateId (void) const;
- /**
-  * Gets the SSRC to use when sending a message.
-  * \returns The SSRC to use when sending a message.
-  */
- virtual uint32_t GetTxSsrc (void) const;
- /**
-  * Indicates if an SSRC is stored for the current arbitrator.
-  * \returns True, if an SSRC is stored; otherwise false.
-  */
- virtual bool HasCurrentSsrc (void) const;
  /**
   * Indicates whether or not the current participant is the acting arbitrator.
   * \returns True, if the current participant is the acting arbitrator.
@@ -267,16 +179,6 @@ public:
   * \param msg The media that is ready to be sent.
   */
  virtual void MediaReady (McpttMediaMsg& msg);
- /**
-  * Receives a floor control message.
-  * \param msg The received message.
-  */
- virtual void Receive (const McpttFloorMsg& msg);
- /**
-  * Receives a media message.
-  * \param msg The received message.
-  */
- virtual void Receive (const McpttMediaMsg& msg);
  /**
   * Releases a request.
   */
@@ -316,14 +218,14 @@ public:
  /**
   * Notifies this machine that the button has been pushed.
   */
- virtual void TakePushNotification (void);
+ virtual void PttPush (void);
  /**
   * Notifies this machine that the button has been released.
   */
- virtual void TakeReleaseNotification (void);
+ virtual void PttRelease (void);
 };
 
 } // namespace ns3
 
-#endif /* MCPTT_FLOOR_MACHINE_H */
+#endif /* MCPTT_FLOOR_PARTICIPANT_H */
 

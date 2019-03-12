@@ -39,7 +39,7 @@
 
 namespace ns3 {
 
-class McpttFloorMachineBasic;
+class McpttFloorParticipant;
 class McpttCallMachinePrivate;
 
 /**
@@ -120,7 +120,7 @@ public:
   * Visits the given floor machine.
   * \param floorMachine The floor machine to visit.
   */
- virtual void Visit (McpttFloorMachineBasic& floorMachine) const;
+ virtual void Visit (McpttFloorParticipant& floorMachine) const;
 private:
  McpttRtpHeader m_head; //!< The head of the message.
  uint16_t m_payloadSize; //!< The size (in bytes) of the payload of the message.

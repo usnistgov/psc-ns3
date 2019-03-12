@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
   uint32_t groupCount = 1;
   uint32_t usersPerGroup = 2;
   DataRate dataRate = DataRate ("24kb/s");
-  TypeId floorTid = McpttFloorMachine::GetTypeId ();
+  TypeId floorTid = McpttFloorParticipant::GetTypeId ();
   double maxX = 5.0;
   double maxY = 5.0;
   uint32_t msgSize = 60; //60 + RTP header = 60 + 12 = 72
@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (false));
   Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttFloorMachineBasic::GenMedia", BooleanValue (true));
+  Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200")); //Disable fragmentation in wifi
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200")); //Disable fragmentation in wifi
  

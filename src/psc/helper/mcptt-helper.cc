@@ -39,7 +39,7 @@
 #include <ns3/double.h>
 #include <ns3/names.h>
 #include <ns3/log.h>
-#include <ns3/mcptt-floor-machine.h>
+#include <ns3/mcptt-floor-participant.h>
 #include <ns3/mcptt-media-src.h>
 #include <ns3/mcptt-ptt-app.h>
 #include <ns3/mcptt-pusher.h>
@@ -82,9 +82,9 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttCounter", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttEmergAlertMachineBasic", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttEmergAlertMachine", LOG_LEVEL_ALL);
-  LogComponentEnable ("McpttFloorMachineBasic", LOG_LEVEL_ALL);
-  LogComponentEnable ("McpttFloorMachineBasicState", LOG_LEVEL_ALL);
-  LogComponentEnable ("McpttFloorMachine", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOffNetworkFloorParticipant", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOffNetworkFloorParticipantState", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttFloorParticipant", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorMsg", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorMsgField", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorQueue", LOG_LEVEL_ALL);
@@ -131,7 +131,7 @@ McpttHelper::ConfigureBasicGrpCall (ApplicationContainer& apps, uint32_t usersPe
   callFac.SetTypeId ("ns3::McpttCallMachineGrpBasic");
 
   ObjectFactory floorFac;
-  floorFac.SetTypeId ("ns3::McpttFloorMachineBasic");
+  floorFac.SetTypeId ("ns3::McpttOffNetworkFloorParticipant");
 
   for (uint32_t idx = 0; idx < apps.GetN (); idx++)
     {

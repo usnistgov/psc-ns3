@@ -36,7 +36,7 @@
 #include <ns3/object.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-floor-machine-basic.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg-field.h"
 #include "mcptt-msg.h"
 
@@ -257,9 +257,9 @@ McpttFloorMsg::Serialize (Buffer::Iterator start) const
 }
 
 void
-McpttFloorMsg::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsg::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
   NS_FATAL_ERROR ("Floor message not yet handled.");
 }
@@ -555,11 +555,11 @@ McpttFloorMsgRequest::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackI
 }
 
 void
-McpttFloorMsgRequest::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgRequest::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  floorMachine.ReceiveFloorRequest (*this);
+  floorMsgSink.ReceiveFloorRequest (*this);
 }
 
 McpttFloorMsgFieldIndic
@@ -876,11 +876,11 @@ McpttFloorMsgGranted::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackI
 }
 
 void
-McpttFloorMsgGranted::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgGranted::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  floorMachine.ReceiveFloorGranted (*this);
+  floorMsgSink.ReceiveFloorGranted (*this);
 }
 
 void
@@ -1169,11 +1169,11 @@ McpttFloorMsgDeny::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo
 }
 
 void
-McpttFloorMsgDeny::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgDeny::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  floorMachine.ReceiveFloorDeny (*this);
+  floorMsgSink.ReceiveFloorDeny (*this);
 }
 
 McpttFloorMsgFieldIndic
@@ -1373,11 +1373,11 @@ McpttFloorMsgRelease::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackI
 }
 
 void
-McpttFloorMsgRelease::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgRelease::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  floorMachine.ReceiveFloorRelease (*this);
+  floorMsgSink.ReceiveFloorRelease (*this);
 }
 
 McpttFloorMsgFieldIndic
@@ -1558,11 +1558,11 @@ McpttFloorMsgRevoke::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackIn
 }
 
 void
-McpttFloorMsgRevoke::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgRevoke::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  //floorMachine.ReceiveFloorRevoke (*this);
+  floorMsgSink.ReceiveFloorRevoke (*this);
 }
 
 McpttFloorMsgFieldIndic
@@ -1744,11 +1744,11 @@ McpttFloorMsgIdle::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo
 }
 
 void
-McpttFloorMsgIdle::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgIdle::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  //floorMachine.ReceiveFloorIdle (*this);
+  floorMsgSink.ReceiveFloorIdle (*this);
 }
 
 McpttFloorMsgFieldIndic
@@ -1960,11 +1960,11 @@ McpttFloorMsgTaken::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInf
 }
 
 void
-McpttFloorMsgTaken::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgTaken::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  floorMachine.ReceiveFloorTaken (*this);
+  floorMsgSink.ReceiveFloorTaken (*this);
 }
 
 McpttFloorMsgFieldIndic
@@ -2182,11 +2182,11 @@ McpttFloorMsgQueuePositionRequest::UpdateTrackInfo (const McpttFloorMsgFieldTrac
 }
 
 void
-McpttFloorMsgQueuePositionRequest::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgQueuePositionRequest::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  //floorMachine.ReceiveFloorQueuePositionRequest (*this);
+  floorMsgSink.ReceiveFloorQueuePositionRequest (*this);
 }
 
 McpttFloorMsgFieldTrackInfo
@@ -2394,11 +2394,11 @@ McpttFloorMsgQueuePositionInfo::UpdateTrackInfo (const McpttFloorMsgFieldTrackIn
 }
 
 void
-McpttFloorMsgQueuePositionInfo::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgQueuePositionInfo::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  floorMachine.ReceiveFloorQueuePositionInfo (*this);
+  floorMsgSink.ReceiveFloorQueuePositionInfo (*this);
 }
 
 McpttFloorMsgFieldUserId
@@ -2626,11 +2626,11 @@ McpttFloorMsgAck::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo)
 }
 
 void
-McpttFloorMsgAck::Visit (McpttFloorMachineBasic& floorMachine) const
+McpttFloorMsgAck::Visit (McpttFloorMsgSink& floorMsgSink) const
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &floorMsgSink);
 
-  //floorMachine.ReceiveFloorAck (*this);
+  floorMsgSink.ReceiveFloorAck (*this);
 }
 
 McpttFloorMsgFieldSource

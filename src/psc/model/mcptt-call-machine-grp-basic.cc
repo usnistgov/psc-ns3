@@ -756,7 +756,7 @@ McpttCallMachineGrpBasic::Stop (void)
   Ptr<McpttTimer> tfg6 = GetTfg6 ();
   Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
   Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " stopped.");
 

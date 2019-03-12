@@ -172,7 +172,7 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
   Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
   McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
   Ptr<UniformRandomVariable> rndCallId = machine.GetRndCallId ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   uint32_t myUserId = machine.GetOwner ()->GetOwner ()->GetUserId ();
   uint32_t callId = rndCallId->GetInteger ();
@@ -230,7 +230,7 @@ McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast (McpttCallMachineGr
   McpttCallMsgFieldUserId theirOrigId = msg.GetOrigId ();
   McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
   McpttCallMsgFieldCallType theirCallType = msg.GetCallType ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   //TODO: Not in standard - should check that received call ID matches no other
   if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ())
@@ -310,7 +310,7 @@ McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast&
 
   McpttCall* call = machine.GetOwner ();
   Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (floorMachine->IsStarted ())
     {
@@ -384,7 +384,7 @@ McpttCallMachineGrpBroadcastStateB2::ReceiveGrpCallBroadcastEnd (McpttCallMachin
   Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
   McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
   McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {
@@ -420,7 +420,7 @@ McpttCallMachineGrpBroadcastStateB2::ReleaseCall (McpttCallMachineGrpBroadcast& 
   McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
   McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
   McpttCallMsgFieldUserId myOrigId = machine.GetOrigId ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (myOrigId.GetId () == myUserId)
     {
@@ -495,7 +495,7 @@ McpttCallMachineGrpBroadcastStateB3::AcceptCall (McpttCallMachineGrpBroadcast& m
   Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
   Ptr<McpttTimer> tfb3 = machine.GetTfb3 ();
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   Ipv4Address grpAddr = mySdp.GetGrpAddr ();
@@ -584,7 +584,7 @@ McpttCallMachineGrpBroadcastStateB4::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast&
   NS_LOG_FUNCTION (this << &machine);
 
   McpttCall* call = machine.GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (floorMachine->IsStarted ())
     {
@@ -636,7 +636,7 @@ McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcastEnd (McpttCallMachin
   Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
   McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
   McpttCallMsgFieldCallId  theirCallId = msg.GetCallId ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {

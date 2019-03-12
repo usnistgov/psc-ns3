@@ -435,7 +435,7 @@ McpttCallMachineGrpBroadcast::Stop (void)
   Ptr<McpttTimer> tfb2 = GetTfb2 ();
   Ptr<McpttTimer> tfb3 = GetTfb3 ();
   Ptr<McpttCall> call = GetOwner ();
-  Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   if (floorMachine->IsStarted ())
     {

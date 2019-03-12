@@ -29,42 +29,97 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_TEST_CASE_H
-#define MCPTT_TEST_CASE_H
-
-#include <ns3/application-container.h>
-#include <ns3/mcptt-ptt-app.h>
+#include <ns3/log.h>
+#include <ns3/object.h>
 #include <ns3/ptr.h>
-#include <ns3/test.h>
+#include <ns3/type-id.h>
 
-#include "mcptt-test-case-config.h"
+#include "mcptt-entity-id.h"
+#include "mcptt-floor-queue.h"
+
+#include "mcptt-floor-msg-sink.h"
 
 namespace ns3 {
 
-class McpttTestCase : public TestCase
-{
-public:
- McpttTestCase (const std::string& name, Ptr<McpttTestCaseConfig>  config);
- virtual Ptr<McpttPttApp> GetApp (uint32_t index = 0);
- virtual Ptr<McpttCallMachine> GetCallMachine (uint32_t index = 0);
- virtual Ptr<McpttFloorParticipant> GetFloorMachine (uint32_t index = 0);
-protected:
- virtual void Configure (void);
- virtual void Execute (void) = 0;
- virtual void Stop (void);
-private:
- virtual void DoRun (void);
-private:
- ApplicationContainer m_clientApps;
- Ptr<McpttTestCaseConfig> m_config;
-protected:
- virtual ApplicationContainer GetClientApps (void) const;
- virtual Ptr<McpttTestCaseConfig> GetConfig (void) const;
- virtual void SetClientApps (const ApplicationContainer& clientApps);
- virtual void SetConfig (Ptr<McpttTestCaseConfig>  config);
-};
+NS_LOG_COMPONENT_DEFINE ("McpttFloorMsgSink");
 
+/** McpttFloorMsgSink - begin **/
+McpttFloorMsgSink::McpttFloorMsgSink (void)
+{
+  NS_LOG_FUNCTION (this);
 }
 
-#endif
+McpttFloorMsgSink::~McpttFloorMsgSink (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+McpttFloorMsgSink::Receive (const McpttFloorMsg& msg)
+{
+}
+
+void
+McpttFloorMsgSink::Receive (const McpttMediaMsg& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorAck (const McpttFloorMsgAck& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveFloorTaken (const McpttFloorMsgTaken& msg)
+{
+}
+
+void
+McpttFloorMsgSink::ReceiveMedia (const McpttMediaMsg& msg)
+{
+}
+
+/** McpttFloorMsgSink - end **/
+
+} // namespace ns3
 

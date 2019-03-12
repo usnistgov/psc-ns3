@@ -35,7 +35,7 @@
 #include <ns3/type-id.h>
 
 #include "mcptt-ptt-app.h"
-#include "mcptt-floor-machine.h"
+#include "mcptt-floor-participant.h"
 #include "mcptt-call-machine-private.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-call-msg-field.h"
