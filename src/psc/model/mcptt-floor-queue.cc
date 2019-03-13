@@ -161,6 +161,29 @@ McpttFloorQueue::IsAtCapacity (void) const
 }
 
 bool
+McpttFloorQueue::Insert (const McpttQueuedUserInfo& user, const uint16_t position)
+{
+  NS_LOG_FUNCTION (this);
+
+  bool found = false;
+  uint16_t count = 1;
+  std::list<McpttQueuedUserInfo>::iterator it = m_users.begin ();
+  while (it != m_users.end () && !found)
+    {
+      if (count == position)
+        {
+          found = true;
+        }
+      else
+        {
+          it++;
+        }
+    }
+
+  return found;
+}
+
+bool
 McpttFloorQueue::IsEnabled (void) const
 {
   bool isEnabled = (m_capacity > 0);

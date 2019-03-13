@@ -213,6 +213,17 @@ McpttTimer::Start (void)
 }
 
 void
+McpttTimer::StartWith (const Time& delay)
+{
+  NS_LOG_FUNCTION (this);
+
+  Time permDelay = GetDelay ();
+  SetDelay (delay);
+  Start ();
+  GetRawTimer ()->SetDelay (permDelay);
+}
+
+void
 McpttTimer::Stop (void)
 {
   NS_LOG_FUNCTION (this);

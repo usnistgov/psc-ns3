@@ -33,7 +33,7 @@
 #include <ns3/type-id.h>
 
 #include "mcptt-call-machine-private.h"
-#include "mcptt-floor-participant.h"
+#include "mcptt-floor-msg-sink.h"
 #include "mcptt-msg.h"
 #include "mcptt-rtp-header.h"
 
@@ -208,7 +208,7 @@ McpttMediaMsg::Visit (McpttCallMachinePrivate& callMachine) const
 }
 
 void
-McpttMediaMsg::Visit (McpttFloorParticipant& floorMachine) const
+McpttMediaMsg::Visit (McpttFloorMsgSink& floorMachine) const
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 

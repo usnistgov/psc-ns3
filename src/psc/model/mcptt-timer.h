@@ -132,6 +132,11 @@ public:
   */
  virtual void Start (void);
  /**
+  * Starts the timer with the given delay but does not preserve the delay.
+  * \param delay The amont of time the timer should run before expiring.
+  */
+ virtual void StartWith (const Time& delay);
+ /**
   * Stops the timer.
   */
  virtual void Stop (void);
