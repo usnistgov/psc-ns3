@@ -29,8 +29,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_ON_NETWORK_FLOOR_ARBITRATOR
-#define MCPTT_ON_NETWORK_FLOOR_ARBITRATOR
+#ifndef MCPTT_ON_NETWORK_FLOOR_ARBITRATOR_H
+#define MCPTT_ON_NETWORK_FLOOR_ARBITRATOR_H
 
 #include <ns3/object.h>
 #include <ns3/packet.h>
@@ -456,5 +456,5 @@ public:
 
 } // namespace ns3
 
-#endif /* MCPTT_ON_NETWORK_FLOOR_ARBITRATOR */
+#endif /* MCPTT_ON_NETWORK_FLOOR_ARBITRATOR_H */
 
