@@ -3638,9 +3638,11 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
+
+  McpttQueuedUserInfo userInfo = McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7));
   
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
-  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
+  ueBMachineQueue->Enqueue (userInfo);
 
   ueAPttAppPusher->NotifyPushed ();
   ueAPttAppPusher->ScheduleRelease (Seconds (2.041));
@@ -4051,9 +4053,11 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
+
+  McpttQueuedUserInfo userInfo = McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7));
   
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
-  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
+  ueBMachineQueue->Enqueue (userInfo);
 
   Simulator::Schedule (Seconds (2.037), &McpttFloorParticipant::ReleaseRequest, ueAMachine);
 
@@ -4685,9 +4689,11 @@ McpttFloorReleaseWhileQueued::Configure (void)
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueBMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
   ueCMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
+
+  McpttQueuedUserInfo userInfo = McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7));
   
   ueBMachineQueue->SetAttribute ("Capacity", UintegerValue (1));
-  ueBMachineQueue->Enqueue (McpttQueuedUserInfo (ueAId, McpttFloorMsgFieldQueuedUserId (ueAId), McpttFloorMsgFieldQueuePositionInfo (1, 7)));
+  ueBMachineQueue->Enqueue (userInfo);
 
   Simulator::Schedule (Seconds (2.037), &McpttFloorParticipant::ReleaseRequest, ueAMachine);
 

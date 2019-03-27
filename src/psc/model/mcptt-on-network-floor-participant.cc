@@ -80,9 +80,9 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_genMedia),
                    MakeBooleanChecker ())
-     .AddAttribute ("ImplicitFloorRequest", "The flag that indicates if the SIP response included an implicit Floor Request.",
+     .AddAttribute ("McImplicitRequest", "The flag that indicates if the SIP response included an implicit Floor Request.",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_implicitFloorRequest),
+                   MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_mcImplicitRequest),
                    MakeBooleanChecker ())
     .AddAttribute ("T100", "The delay to use for timer T100 (Time value)",
                    TimeValue (MilliSeconds (40)),
@@ -121,8 +121,8 @@ McpttOnNetworkFloorParticipant::McpttOnNetworkFloorParticipant (void)
     m_dualFloor (false),
     m_floorGrantedCb (MakeNullCallback<void> ()),
     m_originator (false),
-    m_overriddenWithoutRevoke (false),
-    m_overridingWithoutRevoke (false),
+    m_overridden (false),
+    m_overriding (false),
     m_owner (0),
     m_priority (1),
     m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
@@ -317,9 +317,9 @@ McpttOnNetworkFloorParticipant::IsDualFloor (void) const
 }
 
 bool
-McpttOnNetworkFloorParticipant::IsImplicitFloorRequest (void) const
+McpttOnNetworkFloorParticipant::IsMcImplicitRequest (void) const
 {
-  return m_implicitFloorRequest;
+  return m_mcImplicitRequest;
 }
 
 bool
@@ -329,15 +329,15 @@ McpttOnNetworkFloorParticipant::IsOriginator (void) const
 }
 
 bool
-McpttOnNetworkFloorParticipant::IsOverriddenWithoutRevoke (void) const
+McpttOnNetworkFloorParticipant::IsOverridden (void) const
 {
-  return m_overriddenWithoutRevoke;
+  return m_overridden;
 }
 
 bool
-McpttOnNetworkFloorParticipant::IsOverridingWithoutRevoke (void) const
+McpttOnNetworkFloorParticipant::IsOverriding (void) const
 {
-  return m_overridingWithoutRevoke;
+  return m_overriding;
 }
 
 bool
@@ -855,19 +855,19 @@ McpttOnNetworkFloorParticipant::SetOriginator (const bool& originator)
 }
 
 void
-McpttOnNetworkFloorParticipant::SetOverriddenWithoutRevoke (const bool& overriddenWithoutRevoke)
+McpttOnNetworkFloorParticipant::SetOverridden (const bool& overridden)
 {
-  NS_LOG_FUNCTION (this << overriddenWithoutRevoke);
+  NS_LOG_FUNCTION (this << overridden);
 
-  m_overriddenWithoutRevoke = overriddenWithoutRevoke;
+  m_overridden = overridden;
 }
 
 void
-McpttOnNetworkFloorParticipant::SetOverridingWithoutRevoke (const bool& overridingWithoutRevoke)
+McpttOnNetworkFloorParticipant::SetOverriding (const bool& overriding)
 {
-  NS_LOG_FUNCTION (this << overridingWithoutRevoke);
+  NS_LOG_FUNCTION (this << overriding);
 
-  m_overridingWithoutRevoke = overridingWithoutRevoke;
+  m_overriding = overriding;
 }
 
 void

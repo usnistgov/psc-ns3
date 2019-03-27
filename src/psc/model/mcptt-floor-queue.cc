@@ -116,12 +116,21 @@ McpttFloorQueue::Dequeue (void)
 }
 
 void
-McpttFloorQueue::Enqueue (const McpttQueuedUserInfo& user)
+McpttFloorQueue::Enqueue (McpttQueuedUserInfo& user)
 {
   NS_LOG_FUNCTION (this);
 
-  m_users.push_back (user);
-}
+  uint16_t position = 1;
+  std::list<McpttQueuedUserInfo>::iterator it = m_users.begin ();
+  while (it != m_users.end () && user.GetInfo ().GetPriority () <= it->GetInfo ().GetPriority ())
+    {
+      it++;
+    }
+  McpttFloorMsgFieldQueuePositionInfo queuedInfo = user.GetInfo ();
+  queuedInfo.SetPosition (position);
+  user.SetInfo (queuedInfo);
+  m_users.insert (it, user);
+ }
 
 uint16_t
 McpttFloorQueue::Find (uint32_t userId) const
@@ -158,29 +167,6 @@ McpttFloorQueue::IsAtCapacity (void) const
   bool isAtCapacity = (count >= m_capacity);
 
   return isAtCapacity;
-}
-
-bool
-McpttFloorQueue::Insert (const McpttQueuedUserInfo& user, const uint16_t position)
-{
-  NS_LOG_FUNCTION (this);
-
-  bool found = false;
-  uint16_t count = 1;
-  std::list<McpttQueuedUserInfo>::iterator it = m_users.begin ();
-  while (it != m_users.end () && !found)
-    {
-      if (count == position)
-        {
-          found = true;
-        }
-      else
-        {
-          it++;
-        }
-    }
-
-  return found;
 }
 
 bool

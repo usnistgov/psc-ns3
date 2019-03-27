@@ -38,6 +38,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 
+#include "mcptt-call-control-info.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-msg-sink.h"
@@ -49,6 +50,7 @@ namespace ns3 {
 
 class McpttCall;
 class McpttOnNetworkFloorArbitratorState;
+class McpttOnNetworkFloorTowardsParticipant;
 
 /**
  * \ingroup mcptt
@@ -73,9 +75,15 @@ public:
   */
  virtual ~McpttOnNetworkFloorArbitrator (void);
  /**
-  * Notifies the floor machine that the call has been initialized.
+  * Adds a floor participant interface.
+  * \param participant The interface for the associated participant.
   */
- virtual void CallInitialized (void);
+ virtual void AddParticipant (Ptr<McpttOnNetworkFloorTowardsParticipant> participant);
+ /**
+  * Notifies the floor machine that the call has been initialized.
+  * \param participant The participant that initialized the call.
+  */
+ virtual void CallInitialized (McpttOnNetworkFloorTowardsParticipant& participant);
  /**
   * Notifies the floor machine that the call has been released (part I).
   */
@@ -114,6 +122,12 @@ public:
   */
  virtual uint32_t GetNParticipants (void) const;
  /**
+  * Gets the interface for the associated participant with the given SSRC.
+  * \param ssrc The SSRC of the associated participant.
+  * \return The interface, or 0 if the participant is not found.
+  */
+ virtual Ptr<McpttOnNetworkFloorTowardsParticipant> GetParticipant (const uint32_t ssrc) const;
+ /**
   * Gets the ID of the state.
   * \returns The state ID.
   */
@@ -125,8 +139,9 @@ public:
  virtual uint32_t GetTxSsrc (void) const;
  /**
   * Notifies this machine that an implicit floor request was recieved.
+  * \param participant The participant that initiated the implicit floor request.
   */
- virtual void ImplicitFloorRequest (void);
+ virtual void ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& participant);
  /**
   * Indicates if the audio cut-in is supported for the group.
   * \returns True, if audio cut-in is supported, otherwise false.
@@ -148,15 +163,20 @@ public:
   */
  virtual bool IsDualFloorSupported (void) const;
  /**
-  * Indicates if the SIP response included an implicit floor request.
-  * \returns True, if the implicit floor request was included; otherwise, false.
+  * Indicates whether or not a client is currently premitted to send media.
+  * \returns True, if a client is permitted to send media; otherwise, false.
   */
- virtual bool IsImplicitFloorRequest (void) const;
+ virtual bool IsFloorOccupied (void) const;
  /**
   * Indicates if the "mc_granted" fmtp attribute is negotiated.
   * \returns True, if it has been negotiated.
   */
- virtual bool IsMcGrantedNegotiated (void) const;
+ virtual bool IsMcGranted (void) const;
+ /**
+  * Indicates if the given floor request is a preemptive floor request.
+  * \returns True, if the given floor request is preemptive.
+  */
+ virtual bool IsPreemptive (const McpttFloorMsgRequest& msg) const;
  /**
   * Indicates whether or not the floor machine has been started.
   * \returns True, if the floor machine has been started.
@@ -167,26 +187,6 @@ public:
   * \returns The next sequence number.
   */
  virtual uint16_t NextSeqNum (void);
-  /**
-  * \brief Receives a message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttFloorMsg& msg);
- /**
-  * \brief Receives a message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttMediaMsg& msg);
- /**
-  * Receives a floor acknowledgement message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorAck (const McpttFloorMsgAck& msg);
- /**
-  * Receives Floor Queue Position Request message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg);
  /**
   * Receives a floor release message.
   * \param msg The received message.
@@ -245,11 +245,6 @@ public:
   */
  virtual void SetDelayT7 (const Time& delayT7);
   /**
-  * Sets the delay for timer T8.
-  * \param delayT8 The delay to use.
-  */
- virtual void SetDelayT8 (const Time& delayT8);
-  /**
   * Sets the delay for timer T20.
   * \param delayT20 The delay to use.
   */
@@ -290,24 +285,21 @@ protected:
   */
  virtual void ExpiryOfT7 (void);
  /**
-  * Notifies the floor machine that timer T8 has expired.
-  */
- virtual void ExpiryOfT8 (void);
- /**
   * Notifies the floor machine that timer T20 has expired.
   */
  virtual void ExpiryOfT20 (void);
 private:
  bool m_ackRequired; //!< A flag that indicates if acknowledgement is required.
  bool m_audioCutIn;  //!< The flag that indicates if audio cut-in is configured for the group.
+ Ptr<McpttCallControlInfo> m_callInfo; //!< The call control information.
  Ptr<McpttCounter> m_c7; //!< The counter associated with T7.
  Ptr<McpttCounter> m_c20; //!< The counter associated with T20.
  bool m_dualFloorSupported; //!< A flag that to indicate dual floor indication.
  Ptr<McpttOnNetworkFloorDualControl> m_dualControl; //!< The dual floor control state machine.
- bool m_implicitFloorRequest; //!< The flag that indicates if SIP contains implicit floor request.
- bool m_mcGrantedNegotiated; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
  bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
  McpttCall* m_owner; //!< The client application that owns this floor machine.
+ bool m_mcGranted; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
+ std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
  Ptr<McpttFloorQueue> m_queue; //!< The queue of floor requests.
  uint16_t m_rejectCause; //!< The reject cause to include when revoking the floor.
  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
@@ -323,10 +315,14 @@ private:
  Ptr<McpttTimer> m_t3; //!< The timer T3.
  Ptr<McpttTimer> m_t4; //!< The timer T4.
  Ptr<McpttTimer> m_t7; //!< The timer T7.
- Ptr<McpttTimer> m_t8; //!< The timer T8.
  Ptr<McpttTimer> m_t20; //!< The timer T20.
  Callback<void, const McpttFloorMsg&> m_txCb; //!< The message tranmission call back.
 public:
+ /**
+  * Gets the call control information.
+  * \returns The call control information.
+  */
+ virtual Ptr<McpttCallControlInfo> GetCallInfo (void) const;
  /**
   * Gets the counter C7
   * \returns The counter.
@@ -397,11 +393,6 @@ public:
   * \returns The timer.
   */
  virtual Ptr<McpttTimer> GetT7 (void) const;
- /**
-  * Gets the timer T8.
-  * \returns The timer.
-  */
- virtual Ptr<McpttTimer> GetT8 (void) const;
  /**
   * Gets the timer T20.
   * \returns The timer.

@@ -33,16 +33,17 @@
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
+#include <ns3/pointer.h>
 #include <ns3/simulator.h>
 #include <ns3/type-id.h>
 
 #include "mcptt-counter.h"
-#include "mcptt-call-machine.h"
-#include "mcptt-call-type-machine.h"
+#include "mcptt-call-control-info.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-msg-sink.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator-state.h"
+#include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
 
@@ -69,6 +70,10 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_audioCutIn),
                    MakeBooleanChecker ())
+    .AddAttribute ("CallInfo", "The call information.",
+                   PointerValue (0),
+                   MakePointerAccessor (&McpttOnNetworkFloorArbitrator::m_callInfo),
+                   MakePointerChecker<McpttCallControlInfo> ())
     .AddAttribute ("C7", "The initial limit of counter C7.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::SetLimitC7),
@@ -77,17 +82,13 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    UintegerValue (3),
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::SetLimitC20),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("DualFloor", "The flag that indicates if dual floor control is supported.",
+    .AddAttribute ("DualFloorSupported", "The flag that indicates if dual floor control is supported.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_dualFloorSupported),
                    MakeBooleanChecker ())
-     .AddAttribute ("ImplicitFloorRequest", "The flag that indicates if the SIP response included an implicit Floor Request.",
+    .AddAttribute ("McGranted", "",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_implicitFloorRequest),
-                   MakeBooleanChecker ())
-     .AddAttribute ("McGrantedNegotiated", "The flag that indicates if the 'mc_granted' fmtp attribute is negotiated.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_mcGrantedNegotiated),
+                   MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_mcGranted),
                    MakeBooleanChecker ())
     .AddAttribute ("T1", "The delay to use for timer T1 (Time value)",
                    TimeValue (Seconds (4)),
@@ -109,10 +110,6 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&McpttOnNetworkFloorArbitrator::SetDelayT7),
                    MakeTimeChecker ())
-    .AddAttribute ("T8", "The delay to use for timer T8 (Time value)",
-                   TimeValue (Seconds (1)),
-                   MakeTimeAccessor (&McpttOnNetworkFloorArbitrator::SetDelayT8),
-                   MakeTimeChecker ())
     .AddAttribute ("T20", "The delay to use for timer T20 (Time value)",
                    TimeValue (Seconds (1)),
                    MakeTimeAccessor (&McpttOnNetworkFloorArbitrator::SetDelayT20),
@@ -133,6 +130,7 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_dualFloorSupported (false),
     m_dualControl (CreateObject<McpttOnNetworkFloorDualControl> ()),
     m_owner (0),
+    m_participants (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >()),
     m_queue (CreateObject<McpttFloorQueue> ()),
     m_rejectCause (0),
     m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
@@ -147,7 +145,6 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_t3 (CreateObject<McpttTimer> (McpttEntityId (3, "T3"))),
     m_t4 (CreateObject<McpttTimer> (McpttEntityId (4, "T4"))),
     m_t7 (CreateObject<McpttTimer> (McpttEntityId (7, "T7"))),
-    m_t8 (CreateObject<McpttTimer> (McpttEntityId (8, "T8"))),
     m_t20 (CreateObject<McpttTimer> (McpttEntityId (20, "T20"))),
     m_txCb (MakeNullCallback<void, const McpttFloorMsg&> ())
 {
@@ -160,7 +157,6 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
   m_t3->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT3, this);
   m_t4->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT4, this);
   m_t7->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT7, this);
-  m_t8->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT8, this);
   m_t20->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT20, this);
 }
 
@@ -170,13 +166,22 @@ McpttOnNetworkFloorArbitrator::~McpttOnNetworkFloorArbitrator (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::CallInitialized (void)
+McpttOnNetworkFloorArbitrator::AddParticipant (Ptr<McpttOnNetworkFloorTowardsParticipant> participant)
+{
+  NS_LOG_FUNCTION (this);
+
+  participant->SetOwner (this);
+  m_participants.push_back (participant);
+}
+
+void
+McpttOnNetworkFloorArbitrator::CallInitialized (McpttOnNetworkFloorTowardsParticipant& participant)
 {
   NS_LOG_FUNCTION (this);
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator " << GetOwner ()->GetOwner ()->GetUserId () << "'s call initialized.");
 
-  m_state->CallInitialized (*this);
+  m_state->CallInitialized (*this, participant);
 }
 
 void
@@ -291,7 +296,26 @@ McpttOnNetworkFloorArbitrator::GetInstanceTypeId (void) const
 uint32_t
 McpttOnNetworkFloorArbitrator::GetNParticipants (void) const
 {
-  return 0;
+  return m_participants.size ();
+}
+
+Ptr<McpttOnNetworkFloorTowardsParticipant>
+McpttOnNetworkFloorArbitrator::GetParticipant (const uint32_t ssrc) const
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
+  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
+
+  while (participant == 0 && it != m_participants.end ())
+    {
+      if ((*it)->GetStoredSsrc () == ssrc)
+        {
+          participant = *it;
+        }
+    }
+
+  return participant;
 }
 
 McpttEntityId
@@ -311,13 +335,13 @@ McpttOnNetworkFloorArbitrator::GetTxSsrc () const
 }
 
 void
-McpttOnNetworkFloorArbitrator::ImplicitFloorRequest (void)
+McpttOnNetworkFloorArbitrator::ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& participant)
 {
   NS_LOG_FUNCTION (this);
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorArbitrator (" << this << ") taking implicit floor request.");
 
-  m_state->ImplicitFloorRequest (*this);
+  m_state->ImplicitFloorRequest (*this, participant);
 }
 
 bool
@@ -346,15 +370,79 @@ McpttOnNetworkFloorArbitrator::IsDualFloorSupported (void) const
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsImplicitFloorRequest (void) const
+McpttOnNetworkFloorArbitrator::IsFloorOccupied (void) const
 {
-  return m_implicitFloorRequest;
+  return m_state->IsFloorOccupied (*this);
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsMcGrantedNegotiated (void) const
+McpttOnNetworkFloorArbitrator::IsMcGranted (void) const
 {
-  return m_mcGrantedNegotiated;
+  return m_mcGranted;
+}
+
+bool
+McpttOnNetworkFloorArbitrator::IsPreemptive (const McpttFloorMsgRequest& msg) const
+{
+  bool preemptive = false;
+
+  //if (!GetParticipant (msg.GetSsrc ())->IsReceiveOnly ())
+    //{
+      if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+        {
+          if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+            {
+              if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
+                {
+                  preemptive = true;
+                }
+            }
+          else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
+                  || GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
+            {
+              preemptive = false;
+            }
+        }
+      else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+        {
+          if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+            {
+              preemptive = true;
+            }
+          else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+            {
+              if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
+                {
+                  preemptive = true;
+                }
+            }
+          else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
+            {
+              preemptive = false;
+            }
+        }
+      else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
+        {
+          if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL)
+              || GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+            {
+              preemptive = true;
+            }
+          else
+            {
+              if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
+                {
+                  preemptive = true;
+                }
+            }
+        }
+      else
+        {
+          NS_FATAL_ERROR ("No call type indicated.");
+        }
+    //}
+
+  return preemptive;
 }
 
 bool
@@ -373,56 +461,6 @@ McpttOnNetworkFloorArbitrator::NextSeqNum (void)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator next sequence number = " << (uint32_t)m_seqNum << ".");
 
   return m_seqNum;
-}
-
-void
-McpttOnNetworkFloorArbitrator::Receive (const McpttFloorMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  msg.Visit (*this);
-}
-
-void
-McpttOnNetworkFloorArbitrator::Receive (const McpttMediaMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  msg.Visit (*this);
-}
-
-void
-McpttOnNetworkFloorArbitrator::ReceiveFloorAck (const McpttFloorMsgAck& msg)
-{
-  NS_LOG_FUNCTION (this << msg);
-
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator " << userId << " received " << msg.GetInstanceTypeId () << ".");
-
-  m_state->ReceiveFloorAck (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
-}
-
-void
-McpttOnNetworkFloorArbitrator::ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg)
-{
-  NS_LOG_FUNCTION (this << msg);
-
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator " << userId << " received " << msg.GetInstanceTypeId () << ".");
-
-  m_state->ReceiveFloorQueuePositionRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -543,14 +581,6 @@ McpttOnNetworkFloorArbitrator::SetDelayT7 (const Time& delayT7)
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetDelayT8 (const Time& delayT8)
-{
-  NS_LOG_FUNCTION (this << delayT8);
-
-  GetT8 ()->SetDelay (delayT8);
-}
-
-void
 McpttOnNetworkFloorArbitrator::SetDelayT20 (const Time& delayT20)
 {
   NS_LOG_FUNCTION (this << delayT20);
@@ -588,7 +618,6 @@ McpttOnNetworkFloorArbitrator::DoDispose (void)
   m_t3 = 0;
   m_t4 = 0;
   m_t7 = 0;
-  m_t8 = 0;
   m_t20 = 0;
 }
 
@@ -643,16 +672,6 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT7 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT8 (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorArbitrator T8 expired.");
-
-  m_state->ExpiryOfT8 (*this);
-}
-
-void
 McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
 {
   NS_LOG_FUNCTION (this);
@@ -660,6 +679,14 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorArbitrator T20 expired.");
 
   m_state->ExpiryOfT20 (*this);
+}
+
+Ptr<McpttCallControlInfo>
+McpttOnNetworkFloorArbitrator::GetCallInfo (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_callInfo;
 }
 
 Ptr<McpttCounter>
@@ -772,14 +799,6 @@ McpttOnNetworkFloorArbitrator::GetT7 (void) const
   NS_LOG_FUNCTION (this);
 
   return m_t7;
-}
-
-Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT8 (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  return m_t8;
 }
 
 Ptr<McpttTimer>

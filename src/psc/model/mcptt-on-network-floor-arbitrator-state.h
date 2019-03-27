@@ -44,6 +44,7 @@
 namespace ns3 {
 
 class McpttOnNetworkFloorArbitrator;
+class McpttOnNetworkFloorTowardsParticipant;
 
 /**
  * \ingroup mcptt
@@ -87,8 +88,9 @@ public:
  /**
   * Notifies the floor machine state that the call was initialized.
   * \param machine The FSM.
+  * \param participant The participant that initiated the call.
   */
- virtual void CallInitialized (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
  /**
   * Indicates to the floor control server that the call has been released (part I).
   * \param machine The FSM.
@@ -135,11 +137,6 @@ public:
   */
  virtual void ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const;
  /**
-  * Notifies the floor machine state that timer T8 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT8 (McpttOnNetworkFloorArbitrator& machine) const;
- /**
   * Notifies the floor machine state that timer T20 has expired.
   * \param machine The FSM.
   */
@@ -152,20 +149,14 @@ public:
  /**
   * Notifies this machine state that an implicit floor request has been received.
   * \param machine The FSM.
+  * \param participant The participant that initiated the implicit floor request.
   */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
  /**
-  * Receives a floor ack message.
-  * \param machine The FSM.
-  * \param msg The received message.
+  * Indicates if a client is permitted to send media.
+  * \returns True, if a client is permited; owtherwise, false.
   */
- virtual void ReceiveFloorAck (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgAck& msg) const;
- /**
-  * Receives Floor Queue Position Request message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorQueuePositionRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgQueuePositionRequest& msg) const;
+ virtual bool IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
@@ -240,8 +231,9 @@ public:
  /**
   * Notifies the floor machine state that the call was initialized.
   * \param machine The FSM.
+  * \param participant The participant that initiated the call.
   */
- virtual void CallInitialized (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
 };
 /**
  * \ingroup mcptt
@@ -297,8 +289,9 @@ public:
  /**
   * Notifies this machine state that an implicit floor request has been received.
   * \param machine The FSM.
+  * \param participant The participant that initiated the implicit floor request.
   */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
 };
 /**
  * \ingroup mcptt
@@ -330,6 +323,11 @@ public:
   * \returns The ID of the state.
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
+ /**
+  * Indicates if a client is permitted to send media.
+  * \returns True, if a client is permited; owtherwise, false.
+  */
+ virtual bool IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const;
  /**
   * Notifies the machine state that it has been selected.
   * \param machine The FSM.
@@ -376,8 +374,9 @@ public:
  /**
   * Notifies this machine state that an implicit floor request has been received.
   * \param machine The FSM.
+  * \param participant The participant that initiated the implicit floor request.
   */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
 };
 /**
  * \ingroup mcptt
@@ -409,6 +408,11 @@ public:
   * \returns The ID of the state.
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
+ /**
+  * Indicates if a client is permitted to send media.
+  * \returns True, if a client is permited; owtherwise, false.
+  */
+ virtual bool IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const;
  /**
   * Enters the given state.
   * \param machine The FSM.

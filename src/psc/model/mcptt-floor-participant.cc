@@ -75,6 +75,7 @@ McpttFloorParticipantNull::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::McpttFloorParticipantNull")
     .SetParent<Object> ()
+    .AddConstructor<McpttFloorParticipantNull> ()
   ;
 
   return tid;

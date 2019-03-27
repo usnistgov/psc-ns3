@@ -301,7 +301,7 @@ McpttOnNetworkFloorParticipantStateStartStop::CallInitialized (McpttOnNetworkFlo
 
   if (machine.IsOriginator ())
     {
-      if (machine.IsImplicitFloorRequest ())
+      if (!machine.IsMcImplicitRequest ())
         {
           machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
         }
@@ -660,7 +660,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorGranted (McpttOnN
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
-      machine.SetOverridingWithoutRevoke (true);
+      machine.SetOverriding (true);
       machine.SetDualFloor (true);
     }
 
@@ -824,8 +824,8 @@ McpttOnNetworkFloorParticipantStateHasPermission::PttRelease (McpttOnNetworkFloo
     }
   
   machine.Send (releaseMsg);
-  machine.SetOverridingWithoutRevoke (false);
-  machine.SetOverriddenWithoutRevoke (false);
+  machine.SetOverriding (false);
+  machine.SetOverridden (false);
   machine.SetDualFloor (false);
   machine.GetC100 ()->Reset ();
   machine.GetT100 ()->Start ();
@@ -876,14 +876,14 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveMedia (McpttOnNetworkFl
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine.IsOverridingWithoutRevoke ())
+  if (machine.IsOverriding ())
     {
       //TODO: Request MCPTT client, based on the configuration to either, continue
       //      rendering or stop the rendering and start storing the recieved RTP
       //      media packets.
     }
 
-  if (machine.IsOverriddenWithoutRevoke ())
+  if (machine.IsOverridden ())
     {
       //TODO: Shall request the MCPTT client to render the recieved RTP media
       //      packets.
@@ -898,7 +898,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorIdle (McpttOnNetwo
 
   //Check if duall floor bit is set.
 
-  if (machine.IsOverridingWithoutRevoke ())
+  if (machine.IsOverriding ())
     {
       if (msg.GetSubtype () == McpttFloorMsgIdle::SUBTYPE_ACK)
         {
@@ -907,11 +907,11 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorIdle (McpttOnNetwo
           ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgIdle::SUBTYPE));
           ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
           machine.Send (ackMsg);
-          machine.SetOverridingWithoutRevoke (false);
+          machine.SetOverriding (false);
         }
     }
   else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR)
-      && machine.IsOverriddenWithoutRevoke ())
+      && machine.IsOverridden ())
     {
       if (msg.GetSubtype () == McpttFloorMsgIdle::SUBTYPE_ACK)
         {
@@ -920,7 +920,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorIdle (McpttOnNetwo
           ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgIdle::SUBTYPE));
           ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
           machine.Send (ackMsg);
-          machine.SetOverriddenWithoutRevoke (false);
+          machine.SetOverridden (false);
         }
     }
 }
@@ -933,7 +933,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorTaken (McpttOnNetw
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
       //TODO: shall inform user that the call is overriden without revoke.
-      machine.SetOverriddenWithoutRevoke (true);
+      machine.SetOverridden (true);
     }
 }
 /** McpttOnNetworkFloorParticipantStateHasPermission - end **/

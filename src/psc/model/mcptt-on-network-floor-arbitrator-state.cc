@@ -37,6 +37,7 @@
 #include "mcptt-call-msg-field.h"
 #include "mcptt-entity-id.h"
 #include "mcptt-on-network-floor-arbitrator.h"
+#include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-media-src.h"
@@ -55,7 +56,7 @@ McpttOnNetworkFloorArbitratorState::~McpttOnNetworkFloorArbitratorState (void)
 }
 
 void
-McpttOnNetworkFloorArbitratorState::CallInitialized (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -111,14 +112,6 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT7 (McpttOnNetworkFloorArbitrator& m
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT8 (McpttOnNetworkFloorArbitrator& machine) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T8."); 
-}
-
-void
 McpttOnNetworkFloorArbitratorState::ExpiryOfT20 (McpttOnNetworkFloorArbitrator& machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
@@ -132,20 +125,12 @@ McpttOnNetworkFloorArbitratorState::GetInstanceStateId (void) const
   return McpttEntityId ();
 }
 
-void
-McpttOnNetworkFloorArbitratorState::ReceiveFloorAck (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgAck& msg) const
+bool
+McpttOnNetworkFloorArbitratorState::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
-}
-
-void
-McpttOnNetworkFloorArbitratorState::ReceiveFloorQueuePositionRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgQueuePositionRequest& msg) const
-{
-  NS_LOG_FUNCTION (this << &machine << msg);
-
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  return false;
 }
 
 void
@@ -206,7 +191,7 @@ McpttOnNetworkFloorArbitratorState::CallRelease2 (McpttOnNetworkFloorArbitrator&
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -266,7 +251,7 @@ McpttOnNetworkFloorArbitratorStateStartStop::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -278,22 +263,19 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloo
   //TODO: Wait for the 'basic floor control operation towards the floor
   //      participant' to be initialized.
 
-  //if (machine.IsTemporaryGroupSession ())
-    //{
-      //TODO: Still need the following sections implemented for the 'G: Initialising' state
-      //        - 6.3.4.8.3 Receiving a floor request from a constituent MCPTT group (R: mcptt-floor-request)
-      //        - 6.3.4.8.4 All final SIP responses received (R: final SIP responses)
-      //McpttOnNetworkFloorArbitratorStateInitialising::GetInstance ()->Enter (machine);
-      NS_ABORT_MSG ("State 'G: Initialising' not fully supported.");
-    //}
-  //else
-    //{
-      if (!machine.IsMcGrantedNegotiated ())
+  if (machine.GetCallInfo ()->IsTemporaryGroup ())
+    {
+      McpttOnNetworkFloorArbitratorStateInitialising::GetInstance ()->Enter (machine);
+    }
+  else
+    {
+      if (!machine.IsMcGranted ())
         {
-          if (machine.IsImplicitFloorRequest ())
+          if (participant.IsMcImplicitRequest ())
             {
-              //TODO: Get floor request message (from SIP INVITE?)
               McpttFloorMsgRequest msg;
+              msg.SetSsrc (participant.GetStoredSsrc ());
+              msg.SetPriority (McpttFloorMsgFieldPriority (participant.GetStoredPriority ()));
               McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->ReceiveFloorRequest (machine, msg);
             }
           else
@@ -303,10 +285,13 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloo
         }
       else
         {
-          //TODO: Set need attributes (SSRC and Priority?)
+          //TODO: Not in standard - set needed attributes (SSRC, Priority, and Track Info)
+          machine.SetStoredSsrc (participant.GetStoredSsrc ());
+          machine.SetStoredPriority (participant.GetStoredPriority ());
+          machine.SetTrackInfo (participant.GetTrackInfo ());
           McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
         }
-    //}
+    }
 }
 /** McpttOnNetworkFloorArbitratorStateStartStop - end **/
 
@@ -400,8 +385,7 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (McpttOnNetworkFloor
   NS_LOG_FUNCTION (this << &machine << msg);
 
   bool isOnlyParticipant = machine.GetNParticipants () == 1;
-  //bool isRxOnly = machine.GetParticipant (msg.GetUserId ().GetUserId ()).IsReceiveOnly ();
-  bool isRxOnly = false;
+  bool isRxOnly = machine.GetParticipant (msg.GetUserId ().GetUserId ())->IsReceiveOnly ();
 
   if (isOnlyParticipant == true
       || isRxOnly == true)
@@ -462,7 +446,7 @@ McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT4 (McpttOnNetworkFloorArbitrato
 }
 
 void
-McpttOnNetworkFloorArbitratorStateIdle::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateIdle::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -471,15 +455,13 @@ McpttOnNetworkFloorArbitratorStateIdle::ImplicitFloorRequest (McpttOnNetworkFloo
       McpttFloorMsgDeny denyMsg;
       denyMsg.SetSsrc (machine.GetTxSsrc ());
       denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
+      machine.SendTo (denyMsg, participant.GetStoredSsrc ());
     }
   else
     {
-      //TODO: Where to get information of who the implicit request came from? 
-      McpttFloorMsgRequest msg;
-      machine.GetT4 ()->Stop ();
       machine.GetT7 ()->Stop ();
-      machine.SetStoredSsrc (msg.GetSsrc ());
-      machine.SetStoredPriority (msg.GetPriority ().GetPriority ());
+      machine.SetStoredSsrc (participant.GetStoredSsrc ());
+      machine.SetStoredPriority (participant.GetStoredPriority ());
       McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
     }
 }
@@ -516,6 +498,14 @@ McpttEntityId
 McpttOnNetworkFloorArbitratorStateTaken::GetInstanceStateId (void) const
 {
   return McpttOnNetworkFloorArbitratorStateTaken::GetStateId ();
+}
+
+bool
+McpttOnNetworkFloorArbitratorStateTaken::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+
+  return true;
 }
 
 void
@@ -638,13 +628,6 @@ void
 McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
-  bool preemptive = false;
-
-  //TODO: Realize effective priority based on specified parameters
-  if (msg.GetPriority ().GetPriority () > machine.GetStoredPriority ())
-    {
-      preemptive = true;
-    }
 
   if (msg.GetSsrc () == machine.GetStoredSsrc ())
     {
@@ -655,7 +638,7 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (McpttOnNetworkFloo
       grantedMsg.UpdateTrackInfo (msg.GetTrackInfo ());
       machine.SendTo (grantedMsg, machine.GetStoredSsrc ());
     }
-  else if (preemptive == false)
+  else if (machine.IsPreemptive (msg) == true)
     {
       if (machine.IsDualFloorSupported ())
         {
@@ -665,7 +648,7 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (McpttOnNetworkFloo
         {
           if (machine.GetT1 ()->IsRunning ())
             {
-          machine.GetT1 ()->Stop ();
+              machine.GetT1 ()->Stop ();
             }
 
           if (machine.GetT20 ()->IsRunning ())
@@ -678,10 +661,14 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (McpttOnNetworkFloo
           McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ()->Enter (machine);
 
           if (machine.GetQueue ()->IsEnabled ())
-            {
+            { 
+              McpttFloorMsgFieldQueuedUserId queuedUserId;
+              queuedUserId.SetUserId (msg.GetSsrc ());
               McpttFloorMsgFieldQueuePositionInfo queueInfo (0, msg.GetPriority ().GetPriority ());
+              McpttQueuedUserInfo userInfo (msg.GetSsrc (), queuedUserId, queueInfo);
+ 
               machine.GetQueue ()->Pull (msg.GetSsrc ());
-              machine.GetQueue ()->Insert (McpttQueuedUserInfo (msg.GetSsrc (), McpttFloorMsgFieldQueuedUserId (msg.GetSsrc ()), queueInfo), 0);
+              machine.GetQueue ()->Enqueue (userInfo);
           
               McpttFloorMsgQueuePositionInfo queuedMsg;
               queuedMsg.SetSsrc (machine.GetTxSsrc ());
@@ -721,7 +708,7 @@ McpttOnNetworkFloorArbitratorStateTaken::ClientRelease (McpttOnNetworkFloorArbit
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -741,17 +728,19 @@ McpttOnNetworkFloorArbitratorStateTaken::ImplicitFloorRequest (McpttOnNetworkFlo
 
   if (machine.GetQueue ()->IsEnabled ())
     {
-      //TODO: Where to get information for implicit floor request?
-      McpttFloorMsgRequest msg;
-      McpttFloorMsgFieldQueuePositionInfo queueInfo (0, msg.GetPriority ().GetPriority ());
-      machine.GetQueue ()->Pull (msg.GetSsrc ());
-      machine.GetQueue ()->Insert (McpttQueuedUserInfo (msg.GetSsrc (), McpttFloorMsgFieldQueuedUserId (msg.GetSsrc ()), queueInfo), 0);
-          
+      McpttFloorMsgFieldQueuedUserId queuedUserId;
+      queuedUserId.SetUserId (participant.GetStoredSsrc ());
+      McpttFloorMsgFieldQueuePositionInfo queueInfo (0, participant.GetStoredPriority ());
+      McpttQueuedUserInfo userInfo (participant.GetStoredSsrc (), queuedUserId, queueInfo);
+ 
+      machine.GetQueue ()->Pull (participant.GetStoredSsrc ());
+      machine.GetQueue ()->Enqueue (userInfo);
+ 
       McpttFloorMsgQueuePositionInfo queuedMsg;
       queuedMsg.SetSsrc (machine.GetTxSsrc ());
       queuedMsg.SetQueuePositionInfo (queueInfo);
       queuedMsg.SetIndicator (machine.GetIndicator ());
-      machine.SendTo (queuedMsg, msg.GetSsrc ());
+      machine.SendTo (queuedMsg, participant.GetStoredSsrc ());
     }
 }
 /** McpttOnNetworkFloorArbitratorStateTaken - end **/
@@ -787,6 +776,14 @@ McpttEntityId
 McpttOnNetworkFloorArbitratorStateRevoke::GetInstanceStateId (void) const
 {
   return McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ();
+}
+
+bool
+McpttOnNetworkFloorArbitratorStateRevoke::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+
+  return true;
 }
 
 void
@@ -941,7 +938,12 @@ McpttOnNetworkFloorArbitratorStateInitialising::Enter (McpttOnNetworkFloorArbitr
   NS_LOG_FUNCTION (this << &machine);
 
   machine.ChangeState (McpttOnNetworkFloorArbitratorStateInitialising::GetInstance ());
-}
+
+  NS_ABORT_MSG ("'G: Floor Initialising' state not fully supported");
+  //TODO: Still need the following sections implemented for the 'G: Initialising' state
+  //        - 6.3.4.8.3 Receiving a floor request from a constituent MCPTT group (R: mcptt-floor-request)
+  //        - 6.3.4.8.4 All final SIP responses received (R: final SIP responses)
+ }
 
 } //namespace ns3
 

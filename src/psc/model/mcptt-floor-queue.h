@@ -93,7 +93,7 @@ public:
   * Adds a user to the queue.
   * \param user The user to queue.
   */
- virtual void Enqueue (const McpttQueuedUserInfo& user);
+ virtual void Enqueue (McpttQueuedUserInfo& user);
  /**
   * Finds the user with the given ID in the queue.
   * \param userId The user ID.
@@ -110,13 +110,6 @@ public:
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Inserts a user to into the queue.
-  * \param user The user to insert.
-  * \param position The position (1 indicates first in the queue).
-  * \returns True, if the user was inserted successfully; otherwise, false.
-  */
- virtual bool Insert (const McpttQueuedUserInfo& user, const uint16_t position);
  /**
   * Indicates whether or not the queue is full.
   * \returns True, if the queue is full.

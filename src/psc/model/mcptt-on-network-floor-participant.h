@@ -140,7 +140,7 @@ public:
   * Indicates if the SIP response included an implicit floor request.
   * \returns True, if the implicit floor request was included; otherwise, false.
   */
- virtual bool IsImplicitFloorRequest (void) const;
+ virtual bool IsMcImplicitRequest (void) const;
  /**
   * Indicates whether or not this participant is the origninator.
   * \returns True, if this participant is the orignator, or false otherwise.
@@ -150,12 +150,12 @@ public:
   * Indicates whether or not this participant is overridden without revoke.
   * \returns True, if this participant is overridden without revoke, or false otherwise.
   */
- virtual bool IsOverriddenWithoutRevoke (void) const;
+ virtual bool IsOverridden (void) const;
  /**
   * Indicates whether or not this participant is overriding without revoke.
   * \returns True, if this participant is overriding without revoke, or false otherwise.
   */
- virtual bool IsOverridingWithoutRevoke (void) const;
+ virtual bool IsOverriding (void) const;
  /**
   * Indicates whether or not the floor machine has been started.
   * \returns True, if the floor machine has been started.
@@ -323,10 +323,10 @@ private:
  bool m_dualFloor; //!< A flag that to indicate dual floor indication.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  bool m_genMedia;  //!< The flag that indicates if media should be generated.
- bool m_implicitFloorRequest; //!< The flag that indicates if SIP contains implicit floor request.
+ bool m_mcImplicitRequest; //!< The flag that indicates if SIP contains implicit floor request.
  bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
- bool m_overriddenWithoutRevoke; //!< A flag that indicates whether the user is overridden without revoke.
- bool m_overridingWithoutRevoke; //!< A flag that indicates whether the user is overriding without revoke.
+ bool m_overridden; //!< A flag that indicates whether the user is overridden without revoke.
+ bool m_overriding; //!< A flag that indicates whether the user is overriding without revoke.
  McpttCall* m_owner; //!< The client application that owns this floor machine.
  uint8_t m_priority; //!< The priority of this floor machine.
  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
@@ -413,14 +413,14 @@ public:
  virtual void SetOriginator (const bool& originator);
  /**
   * Sets the flag that indicates if the participant is overridden without revoke.
-  * \param overiddenWithoutRevoke The flag.
+  * \param overidden The flag.
   */
- virtual void SetOverriddenWithoutRevoke (const bool& overriddenWithoutRevoke);
+ virtual void SetOverridden (const bool& overridden);
  /**
   * Sets the flag that indicates if the participant is overriding without revoke.
-  * \param overridingWithoutRevoke The flag.
+  * \param overriding The flag.
   */
- virtual void SetOverridingWithoutRevoke (const bool& overridingWithoutRevoke);
+ virtual void SetOverriding (const bool& overriding);
  /**
   * Sets the owner of the floor machine.
   * \param owner The owner.
