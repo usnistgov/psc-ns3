@@ -657,6 +657,8 @@ void
 McpttOnNetworkFloorParticipant::Start (void)
 {
   NS_LOG_FUNCTION (this);
+
+  CallInitialized ();
 }
 
 void

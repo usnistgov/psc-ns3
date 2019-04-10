@@ -355,6 +355,7 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (McpttOnNetworkFloorArbitrator& ma
           machine.GetC7 ()->Reset ();
           machine.GetT7 ()->Start ();
           machine.GetT4 ()->Start ();
+          machine.ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
         }
     }
   else if (machine.GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
@@ -385,7 +386,7 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (McpttOnNetworkFloor
   NS_LOG_FUNCTION (this << &machine << msg);
 
   bool isOnlyParticipant = machine.GetNParticipants () == 1;
-  bool isRxOnly = machine.GetParticipant (msg.GetUserId ().GetUserId ())->IsReceiveOnly ();
+  bool isRxOnly = machine.GetParticipant (msg.GetSsrc ())->IsReceiveOnly ();
 
   if (isOnlyParticipant == true
       || isRxOnly == true)
@@ -401,7 +402,7 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (McpttOnNetworkFloor
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_5));
         }
       denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      machine.SendTo (denyMsg, msg.GetUserId ().GetUserId ());
+      machine.SendTo (denyMsg, msg.GetSsrc ());
     }
   else
     {
@@ -529,7 +530,7 @@ McpttOnNetworkFloorArbitratorStateTaken::Enter (McpttOnNetworkFloorArbitrator& m
   takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetStoredSsrc ()));
   takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
 
-  if (machine.GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  if (machine.GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
       takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (0));
     }

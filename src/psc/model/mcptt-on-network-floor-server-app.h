@@ -29,68 +29,87 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_CALL_CONTROL_INFO_H
-#define MCPTT_CALL_CONTROL_INFO_H
+#ifndef MCPTT_ON_NETWORK_FLOOR_SERVER_APP_H
+#define MCPTT_ON_NETWORK_FLOOR_SERVER_APP_H
 
+#include <vector>
+
+#include <ns3/application.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
+#include <ns3/vector.h>
 
 namespace ns3 {
+
+class McpttOnNetworkFloorArbitrator;
 
 /**
  * \ingroup mcptt
  *
- * This class is used to access call control information
+ * This class represents the MCPTT floor control application.
  */
-class McpttCallControlInfo : public Object
+class McpttOnNetworkFloorServerApp : public Application
 {
 public:
  /**
-  * Gets the type ID of the  class.
-  * \returns The type ID.
+  * Get the type ID.
+  * \return the object TypeId
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttCallControlInfo class.
+  * Creates an instance of the McpttPtt class.
   */
-  McpttCallControlInfo (void);
+ McpttOnNetworkFloorServerApp (void);
  /**
-  * \brief The destructor of the McpttCallControlInfo class.
+  * The destructor of the McpttOnNetworkFloorServerApp class.
   */
- virtual ~McpttCallControlInfo (void);
+ virtual ~McpttOnNetworkFloorServerApp (void);
  /**
-  * Gets the type ID of this McpttCallControlInfo instance.
+  * Gets the type ID fo this McpttOnNetworkFloorServerApp instance.
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
+protected:
  /**
-  * Gets the ID of the call.
-  * \returns The ID.
+  * Disposes of the McpttOnNetworkFloorServerApp instance.
   */
- virtual uint16_t GetCallId (void) const;
+ virtual void DoDispose (void);
  /**
-  * Gets the call type ID of the call.
-  * \returns the call type ID.
+  * Starts the McpttOnNetworkFloorServerApp application.
   */
- virtual uint8_t GetCallTypeId (void) const;
+ virtual void StartApplication (void);
  /**
-  * Indicates if the call is configured for ambient listening.
-  * \returns True, if the call is configured for ambient listening; othwerise, false.
+  * Stops the McpttOnNetworkFloorServerApp application.
   */
- virtual bool IsAmbientListening (void) const;
- /**
-  * Indicates if the call is configured for a temporary group session.
-  * \returns True, if the call is configured for a temporary group session; false, otherwise.
-  */
- virtual bool IsTemporaryGroup (void) const;
+ virtual void StopApplication (void);
 private:
- bool m_ambientListening; //!< The flag that indicates if the call is configured for ambient listening.
- uint16_t m_callId; //!< The call ID of the call.
- uint8_t m_callTypeId; //!< The call type ID of the call.
- bool m_temporaryGroup; //!< The flag that indicates if the call is configured for a temporary group.
+ Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The arbitrator.
+ Ipv4Address m_localAddress; //!< The local IP address.
+public:
+ /**
+  * Gets the arbitrator.
+  * \returns The arbitrator.
+  */
+ virtual Ptr<McpttOnNetworkFloorArbitrator> GetArbitrator (void) const;
+ /**
+  * Gets the address of the host.
+  * \returns The address.
+  */
+ virtual Ipv4Address GetLocalAddress (void) const;
+ /**
+  * Sets the arbitrator.
+  * \param arbitrator The arbitrator.
+  */
+ virtual void SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrator);
+ /**
+  * Sets the address of the host.
+  * \param localAddress The address.
+  */
+ virtual void SetLocalAddress (const Ipv4Address& localAddress);
 };
 
 } // namespace ns3
 
-#endif /* MCPTT_CALL_CONTROL_INFO_H */
+#endif /* MCPTT_ON_NETWORK_FLOOR_SERVER_APP_H */
+

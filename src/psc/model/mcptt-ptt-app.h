@@ -272,12 +272,6 @@ private:
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
  TracedCallback<const McpttPttApp&, const McpttMsg&> m_txTrace; //!< The Rx trace.
-protected:
- /**
-  * Sets the local IP address.
-  * \param localAddress The local IP address.
-  */
- virtual void SetLocalAddress (const Ipv4Address& localAddress);
 public:
  /**
   * Gets the channel used for call control messages.
@@ -329,6 +323,11 @@ public:
   * \param floorGrantedCb The callback.
   */
  virtual void SetFloorGrantedCb (const Callback<void>  floorGrantedCb);
+ /**
+  * Sets the local IP address.
+  * \param localAddress The local IP address.
+  */
+ virtual void SetLocalAddress (const Ipv4Address& localAddress);
  /**
   * Sets the media source.
   * \param mediaSrc The media source.

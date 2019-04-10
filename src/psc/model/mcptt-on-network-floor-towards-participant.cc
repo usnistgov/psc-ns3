@@ -30,17 +30,21 @@
  */
 
 #include <ns3/boolean.h>
+#include <ns3/ipv4-address.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/simulator.h>
 #include <ns3/type-id.h>
+#include <ns3/uinteger.h>
 
 #include "mcptt-call.h"
+#include "mcptt-chan.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator.h"
+#include "mcptt-on-network-floor-server-app.h"
 #include "mcptt-on-network-floor-towards-participant-state.h"
 #include "mcptt-timer.h"
 
@@ -59,6 +63,11 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorTowardsParticipant")
     .SetParent<Object> ()
     .AddConstructor<McpttOnNetworkFloorTowardsParticipant>()
+    .AddAttribute ("FloorPort", "The port to use for floor control messages.",
+                   UintegerValue (49150),
+                   MakeUintegerAccessor (&McpttOnNetworkFloorTowardsParticipant::GetFloorPort,
+                                         &McpttOnNetworkFloorTowardsParticipant::SetFloorPort),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("McImplicitRequest", "Indicates if the SDP offer included the \"mc_implicit_request\" fmtp attribute",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_mcImplicitRequest),
@@ -67,6 +76,16 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_mcQueuing),
                    MakeBooleanChecker ())
+    .AddAttribute ("MediaPort", "The port to use for media messages.",
+                   UintegerValue (49151),
+                   MakeUintegerAccessor (&McpttOnNetworkFloorTowardsParticipant::GetMediaPort,
+                                         &McpttOnNetworkFloorTowardsParticipant::SetMediaPort),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("PeerAddress", "The Ipv4 address of the node that the peer application is on.",
+                   Ipv4AddressValue (Ipv4Address ("255.255.255.255")),
+                   MakeIpv4AddressAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerAddress,
+                                            &McpttOnNetworkFloorTowardsParticipant::SetPeerAddress),
+                   MakeIpv4AddressChecker ())
     .AddAttribute ("ReceiveOnly", "Indicates if the associated participant is \"receive only\"",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_receiveOnly),
@@ -87,8 +106,10 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
 McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (void)
   : Object (),
     m_dualFloor (false),
+    m_floorChan (CreateObject<McpttChan> ()),
     m_mcImplicitRequest (false),
     m_mcQueuing (false),
+    m_mediaChan (CreateObject<McpttChan> ()),
     m_originator (false),
     m_overridden (false),
     m_overriding (false),
@@ -101,6 +122,9 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
     m_txCb (MakeNullCallback<void, const McpttFloorMsg&> ())
 {
   NS_LOG_FUNCTION (this);
+
+  m_floorChan->SetRxPktCb (MakeCallback (&McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt, this));
+  m_mediaChan->SetRxPktCb (MakeCallback (&McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt, this));
 
   m_t8->Link (&McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8, this);
 }
@@ -167,7 +191,22 @@ McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowar
       SetState (state);
       state->Selected (*this);
 
-      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+    }
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
+{
+  Ptr<Packet> pkt = Create<Packet> ();
+  pkt->AddHeader (msg);
+  if (msg.IsA (McpttFloorMsg::GetTypeId ()))
+    {
+      GetFloorChan ()->Send (pkt);
+    }
+  else if (msg.IsA (McpttMediaMsg::GetTypeId ()))
+    {
+      GetMediaChan ()->Send (pkt);
     }
 }
 
@@ -323,7 +362,181 @@ McpttOnNetworkFloorTowardsParticipant::Send (McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  //TODO: Actually send the message
+  if (msg.IsA (McpttFloorMsgDeny::GetTypeId ()))
+    {
+      SendFloorDeny (static_cast<McpttFloorMsgDeny&>(msg));
+    }
+  else if (msg.IsA (McpttFloorMsgGranted::GetTypeId ()))
+    {
+      SendFloorGranted (static_cast<McpttFloorMsgGranted&>(msg));
+    }
+  else if (msg.IsA (McpttFloorMsgIdle::GetTypeId ()))
+    {
+      SendFloorIdle (static_cast<McpttFloorMsgIdle&>(msg));
+    }
+  else if (msg.IsA (McpttFloorMsgRevoke::GetTypeId ()))
+    {
+      SendFloorRevoke (static_cast<McpttFloorMsgRevoke&>(msg));
+    }
+  else if (msg.IsA (McpttFloorMsgTaken::GetTypeId ()))
+    {
+      SendFloorTaken (static_cast<McpttFloorMsgTaken&>(msg));
+    }
+  else if (msg.IsA (McpttMediaMsg::GetTypeId ()))
+    {
+      SendMedia (static_cast<McpttMediaMsg&>(msg));
+    }
+  else
+    {
+      DoSend (msg);
+    }
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::Terminate (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking terminate notification.");
+
+  m_state->Terminate (*this);
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::SetDelayT8 (const Time& delayT8)
+{
+  NS_LOG_FUNCTION (this << delayT8);
+
+  GetT8 ()->SetDelay (delayT8);
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::Start (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<McpttChan> floorChan = GetFloorChan ();
+  Ptr<McpttChan> mediaChan = GetMediaChan ();
+
+  if (!floorChan->IsOpen ())
+    {
+      floorChan->Open (GetOwner ()->GetOwner ()->GetNode (), GetFloorPort (), GetOwner ()->GetOwner ()->GetLocalAddress (), GetPeerAddress ());
+    }
+
+  if (mediaChan->IsOpen ())
+    {
+      mediaChan->Open (GetOwner ()->GetOwner ()->GetNode (), GetMediaPort (), GetOwner ()->GetOwner ()->GetLocalAddress (), GetPeerAddress ());
+    }
+
+  CallInitiated ();
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::Stop (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (GetFloorChan ()->IsOpen ())
+    {
+      GetFloorChan ()->Close ();
+    }
+
+  if (GetMediaChan ()->IsOpen ())
+    {
+      GetMediaChan ()->Close ();
+    }
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_floorChan = 0;
+  m_mediaChan = 0;
+  m_owner = 0;
+  m_state = 0;
+  m_t8 = 0;
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt)
+{
+  NS_LOG_FUNCTION (this << &pkt);
+
+  McpttFloorMsg temp;
+
+  pkt->PeekHeader (temp);
+  uint8_t subtype = temp.GetSubtype ();
+
+  if (subtype == McpttFloorMsgRequest::SUBTYPE)
+    {
+      McpttFloorMsgRequest reqMsg;
+      pkt->RemoveHeader (reqMsg);
+      Receive (reqMsg);
+    }
+  else if (subtype == McpttFloorMsgGranted::SUBTYPE)
+    {
+      McpttFloorMsgGranted grantedMsg;
+      pkt->RemoveHeader (grantedMsg);
+      Receive (grantedMsg);
+    }
+  else if (subtype == McpttFloorMsgDeny::SUBTYPE)
+    {
+      McpttFloorMsgDeny denyMsg;
+      pkt->RemoveHeader (denyMsg);
+      Receive (denyMsg);
+    }
+  else if (subtype == McpttFloorMsgRelease::SUBTYPE)
+    {
+      McpttFloorMsgRelease releaseMsg;
+      pkt->RemoveHeader (releaseMsg);
+      Receive (releaseMsg);
+    }
+  else if (subtype == McpttFloorMsgTaken::SUBTYPE)
+    {
+      McpttFloorMsgTaken takenMsg;
+      pkt->RemoveHeader (takenMsg);
+      Receive (takenMsg);
+    }
+  else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
+    {
+      McpttFloorMsgQueuePositionRequest queuePositionRequestMsg;
+      pkt->RemoveHeader (queuePositionRequestMsg);
+      Receive (queuePositionRequestMsg);
+    }
+  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE)
+    {
+      McpttFloorMsgQueuePositionInfo queueInfoMsg;
+      pkt->RemoveHeader (queueInfoMsg);
+      Receive (queueInfoMsg);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
+    }
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt (Ptr<Packet>  pkt)
+{
+  NS_LOG_FUNCTION (this << &pkt);
+
+  McpttMediaMsg msg;
+
+  pkt->RemoveHeader (msg);
+
+  Receive (msg);
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8 (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorTowardsParticipant T8 expired.");
+
+  m_state->ExpiryOfT8 (*this);
 }
 
 void
@@ -416,42 +629,36 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
     }
 }
 
-void
-McpttOnNetworkFloorTowardsParticipant::Terminate (void)
+Ptr<McpttChan>
+McpttOnNetworkFloorTowardsParticipant::GetFloorChan (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking terminate notification.");
-
-  m_state->Terminate (*this);
+  return m_floorChan;
 }
 
-void
-McpttOnNetworkFloorTowardsParticipant::SetDelayT8 (const Time& delayT8)
-{
-  NS_LOG_FUNCTION (this << delayT8);
-
-  GetT8 ()->SetDelay (delayT8);
-}
-
-void
-McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
+uint16_t
+McpttOnNetworkFloorTowardsParticipant::GetFloorPort (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  m_owner = 0;
-  m_state = 0;
-  m_t8 = 0;
+  return m_floorPort;
 }
 
-void
-McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8 (void)
+Ptr<McpttChan>
+McpttOnNetworkFloorTowardsParticipant::GetMediaChan (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorTowardsParticipant T8 expired.");
+  return m_mediaChan;
+}
 
-  m_state->ExpiryOfT8 (*this);
+uint16_t
+McpttOnNetworkFloorTowardsParticipant::GetMediaPort (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_mediaPort;
 }
 
 McpttOnNetworkFloorArbitrator*
@@ -460,6 +667,14 @@ McpttOnNetworkFloorTowardsParticipant::GetOwner (void) const
   NS_LOG_FUNCTION (this);
 
   return m_owner;
+}
+
+Ipv4Address
+McpttOnNetworkFloorTowardsParticipant::GetPeerAddress (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_peerAddress;
 }
 
 McpttFloorMsgRevoke
@@ -511,6 +726,38 @@ McpttOnNetworkFloorTowardsParticipant::SetDualFloor (const bool dualFloor)
 }
 
 void
+McpttOnNetworkFloorTowardsParticipant::SetFloorChan (const Ptr<McpttChan> floorChan)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_floorChan = floorChan;
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::SetFloorPort (const uint16_t floorPort)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_floorPort = floorPort;
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::SetMediaChan (const Ptr<McpttChan> mediahan)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_mediaChan = mediahan;
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::SetMediaPort (const uint16_t mediaPort)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_mediaPort = mediaPort;
+}
+
+void
 McpttOnNetworkFloorTowardsParticipant::SetOriginator (const bool originator)
 {
   NS_LOG_FUNCTION (this);
@@ -540,6 +787,14 @@ McpttOnNetworkFloorTowardsParticipant::SetOwner (McpttOnNetworkFloorArbitrator* 
   NS_LOG_FUNCTION (this);
 
   m_owner = owner;
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::SetPeerAddress (const Ipv4Address& peerAddress)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_peerAddress = peerAddress;
 }
 
 void

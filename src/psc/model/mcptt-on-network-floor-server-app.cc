@@ -29,68 +29,107 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_CALL_CONTROL_INFO_H
-#define MCPTT_CALL_CONTROL_INFO_H
+#include <ns3/log.h>
+#include <ns3/ipv4-address.h>
+#include <ns3/pointer.h>
 
-#include <ns3/object.h>
-#include <ns3/ptr.h>
-#include <ns3/type-id.h>
+#include "mcptt-on-network-floor-arbitrator.h"
 
-namespace ns3 {
+#include "mcptt-on-network-floor-server-app.h"
 
-/**
- * \ingroup mcptt
- *
- * This class is used to access call control information
- */
-class McpttCallControlInfo : public Object
+namespace ns3
 {
-public:
- /**
-  * Gets the type ID of the  class.
-  * \returns The type ID.
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the McpttCallControlInfo class.
-  */
-  McpttCallControlInfo (void);
- /**
-  * \brief The destructor of the McpttCallControlInfo class.
-  */
- virtual ~McpttCallControlInfo (void);
- /**
-  * Gets the type ID of this McpttCallControlInfo instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Gets the ID of the call.
-  * \returns The ID.
-  */
- virtual uint16_t GetCallId (void) const;
- /**
-  * Gets the call type ID of the call.
-  * \returns the call type ID.
-  */
- virtual uint8_t GetCallTypeId (void) const;
- /**
-  * Indicates if the call is configured for ambient listening.
-  * \returns True, if the call is configured for ambient listening; othwerise, false.
-  */
- virtual bool IsAmbientListening (void) const;
- /**
-  * Indicates if the call is configured for a temporary group session.
-  * \returns True, if the call is configured for a temporary group session; false, otherwise.
-  */
- virtual bool IsTemporaryGroup (void) const;
-private:
- bool m_ambientListening; //!< The flag that indicates if the call is configured for ambient listening.
- uint16_t m_callId; //!< The call ID of the call.
- uint8_t m_callTypeId; //!< The call type ID of the call.
- bool m_temporaryGroup; //!< The flag that indicates if the call is configured for a temporary group.
-};
+
+NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorServerApp");
+
+NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorServerApp);
+
+TypeId
+McpttOnNetworkFloorServerApp::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorServerApp")
+    .SetParent<Application> ()
+    .AddConstructor<McpttOnNetworkFloorServerApp>()
+  ;
+
+    return tid;
+}  
+
+McpttOnNetworkFloorServerApp::McpttOnNetworkFloorServerApp (void)
+  : Application ()
+{  
+  NS_LOG_FUNCTION (this);
+}
+
+McpttOnNetworkFloorServerApp::~McpttOnNetworkFloorServerApp (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+TypeId
+McpttOnNetworkFloorServerApp::GetInstanceTypeId (void) const
+{
+  return McpttOnNetworkFloorServerApp::GetTypeId ();
+}
+
+void
+McpttOnNetworkFloorServerApp::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Object::DoDispose ();
+}
+
+void
+McpttOnNetworkFloorServerApp::StartApplication (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  GetArbitrator ()->Start ();
+}
+
+void
+McpttOnNetworkFloorServerApp::StopApplication (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  GetArbitrator ()->Stop ();
+}
+
+Ptr<McpttOnNetworkFloorArbitrator>
+McpttOnNetworkFloorServerApp::GetArbitrator (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_arbitrator;
+}
+
+Ipv4Address
+McpttOnNetworkFloorServerApp::GetLocalAddress (void) const
+{
+  return m_localAddress;
+}
+
+void
+McpttOnNetworkFloorServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrator)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (arbitrator != 0)
+    {
+      arbitrator->SetOwner (this);
+    }
+
+  m_arbitrator = arbitrator;
+}
+
+void
+McpttOnNetworkFloorServerApp::SetLocalAddress (const Ipv4Address& localAddress)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_localAddress = localAddress;
+}
 
 } // namespace ns3
 
-#endif /* MCPTT_CALL_CONTROL_INFO_H */

@@ -36,6 +36,7 @@
 #include <ns3/uinteger.h>
 #include <ns3/type-id.h>
 
+#include "mcptt-call-msg-field.h"
 #include "mcptt-call-control-info.h"
 
 namespace ns3
@@ -57,14 +58,18 @@ McpttCallControlInfo::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttCallControlInfo::m_ambientListening),
                    MakeBooleanChecker ())
+    .AddAttribute ("CallId", "The call type ID of the call.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&McpttCallControlInfo::m_callId),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("CallTypeId", "The call type ID of the call.",
+                   UintegerValue (McpttCallMsgFieldCallType::BASIC_GROUP),
+                   MakeUintegerAccessor (&McpttCallControlInfo::m_callTypeId),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("TemporaryGroup", "Indicates if the call is configured for a temporary group session.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttCallControlInfo::m_temporaryGroup),
                    MakeBooleanChecker ())
-    .AddAttribute ("CallTypeId", "The call type ID of the call.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&McpttCallControlInfo::m_callTypeId),
-                   MakeUintegerChecker<uint8_t> ())
   ;
 
   return tid;
@@ -89,6 +94,22 @@ McpttCallControlInfo::GetInstanceTypeId (void) const
   return McpttCallControlInfo::GetTypeId ();
 }
 
+uint16_t
+McpttCallControlInfo::GetCallId (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_callId;
+}
+
+uint8_t
+McpttCallControlInfo::GetCallTypeId (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_callTypeId;
+}
+
 bool
 McpttCallControlInfo::IsAmbientListening (void) const
 {
@@ -103,14 +124,6 @@ McpttCallControlInfo::IsTemporaryGroup (void) const
   NS_LOG_FUNCTION (this);
 
   return m_temporaryGroup;
-}
-
-uint8_t
-McpttCallControlInfo::GetCallTypeId (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  return m_callTypeId;
 }
 
 } // namespace ns3

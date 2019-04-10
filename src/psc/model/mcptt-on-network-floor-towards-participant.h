@@ -38,6 +38,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 
+#include "mcptt-chan.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-msg-sink.h"
@@ -93,6 +94,11 @@ public:
   * \param state The state to change to.
   */
  virtual void ChangeState (Ptr<McpttOnNetworkFloorTowardsParticipantState>  state);
+ /**
+  * Fowards a message to the participant.
+  * \param msg The message to forward.
+  */
+ virtual void DoSend (McpttMsg& msg);
  /**
   * Gets the type ID of this McpttOnNetworkFloorTowardsParticipant instance.
   * \returns The type ID.
@@ -179,6 +185,42 @@ public:
   */
  virtual void Send (McpttMsg& msg);
  /**
+  * Indicates to the floor control server to terminate.
+  */
+ virtual void Terminate (void);
+ /**
+  * Sets the delay for timer T8.
+  * \param delayT8 The delay to use.
+  */
+ virtual void SetDelayT8 (const Time& delayT8);
+ /**
+  * Starts the FSM.
+  */
+ virtual void Start (void);
+ /**
+  * Stops the FSM.
+  */
+ virtual void Stop (void);
+protected:
+ /**
+  * \brief Disposes of the McpttLfloorMachine.
+  */
+ virtual void DoDispose (void);
+ /**
+  * Notifies the floor machine that timer T8 has expired.
+  */
+ virtual void ExpiryOfT8 (void);
+ /**
+  * Handles the receieved floor control packet.
+  * \param pkt The packet that was received.
+  */
+ virtual void ReceiveFloorPkt (Ptr<Packet>  pkt);
+ /**
+  * Handles the received media packet.
+  * \param pkt The packet that was received.
+  */
+ virtual void ReceiveMediaPkt (Ptr<Packet>  pkt);
+ /**
   * Sends a floor deny message.
   * \param msg The message to send.
   */
@@ -208,32 +250,19 @@ public:
   * \param msg The message to send.
   */
  virtual void SendMedia (McpttMediaMsg& msg);
- /**
-  * Indicates to the floor control server to terminate.
-  */
- virtual void Terminate (void);
- /**
-  * Sets the delay for timer T8.
-  * \param delayT8 The delay to use.
-  */
- virtual void SetDelayT8 (const Time& delayT8);
-protected:
- /**
-  * \brief Disposes of the McpttLfloorMachine.
-  */
- virtual void DoDispose (void);
- /**
-  * Notifies the floor machine that timer T8 has expired.
-  */
- virtual void ExpiryOfT8 (void);
 private:
  bool m_dualFloor; //!< The flag that indicates if the associated participant is listenting to two sources.
+ Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
+ uint16_t m_floorPort; //!< The port to use for the floor control channel.
  bool m_mcImplicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
  bool m_mcQueuing; //!< The flag that indicates if SDP offer contains the "mc_queueing" fmtp attribute.
+ Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
+ bool m_mediaPort; //!< The port to use for medi messages.
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.
  bool m_overridden; //!< Flag that indicates if associated participant is overridden without revoke.
  bool m_overriding; //!< Flag that indicates if associated participant is overriding without revoke.
  McpttOnNetworkFloorArbitrator* m_owner; //!< The floor abitration server.
+ Ipv4Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_receiveOnly; //!< Flag that indicates if the associated participant is "receive only".
  McpttFloorMsgRevoke m_revokeMsg; //!< The Floor Revoke message to retransmit when T8 expires.
  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
@@ -247,10 +276,35 @@ private:
  Callback<void, const McpttFloorMsg&> m_txCb; //!< The message tranmission call back.
 public:
  /**
+  * Gets the channel to use for floor control messages.
+  * \returns The channel.
+  */
+ virtual Ptr<McpttChan> GetFloorChan (void) const;
+ /**
+  * Gets the port to use for the floor control channel.
+  * \returns The port number.
+  */
+ virtual uint16_t GetFloorPort (void) const;
+ /**
+  * Gets the channel to use for floor control messages.
+  * \returns The channel.
+  */
+ virtual Ptr<McpttChan> GetMediaChan (void) const;
+ /**
+  * Gets the port to use for the media channel.
+  * \returns The port number.
+  */
+ virtual uint16_t GetMediaPort (void) const;
+ /**
   * Gets the owner of the state machine.
   * \returns The owner.
   */
  virtual McpttOnNetworkFloorArbitrator* GetOwner (void) const;
+ /**
+  * Gets the peer address.
+  * \returns The peer address.
+  */
+ virtual Ipv4Address GetPeerAddress (void) const;
  /**
   * Gets the floor revoke message to retransmit.
   * \returns The revoke message.
@@ -282,6 +336,26 @@ public:
   */
  virtual void SetDualFloor (const bool);
  /**
+  * Sets the channel to use for floor control messages.
+  * \param floorChan The channel.
+  */
+ virtual void SetFloorChan (const Ptr<McpttChan> floorChan);
+ /**
+  * Sets the port to use for the floor control channel.
+  * \param floorPort The port number.
+  */
+ virtual void SetFloorPort (const uint16_t floorPort);
+ /**
+  * Sets the channel to use for media messages.
+  * \param mediaChan The channel.
+  */
+ virtual void SetMediaChan (const Ptr<McpttChan> mediaChan);
+ /**
+  * Sets the port to use for the media channel.
+  * \param mediaPort The port number.
+  */
+ virtual void SetMediaPort (const uint16_t mediaPort);
+ /**
   * Sets the flag that indicates if the associated floor participant is the originator.
   * \parm originator The flag.
   */
@@ -301,6 +375,11 @@ public:
   * \param owner The owner.
   */
  virtual void SetOwner (McpttOnNetworkFloorArbitrator* const& owner);
+ /**
+  * Sets the address of the participant.
+  * \param peerAddress The address of the participant.
+  */
+ virtual void SetPeerAddress (const Ipv4Address& peerAddress);
  /**
   * Sets the floor revoke message to retransmit when the T8 expires.
   * \param revokeMsg The message to retransmit.

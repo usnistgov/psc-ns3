@@ -847,14 +847,6 @@ McpttPttApp::TxCb (const McpttCall& call, const McpttMsg& msg)
   m_txTrace (*this, msg);
 }
 
-void
-McpttPttApp::SetLocalAddress (const Ipv4Address& localAddress)
-{
-  NS_LOG_FUNCTION (this << &localAddress);
-
-  m_localAddress = localAddress;
-}
-
 Ptr<McpttChan>
 McpttPttApp::GetCallChan (void) const
 {
@@ -919,6 +911,14 @@ McpttPttApp::SetFloorGrantedCb (const Callback<void>  floorGrantedCb)
   NS_LOG_FUNCTION (this << &floorGrantedCb);
 
   m_floorGrantedCb = floorGrantedCb;
+}
+
+void
+McpttPttApp::SetLocalAddress (const Ipv4Address& localAddress)
+{
+  NS_LOG_FUNCTION (this << &localAddress);
+
+  m_localAddress = localAddress;
 }
 
 void

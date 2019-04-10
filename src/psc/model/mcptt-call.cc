@@ -291,29 +291,46 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
       pkt->RemoveHeader (reqMsg);
       Receive (reqMsg);
     }
-  else if (subtype == McpttFloorMsgGranted::SUBTYPE)
+  else if (subtype == McpttFloorMsgGranted::SUBTYPE
+      || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
       McpttFloorMsgGranted grantedMsg;
       pkt->RemoveHeader (grantedMsg);
       Receive (grantedMsg);
     }
-  else if (subtype == McpttFloorMsgDeny::SUBTYPE)
+  else if (subtype == McpttFloorMsgDeny::SUBTYPE
+      || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
       McpttFloorMsgDeny denyMsg;
       pkt->RemoveHeader (denyMsg);
       Receive (denyMsg);
     }
-  else if (subtype == McpttFloorMsgRelease::SUBTYPE)
+  else if (subtype == McpttFloorMsgRelease::SUBTYPE
+      || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgRelease releaseMsg;
       pkt->RemoveHeader (releaseMsg);
       Receive (releaseMsg);
     }
-  else if (subtype == McpttFloorMsgTaken::SUBTYPE)
+  else if (subtype == McpttFloorMsgIdle::SUBTYPE
+      || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
+    {
+      McpttFloorMsgIdle idleMsg;
+      pkt->RemoveHeader (idleMsg);
+      Receive (idleMsg);
+    }
+  else if (subtype == McpttFloorMsgTaken::SUBTYPE
+      || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
       McpttFloorMsgTaken takenMsg;
       pkt->RemoveHeader (takenMsg);
       Receive (takenMsg);
+    }
+  else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
+    {
+      McpttFloorMsgRevoke revokeMsg;
+      pkt->RemoveHeader (revokeMsg);
+      Receive (revokeMsg);
     }
   else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
     {
@@ -321,11 +338,18 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
       pkt->RemoveHeader (queuePositionRequestMsg);
       Receive (queuePositionRequestMsg);
     }
-  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE)
+  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
+      || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
       pkt->RemoveHeader (queueInfoMsg);
       Receive (queueInfoMsg);
+    }
+  else if (subtype == McpttFloorMsgAck::SUBTYPE)
+    {
+      McpttFloorMsgAck ackMsg;
+      pkt->RemoveHeader (ackMsg);
+      Receive (ackMsg);
     }
   else
     {

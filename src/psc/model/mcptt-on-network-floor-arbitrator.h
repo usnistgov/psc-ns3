@@ -48,8 +48,8 @@
 
 namespace ns3 {
 
-class McpttCall;
 class McpttOnNetworkFloorArbitratorState;
+class McpttOnNetworkFloorServerApp;
 class McpttOnNetworkFloorTowardsParticipant;
 
 /**
@@ -58,7 +58,7 @@ class McpttOnNetworkFloorTowardsParticipant;
  * This class represents the general floor control operation state mahine
  * described in TS 24.380 v14.8.0.
  */
-class McpttOnNetworkFloorArbitrator : public Object, public McpttFloorMsgSink
+class McpttOnNetworkFloorArbitrator : public Object
 {
 public:
  /**
@@ -102,11 +102,6 @@ public:
   */
  virtual void ChangeState (Ptr<McpttOnNetworkFloorArbitratorState>  state);
  /**
-  * Gets the ID of the current call type.
-  * \returns The call type ID.
-  */
- virtual uint8_t GetCallTypeId (void) const;
- /**
   * Gets the floor indicator to use when sending a message.
   * \returns The floor indicator field.
   */
@@ -132,11 +127,6 @@ public:
   * \returns The state ID.
   */
  virtual McpttEntityId GetStateId (void) const;
- /**
-  * Gets the SSRC to use when sending a message.
-  * \returns The SSRC to use when sending a message.
-  */
- virtual uint32_t GetTxSsrc (void) const;
  /**
   * Notifies this machine that an implicit floor request was recieved.
   * \param participant The participant that initiated the implicit floor request.
@@ -205,20 +195,20 @@ public:
  /**
   * \brief Sends a message to the specified user.
   * \param msg The message to send.
-  * \param userId The ID of the specified user.
+  * \param ssrc The ID of the specified user.
   */
- virtual void SendTo (const McpttFloorMsg& msg, const uint32_t userId);
+ virtual void SendTo (McpttFloorMsg& msg, const uint32_t ssrc);
  /**
   * \brief Sends a message to all users.
   * \param msg The message to send.
   */
- virtual void SendToAll (const McpttFloorMsg& msg);
+ virtual void SendToAll (McpttFloorMsg& msg);
  /**
   * \brief Sends a message to all users except the specified user.
   * \param msg The message to send.
-  * \param userId The ID of the specified user.
+  * \param ssrc The ID of the specified user.
   */
- virtual void SendToAllExcept (const McpttFloorMsg& msg, const uint32_t userId);
+ virtual void SendToAllExcept (McpttFloorMsg& msg, const uint32_t ssrc);
  /**
   * Sets the delay for timer T1.
   * \param delayT1 The delay to use.
@@ -259,6 +249,14 @@ public:
   * \param limitC20 The limit to use.
   */
  virtual void SetLimitC20 (uint32_t limitC20);
+ /**
+  * Starts the state machine.
+  */
+ virtual void Start (void);
+ /**
+  * Stops the state machine.
+  */
+ virtual void Stop (void);
 protected:
  /**
   * \brief Disposes of the McpttLfloorMachine.
@@ -297,7 +295,7 @@ private:
  bool m_dualFloorSupported; //!< A flag that to indicate dual floor indication.
  Ptr<McpttOnNetworkFloorDualControl> m_dualControl; //!< The dual floor control state machine.
  bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
- McpttCall* m_owner; //!< The client application that owns this floor machine.
+ McpttOnNetworkFloorServerApp* m_owner; //!< The client application that owns this floor machine.
  bool m_mcGranted; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
  Ptr<McpttFloorQueue> m_queue; //!< The queue of floor requests.
@@ -310,6 +308,7 @@ private:
  uint32_t m_storedSsrc; //!< The SSRC of the floor participant with permission to transmit media.
  uint8_t m_storedPriority; //!< The stored priority the floor machine.
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
+ uint32_t m_txSsrc; //!< The SSRC to use when transmitting a message.
  Ptr<McpttTimer> m_t1; //!< The timer T1.
  Ptr<McpttTimer> m_t2; //!< The timer T2.
  Ptr<McpttTimer> m_t3; //!< The timer T3.
@@ -342,7 +341,7 @@ public:
   * Gets the owner of the state machine.
   * \returns The owner.
   */
- virtual McpttCall* GetOwner (void) const;
+ virtual McpttOnNetworkFloorServerApp* GetOwner (void) const;
  /**
   * Gets the queue.
   * \returns The queue.
@@ -368,6 +367,11 @@ public:
   * \returns The track info field.
   */
  virtual McpttFloorMsgFieldTrackInfo GetTrackInfo (void) const;
+ /**
+  * Gets the SSRC to use when transmitting a message.
+  * \returns The SSRC.
+  */
+ virtual uint32_t GetTxSsrc (void) const;
  /**
   * Gets the timer T1.
   * \returns The timer.
@@ -399,10 +403,20 @@ public:
   */
  virtual Ptr<McpttTimer> GetT20 (void) const;
  /**
+  * Sets the call control info.
+  * \param callInfo The call control information.
+  */
+ virtual void SetCallInfo (const Ptr<McpttCallControlInfo> callInfo);
+ /**
+  * Sets the dual floor control state machine.
+  * \param dualControl The state machine.
+  */
+ virtual void SetDualControl (const Ptr<McpttOnNetworkFloorDualControl> dualControl);
+ /**
   * Sets the owner of the floor machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner);
+ virtual void SetOwner (McpttOnNetworkFloorServerApp* const& owner);
  /**
   * Sets the received message call back.
   * \param rxCb The received message call back.
