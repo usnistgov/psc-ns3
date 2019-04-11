@@ -423,7 +423,7 @@ McpttOnNetworkFloorTowardsParticipant::Start (void)
       floorChan->Open (GetOwner ()->GetOwner ()->GetNode (), GetFloorPort (), GetOwner ()->GetOwner ()->GetLocalAddress (), GetPeerAddress ());
     }
 
-  if (mediaChan->IsOpen ())
+  if (!mediaChan->IsOpen ())
     {
       mediaChan->Open (GetOwner ()->GetOwner ()->GetNode (), GetMediaPort (), GetOwner ()->GetOwner ()->GetLocalAddress (), GetPeerAddress ());
     }
@@ -742,11 +742,11 @@ McpttOnNetworkFloorTowardsParticipant::SetFloorPort (const uint16_t floorPort)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetMediaChan (const Ptr<McpttChan> mediahan)
+McpttOnNetworkFloorTowardsParticipant::SetMediaChan (const Ptr<McpttChan> mediaChan)
 {
   NS_LOG_FUNCTION (this);
 
-  m_mediaChan = mediahan;
+  m_mediaChan = mediaChan;
 }
 
 void

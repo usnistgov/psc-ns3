@@ -29,6 +29,9 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include <unordered_map>
+#include <sstream>
+
 #include <ns3/boolean.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
@@ -487,7 +490,7 @@ McpttOnNetworkFloorArbitrator::ReceiveMedia (const McpttMediaMsg& msg)
 }
 
 void
-McpttOnNetworkFloorArbitrator::SendTo (McpttFloorMsg& msg, const uint32_t ssrc)
+McpttOnNetworkFloorArbitrator::SendTo (McpttMsg& msg, const uint32_t ssrc)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -504,7 +507,7 @@ McpttOnNetworkFloorArbitrator::SendTo (McpttFloorMsg& msg, const uint32_t ssrc)
           (*it)->Send (msg);
           if (!m_txCb.IsNull ())
             {
-              m_txCb (msg);
+              //m_txCb (msg);
             }
         }
       it++;
@@ -512,7 +515,7 @@ McpttOnNetworkFloorArbitrator::SendTo (McpttFloorMsg& msg, const uint32_t ssrc)
 }
 
 void
-McpttOnNetworkFloorArbitrator::SendToAll (McpttFloorMsg& msg)
+McpttOnNetworkFloorArbitrator::SendToAll (McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -526,32 +529,32 @@ McpttOnNetworkFloorArbitrator::SendToAll (McpttFloorMsg& msg)
       it++;
       if (!m_txCb.IsNull ())
         {
-          m_txCb (msg);
+          //m_txCb (msg);
         }
     }
 }
 
 void
-McpttOnNetworkFloorArbitrator::SendToAllExcept (McpttFloorMsg& msg, const uint32_t ssrc)
+McpttOnNetworkFloorArbitrator::SendToAllExcept (McpttMsg& msg, const uint32_t ssrc)
 {
   NS_LOG_FUNCTION (this << msg);
 
+  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator pit = m_participants.begin ();
+
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator (" << this << ") sending " << msg << " to all except " << ssrc << ".");
 
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin ();
-
-  while (it != m_participants.end ())
+  while (pit != m_participants.end ())
     {
-      if ((*it)->GetStoredSsrc () != ssrc)
+      if ((*pit)->GetStoredSsrc () != ssrc)
         {
-          (*it)->Send (msg);
+          (*pit)->Send (msg);
 
           if (!m_txCb.IsNull ())
             {
-              m_txCb (msg);
+              //m_txCb (msg);
             }
         }
-      it++;
+      pit++;
     }
 }
 
@@ -639,6 +642,8 @@ McpttOnNetworkFloorArbitrator::Stop (void)
     {
       (*it)->Stop ();
     }
+
+  GetDualControl ()->Stop ();
 
   if (GetT1 ()->IsRunning ())
     {
@@ -897,6 +902,11 @@ void
 McpttOnNetworkFloorArbitrator::SetDualControl (const Ptr<McpttOnNetworkFloorDualControl> dualControl)
 {
   NS_LOG_FUNCTION (this);
+
+  if (dualControl != 0)
+    {
+      dualControl->SetOwner (this);
+    }
 
   m_dualControl = dualControl;
 }

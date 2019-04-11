@@ -175,6 +175,12 @@ McpttMediaMsg::Print (std::ostream& os) const
 }
 
 void
+McpttMediaMsg::SetSsrc (const uint32_t ssrc)
+{
+  m_head.SetSsrc (ssrc);
+}
+
+void
 McpttMediaMsg::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this);

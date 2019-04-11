@@ -516,6 +516,19 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::ExpiryOfT103 (McpttOnNetwork
   
   //TODO: Provide floor idle notification to the user.
 }
+
+void
+McpttOnNetworkFloorParticipantStateHasNoPermission::Selected (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+  
+  McpttPttApp* appOwner = machine.GetOwner ()->GetOwner ();
+
+  if (appOwner->IsPushed ())
+    {
+      appOwner->Released ();
+    }
+}
 /** McpttOnNetworkFloorParticipantStateHasNoPermission - end **/
 
 /** McpttOnNetworkFloorParticipantStatePendingRequest - begin **/
@@ -801,6 +814,14 @@ McpttOnNetworkFloorParticipantStateHasPermission::GetInstanceStateId (void) cons
   return McpttOnNetworkFloorParticipantStateHasPermission::GetStateId ();
 }
 
+bool
+McpttOnNetworkFloorParticipantStateHasPermission::HasFloor (const McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+
+  return true;
+}
+
 void
 McpttOnNetworkFloorParticipantStateHasPermission::MediaReady (McpttOnNetworkFloorParticipant& machine, McpttMediaMsg& msg) const
 {
@@ -934,6 +955,46 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorTaken (McpttOnNetw
     {
       //TODO: shall inform user that the call is overriden without revoke.
       machine.SetOverridden (true);
+    }
+}
+
+void
+McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+
+  McpttCall* callOwner = machine.GetOwner ();
+  McpttPttApp* appOwner = callOwner->GetOwner (); 
+  Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
+
+  if (!appOwner->IsPushed ())
+    {
+      appOwner->Pushed ();
+    }
+
+  if (machine.ShouldGenMedia ()
+      && !mediaSrc->IsMakingReq ())
+    {
+      mediaSrc->StartMakingReq ();
+    }
+}
+
+void
+McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+
+  McpttPttApp* appOwner = machine.GetOwner ()->GetOwner (); 
+  Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
+
+  if (appOwner->IsPushed ())
+    {
+      appOwner->Released ();
+    }
+
+  if (mediaSrc->IsMakingReq ())
+    {
+      mediaSrc->StopMakingReq ();
     }
 }
 /** McpttOnNetworkFloorParticipantStateHasPermission - end **/

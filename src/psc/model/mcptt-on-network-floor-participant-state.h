@@ -388,6 +388,11 @@ public:
   * \param machine The FSM.
   */
  virtual void ExpiryOfT103 (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Notifies the floor machine state that it has been selected.
+  * \param machine The FSM.
+  */
+ virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
 };
 /**
  * \ingroup mcptt
@@ -490,6 +495,12 @@ public:
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
+  * Indicates whether or not this machine state has the floor.
+  * \param machine The FSM.
+  * \returns True, if this state has the floor.
+  */
+ virtual bool HasFloor (const McpttOnNetworkFloorParticipant& machine) const;
+ /**
   * Notifies the floor machine that media is ready to be sent.
   * \param machine The FSM.
   * \param msg The media message to be sent.
@@ -530,6 +541,16 @@ public:
   * \param msg The received message.
   */
  virtual void ReceiveFloorTaken (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgTaken& msg) const;
+ /**
+  * Notifies the floor machine state that it has been selected.
+  * \param machine The FSM.
+  */
+ virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Notifies the floor machine state that it has been unselected.
+  * \param machine The FSM.
+  */
+ virtual void Unselected (McpttOnNetworkFloorParticipant& machine) const;
 };
 /**
  * \ingroup mcptt

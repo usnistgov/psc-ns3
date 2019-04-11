@@ -573,6 +573,7 @@ McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT2 (McpttOnNetworkFloorArbitrat
   NS_LOG_FUNCTION (this << &machine);
 
   machine.GetT1 ()->Stop ();
+
   //TODO: Communicate to the revoke state that Cause 2 should be sent
   McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ()->Enter (machine);
 }
@@ -598,6 +599,15 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveMedia (McpttOnNetworkFloorArbitr
 
       //TODO: shall instruct the media distibutor to foward the RTP media packets
       //      to MCPTT clients according to local policy
+      McpttMediaMsg copy = msg;
+      machine.SendToAllExcept (copy, copy.GetSsrc ());
+    }
+  else //TODO: Not in standard
+    {
+      if (machine.GetDualControl ()->IsStarted ())
+        {
+          machine.GetDualControl ()->ReceiveMedia (msg);
+        }
     }
 }
 
@@ -610,6 +620,12 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRelease (McpttOnNetworkFloo
     {
       //TODO: Request the media distributor in the MCPTT server to stop fowarding
       //      RTP media packets
+
+      //TODO: Not in standard - stop T1 if running
+      if (machine.GetT1 ()->IsRunning ())
+        {
+          machine.GetT1 ()->Stop ();
+        }
 
       if (machine.GetT2 ()->IsRunning ())
         {
@@ -650,6 +666,12 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (McpttOnNetworkFloo
           if (machine.GetT1 ()->IsRunning ())
             {
               machine.GetT1 ()->Stop ();
+            }
+
+          //TODO: Not in standard - stop T2 if running.
+          if (machine.GetT2 ()->IsRunning ())
+            {
+              machine.GetT2 ()->Stop ();
             }
 
           if (machine.GetT20 ()->IsRunning ())
@@ -716,6 +738,12 @@ McpttOnNetworkFloorArbitratorStateTaken::ImplicitFloorRequest (McpttOnNetworkFlo
   if (machine.GetT1 ()->IsRunning ())
     {
       machine.GetT1 ()->Stop ();
+    }
+
+  //TODO: Not in standard - stop T2 if running.
+  if (machine.GetT2 ()->IsRunning ())
+    {
+      machine.GetT2 ()->Stop ();
     }
 
   if (machine.GetT20 ()->IsRunning ())
@@ -813,6 +841,15 @@ McpttOnNetworkFloorArbitratorStateRevoke::ReceiveMedia (McpttOnNetworkFloorArbit
 
       //TODO: Shall instruct the emdia distributor to foward the RTP media
       //      packets to MCPTT clients according to local policy.
+      McpttMediaMsg copy = msg;
+      machine.SendToAllExcept (copy, copy.GetSsrc ());
+    }
+  else //TODO: Not in standard
+    {
+      if (machine.GetDualControl ()->IsStarted ())
+        {
+          machine.GetDualControl ()->ReceiveMedia (msg);
+        }
     }
 }
 

@@ -84,6 +84,11 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_mcImplicitRequest),
                    MakeBooleanChecker ())
+    .AddAttribute ("Priority", "The priority of the floor participant.",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&McpttOnNetworkFloorParticipant::GetPriority,
+                                         &McpttOnNetworkFloorParticipant::SetPriority),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("T100", "The delay to use for timer T100 (Time value)",
                    TimeValue (MilliSeconds (40)),
                    MakeTimeAccessor (&McpttOnNetworkFloorParticipant::SetDelayT100),
@@ -354,6 +359,8 @@ McpttOnNetworkFloorParticipant::MediaReady (McpttMediaMsg& msg)
   uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << myUserId << "'s client is about to send media.");
+
+  msg.SetSsrc (GetTxSsrc ());
 
   m_state->MediaReady (*this, msg);
 }

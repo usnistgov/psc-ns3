@@ -197,18 +197,18 @@ public:
   * \param msg The message to send.
   * \param ssrc The ID of the specified user.
   */
- virtual void SendTo (McpttFloorMsg& msg, const uint32_t ssrc);
+ virtual void SendTo (McpttMsg& msg, const uint32_t ssrc);
  /**
   * \brief Sends a message to all users.
   * \param msg The message to send.
   */
- virtual void SendToAll (McpttFloorMsg& msg);
+ virtual void SendToAll (McpttMsg& msg);
  /**
   * \brief Sends a message to all users except the specified user.
   * \param msg The message to send.
-  * \param ssrc The ID of the specified user.
+  * \param ssrc The ID of the excpted user.
   */
- virtual void SendToAllExcept (McpttFloorMsg& msg, const uint32_t ssrc);
+ virtual void SendToAllExcept (McpttMsg& msg, const uint32_t ssrc);
  /**
   * Sets the delay for timer T1.
   * \param delayT1 The delay to use.

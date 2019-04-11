@@ -135,6 +135,10 @@ public:
   */
  virtual void SetDelayT12 (const Time& delayT12);
  /**
+  * Stops the FSM.
+  */
+ virtual void Stop (void);
+ /**
   * Indicates to the floor control server to terminate.
   */
  virtual void Terminate (void);

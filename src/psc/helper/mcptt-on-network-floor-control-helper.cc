@@ -209,7 +209,6 @@ McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer&
   Ptr<McpttOnNetworkFloorServerApp> serverApp = DynamicCast<McpttOnNetworkFloorServerApp, Application> (server.Get (0));
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = serverApp->GetArbitrator ();
 
-
   for (uint32_t pidx = 0; pidx < clients.GetN (); pidx++)
     {
       BooleanValue mcImplicitRequest;

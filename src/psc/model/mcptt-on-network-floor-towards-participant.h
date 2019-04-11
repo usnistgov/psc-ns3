@@ -257,7 +257,7 @@ private:
  bool m_mcImplicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
  bool m_mcQueuing; //!< The flag that indicates if SDP offer contains the "mc_queueing" fmtp attribute.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
- bool m_mediaPort; //!< The port to use for medi messages.
+ uint16_t m_mediaPort; //!< The port to use for media messages.
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.
  bool m_overridden; //!< Flag that indicates if associated participant is overridden without revoke.
  bool m_overriding; //!< Flag that indicates if associated participant is overriding without revoke.

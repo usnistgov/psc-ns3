@@ -112,6 +112,11 @@ public:
   */
  virtual void Serialize (Buffer::Iterator start) const;
  /**
+  * Sets the SSRC of the media message.
+  * \param ssrc The SSRC.
+  */
+ virtual void SetSsrc (const uint32_t ssrc);
+ /**
   * Visits the given privat call machine.
   * \param callMachine The private call machine to visit.
   */

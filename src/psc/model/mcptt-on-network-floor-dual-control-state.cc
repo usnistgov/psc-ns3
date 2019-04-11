@@ -261,6 +261,9 @@ McpttOnNetworkFloorDualControlStateTaken::Enter (McpttOnNetworkFloorDualControl&
 {
   NS_LOG_FUNCTION (this << &machine);
 
+  //This must happen first so that the indictator fields G-bit to indicate dual floor is set
+  machine.ChangeState (McpttOnNetworkFloorDualControlStateTaken::GetInstance ());
+
   McpttFloorMsgGranted grantedMsg;
   grantedMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
   grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine.GetT12 ()->GetTimeLeft ().GetSeconds ()));
@@ -284,7 +287,6 @@ McpttOnNetworkFloorDualControlStateTaken::Enter (McpttOnNetworkFloorDualControl&
   takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
   machine.GetOwner ()->SendToAllExcept (takenMsg, machine.GetStoredSsrc ());
   machine.GetT11 ()->Start ();
-  machine.ChangeState (McpttOnNetworkFloorDualControlStateTaken::GetInstance ());
 }
 
 void
@@ -372,18 +374,24 @@ McpttOnNetworkFloorDualControlStateTaken::ReceiveMedia (McpttOnNetworkFloorDualC
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (!machine.GetT12 ()->IsRunning ())
+  if (machine.GetStoredSsrc () == msg.GetSsrc ())
     {
-      machine.GetT12 ()->Start ();
+      if (!machine.GetT12 ()->IsRunning ())
+        {
+          machine.GetT12 ()->Start ();
+        }
+
+      machine.GetT11 ()->Restart ();
+
+      //TODO: Shall instruct the media distributor to forward the received RTP
+      //      media packets to any non-controlling MCPTT functions to the
+      //      overriden MCPTT client and to those MCPTT clients receiving RTP
+      //      media from the overriding MCPTT client controlled by the controlling
+      //      MCPTT functions according to local policy.
+
+      McpttMediaMsg copy = msg;
+      machine.GetOwner ()->SendToAllExcept (copy, copy.GetSsrc ());
     }
-
-  machine.GetT11 ()->Restart ();
-
-  //TODO: Shall instruct the media distributor to forward the received RTP
-  //      media packets to any non-controlling MCPTT functions to the
-  //      overriden MCPTT client and to those MCPTT clients receiving RTP
-  //      media from the overriding MCPTT client controlled by the controlling
-  //      MCPTT functions according to local policy.
 }
 
 void

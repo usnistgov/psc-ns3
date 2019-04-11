@@ -167,7 +167,7 @@ McpttOnNetworkFloorDualControl::GetStateId (void) const
 bool
 McpttOnNetworkFloorDualControl::IsStarted (void) const
 {
-  return m_state->GetInstanceStateId () != McpttOnNetworkFloorDualControl::GetStateId ();
+  return m_state->GetInstanceStateId () != McpttOnNetworkFloorDualControlStateStartStop::GetStateId ();
 }
 
 void
@@ -215,7 +215,7 @@ McpttOnNetworkFloorDualControl::ReceivePreemptiveFloorRequest (const McpttFloorM
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received preemptive " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceivePreemptiveFloorRequest (*this, msg);
 
@@ -239,6 +239,22 @@ McpttOnNetworkFloorDualControl::SetDelayT12 (const Time& delayT12)
   NS_LOG_FUNCTION (this << delayT12);
 
   GetT12 ()->SetDelay (delayT12);
+}
+
+void
+McpttOnNetworkFloorDualControl::Stop (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (GetT11 ()->IsRunning ())
+    {
+      GetT11 ()->Stop ();
+    }
+
+  if (GetT12 ()->IsRunning ())
+    {
+      GetT12 ()->Stop ();
+    }
 }
 
 void

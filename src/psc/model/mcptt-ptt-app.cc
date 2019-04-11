@@ -821,9 +821,15 @@ McpttPttApp::StopApplication (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttPusher> pusher = GetPusher ();
   Ptr<McpttChan> callChan = GetCallChan ();
+  Ptr<McpttMediaSrc> mediaSrc = GetMediaSrc ();
   std::vector<Ptr<McpttCall> > calls = GetCalls ();
 
   pusher->Stop();
+
+  if (mediaSrc->IsMakingReq ())
+    {
+      mediaSrc->StopMakingReq ();
+    }
 
   for (std::vector<Ptr<McpttCall> >::iterator it = calls.begin (); it != calls.end (); it++)
     {

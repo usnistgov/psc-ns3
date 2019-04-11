@@ -202,7 +202,8 @@ McpttOnNetworkFloorTowardsParticipantState::SendMedia (McpttOnNetworkFloorToward
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  machine.DoSend (msg);
 }
 
 void
@@ -450,7 +451,10 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorTaken (Mcpt
     {
       msg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
     }
+
   machine.DoSend (msg);
+
+  McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
 }
 
 void
@@ -646,7 +650,8 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
     }
   else if (!msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL)
       && !msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
-      && (!machine.GetOwner ()->GetQueue ()->IsEnabled () || !machine.IsMcQueuing ()))
+      && (!machine.GetOwner ()->GetQueue ()->IsEnabled () || !machine.IsMcQueuing ())
+      && msg.GetPriority ().GetPriority () == 0)
     {
       McpttFloorMsgDeny denyMsg;
       denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
@@ -745,8 +750,8 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (!machine.GetOwner ()->GetQueue ()->IsEnabled ()
-      || !machine.IsMcQueuing ())
+  if ((!machine.GetOwner ()->GetQueue ()->IsEnabled ()
+      || !machine.IsMcQueuing ()))
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
@@ -1014,7 +1019,6 @@ McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorRevoke (McpttOnNet
 {
   NS_LOG_FUNCTION (this << &machine);
 
-
   machine.DoSend (msg);
   machine.SetRevokeMsg (msg);
   machine.SetTrackInfo (msg.GetTrackInfo ());
@@ -1027,11 +1031,13 @@ McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveMedia (McpttOnNetwor
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (!machine.IsOverriding ()
-      && !machine.IsOverridden ())
+  if (!machine.IsOverriding ())
     {
       //TODO: Shall request the network media interface in the MCPTT server to foward RTP media packets.
     }
+
+  //TODO: Not in standard
+  machine.GetOwner ()->ReceiveMedia (msg);
 }
 
 void
@@ -1150,6 +1156,8 @@ McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ReceiveMedia (McpttOnNe
   NS_LOG_FUNCTION (this << &machine << msg);
 
   //TODO: Foward RTP media packets to the media distributor
+  //TODO: Not in standard
+  machine.GetOwner ()->ReceiveMedia (msg);
 }
 
 void
