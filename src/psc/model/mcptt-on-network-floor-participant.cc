@@ -672,6 +672,31 @@ void
 McpttOnNetworkFloorParticipant::Stop (void)
 {
   NS_LOG_FUNCTION (this);
+
+  if (GetT100 ()->IsRunning ())
+    {
+      GetT100 ()->Stop ();
+    }
+
+  if (GetT101 ()->IsRunning ())
+    {
+      GetT101 ()->Stop ();
+    }
+
+  if (GetT103 ()->IsRunning ())
+    {
+      GetT103 ()->Stop ();
+    }
+
+  if (GetT104 ()->IsRunning ())
+    {
+      GetT104 ()->Stop ();
+    }
+
+  if (GetT132 ()->IsRunning ())
+    {
+      GetT132 ()->Stop ();
+    }
 }
 
 void
