@@ -54,7 +54,7 @@ SimTimeUpdate (void)
 
 int main (int argc, char *argv[])
 {
-  uint32_t appCount = 1;
+  uint32_t appCount = 2;
   DataRate dataRate = DataRate ("24kb/s");
   TypeId floorTid = McpttFloorParticipant::GetTypeId ();
   double maxX = 5.0;
@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
 
   Config::SetDefault ("ns3::McpttMsgStats::CallControl", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (false));
+  Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
   Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200")); //Disable fragmentation in wifi
@@ -117,7 +117,7 @@ int main (int argc, char *argv[])
 
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (Seconds (0.001)));
+  csma.SetChannelAttribute ("Delay", TimeValue (Seconds (1.0e-6)));
 
   NetDeviceContainer devices;
   devices = csma.Install (nodes);
@@ -142,13 +142,14 @@ int main (int argc, char *argv[])
   mcpttServerHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (true),
+                         "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
+                         "QueueCapacity", UintegerValue (1),
                          "McGranted", BooleanValue (false));
   mcpttServerHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
   mcpttServerHelper.SetParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                          "McImplicitRequest", BooleanValue (false),
-                         "McQueuing", BooleanValue (false),
+                         "McQueuing", BooleanValue (true),
                          "ReceiveOnly", BooleanValue (false));
   mcpttServerHelper.SetCallInfo ("ns3::McpttCallControlInfo",
                          "AmbientListening", BooleanValue (false),
@@ -204,6 +205,8 @@ int main (int argc, char *argv[])
       Ipv4Address clientAddress = interfaces.GetAddress (idx + servers.GetN ());
       pttApp->SetLocalAddress (clientAddress);
       NS_LOG_INFO ("client " << idx << " ip address = " << clientAddress);
+
+      //floorFac.Set ("Priority", UintegerValue ((idx + 6) % 7));
 
       pttApp->CreateCall (callFac, floorFac);
       pttApp->SelectLastCall ();

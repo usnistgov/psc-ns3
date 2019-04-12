@@ -250,6 +250,11 @@ public:
   */
  virtual void SetLimitC20 (uint32_t limitC20);
  /**
+  * Sets the capacity of the queue.
+  * \param capacity The capacity of the queue.
+  */
+ virtual void SetQueueCapacity (const uint32_t capacity);
+ /**
   * Starts the state machine.
   */
  virtual void Start (void);
