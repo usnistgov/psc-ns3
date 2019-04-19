@@ -52,10 +52,10 @@ class McpttPttApp;
  * \ingroup mcptt
  *
  * This class used to represent an MCPTT call, which is just a logical channel
- * between MCPTT appliations. Associated with a call is a call ID, to identify
+ * between MCPTT applications. Associated with a call is a call ID, to identify
  * the particular call, a call machine to perform call control, a floor
  * machine to do floor control, a floor control message channel, and a media
- * message channel. An MCPT call should be subordinate of an MCPTT application.
+ * message channel. An MCPTT call should be subordinate of an MCPTT application.
  */
 class McpttCall : public Object
 {
@@ -63,11 +63,11 @@ class McpttCall : public Object
 public:
  /**
   * Gets the current port number to use.
-  * \returns The currnent port number.
+  * \returns The current port number.
   */
  static uint16_t GetPortNum (void);
  /**
-  * Gets the next por number to use.
+  * Gets the next port number to use.
   * \returns The next port number.
   */
  static uint16_t NextPortNum (void);
