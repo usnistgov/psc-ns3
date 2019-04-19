@@ -59,24 +59,18 @@ uint16_t McpttCall::s_portNum = 49154;
 uint16_t
 McpttCall::GetPortNum (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   return s_portNum;
 }
 
 uint16_t
 McpttCall::NextPortNum (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   return s_portNum++;
 }
 
 TypeId
 McpttCall::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   static TypeId tid = TypeId ("ns3::McpttCall")
     .SetParent<Object> ()
     .AddConstructor<McpttCall> ()
@@ -130,8 +124,6 @@ McpttCall::CloseMediaChan (void)
 uint16_t
 McpttCall::GetCallId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
   McpttCallMsgFieldCallId callIdField = callMachine->GetCallId ();
   uint16_t callId = callIdField.GetCallId ();
@@ -142,16 +134,12 @@ McpttCall::GetCallId (void) const
 TypeId
 McpttCall::GetInstanceTypeId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return McpttCall::GetTypeId ();
 }
 
 bool
 McpttCall::IsFloorChanOpen (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   Ptr<McpttChan> floorChan = GetFloorChan ();
   bool isOpen = floorChan->IsOpen ();
 
@@ -161,8 +149,6 @@ McpttCall::IsFloorChanOpen (void) const
 bool
 McpttCall::IsMediaChanOpen (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   Ptr<McpttChan> mediaChan = GetMediaChan ();
   bool isOpen = mediaChan->IsOpen ();
 
@@ -382,32 +368,24 @@ McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
 Ptr<McpttCallMachine>
 McpttCall::GetCallMachine (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_callMachine;
 }
 
 Ptr<McpttChan>
 McpttCall::GetFloorChan (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_floorChan;
 }
 
 Ptr<McpttFloorMachine>
 McpttCall::GetFloorMachine (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_floorMachine;
 }
 
 Ptr<McpttChan>
 McpttCall::GetMediaChan (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_mediaChan;
 }
 
