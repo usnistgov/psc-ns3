@@ -582,8 +582,8 @@ McpttCallTypeMachinePrivateStateQ1::UpgradeTo (McpttCallTypeMachinePrivate& mach
   Ipv4AddressValue grpAddress;
   Vector myLoc = pttApp->GetNodeLoc ();
   uint32_t myUserId = pttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = pttApp->GetLocalAddress ();
   pttApp->GetAttribute ("PeerAddress", grpAddress);
 

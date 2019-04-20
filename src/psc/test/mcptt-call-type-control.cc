@@ -1014,8 +1014,8 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -1302,8 +1302,8 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -1587,8 +1587,8 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -1869,8 +1869,8 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -2162,8 +2162,8 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -2453,8 +2453,8 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -2860,8 +2860,8 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -3280,8 +3280,8 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -3700,8 +3700,8 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -4115,8 +4115,8 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -4419,8 +4419,8 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -4720,8 +4720,8 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   Time startTime = Seconds (2.1);
   Time exitTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;
@@ -4991,8 +4991,8 @@ McpttCallTypeMerge::Configure (void)
   Time startTime = Seconds (2.1);
   Time exitTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   McpttCallMsgFieldSdp sdp;

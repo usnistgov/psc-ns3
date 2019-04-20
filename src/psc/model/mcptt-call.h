@@ -59,18 +59,7 @@ class McpttPttApp;
  */
 class McpttCall : public Object
 {
- static uint16_t s_portNum; //!< A port number.
 public:
- /**
-  * Gets the current port number to use.
-  * \returns The current port number.
-  */
- static uint16_t GetPortNum (void);
- /**
-  * Gets the next port number to use.
-  * \returns The next port number.
-  */
- static uint16_t NextPortNum (void);
  /**
   * Gets the type ID of the McpttCall class.
   * \returns The type ID.

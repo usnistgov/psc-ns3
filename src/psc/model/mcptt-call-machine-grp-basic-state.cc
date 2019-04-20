@@ -366,8 +366,8 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
 
   uint32_t myUserId = machine.GetOwner ()->GetOwner ()->GetUserId ();
   uint32_t callId = rndCallId->GetInteger ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4AddressValue grpAddress;
   Ipv4Address origAddress = pttApp->GetLocalAddress ();
   Ptr<McpttFloorMachine> floorMachine = call->GetFloorMachine ();

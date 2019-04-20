@@ -289,8 +289,8 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   uint32_t myUserId = pttApp->GetUserId ();
   uint32_t callId = rndCallId->GetInteger ();
   uint32_t theirUserId = (uint32_t)targetId.Get ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = pttApp->GetLocalAddress ();
   McpttCallMsgFieldCallType callType = typeMachine->GetCallType ();
 

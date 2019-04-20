@@ -1061,8 +1061,8 @@ BroadcastCallScenario3::Configure (void)
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueAPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
@@ -1376,8 +1376,8 @@ BroadcastCallScenario4::Configure (void)
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueAPttApp->GetUserId ();
-  uint16_t floorPort = McpttCall::NextPortNum ();
-  uint16_t speechPort = McpttCall::NextPortNum ();
+  uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+  uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);

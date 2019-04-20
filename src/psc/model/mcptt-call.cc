@@ -54,20 +54,6 @@ NS_LOG_COMPONENT_DEFINE ("McpttCall");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttCall);
 
-uint16_t McpttCall::s_portNum = 49154;
-
-uint16_t
-McpttCall::GetPortNum (void)
-{
-  return s_portNum;
-}
-
-uint16_t
-McpttCall::NextPortNum (void)
-{
-  return s_portNum++;
-}
-
 TypeId
 McpttCall::GetTypeId (void)
 {

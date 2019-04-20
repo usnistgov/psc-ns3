@@ -92,6 +92,16 @@ public:
   */
  virtual ~McpttPttApp (void);
  /**
+  * Gets the current port number
+  * \returns The current port number.
+  */
+ static uint16_t GetCurrentPortNumber (void);
+ /**
+  * Gets the next port number to use.
+  * \returns The next port number.
+  */
+ static uint16_t AllocateNextPortNumber (void);
+ /**
   * Accepts a call.
   */
  virtual void AcceptCall (void);
@@ -246,6 +256,7 @@ protected:
   */
  virtual void TxCb (const McpttCall& call, const McpttMsg& msg);
 private:
+ static uint16_t s_portNumber; //!< A port number.
  uint16_t m_callPort; //!< The port on which call control messages will flow.
  Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
  std::vector<Ptr<McpttCall> > m_calls; //!< The collection of calls.

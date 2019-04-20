@@ -66,6 +66,20 @@ NS_LOG_COMPONENT_DEFINE ("McpttPttApp");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttPttApp);
 
+uint16_t McpttPttApp::s_portNumber = 49154;
+
+uint16_t
+McpttPttApp::GetCurrentPortNumber (void)
+{
+  return s_portNumber;
+}
+
+uint16_t
+McpttPttApp::AllocateNextPortNumber (void)
+{
+  return s_portNumber++;
+}
+
 TypeId
 McpttPttApp::GetTypeId (void)
 {
