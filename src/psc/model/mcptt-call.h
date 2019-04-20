@@ -76,88 +76,83 @@ public:
  /**
   * Closes the floor channel.
   */
- virtual void CloseFloorChan (void);
+ void CloseFloorChan (void);
  /**
   * Closes the media channel.
   */
- virtual void CloseMediaChan (void);
+ void CloseMediaChan (void);
  /**
   * Gets the ID of the call.
   * \returns The call ID.
   */
- virtual uint16_t GetCallId (void) const;
- /**
-  * Gets the type ID of this McpttCall instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
+ uint16_t GetCallId (void) const;
  /**
   * Indicates if the floor channel is open.
   * \returns True, if the channel is open.
   */
- virtual bool IsFloorChanOpen (void) const;
+ bool IsFloorChanOpen (void) const;
  /**
   * Indicates if the media channel is open.
   * \returns True, if the channel is open.
   */
- virtual bool IsMediaChanOpen (void) const;
+ bool IsMediaChanOpen (void) const;
  /**
   * Opens the floor channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- virtual void OpenFloorChan (const Ipv4Address& peerAddr, const uint16_t port);
+ void OpenFloorChan (const Ipv4Address& peerAddr, const uint16_t port);
  /**
   * Opens the media channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- virtual void OpenMediaChan (const Ipv4Address& peerAddr, const uint16_t port);
+ void OpenMediaChan (const Ipv4Address& peerAddr, const uint16_t port);
  /**
   * Receives a call message.
   * \param msg The message that was received.
   */
- virtual void Receive (const McpttCallMsg& msg);
+ void Receive (const McpttCallMsg& msg);
  /**
   * Receives a floor message.
   * \param msg The message that was received.
   */
- virtual void Receive (const McpttFloorMsg& msg);
+ void Receive (const McpttFloorMsg& msg);
  /**
   * Receive a media message.
   * \param msg The message that was received.
   */
- virtual void Receive (const McpttMediaMsg& msg);
+ void Receive (const McpttMediaMsg& msg);
  /**
   * Sends a call message.
   * \param msg The message to send.
   */
- virtual void Send (const McpttCallMsg& msg);
+ void Send (const McpttCallMsg& msg);
  /**
   * Sends a floor message.
   * \param msg The message to send.
   */
- virtual void Send (const McpttFloorMsg& msg);
+ void Send (const McpttFloorMsg& msg);
  /**
   * Sends a media message.
   * \param msg The media message.
   */
- virtual void Send (const McpttMediaMsg& msg);
+ void Send (const McpttMediaMsg& msg);
 protected:
  /**
   * Disposes of the McpttCall instance.
   */
- virtual void DoDispose (void);
+ void DoDispose (void);
  /**
   * Handles the receieved floor control packet.
   * \param pkt The packet that was received.
   */
- virtual void ReceiveFloorPkt (Ptr<Packet>  pkt);
+ void ReceiveFloorPkt (Ptr<Packet>  pkt);
  /**
   * Handles the received media packet.
   * \param pkt The packet that was received.
   */
- virtual void ReceiveMediaPkt (Ptr<Packet>  pkt);
+ void ReceiveMediaPkt (Ptr<Packet>  pkt);
  private:
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
@@ -171,62 +166,62 @@ public:
   * Gets the call control state machine.
   * \returns The call machine.
   */
- virtual Ptr<McpttCallMachine> GetCallMachine (void) const;
+ Ptr<McpttCallMachine> GetCallMachine (void) const;
  /**
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- virtual Ptr<McpttChan> GetFloorChan (void) const;
+ Ptr<McpttChan> GetFloorChan (void) const;
  /**
   * Gets the floor machine.
   * \returns The floor machine.
   */
- virtual Ptr<McpttFloorMachine> GetFloorMachine (void) const;
+ Ptr<McpttFloorMachine> GetFloorMachine (void) const;
  /**
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- virtual Ptr<McpttChan> GetMediaChan (void) const;
+ Ptr<McpttChan> GetMediaChan (void) const;
  /**
   * Gets the owner of this call.
   * \returns The owner.
   */
- virtual McpttPttApp* GetOwner (void) const;
+ McpttPttApp* GetOwner (void) const;
  /**
   * Sets the call control state machine.
   * \param callMachine The call control state machine.
   */
- virtual void SetCallMachine (Ptr<McpttCallMachine>  callMachine);
+ void SetCallMachine (Ptr<McpttCallMachine>  callMachine);
  /**
   * Sets the channel to use for floor control messages.
   * \param floorChan The channel.
   */
- virtual void SetFloorChan (Ptr<McpttChan>  floorChan);
+ void SetFloorChan (Ptr<McpttChan>  floorChan);
  /**
   * Sets the floor machine.
   * \param floorMachine The floor machine.
   */
- virtual void SetFloorMachine (Ptr<McpttFloorMachine>  floorMachine);
+ void SetFloorMachine (Ptr<McpttFloorMachine>  floorMachine);
  /**
   * Sets the channel to use for media messages.
   * \param mediaChan The channel.
   */
- virtual void SetMediaChan (Ptr<McpttChan>  mediaChan);
+ void SetMediaChan (Ptr<McpttChan>  mediaChan);
  /**
   * Sets the owner of this call.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttPttApp* const& owner);
+ void SetOwner (McpttPttApp* const& owner);
  /**
   * Sets the received message callback.
   * \param rxCb The callback.
   */
- virtual void SetRxCb (const Callback<void, const McpttCall&, const McpttMsg&>  rxCb);
+ void SetRxCb (const Callback<void, const McpttCall&, const McpttMsg&>  rxCb);
  /**
   * Sets the transmitted message callback.
   * \param txCb The callback.
   */
- virtual void SetTxCb (const Callback<void, const McpttCall&, const McpttMsg&>  txCb);
+ void SetTxCb (const Callback<void, const McpttCall&, const McpttMsg&>  txCb);
 };
 
 } // namespace ns3

@@ -117,12 +117,6 @@ McpttCall::GetCallId (void) const
   return callId;
 }
 
-TypeId
-McpttCall::GetInstanceTypeId (void) const
-{
-  return McpttCall::GetTypeId ();
-}
-
 bool
 McpttCall::IsFloorChanOpen (void) const
 {
