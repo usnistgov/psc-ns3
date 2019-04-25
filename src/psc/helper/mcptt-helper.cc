@@ -96,6 +96,16 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttQueuedUserInfo", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttRtpHeader", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttTimer", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorServerApp", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttFloorParticipant", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorParticipant", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorParticipantState", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorArbitrator", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorArbitratorState", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorDualControl", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorDualControlState", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorTowardsParticipant", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkFloorTowardsParticipantState", LOG_LEVEL_ALL);
 }
 
 uint32_t
