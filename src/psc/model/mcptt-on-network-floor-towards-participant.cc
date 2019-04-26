@@ -115,11 +115,11 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
     m_overriding (false),
     m_owner (0),
     m_revokeMsg (McpttFloorMsgRevoke ()),
-    m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
+    m_rxCb (MakeNullCallback<void, const McpttMsg&> ()),
     m_state (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
     m_t8 (CreateObject<McpttTimer> (McpttEntityId (8, "T8"))),
-    m_txCb (MakeNullCallback<void, const McpttFloorMsg&> ())
+    m_txCb (MakeNullCallback<void, const McpttMsg&> ())
 {
   NS_LOG_FUNCTION (this);
 
@@ -191,6 +191,11 @@ McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowar
       SetState (state);
       state->Selected (*this);
 
+      if (!m_stateChangeCb.IsNull ())
+        {
+          m_stateChangeCb (currStateId, stateId);
+        }
+
       m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
@@ -200,6 +205,12 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 {
   Ptr<Packet> pkt = Create<Packet> ();
   pkt->AddHeader (msg);
+
+  if (!m_txCb.IsNull ())
+    {
+      m_txCb (msg);
+    }
+
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
     {
       GetFloorChan ()->Send (pkt);
@@ -291,6 +302,11 @@ McpttOnNetworkFloorTowardsParticipant::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
+  if (!m_rxCb.IsNull ())
+    {
+      m_rxCb (msg);
+    }
+
   msg.Visit (*this);
 }
 
@@ -298,6 +314,11 @@ void
 McpttOnNetworkFloorTowardsParticipant::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
+
+  if (!m_rxCb.IsNull ())
+    {
+      m_rxCb (msg);
+    }
 
   msg.Visit (*this);
 }
@@ -310,11 +331,6 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorQueuePositionRequest (const M
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorQueuePositionRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -325,11 +341,6 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorRelease (const McpttFloorMsgR
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRelease (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -340,11 +351,6 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorRequest (const McpttFloorMsgR
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -547,11 +553,6 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorDeny (McpttFloorMsgDeny& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorDeny (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_txCb (msg);
-    }
 }
 
 void
@@ -562,11 +563,6 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorGranted (McpttFloorMsgGranted& m
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorGranted (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_txCb (msg);
-    }
 }
 
 void
@@ -577,11 +573,6 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorIdle (McpttFloorMsgIdle& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorIdle (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_txCb (msg);
-    }
 }
 
 void
@@ -592,11 +583,6 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorRevoke (McpttFloorMsgRevoke& msg
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorRevoke (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_txCb (msg);
-    }
 }
 
 void
@@ -607,11 +593,6 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorTaken (McpttFloorMsgTaken& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorTaken (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_txCb (msg);
-    }
 }
 
 void
@@ -622,11 +603,6 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendMedia (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      //m_txCb (msg);
-    }
 }
 
 Ptr<McpttChan>
@@ -806,7 +782,7 @@ McpttOnNetworkFloorTowardsParticipant::SetRevokeMsg (const McpttFloorMsgRevoke& 
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
+McpttOnNetworkFloorTowardsParticipant::SetRxCb (const Callback<void, const McpttMsg&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -854,7 +830,7 @@ McpttOnNetworkFloorTowardsParticipant::SetTrackInfo (const McpttFloorMsgFieldTra
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb)
+McpttOnNetworkFloorTowardsParticipant::SetTxCb (const Callback<void, const McpttMsg&>  txCb)
 {
   NS_LOG_FUNCTION (this);
 

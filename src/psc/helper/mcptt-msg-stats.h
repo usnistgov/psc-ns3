@@ -67,24 +67,24 @@ public:
  virtual TypeId GetInstanceTypeId (void) const;
  /**
   * The sink function for tracing the received messages.
-  * \param pttApp The app.
+  * \param app The app.
   * \param msg The message.
   */
- virtual void ReceiveRxTrace (const McpttPttApp& pttApp, const McpttMsg& msg);
+ virtual void ReceiveRxTrace (const Application& app, const McpttMsg& msg);
  /**
   * The sink function for tracing the transmitted messages.
-  * \param pttApp The app.
+  * \param app The app.
   * \param msg The message.
   */
-  virtual void ReceiveTxTrace (const McpttPttApp& pttApp, const McpttMsg& msg);
+  virtual void ReceiveTxTrace (const Application& app, const McpttMsg& msg);
 protected:
  /**
   * Writes to the trace.
-  * \param pttApp The app.
+  * \param app The app.
   * \param msg The message.
   * \param rx The flag that indicates if an RX or TX should be traced.
   */
- virtual void Trace (const McpttPttApp& pttApp, const McpttMsg& msg, bool rx);
+ virtual void Trace (const Application& app, const McpttMsg& msg, bool rx);
 private:
  bool m_callControl; //!< The flag that indicates if call control messages should be included.
  bool m_firstMsg; //!< Flag that indicates if no message has been traced yet.

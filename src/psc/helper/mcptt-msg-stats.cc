@@ -31,10 +31,13 @@
 
 #include <fstream>
 
+#include <ns3/abort.h>
 #include <ns3/boolean.h>
 #include <ns3/log.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
+#include <ns3/mcptt-on-network-floor-server-app.h>
+#include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/object.h>
 #include <ns3/type-id.h>
 #include <ns3/string.h>
@@ -106,25 +109,25 @@ McpttMsgStats::GetInstanceTypeId (void) const
 }
 
 void
-McpttMsgStats::ReceiveRxTrace (const McpttPttApp& pttApp, const McpttMsg& msg)
+McpttMsgStats::ReceiveRxTrace (const Application& app, const McpttMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &pttApp << &msg);
+  NS_LOG_FUNCTION (this << &app << &msg);
 
-  Trace (pttApp, msg, true);
+  Trace (app, msg, true);
 }
 
 void
-McpttMsgStats::ReceiveTxTrace (const McpttPttApp& pttApp, const McpttMsg& msg)
+McpttMsgStats::ReceiveTxTrace (const Application& app, const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this);
 
-  Trace (pttApp, msg, false);
+  Trace (app, msg, false);
 }
 
 void
-McpttMsgStats::Trace (const McpttPttApp& pttApp, const McpttMsg& msg, bool rx)
+McpttMsgStats::Trace (const Application& app, const McpttMsg& msg, bool rx)
 {
-  NS_LOG_FUNCTION (this << &pttApp << &msg);
+  NS_LOG_FUNCTION (this << &app << &msg);
 
   if ((msg.IsA (McpttCallMsg::GetTypeId ()) && m_callControl == true)
       || (msg.IsA (McpttFloorMsg::GetTypeId ()) && m_floorControl == true)
@@ -136,7 +139,7 @@ McpttMsgStats::Trace (const McpttPttApp& pttApp, const McpttMsg& msg, bool rx)
         {
           m_firstMsg = false;
           outFile.open (m_outputFileName.c_str ());
-          outFile << "time(ms)\tuserid\trx/tx\tbytes\tmessage";
+          outFile << "time(ms)\tssrc\trx/tx\tbytes\tmessage";
           outFile << std::endl;
         }
       else
@@ -145,9 +148,25 @@ McpttMsgStats::Trace (const McpttPttApp& pttApp, const McpttMsg& msg, bool rx)
         }
 
       outFile << Simulator::Now ().GetMilliSeconds ();
-      outFile << "\t" << pttApp.GetUserId ();
+
+      if (app.GetInstanceTypeId () == McpttPttApp::GetTypeId ()
+          || app.GetInstanceTypeId ().IsChildOf (McpttPttApp::GetTypeId ()))
+        {
+          outFile << "\t" << dynamic_cast<const McpttPttApp&>(app).GetUserId ();
+        }
+      else if (app.GetInstanceTypeId () == McpttOnNetworkFloorServerApp::GetTypeId ()
+          || app.GetInstanceTypeId ().IsChildOf (McpttOnNetworkFloorServerApp::GetTypeId ()))
+        {
+          outFile << "\t" << dynamic_cast<const McpttOnNetworkFloorServerApp&>(app).GetArbitrator ()->GetTxSsrc ();
+        }
+      else
+        {
+          NS_ABORT_MSG ("Application being traced is not an MCPTT application.");
+        }
+
       outFile << "\t" << (rx ? "RX" : "TX");
       outFile << "\t" << msg.GetSerializedSize ();
+
       if (m_includeMsgContent)
         {
           outFile << "\t";
@@ -157,6 +176,7 @@ McpttMsgStats::Trace (const McpttPttApp& pttApp, const McpttMsg& msg, bool rx)
         {
           outFile << "\t" << msg.GetInstanceTypeId ();
         }
+
       outFile << std::endl;
 
       outFile.close ();

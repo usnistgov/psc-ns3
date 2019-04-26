@@ -146,6 +146,11 @@ McpttOnNetworkFloorDualControl::ChangeState (Ptr<McpttOnNetworkFloorDualControlS
       SetState (state);
       state->Selected (*this);
 
+      if (!m_stateChangeCb.IsNull ())
+        {
+          m_stateChangeCb (currStateId, stateId);
+        }
+
       m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }

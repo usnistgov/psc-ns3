@@ -35,6 +35,7 @@
 #include <ns3/boolean.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
+#include <ns3/object-vector.h>
 #include <ns3/ptr.h>
 #include <ns3/pointer.h>
 #include <ns3/simulator.h>
@@ -86,11 +87,20 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_dualFloorSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("McGranted", "The flag that indicates if the \"mc_granted\" fmtp attribute was included",
+    .AddAttribute ("DualFloorControl", "The dual floor control state machine.",
+                   PointerValue (CreateObject<McpttOnNetworkFloorDualControl> ()),
+                   MakePointerAccessor (&McpttOnNetworkFloorArbitrator::GetDualControl,
+                                        &McpttOnNetworkFloorArbitrator::SetDualControl),
+                   MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
+    .AddAttribute ("FloorParticipants", "The list of floor participants associated with this arbitrator.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&McpttOnNetworkFloorArbitrator::m_participants),
+                   MakeObjectVectorChecker<McpttOnNetworkFloorTowardsParticipant> ())
+     .AddAttribute ("McGranted", "The flag that indicates if the \"mc_granted\" fmtp attribute was included",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_mcGranted),
                    MakeBooleanChecker ())
-    .AddAttribute ("QueueCapacity", "The capacity of the queue.",
+   .AddAttribute ("QueueCapacity", "The capacity of the queue.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::SetQueueCapacity),
                    MakeUintegerChecker<uint32_t> ())
@@ -136,12 +146,10 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_c7 (CreateObject<McpttCounter> (McpttEntityId (7, "C7"))),
     m_c20 (CreateObject<McpttCounter> (McpttEntityId (20, "C20"))),
     m_dualFloorSupported (false),
-    m_dualControl (CreateObject<McpttOnNetworkFloorDualControl> ()),
     m_owner (0),
-    m_participants (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >()),
     m_queue (CreateObject<McpttFloorQueue> ()),
     m_rejectCause (0),
-    m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
+    m_rxCb (MakeNullCallback<void, const McpttMsg&> ()),
     m_seqNum (0),
     m_state (McpttOnNetworkFloorArbitratorStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
@@ -154,11 +162,9 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_t4 (CreateObject<McpttTimer> (McpttEntityId (4, "T4"))),
     m_t7 (CreateObject<McpttTimer> (McpttEntityId (7, "T7"))),
     m_t20 (CreateObject<McpttTimer> (McpttEntityId (20, "T20"))),
-    m_txCb (MakeNullCallback<void, const McpttFloorMsg&> ())
+    m_txCb (MakeNullCallback<void, const McpttMsg&> ())
 {
   NS_LOG_FUNCTION (this);
-
-  m_dualControl->SetOwner (this);
 
   m_t1->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT1, this);
   m_t2->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT2, this);
@@ -180,6 +186,8 @@ McpttOnNetworkFloorArbitrator::AddParticipant (Ptr<McpttOnNetworkFloorTowardsPar
 
   participant->SetOwner (this);
   m_participants.push_back (participant);
+  participant->SetRxCb (MakeCallback (&McpttOnNetworkFloorArbitrator::RxCb, this));
+  participant->SetTxCb (MakeCallback (&McpttOnNetworkFloorArbitrator::TxCb, this));
 }
 
 void
@@ -239,10 +247,14 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
       SetState (state);
       state->Selected (*this);
 
+      if (!m_stateChangeCb.IsNull ())
+        {
+          m_stateChangeCb (currStateId, stateId);
+        }
+
       m_stateChangeTrace (GetTxSsrc (), GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
-
 
 McpttFloorMsgFieldIndic
 McpttOnNetworkFloorArbitrator::GetIndicator (void) const
@@ -461,11 +473,6 @@ McpttOnNetworkFloorArbitrator::ReceiveFloorRelease (const McpttFloorMsgRelease& 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator (" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRelease (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -476,11 +483,6 @@ McpttOnNetworkFloorArbitrator::ReceiveFloorRequest (const McpttFloorMsgRequest& 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorArbitrator (" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -509,10 +511,6 @@ McpttOnNetworkFloorArbitrator::SendTo (McpttMsg& msg, const uint32_t ssrc)
         {
           found = true;
           (*it)->Send (msg);
-          if (!m_txCb.IsNull ())
-            {
-              //m_txCb (msg);
-            }
         }
       it++;
     }
@@ -531,10 +529,6 @@ McpttOnNetworkFloorArbitrator::SendToAll (McpttMsg& msg)
     {
       (*it)->Send (msg);
       it++;
-      if (!m_txCb.IsNull ())
-        {
-          //m_txCb (msg);
-        }
     }
 }
 
@@ -552,11 +546,6 @@ McpttOnNetworkFloorArbitrator::SendToAllExcept (McpttMsg& msg, const uint32_t ss
       if ((*pit)->GetStoredSsrc () != ssrc)
         {
           (*pit)->Send (msg);
-
-          if (!m_txCb.IsNull ())
-            {
-              //m_txCb (msg);
-            }
         }
       pit++;
     }
@@ -704,6 +693,11 @@ McpttOnNetworkFloorArbitrator::DoDispose (void)
   m_t4 = 0;
   m_t7 = 0;
   m_t20 = 0;
+
+  for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
+  {
+    *it = 0;
+  }
 }
 
 void
@@ -764,6 +758,28 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorArbitrator T20 expired.");
 
   m_state->ExpiryOfT20 (*this);
+}
+
+void
+McpttOnNetworkFloorArbitrator::RxCb (const McpttMsg& msg)
+{
+  NS_LOG_FUNCTION (this << &msg);
+
+  if (!m_rxCb.IsNull ())
+    {
+      m_rxCb (msg);
+    }
+}
+
+void
+McpttOnNetworkFloorArbitrator::TxCb (const McpttMsg& msg)
+{
+  NS_LOG_FUNCTION (this << &msg);
+
+  if (!m_txCb.IsNull ())
+    {
+      m_txCb (msg);
+    }
 }
 
 Ptr<McpttCallControlInfo>
@@ -940,7 +956,7 @@ McpttOnNetworkFloorArbitrator::SetRejectCause (const uint16_t rejectCause)
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
+McpttOnNetworkFloorArbitrator::SetRxCb (const Callback<void, const McpttMsg&> rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -988,12 +1004,13 @@ McpttOnNetworkFloorArbitrator::SetTrackInfo (const McpttFloorMsgFieldTrackInfo& 
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb)
+McpttOnNetworkFloorArbitrator::SetTxCb (const Callback<void, const McpttMsg&> txCb)
 {
   NS_LOG_FUNCTION (this);
 
   m_txCb = txCb;
 }
+
 /** McpttOnNetworkFloorArbitrator - end **/
 
 } // namespace ns3

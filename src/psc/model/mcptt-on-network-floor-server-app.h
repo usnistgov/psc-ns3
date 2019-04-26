@@ -37,6 +37,7 @@
 #include <ns3/application.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
+#include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 #include <ns3/vector.h>
 
@@ -72,6 +73,11 @@ public:
  virtual TypeId GetInstanceTypeId (void) const;
 protected:
  /**
+  * The callback to fire when a message is received.
+  * \param msg The message that was received.
+  */
+ virtual void RxCb (const McpttMsg& msg);
+ /**
   * Disposes of the McpttOnNetworkFloorServerApp instance.
   */
  virtual void DoDispose (void);
@@ -83,9 +89,16 @@ protected:
   * Stops the McpttOnNetworkFloorServerApp application.
   */
  virtual void StopApplication (void);
+ /**
+  * The callback to fire when a message is sent.
+  * \param msg The message that was sent.
+  */
+ virtual void TxCb (const McpttMsg& msg);
 private:
  Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The arbitrator.
  Ipv4Address m_localAddress; //!< The local IP address.
+ TracedCallback<const Application&, const McpttMsg&> m_rxTrace; //!< The Tx trace.
+ TracedCallback<const Application&, const McpttMsg&> m_txTrace; //!< The Tx trace.
 public:
  /**
   * Gets the arbitrator.

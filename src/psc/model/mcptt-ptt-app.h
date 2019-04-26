@@ -267,11 +267,11 @@ private:
  Ipv4Address m_peerAddress; //!< The address of the node that the peer application is on.
  Ptr<McpttPusher> m_pusher; //!< The object that randomly calls the Pushed() function.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
- TracedCallback<const McpttPttApp&, const McpttMsg&> m_rxTrace; //!< The Tx trace.
+ TracedCallback<const Application&, const McpttMsg&> m_rxTrace; //!< The Tx trace.
  Ptr<McpttCall> m_selectedCall; //!< The currenctly selected call.
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
- TracedCallback<const McpttPttApp&, const McpttMsg&> m_txTrace; //!< The Rx trace.
+ TracedCallback<const Application&, const McpttMsg&> m_txTrace; //!< The Rx trace.
 public:
  /**
   * Gets the channel used for call control messages.

@@ -291,6 +291,16 @@ protected:
   * Notifies the floor machine that timer T20 has expired.
   */
  virtual void ExpiryOfT20 (void);
+ /**
+  * The callback to fire when a message is received.
+  * \param msg The message that was received.
+  */
+ virtual void RxCb (const McpttMsg& msg);
+ /**
+  * The callback to fire when a message is sent.
+  * \param msg The message that was sent.
+  */
+ virtual void TxCb (const McpttMsg& msg);
 private:
  bool m_ackRequired; //!< A flag that indicates if acknowledgement is required.
  bool m_audioCutIn;  //!< The flag that indicates if audio cut-in is configured for the group.
@@ -305,7 +315,7 @@ private:
  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
  Ptr<McpttFloorQueue> m_queue; //!< The queue of floor requests.
  uint16_t m_rejectCause; //!< The reject cause to include when revoking the floor.
- Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
+ Callback<void, const McpttMsg&> m_rxCb; //!< The message received call back.
  uint16_t m_seqNum; //!< The sequence number.
  Ptr<McpttOnNetworkFloorArbitratorState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
@@ -320,7 +330,7 @@ private:
  Ptr<McpttTimer> m_t4; //!< The timer T4.
  Ptr<McpttTimer> m_t7; //!< The timer T7.
  Ptr<McpttTimer> m_t20; //!< The timer T20.
- Callback<void, const McpttFloorMsg&> m_txCb; //!< The message tranmission call back.
+ Callback<void, const McpttMsg&> m_txCb; //!< The message tranmission call back.
 public:
  /**
   * Gets the call control information.
@@ -423,15 +433,15 @@ public:
   */
  virtual void SetOwner (McpttOnNetworkFloorServerApp* const& owner);
  /**
-  * Sets the received message call back.
-  * \param rxCb The received message call back.
-  */
- virtual void SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb);
- /**
   * Sets the reject cause to include in the revoke message when entering the 'G: pending Floor Revoke' state.
   * \param rejectCause The reject cause.
   */
  virtual void SetRejectCause (const uint16_t rejectCause);
+ /**
+  * Sets the received message call back.
+  * \param rxCb The received message call back.
+  */
+ virtual void SetRxCb (const Callback<void, const McpttMsg&>  rxCb);
  /**
   * Sets the state of the floor machine.
   * \param state The state.
@@ -458,10 +468,10 @@ public:
   */
  virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
  /**
-  * Sets the transmission call back.
-  * \param txCb The transmission call back.
+  * Sets the received message call back.
+  * \param txCb The received message call back.
   */
- virtual void SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb);
+ virtual void SetTxCb (const Callback<void, const McpttMsg&>  txCb);
 };
 
 } // namespace ns3

@@ -50,6 +50,17 @@ McpttOnNetworkFloorServerApp::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorServerApp")
     .SetParent<Application> ()
     .AddConstructor<McpttOnNetworkFloorServerApp>()
+    .AddAttribute ("FloorArbitrator", "The floor arbitration state machine.",
+                   PointerValue (0),
+                   MakePointerAccessor (&McpttOnNetworkFloorServerApp::GetArbitrator,
+                                        &McpttOnNetworkFloorServerApp::SetArbitrator),
+                   MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
+    .AddTraceSource ("RxTrace", "The trace for capturing received messages",
+                     MakeTraceSourceAccessor (&McpttOnNetworkFloorServerApp::m_rxTrace),
+                     "ns3::McpttOnNetworkFloorServerApp::RxTrace")
+    .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
+                     MakeTraceSourceAccessor (&McpttOnNetworkFloorServerApp::m_txTrace),
+                     "ns3::McpttOnNetworkFloorServerApp::TxTrace")
   ;
 
     return tid;
@@ -81,6 +92,14 @@ McpttOnNetworkFloorServerApp::DoDispose (void)
 }
 
 void
+McpttOnNetworkFloorServerApp::RxCb (const McpttMsg& msg)
+{
+  NS_LOG_FUNCTION (this << &msg);
+
+  m_rxTrace (*this, msg);
+}
+
+void
 McpttOnNetworkFloorServerApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
@@ -94,6 +113,14 @@ McpttOnNetworkFloorServerApp::StopApplication (void)
   NS_LOG_FUNCTION (this);
 
   GetArbitrator ()->Stop ();
+}
+
+void
+McpttOnNetworkFloorServerApp::TxCb (const McpttMsg& msg)
+{
+  NS_LOG_FUNCTION (this << &msg);
+
+  m_txTrace (*this, msg);
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
@@ -115,9 +142,17 @@ McpttOnNetworkFloorServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitr
 {
   NS_LOG_FUNCTION (this);
 
+  if (m_arbitrator != 0)
+    {
+      arbitrator->SetRxCb (MakeNullCallback<void, const McpttMsg&> ());
+      arbitrator->SetTxCb (MakeNullCallback<void, const McpttMsg&> ());
+    }
+
   if (arbitrator != 0)
     {
       arbitrator->SetOwner (this);
+      arbitrator->SetRxCb (MakeCallback (&McpttOnNetworkFloorServerApp::RxCb, this));
+      arbitrator->SetTxCb (MakeCallback (&McpttOnNetworkFloorServerApp::TxCb, this));
     }
 
   m_arbitrator = arbitrator;
