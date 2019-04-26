@@ -735,8 +735,9 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveMedia (McpttOnNetworkF
   NS_LOG_FUNCTION (this << &machine << msg);
 
   //TODO: Rrequest the MCPTT client to start rendering the received RTP media packets.
-  
-  machine.GetT103 ()->Start ();
+
+  //TODO: Not in standard - "restart/start T103" not just "start T103".
+  machine.GetT103 ()->Restart ();
 }
 
 void
