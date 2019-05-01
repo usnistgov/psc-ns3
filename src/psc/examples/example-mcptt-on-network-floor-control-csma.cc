@@ -38,7 +38,6 @@
 #include "ns3/psc-module.h"
 #include "ns3/stats-module.h"
 #include "ns3/udp-socket-factory.h"
-#include "ns3/wifi-module.h"
 
 #include <iostream>
 
@@ -80,8 +79,6 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
   Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200")); //Disable fragmentation in wifi
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200")); //Disable fragmentation in wifi
  
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
