@@ -212,9 +212,9 @@ McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer&
   for (uint32_t pidx = 0; pidx < clients.GetN (); pidx++)
     {
       BooleanValue mcImplicitRequest;
-      uint32_t callPort = McpttCall::NextPortNum ();
-      uint32_t floorPort = McpttCall::NextPortNum ();
-      uint32_t mediaPort = McpttCall::NextPortNum ();
+      uint32_t callPort = McpttPttApp::AllocateNextPortNumber ();
+      uint32_t floorPort = McpttPttApp::AllocateNextPortNumber ();
+      uint32_t mediaPort = McpttPttApp::AllocateNextPortNumber ();
       Ptr<McpttPttApp> clientApp = DynamicCast<McpttPttApp, Application> (clients.Get (pidx));
       Ptr<McpttOnNetworkFloorTowardsParticipant> participant = m_participantFac.Create<McpttOnNetworkFloorTowardsParticipant> ();
 
