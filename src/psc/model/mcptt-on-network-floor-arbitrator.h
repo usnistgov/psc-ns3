@@ -49,7 +49,7 @@
 namespace ns3 {
 
 class McpttOnNetworkFloorArbitratorState;
-class McpttOnNetworkFloorServerApp;
+class McpttServerApp;
 class McpttOnNetworkFloorTowardsParticipant;
 
 /**
@@ -310,7 +310,7 @@ private:
  bool m_dualFloorSupported; //!< A flag that to indicate dual floor indication.
  Ptr<McpttOnNetworkFloorDualControl> m_dualControl; //!< The dual floor control state machine.
  bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
- McpttOnNetworkFloorServerApp* m_owner; //!< The client application that owns this floor machine.
+ McpttServerApp* m_owner; //!< The client application that owns this floor machine.
  bool m_mcGranted; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
  Ptr<McpttFloorQueue> m_queue; //!< The queue of floor requests.
@@ -356,7 +356,7 @@ public:
   * Gets the owner of the state machine.
   * \returns The owner.
   */
- virtual McpttOnNetworkFloorServerApp* GetOwner (void) const;
+ virtual McpttServerApp* GetOwner (void) const;
  /**
   * Gets the queue.
   * \returns The queue.
@@ -431,7 +431,7 @@ public:
   * Sets the owner of the floor machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttOnNetworkFloorServerApp* const& owner);
+ virtual void SetOwner (McpttServerApp* const& owner);
  /**
   * Sets the reject cause to include in the revoke message when entering the 'G: pending Floor Revoke' state.
   * \param rejectCause The reject cause.

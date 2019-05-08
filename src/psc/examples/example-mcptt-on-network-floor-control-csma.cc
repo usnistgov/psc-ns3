@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Creating applications...");
   ApplicationContainer serverApps;
   McpttOnNetworkFloorControlHelper mcpttServerHelper;
-  mcpttServerHelper.SetApp ("ns3::McpttOnNetworkFloorServerApp");
+  mcpttServerHelper.SetApp ("ns3::McpttServerApp");
   mcpttServerHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
@@ -180,7 +180,7 @@ int main (int argc, char *argv[])
 
   for (uint32_t idx = 0; idx < servers.GetN (); idx++)
     {
-      Ptr<McpttOnNetworkFloorServerApp> serverApp = DynamicCast<McpttOnNetworkFloorServerApp, Application> (serverApps.Get (idx));
+      Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp, Application> (serverApps.Get (idx));
       Ipv4Address serverAddress = interfaces.GetAddress (idx);
       serverApp->SetLocalAddress (serverAddress);
       NS_LOG_INFO ("server " << idx << " ip address = " << serverAddress);

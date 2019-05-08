@@ -29,8 +29,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_ON_NETWORK_FLOOR_SERVER_APP_H
-#define MCPTT_ON_NETWORK_FLOOR_SERVER_APP_H
+#ifndef MCPTT_SERVER_APP_H
+#define MCPTT_SERVER_APP_H
 
 #include <vector>
 
@@ -48,9 +48,9 @@ class McpttOnNetworkFloorArbitrator;
 /**
  * \ingroup mcptt
  *
- * This class represents the MCPTT floor control application.
+ * This class represents the MCPTT server application.
  */
-class McpttOnNetworkFloorServerApp : public Application
+class McpttServerApp : public Application
 {
 public:
  /**
@@ -59,15 +59,15 @@ public:
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttPtt class.
+  * Creates an instance of the McpttServerApp class.
   */
- McpttOnNetworkFloorServerApp (void);
+ McpttServerApp (void);
  /**
-  * The destructor of the McpttOnNetworkFloorServerApp class.
+  * The destructor of the McpttServerApp class.
   */
- virtual ~McpttOnNetworkFloorServerApp (void);
+ virtual ~McpttServerApp (void);
  /**
-  * Gets the type ID fo this McpttOnNetworkFloorServerApp instance.
+  * Gets the type ID fo this McpttServerApp instance.
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
@@ -78,15 +78,15 @@ protected:
   */
  virtual void RxCb (const McpttMsg& msg);
  /**
-  * Disposes of the McpttOnNetworkFloorServerApp instance.
+  * Disposes of the McpttServerApp instance.
   */
  virtual void DoDispose (void);
  /**
-  * Starts the McpttOnNetworkFloorServerApp application.
+  * Starts the McpttServerApp application.
   */
  virtual void StartApplication (void);
  /**
-  * Stops the McpttOnNetworkFloorServerApp application.
+  * Stops the McpttServerApp application.
   */
  virtual void StopApplication (void);
  /**
@@ -124,5 +124,5 @@ public:
 
 } // namespace ns3
 
-#endif /* MCPTT_ON_NETWORK_FLOOR_SERVER_APP_H */
+#endif /* MCPTT_SERVER_APP_H */
 

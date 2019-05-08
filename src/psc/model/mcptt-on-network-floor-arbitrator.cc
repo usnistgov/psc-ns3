@@ -47,7 +47,7 @@
 #include "mcptt-floor-msg-sink.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator-state.h"
-#include "mcptt-on-network-floor-server-app.h"
+#include "mcptt-server-app.h"
 #include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
@@ -814,7 +814,7 @@ McpttOnNetworkFloorArbitrator::GetDualControl (void) const
   return m_dualControl;
 }
 
-McpttOnNetworkFloorServerApp*
+McpttServerApp*
 McpttOnNetworkFloorArbitrator::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -940,7 +940,7 @@ McpttOnNetworkFloorArbitrator::SetDualControl (const Ptr<McpttOnNetworkFloorDual
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetOwner (McpttOnNetworkFloorServerApp* const& owner)
+McpttOnNetworkFloorArbitrator::SetOwner (McpttServerApp* const& owner)
 {
   NS_LOG_FUNCTION (this);
 

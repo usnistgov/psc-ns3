@@ -37,7 +37,7 @@
 #include "mcptt-entity-id.h"
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-on-network-floor-arbitrator-state.h"
-#include "mcptt-on-network-floor-server-app.h"
+#include "mcptt-server-app.h"
 #include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-floor-msg.h"

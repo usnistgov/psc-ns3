@@ -44,7 +44,7 @@
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator.h"
-#include "mcptt-on-network-floor-server-app.h"
+#include "mcptt-server-app.h"
 #include "mcptt-on-network-floor-towards-participant-state.h"
 #include "mcptt-timer.h"
 

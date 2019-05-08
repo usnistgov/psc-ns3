@@ -37,7 +37,7 @@
 #include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/mcptt-on-network-floor-dual-control.h>
 #include <ns3/mcptt-on-network-floor-participant.h>
-#include <ns3/mcptt-on-network-floor-server-app.h>
+#include <ns3/mcptt-server-app.h>
 #include <ns3/mcptt-on-network-floor-towards-participant.h>
 #include <ns3/mcptt-ptt-app.h>
 
@@ -47,7 +47,7 @@ namespace ns3 {
 
 McpttOnNetworkFloorControlHelper::McpttOnNetworkFloorControlHelper (void)
 { 
-  m_appFac.SetTypeId (McpttOnNetworkFloorServerApp::GetTypeId ());
+  m_appFac.SetTypeId (McpttServerApp::GetTypeId ());
   m_arbitratorFac.SetTypeId (McpttOnNetworkFloorArbitrator::GetTypeId ());
   m_dualControlFac.SetTypeId (McpttOnNetworkFloorDualControl::GetTypeId ());
   m_participantFac.SetTypeId (McpttOnNetworkFloorTowardsParticipant::GetTypeId ());
@@ -206,7 +206,7 @@ McpttOnNetworkFloorControlHelper::SetCallInfo (std::string name,
 void
 McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer& server, const ApplicationContainer& clients)
 {
-  Ptr<McpttOnNetworkFloorServerApp> serverApp = DynamicCast<McpttOnNetworkFloorServerApp, Application> (server.Get (0));
+  Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp, Application> (server.Get (0));
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = serverApp->GetArbitrator ();
 
   for (uint32_t pidx = 0; pidx < clients.GetN (); pidx++)
@@ -243,7 +243,7 @@ McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer&
 Ptr<Application>
 McpttOnNetworkFloorControlHelper::InstallPriv (const Ptr<Node>& node)
 {
-  Ptr<McpttOnNetworkFloorServerApp> app = m_appFac.Create<McpttOnNetworkFloorServerApp> ();
+  Ptr<McpttServerApp> app = m_appFac.Create<McpttServerApp> ();
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = m_arbitratorFac.Create<McpttOnNetworkFloorArbitrator> ();
   Ptr<McpttOnNetworkFloorDualControl> dualControl = m_dualControlFac.Create<McpttOnNetworkFloorDualControl> ();
   Ptr<McpttCallControlInfo> callInfo = m_callInfoFac.Create<McpttCallControlInfo> ();

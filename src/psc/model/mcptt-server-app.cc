@@ -35,56 +35,56 @@
 
 #include "mcptt-on-network-floor-arbitrator.h"
 
-#include "mcptt-on-network-floor-server-app.h"
+#include "mcptt-server-app.h"
 
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorServerApp");
+NS_LOG_COMPONENT_DEFINE ("McpttServerApp");
 
-NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorServerApp);
+NS_OBJECT_ENSURE_REGISTERED (McpttServerApp);
 
 TypeId
-McpttOnNetworkFloorServerApp::GetTypeId (void)
+McpttServerApp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorServerApp")
+  static TypeId tid = TypeId ("ns3::McpttServerApp")
     .SetParent<Application> ()
-    .AddConstructor<McpttOnNetworkFloorServerApp>()
+    .AddConstructor<McpttServerApp>()
     .AddAttribute ("FloorArbitrator", "The floor arbitration state machine.",
                    PointerValue (0),
-                   MakePointerAccessor (&McpttOnNetworkFloorServerApp::GetArbitrator,
-                                        &McpttOnNetworkFloorServerApp::SetArbitrator),
+                   MakePointerAccessor (&McpttServerApp::GetArbitrator,
+                                        &McpttServerApp::SetArbitrator),
                    MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
-                     MakeTraceSourceAccessor (&McpttOnNetworkFloorServerApp::m_rxTrace),
-                     "ns3::McpttOnNetworkFloorServerApp::RxTrace")
+                     MakeTraceSourceAccessor (&McpttServerApp::m_rxTrace),
+                     "ns3::McpttServerApp::RxTrace")
     .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
-                     MakeTraceSourceAccessor (&McpttOnNetworkFloorServerApp::m_txTrace),
-                     "ns3::McpttOnNetworkFloorServerApp::TxTrace")
+                     MakeTraceSourceAccessor (&McpttServerApp::m_txTrace),
+                     "ns3::McpttServerApp::TxTrace")
   ;
 
     return tid;
 }  
 
-McpttOnNetworkFloorServerApp::McpttOnNetworkFloorServerApp (void)
+McpttServerApp::McpttServerApp (void)
   : Application ()
 {  
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorServerApp::~McpttOnNetworkFloorServerApp (void)
+McpttServerApp::~McpttServerApp (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttOnNetworkFloorServerApp::GetInstanceTypeId (void) const
+McpttServerApp::GetInstanceTypeId (void) const
 {
-  return McpttOnNetworkFloorServerApp::GetTypeId ();
+  return McpttServerApp::GetTypeId ();
 }
 
 void
-McpttOnNetworkFloorServerApp::DoDispose (void)
+McpttServerApp::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -92,7 +92,7 @@ McpttOnNetworkFloorServerApp::DoDispose (void)
 }
 
 void
-McpttOnNetworkFloorServerApp::RxCb (const McpttMsg& msg)
+McpttServerApp::RxCb (const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -100,7 +100,7 @@ McpttOnNetworkFloorServerApp::RxCb (const McpttMsg& msg)
 }
 
 void
-McpttOnNetworkFloorServerApp::StartApplication (void)
+McpttServerApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -108,7 +108,7 @@ McpttOnNetworkFloorServerApp::StartApplication (void)
 }
 
 void
-McpttOnNetworkFloorServerApp::StopApplication (void)
+McpttServerApp::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -116,7 +116,7 @@ McpttOnNetworkFloorServerApp::StopApplication (void)
 }
 
 void
-McpttOnNetworkFloorServerApp::TxCb (const McpttMsg& msg)
+McpttServerApp::TxCb (const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -124,7 +124,7 @@ McpttOnNetworkFloorServerApp::TxCb (const McpttMsg& msg)
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
-McpttOnNetworkFloorServerApp::GetArbitrator (void) const
+McpttServerApp::GetArbitrator (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -132,13 +132,13 @@ McpttOnNetworkFloorServerApp::GetArbitrator (void) const
 }
 
 Ipv4Address
-McpttOnNetworkFloorServerApp::GetLocalAddress (void) const
+McpttServerApp::GetLocalAddress (void) const
 {
   return m_localAddress;
 }
 
 void
-McpttOnNetworkFloorServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrator)
+McpttServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrator)
 {
   NS_LOG_FUNCTION (this);
 
@@ -151,15 +151,15 @@ McpttOnNetworkFloorServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitr
   if (arbitrator != 0)
     {
       arbitrator->SetOwner (this);
-      arbitrator->SetRxCb (MakeCallback (&McpttOnNetworkFloorServerApp::RxCb, this));
-      arbitrator->SetTxCb (MakeCallback (&McpttOnNetworkFloorServerApp::TxCb, this));
+      arbitrator->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
+      arbitrator->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
     }
 
   m_arbitrator = arbitrator;
 }
 
 void
-McpttOnNetworkFloorServerApp::SetLocalAddress (const Ipv4Address& localAddress)
+McpttServerApp::SetLocalAddress (const Ipv4Address& localAddress)
 {
   NS_LOG_FUNCTION (this);
 

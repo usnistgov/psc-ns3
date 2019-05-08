@@ -96,7 +96,7 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttQueuedUserInfo", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttRtpHeader", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttTimer", LOG_LEVEL_ALL);
-  LogComponentEnable ("McpttOnNetworkFloorServerApp", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttServerApp", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorParticipant", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttOnNetworkFloorParticipant", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttOnNetworkFloorParticipantState", LOG_LEVEL_ALL);
@@ -193,8 +193,8 @@ McpttHelper::EnableMsgTraces (void)
       m_msgTracer = CreateObject<McpttMsgStats> ();
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttOnNetworkFloorServerApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttOnNetworkFloorServerApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
+      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
+      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
     }
 }
 
@@ -208,9 +208,9 @@ McpttHelper::EnableStateMachineTraces (void)
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/CallMachine/CallTypeMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/CallMachine/EmergAlertMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttOnNetworkFloorServerApp/FloorArbitrator/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttOnNetworkFloorServerApp/FloorArbitrator/FloorParticipants/*/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttOnNetworkFloorServerApp/FloorArbitrator/DualFloorControl/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/FloorParticipants/*/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
+      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/DualFloorControl/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
     }
 }
 

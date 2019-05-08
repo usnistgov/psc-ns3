@@ -36,7 +36,7 @@
 #include <ns3/log.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
-#include <ns3/mcptt-on-network-floor-server-app.h>
+#include <ns3/mcptt-server-app.h>
 #include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/object.h>
 #include <ns3/type-id.h>
@@ -154,10 +154,10 @@ McpttMsgStats::Trace (const Application& app, const McpttMsg& msg, bool rx)
         {
           outFile << "\t" << dynamic_cast<const McpttPttApp&>(app).GetUserId ();
         }
-      else if (app.GetInstanceTypeId () == McpttOnNetworkFloorServerApp::GetTypeId ()
-          || app.GetInstanceTypeId ().IsChildOf (McpttOnNetworkFloorServerApp::GetTypeId ()))
+      else if (app.GetInstanceTypeId () == McpttServerApp::GetTypeId ()
+          || app.GetInstanceTypeId ().IsChildOf (McpttServerApp::GetTypeId ()))
         {
-          outFile << "\t" << dynamic_cast<const McpttOnNetworkFloorServerApp&>(app).GetArbitrator ()->GetTxSsrc ();
+          outFile << "\t" << dynamic_cast<const McpttServerApp&>(app).GetArbitrator ()->GetTxSsrc ();
         }
       else
         {
