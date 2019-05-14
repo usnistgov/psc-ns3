@@ -82,7 +82,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
+  Config::SetDefault ("ns3::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();

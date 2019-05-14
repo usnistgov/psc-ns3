@@ -78,7 +78,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (true));
   Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
+  Config::SetDefault ("ns3::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
  
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
