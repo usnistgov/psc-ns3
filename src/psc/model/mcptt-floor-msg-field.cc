@@ -1569,7 +1569,7 @@ McpttFloorMsgFieldTrackInfo::Deserialize (Buffer::Iterator& buff)
   NS_ASSERT_MSG (bytesLeft >= 0 && bytesLeft % 4 == 0, "Something went wrong deserializing a McpttFloorMsgFieldTrackInfo.");
 
   std::vector<uint32_t> refs;
-  // Now that we know how many refrences have been recorded, we will read each
+  // Now that we know how many references have been recorded, we will read each
   // reference value (which is represented by 4 bytes) and store it.
   for (uint32_t refIndex = 0; refIndex < refCount; refIndex++)
     {

@@ -45,7 +45,7 @@ namespace ns3 {
  * MCPTT Floor field information.
  *
  * Each floor control specific field consists of n 8-bit field ID, an 8-bit
- * octect length value describing the length of the field value not including
+ * octet length value describing the length of the field value not including
  * the field ID or length value.
  *
  *  0                   1                   2                   3
@@ -56,12 +56,12 @@ namespace ns3 {
  * :                      <    F i e l d  v a l u e   >            :
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * Field Name                      Field ID (deciaml-binary)
+ * Field Name                      Field ID (decimal-binary)
  * Floor Priority                        000-00000000
  * Duration                              001-00000001
  * Reject Cause                          002-00000010
  * Queue Info                            003-00000011
- * Granted Party's Identity	             004-00000100
+ * Granted Party's Identity              004-00000100
  * Permission to Request the Floor       005-00000101
  * User ID                               006-00000110
  * Queue Size                            007-00000111
@@ -71,12 +71,12 @@ namespace ns3 {
  * Track Info                            011-00001011
  * Message Type                          012-00001100
  * Floor Indicator                       013-00001101
- * SSRC	                                 014-00001110
+ * SSRC                                  014-00001110
  */
 /**
  * \ingroup mcptt
  *
- * This abstract class provides a common base for all off-netork, MCPTT, floor
+ * This abstract class provides a common base for all off-network, MCPTT, floor
  * control message fields that are described in TS 24.380 v14.4.0.
  */
 class McpttFloorMsgField : public ObjectBase
@@ -110,7 +110,7 @@ public:
  virtual uint32_t Deserialize (Buffer::Iterator& buff);
  /**
   * Get the most derived TypeId for this Object.
-  * \returns The TypeId assocated to the most-derived type of this instance.
+  * \returns The TypeId associated to the most-derived type of this instance.
   */
  virtual TypeId GetInstanceTypeId (void) const;
  /**
@@ -130,7 +130,7 @@ public:
  virtual void Serialize (Buffer::Iterator& buff) const;
 private:
  uint8_t m_id; //!< The ID of the field.
- uint8_t m_length; //!< The lenght (in octects) of the field.
+ uint8_t m_length; //!< The length (in octets) of the field.
 public:
  /**
   * Gets the ID of the field.
@@ -138,8 +138,8 @@ public:
   */
  virtual uint8_t GetId (void) const;
  /**
-  * Gets the length (in octects) of the field.
-  * \returns The length (in octects).
+  * Gets the length (in octets) of the field.
+  * \returns The length (in octets).
   */
  virtual uint8_t GetLength (void) const;
 protected:
@@ -149,8 +149,8 @@ protected:
   */
  virtual void SetId (uint8_t id);
  /**
-  * Sets the length (in octects) of the field.
-  * \param length The length (in octects).
+  * Sets the length (in octets) of the field.
+  * \param length The length (in octets).
   */
  virtual void SetLength (uint8_t length);
 };
@@ -195,7 +195,7 @@ public:
  McpttFloorMsgFieldPriority (void);
  /**
   * Creates an instance of the McpttFloorMsgFieldPriority class.
-  * \param priority The prioirty value.
+  * \param priority The priority value.
   */
  McpttFloorMsgFieldPriority (uint8_t priority);
  /**
@@ -210,7 +210,7 @@ public:
  virtual uint32_t Deserialize (Buffer::Iterator& buff);
  /**
   * Get the most derived TypeId for this Object.
-  * \returns The TypeId assocated to the most-derived type of this instance.
+  * \returns The TypeId associated to the most-derived type of this instance.
   */
  virtual TypeId GetInstanceTypeId (void) const;
  /**
@@ -331,7 +331,7 @@ public:
  * Reject Causes:
  * Cause #1 - Another MCPTT client has permission; The <Reject cause> value set to 1 indicates that another MCPTT user has permission to send a media.
  * Cause #2 - Internal floor control server error; The <Reject cause> value set to 2 indicates that the floor control server cannot grant the floor request due to an internal error.
- * Cause #3 - Only one participant;	The <Reject cause> value set to 3 indicates that the floor control server cannot grant the floor request, because the requesting party is the only participant in the MCPTT session.
+ * Cause #3 - Only one participant;    The <Reject cause> value set to 3 indicates that the floor control server cannot grant the floor request, because the requesting party is the only participant in the MCPTT session.
  * Cause #4 - Retry-after timer has not expired; The <Reject cause> value set to 4 indicates that the floor control server cannot grant the floor request, because timer T9 (Retry-after) has not expired after permission to send media has been revoked.
  * Cause #5 - Receive only; The <Reject cause> value set to 5 indicates that the floor control server cannot grant the floor request, because the requesting party only has receive privilege.
  * Cause #6 - No resources available; The <Reject cause> value set to 6 indicates that the floor control server cannot grant the floor request due to congestion. 
@@ -346,7 +346,7 @@ public:
  static const uint16_t CAUSE_1; //!< Another MCPTT client has permission.
  static const uint16_t CAUSE_2; //!< Internal floor control server error.
  static const uint16_t CAUSE_3; //!< Only one participant.
- static const uint16_t CAUSE_4; //!< Retry fater timer has not expired.
+ static const uint16_t CAUSE_4; //!< Retry after timer has not expired.
  static const uint16_t CAUSE_5; //!< Receive only.
  static const uint16_t CAUSE_6; //!< No resources available.
  static const uint16_t CAUSE_7; //!< Queue full.
@@ -588,8 +588,8 @@ public:
  *
  * The <Permission to Request the Floor length> value is a binary value and shall have the value 2 indicating the total length in octets of the <Permission to Request the Floor> value item.
  * The <Permission to Request the Floor> value is binary and coded as follows:
- *  0	The receiver is not permitted to request floor.
- *  1	The receiver is permitted to request floor.
+ *  0    The receiver is not permitted to request floor.
+ *  1    The receiver is permitted to request floor.
  */ 
 class McpttFloorMsgFieldPermToReq : public McpttFloorMsgField
 {
@@ -605,7 +605,7 @@ public:
  McpttFloorMsgFieldPermToReq (void);
  /**
   * Creates an instance of the McpttFloorMsgFieldPermToReq class.
-  * \param permission The permssion to request the floor value.
+  * \param permission The permission to request the floor value.
   */
  McpttFloorMsgFieldPermToReq (uint16_t permission);
  /**
@@ -811,7 +811,7 @@ public:
 /**
  * \ingroup mcptt
  * 
- * A class used to representa an MCPTT Message Sequence Number field.
+ * A class used to represent an MCPTT Message Sequence Number field.
  *
  * Field ID = 008
  *
@@ -964,10 +964,10 @@ public:
  * 
  * The <Source length> value is a binary value and shall have the value 2 indicating the total length in octets of the <Source> value item.
  * The <Source> value is a 16 bit binary value where:
- *  0	the floor participant is the source
- *  1	the participating MCPTT function is the source
- *  2	the controlling MCPTT function is the source
- *  3	the non-controlling MCPTT function is the source
+ *  0    the floor participant is the source
+ *  1    the participating MCPTT function is the source
+ *  2    the controlling MCPTT function is the source
+ *  3    the non-controlling MCPTT function is the source
  * All other values are reserved for future use.
  */
 class McpttFloorMsgFieldSource : public McpttFloorMsgField
@@ -1055,16 +1055,16 @@ public:
  * 
  * The <Track Info length> value is a binary value and shall have a value indicating the total length in octets of the <Queueing Capability> value, <Track Info Priority Level> value and one or more <Floor Participant Reference> value items.
  * The <Queueing Capability> value is an 8 bit binary value where:
- *  0	the floor participant in the MCPTT client do not support queueing
- *  1	the floor participant in the MCPTT client do not support queueing
+ *  0    the floor participant in the MCPTT client do not support queueing
+ *  1    the floor participant in the MCPTT client do not support queueing
  * All other values are reserved for future use.
  * The spare bits are reserved for future use and shall be set to zero. The spare bits shall be ignored.
  * The <Participant Type Length> value is 8 bit binary value set to the length of the <Participant Type> value.
  * If the length of the <Participant> value is not a multiple of 4 bytes, the Track Info field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
- * NOTE 1:	The content of the <Participant Type> value is MCPTT service provider specific and out of scope of the present document.
+ * NOTE 1: The content of the <Participant Type> value is MCPTT service provider specific and out of scope of the present document.
  * All other values are reserved for future use.
  * The <Floor Participant Reference> value is a 32 bit binary value containing a reference to the floor participant in the non-Controlling function of an MCPTT group.
- * NOTE 2:	The reference to the floor participant is a value only understandable by the floor control server interface in the non-Controlling function of an MCPTT group.
+ * NOTE 2: The reference to the floor participant is a value only understandable by the floor control server interface in the non-Controlling function of an MCPTT group.
  */ 
 class McpttFloorMsgFieldTrackInfo : public McpttFloorMsgField
 {
@@ -1088,7 +1088,7 @@ public:
   */
  virtual ~McpttFloorMsgFieldTrackInfo (void);
  /**
-  * Adds a reference to the collection of floor participant refrences.
+  * Adds a reference to the collection of floor participant references.
   * \param ref The reference to add.
   */
  virtual void AddRef (uint32_t ref);
@@ -1108,8 +1108,8 @@ public:
   */
  virtual TypeId GetInstanceTypeId (void) const;
  /**
-  * Gets the participant type length value including the number of octects needed for padding.
-  * \returns The participant type length with padding octects included.
+  * Gets the participant type length value including the number of octets needed for padding.
+  * \returns The participant type length with padding octets included.
   */
  virtual uint8_t GetPtLengthWithPadding (void) const;
  /**
@@ -1153,7 +1153,7 @@ public:
   */
  virtual std::vector<uint32_t> GetRefs (void) const;
  /**
-  * Sets the quing capability value.
+  * Sets the queing capability value.
   * \param queueCap The queuing capability value.
   */
  virtual void SetQueueCap (uint8_t queueCap);
@@ -1262,16 +1262,16 @@ public:
  * |A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * A	=	Normal call
- * B	=	Broadcast group call
- * C	=	System call
- * D	=	Emergency call
- * E	=	Imminent peril call
- * F  = Queueing supported
- * G  = Dual floor
- * H  = Temporary group call
+ * A  =  Normal call
+ * B  =  Broadcast group call
+ * C  =  System call
+ * D  =  Emergency call
+ * E  =  Imminent peril call
+ * F  =  Queueing supported
+ * G  =  Dual floor
+ * H  =  Temporary group call
  * 
- * NOTE:	The indicators C, D and E are only informative. There are no procedures specified for the C, D and E indicators in this release of the present document and the use of the indicators are implementation specific.
+ * NOTE:    The indicators C, D and E are only informative. There are no procedures specified for the C, D and E indicators in this release of the present document and the use of the indicators are implementation specific.
  * Bits F to P are reserved for future use and shall be set to 0.
  * There can be more than one bit set to 1 at the same time. The local policy in the floor control server decides which combinations are possible and the priority of the indications.
  */
@@ -1332,12 +1332,12 @@ public:
   */
  virtual void Serialize (Buffer::Iterator& buff) const;
  /**
-  * Sets all bits in the givn pattern to 0.
+  * Sets all bits in the given pattern to 0.
   * \param pattern The given pattern.
   */
  virtual void Unindicate (uint16_t pattern);
 private:
- uint16_t m_flags; //!< The floot indicator value.
+ uint16_t m_flags; //!< The floor indicator value.
 protected:
  /**
   * Gets the floor indicator value.
@@ -1369,9 +1369,9 @@ protected:
  * |                                                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  * 
- * The <SSRC field ID> value is abinary value and is set according to table 8.2.3.1-2
- * The <SSRC length> value is a binary value and has the value '6'.
- * The <SSRC> value is coded as the SSSRC specified in IETF RFC 3550.
+ * The <SSRC field ID> value is a binary value and is set according to table 8.2.3.1-2
+ * The <SSRC length> value is a binary value of '6'.
+ * The <SSRC> value is coded as the SSRC specified in IETF RFC 3550.
  */
 class McpttFloorMsgFieldSsrc : public McpttFloorMsgField
 {
