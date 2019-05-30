@@ -91,8 +91,8 @@ private:
 
 SidelinkInCoverageCommTestCase::SidelinkInCoverageCommTestCase (bool scheduledPool)
   : TestCase ("Scenario with 1 eNodeB and 2 UEs using SideLink"),
-    m_scheduledPool (scheduledPool),
-    m_numPacketRx (0)
+  m_scheduledPool (scheduledPool),
+  m_numPacketRx (0)
 {
 }
 
@@ -137,6 +137,9 @@ SidelinkInCoverageCommTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", StringValue ("23330"));
   Config::SetDefault ("ns3::LteEnbNetDevice::DlBandwidth", StringValue ("50"));
   Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", StringValue ("50"));
+
+  //Reduce frequency of CQI report to allow for sidelink transmissions
+  Config::SetDefault ("ns3::LteUePhy::DownlinkCqiPeriodicity", TimeValue (MilliSeconds (79)));
 
   //Set the UEs power in dBm
   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (31.0));

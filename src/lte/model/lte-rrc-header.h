@@ -1168,6 +1168,38 @@ private:
 
 };
   
+/**
+* This class manages the serialization/deserialization of MeasurementReport IE
+*/
+class MasterInformationBlockSlHeader : public Asn1Header
+{
+public:
+  MasterInformationBlockSlHeader ();
+  ~MasterInformationBlockSlHeader ();
+
+  // Inherited from RrcNistAsn1Header 
+  void PreSerialize () const;
+  uint32_t Deserialize (Buffer::Iterator bIterator);
+  void Print (std::ostream &os) const;
+
+  /**
+  * Receives a MasterInformationBlockSL and stores the contents into the class attributes
+  * @param msg The information block to parse
+  */
+  void SetMessage (LteRrcSap::MasterInformationBlockSL msg);
+
+  /**
+  * Returns a MasterInformationBlockSL header from the values in the class attributes
+  * @return A MasterInformationBlockSL, as defined in NistLteRrcSap
+  */
+  LteRrcSap::MasterInformationBlockSL GetMessage () const;
+
+private:
+  LteRrcSap::MasterInformationBlockSL m_mibSl; ///< Sidelink Master Information Block
+
+};
+
+
 } // namespace ns3
 
 #endif // RRC_HEADER_H

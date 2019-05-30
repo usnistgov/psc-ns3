@@ -38,6 +38,9 @@
 #include "lte-ue-mac.h"
 #include "ff-mac-common.h"
 #include "lte-chunk-processor.h"
+#include "lte-ue-phy-sap.h"
+#include "lte-sl-tag.h"
+#include "lte-rrc-header.h"
 #include <ns3/lte-common.h>
 #include <ns3/pointer.h>
 #include <ns3/boolean.h>
@@ -57,13 +60,13 @@ NS_LOG_COMPONENT_DEFINE ("LteUePhy");
  * events. The duration of one symbol is TTI/14 (rounded). In other words,
  * duration of data portion of UL subframe = 1 ms * (13/14) - 1 ns.
  */
-static const Time UL_DATA_DURATION = NanoSeconds (1e6 - 71429 - 1); 
+static const Time UL_DATA_DURATION = NanoSeconds (1e6 - 71429 - 1);
 
 /**
  * Delay from subframe start to transmission of SRS.
  * Equals to "TTI length - 1 symbol for SRS".
  */
-static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429); 
+static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429);
 
 
 
@@ -85,11 +88,9 @@ public:
 
   // inherited from LtePhySapProvider
   virtual void SendMacPdu (Ptr<Packet> p);
+  virtual void SendSlMacPdu (Ptr<Packet> p, TransmitSlPhySduParameters params);
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg);
   virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti);
-  virtual void AddDiscTxApps (std::list<uint32_t> apps);
-  virtual void AddDiscRxApps (std::list<uint32_t> apps);
-  virtual void SetDiscGrantInfo (uint8_t resPsdch);
 
 private:
   LteUePhy* m_phy; ///< the Phy
@@ -107,6 +108,12 @@ UeMemberLteUePhySapProvider::SendMacPdu (Ptr<Packet> p)
 }
 
 void
+UeMemberLteUePhySapProvider::SendSlMacPdu (Ptr<Packet> p, TransmitSlPhySduParameters params)
+{
+  m_phy->DoSendSlMacPdu (p, params);
+}
+
+void
 UeMemberLteUePhySapProvider::SendLteControlMessage (Ptr<LteControlMessage> msg)
 {
   m_phy->DoSendLteControlMessage (msg);
@@ -116,24 +123,6 @@ void
 UeMemberLteUePhySapProvider::SendRachPreamble (uint32_t prachId, uint32_t raRnti)
 {
   m_phy->DoSendRachPreamble (prachId, raRnti);
-}
-
-void
-UeMemberLteUePhySapProvider::AddDiscTxApps (std::list<uint32_t> apps)
-{
-  m_phy->DoAddDiscTxApps (apps);
-}
-
-void
-UeMemberLteUePhySapProvider::AddDiscRxApps (std::list<uint32_t> apps)
-{
-  m_phy->DoAddDiscRxApps (apps);
-}
-
-void
-UeMemberLteUePhySapProvider::SetDiscGrantInfo (uint8_t resPsdch)
-{
-  m_phy->DoSetDiscGrantInfo (resPsdch);
 }
 
 
@@ -169,25 +158,25 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_uePhySapUser (0),
-    m_ueCphySapUser (0),
-    m_state (CELL_SEARCH),
-    m_subframeNo (0),
-    m_rsReceivedPowerUpdated (false),
-    m_rsInterferencePowerUpdated (false),
-    m_dataInterferencePowerUpdated (false),
-    m_pssReceived (false),
-    m_ueMeasurementsFilterPeriod (MilliSeconds (200)),
-    m_ueMeasurementsFilterLast (MilliSeconds (0)),
-    m_rsrpSinrSampleCounter (0),
-    m_tFirstScanning(MilliSeconds (0)),
-    m_ueSlssScanningInProgress(false),
-    m_ueSlssMeasurementInProgress(false),
-    m_currNMeasPeriods(0),
-    m_currFrameNo(0),
-    m_currSubframeNo(0),
-    m_resyncRequested(false),
-    m_waitingNextScPeriod(false)
+  m_uePhySapUser (0),
+  m_ueCphySapUser (0),
+  m_state (CELL_SEARCH),
+  m_subframeNo (0),
+  m_rsReceivedPowerUpdated (false),
+  m_rsInterferencePowerUpdated (false),
+  m_dataInterferencePowerUpdated (false),
+  m_pssReceived (false),
+  m_ueMeasurementsFilterPeriod (MilliSeconds (200)),
+  m_ueMeasurementsFilterLast (MilliSeconds (0)),
+  m_rsrpSinrSampleCounter (0),
+  m_tFirstScanning (MilliSeconds (0)),
+  m_ueSlssScanningInProgress (false),
+  m_ueSlssMeasurementInProgress (false),
+  m_currNMeasPeriods (0),
+  m_currFrameNo (0),
+  m_currSubframeNo (0),
+  m_resyncRequested (false),
+  m_waitingNextScPeriod (false)
 {
   m_amc = CreateObject <LteAmc> ();
   m_powerControl = CreateObject <LteUePowerControl> ();
@@ -202,20 +191,11 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
                  "Cannot create UE devices after simulation started");
   Simulator::Schedule (m_ueMeasurementsFilterPeriod, &LteUePhy::ReportUeMeasurements, this);
 
-  m_slTxPoolInfo.m_pool = NULL;
+  m_slTxPoolInfo.m_pool = nullptr;
   m_slTxPoolInfo.m_currentScPeriod.frameNo = 0;
   m_slTxPoolInfo.m_currentScPeriod.subframeNo = 0;
   m_slTxPoolInfo.m_nextScPeriod.frameNo = 0;
   m_slTxPoolInfo.m_nextScPeriod.subframeNo = 0;
-
-  m_discTxPools.m_pool = NULL;
-  m_discTxPools.m_currentDiscPeriod.frameNo = 0;
-  m_discTxPools.m_currentDiscPeriod.subframeNo = 0;
-  m_discTxPools.m_nextDiscPeriod.frameNo = 0;
-  m_discTxPools.m_nextDiscPeriod.subframeNo = 0;
-
-  m_discRxApps.clear ();
-  m_discTxApps.clear ();
 
   DoReset ();
 }
@@ -230,6 +210,7 @@ void
 LteUePhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_packetParamsQueue.clear ();
   delete m_uePhySapProvider;
   delete m_ueCphySapProvider;
   if (m_sidelinkSpectrumPhy)
@@ -247,12 +228,12 @@ LteUePhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUePhy")
     .SetParent<LtePhy> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteUePhy> ()
     .AddAttribute ("TxPower",
                    "Transmission power in dBm",
                    DoubleValue (10.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxPower, 
+                   MakeDoubleAccessor (&LteUePhy::SetTxPower,
                                        &LteUePhy::GetTxPower),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("NoiseFigure",
@@ -264,7 +245,7 @@ LteUePhy::GetTypeId (void)
                    " are connected to sources at the standard noise temperature T0.\" "
                    "In this model, we consider T0 = 290K.",
                    DoubleValue (9.0),
-                   MakeDoubleAccessor (&LteUePhy::SetNoiseFigure, 
+                   MakeDoubleAccessor (&LteUePhy::SetNoiseFigure,
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode1Gain",
@@ -375,49 +356,44 @@ LteUePhy::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("UeSlssInterScanningPeriodMax",
                    "The upper bound of the uniform random variable for the interval between SyncRef selection processes",
-                   TimeValue(MilliSeconds (2000)),
-                   MakeTimeAccessor(&LteUePhy::SetUeSlssInterScanningPeriodMax),
-                   MakeTimeChecker())
+                   TimeValue (MilliSeconds (2000)),
+                   MakeTimeAccessor (&LteUePhy::SetUeSlssInterScanningPeriodMax),
+                   MakeTimeChecker ())
     .AddAttribute ("UeSlssInterScanningPeriodMin",
                    "The lower bound of the uniform random variable for the interval between SyncRef selection processes",
-                   TimeValue(MilliSeconds (2000)),
-                   MakeTimeAccessor(&LteUePhy::SetUeSlssInterScanningPeriodMin),
-                   MakeTimeChecker())
-    .AddAttribute("UeSlssScanningPeriod",
-                  "How long the UE will search for SyncRefs (scanning)",
-                  TimeValue(MilliSeconds (40)),
-                  MakeTimeAccessor(&LteUePhy::m_ueSlssScanningPeriod),
-                  MakeTimeChecker())
-    .AddAttribute("UeSlssMeasurementPeriod",
-                  "How long the UE will perform SLSS L1 measurements for SyncRef selection (measurement)",
-                  TimeValue(MilliSeconds (400)),
-                  MakeTimeAccessor(&LteUePhy::m_ueSlssMeasurementPeriod),
-                  MakeTimeChecker())
-    .AddAttribute("UeSlssEvaluationPeriod",
-                  "How long the UE will perform SLSS L1 measurements to determine cease/initiation of SLSS transmission (evaluation)",
-                  TimeValue(MilliSeconds (800)),
-                  MakeTimeAccessor(&LteUePhy::m_ueSlssEvaluationPeriod),
-                  MakeTimeChecker())
+                   TimeValue (MilliSeconds (2000)),
+                   MakeTimeAccessor (&LteUePhy::SetUeSlssInterScanningPeriodMin),
+                   MakeTimeChecker ())
+    .AddAttribute ("UeSlssScanningPeriod",
+                   "How long the UE will search for SyncRefs (scanning)",
+                   TimeValue (MilliSeconds (40)),
+                   MakeTimeAccessor (&LteUePhy::m_ueSlssScanningPeriod),
+                   MakeTimeChecker ())
+    .AddAttribute ("UeSlssMeasurementPeriod",
+                   "How long the UE will perform SLSS L1 measurements for SyncRef selection (measurement)",
+                   TimeValue (MilliSeconds (400)),
+                   MakeTimeAccessor (&LteUePhy::m_ueSlssMeasurementPeriod),
+                   MakeTimeChecker ())
+    .AddAttribute ("UeSlssEvaluationPeriod",
+                   "How long the UE will perform SLSS L1 measurements to determine cease/initiation of SLSS transmission (evaluation)",
+                   TimeValue (MilliSeconds (800)),
+                   MakeTimeAccessor (&LteUePhy::m_ueSlssEvaluationPeriod),
+                   MakeTimeChecker ())
     .AddAttribute ("NSamplesSrsrpMeas",
                    "The maximum number of samples to take during SLSS L1 measurements for each SyncRef",
                    UintegerValue (4),
                    MakeUintegerAccessor (&LteUePhy::m_nSamplesSrsrpMeas),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute("UeRandomInitialSubframeIndication",
-                  "If True, the first frame and subframe values (beginning of the simulation) are chosen randomly, if False they are fixed to 1,1 respectively",
-                  BooleanValue(false),
-                  MakeBooleanAccessor(&LteUePhy::m_chooseFrameAndSubframeRandomly),
-                  MakeBooleanChecker())
+    .AddAttribute ("UeRandomInitialSubframeIndication",
+                   "If True, the first frame and subframe values (beginning of the simulation) are chosen randomly, if False they are fixed to 1,1 respectively",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&LteUePhy::m_chooseFrameAndSubframeRandomly),
+                   MakeBooleanChecker ())
     .AddAttribute ("MinSrsrp",
                    "The minimum S-RSRP required to consider a SyncRef detectable",
-                   DoubleValue(-125),
+                   DoubleValue (-125),
                    MakeDoubleAccessor (&LteUePhy::m_minSrsrp),
-                   MakeDoubleChecker<double>())
-//Sidelink discovery
-    .AddTraceSource ("DiscoveryAnnouncement",
-                     "trace to track the announcement of discovery messages",
-                     MakeTraceSourceAccessor (&LteUePhy::m_discoveryAnnouncementTrace),
-                     "ns3::LteUePhy::DiscoveryAnnouncementTracedCallback")
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -584,6 +560,39 @@ LteUePhy::DoSendMacPdu (Ptr<Packet> p)
   SetMacPdu (p);
 }
 
+void
+LteUePhy::DoSendSlMacPdu (Ptr<Packet> p, LteUePhySapProvider::TransmitSlPhySduParameters params)
+{
+  NS_LOG_FUNCTION (this);
+
+  SetMacPdu (p);
+
+  NS_ASSERT_MSG (m_packetParamsQueue.at (m_packetParamsQueue.size () - 1).size () == 0, "Error: Can only send one sidelink message per TTI");
+  m_packetParamsQueue.at (m_packetParamsQueue.size () - 1).push_back (params);
+}
+
+std::list <LteUePhySapProvider::TransmitSlPhySduParameters>
+LteUePhy::GetSlPhyParameters (Ptr<PacketBurst> pb)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (m_packetParamsQueue.at (0).size () > 0)
+    {
+      std::list< LteUePhySapProvider::TransmitSlPhySduParameters > ret = m_packetParamsQueue.at (0);
+      m_packetParamsQueue.erase (m_packetParamsQueue.begin ());
+      std::list< LteUePhySapProvider::TransmitSlPhySduParameters > newlist;
+      m_packetParamsQueue.push_back (newlist);
+      return (ret);
+    }
+  else
+    {
+      m_packetParamsQueue.erase (m_packetParamsQueue.begin ());
+      std::list< LteUePhySapProvider::TransmitSlPhySduParameters > newlist;
+      m_packetParamsQueue.push_back (newlist);
+      std::list< LteUePhySapProvider::TransmitSlPhySduParameters > emptylist;
+      return (emptylist);
+    }
+}
 
 void
 LteUePhy::PhyPduReceived (Ptr<Packet> p)
@@ -591,6 +600,95 @@ LteUePhy::PhyPduReceived (Ptr<Packet> p)
   NS_LOG_FUNCTION (this);
   m_uePhySapUser->ReceivePhyPdu (p);
 }
+
+void
+LteUePhy::PhyPscchPduReceived (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+
+  LteSlSciHeader sciHeader;
+  p->PeekHeader (sciHeader);
+  LteSlSciTag tag;
+  p->PeekPacketTag (tag);
+  //must check if the destination is one to monitor
+  std::list <uint32_t>::iterator it;
+  bool for_me = false;
+  for (it = m_destinations.begin (); it != m_destinations.end () && !for_me; it++)
+    {
+      if (sciHeader.GetGroupDstId () == ((*it) & 0xFF))
+        {
+          NS_LOG_INFO ("received SCI for group " << (uint32_t)((*it) & 0xFF) << " from rnti " << tag.GetRnti ());
+
+          //todo, how to find the pool among the available ones?
+          //right now just use the first one
+          std::list <RxPoolInfo>::iterator poolIt = m_sidelinkRxPools.begin ();
+          if (poolIt == m_sidelinkRxPools.end ())
+            {
+              NS_LOG_INFO (this << " No Rx pool configured");
+            }
+          else
+            {
+              //this is the first transmission of PSCCH
+              std::map<uint16_t, SidelinkGrantInfo>::iterator grantIt = poolIt->m_currentGrants.find (tag.GetRnti ());
+              if (grantIt == poolIt->m_currentGrants.end ())
+                {
+                  SidelinkGrantInfo txInfo;
+
+                  txInfo.m_grantReceived = true;
+                  txInfo.m_grant.m_rnti = tag.GetRnti ();
+                  txInfo.m_grant.m_resPscch = tag.GetResNo ();
+                  txInfo.m_grant.m_rbStart = sciHeader.GetRbStart ();
+                  txInfo.m_grant.m_rbLen = sciHeader.GetRbLen ();
+                  txInfo.m_grant.m_hopping = sciHeader.IsHopping ();
+                  txInfo.m_grant.m_hoppingInfo = sciHeader.GetHoppingInfo ();
+                  txInfo.m_grant.m_trp = sciHeader.GetTrp ();
+                  txInfo.m_grant.m_groupDstId = sciHeader.GetGroupDstId ();
+                  txInfo.m_grant.m_mcs = sciHeader.GetMcs ();
+                  txInfo.m_grant.m_tbSize = tag.GetTbSize ();
+
+                  //insert grant
+                  poolIt->m_currentGrants.insert (std::pair <uint16_t, SidelinkGrantInfo> (tag.GetRnti (), txInfo));
+                }           //else it should be the retransmission and the data should be the same...add check
+              else
+                {
+                  NS_LOG_DEBUG ("SCI Grant already present");
+                }
+            }
+        }
+    }
+  //Pass information to the MAC
+  m_uePhySapUser->ReceiveSlSciPhyPdu (p);
+}
+
+void
+LteUePhy::PhyPsdchPduReceived (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  m_uePhySapUser->ReceiveSlDiscPhyPdu (p);
+}
+
+void
+LteUePhy::PhyPsbchPduReceived (Ptr<Packet> p, uint16_t slssid)
+{
+  NS_LOG_FUNCTION (this);
+
+  //Store the received MIB-SL during the SyncRef search
+  if (m_ueSlssScanningInProgress)
+    {
+      MasterInformationBlockSlHeader mibSlHeader;
+      p->PeekHeader (mibSlHeader);
+      LteRrcSap::MasterInformationBlockSL mibSl = mibSlHeader.GetMessage ();
+
+      uint16_t rxOffset = Simulator::Now ().GetMilliSeconds () % 40;
+      m_detectedMibSl.insert (std::pair <std::pair<uint16_t, uint16_t>, LteRrcSap::MasterInformationBlockSL>
+                                (std::pair<uint16_t, uint16_t> (slssid, rxOffset), mibSl));
+    }
+
+  //Pass the message to the RRC
+  m_ueCphySapUser->ReceiveMibSL (p, slssid);
+
+}
+
 
 void
 LteUePhy::SetSubChannelsForTransmission (std::vector <int> mask)
@@ -642,7 +740,7 @@ void
 LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
-  
+
   GenerateCqiRsrpRsrq (sinr);
 }
 
@@ -659,26 +757,28 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       // check periodic wideband CQI
       if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriodicity)
         {
-          NS_LOG_DEBUG("Reporting P10 CQI at : " << Simulator::Now().GetMilliSeconds()
-                       << " ms. Last reported at : " << m_p10CqiLast.GetMilliSeconds() << " ms");
+          NS_LOG_DEBUG ("Reporting P10 CQI at : " << Simulator::Now ().GetMilliSeconds ()
+                                                  << " ms. Last reported at : " << m_p10CqiLast.GetMilliSeconds () << " ms");
           Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
           Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
           if (msg)
             {
               DoSendLteControlMessage (msg);
+              m_uePhySapUser->NotifyUlTransmission ();
             }
           m_p10CqiLast = Simulator::Now ();
         }
       // check aperiodic high-layer configured subband CQI
       if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriodicity)
         {
-          NS_LOG_DEBUG("Reporting A30 CQI at : " << Simulator::Now().GetMilliSeconds()
-                       << " ms. Last reported at : " << m_a30CqiLast.GetMilliSeconds() << " ms");
+          NS_LOG_DEBUG ("Reporting A30 CQI at : " << Simulator::Now ().GetMilliSeconds ()
+                                                  << " ms. Last reported at : " << m_a30CqiLast.GetMilliSeconds () << " ms");
           Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
           Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
           if (msg)
             {
               DoSendLteControlMessage (msg);
+              m_uePhySapUser->NotifyUlTransmission ();
             }
           m_a30CqiLast = Simulator::Now ();
         }
@@ -686,7 +786,7 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
 
   // Generate PHY trace
   m_rsrpSinrSampleCounter++;
-  if (m_rsrpSinrSampleCounter==m_rsrpSinrSamplePeriod)
+  if (m_rsrpSinrSampleCounter == m_rsrpSinrSamplePeriod)
     {
       NS_ASSERT_MSG (m_rsReceivedPowerUpdated, " RS received power info obsolete");
       // RSRP evaluated as averaged received power among RBs
@@ -696,8 +796,8 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
         {
           // convert PSD [W/Hz] to linear power [W] for the single RE
-          // we consider only one RE for the RS since the channel is 
-          // flat within the same RB 
+          // we consider only one RE for the RS since the channel is
+          // flat within the same RB
           double powerTxW = ((*it) * 180000.0) / 12.0;
           sum += powerTxW;
           rbNum++;
@@ -813,15 +913,15 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
   uint32_t modulo = m_dlBandwidth % rbgSize;
   double avgMixedSinr = 0;
   uint32_t usedRbgNum = 0;
-  for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++) 
+  for (uint32_t i = 0; i < (m_dlBandwidth - 1 - modulo); i++)
     {
       usedRbgNum++;
-      avgMixedSinr+=mixedSinr[i];
+      avgMixedSinr += mixedSinr[i];
     }
-  avgMixedSinr = avgMixedSinr/usedRbgNum;
-  for(uint32_t i = 0; i < modulo; i++) 
+  avgMixedSinr = avgMixedSinr / usedRbgNum;
+  for (uint32_t i = 0; i < modulo; i++)
     {
-      mixedSinr[m_dlBandwidth-1-i] = avgMixedSinr;
+      mixedSinr[m_dlBandwidth - 1 - i] = avgMixedSinr;
     }
 
   GenerateCqiRsrpRsrq (mixedSinr);
@@ -1030,7 +1130,7 @@ LteUePhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
   SetControlMessages (msg);
 }
 
-void 
+void
 LteUePhy::DoSendRachPreamble (uint32_t raPreambleId, uint32_t raRnti)
 {
   NS_LOG_FUNCTION (this << raPreambleId);
@@ -1102,7 +1202,9 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
 
           SetSubChannelsForReception (dlRb);
 
-
+          //Since we are receiving packets in the downlink, we will need to send an HARQ feedback, let's tell the MAC
+          //about it now so it does not schedule sidelink transmission
+          m_uePhySapUser->NotifyUlTransmission ();
         }
       else if (msg->GetMessageType () == LteControlMessage::UL_DCI)
         {
@@ -1187,99 +1289,18 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
           m_ueCphySapUser->RecvSystemInformationBlockType1 (m_cellId, msg2->GetSib1 ());
         }
       else if (msg->GetMessageType () == LteControlMessage::SL_DCI)
-          {
-            Ptr<SlDciLteControlMessage> msg2 = DynamicCast<SlDciLteControlMessage> (msg);
-            SlDciListElement_s dci = msg2->GetDci ();
-            if (dci.m_rnti != m_rnti)
-              {
-                // DCI not for me
-                continue;
-              }
-            NS_LOG_INFO ("received SL_DCI");
-            // pass the info to the MAC
-            m_uePhySapUser->ReceiveLteControlMessage (msg);
-          }
-        else if (msg->GetMessageType () == LteControlMessage::SCI)
-          {
-            Ptr<SciLteControlMessage> msg2 = DynamicCast<SciLteControlMessage> (msg);
-            SciListElement_s sci = msg2->GetSci ();
-            //must check if the destination is one to monitor
-            std::list <uint32_t>::iterator it;
-            bool for_me = false;
-            for (it = m_destinations.begin (); it != m_destinations.end () && !for_me; it++)
-              {
-                if (sci.m_groupDstId == ((*it) & 0xFF))
-                  {
-                    NS_LOG_INFO ("received SCI for group " << (uint32_t)((*it) & 0xFF) << " from rnti " << sci.m_rnti);
-
-                    //todo, how to find the pool among the available ones?
-                    //right now just use the first one
-                    std::list <PoolInfo>::iterator poolIt = m_sidelinkRxPools.begin ();
-                    if (poolIt == m_sidelinkRxPools.end ())
-                      {
-                        NS_LOG_INFO (this << " No Rx pool configured");
-                      }
-                    else
-                      {
-                        //this is the first transmission of PSCCH
-                        std::map<uint16_t, SidelinkGrantInfo>::iterator grantIt = poolIt->m_currentGrants.find (sci.m_rnti);
-                        if (grantIt == poolIt->m_currentGrants.end ())
-                          {
-                            SidelinkGrantInfo txInfo;
-
-                            txInfo.m_grantReceived = true;
-                            txInfo.m_grant.m_rnti = sci.m_rnti;
-                            txInfo.m_grant.m_resPscch = sci.m_resPscch;
-                            txInfo.m_grant.m_rbStart = sci.m_rbStart;
-                            txInfo.m_grant.m_rbLen = sci.m_rbLen;
-                            txInfo.m_grant.m_hopping = sci.m_hopping;
-                            txInfo.m_grant.m_hoppingInfo = sci.m_hoppingInfo;
-                            txInfo.m_grant.m_trp = sci.m_trp;
-                            txInfo.m_grant.m_groupDstId = sci.m_groupDstId;
-                            txInfo.m_grant.m_mcs = sci.m_mcs;
-                            txInfo.m_grant.m_tbSize = sci.m_tbSize;
-
-                            //insert grant
-                            poolIt->m_currentGrants.insert (std::pair <uint16_t, SidelinkGrantInfo> (sci.m_rnti, txInfo));
-                          } //else it should be the retransmission and the data should be the same...add check
-                        else
-                          {
-                            NS_LOG_DEBUG ("SCI Grant already present");
-                          }
-                      }
-
-                    //m_uePhySapUser->ReceiveLteControlMessage (msg);
-
-                  }
-              }
-          }
-        else if (msg->GetMessageType() == LteControlMessage::MIB_SL)
-          {
-            Ptr<MibSlLteControlMessage> msgMibSL = DynamicCast<MibSlLteControlMessage> (msg);
-            LteRrcSap::MasterInformationBlockSL mibSL = msgMibSL->GetMibSL();
-
-            //Pass the message to the RRC
-            m_ueCphySapUser->ReceiveMibSL(mibSL);
-
-            //Store the received MIB-SL during the SyncRef search
-            if (m_ueSlssScanningInProgress)
-              {
-                mibSL.rxOffset = Simulator::Now ().GetMilliSeconds () % 40;
-                m_detectedMibSl.insert (std::pair <std::pair<uint16_t, uint16_t>, LteRrcSap::MasterInformationBlockSL>
-                                                  (std::pair<uint16_t, uint16_t>(mibSL.slssid, mibSL.rxOffset), mibSL));
-              }
-          }
-
-        //discovery
-        else if (msg->GetMessageType () == LteControlMessage::SL_DISC_MSG)
-          {
-            Ptr<SlDiscMessage> msg2 = DynamicCast<SlDiscMessage> (msg);
-            SlDiscMsg disc = msg2->GetSlDiscMessage ();
-
-            NS_LOG_INFO ("received discovery from rnti " << disc.m_rnti << " with resPsdch: " << disc.m_resPsdch);
-            m_uePhySapUser->ReceiveLteControlMessage (msg);
-          }
-
+        {
+          Ptr<SlDciLteControlMessage> msg2 = DynamicCast<SlDciLteControlMessage> (msg);
+          SlDciListElement_s dci = msg2->GetDci ();
+          if (dci.m_rnti != m_rnti)
+            {
+              // DCI not for me
+              continue;
+            }
+          NS_LOG_INFO ("received SL_DCI");
+          // pass the info to the MAC
+          m_uePhySapUser->ReceiveLteControlMessage (msg);
+        }
       else
         {
           // pass the message to UE-MAC
@@ -1363,16 +1384,16 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   // Clear expected TB not received in previous subframes
   if (m_sidelinkSpectrumPhy)
     {
-      m_sidelinkSpectrumPhy->ClearExpectedSlTb();
+      m_sidelinkSpectrumPhy->ClearExpectedSlTb ();
       //Notify RRC about the current Subframe indication
-      m_ueCphySapUser->ReportSubframeIndication(frameNo, subframeNo);
+      m_ueCphySapUser->ReportSubframeIndication (frameNo, subframeNo);
     }
   //If a change of timing (resynchronization) was requested before, do the change of frameNo and subframeNo if possible
   // Do it here for avoiding  miss alignments of subframe indications
   if (m_resyncRequested)
     {
       NS_LOG_LOGIC ("(re)synchronization requested ");
-      if (ChangeOfTiming(frameNo, subframeNo) )
+      if (ChangeOfTiming (frameNo, subframeNo) )
         {
           frameNo = m_currFrameNo;
           subframeNo = m_currSubframeNo;
@@ -1386,6 +1407,8 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
   if (m_ulConfigured)
     {
+      InitializeDiscRxPool (frameNo, subframeNo);
+
       if (m_slTxPoolInfo.m_pool)
         {
           //Check if we need to initialize the Tx pool
@@ -1413,120 +1436,84 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                   NS_LOG_LOGIC ("The UE was waiting for next SC period and it just started");
                   m_waitingNextScPeriod = false;
                 }
-              //clear any previous grant
-              m_slTxPoolInfo.m_currentGrants.clear ();
             }
         }
 
-    if (m_discTxPools.m_pool)
-      {
-        //Check if we need to initialize the discovery Tx pool
-        if (m_discTxPools.m_nextDiscPeriod.frameNo == 0)
-          {
-            //pool not initialized yet
-            m_discTxPools.m_nextDiscPeriod = m_discTxPools.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
-            //adjust because scheduler starts with frame/subframe = 1
-            m_discTxPools.m_nextDiscPeriod.frameNo++;
-            m_discTxPools.m_nextDiscPeriod.subframeNo++;
-            NS_LOG_INFO ("Discovery Tx Pool initialized" << ". Next period at " << m_discTxPools.m_nextDiscPeriod.frameNo
-                           << "/" << m_discTxPools.m_nextDiscPeriod.subframeNo);
-          }
-        //Check if this is a new discovery period
-        if (frameNo == m_discTxPools.m_nextDiscPeriod.frameNo && subframeNo == m_discTxPools.m_nextDiscPeriod.subframeNo)
-          {
-            m_discTxPools.m_currentDiscPeriod = m_discTxPools.m_nextDiscPeriod;
-            m_discTxPools.m_nextDiscPeriod = m_discTxPools.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
-            //adjust because scheduler starts with frame/subframe = 1
-            m_discTxPools.m_nextDiscPeriod.frameNo++;
-            m_discTxPools.m_nextDiscPeriod.subframeNo++;
-            NS_LOG_INFO ("At " << Simulator::Now ().GetMilliSeconds ()
-                               << " ms Starting new discovery period for TX pool"
-                               << ". Next period at " << m_discTxPools.m_nextDiscPeriod.frameNo
-                               << "/" << m_discTxPools.m_nextDiscPeriod.subframeNo);
+      //check if we received grants for Sidelink
+      //compute the reception slots for the PSSCH. Do this here because
+      //we did not have access to the frame/subframe at the reception
 
-            //clear any previous grant
-            m_discTxPools.m_currentGrants.clear ();
+      std::list <RxPoolInfo>::iterator it;
+      for (it = m_sidelinkRxPools.begin (); it != m_sidelinkRxPools.end (); it++)
+        {
+          std::map <uint16_t, SidelinkGrantInfo>::iterator grantIt = it->m_currentGrants.begin ();
+          while (grantIt != it->m_currentGrants.end ())
+            {
+              std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator rxIt;
 
-          }
-      }
+              if (grantIt->second.m_grantReceived)
+                {
+                  NS_LOG_INFO ("New grant received");
+                  //TODO: how to identify pool if multiple are presents?
+                  SidelinkCommResourcePool::SubframeInfo tmp = it->m_pool->GetCurrentScPeriod (frameNo, subframeNo);
+                  grantIt->second.m_psschTx = it->m_pool->GetPsschTransmissions (tmp, grantIt->second.m_grant.m_trp,
+                                                                                 grantIt->second.m_grant.m_rbStart, grantIt->second.m_grant.m_rbLen);
 
-    InitializeDiscRxPool (frameNo, subframeNo);
+                  for (rxIt = grantIt->second.m_psschTx.begin (); rxIt != grantIt->second.m_psschTx.end (); rxIt++)
+                    {
+                      //adjust for index starting at 1
+                      rxIt->subframe.frameNo++;
+                      rxIt->subframe.subframeNo++;
+                      NS_LOG_INFO ("Subframe Rx" << rxIt->subframe.frameNo << "/" << rxIt->subframe.subframeNo << ": rbStart=" << (uint32_t) rxIt->rbStart << ", rbLen=" << (uint32_t) rxIt->nbRb);
+                    }
 
-    //check if we received grants for Sidelink
-    //compute the reception slots for the PSSCH. Do this here because
-    //we did not have access to the frame/subframe at the reception
+                  grantIt->second.m_grantReceived = false;
+                }
 
-    std::list <PoolInfo>::iterator it;
-    for (it = m_sidelinkRxPools.begin () ; it != m_sidelinkRxPools.end () ; it++)
-      {
-        std::map <uint16_t, SidelinkGrantInfo>::iterator grantIt = it->m_currentGrants.begin ();
-        while (grantIt != it->m_currentGrants.end ())
-          {
-            std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator rxIt;
+              //now check if there is any grant for the current subframe
+              rxIt = grantIt->second.m_psschTx.begin ();
 
-            if (grantIt->second.m_grantReceived)
-              {
-                NS_LOG_INFO ("New grant received");
-                //TODO: how to identify pool if multiple are presents?
-                SidelinkCommResourcePool::SubframeInfo tmp = it->m_pool->GetCurrentScPeriod(frameNo, subframeNo);
-                grantIt->second.m_psschTx = it->m_pool->GetPsschTransmissions (tmp, grantIt->second.m_grant.m_trp,
-                                                                               grantIt->second.m_grant.m_rbStart, grantIt->second.m_grant.m_rbLen);
+              if (rxIt != grantIt->second.m_psschTx.end ())
+                {
+                  NS_LOG_DEBUG (frameNo << "/" << subframeNo << " RNTI=" << m_rnti << " next pssch at " << (*rxIt).subframe.frameNo << "/" << (*rxIt).subframe.subframeNo);
+                }
 
-                for (rxIt = grantIt->second.m_psschTx.begin (); rxIt != grantIt->second.m_psschTx.end (); rxIt++)
-                  {
-                    //adjust for index starting at 1
-                    rxIt->subframe.frameNo++;
-                    rxIt->subframe.subframeNo++;
-                    NS_LOG_INFO ("Subframe Rx" << rxIt->subframe.frameNo << "/" << rxIt->subframe.subframeNo << ": rbStart=" << (uint32_t) rxIt->rbStart << ", rbLen=" << (uint32_t) rxIt->nbRb);
-                  }
+              if (rxIt != grantIt->second.m_psschTx.end () && (*rxIt).subframe.frameNo == frameNo && (*rxIt).subframe.subframeNo == subframeNo)
+                {
+                  //reception
+                  NS_LOG_INFO ("Expecting PSSCH reception RB " << (uint16_t) rxIt->rbStart << " to " << (uint16_t) (rxIt->rbStart + rxIt->nbRb - 1));
+                  std::vector <int> rbMap;
+                  for (int i = rxIt->rbStart; i < rxIt->rbStart + rxIt->nbRb; i++)
+                    {
+                      rbMap.push_back (i);
+                    }
+                  //Compute redundancy version number
+                  uint8_t rv = grantIt->second.m_psschTx.size () % 4;
+                  rv = rv == 0 ? rv : 4 - rv;
 
-                grantIt->second.m_grantReceived =false;
-              }
+                  NS_LOG_DEBUG ("RV = " << (uint16_t) rv << " Number of PSSCH transmissions "
+                                        << grantIt->second.m_psschTx.size ());
 
-            //now check if there is any grant for the current subframe
-            rxIt = grantIt->second.m_psschTx.begin ();
+                  m_sidelinkSpectrumPhy->AddExpectedTb (grantIt->second.m_grant.m_rnti,
+                                                        grantIt->second.m_grant.m_groupDstId,
+                                                        grantIt->second.m_psschTx.size () % 4 == 0,
+                                                        grantIt->second.m_grant.m_tbSize,
+                                                        grantIt->second.m_grant.m_mcs, rbMap, rv);
+                  //remove reception information
+                  grantIt->second.m_psschTx.erase (rxIt);
 
-            if (rxIt != grantIt->second.m_psschTx.end ())
-              {
-                NS_LOG_DEBUG (frameNo << "/" << subframeNo << " RNTI=" << m_rnti << " next pssch at " << (*rxIt).subframe.frameNo << "/" << (*rxIt).subframe.subframeNo);
-              }
-
-            if (rxIt != grantIt->second.m_psschTx.end () && (*rxIt).subframe.frameNo == frameNo && (*rxIt).subframe.subframeNo == subframeNo)
-              {
-                //reception
-                NS_LOG_INFO ("Expecting PSSCH reception RB " << (uint16_t) rxIt->rbStart << " to " << (uint16_t) (rxIt->rbStart + rxIt->nbRb - 1));
-                std::vector <int> rbMap;
-                for (int i = rxIt->rbStart; i < rxIt->rbStart + rxIt->nbRb; i++)
-                  {
-                    rbMap.push_back (i);
-                  }
-                //Compute redundancy version number
-                uint8_t rv = grantIt->second.m_psschTx.size () % 4;
-                rv = rv == 0 ? rv : 4 - rv;
-
-                NS_LOG_DEBUG ("RV = " << (uint16_t) rv << " Number of PSSCH transmissions "
-                                                                << grantIt->second.m_psschTx.size ());
-
-                m_sidelinkSpectrumPhy->AddExpectedTb (grantIt->second.m_grant.m_rnti,
-                                                      grantIt->second.m_grant.m_groupDstId,
-                                                      grantIt->second.m_psschTx.size () % 4 == 0,
-                                                      grantIt->second.m_grant.m_tbSize,
-                                                      grantIt->second.m_grant.m_mcs, rbMap, rv);
-                //remove reception information
-                grantIt->second.m_psschTx.erase (rxIt);
-
-              }
-            if (grantIt->second.m_psschTx.size () == 0)
-              {
-                //no more PSSCH transmission, clear the grant
-                it->m_currentGrants.erase (grantIt++);
-              }
-            else
-              {
-                grantIt++;
-              }
-          } // end of while (grantIt != it->m_currentGrants.end ())
-      } // end of for (it = m_sidelinkRxPools.begin () ; it != m_sidelinkRxPools.end () ; it++)
+                }
+              if (grantIt->second.m_psschTx.size () == 0)
+                {
+                  //no more PSSCH transmission, clear the grant
+                  it->m_currentGrants.erase (grantIt++);
+                }
+              else
+                {
+                  grantIt++;
+                }
+            } // end of while (grantIt != it->m_currentGrants.end ())
+        } // end of for (it = m_sidelinkRxPools.begin () ; it != m_sidelinkRxPools.end () ; it++)
 
 
       // update uplink transmission mask according to previous UL-CQIs
@@ -1536,18 +1523,18 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       // shift the queue
       for (uint8_t i = 1; i < m_macChTtiDelay; i++)
         {
-          m_subChannelsForTransmissionQueue.at (i-1) = m_subChannelsForTransmissionQueue.at (i);
+          m_subChannelsForTransmissionQueue.at (i - 1) = m_subChannelsForTransmissionQueue.at (i);
         }
-      m_subChannelsForTransmissionQueue.at (m_macChTtiDelay-1).clear ();
+      m_subChannelsForTransmissionQueue.at (m_macChTtiDelay - 1).clear ();
 
       if (m_srsConfigured && (m_srsStartTime <= Simulator::Now ()))
         {
 
           NS_ASSERT_MSG (subframeNo > 0 && subframeNo <= 10, "the SRS index check code assumes that subframeNo starts at 1");
-          if ((((frameNo-1)*10 + (subframeNo-1)) % m_srsPeriodicity) == m_srsSubframeOffset)
+          if ((((frameNo - 1) * 10 + (subframeNo - 1)) % m_srsPeriodicity) == m_srsSubframeOffset)
             {
               NS_LOG_INFO ("frame " << frameNo << " subframe " << subframeNo << " sending SRS (offset=" << m_srsSubframeOffset << ", period=" << m_srsPeriodicity << ")");
-              m_sendSrsEvent = Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START, 
+              m_sendSrsEvent = Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START,
                                                     &LteUePhy::SendSrs,
                                                     this);
             }
@@ -1557,49 +1544,22 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       std::list<Ptr<LteControlMessage> > ctrlMsg = GetControlMessages ();
       // retrieve the current burst of packets from UL data queue at LtePhy
       Ptr<PacketBurst> pb = GetPacketBurst ();
-
-      bool sciDiscFound = false;
-      bool mibSlFound = false;
+      // retrieve burst information
+      std::list<LteUePhySapProvider::TransmitSlPhySduParameters> params = GetSlPhyParameters (pb);
 
       if (rbMask.size () == 0)
         {
-          //we do not have uplink data to send. Normally, uplink has priority over Sidelink but
-          //since we send UL CQI messages all the time, we can remove them if we have a Sidelink
-          //transmission
+          //we do not have uplink data to send, make sure that if we are sending sidelink messages that 
+          //there is no control messages also being sent (like DL_HARQ or CQI feedbacks)
           std::list<Ptr<LteControlMessage> >::iterator ctrlIt;
-          for (ctrlIt=ctrlMsg.begin () ; ctrlIt != ctrlMsg.end () && !sciDiscFound; ctrlIt++)
+          for (ctrlIt = ctrlMsg.begin (); ctrlIt != ctrlMsg.end (); ctrlIt++)
             {
-              sciDiscFound = (*ctrlIt)->GetMessageType () == LteControlMessage::SCI || (*ctrlIt)->GetMessageType () == LteControlMessage::SL_DISC_MSG;
-              mibSlFound = (*ctrlIt)->GetMessageType () == LteControlMessage::MIB_SL;
+              NS_LOG_INFO ("Message type = " << (*ctrlIt)->GetMessageType ());
             }
-          if (pb || sciDiscFound || mibSlFound)
-            {
-              //we have Sidelink to send, purge the control messages
-              ctrlIt=ctrlMsg.begin ();
-              while (ctrlIt != ctrlMsg.end ())
-                {
-                  NS_LOG_INFO ("Message type = " << (*ctrlIt)->GetMessageType ());
-                  if ((*ctrlIt)->GetMessageType () == LteControlMessage::DL_CQI
-                      || (*ctrlIt)->GetMessageType () == LteControlMessage::BSR)
-                    {
-                      ctrlIt = ctrlMsg.erase (ctrlIt);
-                    }
-                  else
-                    {
-                      NS_ASSERT ((*ctrlIt)->GetMessageType () == LteControlMessage::SCI
-                                 || (*ctrlIt)->GetMessageType() == LteControlMessage::MIB_SL
-                                 || (*ctrlIt)->GetMessageType () == LteControlMessage::SL_DISC_MSG
-                      );
-                      ctrlIt++;
-                    }
+          NS_ASSERT_MSG (!pb || ctrlMsg.size () == 0, "Trying to send sidelink along with UL control messages");
+        } // end of if (rbMask.size () == 0)
 
-                }
-            }
-        }// end of if (rbMask.size () == 0)
-
-      if (rbMask.size () != 0 || (ctrlMsg.size () > 0 && (*ctrlMsg.begin ())->GetMessageType () != LteControlMessage::SCI
-                                                         && (*ctrlMsg.begin ())->GetMessageType () != LteControlMessage::MIB_SL
-                                                         && (*ctrlMsg.begin ())->GetMessageType () != LteControlMessage::SL_DISC_MSG))
+      if (rbMask.size () != 0 || ctrlMsg.size () > 0)
         {
           // send packets in queue
           NS_LOG_LOGIC (this << " UE - start slot for PUSCH + PUCCH - RNTI " << m_rnti << " CELLID " << m_cellId);
@@ -1622,7 +1582,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           else
             {
               // send only PUCCH (ideal: fake null bandwidth signal)
-              if (ctrlMsg.size ()>0)
+              if (ctrlMsg.size () > 0)
                 {
                   NS_LOG_LOGIC (this << " UE - start TX PUCCH (NO PUSCH)");
                   std::vector <int> dlRb;
@@ -1644,16 +1604,6 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
         {
           //check Sidelink
 
-          //check if there is a SLSS message to be transmitted
-          std::list<Ptr<LteControlMessage> >::iterator ctrlIt;
-          for (ctrlIt = ctrlMsg.begin (); ctrlIt != ctrlMsg.end (); ctrlIt++)
-            {
-              if ((*ctrlIt)->GetMessageType() == LteControlMessage::MIB_SL)
-                {
-                  mibSlFound = true;
-                }
-            }
-
           if (!m_waitingNextScPeriod)
             {
               //since we only have 1 Tx pool we can either send PSCCH or PSSCH but not both
@@ -1661,51 +1611,72 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
               if (pb)
                 {
-                  //NS_ASSERT (ctrlMsg.size () == 0); //(In the future we can have PSSCH and MIB-SL in the same subframe)
-                  NS_LOG_LOGIC (this << " UE - start TX PSSCH");
-                  NS_LOG_DEBUG (this << " TX Burst containing " << pb->GetNPackets() << " packets");
+                  std::list<LteUePhySapProvider::TransmitSlPhySduParameters>::iterator paramIt = params.begin ();
+                  NS_ASSERT_MSG (paramIt != params.end (), "Found packet burst without associated parameters");
+                  NS_ASSERT_MSG (ctrlMsg.size () == 0, "Should not have control messages while sending SL packet burst");
 
-                  //tx pool only has 1 grant so we can go straight to the first element
-                  //find the matching transmission opportunity. This is needed in case some opportunities
-                  //were skipped because the queue was empty
-                  std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator txIt = m_slTxPoolInfo.m_currentGrants.begin ()->second.m_psschTx.begin ();
-                  while (txIt->subframe.frameNo < frameNo || (txIt->subframe.frameNo == frameNo && txIt->subframe.subframeNo < subframeNo))
+                  std::vector <int> slRb;
+                  for (int i = (*paramIt).rbStart; i < (*paramIt).rbStart + (*paramIt).rbLen; i++)
                     {
-                      txIt = m_slTxPoolInfo.m_currentGrants.begin ()->second.m_psschTx.erase (txIt);
-                      if (txIt == m_slTxPoolInfo.m_currentGrants.begin ()->second.m_psschTx.end ())
+                      NS_LOG_LOGIC (this << " Transmitting sidelink on RB " << i);
+                      slRb.push_back (i);
+                    }
+
+                  switch ((*paramIt).channel)
+                    {
+                    case LteUePhySapProvider::TransmitSlPhySduParameters::PSBCH:
+                      NS_LOG_LOGIC (this << " UE - start TX PSBCH");
+
+                      NS_ASSERT_MSG (params.size () == 1, "Found more than one packet in PSBCH burst");
+
+                      if (m_enableUplinkPowerControl)
                         {
-                          NS_LOG_ERROR ("Reached end of transmission list");
+                          m_txPower = m_powerControl->GetPscchTxPower (slRb); //what's the power control for PSBCH?
                         }
-                    }
 
-                  NS_ASSERT (txIt != m_slTxPoolInfo.m_currentGrants.begin ()->second.m_psschTx.end ()); //must be at least one element
-                  NS_ASSERT_MSG (txIt->subframe.frameNo == frameNo && txIt->subframe.subframeNo == subframeNo, "Found " <<
-                                 txIt->subframe.frameNo << "/" << txIt->subframe.subframeNo); //there must be an opportunity in this subframe
-                  NS_ASSERT (rbMask.size () == 0);
+                      SetSubChannelsForTransmission (slRb);
+                      m_uplinkSpectrumPhy->StartTxSlMibFrame (pb, UL_DATA_DURATION);
+                      break;
+                    case LteUePhySapProvider::TransmitSlPhySduParameters::PSCCH:
+                      NS_LOG_LOGIC (this << " UE - start TX PSCCH");
+                      //access the control message to store the PSSCH grant and be able to
+                      //determine the subframes/RBs for PSSCH transmissions/ discovery
 
-                  for (int i = txIt->rbStart ; i < txIt->rbStart + txIt->nbRb ; i++)
-                    {
-                      NS_LOG_LOGIC (this << " Transmitting PSSCH on RB " << i);
-                      rbMask.push_back (i);
-                    }
-                  m_slTxPoolInfo.m_currentGrants.begin ()->second.m_psschTx.erase (txIt);
+                      NS_ASSERT_MSG (params.size () == 1, "Found more than one packet in PSCCH burst");
 
-                  // if (m_slTxPoolInfo.m_currentGrants.begin ()->second.m_psschTx.size () == 0) {
-                  //   //no more PSSCH transmission, clear the grant
-                  //   m_slTxPoolInfo.m_currentGrants.clear ();
-                  // }
+                      if (m_enableUplinkPowerControl)
+                        {
+                          m_txPower = m_powerControl->GetPscchTxPower (slRb);
+                        }
 
-                  if (m_enableUplinkPowerControl)
-                    {
-                      m_txPower = m_powerControl->GetPsschTxPower (rbMask);
-                    }
-                  //Synchronization has priority over communication
-                  //The PSSCH is transmitted only if no synchronization operations are being performed
-                  if (!mibSlFound)
-                    {
                       if (m_ueSlssScanningInProgress)
                         {
-                          NS_LOG_LOGIC(this <<" trying to do a PSSCH transmission while there is a scanning in progress... Ignoring transmission");
+                          NS_LOG_LOGIC (this << "trying to do a PSCCH transmission while there is a scanning in progress... Ignoring transmission");
+                        }
+                      else if (m_ueSlssMeasurementsSched.find (Simulator::Now ().GetMilliSeconds ()) != m_ueSlssMeasurementsSched.end ())         //Measurement in this subframe
+                        {
+                          NS_LOG_LOGIC ("trying to do a PSCCH transmission while measuring S-RSRP in the same subframe... Ignoring transmission");
+                        }
+                      else
+                        {
+                          SetSubChannelsForTransmission (slRb);
+                          m_uplinkSpectrumPhy->StartTxSlCtrlFrame (pb, UL_DATA_DURATION);
+                        }
+
+                      break;
+                    case LteUePhySapProvider::TransmitSlPhySduParameters::PSSCH:
+                      //NS_ASSERT (ctrlMsg.size () == 0); //(In the future we can have PSSCH and MIB-SL in the same subframe)
+                      NS_LOG_LOGIC (this << " UE - start TX PSSCH");
+                      NS_LOG_DEBUG (this << " TX Burst containing " << pb->GetNPackets () << " packets");
+
+                      if (m_enableUplinkPowerControl)
+                        {
+                          m_txPower = m_powerControl->GetPsschTxPower (slRb);
+                        }
+
+                      if (m_ueSlssScanningInProgress)
+                        {
+                          NS_LOG_LOGIC (this << " trying to do a PSSCH transmission while there is a scanning in progress... Ignoring transmission");
                         }
                       else if (m_ueSlssMeasurementsSched.find (Simulator::Now ().GetMilliSeconds ()) != m_ueSlssMeasurementsSched.end ())
                         {
@@ -1713,242 +1684,38 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                         }
                       else
                         {
-                          SetSubChannelsForTransmission (rbMask);
-                          m_uplinkSpectrumPhy->StartTxSlDataFrame (pb, ctrlMsg, UL_DATA_DURATION, m_slTxPoolInfo.m_currentGrants.begin ()->second.m_grant.m_groupDstId);
-                        }
-                    }
-                  else
-                    {
-                      //TODO: Make the transmission possible if using different RBs than MIB-SL
-                      NS_LOG_LOGIC ("trying to do a PSSCH transmission while there is a PSBCH (SLSS) transmission scheduled... Ignoring transmission ");
-                    }
-                }
-              else
-                {
-                  // send only PSCCH (ideal: fake null bandwidth signal)
-                  if (ctrlMsg.size ()>0 && sciDiscFound)
-                    {
-                      std::list<Ptr<LteControlMessage> >::iterator msgIt = ctrlMsg.begin ();
-                      //skiping the MIB-SL if it is the first in the list
-                      if ((*msgIt)->GetMessageType () != LteControlMessage::SCI && (*msgIt)->GetMessageType () != LteControlMessage::SL_DISC_MSG)
-                        {
-                          msgIt++;
-                        }
-                      else if ((*msgIt)->GetMessageType () == LteControlMessage::SCI)
-                        {
-                          NS_LOG_LOGIC (this << " UE - start TX PSCCH");
-                          //access the control message to store the PSSCH grant and be able to
-                          //determine the subframes/RBs for PSSCH transmissions/ discovery
-
-                          NS_ASSERT_MSG ((*msgIt)->GetMessageType () == LteControlMessage::SCI, "Received " << (*msgIt)->GetMessageType ());
-
-                          Ptr<SciLteControlMessage> msg2 = DynamicCast<SciLteControlMessage> (*msgIt);
-                          SciListElement_s sci = msg2->GetSci ();
-
-                          std::map<uint16_t, SidelinkGrantInfo>::iterator grantIt = m_slTxPoolInfo.m_currentGrants.find (sci.m_rnti);
-                          if (grantIt == m_slTxPoolInfo.m_currentGrants.end ())
-                            {
-                              SidelinkGrantInfo grantInfo;
-                              //this is the first transmission of PSCCH
-                              grantInfo.m_grantReceived = true;
-                              grantInfo.m_grant.m_rnti = sci.m_rnti;
-                              grantInfo.m_grant.m_resPscch = sci.m_resPscch;
-                              grantInfo.m_grant.m_rbStart = sci.m_rbStart;
-                              grantInfo.m_grant.m_rbLen = sci.m_rbLen;
-                              grantInfo.m_grant.m_trp = sci.m_trp;
-                              grantInfo.m_grant.m_groupDstId = sci.m_groupDstId;
-                              grantInfo.m_grant.m_mcs = sci.m_mcs;
-                              grantInfo.m_grant.m_tbSize = sci.m_tbSize;
-                              grantInfo.m_grant.m_hopping = sci.m_hopping;
-                              grantInfo.m_grant.m_hoppingInfo = sci.m_hoppingInfo;
-
-                              grantInfo.m_grant.frameNo = frameNo;
-                              grantInfo.m_grant.subframeNo = subframeNo;
-
-                              grantInfo.m_pscchTx = m_slTxPoolInfo.m_pool->GetPscchTransmissions (sci.m_resPscch);
-                              SidelinkCommResourcePool::SubframeInfo tmp = m_slTxPoolInfo.m_pool->GetCurrentScPeriod(frameNo, subframeNo);
-                              grantInfo.m_psschTx = m_slTxPoolInfo.m_pool->GetPsschTransmissions (tmp, grantInfo.m_grant.m_trp, grantInfo.m_grant.m_rbStart, grantInfo.m_grant.m_rbLen);
-
-                              std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator txIt;
-                              for (txIt = grantInfo.m_psschTx.begin (); txIt != grantInfo.m_psschTx.end (); txIt++)
-                                {
-                                  //adjust for index starting at 1
-                                  txIt->subframe.frameNo++;
-                                  txIt->subframe.subframeNo++;
-                                  NS_LOG_INFO (this << " Subframe Tx" << txIt->subframe.frameNo << "/" << txIt->subframe.subframeNo << ": rbStart=" << (uint32_t) txIt->rbStart << ", rbLen=" << (uint32_t) txIt->nbRb);
-                                }
-
-                              //insert grant
-                              m_slTxPoolInfo.m_currentGrants.insert (std::pair <uint16_t, SidelinkGrantInfo> (sci.m_rnti, grantInfo));
-                              NS_LOG_DEBUG (this <<  " Creating grant at " << grantInfo.m_grant.frameNo << "/" << grantInfo.m_grant.subframeNo);
-                            }
-                          else
-                            {
-                              NS_LOG_DEBUG (this <<  " Grant created at " << grantIt->second.m_grant.frameNo << "/" << grantIt->second.m_grant.subframeNo);
-                            }
-                          std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator txIt = m_slTxPoolInfo.m_currentGrants.begin ()->second.m_pscchTx.begin ();
-                          NS_ASSERT (txIt != m_slTxPoolInfo.m_currentGrants.begin ()->second.m_pscchTx.end ()); //must be at least one element
-                          std::vector <int> slRb;
-                          for (int i = txIt->rbStart ; i < txIt->rbStart + txIt->nbRb ; i++)
-                            {
-                              NS_LOG_LOGIC (this << " Transmitting PSCCH on RB " << i);
-                              slRb.push_back (i);
-                            }
-                          m_slTxPoolInfo.m_currentGrants.begin ()->second.m_pscchTx.erase (txIt);
-                          if (m_enableUplinkPowerControl)
-                            {
-                              m_txPower = m_powerControl->GetPscchTxPower (slRb);
-                            }
-                          //Synchronization has priority over communication
-                          //The PSCCH is transmitted only if no synchronization operations are being performed
-                          if (!mibSlFound)
-                            {
-                              if (m_ueSlssScanningInProgress)
-                                {
-                                  NS_LOG_LOGIC(this << "trying to do a PSCCH transmission while there is a scanning in progress... Ignoring transmission");
-                                }
-                              else if (m_ueSlssMeasurementsSched.find (Simulator::Now ().GetMilliSeconds ()) != m_ueSlssMeasurementsSched.end ()) //Measurement in this subframe
-                                {
-                                  NS_LOG_LOGIC ("trying to do a PSCCH transmission while measuring S-RSRP in the same subframe... Ignoring transmission");
-                                }
-                              else
-                                {
-                                  SetSubChannelsForTransmission (slRb);
-                                  m_uplinkSpectrumPhy->StartTxSlDataFrame (pb, ctrlMsg, UL_DATA_DURATION, sci.m_groupDstId);
-                                }
-                            }
-                          else
-                            {
-                              //TODO: Make the transmission possible if using different RBs than MIB-SL
-                              NS_LOG_LOGIC ("trying to do a PSCCH transmission while there is a PSBCH (SLSS) transmission scheduled... Ignoring transmission ");
-                            }
-                        }
-                      else if ((*msgIt)->GetMessageType () == LteControlMessage::SL_DISC_MSG)
-                        {
-                          NS_LOG_LOGIC (this << " UE - start Tx PSDCH");
-                          NS_ASSERT_MSG ((*msgIt)->GetMessageType () == LteControlMessage::SL_DISC_MSG, "Received " << (*msgIt)->GetMessageType ());
-
-                          std::map<uint16_t, DiscGrantInfo>::iterator grantIt = m_discTxPools.m_currentGrants.find (m_rnti);
-                          if (grantIt == m_discTxPools.m_currentGrants.end ())
-                            {
-                              DiscGrantInfo grantInfo;
-                              grantInfo.m_grantReceived = true;
-                              grantInfo.m_grant.m_rnti = m_rnti;
-                              grantInfo.m_grant.m_resPsdch = m_discResPsdch;
-
-                              grantInfo.m_psdchTx = m_discTxPools.m_pool->GetPsdchTransmissions (grantInfo.m_grant.m_resPsdch);
-
-                              uint8_t retx = m_discTxPools.m_pool->GetNumRetx ();
-                              m_sidelinkSpectrumPhy->SetDiscNumRetx (retx);
-
-                              std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator txIt;
-                              for (txIt = grantInfo.m_psdchTx.begin (); txIt != grantInfo.m_psdchTx.end (); txIt++)
-                                {
-                                  //adjust for index starting at 1
-                                  txIt->subframe.frameNo++;
-                                  txIt->subframe.subframeNo++;
-                                }
-
-                              NS_LOG_DEBUG (this <<  " Creating grant");
-                              m_discTxPools.m_currentGrants.insert (std::pair<uint16_t,DiscGrantInfo> (m_rnti, grantInfo));
-                            }
-                          else
-                            {
-                              NS_LOG_DEBUG (this <<  " Grant already created");
-                            }
-
-                          std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator txIt = m_discTxPools.m_currentGrants.begin ()->second.m_psdchTx.begin ();
-                          NS_ASSERT (txIt != m_discTxPools.m_currentGrants.begin ()->second.m_psdchTx.end ());
-                          std::vector <int> slRb;
-
-                          for (int i = txIt->rbStart ; i < txIt->rbStart + txIt->nbRb ; i++)
-                            {
-                              NS_LOG_LOGIC (this << " Transmitting PSDCH on RB " << i);
-                              slRb.push_back (i);
-                            }
-
-                          m_discTxPools.m_currentGrants.begin ()->second.m_psdchTx.erase (txIt);
-
-                          if (m_enableUplinkPowerControl)
-                          {
-                            m_txPower = m_powerControl->GetPsdchTxPower (slRb);
-                          }
-
                           SetSubChannelsForTransmission (slRb);
+                          m_uplinkSpectrumPhy->StartTxSlDataFrame (pb, UL_DATA_DURATION, (*paramIt).dstId);
+                        }
+                      break;
+                    case LteUePhySapProvider::TransmitSlPhySduParameters::PSDCH:
+                      NS_LOG_LOGIC (this << " UE - start Tx PSDCH");
 
-                          //0 added to pass by the group Id
-                          //to be double checked
-                          //
-                          m_uplinkSpectrumPhy->StartTxSlDataFrame (pb, ctrlMsg, UL_DATA_DURATION,0);
-
-                          for (std::list<Ptr<LteControlMessage> >::iterator msg = ctrlMsg.begin (); msg != ctrlMsg.end (); ++msg)
-                            {
-                              NS_LOG_LOGIC (this << ((*msg)->GetMessageType ()) << " discovery msg");
-                              Ptr<SlDiscMessage> msg2 = DynamicCast<SlDiscMessage> ((*msg));
-                              if (msg2)
-                                {
-                                  SlDiscMsg disc = msg2->GetSlDiscMessage ();
-                                  m_discoveryAnnouncementTrace (m_cellId, m_rnti,(uint32_t)disc.m_proSeAppCode.to_ulong ());
-                                }
-                            }
-
+                      if (m_enableUplinkPowerControl)
+                        {
+                          m_txPower = m_powerControl->GetPsdchTxPower (slRb);
                         }
 
-                    else
-                      {
-                        NS_LOG_LOGIC (this << " UE - SL/UL NOTHING TO SEND");
-                      }
-                    }
-                  }
-              }//end if !m_waitingNextScPeriod
-            else
-              {
-                NS_LOG_LOGIC (this << " the UE changed of timing and it is waiting for the start of a new SC period using the new timing... Delaying transmissions ");
-              }
-          //Transmit the SLSS
-          if (mibSlFound)
-            {
-              //Remove all other control packets (i.e., SCI)
-              ctrlIt=ctrlMsg.begin ();
-              while (ctrlIt != ctrlMsg.end ())
-                {
-                  if ((*ctrlIt)->GetMessageType () != LteControlMessage::MIB_SL)
-                    {
-                      ctrlIt = ctrlMsg.erase (ctrlIt);
-                    }
-                  else
-                    {
-                      ctrlIt++;
-                    }
-                }
+                      SetSubChannelsForTransmission (slRb);
 
-              ctrlIt=ctrlMsg.begin ();
+                      //0 added to pass by the group Id
+                      //to be double checked
+                      //
+                      m_uplinkSpectrumPhy->StartTxSlDiscFrame (pb, (*paramIt).resNo, (*paramIt).rv, UL_DATA_DURATION);
 
-              //We assume the SyncRef selection has priority over SLSS transmission
-              //The SLSS is sent only if no scanning or measurement is performed in this subframe
-              if (m_ueSlssScanningInProgress)
-                {
-                  NS_LOG_LOGIC ("trying to do a PSBCH transmission while there is a scanning in progress... Ignoring transmission");
-                }
-              else if (m_ueSlssMeasurementsSched.find (Simulator::Now ().GetMilliSeconds ()) != m_ueSlssMeasurementsSched.end ()) //Measurement in this subframe
-                {
-                  NS_LOG_LOGIC ("trying to do a PSBCH transmission while measuring S-RSRP in the same subframe... Ignoring transmission");
+                      break;
+                    default:
+                      NS_LOG_ERROR ("Unknown sidelink message type");
+                    }
                 }
               else
                 {
-                  std::vector<int> dlRb;
-                  for (uint8_t i = 22; i < 28; i++)
-                    {
-                      dlRb.push_back (i);
-                    }
-                  if (m_enableUplinkPowerControl)
-                    {
-                      //TODO: Set the transmission power corresponding to PSBCH
-                      m_txPower = m_powerControl->GetPscchTxPower (dlRb);
-                    }
-                  SetSubChannelsForTransmission (dlRb);
-                  m_uplinkSpectrumPhy->StartTxSlDataFrame (pb, ctrlMsg, UL_DATA_DURATION,m_slTxPoolInfo.m_currentGrants.begin ()->second.m_grant.m_groupDstId);
+                  NS_LOG_LOGIC (this << " UE - SL/UL NOTHING TO SEND");
                 }
+            }  //end if !m_waitingNextScPeriod
+          else
+            {
+              NS_LOG_LOGIC (this << " the UE changed of timing and it is waiting for the start of a new SC period using the new timing... Delaying transmissions ");
             }
         }
     }  // end of if (m_ulConfigured)
@@ -2006,6 +1773,8 @@ LteUePhy::DoReset ()
   m_srsConfigured = false;
   m_dlConfigured = false;
   m_ulConfigured = false;
+  m_ulEarfcn = 0;
+  m_ulBandwidth = 0;
   m_raPreambleId = 255; // value out of range
   m_raRnti = 11; // value out of range
   m_rsrpSinrSampleCounter = 0;
@@ -2022,10 +1791,12 @@ LteUePhy::DoReset ()
       m_packetBurstQueue.push_back (pb);
       std::list<Ptr<LteControlMessage> > l;
       m_controlMessagesQueue.push_back (l);
+      std::list < LteUePhySapProvider::TransmitSlPhySduParameters > l2;
+      m_packetParamsQueue.push_back (l2);
+
     }
   std::vector <int> ulRb;
   m_subChannelsForTransmissionQueue.resize (m_macChTtiDelay, ulRb);
-
   m_sendSrsEvent.Cancel ();
   m_downlinkSpectrumPhy->Reset ();
   m_uplinkSpectrumPhy->Reset ();
@@ -2103,11 +1874,11 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 }
 
 
-void 
+void
 LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth)
 {
   NS_LOG_FUNCTION (this << " Uplink : EARFCN = " << ulEarfcn
-                  << " bandwidth = " << (uint32_t) ulBandwidth);
+                        << " bandwidth = " << (uint32_t) ulBandwidth);
 
   if ((m_ulEarfcn != ulEarfcn) || (m_ulBandwidth != ulBandwidth) || (!m_ulConfigured))
     {
@@ -2131,7 +1902,7 @@ LteUePhy::DoConfigureReferenceSignalPower (int8_t referenceSignalPower)
   NS_LOG_FUNCTION (this);
   m_powerControl->ConfigureReferenceSignalPower (referenceSignalPower);
 }
- 
+
 void
 LteUePhy::DoSetRnti (uint16_t rnti)
 {
@@ -2141,7 +1912,7 @@ LteUePhy::DoSetRnti (uint16_t rnti)
   m_powerControl->SetCellId (m_cellId);
   m_powerControl->SetRnti (m_rnti);
 }
- 
+
 void
 LteUePhy::DoSetTransmissionMode (uint8_t txMode)
 {
@@ -2168,10 +1939,10 @@ void
 LteUePhy::DoSetPa (double pa)
 {
   NS_LOG_FUNCTION (this << pa);
-  m_paLinear = pow (10,(pa/10));
+  m_paLinear = pow (10,(pa / 10));
 }
 
-void 
+void
 LteUePhy::DoSetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient)
 {
   NS_LOG_FUNCTION (this << (uint16_t) (rsrpFilterCoefficient));
@@ -2184,37 +1955,37 @@ LteUePhy::SetTxMode1Gain (double gain)
   SetTxModeGain (1, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode2Gain (double gain)
 {
   SetTxModeGain (2, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode3Gain (double gain)
 {
   SetTxModeGain (3, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode4Gain (double gain)
 {
   SetTxModeGain (4, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode5Gain (double gain)
 {
   SetTxModeGain (5, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode6Gain (double gain)
 {
   SetTxModeGain (6, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode7Gain (double gain)
 {
   SetTxModeGain (7, gain);
@@ -2223,7 +1994,7 @@ LteUePhy::SetTxMode7Gain (double gain)
 void
 LteUePhy::SetSlRxGain (double gain)
 {
-  NS_LOG_FUNCTION(this << gain);
+  NS_LOG_FUNCTION (this << gain);
   m_slRxGain = gain;
 }
 
@@ -2242,7 +2013,7 @@ LteUePhy::SetTxModeGain (uint8_t txMode, double gain)
   m_txModeGain.clear ();
   for (uint8_t i = 0; i < temp.size (); i++)
     {
-      if (i==txMode-1)
+      if (i == txMode - 1)
         {
           m_txModeGain.push_back (gainLin);
         }
@@ -2288,40 +2059,17 @@ LteUePhy::SwitchToState (State newState)
   State oldState = m_state;
   m_state = newState;
   NS_LOG_INFO ("cellId=" << m_cellId << " rnti=" << m_rnti
-               << " UePhy " << ToString (oldState)
-               << " --> " << ToString (newState));
+                         << " UePhy " << ToString (oldState)
+                         << " --> " << ToString (newState));
   m_stateTransitionTrace (m_cellId, m_rnti, oldState, newState);
-}
-
-void
-LteUePhy::DoSetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool)
-{
-  NS_LOG_FUNCTION (this << pool);
-  m_discTxPools.m_pool = pool;
-  m_discTxPools.m_npsdch = pool->GetNPsdch ();
-  m_discTxPools.m_currentGrants.clear ();
-  m_discTxPools.m_nextDiscPeriod.frameNo = 0;
-  m_discTxPools.m_nextDiscPeriod.subframeNo = 0;
-}
-
-void
-LteUePhy::DoRemoveSlDiscTxPool ()
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG("Removing Sidelink Discovery Tx pool");
-  m_discTxPools.m_pool = NULL;
-  m_discTxPools.m_npsdch = 0;
-  m_discTxPools.m_currentGrants.clear ();
 }
 
 void
 LteUePhy::DoRemoveSlCommTxPool ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG("Removing Sidelink Communication Tx pool");
-  m_slTxPoolInfo.m_pool = NULL;
-  m_slTxPoolInfo.m_npscch = 0;
-  m_slTxPoolInfo.m_currentGrants.clear ();
+  NS_LOG_DEBUG ("Removing Sidelink Communication Tx pool");
+  m_slTxPoolInfo.m_pool = nullptr;
 }
 
 void
@@ -2354,7 +2102,7 @@ LteUePhy::DoSetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools)
           m_sidelinkSpectrumPhy->SetRxPool (newpool.m_pool);
           //This is needed to configure the number of retransmissions in LteSlHarqPhy
           //if a UE is only monitoring the discovery announcements.
-          m_sidelinkSpectrumPhy->SetDiscNumRetx(newpool.m_pool->GetNumRetx());
+          m_sidelinkSpectrumPhy->SetDiscNumRetx (newpool.m_pool->GetNumRetx ());
         }
     }
 }
@@ -2373,7 +2121,7 @@ LteUePhy::InitializeDiscRxPool (uint32_t frameNo, uint32_t subframeNo)
           it.m_nextDiscPeriod.frameNo++;
           it.m_nextDiscPeriod.subframeNo++;
           NS_LOG_DEBUG ("Total discovery RX pool = " << m_discRxPools.size ());
-          NS_LOG_DEBUG ("At " << Simulator::Now().GetMilliSeconds ()
+          NS_LOG_DEBUG ("At " << Simulator::Now ().GetMilliSeconds ()
                               << " ms Discovery Rx Pool initialized"
                               << ". Next period at " << it.m_nextDiscPeriod.frameNo
                               << "/" << it.m_nextDiscPeriod.subframeNo);
@@ -2397,35 +2145,10 @@ LteUePhy::InitializeDiscRxPool (uint32_t frameNo, uint32_t subframeNo)
 }
 
 void
-LteUePhy::DoSetDiscGrantInfo (uint8_t resPsdch)
-{
-  NS_LOG_FUNCTION (this << resPsdch);
-  m_discResPsdch = resPsdch;
-}
-
-void
-LteUePhy::DoAddDiscTxApps (std::list<uint32_t> apps)
-{
-  NS_LOG_FUNCTION (this);
-  m_discTxApps = apps;
-  m_sidelinkSpectrumPhy->AddDiscTxApps (apps);
-}
-
-void
-LteUePhy::DoAddDiscRxApps (std::list<uint32_t> apps)
-{
-  NS_LOG_FUNCTION (this);
-  m_discRxApps = apps;
-  m_sidelinkSpectrumPhy->AddDiscRxApps (apps);
-}
-
-void
 LteUePhy::DoSetSlCommTxPool (Ptr<SidelinkTxCommResourcePool> pool)
 {
   NS_LOG_FUNCTION (this << pool );
   m_slTxPoolInfo.m_pool = pool;
-  m_slTxPoolInfo.m_npscch = pool->GetNPscch();
-  m_slTxPoolInfo.m_currentGrants.clear ();
   m_slTxPoolInfo.m_nextScPeriod.frameNo = 0; //init to 0 to make it invalid
   m_slTxPoolInfo.m_nextScPeriod.subframeNo = 0; //init to 0 to make it invalid
 }
@@ -2439,7 +2162,7 @@ LteUePhy::DoSetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools)
   for (poolIt = pools.begin (); poolIt != pools.end (); poolIt++)
     {
       bool found = false;
-      std::list<PoolInfo >::iterator currentPoolIt;
+      std::list<RxPoolInfo >::iterator currentPoolIt;
       for (currentPoolIt = m_sidelinkRxPools.begin (); currentPoolIt != m_sidelinkRxPools.end () && !found; currentPoolIt++)
         {
           if (*poolIt == currentPoolIt->m_pool)
@@ -2449,9 +2172,8 @@ LteUePhy::DoSetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools)
         }
       if (!found)
         {
-          PoolInfo newpool;
+          RxPoolInfo newpool;
           newpool.m_pool = *poolIt;
-          newpool.m_npscch = (*poolIt)->GetNPscch();
           newpool.m_currentGrants.clear ();
           m_sidelinkRxPools.push_back (newpool);
         }
@@ -2466,7 +2188,7 @@ void
 LteUePhy::DoAddSlDestination (uint32_t destination)
 {
   std::list <uint32_t>::iterator it;
-  for (it = m_destinations.begin (); it != m_destinations.end ();it++)
+  for (it = m_destinations.begin (); it != m_destinations.end (); it++)
     {
       if ((*it) == destination)
         {
@@ -2499,7 +2221,7 @@ LteUePhy::DoRemoveSlDestination (uint32_t destination)
             {
               m_sidelinkSpectrumPhy->RemoveL1GroupId (destination);
             }
-          break;//leave the loop
+          break; //leave the loop
         }
       it++;
     }
@@ -2523,7 +2245,7 @@ LteUePhy::GetFirstScanningTime ()
 void
 LteUePhy::ReceiveSlss (uint16_t slssid, Ptr<SpectrumValue> p)
 {
-  NS_LOG_FUNCTION(this << slssid);
+  NS_LOG_FUNCTION (this << slssid);
 
   if (m_ueSlssScanningInProgress || m_ueSlssMeasurementInProgress)
     {
@@ -2533,7 +2255,7 @@ LteUePhy::ReceiveSlss (uint16_t slssid, Ptr<SpectrumValue> p)
       double sum = 0.0;
       uint16_t nRB = 0;
       Values::const_iterator itPi;
-      for (itPi = p->ConstValuesBegin(); itPi != p->ConstValuesEnd(); itPi++)
+      for (itPi = p->ConstValuesBegin (); itPi != p->ConstValuesEnd (); itPi++)
         {
           if ((*itPi))
             {
@@ -2543,11 +2265,11 @@ LteUePhy::ReceiveSlss (uint16_t slssid, Ptr<SpectrumValue> p)
             }
         }
       double s_rsrp_W = (sum / static_cast<double> (nRB));
-      double s_rsrp_dBm = 10 * log10(1000 * (s_rsrp_W));
+      double s_rsrp_dBm = 10 * log10 (1000 * (s_rsrp_W));
       uint16_t offset = Simulator::Now ().GetMilliSeconds () % 40;
 
       NS_LOG_INFO ("UE RNTI " << m_rnti << " received SLSS from SyncRef with SLSSID " << slssid
-                  << " offset "<< offset << " with S-RSRP " << s_rsrp_dBm << " dBm" );
+                              << " offset " << offset << " with S-RSRP " << s_rsrp_dBm << " dBm" );
 
       //If it is not detectable, ignore
       if (s_rsrp_dBm < m_minSrsrp)
@@ -2561,7 +2283,7 @@ LteUePhy::ReceiveSlss (uint16_t slssid, Ptr<SpectrumValue> p)
       //SLSSs coming from different UEs, but having the same SyncRef info (same SLSSID and reception offset)
       //are considered as different S-RSRP samples of the same SyncRef
       std::map <std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator
-      itMeasMap = m_ueSlssMeasurementsMap.find (std::pair<uint16_t, uint16_t>(slssid,offset));
+        itMeasMap = m_ueSlssMeasurementsMap.find (std::pair<uint16_t, uint16_t> (slssid,offset));
 
       if (itMeasMap == m_ueSlssMeasurementsMap.end ()) //First entry
         {
@@ -2573,19 +2295,19 @@ LteUePhy::ReceiveSlss (uint16_t slssid, Ptr<SpectrumValue> p)
             {
               NS_LOG_LOGIC ("SyncRef scan in progress, first detected entry");
               m_ueSlssDetectionMap.insert (std::pair< std::pair<uint16_t, uint16_t>,
-                                          UeSlssMeasurementsElement>(std::pair<uint16_t, uint16_t>(slssid,offset), newEl));
+                                                      UeSlssMeasurementsElement> (std::pair<uint16_t, uint16_t> (slssid,offset), newEl));
             }
           else if (m_ueSlssMeasurementInProgress)
             {
               NS_LOG_LOGIC ("S-RSRP measurement in progress, first measurement entry");
               //Insert new measurement only if it was already detected
               std::map <std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator
-              itDetectionMap = m_ueSlssDetectionMap.find (std::pair<uint16_t, uint16_t>(slssid,offset));
+                itDetectionMap = m_ueSlssDetectionMap.find (std::pair<uint16_t, uint16_t> (slssid,offset));
               if (itDetectionMap != m_ueSlssDetectionMap.end ())
                 {
                   NS_LOG_LOGIC ("SyncRef already detected, storing measurement");
                   m_ueSlssMeasurementsMap.insert (std::pair< std::pair<uint16_t, uint16_t>,
-                                                 UeSlssMeasurementsElement>(std::pair<uint16_t, uint16_t>(slssid,offset), newEl));
+                                                             UeSlssMeasurementsElement> (std::pair<uint16_t, uint16_t> (slssid,offset), newEl));
                 }
               else
                 {
@@ -2611,14 +2333,14 @@ void
 LteUePhy::SetUeSlssInterScanningPeriodMax (Time t)
 {
   NS_LOG_FUNCTION (this);
-  m_nextScanRdm->SetAttribute("Max",DoubleValue(t.GetMilliSeconds ()) );
+  m_nextScanRdm->SetAttribute ("Max",DoubleValue (t.GetMilliSeconds ()) );
 }
 
 void
 LteUePhy::SetUeSlssInterScanningPeriodMin (Time t)
 {
   NS_LOG_FUNCTION (this);
-  m_nextScanRdm->SetAttribute("Min",DoubleValue(t.GetMilliSeconds ()) );
+  m_nextScanRdm->SetAttribute ("Min",DoubleValue (t.GetMilliSeconds ()) );
 }
 
 void
@@ -2638,36 +2360,36 @@ LteUePhy::EndSlssScanning ()
 
   //Filter to keep only the SyncRefs with received MIB-SL
   std::map <std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator itDetectionMap;
-  for (itDetectionMap = m_ueSlssDetectionMap.begin (); itDetectionMap != m_ueSlssDetectionMap.end ();itDetectionMap++)
+  for (itDetectionMap = m_ueSlssDetectionMap.begin (); itDetectionMap != m_ueSlssDetectionMap.end (); itDetectionMap++)
     {
-      NS_LOG_LOGIC ("UE RNTI "<<m_rnti<<" detected SyncRef with SLSSID "<<itDetectionMap->first.first <<" offset " << itDetectionMap->first.second <<" S-RSRP "<< itDetectionMap->second.srsrpSum / itDetectionMap->second.srsrpNum);
+      NS_LOG_LOGIC ("UE RNTI " << m_rnti << " detected SyncRef with SLSSID " << itDetectionMap->first.first << " offset " << itDetectionMap->first.second << " S-RSRP " << itDetectionMap->second.srsrpSum / itDetectionMap->second.srsrpNum);
       std::map <std::pair<uint16_t, uint16_t>, LteRrcSap::MasterInformationBlockSL>::iterator itMap =
-          m_detectedMibSl.find (std::pair<uint16_t, uint16_t>(itDetectionMap->first.first, itDetectionMap->first.second));
+        m_detectedMibSl.find (std::pair<uint16_t, uint16_t> (itDetectionMap->first.first, itDetectionMap->first.second));
       //If the MIB-SL wasn't received, erase it from the detection map
       if (itMap == m_detectedMibSl.end ())
         {
           NS_LOG_LOGIC ("MIB-SL was not found... Removing from detection list");
-          m_ueSlssDetectionMap.erase(itDetectionMap);
+          m_ueSlssDetectionMap.erase (itDetectionMap);
         }
     }
 
   //Select the 6 SyncRefs with higher S-RSRP. Remove the others form the detected list
   std::map <double, std::pair<uint16_t, uint16_t> > tmp;
-  for (itDetectionMap = m_ueSlssDetectionMap.begin (); itDetectionMap != m_ueSlssDetectionMap.end ();itDetectionMap++)
+  for (itDetectionMap = m_ueSlssDetectionMap.begin (); itDetectionMap != m_ueSlssDetectionMap.end (); itDetectionMap++)
     {
-      tmp.insert (std::pair<double, std::pair<uint16_t, uint16_t> >(itDetectionMap->second.srsrpSum / itDetectionMap->second.srsrpNum, itDetectionMap->first));
+      tmp.insert (std::pair<double, std::pair<uint16_t, uint16_t> > (itDetectionMap->second.srsrpSum / itDetectionMap->second.srsrpNum, itDetectionMap->first));
     }
   while (tmp.size () > 6)
     {
-      NS_LOG_LOGIC ("The UE detected more than 6 SyncRefs... Removing lowest S-RSRP SyncRef: SLSSID"<< tmp.begin ()->second.first <<"ofset "<<tmp.begin ()->second.second<< "S-RSRP " <<tmp.begin ()->first);
-      tmp.erase(tmp.begin ()->first);
+      NS_LOG_LOGIC ("The UE detected more than 6 SyncRefs... Removing lowest S-RSRP SyncRef: SLSSID" << tmp.begin ()->second.first << "ofset " << tmp.begin ()->second.second << "S-RSRP " << tmp.begin ()->first);
+      tmp.erase (tmp.begin ()->first);
     }
   std::map <std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement> ret;
   std::map <double, std::pair<uint16_t, uint16_t> >::iterator itTmp;
   for (itTmp = tmp.begin (); itTmp != tmp.end (); itTmp++)
     {
       std::map<std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator
-      itDetectionMapTwo = m_ueSlssDetectionMap.find (itTmp->second);
+        itDetectionMapTwo = m_ueSlssDetectionMap.find (itTmp->second);
       if (itDetectionMapTwo != m_ueSlssDetectionMap.end ())
         {
           ret.insert (std::pair<std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement> (itDetectionMapTwo->first, itDetectionMapTwo->second));
@@ -2675,7 +2397,7 @@ LteUePhy::EndSlssScanning ()
     }
 
   m_ueSlssDetectionMap = ret; // It contains now only the 6 SyncRefs with higher S-RSRP
-  m_ueSlssMeasurementsMap= ret;// It contains now only the 6 SyncRefs with higher S-RSRP (we use the S-RSRP measurements during scanning as first measurements)
+  m_ueSlssMeasurementsMap = ret; // It contains now only the 6 SyncRefs with higher S-RSRP (we use the S-RSRP measurements during scanning as first measurements)
 
   uint32_t nDetectedSyncRef = m_ueSlssDetectionMap.size ();
 
@@ -2697,11 +2419,11 @@ LteUePhy::EndSlssScanning ()
               t = Simulator::Now ().GetMilliSeconds () + (40 - currOffset + itMeasMap->first.second);
             }
           uint16_t count = 1;
-          while (t < (Simulator::Now ().GetMilliSeconds ()+ m_ueSlssMeasurementPeriod.GetMilliSeconds () - 40))
+          while (t < (Simulator::Now ().GetMilliSeconds () + m_ueSlssMeasurementPeriod.GetMilliSeconds () - 40))
             {
-              NS_LOG_INFO ("UE RNTI "<<m_rnti<<" will measure S-RSRP of SyncRef SLSSID "<< itMeasMap->first.first<<" offset "<< itMeasMap->first.second<<" at t:"<< t<<" ms");
-              m_ueSlssMeasurementsSched.insert (std::pair<int64_t, std::pair<uint16_t, uint16_t> >(t,itMeasMap->first));
-              count ++;
+              NS_LOG_INFO ("UE RNTI " << m_rnti << " will measure S-RSRP of SyncRef SLSSID " << itMeasMap->first.first << " offset " << itMeasMap->first.second << " at t:" << t << " ms");
+              m_ueSlssMeasurementsSched.insert (std::pair<int64_t, std::pair<uint16_t, uint16_t> > (t,itMeasMap->first));
+              count++;
               if (count > m_nSamplesSrsrpMeas)
                 {
                   break;
@@ -2729,12 +2451,13 @@ LteUePhy::StartSlssMeasurements (uint64_t slssid, uint16_t offset)
   if (slssid == 0) //Measurement
     {
       t = m_ueSlssMeasurementPeriod;
-      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the measurement sub-process... Report happening in "<<t<<" ms");
+      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the measurement sub-process... Report happening in " << t << " ms");
     }
-  else{ //Evaluation
+  else  //Evaluation
+    {
       t = m_ueSlssEvaluationPeriod;
-      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the evaluation sub-process... Report happening in "<<t<<" ms");
-  }
+      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the evaluation sub-process... Report happening in " << t << " ms");
+    }
   Simulator::Schedule (t, &LteUePhy::ReportSlssMeasurements, this, slssid, offset);
 }
 
@@ -2757,22 +2480,22 @@ LteUePhy::ReportSlssMeasurements (uint64_t slssid, uint16_t offset)
           //The stored values are in W, the report to the RRC should be in dBm
           double avg_s_rsrp_dBm = 10 * log10 (1000 * (avg_s_rsrp_W));
 
-          NS_LOG_INFO ("UE RNTI "<<m_rnti<< " report SyncRef with SLSSID "
-                      << (*it).first.first << " offset "<< (*it).first.second << " L1 filtered S-RSRP " << avg_s_rsrp_dBm
-                      << " from " << (double) (*it).second.srsrpNum <<" samples");
+          NS_LOG_INFO ("UE RNTI " << m_rnti << " report SyncRef with SLSSID "
+                                  << (*it).first.first << " offset " << (*it).first.second << " L1 filtered S-RSRP " << avg_s_rsrp_dBm
+                                  << " from " << (double) (*it).second.srsrpNum << " samples");
 
           LteUeCphySapUser::UeSlssMeasurementsElement newEl;
           newEl.m_slssid = (*it).first.first;
           newEl.m_srsrp = avg_s_rsrp_dBm;
           newEl.m_offset = (*it).first.second;
-          ret.m_ueSlssMeasurementsList.push_back(newEl);
+          ret.m_ueSlssMeasurementsList.push_back (newEl);
         }
 
     }
   else // Report only of the selected SyncRef
     {
       NS_LOG_LOGIC ("End of S-RSRP measurement corresponding to the evaluation sub-process");
-      NS_LOG_LOGIC ("Reporting L1 filtered S-RSRP values of the SyncRef SLSSID " << slssid <<" offset "<<offset);
+      NS_LOG_LOGIC ("Reporting L1 filtered S-RSRP values of the SyncRef SLSSID " << slssid << " offset " << offset);
 
       it = m_ueSlssMeasurementsMap.find (std::pair<uint16_t, uint16_t> (slssid, offset));
       if (it != m_ueSlssMeasurementsMap.end ())
@@ -2780,22 +2503,22 @@ LteUePhy::ReportSlssMeasurements (uint64_t slssid, uint16_t offset)
           //L1 filtering: linear average
           double avg_s_rsrp_W = (*it).second.srsrpSum / static_cast<double> ((*it).second.srsrpNum);
           //The stored values are in W, the report to the RRC should be in dBm
-          double avg_s_rsrp_dBm = 10 * log10(1000 * (avg_s_rsrp_W));
+          double avg_s_rsrp_dBm = 10 * log10 (1000 * (avg_s_rsrp_W));
 
-          NS_LOG_INFO(Simulator::Now ().GetMilliSeconds ()<< " UE RNTI "<<m_rnti<< " Report SyncRef with SLSSID "
-                      << (*it).first.first << " offset "<< (*it).first.second << " L1 filtered S-RSRP " << avg_s_rsrp_dBm
-                      << " from " << (double) (*it).second.srsrpNum <<" samples");
+          NS_LOG_INFO (Simulator::Now ().GetMilliSeconds () << " UE RNTI " << m_rnti << " Report SyncRef with SLSSID "
+                                                            << (*it).first.first << " offset " << (*it).first.second << " L1 filtered S-RSRP " << avg_s_rsrp_dBm
+                                                            << " from " << (double) (*it).second.srsrpNum << " samples");
 
           LteUeCphySapUser::UeSlssMeasurementsElement newEl;
           newEl.m_slssid = (*it).first.first;
           newEl.m_srsrp = avg_s_rsrp_dBm;
           newEl.m_offset = (*it).first.second;
-          ret.m_ueSlssMeasurementsList.push_back(newEl);
+          ret.m_ueSlssMeasurementsList.push_back (newEl);
         }
     }
 
   //Report to RRC
-  m_ueCphySapUser->ReportSlssMeasurements(ret,slssid,offset);
+  m_ueCphySapUser->ReportSlssMeasurements (ret,slssid,offset);
 
   //Cleaning for next process
   m_ueSlssMeasurementsMap.clear ();
@@ -2803,32 +2526,32 @@ LteUePhy::ReportSlssMeasurements (uint64_t slssid, uint16_t offset)
   m_ueSlssMeasurementInProgress = false;
 
   //Schedule the start of the measurement period for evaluation of selected SyncRef if appropriated
-  m_currNMeasPeriods ++;
+  m_currNMeasPeriods++;
   if (m_currNMeasPeriods == 1 && m_resyncRequested)
     {
       NS_LOG_LOGIC ("The measurement sub-process ended and RRC selected a SyncRef for (re)synchronization");
 
       //Schedule the measurement for evaluation of the selected SyncRef for initiation/cease of SlSS transmission
-      NS_LOG_INFO ("UE RNTI "<<m_rnti<< " will start evaluation of selected SyncRef with SLSSID " <<m_resyncParams.syncRefMib.slssid <<" offset" << m_resyncParams.syncRefMib.rxOffset );
-      Simulator::ScheduleNow (&LteUePhy::StartSlssMeasurements, this, m_resyncParams.syncRefMib.slssid, m_resyncParams.syncRefMib.rxOffset);
+      NS_LOG_INFO ("UE RNTI " << m_rnti << " will start evaluation of selected SyncRef with SLSSID " << m_resyncParams.slssid << " offset" << m_resyncParams.offset );
+      Simulator::ScheduleNow (&LteUePhy::StartSlssMeasurements, this, m_resyncParams.slssid, m_resyncParams.offset);
 
       //Create measurement schedule for the evaluation
-      uint16_t currOffset = Simulator::Now ().GetMilliSeconds ()%40;
+      uint16_t currOffset = Simulator::Now ().GetMilliSeconds () % 40;
       int64_t t;
-      if ( currOffset < m_resyncParams.syncRefMib.rxOffset)
+      if ( currOffset < m_resyncParams.offset)
         {
-          t = Simulator::Now ().GetMilliSeconds () + (m_resyncParams.syncRefMib.rxOffset - currOffset);
+          t = Simulator::Now ().GetMilliSeconds () + (m_resyncParams.offset - currOffset);
         }
       else
         {
-          t = Simulator::Now ().GetMilliSeconds () + (40 - currOffset + m_resyncParams.syncRefMib.rxOffset);
+          t = Simulator::Now ().GetMilliSeconds () + (40 - currOffset + m_resyncParams.offset);
         }
       uint16_t count = 1;
-      while (t < (Simulator::Now ().GetMilliSeconds ()+ m_ueSlssMeasurementPeriod.GetMilliSeconds () - 40))
+      while (t < (Simulator::Now ().GetMilliSeconds () + m_ueSlssMeasurementPeriod.GetMilliSeconds () - 40))
         {
-          NS_LOG_INFO ("UE RNTI "<<m_rnti<< " will measure SyncRef with SLSSID"<< m_resyncParams.syncRefMib.slssid<<" offset "<<  m_resyncParams.syncRefMib.rxOffset<<" at t:"<< t<<" ms");
-          m_ueSlssMeasurementsSched.insert (std::pair<int64_t, std::pair<uint16_t, uint16_t> > (t, std::pair<uint16_t, uint16_t> (m_resyncParams.syncRefMib.slssid , m_resyncParams.syncRefMib.rxOffset)));
-          count ++;
+          NS_LOG_INFO ("UE RNTI " << m_rnti << " will measure SyncRef with SLSSID" << m_resyncParams.slssid << " offset " <<  m_resyncParams.offset << " at t:" << t << " ms");
+          m_ueSlssMeasurementsSched.insert (std::pair<int64_t, std::pair<uint16_t, uint16_t> > (t, std::pair<uint16_t, uint16_t> (m_resyncParams.slssid, m_resyncParams.offset)));
+          count++;
           if (count > m_nSamplesSrsrpMeas)
             {
               break;
@@ -2841,7 +2564,7 @@ LteUePhy::ReportSlssMeasurements (uint64_t slssid, uint16_t offset)
       //End of the selection+evaluation process, reinitialize variables for next process and schedule it
       m_ueSlssDetectionMap.clear ();
 
-      if (m_currNMeasPeriods ==1)
+      if (m_currNMeasPeriods == 1)
         {
           NS_LOG_LOGIC ("The measurement sub-process ended and RRC did not selected a SyncRef... Ending SyncRef selection process");
           ScheduleNextSyncRefReselection (1); //The process ended after measurement
@@ -2862,8 +2585,8 @@ LteUePhy::ScheduleNextSyncRefReselection (uint16_t endOfPrevious)
 
   int32_t t_nextProcess = m_nextScanRdm->GetInteger ();
 
-  switch(endOfPrevious)
-  {
+  switch (endOfPrevious)
+    {
     case 0:
       NS_LOG_LOGIC ("SyncRef selection process ended after scanning sub-process");
       t_nextProcess = t_nextProcess - m_ueSlssScanningPeriod.GetMilliSeconds ();
@@ -2874,9 +2597,9 @@ LteUePhy::ScheduleNextSyncRefReselection (uint16_t endOfPrevious)
       break;
     case 2:
       NS_LOG_LOGIC ("SyncRef selection process ended after evaluation sub-process");
-      t_nextProcess = t_nextProcess - (m_ueSlssScanningPeriod.GetMilliSeconds () + m_ueSlssMeasurementPeriod.GetMilliSeconds ()+ m_ueSlssEvaluationPeriod.GetMilliSeconds ());
+      t_nextProcess = t_nextProcess - (m_ueSlssScanningPeriod.GetMilliSeconds () + m_ueSlssMeasurementPeriod.GetMilliSeconds () + m_ueSlssEvaluationPeriod.GetMilliSeconds ());
       break;
-  }
+    }
 
   //The standard requires at least one SyncRef selection process within 20s
   if (t_nextProcess > 20000)
@@ -2891,14 +2614,14 @@ LteUePhy::ScheduleNextSyncRefReselection (uint16_t endOfPrevious)
       NS_LOG_LOGIC ("Attempted to schedule the next SyncRef selection process for the past... Scheduling it for next subframe");
       t_nextProcess = 1;
     }
-  NS_LOG_INFO ("UE RNTI "<<m_rnti<< " will start the next SyncRef selection process in t: "<<t_nextProcess<<" ms");
+  NS_LOG_INFO ("UE RNTI " << m_rnti << " will start the next SyncRef selection process in t: " << t_nextProcess << " ms");
   Simulator::Schedule (MilliSeconds (t_nextProcess), &LteUePhy::StartSlssScanning, this);
 }
 
 bool
 LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << frameNo << subframeNo);
 
   if (m_slTxPoolInfo.m_pool)
     {
@@ -2906,23 +2629,37 @@ LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
 
       //Is it the start of a new period?
       if (((frameNo == m_slTxPoolInfo.m_nextScPeriod.frameNo && subframeNo
-          == m_slTxPoolInfo.m_nextScPeriod.subframeNo)
-          || m_slTxPoolInfo.m_nextScPeriod.frameNo == 0))
+            == m_slTxPoolInfo.m_nextScPeriod.subframeNo)
+           || m_slTxPoolInfo.m_nextScPeriod.frameNo == 0))
         {
           NS_LOG_LOGIC ("The current subframe corresponds to the start of a new Sidelink communication period... Applying the change of timing");
 
-          //Apply the change of Timing
-          frameNo = m_resyncParams.newFrameNo;
-          subframeNo = m_resyncParams.newSubframeNo;
+          //Calculate the new subframe indication
+          SidelinkCommResourcePool::SubframeInfo mibTime;
+          mibTime.frameNo = m_resyncParams.syncRefMib.directFrameNo;
+          mibTime.subframeNo = m_resyncParams.syncRefMib.directSubframeNo;
+          SidelinkCommResourcePool::SubframeInfo currentTime;
+          currentTime.frameNo = frameNo;
+          currentTime.subframeNo = subframeNo;
+          NS_LOG_INFO ("mibTime " << mibTime.frameNo << "/" << mibTime.subframeNo);
+          NS_LOG_INFO ("currentTime " << currentTime.frameNo << "/" << currentTime.subframeNo);
+          NS_LOG_INFO ("rxSubframe " << m_resyncParams.rxSubframe.frameNo << "/" << m_resyncParams.rxSubframe.subframeNo);
+
+          m_resyncParams.newSubframe = mibTime + (currentTime - m_resyncParams.rxSubframe);
+
           m_resyncRequested = false;
           NS_LOG_INFO ("UE RNTI " << m_rnti
-                      << " has a TxPool and changed the Subframe Indication from:"
-                      << " frame " << m_slTxPoolInfo.m_nextScPeriod.frameNo
-                      << " subframe " << m_slTxPoolInfo.m_nextScPeriod.subframeNo
-                      << " to: frame " << frameNo << " subframe " << subframeNo);
+                                  << " has a TxPool and changed the Subframe Indication"
+                                  << " from " << currentTime.frameNo << "/" << currentTime.subframeNo
+                                  << " to " << m_resyncParams.newSubframe.frameNo << "/" << m_resyncParams.newSubframe.subframeNo);
+
+          //Updating values used bellow
+          frameNo = m_resyncParams.newSubframe.frameNo;
+          subframeNo = m_resyncParams.newSubframe.subframeNo;
+
 
           //Notify RRC about the successful change of SyncRef and timing
-          m_ueCphySapUser->ReportChangeOfSyncRef(m_resyncParams.syncRefMib,frameNo, subframeNo);
+          m_ueCphySapUser->ReportChangeOfSyncRef (m_resyncParams);
 
           //Notify MAC about the successful change of SyncRef and timing. Some adjustments first
 
@@ -2947,19 +2684,17 @@ LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
           //We calculate the next period using the frameNo/subframeNo of the MAC.
           //Thus we avoid miss alignment due to the delay
           m_slTxPoolInfo.m_currentScPeriod
-          = m_slTxPoolInfo.m_pool->GetCurrentScPeriod(macFrameNo,macSubframeNo);
+            = m_slTxPoolInfo.m_pool->GetCurrentScPeriod (macFrameNo,macSubframeNo);
           m_slTxPoolInfo.m_nextScPeriod
-          = m_slTxPoolInfo.m_pool->GetNextScPeriod(
-              m_slTxPoolInfo.m_currentScPeriod.frameNo,
-              m_slTxPoolInfo.m_currentScPeriod.subframeNo);
+            = m_slTxPoolInfo.m_pool->GetNextScPeriod (
+                m_slTxPoolInfo.m_currentScPeriod.frameNo,
+                m_slTxPoolInfo.m_currentScPeriod.subframeNo);
           //adjust because scheduler starts with frame/subframe = 1
           m_slTxPoolInfo.m_nextScPeriod.frameNo++;
           m_slTxPoolInfo.m_nextScPeriod.subframeNo++;
           NS_LOG_INFO ("UE RNTI " << m_rnti << " Next Sidelink communication Tx period at frame/subframe: "
-                      << m_slTxPoolInfo.m_nextScPeriod.frameNo << "/"
-                      << m_slTxPoolInfo.m_nextScPeriod.subframeNo);
-          //clear any previous grant
-          m_slTxPoolInfo.m_currentGrants.clear ();
+                                  << m_slTxPoolInfo.m_nextScPeriod.frameNo << "/"
+                                  << m_slTxPoolInfo.m_nextScPeriod.subframeNo);
 
           //Don't try to send Sidelink communication until the start of the next period
           m_waitingNextScPeriod = true;
@@ -2972,26 +2707,14 @@ LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
           m_currSubframeNo = subframeNo;
 
           //Notify the SpectrumPhy about the change of SLSSID
-          m_uplinkSpectrumPhy->SetSlssid (m_resyncParams.syncRefMib.slssid);
-          m_sidelinkSpectrumPhy->SetSlssid (m_resyncParams.syncRefMib.slssid);
+          m_uplinkSpectrumPhy->SetSlssid (m_resyncParams.slssid);
+          m_sidelinkSpectrumPhy->SetSlssid (m_resyncParams.slssid);
 
           return true;
         }
       else
-        {//Delay the change of Timing
+        { //Delay the change of Timing
           NS_LOG_LOGIC ("The current subframe does not correspond to the start of a new Sidelink communication period... Delaying the change of timing");
-
-          //Adjusting subframe indication to still match the SyncRef when the change of timing will be performed
-          ++m_resyncParams.newSubframeNo;
-          if (m_resyncParams.newSubframeNo > 10)
-            {
-              ++m_resyncParams.newFrameNo;
-              if (m_resyncParams.newFrameNo > 1024)
-                {
-                  m_resyncParams.newFrameNo = 1;
-                }
-              m_resyncParams.newSubframeNo = 1;
-            }
           return false;
         }
     }
@@ -3000,23 +2723,34 @@ LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
       //No pool, apply directly the change of Timing
       NS_LOG_LOGIC ("The UE is not currently transmitting Sidelink communication... Applying the change of timing");
 
-      frameNo = m_resyncParams.newFrameNo;
-      subframeNo = m_resyncParams.newSubframeNo;
+      //Calculate the new subframe indication
+      SidelinkCommResourcePool::SubframeInfo mibTime;
+      mibTime.frameNo = m_resyncParams.syncRefMib.directFrameNo;
+      mibTime.subframeNo = m_resyncParams.syncRefMib.directSubframeNo;
+      SidelinkCommResourcePool::SubframeInfo currentTime;
+      currentTime.frameNo = frameNo;
+      currentTime.subframeNo = subframeNo;
+
+      m_resyncParams.newSubframe = mibTime + (currentTime - m_resyncParams.rxSubframe);
+
       m_resyncRequested = false;
-      NS_LOG_INFO ("UE RNTI " << m_rnti << "did not have a Tx pool and"
-                  << " changed the Subframe Indication from: "
-                  << " frame "<<m_currFrameNo<< "subframe "<<m_currSubframeNo
-                  << " to: frame "<< frameNo << " subframe " << subframeNo);
+
+      frameNo = m_resyncParams.newSubframe.frameNo;
+      subframeNo = m_resyncParams.newSubframe.subframeNo;
+
+      NS_LOG_INFO ("UE RNTI " << m_rnti << "did not have a Tx pool and changed the Subframe Indication"
+                              << " from " << currentTime.frameNo << "/" << currentTime.subframeNo
+                              << " to " << m_resyncParams.newSubframe.frameNo << "/" << m_resyncParams.newSubframe.subframeNo);
 
       //Notify RRC about the successful change of SyncRef and timing
-      m_ueCphySapUser->ReportChangeOfSyncRef (m_resyncParams.syncRefMib, frameNo, subframeNo);
+      m_ueCphySapUser->ReportChangeOfSyncRef (m_resyncParams);
 
-      m_currFrameNo = frameNo;
-      m_currSubframeNo = subframeNo;
+      m_currFrameNo = m_resyncParams.newSubframe.frameNo;
+      m_currSubframeNo = m_resyncParams.newSubframe.subframeNo;
 
       //Notify the SpectrumPhy about the change of SLSSID
-      m_uplinkSpectrumPhy->SetSlssid (m_resyncParams.syncRefMib.slssid);
-      m_sidelinkSpectrumPhy->SetSlssid (m_resyncParams.syncRefMib.slssid);
+      m_uplinkSpectrumPhy->SetSlssid (m_resyncParams.slssid);
+      m_sidelinkSpectrumPhy->SetSlssid (m_resyncParams.slssid);
 
       return true;
     }
@@ -3031,72 +2765,17 @@ LteUePhy::DoSetSlssId (uint64_t slssid)
 }
 
 void
-LteUePhy::DoSendSlss (LteRrcSap::MasterInformationBlockSL mibSl)
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<MibSlLteControlMessage> msg = Create<MibSlLteControlMessage> ();
-  msg->SetMibSL (mibSl);
-  NS_LOG_LOGIC ("Adding a MIB-SL to the queue of control messages to be send ");
-  DoSendLteControlMessage(msg);
-  //Notify the SpectrumPhy about the SLSSID used for transmitting
-  //Do it here to have the correct SLSSID in the SpectrumPhy and cover the case in which
-  //the UE reselects a random SLSSID without change of timing, i.e., out-of-coverage and without SyncRef
-  m_uplinkSpectrumPhy->SetSlssid (mibSl.slssid);
-  m_sidelinkSpectrumPhy->SetSlssid( mibSl.slssid);
-}
-
-void
-LteUePhy::DoSynchronizeToSyncRef (LteRrcSap::MasterInformationBlockSL mibSl)
+LteUePhy::DoSynchronizeToSyncRef (LteSlSyncParams synchParams)
 {
   NS_LOG_FUNCTION (this);
 
-  //Estimate the current timing (frame/subframe indication) of the SyncRef
-  //using the information in the MIB-SL and the creation and reception time stamps
-  uint32_t mibCreationAge = Simulator::Now().GetMilliSeconds() - mibSl.creationTimestamp.GetMilliSeconds();
-  uint32_t mibRxAge = Simulator::Now().GetMilliSeconds() - mibSl.rxTimestamp.GetMilliSeconds();
-
-  uint32_t frameOffsetSyncRef = 0;
-  if (mibCreationAge >= 10)
-    {
-      frameOffsetSyncRef = uint32_t(mibCreationAge / 10);
-    }
-  uint32_t frameSyncRef = mibSl.directFrameNo + frameOffsetSyncRef;
-  if (frameSyncRef > 1024)
-    {
-      frameSyncRef = frameSyncRef - 1024;
-    }
-  uint32_t subframeOffsetSyncRef = mibCreationAge % 10;
-  uint32_t subframeSyncRef = mibSl.directSubframeNo + subframeOffsetSyncRef;
-  if (subframeSyncRef > 10)
-    {
-      subframeSyncRef = subframeSyncRef % 10;
-      frameSyncRef++;
-      if (frameSyncRef > 1024)
-        {
-          frameSyncRef = 1;
-        }
-    }
-  NS_LOG_INFO ("Synchronizing to SyncRef SLSSSID " << mibSl.slssid <<" offset " << mibSl.rxOffset);
-  NS_LOG_INFO ("Its last mib was received " << mibRxAge << " ms ago, and it was created by the SyncRef "<<mibCreationAge<<" ms ago");
-  NS_LOG_INFO ("The subframe indication in the MIB-SL, i.e., when created (frame/subframe):" << mibSl.directFrameNo <<"/"<< mibSl.directSubframeNo);
-  NS_LOG_INFO ("The estimated CURRENT subframe indication of the SyncRef (frame/subframe): "<< frameSyncRef << "/"<< subframeSyncRef);
-  NS_LOG_INFO ("The CURRENT subframe indication of this UE (frame/subframe): "<< m_currFrameNo << "/"<< m_currSubframeNo);
+  NS_LOG_INFO ("Synchronizing to SyncRef SLSSSID " << synchParams.slssid << " offset " << synchParams.offset);
+  // NS_LOG_INFO ("The estimated CURRENT subframe indication of the SyncRef (frame/subframe): " << synchParams.newFrameNo << "/" << synchParams.newSubframeNo);
+  NS_LOG_INFO ("The CURRENT subframe indication of this UE (frame/subframe): " << m_currFrameNo << "/" << m_currSubframeNo);
 
   //Request the synchronization (change of timing) for the next subframe
   m_resyncRequested = true;
-  ++subframeSyncRef; //Update frame/subframe number to be used (in the next subframe)
-  if (subframeSyncRef > 10)
-    {
-      ++frameSyncRef;
-      if (frameSyncRef > 1024)
-        {
-          frameSyncRef = 1;
-        }
-      subframeSyncRef = 1;
-    }
-  m_resyncParams.newFrameNo = frameSyncRef;
-  m_resyncParams.newSubframeNo = subframeSyncRef;
-  m_resyncParams.syncRefMib = mibSl;
+  m_resyncParams = synchParams;
 }
 
 int64_t

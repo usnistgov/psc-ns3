@@ -117,11 +117,11 @@ SidlelinkDiscPoolNextFrameSubframeTestCase::SidlelinkDiscPoolNextFrameSubframeTe
                                                                                         uint32_t frameNo,uint32_t subframeNo,uint32_t expectedNextFrameNo,
                                                                                         uint32_t expectedNextSubframeNo)
   : TestCase (BuildNameString (pfactory,frameNo,subframeNo)),
-    m_pfactory (pfactory),
-    m_frameNo (frameNo),
-    m_subframeNo (subframeNo),
-    m_expectedNextFrameNo (expectedNextFrameNo),
-    m_expectedNextSubframeNo (expectedNextSubframeNo)
+  m_pfactory (pfactory),
+  m_frameNo (frameNo),
+  m_subframeNo (subframeNo),
+  m_expectedNextFrameNo (expectedNextFrameNo),
+  m_expectedNextSubframeNo (expectedNextSubframeNo)
 {
 }
 
@@ -215,12 +215,12 @@ SidelinkDiscPoolResourceOpportunityTestCase::SidelinkDiscPoolResourceOpportunity
                                                                                           uint32_t expectedSubframeNo,uint32_t expectedRbStart,
                                                                                           uint32_t expectedNbCount)
   : TestCase (BuildNameString (pfactory,psdchResourceNo)),
-    m_pfactory (pfactory),
-    m_psdchResourceNo (psdchResourceNo),
-    m_expectedFrameNo (expectedFrameNo),
-    m_expectedSubframeNo (expectedSubframeNo),
-    m_expectedRbStart (expectedRbStart),
-    m_expectedNbCount (expectedNbCount)
+  m_pfactory (pfactory),
+  m_psdchResourceNo (psdchResourceNo),
+  m_expectedFrameNo (expectedFrameNo),
+  m_expectedSubframeNo (expectedSubframeNo),
+  m_expectedRbStart (expectedRbStart),
+  m_expectedNbCount (expectedNbCount)
 {
 }
 
@@ -334,11 +334,11 @@ SidlelinkDiscPoolRbsPerSubframeTestCase::SidlelinkDiscPoolRbsPerSubframeTestCase
                                                                                   uint32_t expectedTotalRbs,
                                                                                   std::vector <uint32_t> expectedRbIndex)
   : TestCase (BuildNameString (pfactory,frameNo,subframeNo)),
-    m_pfactory (pfactory),
-    m_frameNo (frameNo),
-    m_subframeNo (subframeNo),
-    m_expectedTotalRbs (expectedTotalRbs),
-    m_expectedRbIndex (expectedRbIndex)
+  m_pfactory (pfactory),
+  m_frameNo (frameNo),
+  m_subframeNo (subframeNo),
+  m_expectedTotalRbs (expectedTotalRbs),
+  m_expectedRbIndex (expectedRbIndex)
 {
 }
 
@@ -368,9 +368,111 @@ void SidlelinkDiscPoolRbsPerSubframeTestCase::DoRun ()
         }
     }
 
-  NS_TEST_ASSERT_MSG_EQ (flag, true, " The indicies of resource blocks are not equal to the expected indicies");
+  NS_TEST_ASSERT_MSG_EQ (flag, true, " The indices of resource blocks are not equal to the expected indices");
 }
 
+
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Sidlelink discovery pool resources overlap test case.
+ */
+class SidlelinkDiscPoolOverlapResourcesTestCase : public TestCase
+{
+public:
+  /**
+   * Build name string function
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param res1 Discovery resource 1
+   * \param res2 Discovery resource 2
+   * \returns the name string
+   */
+  static std::string BuildNameString (LteSlDiscResourcePoolFactory pfactory,uint32_t res1, uint32_t res2);
+
+  /**
+   * Constructor
+   *
+   * \param pfactory LteSlDiscResourcePoolFactory
+   * \param res1 Discovery resource 1
+   * \param res2 Discovery resource 2
+   * \param overlap Expected overlap status between res1 and res2
+   */
+  SidlelinkDiscPoolOverlapResourcesTestCase (LteSlDiscResourcePoolFactory pfactory, uint32_t res1, uint32_t res2, bool overlap);
+
+private:
+  virtual void DoRun (void);
+  LteSlDiscResourcePoolFactory m_pfactory; ///< LteSlDiscResourcePoolFactory
+  uint32_t m_res1; ///< Discovery resource 1
+  uint32_t m_res2; ///< Discovery resource 2
+  bool m_expectedOverlap; ///< Indicates if the resources are expected to collide in time domain
+};
+
+std::string SidlelinkDiscPoolOverlapResourcesTestCase::BuildNameString (LteSlDiscResourcePoolFactory pfactory,
+                                                                        uint32_t res1, uint32_t res2)
+{
+  std::ostringstream oss;
+
+  oss << "TestCase:SidlelinkDiscPoolRbsPerSubframeTestCase, ";
+  oss << "DiscCpLen:" << pfactory.GetDiscCpLen () << ", ";
+  oss << "DiscPeriod:" << pfactory.GetDiscPeriod () << ", ";
+  oss << "NumRetx:" << static_cast<int> (pfactory.GetNumRetx ()) << ", ";
+  oss << "NumRepetition:" << pfactory.GetNumRepetition () << ", ";
+  oss << "DiscPrbNum:" << pfactory.GetDiscPrbNum () << ", ";
+  oss << "DiscPrbStart:" << pfactory.GetDiscPrbStart () << ", ";
+  oss << "DiscPrbEnd:" << pfactory.GetDiscPrbEnd () << ", ";
+  oss << "DiscOffset:" << pfactory.GetDiscOffset () << ", ";
+  oss << "DiscBitmap:" << std::hex << pfactory.GetDiscBitmap () << std::dec << ", ";
+  oss << "HaveTxParameters:" << pfactory.GetHaveTxParameters () << ", ";
+  oss << "DiscTxAlpha:" << pfactory.GetDiscTxAlpha () << ", ";
+  oss << "DiscTxP0:" << pfactory.GetDiscTxP0 () << ", ";
+  oss << "DiscPoolSelection:" << pfactory.GetDiscPoolSelection () << ", ";
+  oss << "HaveRsrpBasedPoolSelection:" << pfactory.GetHaveRsrpBasedPoolSelection () << ", ";
+  oss << "RsrpThreshLow:" << pfactory.GetRsrpThreshLow () << ", ";
+  oss << "RsrpThreshHigh:" << pfactory.GetRsrpThreshHigh () << ", ";
+  oss << "DiscTxProbability:" << pfactory.GetDiscTxProbability () << ", ";
+  oss << "Resource 1:" << res1 << ", ";
+  oss << "Resource 2:" << res2;
+
+  return oss.str ();
+}
+
+SidlelinkDiscPoolOverlapResourcesTestCase::SidlelinkDiscPoolOverlapResourcesTestCase (LteSlDiscResourcePoolFactory pfactory,
+                                                                                      uint32_t res1, uint32_t res2, bool overlap)
+  : TestCase (BuildNameString (pfactory,res1,res2)),
+  m_pfactory (pfactory),
+  m_res1 (res1),
+  m_res2 (res2),
+  m_expectedOverlap (overlap)
+{
+}
+
+void SidlelinkDiscPoolOverlapResourcesTestCase::DoRun ()
+{
+  NS_LOG_FUNCTION (this << BuildNameString (m_pfactory, m_res1, m_res2));
+
+  LteRrcSap::SlDiscResourcePool pool = m_pfactory.CreatePool ();
+
+  Ptr<SidelinkTxDiscResourcePool> txpool = CreateObject<SidelinkTxDiscResourcePool> ();
+  txpool->SetPool (pool);
+
+  std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> list1 = txpool->GetPsdchTransmissions (m_res1);
+
+  std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> list2 = txpool->GetPsdchTransmissions (m_res2);
+
+  std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator it1 = list1.begin ();
+  NS_LOG_INFO ( " res1 " << it1->subframe.frameNo << "/" << it1->subframe.subframeNo << " rbstart=" << (uint16_t) it1->rbStart << " nrb=" << (uint16_t) it1->nbRb);
+  std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator it2 = list2.begin ();
+  NS_LOG_INFO ( " res2 " << it2->subframe.frameNo << "/" << it2->subframe.subframeNo << " rbstart=" << (uint16_t) it2->rbStart << " nrb=" << (uint16_t) it2->nbRb);
+
+
+  std::unordered_set<uint32_t> overlappingResources = txpool->GetConflictingResources (m_res1);
+
+  bool flag = overlappingResources.find (m_res2) != overlappingResources.end ();
+
+  NS_TEST_EXPECT_MSG_EQ (flag, m_expectedOverlap, " The overlap status of the discovery resources " << m_res1 << " and  " << m_res2 << " is incorrect (expected=" << (uint16_t) m_expectedOverlap << ")");
+}
 
 /**
  * \ingroup lte-test
@@ -450,6 +552,31 @@ SidelinkDiscPoolTestSuite::SidelinkDiscPoolTestSuite ()
   //should be no resource block assignment
   rbIndex.clear ();
   AddTestCase (new SidlelinkDiscPoolRbsPerSubframeTestCase (pfactory, 8, 2, 0, rbIndex),TestCase::QUICK);
+
+  //SidlelinkDiscPoolOverlapResourcesTestCase Input Format:
+  //pfactory,psdchResourceNo 1,psdchResourceNo 2, expected overlap
+  //These tests check that the function to detect that discovery resources overlap in time is working
+  //properly. Each discovery resource maps to a set of subframes and resource blocks in the discovery pool.
+  //Within a sidelink period, the UE MAC must select resources that do not overlap in time (see TS 36.321 5.15.1.1)
+  //even if they use different resource blocks.
+  //For this test, we create a discovery pool with 4 resources
+  // layout is
+  // resource 0 on first subframe and RBs 10/11
+  // resource 1 on second subframe and RBs 10/11
+  // resource 2 on first subframe and RBs 12/13
+  // resource 3 on second subframe and RBs 12/13
+  pfactory.SetDiscPrbNum (2);
+  pfactory.SetDiscPrbStart (10);
+  pfactory.SetDiscPrbEnd (13);
+  //The same resource will overlap with itself
+  AddTestCase (new SidlelinkDiscPoolOverlapResourcesTestCase (pfactory, 0, 0, true),TestCase::QUICK);
+  //Resources 0 and 1 are on the same RBs but different subframes, so they don't overlap
+  AddTestCase (new SidlelinkDiscPoolOverlapResourcesTestCase (pfactory, 0, 1, false),TestCase::QUICK);
+  //Resources 0 and 2 are on different RBs but same subframe, so they overlap
+  AddTestCase (new SidlelinkDiscPoolOverlapResourcesTestCase (pfactory, 0, 2, true),TestCase::QUICK);
+  //Resources 1 and 3 are on different RBs but same subframe, so they overlap
+  AddTestCase (new SidlelinkDiscPoolOverlapResourcesTestCase (pfactory, 1, 3, true),TestCase::QUICK);
+
 }
 
 static SidelinkDiscPoolTestSuite staticSidelinkDiscPoolTestSuite;

@@ -565,21 +565,7 @@ PointToPointEpcHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<Lt
   NS_ASSERT (ueLteDevice);
   ueLteDevice->GetNas ()->DeactivateSidelinkBearer (tft);
 }
-
-void
-PointToPointEpcHelper::StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
-{
-  NS_LOG_FUNCTION (this << ueDevice);
-  ueDevice->GetObject<LteUeNetDevice> ()->GetNas ()->AddDiscoveryApps (apps, rxtx);
-}
-
-void
-PointToPointEpcHelper::StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
-{
-  NS_LOG_FUNCTION (this << ueDevice);
-  ueDevice->GetObject<LteUeNetDevice> ()->GetNas ()->RemoveDiscoveryApps (apps, rxtx);
-}
-  
+ 
 Ptr<Node>
 PointToPointEpcHelper::GetPgwNode ()
 {

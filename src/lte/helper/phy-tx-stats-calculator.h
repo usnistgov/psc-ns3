@@ -96,13 +96,13 @@ public:
 
   /**
    * Notifies the stats calculator that an downlink transmission has occurred.
-   * @param params Trace information regarding PHY transmission stats
+   * \param params The trace information regarding PHY transmission stats
    */
   void DlPhyTransmission (PhyTransmissionStatParameters params);
 
   /**
    * Notifies the stats calculator that an uplink transmission has occurred.
-   * @param params Trace information regarding PHY transmission stats
+   * \param params The trace information regarding PHY transmission stats
    */
   void UlPhyTransmission (PhyTransmissionStatParameters params);
 

@@ -36,6 +36,7 @@
 #include "ns3/component-carrier-ue.h"
 #include <ns3/lte-ue-ccm-rrc-sap.h>
 #include <ns3/lte-sl-ue-rrc.h>
+#include <ns3/lte-sl-header.h>
 #include <vector>
 
 #include <map>
@@ -97,10 +98,9 @@ class LteUeRrc : public Object
   friend class MemberLteUeCcmRrcSapUser<LteUeRrc>;
 
 public:
-
   /**
    * The states of the UE RRC entity
-   * 
+   *
    */
   enum State
   {
@@ -177,26 +177,26 @@ public:
 
   /**
    * set the CMAC SAP this RRC should interact with
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \param s the CMAC SAP Provider to be used by this RRC
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s);
   /**
    * set the CMAC SAP this RRC should interact with
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \param s the CMAC SAP Provider to be used by this RRC
    * \param index the index
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s, uint8_t index);
 
   /**
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
   /**
    * \brief This function is overloaded to maintain backward compatibility
-   * \param index the index  
+   * \param index the index
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser (uint8_t index);
@@ -225,16 +225,16 @@ public:
    */
   void SetLteMacSapProvider (LteMacSapProvider* s);
 
-  /** 
+  /**
    * Set the AS SAP user to interact with the NAS entity
-   * 
+   *
    * \param s the AS SAP user
    */
   void SetAsSapUser (LteAsSapUser* s);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \return the AS SAP provider exported by this RRC
    */
   LteAsSapProvider* GetAsSapProvider ();
@@ -253,8 +253,8 @@ public:
    */
   LteUeCcmRrcSapUser* GetLteCcmRrcSapUser ();
 
-  /** 
-   * 
+  /**
+   *
    * \param imsi the unique UE identifier
    */
   void SetImsi (uint64_t imsi);
@@ -277,12 +277,12 @@ public:
    */
   uint16_t GetCellId () const;
 
-  /** 
+  /**
    * \return the uplink bandwidth in RBs
    */
   uint8_t GetUlBandwidth () const;
 
-  /** 
+  /**
    * \return the downlink bandwidth in RBs
    */
   uint8_t GetDlBandwidth () const;
@@ -292,7 +292,7 @@ public:
    */
   uint32_t GetDlEarfcn () const;
 
-  /** 
+  /**
    * \return the uplink carrier frequency (EARFCN)
    */
   uint32_t GetUlEarfcn () const;
@@ -303,9 +303,9 @@ public:
    */
   State GetState () const;
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
    */
   void SetUseRlcSm (bool val);
@@ -316,8 +316,7 @@ public:
    * \param [in] imsi
    * \param [in] cellId
    */
-  typedef void (* CellSelectionTracedCallback)
-    (uint64_t imsi, uint16_t cellId);
+  typedef void (* CellSelectionTracedCallback)(uint64_t imsi, uint16_t cellId);
 
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
@@ -326,8 +325,7 @@ public:
    * \param [in] cellId
    * \param [in] rnti
    */
-  typedef void (* ImsiCidRntiTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti);
+  typedef void (* ImsiCidRntiTracedCallback)(uint64_t imsi, uint16_t cellId, uint16_t rnti);
 
   /**
    * TracedCallback signature for MIBRecieved, Sib1Received and
@@ -338,8 +336,7 @@ public:
    * \param [in] rnti
    * \param [in] otherCid
    */
-  typedef void (* MibSibHandoverTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti, uint16_t otherCid);
+  typedef void (* MibSibHandoverTracedCallback)(uint64_t imsi, uint16_t cellId, uint16_t rnti, uint16_t otherCid);
 
   /**
    * TracedCallback signature for state transition events.
@@ -350,9 +347,8 @@ public:
    * \param [in] oldState
    * \param [in] newState
    */
-  typedef void (* StateTracedCallback)
-    (uint64_t imsi, uint16_t cellId, uint16_t rnti,
-     State oldState, State newState);
+  typedef void (* StateTracedCallback)(uint64_t imsi, uint16_t cellId, uint16_t rnti,
+                                       State oldState, State newState);
 
   /**
     * TracedCallback signature for secondary carrier configuration events.
@@ -360,8 +356,7 @@ public:
     * \param [in] Pointer to UE RRC
     * \param [in] List of LteRrcSap::SCellToAddMod
     */
-  typedef void (* SCarrierConfiguredTracedCallback)
-    (Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod>);
+  typedef void (* SCarrierConfiguredTracedCallback)(Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod>);
 
 //Sidelink related code
   /**
@@ -384,34 +379,59 @@ public:
    * \brief Set the SLSSID for the UE
    * \param slssid
    */
-
   void SetSlssid (uint64_t slssid);
   /**
    * \brief Get the SLSSID of the UE
    * \return slssid
    */
-
   uint64_t GetSlssid ();
+  /**
+  * Starts discovery process for given applications depending on the interest (monitoring or announcing)
+  * \param appCodes app code payloads to be removed
+  * \param role UE role (discovered or discoveree)
+  */
+  void StartDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+
+  /**
+   * Stops discovery process for given applications depending on the interest (monitoring or announcing)
+   * \param appCodes app code payloads to be removed
+   * \param role UE role (discovered or discoveree)
+   */
+  void StopDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+
+  /**
+   * Starts UE-to-Network relay process
+   * \param serviceCode relay service code to use
+   * \param model discovery model (A or B)
+   * \param role UE role (remote UE or relay node)
+   */
+  void StartRelayService (uint32_t serviceCode, LteSlUeRrc::DiscoveryModel model, LteSlUeRrc::RelayRole role);
+
+  /**
+   * Stops UE-to-Network relay process
+   * \param serviceCode relay service code to use
+   */
+  void StopRelayService (uint32_t serviceCode);
+
   /**
    * \brief Get the current frame number reported to the RRC
    * \return the frame number value
    */
-
   uint64_t GetFrameNumber ();
+
   /**
    * \brief Get the current subframe number reported to the RRC
    * \return the subframe number value
    */
-
   uint64_t GetSubFrameNumber ();
+
   /**
    * TracedCallback signature for Change of SyncRef events
    *
    * \param [in] param (list of parameters to be reported, see SlChangeOfSyncRefStatParameters)
    */
 
-  typedef void (* ChangeOfSyncRefTracedCallback)
-    (const SlChangeOfSyncRefStatParameters param );
+  typedef void (* ChangeOfSyncRefTracedCallback)(const SlChangeOfSyncRefStatParameters param );
   /**
    * TracedCallback signature for Send SLSS events
    *
@@ -423,23 +443,22 @@ public:
    * \param [in] subframe (MIB-SL content)
    */
 
-  typedef void (* SendSLSSTracedCallback)
-    (const uint64_t imsi, const uint64_t slssid, const uint16_t txOffset, const bool inCoverage,  const uint16_t frame, const uint16_t subframe);
-  /**
-   * TracedCallback signature for reception of discovery message.
-   *
-   * \param [in] imsi
-   * \param [in] cellId
-   * \param [in] rnti
-   * \param [in] proSeAppCode
-   */
+  typedef void (* SendSLSSTracedCallback)(const uint64_t imsi, const uint64_t slssid, const uint16_t txOffset, const bool inCoverage,  const uint16_t frame, const uint16_t subframe);
 
-  typedef void (* DiscoveryMonitoringTracedCallback)
-    (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti, const uint32_t proSeAppCode);
+  /**
+   * Sends a discovery message
+   * \param discHeader The discovery message
+   */
+  void TransmitDiscoveryMessage (LteSlDiscHeader discHeader);
+
+  /**
+   * Method called to activate a sidelink radio bearer for one to one communication
+   * \param destination The layer 2 ID
+   */
+  void ActivateSidelinkRadioBearer (uint32_t destination);
+
 
 private:
-
-
   // PDCP SAP methods
   /**
    * Receive PDCP SDU function
@@ -478,9 +497,9 @@ private:
    * This function is called by UE MAC to notify UE RRC about the reception of
    * sidelink discovery message
    *
-   * \param msg sidelink discovery message
+   * \param p sidelink discovery packet
    */
-  void DoNotifyDiscoveryReception (Ptr<LteControlMessage> msg);
+  void DoNotifyDiscoveryReception (Ptr<Packet> p);
   // CMAC SAP methods related to Sidelink synchronization
   /**
    * Notify MAC has sidelink data to send function
@@ -488,15 +507,15 @@ private:
    *This function is called by UE MAC to notify UE RRC
    *that it has data to send and RRC should activate the SLSS transmission if appropriate
    */
-  void DoNotifyMacHasSlDataToSend();
+  void DoNotifyMacHasSlDataToSend ();
   /**
    * Notify MAC has no sidelink data to send function
    *
    *This function is called by UE MAC to notify UE RRC
    *that it has no data to send and RRC should deactivate the SLSS transmission if appropriate
    */
-  void DoNotifyMacHasNoSlDataToSend();
- 
+  void DoNotifyMacHasNoSlDataToSend ();
+
   // LTE AS SAP methods
   /**
    * Set CSG white list function
@@ -551,23 +570,6 @@ private:
    * \param group the group id
    */
   void DoDeactivateSidelinkRadioBearer (uint32_t group);
-  // Sidelink discovery
-  /**
-   * Add discovery applications function
-   *
-   * \param apps the list containing the code of prose applications
-   * \param rxtx true if the applications added to the list are used for announcing purpose
-   *             false if the applications added to the list are used for monitoring purpose
-   */
-  void DoAddDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
-  /**
-   * Remove discovery applications function
-   *
-   * \param apps the list containing the code of prose applications
-   * \param rxtx true if the announcing applications to be removed
-   *             false if the monitoring applications to be removed
-   */
-  void DoRemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
 
   // CPHY SAP methods
   /**
@@ -597,31 +599,30 @@ private:
   /**
    * Receive master information block sidelink function
    *
-   * \param mibSL LteRrcSap::MasterInformationBlockSL
+   * \param p Packet containing the LteRrcSap::MasterInformationBlockSL
+   * \param slssid The SLSSID associated with the packet
    *
    * Store the latest MIB-SL for each SyncRef
    */
-  void DoReceiveMibSL (LteRrcSap::MasterInformationBlockSL mibSL);
+  void DoReceiveMibSL (Ptr<Packet> p, uint16_t slssid);
   /**
    * Report sidelink synchronization signal measurements function
    *
-   * \param params LteUeCphySapUser::UeSlssMeasurementsParameters
+   * \param params The sidelink measurements
    * \param slssId The sidelink synchronization signal identifier
    * \param offset The sidelik synchronization signal offset
    *
    * Process the S-RSRP measurement reported by the PHY
    */
-  void DoReportSlssMeasurements (LteUeCphySapUser::UeSlssMeasurementsParameters params,  uint64_t slssId, uint16_t offset);
+  void DoReportSlssMeasurements (LteUeCphySapUser::UeSlssMeasurementsParameters params,  uint16_t slssId, uint16_t offset);
   /**
    * Report change of SyncRef function
    *
-   * \param mibSL LteRrcSap::MasterInformationBlockSL
-   * \param frameNo The frame number
-   * \param subFrameNo The subframe number
+   * \param params Synchronization information
    *
    * Notify the successful change of timing/SyncRef, and store the selected/current SyncRef information
    */
-  void DoReportChangeOfSyncRef(LteRrcSap::MasterInformationBlockSL mibSL, uint16_t frameNo, uint16_t subFrameNo);
+  void DoReportChangeOfSyncRef (LteSlSyncParams params);
   /**
    * Report subframe indication function
    *
@@ -630,7 +631,7 @@ private:
    *
    * Store the current frameNo and subframeNo reported by phy
    */
-  void DoReportSubframeIndication(uint16_t frameNo, uint16_t subFrameNo);
+  void DoReportSubframeIndication (uint16_t frameNo, uint16_t subFrameNo);
 
 
   // RRC SAP methods
@@ -682,7 +683,7 @@ private:
    */
   void DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
- 
+
   // INTERNAL METHODS
 
   /**
@@ -805,7 +806,7 @@ private:
    *
    * As for SaveUeMeasurements, this function aims to store the latest measurements
    * related to the secondary component carriers.
-   * in the current implementation it saves only measurements related on the serving 
+   * in the current implementation it saves only measurements related on the serving
    * secondary carriers while, measurements related to the Neighbor Cell are filtered
    */
 
@@ -914,8 +915,12 @@ private:
    * Send sidelink UE information function
    *
    * Transmits a SidelinkUEInformation message to the eNodeB
+    \param txComm Indicates if there has been a change in sidelink communication related parameters for transmission
+   * \param rxComm Indicates if there has been a change in sidelink communication related parameters for reception
+   * \param txDisc Indicates if there has been a change in sidelink discovery related parameters for transmission
+   * \param rxDisc Indicates if there has been a change in sidelink discovery related parameters for reception
    */
-  void SendSidelinkUeInformation ();
+  void SendSidelinkUeInformation (bool txComm, bool rxComm, bool txDisc, bool rxDisc);
   /**
    * Add sidelink radio bearer function
    *
@@ -1002,9 +1007,9 @@ private:
   TracedCallback<uint64_t, uint16_t, uint16_t, uint16_t> m_mibReceivedTrace;
   /**
    * The `m_discoveryMsgReceived` trace source. Track the reception of discovery message (monitor)
-   * Exporting IMSI, cell ID, RNTI and ProSe App Code.
+   * Exporting IMSI, cell ID, RNTI and SlDiscMsg.
    */
-  TracedCallback<uint64_t, uint16_t, uint16_t, uint32_t> m_discoveryMonitoringTrace;
+  TracedCallback<uint64_t, uint16_t, uint16_t, LteSlDiscHeader> m_discoveryMonitoringTrace;
   /**
    * The `Sib1Received` trace source. Fired upon reception of System
    * Information Block Type 1. Exporting IMSI, the serving cell ID, RNTI, and
@@ -1099,7 +1104,7 @@ private:
   uint32_t m_csgWhiteList;
 
   /// Sidelink configuration
-    Ptr<LteSlUeRrc> m_sidelinkConfiguration;
+  Ptr<LteSlUeRrc> m_sidelinkConfiguration;
 
   // INTERNAL DATA STRUCTURE RELATED TO UE MEASUREMENTS
 
@@ -1240,7 +1245,7 @@ private:
 
   /**
    * \brief Internal storage of the latest measurement results from all detected
-   *        detected Secondary carrier component, indexed by the carrier component ID 
+   *        detected Secondary carrier component, indexed by the carrier component ID
    *        where the measurement was taken from.
    *
    * Each *measurement result* comprises of RSRP (in dBm) and RSRQ (in dB).
@@ -1250,7 +1255,7 @@ private:
    * applied to the measurement results and they are used by *UE measurements*
    * function:
    * - LteUeRrc::MeasurementReportTriggering: in this case it is not set any
-   *   measurement related to seconday carrier components since the 
+   *   measurement related to seconday carrier components since the
    *   A6 event is not implemented
    * - LteUeRrc::SendMeasurementReport: in this case the report are sent.
    */
@@ -1391,7 +1396,10 @@ private:
   void ConnectionTimeout ();
 
 //Sidelink related code
-
+  /**
+   * Used to detect changes in tx pool
+   */
+  Ptr<SidelinkTxCommResourcePool> m_txPool;
   /**
    * True if the transmission of SLSS is enabled for the UE
    * (out of coverage sidelink synchronization procedure is enabled)
@@ -1445,23 +1453,27 @@ private:
    */
   Time m_slssTxTime;
   /**
+   * Event for sending SLSS.
+   */
+  EventId m_slssTxEvent;
+  /**
    * \brief Internal storage of the most recent MIB-SL for each SyncRef,
    * indexed by the SyncRef SLSSID and the time offset indicator in which it was received
    */
-    std::map <std::pair<uint16_t,uint16_t>, LteRrcSap::MasterInformationBlockSL> m_latestMibSlReceived;
+  std::map <std::pair<uint16_t,uint16_t>, LteSlSyncParams> m_latestMibSlReceived;
   /**
    * Represents the value of S-RSRP to be used in the RRC layer for SyncRef selection
    */
   struct SlssMeasValues
   {
-      double srsrp; ///< Measured S-RSRP in dBm.
-      Time timestamp; ///< The time stamp when the S-RSRP was measured
+    double srsrp;   ///< Measured S-RSRP in dBm.
+    Time timestamp;   ///< The time stamp when the S-RSRP was measured
   };
   /**
    * The MIB-SL used by the UE to obtain the synchronization information once it
    * has selected the SyncRef and successfully synchronized to it
    */
-  LteRrcSap::MasterInformationBlockSL m_currSyncRef;
+  LteSlSyncParams m_currSyncRef;
   /**
    * \brief Internal storage of each SyncRef S-RSRP measurement to be used for SyncRef selection
    * and SyncRef inner cell criteria,
@@ -1499,7 +1511,7 @@ private:
    * \note The function may conclude that the UE was already in a on-data period
    * and nothing is needed to be done.
    */
-  void InitiateSlssTransmission();
+  void InitiateSlssTransmission ();
   /**
    * \brief Stop the transmission of Sidelink Synchronization Signals (SLSSs).
    * The function is triggered by upper layers when the UE does not have anymore
@@ -1507,7 +1519,7 @@ private:
    * \note The function may conclude that the UE was already in a off-data period
    * and nothing is needed to be done.
    */
-  void StopSlssTransmission();
+  void StopSlssTransmission ();
   /**
    * \brief Activate the transmission of Sidelink Synchronization Signals (SLSSs).
    * The function decides the value of the SLSSID, when to send the MIB-SL (offsetIndicator),
@@ -1528,7 +1540,7 @@ private:
    * \param frameNo current frameNo
    * \param subFrameNo current subframeNo
    */
-  void SaveSubframeIndication(uint16_t frameNo, uint16_t subFrameNo);
+  void SaveSubframeIndication (uint16_t frameNo, uint16_t subFrameNo);
   /**
    * The function fills the MIB-SL with the appropriate parameters, pass it to
    * lower layers to be sent, and schedule the next transmission according to the
@@ -1537,7 +1549,7 @@ private:
    * current timeslot (e.g. if the UE changed of timing/SyncRef in the meantime)
    * and nothing is needed to be done.
    */
-  void SendSlss();
+  void SendSlss ();
   /**
    * Store the S-RSRP values to be used in the synchronization protocol decision processes
    * If the L3 filtering is active, the values are processed before being stored.
@@ -1562,7 +1574,7 @@ private:
 
    * \return true if the UE is in the inner part of the SyncRef cell, or false otherwise
    */
-  bool IsInTheInnerPartOfTheSyncRefCell(uint16_t slssid, uint16_t offset);
+  bool IsInTheInnerPartOfTheSyncRefCell (uint16_t slssid, uint16_t offset);
 
 public:
   /**

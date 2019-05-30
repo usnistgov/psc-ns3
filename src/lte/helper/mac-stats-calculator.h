@@ -31,6 +31,11 @@
 #include <string>
 #include <fstream>
 #include "ns3/lte-enb-mac.h"
+#include <bitset>
+#include <ns3/ff-mac-common.h>
+#include <ns3/config.h>
+#include <ns3/lte-ue-net-device.h>
+#include <ns3/lte-sl-header.h>
 
 namespace ns3 {
 
@@ -121,6 +126,19 @@ public:
    */
   std::string GetSlUeSchOutputFilename (void);
 
+  /**
+   * Set the name of the file where the Sidelink PSDCH UE MAC statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetSlUeDchOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the Sidelink PSDCH UE MAC statistics will be stored.
+   * @return the name of the file where the Sidelink statistics will be stored
+   */
+  std::string GetSlUeDchOutputFilename (void);
+
 
   /**
    * Notifies the stats calculator that an downlink scheduling has occurred.
@@ -153,31 +171,31 @@ public:
   void UlScheduling (uint16_t cellId, uint64_t imsi,uint32_t frameNo, uint32_t subframeNo,
                      uint16_t rnti, uint8_t mcsTb, uint16_t sizeTb, uint8_t componentCarrierId);
 
-  
-  /** 
+
+  /**
    * Trace sink for the ns3::LteEnbMac::DlScheduling trace source
-   * 
-   * \param macStats 
-   * \param path 
+   *
+   * \param macStats
+   * \param path
    * \param dlSchedulingCallbackInfo DlSchedulingCallbackInfo structure containing all downlink information that is generated what DlScheduling traces is fired
    */
   static void DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, DlSchedulingCallbackInfo dlSchedulingCallbackInfo);
 
-  /** 
+  /**
    * Trace sink for the ns3::LteEnbMac::UlScheduling trace source
-   * 
-   * \param macStats 
-   * \param path 
-   * \param frameNo 
-   * \param subframeNo 
-   * \param rnti 
-   * \param mcs 
-   * \param size 
+   *
+   * \param macStats
+   * \param path
+   * \param frameNo
+   * \param subframeNo
+   * \param rnti
+   * \param mcs
+   * \param size
    * \param componentCarrierId
    */
   static void UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
-                             uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                             uint8_t mcs, uint16_t size, uint8_t componentCarrierId);
+                                    uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                                    uint8_t mcs, uint16_t size, uint8_t componentCarrierId);
   //Sidelink
 
   /**
@@ -197,18 +215,32 @@ public:
   static void SlUeSchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params);
 
   /**
+   * Notifies the stats calculator that a Sidelink PSDCH UE MAC transmission has occurred.
+   * \param macStats
+   * \param path
+   * \param params
+   * \param discMsg The LteSlDiscHeader
+   */
+  static void SlUeDchSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path, SlUeMacStatParameters params, LteSlDiscHeader discMsg);
+
+  /**
    * Notifies the stats calculator that a Sidelink PSCCH UE MAC scheduling has occurred.
    * \param params The SlUeMacStatParameters
    */
   void SlUeCchScheduling (SlUeMacStatParameters params);
 
-   /**
-   * Notifies the stats calculator that a Sidelink PSSCH UE MAC scheduling has occurred.
-   * \param params The SlUeMacStatParameters
-   */
+  /**
+  * Notifies the stats calculator that a Sidelink PSSCH UE MAC scheduling has occurred.
+  * \param params The SlUeMacStatParameters
+  */
   void SlUeSchScheduling (SlUeMacStatParameters params);
 
-
+  /**
+   * Notifies the stats calculator that a Sidelink PSDCH UE MAC scheduling has occurred.
+   * \param params The SlUeMacStatParameters
+   * \param discMsg The LteSlDiscHeader
+   */
+  void SlUeDchScheduling (SlUeMacStatParameters params, LteSlDiscHeader discMsg);
 
 private:
   /**
@@ -242,6 +274,14 @@ private:
    * files have not been opened yet
    */
   bool m_slUeSchFirstWrite;
+
+  /**
+   * When writing Discovery Announcement messages first time to file,
+   * columns description is added. Then next lines are
+   * appended to file. This value is true if output
+   * files have not been opened yet
+   */
+  bool m_slUeDchFirstWrite;
 
 };
 

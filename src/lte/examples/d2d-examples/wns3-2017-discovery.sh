@@ -108,9 +108,9 @@ numues=$UE
 numruns=$ENDRUN #runs
 numseeds=$MAXSEEDS #trials
 chosenue=1
-periodlength=0.32
-INFILE="discovery-out-monitoring.tr"
-discoverystart=2
+periodlength=320 #Time in SlDchRxRrcStats.txt is in milliseconds
+INFILE="SlDchRxRrcStats.txt"
+discoverystart=2000 #Time in SlDchRxRrcStats.txt is in milliseconds
 
 for j in $(seq 1 $numruns)
 do
@@ -124,8 +124,8 @@ do
     cd $dir
     grep -v IMSI $INFILE | awk -v maxues=$numues '
       {
-        if (! ($2, $5) in times) {
-          times[$2, $5] = $1
+        if (! ($2, $8) in times) {
+          times[$2, $8] = $1
         } 
       } 
       END{

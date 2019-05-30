@@ -90,7 +90,7 @@ LteRlcAm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcAm")
     .SetParent<LteRlc> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteRlcAm> ()
     .AddAttribute ("PollRetransmitTimer",
                    "Value of the t-PollRetransmit timer (See section 7.3 of 3GPP TS 36.322)",
@@ -109,7 +109,7 @@ LteRlcAm::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("ReportBufferStatusTimer",
                    "How much to wait to issue a new Report Buffer Status since the last time "
-                   "a new SDU was received",     
+                   "a new SDU was received",
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&LteRlcAm::m_rbsTimerValue),
                    MakeTimeChecker ())
@@ -121,7 +121,7 @@ LteRlcAm::GetTypeId (void)
                    MakeBooleanAccessor (&LteRlcAm::m_txOpportunityForRetxAlwaysBigEnough),
                    MakeBooleanChecker ())
 
-    ;
+  ;
   return tid;
 }
 
@@ -172,7 +172,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
   NS_LOG_LOGIC ("Txon Buffer: New packet added");
   m_txonBuffer.push_back (p);
   m_txonBufferSize += p->GetSize ();
-  NS_LOG_LOGIC ("NumOfBuffers = " << m_txonBuffer.size() );
+  NS_LOG_LOGIC ("NumOfBuffers = " << m_txonBuffer.size () );
   NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
 
   /** Report Buffer Status */
@@ -197,18 +197,18 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       // There are a more restrictive test for each particular case
       NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small");
       NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small.\n"
-                         << "Your MAC scheduler is assigned too few resource blocks.");
+                                                     << "Your MAC scheduler is assigned too few resource blocks.");
       return;
     }
 
-  if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
+  if ( m_statusPduRequested && !m_statusProhibitTimer.IsRunning () )
     {
       if (txOpParams.bytes < m_statusPduBufferSize)
         {
           // Stingy MAC: We need more bytes for the STATUS PDU
           NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")");
           NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small for the STATUS PDU (size = " << m_statusPduBufferSize << ")\n"
-                             << "Your MAC scheduler is assigned too few resource blocks.");
+                                                         << "Your MAC scheduler is assigned too few resource blocks.");
           return;
         }
 
@@ -217,41 +217,41 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       Ptr<Packet> packet = Create<Packet> ();
       LteRlcAmHeader rlcAmHeader;
       rlcAmHeader.SetControlPdu (LteRlcAmHeader::STATUS_PDU);
-     
-      NS_LOG_LOGIC ("Check for SNs to NACK from " << m_vrR.GetValue() << " to " << m_vrMs.GetValue());
+
+      NS_LOG_LOGIC ("Check for SNs to NACK from " << m_vrR.GetValue () << " to " << m_vrMs.GetValue ());
       SequenceNumber10 sn;
       sn.SetModulusBase (m_vrR);
       std::map<uint16_t, PduBuffer>::iterator pduIt;
-      for (sn = m_vrR; sn < m_vrMs; sn++) 
+      for (sn = m_vrR; sn < m_vrMs; sn++)
         {
-          NS_LOG_LOGIC ("SN = " << sn);          
+          NS_LOG_LOGIC ("SN = " << sn);
           if (!rlcAmHeader.OneMoreNackWouldFitIn (txOpParams.bytes))
             {
               NS_LOG_LOGIC ("Can't fit more NACKs in STATUS PDU");
               break;
-            }          
+            }
           pduIt = m_rxonBuffer.find (sn.GetValue ());
           if (pduIt == m_rxonBuffer.end () || (!(pduIt->second.m_pduComplete)))
             {
               NS_LOG_LOGIC ("adding NACK_SN " << sn.GetValue ());
-              rlcAmHeader.PushNack (sn.GetValue ());              
-            }          
+              rlcAmHeader.PushNack (sn.GetValue ());
+            }
         }
       NS_LOG_LOGIC ("SN at end of NACK loop = " << sn);
       // 3GPP TS 36.322 section 6.2.2.1.4 ACK SN
-      // find the  SN of the next not received RLC Data PDU 
-      // which is not reported as missing in the STATUS PDU. 
+      // find the  SN of the next not received RLC Data PDU
+      // which is not reported as missing in the STATUS PDU.
       pduIt = m_rxonBuffer.find (sn.GetValue ());
-      while ((sn < m_vrMs) && (pduIt != m_rxonBuffer.end ()) && (pduIt->second.m_pduComplete))            
+      while ((sn < m_vrMs) && (pduIt != m_rxonBuffer.end ()) && (pduIt->second.m_pduComplete))
         {
           NS_LOG_LOGIC ("SN = " << sn << " < " << m_vrMs << " = " << (sn < m_vrMs));
           sn++;
           NS_LOG_LOGIC ("SN = " << sn);
           pduIt = m_rxonBuffer.find (sn.GetValue ());
         }
-      
-      NS_ASSERT_MSG (sn <= m_vrMs, "first SN not reported as missing = " << sn << ", VR(MS) = " << m_vrMs);      
-      rlcAmHeader.SetAckSn (sn); 
+
+      NS_ASSERT_MSG (sn <= m_vrMs, "first SN not reported as missing = " << sn << ", VR(MS) = " << m_vrMs);
+      rlcAmHeader.SetAckSn (sn);
 
 
       NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
@@ -273,6 +273,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       params.layer = txOpParams.layer;
       params.harqProcessId = txOpParams.harqId;
       params.componentCarrierId = txOpParams.componentCarrierId;
+      params.discMsg = false;
+      params.mibslMsg = false;
 
       m_macSapProvider->TransmitPdu (params);
 
@@ -284,21 +286,21 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
     }
   else if ( m_retxBufferSize > 0 )
     {
-      NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);      
+      NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
       NS_LOG_LOGIC ("Sending data from Retransmission Buffer");
       NS_ASSERT (m_vtA < m_vtS);
       SequenceNumber10 sn;
       sn.SetModulusBase (m_vtA);
-      for (sn = m_vtA; sn < m_vtS; sn++) 
+      for (sn = m_vtA; sn < m_vtS; sn++)
         {
           uint16_t seqNumberValue = sn.GetValue ();
           NS_LOG_LOGIC ("SN = " << seqNumberValue << " m_pdu " << m_retxBuffer.at (seqNumberValue).m_pdu);
 
           if (m_retxBuffer.at (seqNumberValue).m_pdu != 0)
-            {            
+            {
 
               Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
-              
+
               if (( packet->GetSize () <= txOpParams.bytes )
                   || m_txOpportunityForRetxAlwaysBigEnough)
                 {
@@ -310,10 +312,10 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   // Calculate the Polling Bit (5.2.2.1)
                   rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_NOT_REQUESTED);
 
-                  NS_LOG_LOGIC ("polling conditions: m_txonBuffer.empty=" << m_txonBuffer.empty () 
-                                << " retxBufferSize="  << m_retxBufferSize
-                                << " packet->GetSize ()=" << packet->GetSize ());
-                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize () + rlcAmHeader.GetSerializedSize ())) 
+                  NS_LOG_LOGIC ("polling conditions: m_txonBuffer.empty=" << m_txonBuffer.empty ()
+                                                                          << " retxBufferSize="  << m_retxBufferSize
+                                                                          << " packet->GetSize ()=" << packet->GetSize ());
+                  if (((m_txonBuffer.empty ()) && (m_retxBufferSize == packet->GetSize () + rlcAmHeader.GetSerializedSize ()))
                       || (m_vtS >= m_vtMs)
                       || m_pollRetransmitTimerJustExpired)
                     {
@@ -325,7 +327,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                       m_pollSn = m_vtS - 1;
                       NS_LOG_LOGIC ("New POLL_SN = " << m_pollSn);
 
-                      if (! m_pollRetransmitTimer.IsRunning () )
+                      if (!m_pollRetransmitTimer.IsRunning () )
                         {
                           NS_LOG_LOGIC ("Start PollRetransmit timer");
 
@@ -361,7 +363,9 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   params.layer = txOpParams.layer;
                   params.harqProcessId = txOpParams.harqId;
                   params.componentCarrierId = txOpParams.componentCarrierId;
-                  
+                  params.discMsg = false;
+                  params.mibslMsg = false;
+
                   m_macSapProvider->TransmitPdu (params);
 
                   m_retxBuffer.at (seqNumberValue).m_retxCount++;
@@ -379,7 +383,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
                   m_retxBuffer.at (seqNumberValue).m_pdu = 0;
                   m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
-                  
+
                   NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
 
                   return;
@@ -397,13 +401,13 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   else if ( m_txonBufferSize > 0 )
     {
       if (txOpParams.bytes < 7)
-      {
-        // Stingy MAC: We need more bytes for new DATA PDUs.
-        NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small for DATA PDU");
-        NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small for DATA PDU\n"
-                           << "Your MAC scheduler is assigned too few resource blocks.");
-        return;
-      }
+        {
+          // Stingy MAC: We need more bytes for new DATA PDUs.
+          NS_LOG_LOGIC ("TxOpportunity (size = " << txOpParams.bytes << ") too small for DATA PDU");
+          NS_ASSERT_MSG (false, "TxOpportunity (size = " << txOpParams.bytes << ") too small for DATA PDU\n"
+                                                         << "Your MAC scheduler is assigned too few resource blocks.");
+          return;
+        }
 
       NS_ASSERT (m_vtS <= m_vtMs);
       if (m_vtS == m_vtMs)
@@ -446,12 +450,12 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
     }
 
   NS_LOG_LOGIC ("SDUs in TxonBuffer  = " << m_txonBuffer.size ());
-  NS_LOG_LOGIC ("First SDU buffer  = " << *(m_txonBuffer.begin()));
-  NS_LOG_LOGIC ("First SDU size    = " << (*(m_txonBuffer.begin()))->GetSize ());
+  NS_LOG_LOGIC ("First SDU buffer  = " << *(m_txonBuffer.begin ()));
+  NS_LOG_LOGIC ("First SDU size    = " << (*(m_txonBuffer.begin ()))->GetSize ());
   NS_LOG_LOGIC ("Next segment size = " << nextSegmentSize);
   NS_LOG_LOGIC ("Remove SDU from TxBuffer");
   Ptr<Packet> firstSegment = (*(m_txonBuffer.begin ()))->Copy ();
-  m_txonBufferSize -= (*(m_txonBuffer.begin()))->GetSize ();
+  m_txonBufferSize -= (*(m_txonBuffer.begin ()))->GetSize ();
   NS_LOG_LOGIC ("txBufferSize      = " << m_txonBufferSize );
   m_txonBuffer.erase (m_txonBuffer.begin ());
 
@@ -460,10 +464,10 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       NS_LOG_LOGIC ("WHILE ( firstSegment && firstSegment->GetSize > 0 && nextSegmentSize > 0 )");
       NS_LOG_LOGIC ("    firstSegment size = " << firstSegment->GetSize ());
       NS_LOG_LOGIC ("    nextSegmentSize   = " << nextSegmentSize);
-      if ( (firstSegment->GetSize () > nextSegmentSize) ||
-           // Segment larger than 2047 octets can only be mapped to the end of the Data field
+      if ( (firstSegment->GetSize () > nextSegmentSize)
+           ||// Segment larger than 2047 octets can only be mapped to the end of the Data field
            (firstSegment->GetSize () > 2047)
-         )
+           )
         {
           // Take the minimum size, due to the 2047-bytes 3GPP exception
           // This exception is due to the length of the LI field (just 11 bits)
@@ -502,11 +506,11 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
               firstSegment->AddPacketTag (oldTag);
 
               m_txonBuffer.insert (m_txonBuffer.begin (), firstSegment);
-              m_txonBufferSize += (*(m_txonBuffer.begin()))->GetSize ();
+              m_txonBufferSize += (*(m_txonBuffer.begin ()))->GetSize ();
 
               NS_LOG_LOGIC ("    Txon buffer: Give back the remaining segment");
               NS_LOG_LOGIC ("    Txon buffers = " << m_txonBuffer.size ());
-              NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txonBuffer.begin ()))->GetSize ());
               NS_LOG_LOGIC ("    txonBufferSize = " << m_txonBufferSize );
             }
           else
@@ -568,8 +572,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("        SDUs in TxBuffer  = " << m_txonBuffer.size ());
           if (m_txonBuffer.size () > 0)
             {
-              NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txonBuffer.begin()));
-              NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txonBuffer.begin ()));
+              NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txonBuffer.begin ()))->GetSize ());
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
 
@@ -598,15 +602,15 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("        SDUs in TxBuffer  = " << m_txonBuffer.size ());
           if (m_txonBuffer.size () > 0)
             {
-              NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txonBuffer.begin()));
-              NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txonBuffer.begin ()));
+              NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txonBuffer.begin ()))->GetSize ());
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
           NS_LOG_LOGIC ("        Remove SDU from TxBuffer");
 
           // (more segments)
           firstSegment = (*(m_txonBuffer.begin ()))->Copy ();
-          m_txonBufferSize -= (*(m_txonBuffer.begin()))->GetSize ();
+          m_txonBufferSize -= (*(m_txonBuffer.begin ()))->GetSize ();
           m_txonBuffer.erase (m_txonBuffer.begin ());
           NS_LOG_LOGIC ("        txBufferSize = " << m_txonBufferSize );
         }
@@ -622,8 +626,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   rlcAmHeader.SetLastSegmentFlag (LteRlcAmHeader::LAST_PDU_SEGMENT);
   rlcAmHeader.SetSegmentOffset (0);
 
-  NS_ASSERT_MSG(rlcAmHeader.GetSequenceNumber () < m_vtMs, "SN above TX window");
-  NS_ASSERT_MSG(rlcAmHeader.GetSequenceNumber () >= m_vtA, "SN below TX window");
+  NS_ASSERT_MSG (rlcAmHeader.GetSequenceNumber () < m_vtMs, "SN above TX window");
+  NS_ASSERT_MSG (rlcAmHeader.GetSequenceNumber () >= m_vtA, "SN below TX window");
 
   // Calculate FramingInfo flag according the status of the SDUs in the DataField
   uint8_t framingInfo = 0;
@@ -634,9 +638,9 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   LteRlcSduStatusTag tag;
   NS_ASSERT_MSG ((*it)->PeekPacketTag (tag), "LteRlcSduStatusTag is missing");
   (*it)->PeekPacketTag (tag);
-  if ( (tag.GetStatus () == LteRlcSduStatusTag::FULL_SDU) ||
-       (tag.GetStatus () == LteRlcSduStatusTag::FIRST_SEGMENT)
-     )
+  if ( (tag.GetStatus () == LteRlcSduStatusTag::FULL_SDU)
+       || (tag.GetStatus () == LteRlcSduStatusTag::FIRST_SEGMENT)
+       )
     {
       framingInfo |= LteRlcAmHeader::FIRST_BYTE;
     }
@@ -665,8 +669,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 
   // LAST SEGMENT (Note: There could be only one and be the first one)
   it--;
-  if ( (tag.GetStatus () == LteRlcSduStatusTag::FULL_SDU) ||
-        (tag.GetStatus () == LteRlcSduStatusTag::LAST_SEGMENT) )
+  if ( (tag.GetStatus () == LteRlcSduStatusTag::FULL_SDU)
+       || (tag.GetStatus () == LteRlcSduStatusTag::LAST_SEGMENT) )
     {
       framingInfo |= LteRlcAmHeader::LAST_BYTE;
     }
@@ -687,11 +691,11 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   m_byteWithoutPoll += packet->GetSize ();
   NS_LOG_LOGIC ("BYTE_WITHOUT_POLL = " << m_byteWithoutPoll);
 
-  if ( (m_pduWithoutPoll >= m_pollPdu) || (m_byteWithoutPoll >= m_pollByte) ||
-       ( (m_txonBuffer.empty ()) && (m_retxBufferSize == 0) ) ||
-       (m_vtS >= m_vtMs)
+  if ( (m_pduWithoutPoll >= m_pollPdu) || (m_byteWithoutPoll >= m_pollByte)
+       || ( (m_txonBuffer.empty ()) && (m_retxBufferSize == 0) )
+       || (m_vtS >= m_vtMs)
        || m_pollRetransmitTimerJustExpired
-     )
+       )
     {
       m_pollRetransmitTimerJustExpired = false;
       rlcAmHeader.SetPollingBit (LteRlcAmHeader::STATUS_REPORT_IS_REQUESTED);
@@ -701,7 +705,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       m_pollSn = m_vtS - 1;
       NS_LOG_LOGIC ("New POLL_SN = " << m_pollSn);
 
-      if (! m_pollRetransmitTimer.IsRunning () )
+      if (!m_pollRetransmitTimer.IsRunning () )
         {
           NS_LOG_LOGIC ("Start PollRetransmit timer");
 
@@ -744,6 +748,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   params.layer = txOpParams.layer;
   params.harqProcessId = txOpParams.harqId;
   params.componentCarrierId = txOpParams.componentCarrierId;
+  params.discMsg = false;
+  params.mibslMsg = false;
 
   m_macSapProvider->TransmitPdu (params);
 }
@@ -765,7 +771,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   Time delay;
   NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
   rxPduParams.p->RemovePacketTag (rlcTag);
-  delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
+  delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
   m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
 
   // Get RLC header parameters
@@ -840,7 +846,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       else
         {
           NS_ASSERT_MSG (false, "Neither a PDU segment nor a PDU received");
-          return ;
+          return;
         }
 
       // STATUS PDU is requested
@@ -849,7 +855,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
           m_statusPduRequested = true;
           m_statusPduBufferSize = 4;
 
-          if (! m_statusProhibitTimer.IsRunning ())
+          if (!m_statusProhibitTimer.IsRunning ())
             {
               DoReportBufferStatus ();
             }
@@ -875,7 +881,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 
       // - if x falls outside of the receiving window; or
       // - if byte segment numbers y to z of the AMD PDU with SN = x have been received before:
-      if ( ! IsInsideReceivingWindow (seqNumber) )
+      if ( !IsInsideReceivingWindow (seqNumber) )
         {
           NS_LOG_LOGIC ("PDU discarded");
           return;
@@ -884,7 +890,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
         {
           // - if some byte segments of the AMD PDU contained in the RLC data PDU have been received before:
           //         - discard the duplicate byte segments.
-          // note: re-segmentation of AMD PDU is currently not supported, 
+          // note: re-segmentation of AMD PDU is currently not supported,
           // so we just check that the segment was not received before
           std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
           if (it != m_rxonBuffer.end () )
@@ -921,12 +927,12 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       //       which not all byte segments have been received;
 
       std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
-      if ( it != m_rxonBuffer.end () &&
-           it->second.m_pduComplete )
+      if ( it != m_rxonBuffer.end ()
+           && it->second.m_pduComplete )
         {
           int firstVrMs = m_vrMs.GetValue ();
-          while ( it != m_rxonBuffer.end () &&
-                  it->second.m_pduComplete )
+          while ( it != m_rxonBuffer.end ()
+                  && it->second.m_pduComplete )
             {
               m_vrMs++;
               it = m_rxonBuffer.find (m_vrMs.GetValue ());
@@ -946,17 +952,17 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       if ( seqNumber == m_vrR )
         {
           std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (seqNumber.GetValue ());
-          if ( it != m_rxonBuffer.end () &&
-               it->second.m_pduComplete )
+          if ( it != m_rxonBuffer.end ()
+               && it->second.m_pduComplete )
             {
               it = m_rxonBuffer.find (m_vrR.GetValue ());
               int firstVrR = m_vrR.GetValue ();
-              while ( it != m_rxonBuffer.end () &&
-                      it->second.m_pduComplete )
+              while ( it != m_rxonBuffer.end ()
+                      && it->second.m_pduComplete )
                 {
                   NS_LOG_LOGIC ("Reassemble and Deliver ( SN = " << m_vrR << " )");
                   NS_ASSERT_MSG (it->second.m_byteSegments.size () == 1,
-                                "Too many segments. PDU Reassembly process didn't work");
+                                 "Too many segments. PDU Reassembly process didn't work");
                   ReassembleAndDeliver (it->second.m_byteSegments.front ());
                   m_rxonBuffer.erase (m_vrR.GetValue ());
 
@@ -985,9 +991,9 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       if ( m_reorderingTimer.IsRunning () )
         {
           NS_LOG_LOGIC ("Reordering timer is running");
-          if ( (m_vrX == m_vrR) ||
-               ( (! IsInsideReceivingWindow (m_vrX)) && (m_vrX != m_vrMr) )
-             )
+          if ( (m_vrX == m_vrR)
+               || ( (!IsInsideReceivingWindow (m_vrX)) && (m_vrX != m_vrMr) )
+               )
             {
               /// \todo stop and reset the t-Reordering
               NS_LOG_LOGIC ("Stop reordering timer");
@@ -1000,14 +1006,14 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       //         - start t-Reordering;
       //         - set VR(X) to VR(H).
 
-      if ( ! m_reorderingTimer.IsRunning () )
+      if ( !m_reorderingTimer.IsRunning () )
         {
           NS_LOG_LOGIC ("Reordering timer is not running");
           if ( m_vrH > m_vrR )
             {
               NS_LOG_LOGIC ("Start reordering timer");
               m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue,
-                                                       &LteRlcAm::ExpireReorderingTimer ,this);
+                                                       &LteRlcAm::ExpireReorderingTimer,this);
               m_vrX = m_vrH;
               NS_LOG_LOGIC ("New VR(X) = " << m_vrX);
             }
@@ -1032,7 +1038,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
       ackSn.SetModulusBase (m_vtA);
       sn.SetModulusBase (m_vtA);
 
-      bool incrementVtA = true; 
+      bool incrementVtA = true;
 
       for (sn = m_vtA; sn < ackSn && sn < m_vtS; sn++)
         {
@@ -1040,7 +1046,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 
           uint16_t seqNumberValue = sn.GetValue ();
 
-          if (m_pollRetransmitTimer.IsRunning () 
+          if (m_pollRetransmitTimer.IsRunning ()
               && (seqNumberValue == m_pollSn.GetValue ()))
             {
               m_pollRetransmitTimer.Cancel ();
@@ -1065,7 +1071,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                 }
 
               NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu != 0);
-              
+
             }
           else
             {
@@ -1091,7 +1097,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
             }
 
           NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
-          NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);      
+          NS_LOG_LOGIC ("txedBufferSize = " << m_txedBufferSize);
 
           if (incrementVtA)
             {
@@ -1104,9 +1110,9 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
               ackSn.SetModulusBase (m_vtA);
               sn.SetModulusBase (m_vtA);
             }
-          
+
         } // loop over SN : VT(A) <= SN < ACK SN
-      
+
       return;
 
     }
@@ -1201,9 +1207,18 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
   std::list < Ptr<Packet> >::iterator it;
 
   // Current reassembling state
-  if (m_reassemblingState == WAITING_S0_FULL)       NS_LOG_LOGIC ("Reassembling State = 'WAITING_S0_FULL'");
-  else if (m_reassemblingState == WAITING_SI_SF)    NS_LOG_LOGIC ("Reassembling State = 'WAITING_SI_SF'");
- else                                               NS_LOG_LOGIC ("Reassembling State = Unknown state");
+  if (m_reassemblingState == WAITING_S0_FULL)
+    {
+      NS_LOG_LOGIC ("Reassembling State = 'WAITING_S0_FULL'");
+    }
+  else if (m_reassemblingState == WAITING_SI_SF)
+    {
+      NS_LOG_LOGIC ("Reassembling State = 'WAITING_SI_SF'");
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Reassembling State = Unknown state");
+    }
 
 
   // Received framing Info
@@ -1215,125 +1230,125 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
     {
       switch (m_reassemblingState)
         {
-          case WAITING_S0_FULL:
-                  switch (framingInfo)
-                    {
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                              m_reassemblingState = WAITING_S0_FULL;
+        case WAITING_S0_FULL:
+          switch (framingInfo)
+            {
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+              m_reassemblingState = WAITING_S0_FULL;
 
-                              /**
-                              * Deliver one or multiple PDUs
-                              */
-                              for ( it = m_sdusBuffer.begin () ; it != m_sdusBuffer.end () ; it++ )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (*it);
-                                }
-                              m_sdusBuffer.clear ();
-                      break;
+              /**
+              * Deliver one or multiple PDUs
+              */
+              for ( it = m_sdusBuffer.begin (); it != m_sdusBuffer.end (); it++ )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (*it);
+                }
+              m_sdusBuffer.clear ();
+              break;
 
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                              m_reassemblingState = WAITING_SI_SF;
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+              m_reassemblingState = WAITING_SI_SF;
 
-                              /**
-                              * Deliver full PDUs
-                              */
-                              while ( m_sdusBuffer.size () > 1 )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
+              /**
+              * Deliver full PDUs
+              */
+              while ( m_sdusBuffer.size () > 1 )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
 
-                              /**
-                              * Keep S0
-                              */
-                              m_keepS0 = m_sdusBuffer.front ();
-                              m_sdusBuffer.pop_front ();
-                      break;
+              /**
+              * Keep S0
+              */
+              m_keepS0 = m_sdusBuffer.front ();
+              m_sdusBuffer.pop_front ();
+              break;
 
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                      default:
-                              /**
-                              * ERROR: Transition not possible
-                              */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
-                      break;
-                    }
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+            default:
+              /**
+              * ERROR: Transition not possible
+              */
+              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
+              break;
+            }
           break;
 
-          case WAITING_SI_SF:
-                  switch (framingInfo)
+        case WAITING_SI_SF:
+          switch (framingInfo)
+            {
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+              m_reassemblingState = WAITING_S0_FULL;
+
+              /**
+              * Deliver (Kept)S0 + SN
+              */
+              m_keepS0->AddAtEnd (m_sdusBuffer.front ());
+              m_sdusBuffer.pop_front ();
+              m_rlcSapUser->ReceivePdcpPdu (m_keepS0);
+
+              /**
+                * Deliver zero, one or multiple PDUs
+                */
+              while ( !m_sdusBuffer.empty () )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+              m_reassemblingState = WAITING_SI_SF;
+
+              /**
+              * Keep SI
+              */
+              if ( m_sdusBuffer.size () == 1 )
+                {
+                  m_keepS0->AddAtEnd (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+              else                 // m_sdusBuffer.size () > 1
+                {
+                  /**
+                  * Deliver (Kept)S0 + SN
+                  */
+                  m_keepS0->AddAtEnd (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                  m_rlcSapUser->ReceivePdcpPdu (m_keepS0);
+
+                  /**
+                  * Deliver zero, one or multiple PDUs
+                  */
+                  while ( m_sdusBuffer.size () > 1 )
                     {
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                              m_reassemblingState = WAITING_S0_FULL;
-
-                              /**
-                              * Deliver (Kept)S0 + SN
-                              */
-                              m_keepS0->AddAtEnd (m_sdusBuffer.front ());
-                              m_sdusBuffer.pop_front ();
-                              m_rlcSapUser->ReceivePdcpPdu (m_keepS0);
-
-                              /**
-                                * Deliver zero, one or multiple PDUs
-                                */
-                              while ( ! m_sdusBuffer.empty () )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                              m_reassemblingState = WAITING_SI_SF;
-
-                              /**
-                              * Keep SI
-                              */
-                              if ( m_sdusBuffer.size () == 1 )
-                                {
-                                  m_keepS0->AddAtEnd (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-                              else // m_sdusBuffer.size () > 1
-                                {
-                                  /**
-                                  * Deliver (Kept)S0 + SN
-                                  */
-                                  m_keepS0->AddAtEnd (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                  m_rlcSapUser->ReceivePdcpPdu (m_keepS0);
-
-                                  /**
-                                  * Deliver zero, one or multiple PDUs
-                                  */
-                                  while ( m_sdusBuffer.size () > 1 )
-                                    {
-                                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                      m_sdusBuffer.pop_front ();
-                                    }
-
-                                  /**
-                                  * Keep S0
-                                  */
-                                  m_keepS0 = m_sdusBuffer.front ();
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                      default:
-                              /**
-                                * ERROR: Transition not possible
-                                */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
-                      break;
+                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                      m_sdusBuffer.pop_front ();
                     }
+
+                  /**
+                  * Keep S0
+                  */
+                  m_keepS0 = m_sdusBuffer.front ();
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+            default:
+              /**
+                * ERROR: Transition not possible
+                */
+              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
+              break;
+            }
           break;
 
-          default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
+        default:
+          NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -1341,221 +1356,221 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
     {
       switch (m_reassemblingState)
         {
-          case WAITING_S0_FULL:
-                  switch (framingInfo)
+        case WAITING_S0_FULL:
+          switch (framingInfo)
+            {
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+              m_reassemblingState = WAITING_S0_FULL;
+
+              /**
+               * Deliver one or multiple PDUs
+               */
+              for ( it = m_sdusBuffer.begin (); it != m_sdusBuffer.end (); it++ )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (*it);
+                }
+              m_sdusBuffer.clear ();
+              break;
+
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+              m_reassemblingState = WAITING_SI_SF;
+
+              /**
+               * Deliver full PDUs
+               */
+              while ( m_sdusBuffer.size () > 1 )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+
+              /**
+               * Keep S0
+               */
+              m_keepS0 = m_sdusBuffer.front ();
+              m_sdusBuffer.pop_front ();
+              break;
+
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+              m_reassemblingState = WAITING_S0_FULL;
+
+              /**
+               * Discard SN
+               */
+              m_sdusBuffer.pop_front ();
+
+              /**
+               * Deliver zero, one or multiple PDUs
+               */
+              while ( !m_sdusBuffer.empty () )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+              if ( m_sdusBuffer.size () == 1 )
+                {
+                  m_reassemblingState = WAITING_S0_FULL;
+                }
+              else
+                {
+                  m_reassemblingState = WAITING_SI_SF;
+                }
+
+              /**
+               * Discard SI or SN
+               */
+              m_sdusBuffer.pop_front ();
+
+              if ( m_sdusBuffer.size () > 0 )
+                {
+                  /**
+                  * Deliver zero, one or multiple PDUs
+                  */
+                  while ( m_sdusBuffer.size () > 1 )
                     {
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                              m_reassemblingState = WAITING_S0_FULL;
-
-                              /**
-                               * Deliver one or multiple PDUs
-                               */
-                              for ( it = m_sdusBuffer.begin () ; it != m_sdusBuffer.end () ; it++ )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (*it);
-                                }
-                              m_sdusBuffer.clear ();
-                      break;
-
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                              m_reassemblingState = WAITING_SI_SF;
-
-                              /**
-                               * Deliver full PDUs
-                               */
-                              while ( m_sdusBuffer.size () > 1 )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-
-                              /**
-                               * Keep S0
-                               */
-                              m_keepS0 = m_sdusBuffer.front ();
-                              m_sdusBuffer.pop_front ();
-                      break;
-
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                              m_reassemblingState = WAITING_S0_FULL;
-
-                              /**
-                               * Discard SN
-                               */
-                              m_sdusBuffer.pop_front ();
-
-                              /**
-                               * Deliver zero, one or multiple PDUs
-                               */
-                              while ( ! m_sdusBuffer.empty () )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                              if ( m_sdusBuffer.size () == 1 )
-                                {
-                                  m_reassemblingState = WAITING_S0_FULL;
-                                }
-                              else
-                                {
-                                  m_reassemblingState = WAITING_SI_SF;
-                                }
-
-                              /**
-                               * Discard SI or SN
-                               */
-                              m_sdusBuffer.pop_front ();
-
-                              if ( m_sdusBuffer.size () > 0 )
-                                {
-                                  /**
-                                  * Deliver zero, one or multiple PDUs
-                                  */
-                                  while ( m_sdusBuffer.size () > 1 )
-                                    {
-                                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                      m_sdusBuffer.pop_front ();
-                                    }
-
-                                  /**
-                                  * Keep S0
-                                  */
-                                  m_keepS0 = m_sdusBuffer.front ();
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      default:
-                              /**
-                               * ERROR: Transition not possible
-                               */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
-                      break;
+                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                      m_sdusBuffer.pop_front ();
                     }
+
+                  /**
+                  * Keep S0
+                  */
+                  m_keepS0 = m_sdusBuffer.front ();
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            default:
+              /**
+               * ERROR: Transition not possible
+               */
+              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
+              break;
+            }
           break;
 
-          case WAITING_SI_SF:
-                  switch (framingInfo)
+        case WAITING_SI_SF:
+          switch (framingInfo)
+            {
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+              m_reassemblingState = WAITING_S0_FULL;
+
+              /**
+               * Discard S0
+               */
+              m_keepS0 = 0;
+
+              /**
+               * Deliver one or multiple PDUs
+               */
+              while ( !m_sdusBuffer.empty () )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+              m_reassemblingState = WAITING_SI_SF;
+
+              /**
+               * Discard S0
+               */
+              m_keepS0 = 0;
+
+              /**
+               * Deliver zero, one or multiple PDUs
+               */
+              while ( m_sdusBuffer.size () > 1 )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+
+              /**
+               * Keep S0
+               */
+              m_keepS0 = m_sdusBuffer.front ();
+              m_sdusBuffer.pop_front ();
+
+              break;
+
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
+              m_reassemblingState = WAITING_S0_FULL;
+
+              /**
+               * Discard S0
+               */
+              m_keepS0 = 0;
+
+              /**
+               * Discard SI or SN
+               */
+              m_sdusBuffer.pop_front ();
+
+              /**
+               * Deliver zero, one or multiple PDUs
+               */
+              while ( !m_sdusBuffer.empty () )
+                {
+                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
+              if ( m_sdusBuffer.size () == 1 )
+                {
+                  m_reassemblingState = WAITING_S0_FULL;
+                }
+              else
+                {
+                  m_reassemblingState = WAITING_SI_SF;
+                }
+
+              /**
+               * Discard S0
+               */
+              m_keepS0 = 0;
+
+              /**
+               * Discard SI or SN
+               */
+              m_sdusBuffer.pop_front ();
+
+              if ( m_sdusBuffer.size () > 0 )
+                {
+                  /**
+                   * Deliver zero, one or multiple PDUs
+                   */
+                  while ( m_sdusBuffer.size () > 1 )
                     {
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                              m_reassemblingState = WAITING_S0_FULL;
-
-                              /**
-                               * Discard S0
-                               */
-                              m_keepS0 = 0;
-
-                              /**
-                               * Deliver one or multiple PDUs
-                               */
-                              while ( ! m_sdusBuffer.empty () )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      case (LteRlcAmHeader::FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                              m_reassemblingState = WAITING_SI_SF;
-
-                              /**
-                               * Discard S0
-                               */
-                              m_keepS0 = 0;
-
-                              /**
-                               * Deliver zero, one or multiple PDUs
-                               */
-                              while ( m_sdusBuffer.size () > 1 )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-
-                              /**
-                               * Keep S0
-                               */
-                              m_keepS0 = m_sdusBuffer.front ();
-                              m_sdusBuffer.pop_front ();
-
-                      break;
-
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::LAST_BYTE):
-                              m_reassemblingState = WAITING_S0_FULL;
-
-                              /**
-                               * Discard S0
-                               */
-                              m_keepS0 = 0;
-
-                              /**
-                               * Discard SI or SN
-                               */
-                              m_sdusBuffer.pop_front ();
-
-                              /**
-                               * Deliver zero, one or multiple PDUs
-                               */
-                              while ( ! m_sdusBuffer.empty () )
-                                {
-                                  m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      case (LteRlcAmHeader::NO_FIRST_BYTE | LteRlcAmHeader::NO_LAST_BYTE):
-                              if ( m_sdusBuffer.size () == 1 )
-                                {
-                                  m_reassemblingState = WAITING_S0_FULL;
-                                }
-                              else
-                                {
-                                  m_reassemblingState = WAITING_SI_SF;
-                                }
-
-                              /**
-                               * Discard S0
-                               */
-                              m_keepS0 = 0;
-
-                              /**
-                               * Discard SI or SN
-                               */
-                              m_sdusBuffer.pop_front ();
-
-                              if ( m_sdusBuffer.size () > 0 )
-                                {
-                                  /**
-                                   * Deliver zero, one or multiple PDUs
-                                   */
-                                  while ( m_sdusBuffer.size () > 1 )
-                                    {
-                                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
-                                      m_sdusBuffer.pop_front ();
-                                    }
-
-                                  /**
-                                   * Keep S0
-                                   */
-                                  m_keepS0 = m_sdusBuffer.front ();
-                                  m_sdusBuffer.pop_front ();
-                                }
-                      break;
-
-                      default:
-                              /**
-                                * ERROR: Transition not possible
-                                */
-                              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
-                      break;
+                      m_rlcSapUser->ReceivePdcpPdu (m_sdusBuffer.front ());
+                      m_sdusBuffer.pop_front ();
                     }
+
+                  /**
+                   * Keep S0
+                   */
+                  m_keepS0 = m_sdusBuffer.front ();
+                  m_sdusBuffer.pop_front ();
+                }
+              break;
+
+            default:
+              /**
+                * ERROR: Transition not possible
+                */
+              NS_LOG_LOGIC ("INTERNAL ERROR: Transition not possible. FI = " << (uint32_t) framingInfo);
+              break;
+            }
           break;
 
-          default:
-                NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
+        default:
+          NS_LOG_LOGIC ("INTERNAL ERROR: Wrong reassembling state = " << (uint32_t) m_reassemblingState);
           break;
         }
     }
@@ -1596,11 +1611,11 @@ LteRlcAm::DoReportBufferStatus (void)
       else
         {
           m_txedBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
-        }      
+        }
       retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
     }
-  else 
-    {      
+  else
+    {
       retxQueueHolDelay = Seconds (0);
     }
 
@@ -1614,7 +1629,7 @@ LteRlcAm::DoReportBufferStatus (void)
   r.retxQueueSize = m_retxBufferSize + m_txedBufferSize;
   r.retxQueueHolDelay = retxQueueHolDelay.GetMilliSeconds ();
 
-  if ( m_statusPduRequested && ! m_statusProhibitTimer.IsRunning () )
+  if ( m_statusPduRequested && !m_statusProhibitTimer.IsRunning () )
     {
       r.statusPduSize = m_statusPduBufferSize;
     }
@@ -1625,8 +1640,8 @@ LteRlcAm::DoReportBufferStatus (void)
 
   if ( r.txQueueSize != 0 || r.retxQueueSize != 0 || r.statusPduSize != 0 )
     {
-      NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", " 
-                                               << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", " 
+      NS_LOG_INFO ("Send ReportBufferStatus: " << r.txQueueSize << ", " << r.txQueueHolDelay << ", "
+                                               << r.retxQueueSize << ", " << r.retxQueueHolDelay << ", "
                                                << r.statusPduSize);
       m_macSapProvider->ReportBufferStatus (r);
     }
@@ -1654,8 +1669,8 @@ LteRlcAm::ExpireReorderingTimer (void)
   m_vrMs = m_vrX;
   int firstVrMs = m_vrMs.GetValue ();
   std::map <uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find (m_vrMs.GetValue ());
-  while ( it != m_rxonBuffer.end () &&
-          it->second.m_pduComplete )
+  while ( it != m_rxonBuffer.end ()
+          && it->second.m_pduComplete )
     {
       m_vrMs++;
       it = m_rxonBuffer.find (m_vrMs.GetValue ());
@@ -1668,14 +1683,14 @@ LteRlcAm::ExpireReorderingTimer (void)
     {
       NS_LOG_LOGIC ("Start reordering timer");
       m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue,
-                                              &LteRlcAm::ExpireReorderingTimer ,this);
+                                               &LteRlcAm::ExpireReorderingTimer,this);
       m_vrX = m_vrH;
       NS_LOG_LOGIC ("New VR(MS) = " << m_vrMs);
     }
 
-    // Section 5.2.3 Status Reporting:
-    //   - The receiving side of an AM RLC entity shall trigger a
-    //     STATUS report when T_reordering expires. 
+  // Section 5.2.3 Status Reporting:
+  //   - The receiving side of an AM RLC entity shall trigger a
+  //     STATUS report when T_reordering expires.
   m_statusPduRequested = true;
 }
 
@@ -1703,18 +1718,18 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
         {
           bool pduAvailable = m_txedBuffer.at (sn.GetValue ()).m_pdu != 0;
 
-           if ( pduAvailable )
-             {
-               uint16_t snValue = sn.GetValue ();
-               NS_LOG_INFO ("Move PDU " << sn << " from txedBuffer to retxBuffer");
-               m_retxBuffer.at (snValue).m_pdu = m_txedBuffer.at (snValue).m_pdu->Copy ();
-               m_retxBuffer.at (snValue).m_retxCount = m_txedBuffer.at (snValue).m_retxCount;
-               m_retxBufferSize += m_retxBuffer.at (snValue).m_pdu->GetSize ();
+          if ( pduAvailable )
+            {
+              uint16_t snValue = sn.GetValue ();
+              NS_LOG_INFO ("Move PDU " << sn << " from txedBuffer to retxBuffer");
+              m_retxBuffer.at (snValue).m_pdu = m_txedBuffer.at (snValue).m_pdu->Copy ();
+              m_retxBuffer.at (snValue).m_retxCount = m_txedBuffer.at (snValue).m_retxCount;
+              m_retxBufferSize += m_retxBuffer.at (snValue).m_pdu->GetSize ();
 
-               m_txedBufferSize -= m_txedBuffer.at (snValue).m_pdu->GetSize ();
-               m_txedBuffer.at (snValue).m_pdu = 0;
-               m_txedBuffer.at (snValue).m_retxCount = 0;
-             }
+              m_txedBufferSize -= m_txedBuffer.at (snValue).m_pdu->GetSize ();
+              m_txedBuffer.at (snValue).m_pdu = 0;
+              m_txedBuffer.at (snValue).m_retxCount = 0;
+            }
         }
     }
 
@@ -1722,7 +1737,7 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
 }
 
 
-void 
+void
 LteRlcAm::ExpireStatusProhibitTimer (void)
 {
   NS_LOG_FUNCTION (this);

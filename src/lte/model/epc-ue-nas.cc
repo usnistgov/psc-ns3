@@ -458,16 +458,5 @@ EpcUeNas::DoNotifySidelinkRadioBearerActivated (uint32_t group)
     }
 }
 
-void
-EpcUeNas::AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
-{
-  m_asSapProvider->AddDiscoveryApps (apps, rxtx);
-}
-void
-EpcUeNas::RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
-{
-  m_asSapProvider->RemoveDiscoveryApps (apps, rxtx);
-}
-
 } // namespace ns3
 

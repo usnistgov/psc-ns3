@@ -115,21 +115,7 @@ public:
    * \param group The L2 address of the group the UE is no longer interested
    */
   virtual void DeactivateSidelinkRadioBearer (uint32_t group) = 0;
-  
-  /**
-   * tell RRC to add discovery applications
-   * \param apps applications to be added
-   * \param rxtx 0 for monitoring and 1 for announcing
-   */
-  virtual void AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx) = 0;
-  
-  /**
-   * tell RRC to remove discovery applications
-   * \param apps applications to be removed
-   * \param rxtx 0 for monitoring and 1 for announcing
-   */
-  virtual void RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx) = 0;
-  
+    
 };
 
 
@@ -210,9 +196,6 @@ public:
   //communication
   virtual void ActivateSidelinkRadioBearer (uint32_t group, bool tx, bool rx);
   virtual void DeactivateSidelinkRadioBearer (uint32_t group);
-  //Discovery
-  virtual void AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
-  virtual void RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
 
 private:
   MemberLteAsSapProvider ();
@@ -291,20 +274,6 @@ void
 MemberLteAsSapProvider<C>::DeactivateSidelinkRadioBearer (uint32_t group)
 {
   m_owner->DoDeactivateSidelinkRadioBearer (group);
-}
-
-template <class C>
-void
-MemberLteAsSapProvider<C>::AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
-{
-  m_owner->DoAddDiscoveryApps (apps, rxtx);
-}
-
-template <class C>
-void
-MemberLteAsSapProvider<C>::RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
-{
-  m_owner->DoRemoveDiscoveryApps (apps, rxtx);
 }
 
 /**

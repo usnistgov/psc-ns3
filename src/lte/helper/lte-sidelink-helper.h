@@ -184,6 +184,38 @@ public:
    */
   void DoActivateSidelinkBearer (NetDeviceContainer ues, Ptr<LteSlTft> tft);
 
+   /**
+   * Starts discovery process for given applications depending on the interest (monitoring or announcing)
+   * \param ueDevice the targeted device
+   * \param appCodes app code payloads to be added
+   * \param role UE role (discovered or discoveree)
+   */
+  void StartDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+  
+  /**
+   * Stops discovery process for given applications depending on the interest (monitoring or announcing)
+   * \param ueDevice the targeted device
+   * \param appCodes app code payloads to be removed
+   * \param role UE role (discovered or discoveree)
+   */
+  void StopDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+
+  /**
+   * Starts UE-to-Network relay process
+   * \param ueDevice the targeted device
+   * \param serviceCode relay service code to use
+   * \param model discovery model (A or B)
+   * \param role UE role (remote UE or relay node)
+   */
+  void StartRelayService (Ptr<NetDevice> ueDevice, uint32_t serviceCode, LteSlUeRrc::DiscoveryModel model, LteSlUeRrc::RelayRole role); 
+
+  /**
+   * Stops UE-to-Network relay process
+   * \param ueDevice the targeted device
+   * \param serviceCode relay service code to use
+   */
+  void StopRelayService (Ptr<NetDevice> ueDevice, uint32_t serviceCode);
+
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that

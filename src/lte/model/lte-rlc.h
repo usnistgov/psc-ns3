@@ -55,6 +55,12 @@ class LteRlc : public Object // SimpleRefCount<LteRlc>
   /// allow LteRlcSpecificLteRlcSapProvider<LteRlc> class friend access
   friend class LteRlcSpecificLteRlcSapProvider<LteRlc>;
 public:
+  /// Channel type enumeration
+  enum ChannelType
+  {
+    DEFAULT = 0,
+    STCH
+  };
   LteRlc ();
   virtual ~LteRlc ();
   /**
@@ -117,6 +123,16 @@ public:
    * \return the MAC SAP User interface offered to the MAC by this LTE_RLC
    */
   LteMacSapUser* GetLteMacSapUser ();
+
+  /**
+   * \brief Set the RLC logical channel type
+   *
+   * Currently this method is only used for a
+   * Sidelink logical channel.
+   *
+   * \param channelType the logical channel type
+   */
+  void SetRlcChannelType (LteRlc::ChannelType channelType);
 
 
   /**
@@ -182,6 +198,7 @@ protected:
   uint8_t m_lcid; ///< LCID
   uint32_t m_srcL2Id;  ///< Source L2 ID (24 bits)
   uint32_t m_dstL2Id;  ///< Destination L2 ID (24 bits)
+  ChannelType m_channelType; ///< The logical channel type.
 
   /**
    * Used to inform of a PDU delivery to the MAC SAP provider

@@ -52,25 +52,25 @@ public:
     uint8_t preambleTransMax; ///< preamble transmit maximum
     uint8_t raResponseWindowSize; ///< RA response window size
   };
-  
-  /** 
-   * Configure RACH function 
+
+  /**
+   * Configure RACH function
    *
    * \param rc The RACH config
    */
   virtual void ConfigureRach (RachConfig rc) = 0;
 
-  /** 
+  /**
    * Tells the MAC to start a contention-based random access procedure,
-   * e.g., to perform RRC connection establishment 
-   * 
+   * e.g., to perform RRC connection establishment
+   *
    */
   virtual void StartContentionBasedRandomAccessProcedure () = 0;
 
-  /** 
+  /**
    * Tells the MAC to start a non-contention-based random access
    * procedure, e.g., as a consequence of handover
-   * 
+   *
    * \param rnti The RNTI
    * \param rapId The Random Access Preamble Identifier
    * \param prachMask The PRACK mask
@@ -86,10 +86,10 @@ public:
     uint16_t bucketSizeDurationMs; ///< bucket size duration ms
     uint8_t logicalChannelGroup; ///< logical channel group
   };
-  
-  /** 
+
+  /**
    * Adds a new Logical Channel (LC)
-   * 
+   *
    * \param lcId The ID of the LC
    * \param lcConfig The LC configuration provided by the RRC
    * \param msu The corresponding LteMacSapUser
@@ -107,10 +107,10 @@ public:
    */
   virtual void AddSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, LogicalChannelConfig lcConfig, LteMacSapUser* msu) = 0;
 
-  /** 
+  /**
    * Removes an existing LC
-   * 
-   * \param lcId 
+   *
+   * \param lcId
    */
   virtual void RemoveLc (uint8_t lcId) = 0;
 
@@ -123,12 +123,12 @@ public:
    */
   virtual void RemoveSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
 
-  /** 
+  /**
    * Resets the MAC
-   * 
+   *
    */
   virtual void Reset () = 0;
-  
+
   /**
    * Adds a Sidelink transmission pool for the given destination
    *
@@ -185,20 +185,6 @@ public:
   virtual void SetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools) = 0;
 
   /**
-   * Push announcing applications to MAC
-   *
-   * \param apps The applications to announce
-   */
-  virtual void ModifyDiscTxApps (std::list<uint32_t> apps) = 0;
-
-  /**
-   * Push monitoring applications to MAC
-   *
-   * \param apps The applications to monitor
-   */
-  virtual void ModifyDiscRxApps (std::list<uint32_t> apps) = 0;
-
-  /**
    * Sets the RNTI of the UE
    *
    * \param rnti The cell-specific UE identifier
@@ -210,7 +196,7 @@ public:
    *  added function to handle priority in UL scheduling
    *
    */
- // virtual void AddLCPriority (uint8_t rnti, uint8_t lcid ,uint8_t  priority) = 0;
+  // virtual void AddLCPriority (uint8_t rnti, uint8_t lcid ,uint8_t  priority) = 0;
 
 };
 
@@ -224,25 +210,24 @@ public:
 class LteUeCmacSapUser
 {
 public:
-
   virtual ~LteUeCmacSapUser ();
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param rnti the T-C-RNTI, which will eventually become the C-RNTI after contention resolution
    */
   virtual void SetTemporaryCellRnti (uint16_t rnti) = 0;
 
-  /** 
+  /**
    * Notify the RRC that the MAC Random Access procedure completed successfully
-   * 
+   *
    */
   virtual void NotifyRandomAccessSuccessful () = 0;
 
-  /** 
+  /**
    * Notify the RRC that the MAC Random Access procedure failed
-   * 
+   *
    */
   virtual void NotifyRandomAccessFailed () = 0;
 
@@ -267,9 +252,9 @@ public:
   /**
    * Notify the RRC that the MAC has detected a new incoming flow for discovery reception
    *
-   * \param msg LTE control message
+   * \param p The packet containing the discovery message
    */
-  virtual void NotifyDiscoveryReception (Ptr<LteControlMessage> msg) = 0;
+  virtual void NotifyDiscoveryReception (Ptr<Packet> p) = 0;
 };
 
 

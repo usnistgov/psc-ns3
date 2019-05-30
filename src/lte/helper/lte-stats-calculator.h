@@ -108,6 +108,19 @@ public:
   std::string GetSlPscchOutputFilename (void);
 
   /**
+   * Set the name of the file where the Sidelink PSDCH statistics will be stored.
+   *
+   * \param outputFilename string with the name of the file
+   */
+  void SetSlPsdchOutputFilename (std::string outputFilename);
+
+  /**
+   * Get the name of the file where the Sidelink PSDCH statistics will be stored.
+   * @return the name of the file where the Sidelink PSDCH statistics will be stored
+   */
+  std::string GetSlPsdchOutputFilename (void);
+
+  /**
    * Checks if there is an already stored IMSI for the given path
    * @param path Path in the attribute system to check
    * @return true if the path exists, false otherwise
@@ -241,6 +254,12 @@ private:
    * Name of the file where the Sidlink PSCCH results will be saved
    */
   std::string m_slPscchOutputFilename;
+
+  /**
+   * Name of the file where the Sidlink PSDCH results will be saved
+   */
+  std::string m_slPsdchOutputFilename;
+
 };
 
 } // namespace ns3

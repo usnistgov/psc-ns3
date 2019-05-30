@@ -2,11 +2,15 @@
 ﻿LTE Sidelink
 ------------
 
-A new directory "d2d-examples" in the LTE module examples directory holds the examples for simulating ProSe services, i.e., direct communication, direct discovery, and synchronization. These examples can be divided into the following two categories:
+A new directory "d2d-examples" in the LTE module examples directory holds the
+examples for simulating ProSe services, i.e., direct communication, direct
+discovery, and synchronization. These examples can be divided into the following
+two categories:
 
 1. Simple examples 
 
-These examples covers in-coverage and out-of-coverage ProSe communication using a simple scenario. The examples included in this category are the following:
+These examples covers in-coverage and out-of-coverage ProSe communication using
+a simple scenario. The examples included in this category are the following:
 
 * lte-sl-in-covrg-comm-mode1
 * lte-sl-in-covrg-comm-mode2
@@ -14,35 +18,50 @@ These examples covers in-coverage and out-of-coverage ProSe communication using 
 
 2. Detailed examples 
 
-These examples can be used to simulate out-of-coverage ProSe communication, discovery and synchronization. In particular, these examples covers the simulation scenarios used for the study published in [NIST2017]_. The users interested in the extensive simulation campaigns described in this study, are referred to a "README.txt" file for more information. The examples included in this category are:
+These examples can be used to simulate out-of-coverage ProSe communication,
+discovery and synchronization. In particular, these examples covers the
+simulation scenarios used for the study published in [NIST2017]_. The users
+interested in the extensive simulation campaigns described in this study, are
+referred to a "README.txt" file for more information. The examples included in
+this category are:
 
 * wns3-2017-pscch
 * wns3-2017-pssch
 * wns3-2017-synch
 * wns3-2017-discovery
 
-The Sidelink example scripts follow the same rules as writing an LTE simulation script, however, there are additional configurations required to simulate Sidelink. Following are some rules of thumb for writing Sidelink scripts;
+The Sidelink example scripts follow the same rules as writing an LTE simulation
+script, however, there are additional configurations required to simulate
+Sidelink. Following are some rules of thumb for writing Sidelink scripts;
 
 * Sidelink simulations require EPC.
 * eNB should be disabled to simulate out-of-coverage scenarios.
 * Sidelink pools should be configured before the start of the simulation.
-* ``Lte3gppHexGridEnbTopologyHelper`` can not be use without initializing eNB nodes and appropriate antenna model.
-* It is possible to avoid the initialization of eNB nodes in out-of-coverage scenarios, if hexagonal ring topology is not used.
+* ``Lte3gppHexGridEnbTopologyHelper`` can not be use without initializing eNB
+  nodes and appropriate antenna model. * It is possible to avoid the
+  initialization of eNB nodes in out-of-coverage scenarios, if hexagonal ring
+  topology is not used.
 
-In general, all the D2D examples are highly parameterizable and could be divided in three parts:
+In general, all the D2D examples are highly parameterizable and could be divided
+in three parts:
 
- #. Configuration of LTE and Sidelink default parameters, e.g., the ones configured by calling ``Config::SetDefault`` function
+ #. Configuration of LTE and Sidelink default parameters, e.g., the ones
+    configured by calling ``Config::SetDefault`` function
 
  #. Topology configuration
 
  #. Sidelink pool configuration
 
-In the following, we will discuss all the examples from the "Simple examples" category and the two examples from "Detailed examples" category, which are wns3-2017-synch and wns3-2017-discovery. We choose wns3-2017-synch, since it also simulates the PSCCH and PSSCH.
+In the following, we will discuss all the examples from the "Simple examples"
+category and the two examples from "Detailed examples" category, which are
+wns3-2017-synch and wns3-2017-discovery. We choose wns3-2017-synch, since it
+also simulates the PSCCH and PSSCH.
 
 lte-sl-in-covrg-comm-mode1
 ++++++++++++++++++++++++++
 
-This example simulates an in-coverage MODE 1 ProSe communication by using the following scenario.  
+This example simulates an in-coverage MODE 1 ProSe communication by using the
+following scenario.
 
 .. _fig-lte-sl-simple-scenario:
  
@@ -51,7 +70,11 @@ This example simulates an in-coverage MODE 1 ProSe communication by using the fo
 
    Sidelink simple in-coverage scenario
 
-Both the UEs are in-coverage of the eNB where UE1 sends the data to UE2 via Sidelink by using the resources assigned by the eNB. A user can configure the simulation time and the output of NS logs of the specified classes by using the corresponding global variables in the simulation script. For example, a user can run the simulation as follows::
+Both the UEs are in-coverage of the eNB where UE1 sends the data to UE2 via
+Sidelink by using the resources assigned by the eNB. A user can configure the
+simulation time and the output of NS logs of the specified classes by using the
+corresponding global variables in the simulation script. For example, a user can
+run the simulation as follows::
 
 ./waf --run "lte-sl-in-covrg-comm-mode1 --simTime=7 --enableNsLogs=false"
 
@@ -65,14 +88,16 @@ is provided.
 Configuration of LTE and Sidelink default parameters
 ----------------------------------------------------
 
-The simulation script begins with the configuration of the parameters of the Sidelink scheduler as follows.
+The simulation script begins with the configuration of the parameters of the
+Sidelink scheduler as follows.
  
 * Configure the Sidelink scheduler : ::
 
    Config::SetDefault ("ns3::RrSlFfMacScheduler::Itrp", UintegerValue (0));
    Config::SetDefault ("ns3::RrSlFfMacScheduler::SlGrantSize", UintegerValue (5));
 
-The ``ns3::RrSlFfMacScheduler`` is a very simple round robin scheduler, which uses a fixed TRP index value and number of RBs to be allocated to a UE.
+The ``ns3::RrSlFfMacScheduler`` is a very simple round robin scheduler, which
+uses a fixed TRP index value and number of RBs to be allocated to a UE.
 
    
 * Configure the frequency and the bandwidth : ::
@@ -173,12 +198,21 @@ Topology configuration
 Sidelink pool configuration
 ---------------------------
 
-This example simulates an in-coverage scenario, therefore, the eNB will be configured with a pre-configured dedicated Sidelink pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlEnbRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlEnbRrc`` as an indication that the Sidelink is enabled. It is configured as follows::
+This example simulates an in-coverage scenario, therefore, the eNB will be
+configured with a pre-configured dedicated Sidelink pool. As mentioned in
+:ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlEnbRrc`` class will be
+responsible for holding this per-configured pool configuration. The pool
+configuration starts by setting a flag in ``LteSlEnbRrc`` as an indication
+that the Sidelink is enabled. It is configured as follows::
 
    Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc> ();
    enbSidelinkConfiguration->SetSlEnabled (true);
 
-For configuring Sidelink parameters, the "setup" structure of the field "commTxResources-r12" of IE "SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++ structure. This example uses this structure to configure the pool parameters for Sidelink control. The pool configuration is done by using the ``LteSlPreconfigPoolFactory`` in the following manner, ::
+For configuring Sidelink parameters, the "setup" structure of the field
+"commTxResources-r12" of IE "SL-Preconfiguration" defined in the standard
+[TS36331]_ is converted into a C++ structure. This example uses this structure
+to configure the pool parameters for Sidelink control. The pool configuration is
+done by using the ``LteSlPreconfigPoolFactory`` in the following manner, ::
 
    
    LteRrcSap::SlCommTxResourcesSetup pool;
@@ -186,7 +220,7 @@ For configuring Sidelink parameters, the "setup" structure of the field "commTxR
    pool.setup = LteRrcSap::SlCommTxResourcesSetup::SCHEDULED;
    //BSR timers
    pool.scheduled.macMainConfig.periodicBsrTimer.period = 
-						LteRrcSap::PeriodicBsrTimer::sf16;
+                                              LteRrcSap::PeriodicBsrTimer::sf16;
    pool.scheduled.macMainConfig.retxBsrTimer.period = LteRrcSap::RetxBsrTimer::sf640;
    //MCS
    pool.scheduled.haveMcs = true;
@@ -210,9 +244,15 @@ For configuring Sidelink parameters, the "setup" structure of the field "commTxR
    enbSidelinkConfiguration->AddPreconfiguredDedicatedPool (groupL2Address, pool);
    lteHelper->InstallSidelinkConfiguration (enbDevs, enbSidelinkConfiguration);
 
-The resources for data are computed by the scheduler on the basis of the scheduler's attributes configured in the start of this simulation script and the above pool configuration.
+The resources for data are computed by the scheduler on the basis of the
+scheduler's attributes configured in the start of this simulation script and
+the above pool configuration.
 
-Similarly, for the UEs we need to enable the Sidelink in ``LteSlUeRrc`` by setting a flag and a pre-configuration object, which will be initialized with the pool configurations once the UE receives an ``RrcConnectionReconfiguration`` message from the eNB, as shown in Figures :ref:`fig-lte-sl-in-coverage-tx` and :ref:`fig-lte-sl-in-coverage-rx`::   
+Similarly, for the UEs we need to enable the Sidelink in ``LteSlUeRrc`` by
+setting a flag and a pre-configuration object, which will be initialized with
+the pool configurations once the UE receives an ``RrcConnectionReconfiguration``
+message from the eNB, as shown in Figures :ref:`fig-lte-sl-in-coverage-tx`
+and :ref:`fig-lte-sl-in-coverage-rx`::
 
   //pre-configuration for the UEs
   Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
@@ -242,7 +282,7 @@ Similarly, for the UEs we need to enable the Sidelink in ``LteSlUeRrc`` by setti
 
 The above configuration is similar to any usual LTE example with EPC. 
 
-* Attaching the UEs to the eNB : :: 
+* Attaching the UEs to the eNB : ::
 
    lteHelper->Attach (ueDevs);
 
@@ -269,9 +309,12 @@ The above configuration is similar to any usual LTE example with EPC.
    serverApps = sidelinkSink.Install (ueNodes.Get (1));
    serverApps.Start(Seconds (2.0));
 
-In this example, an "OnOff" application is installed in the UE 1, which sends a 200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE 2 is configured with the "PacketSink" application.
+In this example, an "OnOff" application is installed in the UE 1, which sends a
+200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE
+2 is configured with the "PacketSink" application.
 
-The Sidelink radio bearers are activated by calling the ``ActivateSidelinkBearer`` method of ``LteSidelinkHelper`` as follows: ::      
+The Sidelink radio bearers are activated by calling the ``ActivateSidelinkBearer``
+method of ``LteSidelinkHelper`` as follows: ::
 
    //Set Sidelink bearers
    Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, 
@@ -286,7 +329,8 @@ The ``ActivateSidelinkBearer`` method takes the following three parameters as in
 
     #. The Sidelink traffic flow template
 
-The ``tft`` in this example is an object of ``LteSlTft`` class created by initializing its following parameters,
+The ``tft`` in this example is an object of ``LteSlTft`` class created by
+initializing its following parameters,
 
     #. Direction of the bearer, i.e., "Transmit", "Receive" or Bidirectional
 
@@ -303,20 +347,26 @@ The ``tft`` in this example is an object of ``LteSlTft`` class created by initia
    lteHelper->EnableSlRxPhyTraces ();
    lteHelper->EnableSlPscchRxPhyTraces ();
 
-The above code will enable all the Sidelink related traces. We note that, the user can also use the classical function "LteHelper::EnableTraces ()", but this will also output the LTE traces.
+The above code will enable all the Sidelink related traces. We note that, the
+user can also use the classical function "LteHelper::EnableTraces ()", but this
+will also output the LTE traces.
 
-Upon the completion of the simulation, the following trace files can be found in the repository's root folder,
+Upon the completion of the simulation, the following trace files can be found in
+the repository's root folder,
 
 * SlUeMacStats.txt
 * SlSchUeMacStats.txt
 * SlPscchRxPhyStats.txt
 * SlRxPhyStats.txt
 
-For more information related to the above files please refer to the :ref:`sec-sidelink-simulation-output` section.
+For more information related to the above files please refer to the
+lte-user:ref:`sec-sidelink-simulation-output` section.
 
 * UePacketTrace.tr
 
-  The information in this file is obtained by using the traces "TxWithAddresses" and "RxWithAddresses" of  ``OnOff`` and ``PacketSink`` application, respectively. Following table shows the snippet of the data from this file for the two UEs,
+  The information in this file is obtained by using the traces "TxWithAddresses"
+  and "RxWithAddresses" of  ``OnOff`` and ``PacketSink`` application, respectively.
+  Following table shows the snippet of the data from this file for the two UEs,
 
   .. tabularcolumns:: |l|l|l|l|l|l|l|
   .. list-table:: UePacketTrace.tr
@@ -344,12 +394,23 @@ For more information related to the above files please refer to the :ref:`sec-si
      - 7.0.0.2:49153
      - 7.0.0.3:8000
 
-The first row shows that the UE 1 with node id 2 and IMSI 1 transmits a multicast packet of 200 bytes and the UE 2 receives the packet transmitted by the UE 1. As per the client's application data rate and ON time, i.e., 16 kb/s and 2 seconds, respectively, a total of 20 packets are sent and received by the transmitting and the receiving UE.
+The first row shows that the UE 1 with node id 2 and IMSI 1 transmits a multicast
+packet of 200 bytes and the UE 2 receives the packet transmitted by the UE 1.
+As per the client's application data rate and ON time, i.e., 16 kb/s and 2 seconds,
+respectively, a total of 20 packets are sent and received by the transmitting and
+the receiving UE.
 
 lte-sl-in-covrg-comm-mode2
 ++++++++++++++++++++++++++
 
-This example simulates an in-coverage MODE 2 ProSe communication using the same scenario :ref:`fig-lte-sl-simple-scenario`, used for previous example. The only difference is that the resources are not scheduled by the eNB, instead, the UE 1 selects the resources autonomously from a pool specified by the eNB through ``RrcConnectionReconfiguration`` message. Besides using the same scenario, this example also has the same application, therefore, in the following, we will discuss only those configurations, which are MODE 2 specific. A user can run the simulation as follows::
+This example simulates an in-coverage MODE 2 ProSe communication using the same
+scenario :ref:`fig-lte-sl-simple-scenario`, used for previous example. The only
+difference is that the resources are not scheduled by the eNB, instead, the UE
+1 selects the resources autonomously from a pool specified by the eNB through
+``RrcConnectionReconfiguration`` message. Besides using the same scenario, this
+example also has the same application, therefore, in the following, we will
+discuss only those configurations, which are MODE 2 specific. A user can run the
+simulation as follows::
 
 ./waf --run "lte-sl-in-covrg-comm-mode2 --simTime=7 --enableNsLogs=false"
 
@@ -372,7 +433,10 @@ Configuration of LTE and Sidelink default parameters
    //use default Trp index of 0 
    Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (true));
 
-The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e., frame/subframe) and the frequency (i.e., RBs) resources autonomously. If the attribute "UseSetTrp" is false, a UE will select the TRP index randomly from the range of values depending on the KTRP value [TS36213]_.
+The above parameters of ``LteUeMac`` class enable the UE to select the time
+(i.e., frame/subframe) and the frequency (i.e., RBs) resources autonomously. If
+the attribute "UseSetTrp" is false, a UE will select the TRP index randomly from
+the range of values depending on the KTRP value [TS36213]_.
 
 * Configure the error models : ::
 
@@ -387,7 +451,12 @@ The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e
    Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
 							BooleanValue (false));
 
-Along with the error model configuration, by setting the "DropRbOnCollisionEnabled" attribute all the TBs collided in time and frequency are dropped. This attribute could be of particular interest for the users, e.g., to study the impact of collisions in MODE 2. In this example, this attribute has no impact as only one UE is acting as a transmitter. It is included just to make the users aware of this attribute.
+Along with the error model configuration, by setting the "DropRbOnCollisionEnabled"
+attribute all the TBs collided in time and frequency are dropped. This attribute
+could be of particular interest for the users, e.g., to study the impact of
+collisions in MODE 2. In this example, this attribute has no impact as only one
+UE is acting as a transmitter. It is included just to make the users aware of
+this attribute.
 
 Topology configuration
 ----------------------
@@ -398,7 +467,9 @@ Topology configuration
 Sidelink pool configuration
 ---------------------------
 
-The Sidelink pool configuration is similar to the MODE 1 configuration, e.g., the configuration for Sidelink control is the same. However, the following additional configurations are needed for in-coverage MODE 2. ::
+The Sidelink pool configuration is similar to the MODE 1 configuration, e.g.,
+the configuration for Sidelink control is the same. However, the following
+additional configurations are needed for in-coverage MODE 2. ::
 
   LteRrcSap::SlCommTxResourcesSetup pool;
 
@@ -415,14 +486,28 @@ The Sidelink pool configuration is similar to the MODE 1 configuration, e.g., th
   pfactory.SetDataPrbStart(0);
   pfactory.SetDataPrbEnd(49);
 
-Compared to MODE 1, the pool resources are now indicated as "UE_SELECTED" along with other parameters. Moreover, now we need to configure the pool parameters related to the data, i.e., PSSCH. In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2 introduces another level of subframe filtering for the subframe pool via "DataBitmap" to limit the number of possible values for iTRP. The PSSCH transmission occurs on the filtered subframes after applying TRP bitmap on this "DataBitmap". Users interested to learn about how it is done are referred to :ref:`SidelinkCommPoolPsschTestCase`.
+Compared to MODE 1, the pool resources are now indicated as "UE_SELECTED" along
+with other parameters. Moreover, now we need to configure the pool parameters
+related to the data, i.e., PSSCH. In addition to the subframe indicator bitmap
+specified by KTRP and iTRP, Mode 2 introduces another level of subframe
+filtering for the subframe pool via "DataBitmap" to limit the number of possible
+values for iTRP. The PSSCH transmission occurs on the filtered subframes after
+applying TRP bitmap on this "DataBitmap". Users interested to learn about how it
+is done are referred to :ref:`SidelinkCommPoolPsschTestCase`.
 
-Finally, at the end of the simulation the trace files, similar to the previous example, can be found in the repository's root folder. One important difference, compared to MODE 1, is that in the trace files "SlUeMacStats.txt" and "SlPscchRxPhyStats.txt" the parameters, e.g., PSCCH resource index and the starting RB for PSSCH are randomly selected by the UE for every SC period. Furthermore, a similar amount of packets, i.e. 20, are sent and received by the UEs.
+Finally, at the end of the simulation the trace files, similar to the previous
+example, can be found in the repository's root folder. One important difference,
+compared to MODE 1, is that in the trace files "SlUeMacStats.txt" and
+"SlPscchRxPhyStats.txt" the parameters, e.g., PSCCH resource index and the
+starting RB for PSSCH are randomly selected by the UE for every SC period.
+Furthermore, a similar amount of packets, i.e. 20, are sent and received by the
+UEs.
 
 lte-sl-out-of-covrg-comm
 ++++++++++++++++++++++++
 
-This example simulates an out-of-coverage MODE 2 ProSe communication by using the following scenario.  
+This example simulates an out-of-coverage MODE 2 ProSe communication by using
+the following scenario.
 
 .. _fig-lte-sl-simple-OofCovrg-scenario:
  
@@ -431,7 +516,9 @@ This example simulates an out-of-coverage MODE 2 ProSe communication by using th
 
    Sidelink simple out-of-coverage scenario
 
-This example allows a user to configure the simulation time and the output of NS logs of the specified classes by using the corresponding global variables in the simulation script. For example, a user can run the simulation as follows::
+This example allows a user to configure the simulation time and the output of NS
+logs of the specified classes by using the corresponding global variables in the
+simulation script. For example, a user can run the simulation as follows::
 
 ./waf --run "lte-sl-out-of-covrg-comm --simTime=7 --enableNsLogs=false"
 
@@ -454,14 +541,24 @@ Configuration of LTE and Sidelink default parameters
    //use default Trp index of 0 
    Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (true));
 
-The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e., frame/subframe) and the frequency (i.e., RBs) resources autonomously. If the attribute "UseSetTrp" is false, a UE will select the TRP index randomly from the range of values depending on the KTRP value [TS36213]_.
+The above parameters of ``LteUeMac`` class enable the UE to select the time
+(i.e., frame/subframe) and the frequency (i.e., RBs) resources autonomously. If
+the attribute "UseSetTrp" is false, a UE will select the TRP index randomly from
+the range of values depending on the KTRP value [TS36213]_.
 
 * Configure the frequency : ::
 
    uint32_t ulEarfcn = 18100;
    uint16_t ulBandwidth = 50;
 
-  Here, it is not necessary to configure the EARFCNs and the bandwidth of the UE and eNB for the two reasons. First, in this example we will not instantiate the eNB node, thus, setting these attributes would have no impact. Second, both the UEs will use only the Sidelink to communicate, therefore, the EARFCN and the bandwidth are specified in the pool configuration. At this stage, the above two variables are initialized to be used later to configure the pathloss model and the Sidelink pool. Similar, to the previous simple examples, we use the LTE Band 1 for Sidelink communication.
+  Here, it is not necessary to configure the EARFCNs and the bandwidth of the UE
+  and eNB for the two reasons. First, in this example we will not instantiate
+  the eNB node, thus, setting these attributes would have no impact. Second,
+  both the UEs will use only the Sidelink to communicate, therefore, the EARFCN
+  and the bandwidth are specified in the pool configuration. At this stage, the
+  above two variables are initialized to be used later to configure the pathloss
+  model and the Sidelink pool. Similar, to the previous simple examples, we use
+  the LTE Band 1 for Sidelink communication.
 
 * Configure the error models : ::
 
@@ -476,7 +573,12 @@ The above parameters of ``LteUeMac`` class enable the UE to select the time (i.e
    Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", 
 							BooleanValue (false));
 
-Along with the error model configuration, by setting the "DropRbOnCollisionEnabled" attribute all the TBs collided in time and frequency are dropped. This attribute could be of particular interest for the users, e.g., to study the impact of collisions in MODE 2. In this example, this attribute has no impact as only one UE is acting as a transmitter. It is included just to make the users aware of this attribute.
+Along with the error model configuration, by setting the
+"DropRbOnCollisionEnabled" attribute all the TBs collided in time and frequency
+are dropped. This attribute could be of particular interest for the users, e.g.,
+to study the impact of collisions in MODE 2. In this example, this attribute has
+no impact as only one UE is acting as a transmitter. It is included just to make
+the users aware of this attribute.
 
 * Configure the transmit power for the UEs : ::
 
@@ -530,7 +632,13 @@ Topology configuration
        }
 
 
-The use of eNB nodes can be bypassed by using the above commands strictly in the order they are listed. The command "lteHelper->Initialize ()" basically performs the channel model initialization of all the component carriers. Therefore, it is necessary to configure any desired pathloss model before issuing this command. The commands in step 3 are to properly configure the frequency attribute of the pathloss model used, which is normally done in ``InstallSingleEnb`` method of ``LteHelper``.
+The use of eNB nodes can be bypassed by using the above commands strictly in the
+order they are listed. The command "lteHelper->Initialize ()" basically performs
+the channel model initialization of all the component carriers. Therefore, it is
+necessary to configure any desired pathloss model before issuing this command.
+The commands in step 3 are to properly configure the frequency attribute of the
+pathloss model used, which is normally done in ``InstallSingleEnb`` method of
+``LteHelper``.
 
 * Creating the UE nodes and setting their mobility : ::
 
@@ -562,12 +670,22 @@ The use of eNB nodes can be bypassed by using the above commands strictly in the
 Sidelink pool configuration
 ---------------------------
 
-This example simulates an out-of-coverage scenario, therefore, both the UEs are configured with a pre-configured Sidelink communication pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that the Sidelink is enabled. It is configured as follows::
+This example simulates an out-of-coverage scenario, therefore, both the UEs are
+configured with a pre-configured Sidelink communication pool. As mentioned in
+:ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be
+responsible for holding this per-configured pool configuration. The pool
+configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that
+the Sidelink is enabled. It is configured as follows::
 
  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
  ueSidelinkConfiguration->SetSlEnabled (true);
 
-For configuring Sidelink communication pre-configured pool parameters, the IE "SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++ structure and similar to the basic LTE layer 3 messages it can be found in ``LteRrcSap`` class. This example uses this structure to configure the Sidelink communication pool parameters. The pool configuration is done by using the ``LteSlPreconfigPoolFactory`` in the following manner, ::
+For configuring Sidelink communication pre-configured pool parameters, the IE
+"SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++
+structure and similar to the basic LTE layer 3 messages it can be found in
+``LteRrcSap`` class. This example uses this structure to configure the Sidelink
+communication pool parameters. The pool configuration is done by using the
+``LteSlPreconfigPoolFactory`` in the following manner, ::
 
   LteRrcSap::SlPreconfiguration preconfiguration;
 
@@ -597,7 +715,12 @@ For configuring Sidelink communication pre-configured pool parameters, the IE "S
   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
-In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2 introduces another level of subframe filtering for the subframe pool via "DataBitmap" to limit the number of possible values for iTRP. The PSSCH transmission occurs on the filtered subframes after applying TRP bitmap on this "DataBitmap". Users interested to learn about how it is applied are referred to :ref:`SidelinkCommPoolPsschTestCase`.
+In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2
+introduces another level of subframe filtering for the subframe pool via
+"DataBitmap" to limit the number of possible values for iTRP. The PSSCH
+transmission occurs on the filtered subframes after applying TRP bitmap on this
+"DataBitmap". Users interested to learn about how it is applied are referred to
+:ref:`SidelinkCommPoolPsschTestCase`.
 
 * Installing the IP stack on the UEs and assigning IP addresses (IPv4
   code statements shown below) : ::
@@ -640,9 +763,12 @@ In addition to the subframe indicator bitmap specified by KTRP and iTRP, Mode 2 
    serverApps = sidelinkSink.Install (ueNodes.Get (1));
    serverApps.Start(Seconds (2.0));
 
-In this example, an "OnOff" application is installed in the UE 1, which sends a 200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE 2 is configured with the "PacketSink" application.
+In this example, an "OnOff" application is installed in the UE 1, which sends a
+200 byte packet with the constant bit rate of 16 kb/s. On the other hand, the UE
+2 is configured with the "PacketSink" application.
 
-The Sidelink radio bearers are activated by calling the ``ActivateSidelinkBearer`` method of ``LteSidelinkHelper`` as follows: ::      
+The Sidelink radio bearers are activated by calling the
+``ActivateSidelinkBearer`` method of ``LteSidelinkHelper`` as follows: ::
 
    //Set Sidelink bearers
    Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL,
@@ -657,7 +783,8 @@ The ``ActivateSidelinkBearer`` method takes the following three parameters as in
 
     #. The Sidelink traffic flow template
 
-The ``tft`` in this example is an object of ``LteSlTft`` class created by initializing its following parameters,
+The ``tft`` in this example is an object of ``LteSlTft`` class created by
+initializing its following parameters,
 
     #. Direction of the bearer, i.e., "Transmit", "Receive" or Bidirectional
 
@@ -676,18 +803,23 @@ The ``tft`` in this example is an object of ``LteSlTft`` class created by initia
 
 The above code will enable all the Sidelink related traces.
 
-Upon the completion of the simulation, the following trace files can be found in the repository's root folder,
+Upon the completion of the simulation, the following trace files can be found in
+the repository's root folder,
 
 * SlUeMacStats.txt
 * SlSchUeMacStats.txt
 * SlPscchRxPhyStats.txt
 * SlRxPhyStats.txt
 
-For more information related to the above files please refer to the :ref:`sec-sidelink-simulation-output` section.
+For more information related to the above files please refer to the
+lt-user:ref:`sec-sidelink-simulation-output` section.
 
 * UePacketTrace.tr
 
-  The information in this file is obtained by using the traces "TxWithAddresses" and "RxWithAddresses" of  ``OnOff`` and ``PacketSink`` application, respectively. Following table shows the snippet of the data from this file for the two UEs,
+  The information in this file is obtained by using the traces "TxWithAddresses"
+  and "RxWithAddresses" of ``OnOff`` and ``PacketSink`` application,
+  respectively. Following table shows the snippet of the data from this file for
+  the two UEs,
 
   .. tabularcolumns:: |l|l|l|l|l|l|l|
   .. list-table:: UePacketTrace.tr
@@ -715,20 +847,34 @@ For more information related to the above files please refer to the :ref:`sec-si
      - 7.0.0.2:49153
      - 7.0.0.3:8000
 
-The first row shows that the UE 1 with node id 1 and IMSI 1 transmits a multicast packet of 200 bytes and the UE 2 receives the packet transmitted by the UE 1. As per the client's application data rate and ON time, i.e., 16 kb/s and 2 seconds, respectively, a total of 20 packets are sent and received by the transmitting and the receiving UE.
+The first row shows that the UE 1 with node id 1 and IMSI 1 transmits a
+multicast packet of 200 bytes and the UE 2 receives the packet transmitted by
+the UE 1. As per the client's application data rate and ON time, i.e., 16 kb/s
+and 2 seconds, respectively, a total of 20 packets are sent and received by the
+transmitting and the receiving UE.
 
 
-In the following we will discuss the detailed examples mentioned above, however, we will mainly discuss about the topology and the Sidelink configuration, since the example scripts already contain the details of the default attributes and also, most of them are already covered by the previous examples.
+In the following we will discuss the detailed examples mentioned above, however,
+we will mainly discuss about the topology and the Sidelink configuration, since
+the example scripts already contain the details of the default attributes and
+also, most of them are already covered by the previous examples.
 
 wns3-2017-synch
 +++++++++++++++
 
-The scenario in this example is composed of 1 hexagonal cell site divided into 3 sectors. Each sector has 1 UE, i.e., 3 in total, which are randomly dropped. These UEs are then grouped in a single group by choosing randomly one UE as a transmitter while the other 2 UEs act as receivers.
+The scenario in this example is composed of 1 hexagonal cell site divided into 3
+sectors. Each sector has 1 UE, i.e., 3 in total, which are randomly dropped.
+These UEs are then grouped in a single group by choosing randomly one UE as a
+transmitter while the other 2 UEs act as receivers.
 
 Topology configuration
 ----------------------
 
-In the following, we walk through the example line by line and discuss each important topology configuration. However, some configuration parameters are skipped, which are already elaborated in the previous sections of LTE. Therefore, it is highly recommended for the new users to go through the basic LTE configuration before digging into D2D examples.
+In the following, we walk through the example line by line and discuss each
+important topology configuration. However, some configuration parameters are
+skipped, which are already elaborated in the previous sections of LTE.
+Therefore, it is highly recommended for the new users to go through the basic
+LTE configuration before digging into D2D examples.
 
 .. highlight:: none
 
@@ -737,7 +883,12 @@ In the following, we walk through the example line by line and discuss each impo
    Config::SetDefault ("ns3::LteUePhy::UeRandomInitialSubframeIndication",
                                                           BooleanValue (unsyncSl));
 
-As mentioned in the design documentation :ref:`sec-lte-sl-ue-phy-sync`, by default all the UEs are perfectly synchronized, i.e., all the UEs in a simulation upon being initialized pick the same frame and subframe 1 to start with. Therefore, to simulate synchronization and to make every UE to pick a random frame and subframe number the attribute "UeRandomInitialSubframeIndication" should be set.
+As mentioned in the design documentation :ref:`sec-lte-sl-ue-phy-sync`, by
+default all the UEs are perfectly synchronized, i.e., all the UEs in a
+simulation upon being initialized pick the same frame and subframe 1 to start
+with. Therefore, to simulate synchronization and to make every UE to pick a
+random frame and subframe number the attribute
+"UeRandomInitialSubframeIndication" should be set.
 
 * Instantiating ``LteSidelinkHelper`` and setting ``LteHelper`` : ::
 
@@ -763,14 +914,18 @@ As mentioned in the design documentation :ref:`sec-lte-sl-ue-phy-sync`, by defau
     topoHelper->SetMinimumDistance (10); // in meter
     topoHelper->SetSiteHeight (32); // in meter
 
-The code above will set the parameters to build 1 ring, i.e., 1 hexagonal site, which will have 500 meters of inter-site distance between the sites, if the number of rings is more than 1. The minimum distance between an eNB and the UEs is set to 10 m and the eNB is at the height of 32 m above the ground.
+The code above will set the parameters to build 1 ring, i.e., 1 hexagonal site,
+which will have 500 meters of inter-site distance between the sites, if the
+number of rings is more than 1. The minimum distance between an eNB and the UEs
+is set to 10 m and the eNB is at the height of 32 m above the ground.
 
 * Creating eNB nodes : ::
 
     NodeContainer sectorNodes;
     sectorNodes.Create (topoHelper->GetNumNodes ());
 
-Call to ``topoHelper->GetNumNodes ()`` will return 3, which in turns would create 3 sector nodes, since, it requires 3 eNBs to cover one hexagon.
+Call to ``topoHelper->GetNumNodes ()`` will return 3, which in turns would
+create 3 sector nodes, since, it requires 3 eNBs to cover one hexagon.
 
 * Fixing eNB mobility and installing eNB devices : ::
 
@@ -780,7 +935,16 @@ Call to ``topoHelper->GetNumNodes ()`` will return 3, which in turns would creat
     NetDeviceContainer enbDevs = topoHelper->
                                       SetPositionAndInstallEnbDevice (sectorNodes);
 
-The call ``SetPositionAndInstallEnbDevice`` will compute the position of each site and the antenna orientation of each eNB. The antenna orientation of each eNB in a hexagon is 30, 150 and 270 degrees, respectively [TS25814]_ [TR36814]_. As mentioned before, even if the eNB PHY is disabled, the hexagonal topology requires to instantiate the eNB nodes to form the sectors of an hexagon. It is also to be noted that the use of antenna models, e.g., ``Parabolic3dAntennaModel``, ``ParabolicAntennaModel``, or ``CosineAntennaModel`` is needed to configure antenna orientation. Moreover, the function ``SetPositionAndInstallEnbDevice`` is also responsible to call ``InstallEnbDevice`` of ``LteHelper`` for each eNB in this scenario.
+The call ``SetPositionAndInstallEnbDevice`` will compute the position of each
+site and the antenna orientation of each eNB. The antenna orientation of each
+eNB in a hexagon is 30, 150 and 270 degrees, respectively [TS25814]_ [TR36814]_.
+As mentioned before, even if the eNB PHY is disabled, the hexagonal topology
+requires to instantiate the eNB nodes to form the sectors of an hexagon. It is
+also to be noted that the use of antenna models, e.g.,
+``Parabolic3dAntennaModel``, ``ParabolicAntennaModel``, or
+``CosineAntennaModel`` is needed to configure antenna orientation. Moreover, the
+function ``SetPositionAndInstallEnbDevice`` is also responsible to call
+``InstallEnbDevice`` of ``LteHelper`` for each eNB in this scenario.
 
 * Creating UE nodes : ::
 
@@ -803,7 +967,11 @@ This will create 3 UE nodes in total, 1 for each sector of hexagonal site.
     mobilityResponders.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
     topoHelper->DropUEsUniformlyPerSector (ueResponders);
 
-This will place 1 UE per sector by choosing their position randomly with in the sector, taking into account the configured minimum eNB to UE distance of 10 m. This will also install the UE devices by calling ``InstallUeDevice`` of ``LteHelper``. The installation of the IP stack and IP address assignment is done in a similar fashion as explain in :ref:`sec-evolved-packet-core`
+This will place 1 UE per sector by choosing their position randomly with in the
+sector, taking into account the configured minimum eNB to UE distance of 10 m.
+This will also install the UE devices by calling ``InstallUeDevice`` of
+``LteHelper``. The installation of the IP stack and IP address assignment is
+done in a similar fashion as explain in lte-design:ref:`sec-evolved-packet-core`
 
 * Creating groups of UEs : ::
 
@@ -819,9 +987,20 @@ This will place 1 UE per sector by choosing their position randomly with in the 
                                                                         SLRSRP_PSBCH);
 
 
-The ``AssociateForBroadcast`` function will basically form the specified number of groups, i.e., 1 in this example, by choosing the transmitting UE randomly from the total number of UEs. After choosing the transmitting UE, the receiving UEs of the group are selected if the Sidelink RSRP, calculated as per the method defined in [TS36214]_, between the transmitting UE and the receiving UE is higher than -112 dBm. In this example, UE node 4 with IMSI 1 is selected as a transmitter while remaining 2 UEs will act as receivers. It is to be noted that ``AssociateForBroadcast`` is only responsible for forming the groups and not installing any application.
+The ``AssociateForBroadcast`` function will basically form the specified number
+of groups, i.e., 1 in this example, by choosing the transmitting UE randomly
+from the total number of UEs. After choosing the transmitting UE, the receiving
+UEs of the group are selected if the Sidelink RSRP, calculated as per the method
+defined in [TS36214]_, between the transmitting UE and the receiving UE is
+higher than -112 dBm. In this example, UE node 4 with IMSI 1 is selected as a
+transmitter while remaining 2 UEs will act as receivers. It is to be noted that
+``AssociateForBroadcast`` is only responsible for forming the groups and not
+installing any application.
 
-All the UEs in a group are stored in a ``NetDeviceContainer``, such that the first UE in this container is the transmitter of the group. Finally, this ``NetDeviceContainer`` is stored in a vector (createdgroups), which is used to install appropriate application in UE devices.
+All the UEs in a group are stored in a ``NetDeviceContainer``, such that the
+first UE in this container is the transmitter of the group. Finally, this
+``NetDeviceContainer`` is stored in a vector (createdgroups), which is used to
+install appropriate application in UE devices.
 
 * Installing applications and activating Sidelink radio bearers : ::
 
@@ -878,22 +1057,41 @@ All the UEs in a group are stored in a ``NetDeviceContainer``, such that the fir
                                        clientPacketSinkHelper.Install (ueResponders);
 
 
-In the previous step we obtained the vector ``createdgroups``, containing a group formed by one transmitter UE and 2 receiver UEs. Now, it is easy to anticipate that the client application will be installed in the transmitter UE and the receiver UEs will have server application. In this example, a user can configure any of the two client applications, i.e., ``OnOff`` and ``UdpEchoClientApplication``, where the later one is the default client application.
+In the previous step we obtained the vector ``createdgroups``, containing a
+group formed by one transmitter UE and 2 receiver UEs. Now, it is easy to
+anticipate that the client application will be installed in the transmitter UE
+and the receiver UEs will have server application. In this example, a user can
+configure any of the two client applications, i.e., ``OnOff`` and
+``UdpEchoClientApplication``, where the later one is the default client
+application.
 
-The Sidelink radio bearers for Tx (for transmitting UE) and Rx (for receiving UEs) are activated by calling the `ActivateSidelinkBearer`` method of ``LteSidelinkHelper``.
+The Sidelink radio bearers for Tx (for transmitting UE) and Rx (for receiving
+UEs) are activated by calling the `ActivateSidelinkBearer`` method of
+``LteSidelinkHelper``.
 
-Finally, a ``PacketSink`` application is installed as a server application in the receiving UEs.
+Finally, a ``PacketSink`` application is installed as a server application in
+the receiving UEs.
 
 
 Sidelink pool configuration
 ---------------------------
 
-This example simulates an out-of-coverage scenario, therefore, all the UEs will be configured with a pre-configured Sidelink pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that the Sidelink is enabled. It is configured as follows::
+This example simulates an out-of-coverage scenario, therefore, all the UEs will
+be configured with a pre-configured Sidelink pool. As mentioned in
+:ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be
+responsible for holding this per-configured pool configuration. The pool
+configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that
+the Sidelink is enabled. It is configured as follows::
 
  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
  ueSidelinkConfiguration->SetSlEnabled (true);
 
-For configuring Sidelink pre-configured pool parameters, the IE "SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++ structure and similar to the basic LTE layer 3 messages it can be found in ``LteRrcSap`` class. This example uses this structure to configure the Sidelink pool parameters for control, data and synchronization in the following manner, ::
+For configuring Sidelink pre-configured pool parameters, the IE
+"SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++
+structure and similar to the basic LTE layer 3 messages it can be found in
+``LteRrcSap`` class. This example uses this structure to configure the Sidelink
+pool parameters for control, data and synchronization in the following manner,
+::
 
  LteRrcSap::SlPreconfiguration preconfiguration;
 
@@ -944,17 +1142,26 @@ For configuring Sidelink pre-configured pool parameters, the IE "SL-Preconfigura
  preconfiguration.preconfigSync.filterCoefficient = filterCoefficient;
 
 
-Finally, the configured pool is stored in ``LteSlUeRrc`` class by calling ``SetSlPreconfiguration`` function ::
+Finally, the configured pool is stored in ``LteSlUeRrc`` class by calling
+``SetSlPreconfiguration`` function ::
 
  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
 
-Then, by calling the ``InstallSidelinkConfiguration`` method of ``LteHelper`` class it configures the ``LteUeRrc`` attribute named "SidelinkConfiguration" of a UE, which is nothing but a pointer to the ``LteSlUeRrc`` object used to configure the pool::
+Then, by calling the ``InstallSidelinkConfiguration`` method of ``LteHelper``
+class it configures the ``LteUeRrc`` attribute named "SidelinkConfiguration" of
+a UE, which is nothing but a pointer to the ``LteSlUeRrc`` object used to
+configure the pool::
 
  lteHelper->InstallSidelinkConfiguration (ueRespondersDevs, ueSidelinkConfiguration);
 
-This interaction of classes to populate the Sidelink pool is also depicted in :ref:`fig-lte-sl-pool-config`.
+This interaction of classes to populate the Sidelink pool is also depicted in
+:ref:`fig-lte-sl-pool-config`.
 
-Alternatively, the pool configuration for control and data can also be done in a semi-automatic way by using the ``LteSlPreconfigPoolFactory``. This would ease the configuration of the pool by only changing the parameters of interest and leaving the rest as default. For example, the above configuration can also be done as follows, ::
+Alternatively, the pool configuration for control and data can also be done in a
+semi-automatic way by using the ``LteSlPreconfigPoolFactory``. This would ease
+the configuration of the pool by only changing the parameters of interest and
+leaving the rest as default. For example, the above configuration can also be
+done as follows, ::
 
  preconfiguration.preconfigGeneral.carrierFreq = 23330;
  preconfiguration.preconfigGeneral.slBandwidth = 50;
@@ -984,24 +1191,32 @@ Alternatively, the pool configuration for control and data can also be done in a
  lteHelper->InstallSidelinkConfiguration (ueRespondersDevs, ueSidelinkConfiguration);
 
 
-Upon the completion of the simulation, the information related to the topology and the data related to the synchronization process gathered through the traces is written to the following files,
+Upon the completion of the simulation, the information related to the topology
+and the data related to the synchronization process gathered through the traces
+is written to the following files,
 
  * nPositions.txt
 
-   This file stores the position of all the nodes, i.e., eNBs and the UEs in the simulation.
+   This file stores the position of all the nodes, i.e., eNBs and the UEs in the
+   simulation.
 
  * prose-connections.txt
 
-   This file stores the information, e.g., Node id, and IMSI of the transmitting and the corresponding receiving UEs.
+   This file stores the information, e.g., Node id, and IMSI of the transmitting
+   and the corresponding receiving UEs.
 
  * FirstScan.txt
 
-   This file stores the start time (in ms) of the first scanning period and the IMSI of each UE nodes. The start time for each UE is randomly chosen between 2000 ms and 4000 ms defined by the variables "firstScanTimeMin" and "firstScanTimeMax" in the simulation script.
+   This file stores the start time (in ms) of the first scanning period and the
+   IMSI of each UE nodes. The start time for each UE is randomly chosen between
+   2000 ms and 4000 ms defined by the variables "firstScanTimeMin" and
+   "firstScanTimeMax" in the simulation script.
 
 
  * SyncRef.txt
 
-   The information in this file is gathered by listening to the trace "ChangeOfSyncRef" of ``LteUeRrc``.
+   The information in this file is gathered by listening to the trace
+   "ChangeOfSyncRef" of ``LteUeRrc``.
 
   .. tabularcolumns:: |l|l|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|
   .. list-table:: SyncRef.txt
@@ -1116,11 +1331,20 @@ Upon the completion of the simulation, the information related to the topology a
      - 0
      - 0
 
-  It is to be noted that the data in first and last three rows of above table are written by this simulation script to mark the start and end of the simulation. From row 4 we can observe that the UE with IMSI 1 becomes the SyncRef, this can be deduced by looking at its SLSS-ID, which is ``SLSS-ID = IMSI * 10`` as explained in :ref:`sec-lte-sl-rrc`. On the other hand, UEs with IMSI 2 and 3 selects IMSI 1 as their SyncRef and use the same SLSS-ID, as shown in row 5 and 6.
+  It is to be noted that the data in first and last three rows of above table
+  are written by this simulation script to mark the start and end of the
+  simulation. From row 4 we can observe that the UE with IMSI 1 becomes the
+  SyncRef, this can be deduced by looking at its SLSS-ID, which is ``SLSS-ID =
+  IMSI * 10`` as explained in :ref:`sec-lte-sl-rrc`. On the other hand, UEs with
+  IMSI 2 and 3 selects IMSI 1 as their SyncRef and use the same SLSS-ID, as shown
+  in row 5 and 6.
 
  * pscr-ue-pck.tr
 
-   The information in this file is obtained by using the traces "TxWithAddresses" and "RxWithAddresses" of  ``UdpEchoClient`` and ``PacketSink`` application respectively. Following table shows the snippet of data from this file for all the three UEs,
+   The information in this file is obtained by using the traces
+   "TxWithAddresses" and "RxWithAddresses" of ``UdpEchoClient`` and ``PacketSink``
+   application respectively. Following table shows the snippet of data from this
+   file for all the three UEs,
 
   .. tabularcolumns:: |l|l|l|l|l|l|l|l|
   .. list-table:: pscr-ue-pck.tr
@@ -1159,11 +1383,15 @@ Upon the completion of the simulation, the information related to the topology a
      - 7.0.0.2:49153
      - 7.0.0.4:8000
 
-The first row shows that the first UE with node id 4 and IMSI 1 acts as a transmitter and sends a multicast packet of 40 bytes. Similarly, the other two UEs act as receiver and receive the packet transmitted by the first UE.
+The first row shows that the first UE with node id 4 and IMSI 1 acts as a
+transmitter and sends a multicast packet of 40 bytes. Similarly, the other two
+UEs act as receiver and receive the packet transmitted by the first UE.
 
  * TxSlss.txt
 
-   This file stores the information gathered by listening to the trace "SendSLSS" of ``LteUeRrc``. Following is the snippet of the information stored in this file.
+   This file stores the information gathered by listening to the trace
+   "SendSLSS" of ``LteUeRrc``. Following is the snippet of the information
+   stored in this file.
 
   .. tabularcolumns:: |l|l|l|l|l|l|l|
   .. list-table:: TxSlss.txt
@@ -1205,17 +1433,33 @@ The first row shows that the first UE with node id 4 and IMSI 1 acts as a transm
      - 998
      - 9
 
-It can be observed that UE with IMSI 1 being a SyncRef is transmitting SLSS with a fixed periodicity of 40 ms. Moreover, at the time when this UE chose to become a SyncRef it randomly selects one of the two configured offsets, i.e., syncOffsetIndicator1 and syncOffsetIndicator2. In this example, it has selected syncOffsetIndicator2, which is set to 29 ms.
+It can be observed that UE with IMSI 1 being a SyncRef is transmitting SLSS with
+a fixed periodicity of 40 ms. Moreover, at the time when this UE chose to become
+a SyncRef it randomly selects one of the two configured offsets, i.e.,
+syncOffsetIndicator1 and syncOffsetIndicator2. In this example, it has selected
+syncOffsetIndicator2, which is set to 29 ms.
 
 wns3-2017-discovery
 +++++++++++++++++++
 
-This example deploys 10 out-of-coverage UEs, distributed randomly within an area of 100 m x 100 m. This example script also illustrates how an out-of-coverage Sidelink related simulation can be performed without instantiating the eNB nodes.
+This example deploys 10 out-of-coverage UEs, distributed randomly within an area
+of 100 m x 100 m. This example script also illustrates how an out-of-coverage
+Sidelink related simulation can be performed without instantiating the eNB
+nodes.
 
 Topology configuration
 ----------------------
 
-Compared to the topology of the synchronization example that we discussed before, this example is very simple. For instance, it does not use hexagonal topology or form groups of UEs, i.e, it does not use ``Lte3gppHexGridEnbTopologyHelper`` and ``LteSidelinkHelper``. The ``LteHelper`` and ``PointToPointEpcHelper`` are initialized in the same way like any other LTE example with EPC. Also, the call to disable the eNB PHY can also be skipped, since it does not instantiates the eNB nodes. Moreover, this example only focuses on simulating ProSe out-of-coverage discovery, therefore, there is no need to configure the IP of the UEs since discovery is purely a MAC layer application where the messages are filtered on the basis of ProSeAppCode.
+Compared to the topology of the synchronization example that we discussed
+before, this example is very simple. For instance, it does not use hexagonal
+topology or form groups of UEs, i.e, it does not use
+``Lte3gppHexGridEnbTopologyHelper`` and ``LteSidelinkHelper``. The ``LteHelper``
+and ``PointToPointEpcHelper`` are initialized in the same way like any other LTE
+example with EPC. Also, the call to disable the eNB PHY can also be skipped,
+since it does not instantiates the eNB nodes. Moreover, this example only
+focuses on simulating ProSe out-of-coverage discovery, therefore, there is no
+need to configure the IP of the UEs since discovery is purely a MAC layer
+application where the messages are filtered on the basis of ProSeAppCode.
 
 The first Sidelink related configuration in this example is to enable the Sidelink.
 
@@ -1253,7 +1497,13 @@ The first Sidelink related configuration in this example is to enable the Sideli
        }
 
 
-The use of eNB nodes can be bypassed by using the above commands strictly in the order they are listed. The command "lteHelper->Initialize ()" basically performs the channel model initialization of all the component carriers. Therefore, it is necessary to configure any desired pathloss model before issuing this command. The commands in step 3 are to properly configure the frequency attribute of the pathloss model used, which is normally done in ``InstallSingleEnb`` method of ``LteHelper``.
+The use of eNB nodes can be bypassed by using the above commands strictly in the
+order they are listed. The command "lteHelper->Initialize ()" basically performs
+the channel model initialization of all the component carriers. Therefore, it is
+necessary to configure any desired pathloss model before issuing this command.
+The commands in step 3 are to properly configure the frequency attribute of the
+pathloss model used, which is normally done in ``InstallSingleEnb`` method of
+``LteHelper``.
 
 * Creating the UE node, fixing their mobility, and installing UE devices : ::
 
@@ -1282,7 +1532,9 @@ The use of eNB nodes can be bypassed by using the above commands strictly in the
 
    NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ues);
 
-The above commands will simply create 10 UEs and position each UE at a random location in an area of 100 m x 100 m. The UE devices are installed in a usual way by calling ``InstallUeDevice`` of ``LteHelper`` class.
+The above commands will simply create 10 UEs and position each UE at a random
+location in an area of 100 m x 100 m. The UE devices are installed in a usual
+way by calling ``InstallUeDevice`` of ``LteHelper`` class.
 
 * Configuring discovery applications and starting the discovery process : ::
 
@@ -1315,17 +1567,34 @@ The above commands will simply create 10 UEs and position each UE at a random lo
                                     monitorApps.find (ueDevs.Get (i))->second, false);
      }
 
-Given the broadcast nature of the discovery process, the applications are configured such that each UE will be able to transmit discovery messages with one ProSeAppCode, i.e., one announce app and will be able to monitor/receive the discovery messages from all other UEs (Notice the two ``for`` loops at the beginning). The UE device index in the ``NetDeviceContainer`` is used as a ProSeAppCode, which is later in ``LteUeRrc`` is converted into a 184 bitset [TS23003]_. Finally, at 2 sec the method "SlStartDiscovery" implemented in this example calls the ``StartDiscovery`` of ``LteHelper`` class to start the discovery process.
+Given the broadcast nature of the discovery process, the applications are
+configured such that each UE will be able to transmit discovery messages with
+one ProSeAppCode, i.e., one announce app and will be able to monitor/receive the
+discovery messages from all other UEs (Notice the two ``for`` loops at the
+beginning). The UE device index in the ``NetDeviceContainer`` is used as a
+ProSeAppCode, which is later in ``LteUeRrc`` is converted into a 184 bitset
+[TS23003]_. Finally, at 2 sec the method "SlStartDiscovery" implemented in this
+example calls the ``StartDiscovery`` of ``LteHelper`` class to start the
+discovery process.
 
 Sidelink pool configuration
 ---------------------------
 
-This example simulates an out-of-coverage scenario, therefore, all the UEs will be configured with a pre-configured Sidelink discovery pool. As mentioned in :ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be responsible for holding this per-configured pool configuration. The pool configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that the Sidelink discovery is enabled. It is configured as follows::
+This example simulates an out-of-coverage scenario, therefore, all the UEs will
+be configured with a pre-configured Sidelink discovery pool. As mentioned in
+:ref:`sec-lte-sl-rrc`, in this scenario the ``LteSlUeRrc`` class will be
+responsible for holding this per-configured pool configuration. The pool
+configuration starts by setting a flag in ``LteSlUeRrc`` as an indication that
+the Sidelink discovery is enabled. It is configured as follows::
 
  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
  ueSidelinkConfiguration->SetDiscEnabled (true);
 
-For configuring Sidelink discovery pre-configured pool parameters, the IE "SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++ structure and similar to the basic LTE layer 3 messages it can be found in ``LteRrcSap`` class. This example uses this structure to configure the Sidelink discovery pool parameters in the following way, ::
+For configuring Sidelink discovery pre-configured pool parameters, the IE
+"SL-Preconfiguration" defined in the standard [TS36331]_ is converted into a C++
+structure and similar to the basic LTE layer 3 messages it can be found in
+``LteRrcSap`` class. This example uses this structure to configure the Sidelink
+discovery pool parameters in the following way, ::
 
  LteRrcSap::SlPreconfiguration preconfiguration;
 
@@ -1356,7 +1625,11 @@ For configuring Sidelink discovery pre-configured pool parameters, the IE "SL-Pr
  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
  lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
-Alternatively, the discovery pool configuration can also be done in a semi-automatic way by using the ``LteSlDiscResourcePoolFactory``. This would ease the configuration of the pool by only changing the parameters of interest and leaving the rest as default. For example, the above configuration can also be done as follows, ::
+Alternatively, the discovery pool configuration can also be done in a
+semi-automatic way by using the ``LteSlDiscResourcePoolFactory``. This would
+ease the configuration of the pool by only changing the parameters of interest
+and leaving the rest as default. For example, the above configuration can also
+be done as follows, ::
 
  preconfiguration.preconfigGeneral.carrierFreq = 23330;
  preconfiguration.preconfigGeneral.slBandwidth = 50;
@@ -1371,7 +1644,8 @@ Alternatively, the discovery pool configuration can also be done in a semi-autom
  lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
 
-Upon the completion of the simulation a user can find the following files containing the information of the simulated discovery process.
+Upon the completion of the simulation a user can find the following files
+containing the information of the simulated discovery process.
 
  * discovery_nodes.txt
 
@@ -1380,7 +1654,8 @@ Upon the completion of the simulation a user can find the following files contai
  * discovery-out-announcement-mac.tr
 
    This file logs the discovery message transmissions (announcements)
-   by listening to the "DiscoveryAnnouncement" trace of ``LteUeMac`` class. Following is the snippet from this file,
+   by listening to the "DiscoveryAnnouncement" trace of ``LteUeMac`` class.
+   Following is the snippet from this file,
 
   .. tabularcolumns:: |l|l|l|l|
   .. list-table:: discovery-out-announcement-mac.tr
@@ -1409,7 +1684,11 @@ Upon the completion of the simulation a user can find the following files contai
 
  * discovery-out-announcement-phy.tr
 
-   Similar to the information in "discovery-out-announcement-mac.tr" file this file contains the information about the discovery announcements but with the perspective of phy layer. In particular, it is obtained by listening to the "DiscoveryAnnouncement" trace of ``LteUePhy`` class. Following is the snippet from this file,
+   Similar to the information in "discovery-out-announcement-mac.tr" file this
+   file contains the information about the discovery announcements but with the
+   perspective of phy layer. In particular, it is obtained by listening to the
+   "DiscoveryAnnouncement" trace of ``LteUePhy`` class. Following is the snippet
+   from this file,
 
   .. tabularcolumns:: |l|l|l|l|l|
   .. list-table:: discovery-out-announcement-phy.tr
@@ -1441,11 +1720,16 @@ Upon the completion of the simulation a user can find the following files contai
      - 9
      - 9
 
-By comparing the traces from UE MAC and UE PHY, one can notice that the phy layer transmits a particular discovery messages exactly after 4 ms of the processing delay between UE MAC and PHY. The CellId is 0 because of out-of-coverage scenario.
+By comparing the traces from UE MAC and UE PHY, one can notice that the phy
+layer transmits a particular discovery messages exactly after 4 ms of the
+processing delay between UE MAC and PHY. The CellId is 0 because of
+out-of-coverage scenario.
 
  * discovery-out-monitoring.tr
 
-   This file contains the information about the reception of discovery messages by each UE. The data is obtained by listening to the "DiscoveryMonitoring" trace of ``LteUeRrc`` class. Following is snippet from this file,
+   This file contains the information about the reception of discovery messages
+   by each UE. The data is obtained by listening to the "DiscoveryMonitoring"
+   trace of ``LteUeRrc`` class. Following is snippet from this file,
 
   .. tabularcolumns:: |l|l|l|l|l|
   .. list-table:: discovery-out-monitoring.tr
@@ -1477,4 +1761,7 @@ By comparing the traces from UE MAC and UE PHY, one can notice that the phy laye
      - 2
      - 5
 
-From the above table it can be observed that the UE with IMSI 2 has received the discovery messages with ProSeAppCode of 3,9,1,5. In other words, this UE has discovered 4 other UEs transmitting their discovery announcements using the ProSeAppCode of 3, 9, 1, 5 respectively.
+From the above table it can be observed that the UE with IMSI 2 has received the
+discovery messages with ProSeAppCode of 3,9,1,5. In other words, this UE has
+discovered 4 other UEs transmitting their discovery announcements using the
+ProSeAppCode of 3, 9, 1, 5 respectively.

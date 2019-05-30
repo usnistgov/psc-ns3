@@ -42,10 +42,63 @@ public:
   virtual ~LteUePhySapProvider ();
 
   /**
+   * Parameters for LteUePhySapProvider::TransmitPhySdu
+   */
+  struct TransmitSlPhySduParameters
+  {
+    enum SidelinkChannel ///< The list of sidelink channels
+    {
+      PSBCH,
+      PSCCH,
+      PSSCH,
+      PSDCH,
+      INVALID_CH ///special value for uninitialized channel
+    } channel {
+      INVALID_CH
+    };                       ///< channel over which the packet needs to be transmitted
+    //Common information
+    uint8_t   rbStart {
+      std::numeric_limits<uint8_t>::max ()
+    };                                                     ///< models rb assignment
+    uint8_t   rbLen {
+      std::numeric_limits<uint8_t>::max ()
+    };                                                   ///< models rb assignment
+
+    //PSCCH, PSDCH
+    uint32_t resNo {
+      std::numeric_limits<uint32_t>::max ()
+    };                                                   ///< the resource index from the communication/discovery pool
+
+    //PSDH and PSSCH information
+    uint8_t   rv {
+      std::numeric_limits<uint8_t>::max ()
+    };                                                      ///< indicates HARQ revision number
+
+    //PSSCH information
+    uint8_t   hopping {
+      std::numeric_limits<uint8_t>::max ()
+    };                                                     ///< hopping flag
+    uint8_t   hoppingInfo {
+      std::numeric_limits<uint8_t>::max ()
+    };                                                         ///< models rb assignment when hopping is enabled
+    uint8_t   dstId {
+      std::numeric_limits<uint8_t>::max ()
+    };                                                   ///< layer 1 destination
+  };
+
+
+  /**
   * \brief Send The MAC PDU to the channel
   * \param p The MAC PDU to send
   */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
+
+  /**
+  * \brief Send a sidelink MAC PDU to the channel
+  * \param p The sidelink MAC PDU
+  * \param params Additional information about the PDU
+  */
+  virtual void SendSlMacPdu (Ptr<Packet> p, TransmitSlPhySduParameters params) = 0;
 
   /**
   * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
@@ -53,33 +106,13 @@ public:
   */
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
-  /** 
+  /**
    * Send a preamble on the PRACH
-   * 
+   *
    * \param prachId the ID of the preamble
    * \param raRnti the RA RNTI
    */
   virtual void SendRachPreamble (uint32_t prachId, uint32_t raRnti) = 0;
-
-  //Sidelink Communication
-
-  /**
-   * Set discovery announcement apps
-   * \param apps The applications we are interested in announcing
-   */
-   virtual void AddDiscTxApps (std::list<uint32_t> apps) = 0;
-
-  /**
-   * Set discovery monitoring apps
-   * \param apps The applications we are interested in monitoring
-   */
-   virtual void AddDiscRxApps (std::list<uint32_t> apps) = 0;
-
-  /**
-   * Set grant for discovery
-   * \param resPsdch The resource to use in the discovery pool
-   */
-  virtual void SetDiscGrantInfo (uint8_t resPsdch) = 0;
 
 };
 
@@ -104,6 +137,20 @@ public:
   virtual void ReceivePhyPdu (Ptr<Packet> p) = 0;
 
   /**
+   * Called by the Phy to notify the MAC of the reception of a new PHY-PDU
+   *
+   * \param p The packet
+   */
+  virtual void ReceiveSlDiscPhyPdu (Ptr<Packet> p) = 0;
+
+  /**
+   * Called by the Phy to notify the MAC of the reception of a new PHY-PDU
+   *
+   * \param p The packet
+   */
+  virtual void ReceiveSlSciPhyPdu (Ptr<Packet> p) = 0;
+
+  /**
    * \brief Trigger the start from a new frame (input from Phy layer)
    * \param frameNo The frame number
    * \param subframeNo The subframe number
@@ -123,12 +170,20 @@ public:
    * \param frameNo The current PHY frame number
    * \param subframeNo The current PHY subframe number
    */
-   virtual void NotifyChangeOfTiming (uint32_t frameNo, uint32_t subframeNo) = 0;
+  virtual void NotifyChangeOfTiming (uint32_t frameNo, uint32_t subframeNo) = 0;
 
   /**
    * Notify the MAC that Sidelink is configured
    */
   virtual void NotifySidelinkEnabled () = 0;
+
+  /**
+   * \brief Notify the MAC that the PHY has generated a transmission in the UL (e.g. CQI or HARQ)
+   * This function will be used to make sure the MAC does not try to send sidelink packets in subframes
+   * where there will be an uplink transmission
+   */
+  virtual void NotifyUlTransmission () = 0;
+
 };
 
 } // namespace ns3

@@ -593,15 +593,6 @@ LteEnbPhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgL
               }
           }
           break;
-        case LteControlMessage::SCI:
-          NS_LOG_INFO ("eNodeB receiving SL_DCI...ignore");
-          break;
-        case LteControlMessage::MIB_SL:
-          NS_LOG_INFO ("eNodeB receiving MIB_SL...ignore");
-          break;
-        case LteControlMessage::SL_DISC_MSG:
-          NS_LOG_INFO ("eNodeB receiving discovery message...ignore");
-          break;
         default:
           NS_FATAL_ERROR ("Unexpected LteControlMessage type");
           break;

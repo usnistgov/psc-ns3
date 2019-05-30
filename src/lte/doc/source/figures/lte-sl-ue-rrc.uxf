@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>490</x>
+      <y>30</y>
+      <w>320</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;LteSlUeRrc&gt;&gt;
+--
+
+Responsibilities
+-- Holds Sidelink Comm and Disc pool config
+-- Stores source L2 ID
+-- Record Disc applications configured
+-- Record Sidelink bearrers
+
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>20</x>
+      <y>20</y>
+      <w>280</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;LteUeRrc&gt;&gt;
+--
+
+_-ClassAttribute:
+
+Name : SidelinkConfiguration
+Type : Ptr&lt;LteSlUeRrc&gt; 
+                    m_sidelinkConfiguration
+
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>290</x>
+      <y>60</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=.&gt;
+&lt;&lt;Friend&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
+  </element>
+</diagram>

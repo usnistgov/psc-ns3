@@ -491,6 +491,34 @@ LteSidelinkHelper::DoActivateSidelinkBearer (NetDeviceContainer ues, Ptr<LteSlTf
   m_lteHelper->ActivateSidelinkBearer (ues, tft);
 }
 
+void
+LteSidelinkHelper::StartDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role)
+{
+  NS_LOG_FUNCTION (this);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->StartDiscoveryApps (appCodes, role);
+}
+  
+void
+LteSidelinkHelper::StopDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role)
+{
+  NS_LOG_FUNCTION (this);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->StopDiscoveryApps (appCodes, role);
+}
+
+void
+LteSidelinkHelper::StartRelayService (Ptr<NetDevice> ueDevice, uint32_t serviceCode, LteSlUeRrc::DiscoveryModel model, LteSlUeRrc::RelayRole role)
+{
+  NS_LOG_FUNCTION (this);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->StartRelayService (serviceCode, model, role);
+}
+
+void
+LteSidelinkHelper::StopRelayService (Ptr<NetDevice> ueDevice, uint32_t serviceCode)
+{
+  NS_LOG_FUNCTION (this);
+  ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->StopRelayService (serviceCode);
+}
+
 int64_t
 LteSidelinkHelper::AssignStreams (int64_t stream)
 {

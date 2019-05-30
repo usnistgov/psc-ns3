@@ -1,7 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * NIST-developed software is provided by NIST as a public
- * service. You may use, copy and distribute copies of the software in 
+ * service. You may use, copy and distribute copies of the software in
  * any medium, provided that you keep intact this entire notice. You
  * may improve, modify and create derivative works of the software or
  * any portion of the software, and you may copy and distribute such
@@ -37,6 +37,7 @@
 #define LTE_SL_POOL_H
 
 #include <map>
+#include <unordered_set>
 #include "lte-rrc-sap.h"
 #include <ns3/traced-callback.h>
 
@@ -74,7 +75,28 @@ public:
       SubframeInfo res;
       uint32_t tmp1 = 10 * (lhs.frameNo % 1024) + lhs.subframeNo % 10;
       tmp1 += 10 * (rhs.frameNo % 1024) + rhs.subframeNo % 10;
-      res.frameNo = tmp1 / 10;
+      res.frameNo = (tmp1 / 10) % 1024;
+      res.subframeNo = tmp1 % 10;
+      return res;
+    }
+
+    /**
+     * Adds two subframe locations and return the new location
+     * This is used for computing the absolute subframe location from a starting point
+     * \param lhs One of the subframe location
+     * \param rhs The other subframe location
+     * \return The new subframe location
+     */
+    friend SubframeInfo operator- (const SubframeInfo& lhs, const SubframeInfo& rhs)
+    {
+      SubframeInfo res;
+      uint32_t tmp1 = 10 * (lhs.frameNo % 1024) + lhs.subframeNo % 10;
+      if (lhs < rhs)
+        {
+          tmp1 += 10240;
+        }
+      tmp1 -= 10 * (rhs.frameNo % 1024) + rhs.subframeNo % 10;
+      res.frameNo = (tmp1 / 10) % 1024;
       res.subframeNo = tmp1 % 10;
       return res;
     }
@@ -127,8 +149,7 @@ public:
    * \param [in] oldState
    * \param [in] newState
    */
-  typedef void (*ScPeriodTracedCallback)
-    (const uint32_t frameNo, const uint32_t subframeNo, const uint32_t nextScPeriod);
+  typedef void (*ScPeriodTracedCallback)(const uint32_t frameNo, const uint32_t subframeNo, const uint32_t nextScPeriod);
 
   /**
    * Checks if two Sidelink pool configurations are identical
@@ -227,16 +248,16 @@ public:
   LteRrcSap::SlHoppingConfigComm GetDataHoppingConfig ();
 
   /**
-   * Computes all valid rbStart values for a single Lcrb value from the range [0,10]
+   * Computes all valid rbStart values for a single Lcrb (length of contiguous RBs) value from the range [0,10]
    * \param rbLen the size of the contiguous resource block
    * \return A vector of all valid rbStart index positions for that Lcrb value
    */
   std::vector<uint8_t> GetValidRBstart (uint8_t rbLen);
 
- /**
-  * Computes all valid rbStart values for every Lcrb value from range [0,10]
-  * \return A vector of vectors which contains valid rbStart indexes for corresponding Lcrb value
-  */
+  /**
+   * Computes all valid rbStart values for every Lcrb value from range [0,10]
+   * \return A vector of vectors which contains valid rbStart indexes for corresponding Lcrb value
+   */
   std::vector< std::vector<uint8_t> > GetValidAllocations ();
 
 protected:
@@ -412,6 +433,12 @@ public:
   void SetScheduledTxParameters (uint16_t slrnti, LteRrcSap::SlMacMainConfigSl macMainConfig, LteRrcSap::SlCommResourcePool commTxConfig, uint8_t index, uint8_t mcs);
 
   /**
+   * Set parameters for UE selected pool
+   * \param identity The pool identity
+   */
+  void SetUeSelectedTxParameters (uint8_t identity);
+
+  /**
    * Returns the index of the resource pool
    * \return the index of the resource pool
    */
@@ -422,10 +449,18 @@ public:
    * \return The MCS to use
    */
   uint8_t GetMcs ();
+
+  /**
+   * Returns the pool identity
+   * \return The pool identity
+   */
+  uint8_t GetPoolIdentity ();
+
 protected:
   //Fields for UE selected pools
   LteRrcSap::SlTxParameters m_scTxParameters; ///< configuration of the control channel
   LteRrcSap::SlTxParameters m_dataTxParameters; ///< configuration of the shared channel
+  uint8_t m_poolIdentity; ///< identity of the individual pool entry configured for sidelink transmission
 
   //Fields for scheduled pools
   uint16_t m_slrnti; ///< Sidelink RNTI
@@ -612,6 +647,15 @@ public:
    */
   static LteRrcSap::TxProbability TxProbabilityFromInt (uint32_t p);
 
+  /**
+   * \brief Returns the list of resources that conflict with the given resource in time, i.e.,
+   * the resources using the same subframe.
+   *
+   * \param res The resource number
+   * \return The list of resources that conflict with the given resource
+   */
+  std::unordered_set<uint32_t> GetConflictingResources (uint32_t res);
+
 protected:
   /**
    * Initialize the PSDCH pool
@@ -644,11 +688,18 @@ private:
    */
   void ComputeNumberOfPsdchResources ();
 
+  /**
+   * \brief Compute and build a list of resources that overlap in time, i.e.,
+   * the resources using the same subframe.
+   */
+  void BuildListOfConflictingResources ();
+
   uint32_t m_lpsdch; ///< Total number of subframes belong to a PSDCH pool
   std::vector <uint32_t> m_lpsdchVector;   ///< List of subframes that belong to PSDCH pool
   uint32_t m_rbpsdch; ///< Total number of RBs belong to a PSDCH pool
   std::vector <uint32_t> m_rbpsdchVector;   ///< List of RBs that belong to PSDCH pool
   uint32_t m_nPsdchResources;   ///< Number of resources in the PSDCH pools
+  std::vector < std::unordered_set <uint32_t> > m_resourceConflictsVector; ///< Matrix indicating resources using the same subframes
   bool m_preconfigured;   ///< Indicates if the pool is preconfigured
 };
 
@@ -701,6 +752,12 @@ public:
   void SetScheduledTxParameters (LteRrcSap::SlDiscResourcePool discPool, LteRrcSap::SlTfIndexPairList discResources, LteRrcSap::SlHoppingConfigDisc discHopping);
 
   /**
+   * Set parameters for UE selected pool
+   * \param identity The pool identity
+   */
+  void SetUeSelectedTxParameters (uint8_t identity);
+
+  /**
    * Returns the transmission probability
    * \return The transmission probability
    */
@@ -712,6 +769,12 @@ public:
    */
   void SetTxProbability (uint32_t theta);
 
+  /**
+   * Returns the pool identity
+   * \return The pool identity
+   */
+  uint8_t GetPoolIdentity ();
+
 protected:
   //Fields for UE selected pools
   LteRrcSap::PoolSelection m_poolSelection; ///< method for selecting the pool
@@ -719,6 +782,7 @@ protected:
   LteRrcSap::PoolSelectionRsrpBased m_poolSelectionRsrpBased; ///< parameters for the RSRP based selection
   LteRrcSap::TxProbability m_txProbability;  ///< transmission probability
   bool m_txProbChanged; ///< indicates if the transmission probability has changed
+  uint8_t m_poolIdentity; ///< identity of the individual pool entry configured for sidelink transmission
 
   //Fields for scheduled pools
   LteRrcSap::SlDiscResourcePool m_discTxConfig; ///< resource configuration

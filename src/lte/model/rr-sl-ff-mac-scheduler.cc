@@ -1297,7 +1297,7 @@ RrSlFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
               SlDciListElement_s dci;
               dci.m_rnti = alloc.m_rnti;
               dci.m_hopping = false;
-              dci.m_hoppingInfo = 0; //frequency hopping not supported for Mode 1. Disable frequency hopping
+              dci.m_hoppingInfo = (0xFF); //frequency hopping not supported for Mode 1. Disable frequency hopping
               dci.m_resPscch = alloc.m_resPscch;
               dci.m_trp = alloc.m_slItrp;
               dci.m_rbStart = alloc.m_rbStart;

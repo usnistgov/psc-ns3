@@ -36,7 +36,10 @@ NS_OBJECT_ENSURE_REGISTERED (LteStatsCalculator);
 
 LteStatsCalculator::LteStatsCalculator ()
   : m_dlOutputFilename (""),
-    m_ulOutputFilename ("")
+    m_ulOutputFilename (""),
+    m_slOutputFilename (""),
+    m_slPscchOutputFilename (""),
+    m_slPsdchOutputFilename ("")
 {
   // Nothing to do here
 
@@ -106,6 +109,18 @@ std::string
 LteStatsCalculator::GetSlPscchOutputFilename (void)
 {
   return m_slPscchOutputFilename;
+}
+
+void
+LteStatsCalculator::SetSlPsdchOutputFilename (std::string outputFilename)
+{
+  m_slPsdchOutputFilename = outputFilename;
+}
+
+std::string
+LteStatsCalculator::GetSlPsdchOutputFilename (void)
+{
+  return m_slPsdchOutputFilename;
 }
 
 bool

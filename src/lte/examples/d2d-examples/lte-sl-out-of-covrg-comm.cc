@@ -189,7 +189,7 @@ int main (int argc, char *argv[])
   NS_LOG_LOGIC ("UL freq: " << ulFreq);
   Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
   Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel> ();
-  NS_ABORT_MSG_IF (lossModel == NULL, "No PathLossModel");
+  NS_ABORT_MSG_IF (lossModel == nullptr, "No PathLossModel");
   bool ulFreqOk = uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
   if (!ulFreqOk)
     {

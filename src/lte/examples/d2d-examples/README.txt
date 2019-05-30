@@ -19,6 +19,7 @@ wns3-2017-discovery.cc      Discovery validation (scenario)
 wns3-2017-discovery.sh      Discovery validation (master)
 wns3-2017-pscch.cc          Communication control channel validation (scenario)
 wns3-2017-pscch-stats.sh    Communication control channel validation (stats)
+wns3-2017-pscch-mac-trace-formatter.py Communication control channel validation (stats formatter)
 wns3-2017-pscch.sh          Communication control channel validation (master)
 wns3-2017-pssch.cc          Communication shared channel validation (scenario)
 wns3-2017-pssch.sh          Communication shared channel validation (master)
@@ -31,7 +32,10 @@ III. Running instructions
 Copy the scenario scripts (.cc files) to the ns-3 scratch folder 
 (~/ns-3-dev/scratch/ or ~/ns-3.29/scratch/)
 
-Copy the master and stats scripts (.sh files) to the ns-3 root folder
+Copy the master, stats scripts (.sh files) and the stats formatter (.py) to the
+ns-3 root folder. 
+
+**Note : Python 3 is required to run wns3-2017-pscch-mac-trace-formatter.py**
 
 From the ns-3 root folder (~/ns-3-dev/ or ~/ns-3.29/), run the desired master script to
 execute the corresponding evaluation. 

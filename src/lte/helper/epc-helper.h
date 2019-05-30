@@ -129,26 +129,6 @@ public:
    */
   virtual void DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft) = 0;
 
-  
-  /**
-   *  Activate discovery for one UE for given applications
-   *
-   * \param ueDevice the UE device
-   * \param apps the applications to start
-   * \param rxtx the interest in monitoring or announcing (0 for rx and 1 for tx)
-   */
-  virtual void StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx) = 0;
-
-  /**
-   *  Deactivate discovery for one UE for given applications
-   *  \param ueDevice the UE device
-   *  \param apps the applications to stop
-   *  \param rxtx the interest in monitoring or announcing (0 for rx and 1 for tx)
-   */
-  virtual void StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx) = 0;
-
-
-
   /** 
    * 
    * \return a pointer to the node implementing PGW

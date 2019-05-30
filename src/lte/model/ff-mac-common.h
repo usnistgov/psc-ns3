@@ -25,7 +25,7 @@
 #include <ns3/simple-ref-count.h>
 #include <ns3/ptr.h>
 #include <vector>
-#include<bitset>
+#include <bitset>
 #include <map>
 
 
@@ -194,26 +194,12 @@ struct SciListElement_s
   uint16_t  m_timing; ///< Timing advance indication
   uint8_t   m_groupDstId; ///< Group destination ID
 };
- 
-/**
- * \brief See section 11.2.5 3GPP TS 24.334
- * \struct SlDiscMsg
- */
-struct SlDiscMsg 
-{
-  uint16_t  m_rnti; ///< added for modeling
-  uint8_t   m_resPsdch; ///< added for modeling
-  uint8_t m_msgType; ///< Message Type
-  std::bitset <184> m_proSeAppCode; ///< ProSe application code
-  uint32_t m_mic; ///< Message Integrity Check (MIC)
-  uint8_t m_utcBasedCounter; ///< UTC-based counter
-};
 
 /**
 * \brief Base class for storing the values of vendor specific parameters
 */
 struct VendorSpecificValue : public SimpleRefCount<VendorSpecificValue>
-{ 
+{
   virtual ~VendorSpecificValue ();
 
 };
@@ -262,7 +248,7 @@ struct LogicalChannelConfigListElement_s
 
 /**
  * \brief See section 4.3.6 rachListElement
- * \struct RachListElement_s 
+ * \struct RachListElement_s
  */
 struct RachListElement_s
 {
@@ -319,7 +305,7 @@ struct UlGrant_s
   int8_t m_tpc; ///< Tx power control command
   bool m_cqiRequest; ///< CQI request?
   bool m_ulDelay; ///< UL delay?
-}; 
+};
 
 /**
  * \brief See section 4.3.10 buildRARListElement
@@ -354,7 +340,7 @@ struct UlInfoListElement_s
   uint16_t  m_rnti; ///< RNTI
   std::vector <uint16_t> m_ulReception; ///< UL reception
   /// Reception status enum
-  enum ReceptionStatus_e 
+  enum ReceptionStatus_e
   {
     Ok, NotOk, NotValid
   } m_receptionStatus; ///< the status
@@ -401,7 +387,7 @@ struct DrxConfig_s
   uint8_t   m_onDurationTimer; ///< on duration timer
   uint16_t  m_drxInactivityTimer; ///< inactivity timer
   uint16_t  m_drxRetransmissionTimer; ///< retransmission timer
-  uint16_t  m_longDrxCycle; ///< long DRX cycle 
+  uint16_t  m_longDrxCycle; ///< long DRX cycle
   uint16_t  m_longDrxCycleStartOffset; ///< long DRX cycle start offset
   uint16_t  m_shortDrxCycle; ///< short DRX cycle
   uint8_t   m_drxShortCycleTimer; ///< short DRX cycle timer

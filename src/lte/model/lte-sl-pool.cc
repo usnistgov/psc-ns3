@@ -845,7 +845,7 @@ SidelinkCommResourcePool::GetNprbType1 (uint8_t rbStart)
       NS_FATAL_ERROR (this << " GetNprbType1, ONLY TYPE 1 FREQUENCY HOPPING IS ALLOWED.");
     }
 
-  NS_LOG_DEBUG ("m_dataHoppingConfig.hoppingInfo : "<<(uint16_t)m_dataHoppingConfig.hoppingInfo<<" nPrb : "<<nPrb);
+  NS_LOG_DEBUG ("m_dataHoppingConfig.hoppingInfo : " << (uint16_t)m_dataHoppingConfig.hoppingInfo << " nPrb : " << nPrb);
 
   return nPrb;
 }
@@ -1235,6 +1235,13 @@ SidelinkTxCommResourcePool::SetScheduledTxParameters (uint16_t slrnti, LteRrcSap
   m_mcs = mcs;
 }
 
+void
+SidelinkTxCommResourcePool::SetUeSelectedTxParameters (uint8_t identity)
+{
+  NS_LOG_FUNCTION (this << identity);
+  m_poolIdentity = identity;
+}
+
 uint8_t
 SidelinkTxCommResourcePool::GetIndex ()
 {
@@ -1247,6 +1254,13 @@ SidelinkTxCommResourcePool::GetMcs ()
 {
   NS_LOG_FUNCTION (this);
   return m_mcs;
+}
+
+uint8_t
+SidelinkTxCommResourcePool::GetPoolIdentity ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_poolIdentity;
 }
 
 ///// SidelinkDiscResourcePool //////
@@ -1281,7 +1295,7 @@ SidelinkDiscResourcePool::SetPool (LteRrcSap::SlDiscResourcePool pool)
   m_discCpLen = pool.cpLen;
   m_discPeriod = pool.discPeriod;
   NS_ABORT_MSG_IF (pool.numRetx > 3, "For discovery maximum number of retransmissions "
-                                       "should be less than "<< (uint16_t) pool.numRetx);
+                   "should be less than " << (uint16_t) pool.numRetx);
   m_numRetx = pool.numRetx;
   m_numRepetition = pool.numRepetition;
   m_discTfResourceConfig = pool.tfResourceConfig;
@@ -1308,7 +1322,7 @@ SidelinkDiscResourcePool::SetPool (LteRrcSap::SlPreconfigDiscPool pool)
   m_discCpLen = pool.cpLen;
   m_discPeriod = pool.discPeriod;
   NS_ABORT_MSG_IF (pool.numRetx > 3, "For discovery maximum number of retransmissions "
-                                       "should be less than "<< (uint16_t)pool.numRetx);
+                   "should be less than " << (uint16_t)pool.numRetx);
   m_numRetx = pool.numRetx;
   m_numRepetition = pool.numRepetition;
   m_discTfResourceConfig = pool.tfResourceConfig;
@@ -1321,6 +1335,51 @@ SidelinkDiscResourcePool::Initialize ()
 {
   NS_LOG_FUNCTION (this);
   ComputeNumberOfPsdchResources ();
+  BuildListOfConflictingResources ();
+}
+
+void
+SidelinkDiscResourcePool::BuildListOfConflictingResources ()
+{
+  //build the list of resources that uses the same subframes
+  std::vector < std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> > txInfoVector;
+  for (uint32_t i = 0; i < m_nPsdchResources; i++)
+    {
+      NS_LOG_DEBUG ("  Checking resource " << i);
+      std::unordered_set <uint32_t> emptySet;
+      m_resourceConflictsVector.push_back (emptySet);
+      //get transmission information for resource i
+      std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> txInfo = GetPsdchTransmissions (i);
+      //find the list of resources that collide with each of the transmission of resource i by looking
+      //at the list of previous resource information
+      std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator itNewTx;
+      for (itNewTx = txInfo.begin (); itNewTx != txInfo.end (); itNewTx++)
+        {
+          //check for overlapping with any of the previous transmission
+          for (uint32_t j = 0; j < i; j++)
+            {
+              std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator itPrevTx;
+              for (itPrevTx = txInfoVector.at (j).begin (); itPrevTx != txInfoVector.at (j).end (); itPrevTx++)
+                {
+                  if ((*itNewTx).subframe == (*itPrevTx).subframe)
+                    {
+                      NS_LOG_DEBUG ("    Resource " << j << " collides on subframe " << (*itNewTx).subframe.frameNo << "/" << (*itNewTx).subframe.subframeNo);
+                      //Overlapping subframe
+                      if (m_resourceConflictsVector.at (i).find (j) == m_resourceConflictsVector.at (i).end ())
+                        {
+                          NS_LOG_DEBUG ("      Adding to conflict list");
+                          m_resourceConflictsVector.at (i).insert (j);
+                          m_resourceConflictsVector.at (j).insert (i);
+                        }
+                    }
+                }
+            }
+          //add himself to list of conflicts
+          m_resourceConflictsVector.at (i).insert (i);
+        }
+
+      txInfoVector.push_back (txInfo);
+    }
 }
 
 SidelinkDiscResourcePool::SlPoolType
@@ -1413,6 +1472,7 @@ SidelinkDiscResourcePool::GetPsdchTransmissions (uint32_t npsdch)
   uint32_t nt = std::floor (m_lpsdch / n);
   uint32_t aj;
   uint32_t b1;
+  NS_ABORT_MSG_IF (m_lpsdch < n, "No subframe available for retransmission. Check the discovery bitmap");
 
   if (m_type == SidelinkDiscResourcePool::UE_SELECTED)
     {
@@ -1599,6 +1659,14 @@ SidelinkDiscResourcePool::TxProbabilityFromInt (uint32_t p)
   return prob;
 }
 
+std::unordered_set<uint32_t>
+SidelinkDiscResourcePool::GetConflictingResources (uint32_t res)
+{
+  NS_LOG_FUNCTION (this << res);
+  NS_ASSERT (res < m_nPsdchResources);
+  return m_resourceConflictsVector.at (res);
+}
+
 ///// SidelinkRxDiscResourcePool //////
 TypeId
 SidelinkRxDiscResourcePool::GetTypeId (void)
@@ -1672,6 +1740,13 @@ SidelinkTxDiscResourcePool::SetScheduledTxParameters (LteRrcSap::SlDiscResourceP
   m_discHoppingConfigDisc = discHopping;
 }
 
+void
+SidelinkTxDiscResourcePool::SetUeSelectedTxParameters (uint8_t identity)
+{
+  NS_LOG_FUNCTION (this << identity);
+  m_poolIdentity = identity;
+}
+
 uint32_t
 SidelinkTxDiscResourcePool::GetTxProbability ()
 {
@@ -1702,5 +1777,13 @@ void SidelinkTxDiscResourcePool::SetTxProbability (uint32_t theta)
     }
   m_txProbability = txProb;
 }
+
+uint8_t
+SidelinkTxDiscResourcePool::GetPoolIdentity ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_poolIdentity;
+}
+
 
 }

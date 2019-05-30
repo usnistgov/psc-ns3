@@ -47,7 +47,7 @@ public:
   /**
    * The type of the message
    * NOTE: The messages sent by UE are filtered by the
-   *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones 
+   *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones
    *  that has been already handoff by the eNB for avoiding propagation of
    *  spurious messages. When new messaged have to been added, consider to
    *  update the switch statement implementing the filtering.
@@ -62,10 +62,7 @@ public:
     RAR, // Random Access Response
     MIB, // Master Information Block
     SIB1, // System Information Block Type 1
-    SL_DCI, //Sidelink Data Control Indicator
-    SCI, //Sidelink Control Information
-    MIB_SL, // Master Information Block Sidelink
-    SL_DISC_MSG // Sidelink dicovery message
+    SL_DCI //Sidelink Data Control Indicator
   };
 
   LteControlMessage (void);
@@ -280,16 +277,16 @@ class RachPreambleLteControlMessage : public LteControlMessage
 {
 public:
   RachPreambleLteControlMessage (void);
-  
-  /** 
+
+  /**
    * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
    *
    * \param rapid the RAPID
    */
   void SetRapId (uint32_t rapid);
-  
-  /** 
-   * 
+
+  /**
+   *
    * \return the RAPID
    */
   uint32_t GetRapId () const;
@@ -312,21 +309,21 @@ class RarLteControlMessage : public LteControlMessage
 public:
   RarLteControlMessage (void);
 
-  /** 
-   * 
+  /**
+   *
    * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
    */
   void SetRaRnti (uint16_t raRnti);
 
-  /** 
-   * 
+  /**
+   *
    * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
    */
   uint16_t GetRaRnti () const;
 
   /**
-   * a MAC RAR and the corresponding RAPID subheader 
-   * 
+   * a MAC RAR and the corresponding RAPID subheader
+   *
    */
   struct Rar
   {
@@ -334,21 +331,21 @@ public:
     BuildRarListElement_s rarPayload; ///< RAR payload
   };
 
-  /** 
+  /**
    * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
-   * 
+   *
    * \param rar the rar
    */
   void AddRar (Rar rar);
 
-  /** 
-   * 
+  /**
+   *
    * \return a const iterator to the beginning of the RAR list
    */
   std::list<Rar>::const_iterator RarListBegin () const;
-  
-  /** 
-   * 
+
+  /**
+   *
    * \return a const iterator to the end of the RAR list
    */
   std::list<Rar>::const_iterator RarListEnd () const;
@@ -436,87 +433,6 @@ private:
   LteRrcSap::SystemInformationBlockType1 m_sib1; ///< SIB1
 
 }; // end of class Sib1LteControlMessage
-
-
-/**
- * \ingroup lte
- * The Sidelink Control Indicator messages defines the RB allocation for the
- * users in the sidelink shared channel
- */
-class SciLteControlMessage : public LteControlMessage
-{
-public:
-  SciLteControlMessage (void);
-
-  /**
-  * \brief add a SCI into the message
-  * \param sci the sci
-  */
-  void SetSci (SciListElement_s sci);
-
-  /**
-  * \brief Get sci informations
-  * \return sci messages
-  */
-  SciListElement_s GetSci (void);
-
-private:
-  SciListElement_s m_sci; ///< Sidelink control information message
-};
-
-/**
- * \ingroup lte
- * Abstract model for broadcasting the Master Information Block Sidelink (MIB-SL)
- * MIB-SL is transmitted by sidelink-enabled UEs (when required) every 40 milliseconds.
- * */
-class MibSlLteControlMessage : public LteControlMessage
-{
-public:
-  MibSlLteControlMessage (void);
-
-  /**
-  * \brief add a MIB-SL into the message
-  * \param mibSL the MIB-SL
-  */
-  void SetMibSL (LteRrcSap::MasterInformationBlockSL mibSL);
-
-  /**
-  * \brief Get MIB-SL informations
-  * \return mibSL messages
-  */
-  LteRrcSap::MasterInformationBlockSL GetMibSL (void);
-
-private:
-  LteRrcSap::MasterInformationBlockSL m_mibSL; ///< Sidelink Master Information Block
-};
-  
-/**
- * \ingroup lte
- * the discovery message 
- *
- */ 
-class SlDiscMessage: public LteControlMessage
-{
-public:
-  SlDiscMessage (void);
-
-  /**
-   * \brief set discovery message
-   * \param discMsg discovery message
-   */
-  void SetSlDiscMessage (SlDiscMsg discMsg);
-
-  /**
-   * \brief get discovery message
-   * \return discovery message
-   */
-  SlDiscMsg GetSlDiscMessage (void);
-
-private:
-SlDiscMsg m_discMsg; ///< Sidelink discovery message
-
-};
-
 
 } // namespace ns3
 

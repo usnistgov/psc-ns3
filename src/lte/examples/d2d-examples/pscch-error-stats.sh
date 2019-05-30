@@ -71,10 +71,12 @@ do
     continue
   fi
 
-  echo -e "Period_time\tCollisions\tSingle_Overlap\tDouble_Overlap" > $OUTFILE_PSCCH_1
+  echo -e "Period_StartFr\tCollisions\tSingle_Overlap\tDouble_Overlap" > $OUTFILE_PSCCH_1
+
+  python3 wns3-2017-pscch-mac-trace-formatter.py $newdir
 
   #echo "Processing Tx"
-  INFILE_UeScheduleTrace="$newdir/SlUeMacStats.txt"
+  INFILE_UeScheduleTrace="$newdir/Wns32017SlCchMacStats.txt"
   
   gawk -v simu_time=$SIMU_TIME 'FNR>1{
           
@@ -83,7 +85,7 @@ do
                 #print
                 exit;
               }
-            curr_period_t = $1;
+            curr_period_t = $7;
             if(FNR == 2)
               {
                 prev_period_t = curr_period_t;
@@ -91,10 +93,10 @@ do
               }
             
             # Collect statistics
-            RI = $7; # PSCCH resource index
+            RI = $9; # PSCCH resource index
             RI_access[curr_period_t][RI]++;
-            PSCCH_1tx = $8$9;   # Time of first PSCCH transmission
-            PSCCH_2tx = $10$11; # Time of second PSCCH transmission
+            PSCCH_1tx = $5$6;   # Time of first PSCCH transmission
+            PSCCH_2tx = $21$22; # Time of second PSCCH transmission
             PSCCH_txs[curr_period_t][PSCCH_1tx]++;
             PSCCH_txs[curr_period_t][PSCCH_2tx]++;
             PSCCH_combined_txs[curr_period_t][PSCCH_1tx "" PSCCH_2tx]++;

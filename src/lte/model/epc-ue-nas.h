@@ -199,20 +199,6 @@ public:
    */
   void DeactivateSidelinkBearer (Ptr<LteSlTft> tft);
   
-  /**
-   * Add Discovery Applications
-   * \param apps applications to be added
-   * \param rxtx 0 for monitoring and 1 for announcing
-   */
-  void AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
- 
-  /**
-   * Remove Discovery Applications
-   * \param apps applications to be removed
-   * \param rxtx 0 for monitoring and 1 for announcing
-   */
-  void RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
-
 private:
 
   // LTE AS SAP methods

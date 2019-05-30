@@ -89,11 +89,12 @@ NS_OBJECT_ENSURE_REGISTERED (LteRlc);
 
 LteRlc::LteRlc ()
   : m_rlcSapUser (0),
-    m_macSapProvider (0),
-    m_rnti (0),
-    m_lcid (0),
-    m_srcL2Id (0),
-    m_dstL2Id (0)
+  m_macSapProvider (0),
+  m_rnti (0),
+  m_lcid (0),
+  m_srcL2Id (0),
+  m_dstL2Id (0),
+  m_channelType (LteRlc::DEFAULT)
 {
   NS_LOG_FUNCTION (this);
   m_rlcSapProvider = new LteRlcSpecificLteRlcSapProvider<LteRlc> (this);
@@ -109,7 +110,7 @@ TypeId LteRlc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlc")
     .SetParent<Object> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the MAC.",
                      MakeTraceSourceAccessor (&LteRlc::m_txPdu),
@@ -118,7 +119,7 @@ TypeId LteRlc::GetTypeId (void)
                      "PDU received.",
                      MakeTraceSourceAccessor (&LteRlc::m_rxPdu),
                      "ns3::LteRlc::ReceiveTracedCallback")
-    ;
+  ;
   return tid;
 }
 
@@ -150,7 +151,7 @@ LteRlc::SetSourceL2Id (uint32_t src)
   NS_LOG_FUNCTION (this << src);
   m_srcL2Id = src;
 }
-  
+
 void
 LteRlc::SetDestinationL2Id (uint32_t dst)
 {
@@ -186,6 +187,22 @@ LteRlc::GetLteMacSapUser ()
   return m_macSapUser;
 }
 
+void
+LteRlc::SetRlcChannelType (LteRlc::ChannelType channelType)
+{
+  NS_LOG_FUNCTION (this);
+
+  switch (channelType)
+  {
+    case STCH:
+      m_channelType = STCH;
+      break;
+    default:
+      m_channelType = DEFAULT;
+      break;
+  }
+}
+
 
 
 ////////////////////////////////////////
@@ -207,9 +224,9 @@ LteRlcSm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteRlcSm> ()
-    ;
+  ;
   return tid;
 }
 
@@ -242,12 +259,12 @@ LteRlcSm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   Time delay;
   NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
   rxPduParams.p->RemovePacketTag (rlcTag);
-  delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
-  NS_LOG_LOGIC (" RNTI=" << m_rnti 
-                << " LCID=" << (uint32_t) m_lcid 
-                << " size=" << rxPduParams.p->GetSize ()
-                << " delay=" << delay.GetNanoSeconds ());
-  m_rxPdu(m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds () );
+  delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
+  NS_LOG_LOGIC (" RNTI=" << m_rnti
+                         << " LCID=" << (uint32_t) m_lcid
+                         << " size=" << rxPduParams.p->GetSize ()
+                         << " delay=" << delay.GetNanoSeconds ());
+  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds () );
 }
 
 void
@@ -263,14 +280,16 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   params.layer = txOpParams.layer;
   params.harqProcessId = txOpParams.harqId;
   params.componentCarrierId = txOpParams.componentCarrierId;
+  params.discMsg = false;
+  params.mibslMsg = false;
 
   // RLC Performance evaluation
-  RlcTag tag (Simulator::Now());
+  RlcTag tag (Simulator::Now ());
   params.pdu->AddPacketTag (tag);
-  NS_LOG_LOGIC (" RNTI=" << m_rnti 
-                << " LCID=" << (uint32_t) m_lcid 
-                << " size=" << txOpParams.bytes);
-  m_txPdu(m_rnti, m_lcid, txOpParams.bytes);
+  NS_LOG_LOGIC (" RNTI=" << m_rnti
+                         << " LCID=" << (uint32_t) m_lcid
+                         << " size=" << txOpParams.bytes);
+  m_txPdu (m_rnti, m_lcid, txOpParams.bytes);
 
   m_macSapProvider->TransmitPdu (params);
   ReportBufferStatus ();

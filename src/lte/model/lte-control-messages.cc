@@ -216,7 +216,7 @@ RachPreambleLteControlMessage::SetRapId (uint32_t rapId)
   m_rapId = rapId;
 }
 
-uint32_t 
+uint32_t
 RachPreambleLteControlMessage::GetRapId () const
 {
   return m_rapId;
@@ -238,7 +238,7 @@ RarLteControlMessage::SetRaRnti (uint16_t raRnti)
   m_raRnti = raRnti;
 }
 
-uint16_t 
+uint16_t
 RarLteControlMessage::GetRaRnti () const
 {
   return m_raRnti;
@@ -251,13 +251,13 @@ RarLteControlMessage::AddRar (Rar rar)
   m_rarList.push_back (rar);
 }
 
-std::list<RarLteControlMessage::Rar>::const_iterator 
+std::list<RarLteControlMessage::Rar>::const_iterator
 RarLteControlMessage::RarListBegin () const
 {
   return m_rarList.begin ();
 }
 
-std::list<RarLteControlMessage::Rar>::const_iterator 
+std::list<RarLteControlMessage::Rar>::const_iterator
 RarLteControlMessage::RarListEnd () const
 {
   return m_rarList.end ();
@@ -280,7 +280,7 @@ MibLteControlMessage::SetMib (LteRrcSap::MasterInformationBlock  mib)
   m_mib = mib;
 }
 
-LteRrcSap::MasterInformationBlock 
+LteRrcSap::MasterInformationBlock
 MibLteControlMessage::GetMib () const
 {
   return m_mib;
@@ -308,29 +308,6 @@ Sib1LteControlMessage::GetSib1 () const
 {
   return m_sib1;
 }
-
-
-// ---------------------------------------------------------------------------
-
-
-SciLteControlMessage::SciLteControlMessage (void)
-{
-  SetMessageType (LteControlMessage::SCI);
-}
-
-
-void
-SciLteControlMessage::SetSci (SciListElement_s sci)
-{
-  m_sci = sci;
-}
-
-SciListElement_s
-SciLteControlMessage::GetSci ()
-{
-  return m_sci;
-}
-
 
 // ---------------------------------------------------------------------------
 
@@ -361,50 +338,6 @@ DlHarqFeedbackLteControlMessage::GetDlHarqFeedback (void)
 
 
 // ---------------------------------------------------------------------------
-
-
-MibSlLteControlMessage::MibSlLteControlMessage (void)
-{
-  SetMessageType (LteControlMessage::MIB_SL);
-}
-
-void
-MibSlLteControlMessage::SetMibSL (LteRrcSap::MasterInformationBlockSL mibSL)
-{
-  m_mibSL = mibSL;
-}
-
-LteRrcSap::MasterInformationBlockSL
-MibSlLteControlMessage::GetMibSL ()
-{
-  return m_mibSL;
-}
-
-
-// ---------------------------------------------------------------------------
-
-
-SlDiscMessage::SlDiscMessage (void)
-{
-  SetMessageType (LteControlMessage::SL_DISC_MSG);
-}
-
-
-void
-SlDiscMessage::SetSlDiscMessage (SlDiscMsg discMsg)
-{
-  m_discMsg = discMsg;
-}
-
-SlDiscMsg
-SlDiscMessage::GetSlDiscMessage ()
-{
-  return m_discMsg;
-}
-
-
-// ---------------------------------------------------------------------------
-
 
 } // namespace ns3
 

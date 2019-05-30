@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>399</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>EpcUeNas</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>588</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>LteUeRrc</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>735</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>LteSlUeRrc</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>882</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>LteUeMac0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>427</x>
+      <y>14</y>
+      <w>21</w>
+      <h>1246</h>
+    </coordinates>
+    <panel_attributes>lt=.
+layer=0</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;1760.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>427</x>
+      <y>105</y>
+      <w>14</w>
+      <h>1120</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>616</x>
+      <y>105</y>
+      <w>14</w>
+      <h>1120</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>616</x>
+      <y>14</y>
+      <w>21</w>
+      <h>1246</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;1760.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>434</x>
+      <y>98</y>
+      <w>196</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>260.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>434</x>
+      <y>77</y>
+      <w>147</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>ActivateSidelinkRadio
+Bearer (group, tx, rx)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>987</y>
+      <w>126</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;50.0;160.0;50.0;160.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>637</x>
+      <y>966</y>
+      <w>119</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>AddSlrb 
+(srcL2Id, dstL2Id, lcid) 
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>763</x>
+      <y>14</y>
+      <w>21</w>
+      <h>1246</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;1760.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>763</x>
+      <y>609</y>
+      <w>14</w>
+      <h>616</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>1113</y>
+      <w>147</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>637</x>
+      <y>1092</y>
+      <w>105</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>AddSidelinkRadioBearer (slbInfo)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>910</x>
+      <y>14</y>
+      <w>21</w>
+      <h>1246</h>
+    </coordinates>
+    <panel_attributes>lt=.
+layer=0</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;1760.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>910</x>
+      <y>350</y>
+      <w>14</w>
+      <h>875</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>1176</y>
+      <w>294</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>400.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>637</x>
+      <y>1141</y>
+      <w>126</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>AddLc (lcid, srcL2Id, dstL2Id, lcConfig, PtrMacSapUser)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>434</x>
+      <y>756</y>
+      <w>14</w>
+      <h>469</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>504</x>
+      <y>714</y>
+      <w>112</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>NotifySidelinkRadio
+BearerActivated (groupId)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>462</x>
+      <y>112</y>
+      <w>812</w>
+      <h>658</h>
+    </coordinates>
+    <panel_attributes>lw=2
+LteUeRrc::DoActivate
+SidelinkRadioBearer
+function</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1176</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>LteUePhy0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1204</x>
+      <y>14</y>
+      <w>21</w>
+      <h>1246</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;1760.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1204</x>
+      <y>322</y>
+      <w>14</w>
+      <h>903</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>511</x>
+      <y>259</y>
+      <w>728</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>DoSetTemporary
+CellRnti function</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>476</x>
+      <y>154</y>
+      <w>777</w>
+      <h>273</h>
+    </coordinates>
+    <panel_attributes>alt</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>441</x>
+      <y>749</y>
+      <w>189</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>483</x>
+      <y>175</y>
+      <w>84</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>if (rnti == 0)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>210</y>
+      <w>112</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;50.0;140.0;50.0;140.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>189</y>
+      <w>91</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>DoSetTemporaryCellRnti (rnti)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>315</y>
+      <w>595</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>830.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>280</y>
+      <w>77</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>SetRnti (rnti)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1029</x>
+      <y>0</y>
+      <w>70</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>LteRlc</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1057</x>
+      <y>14</y>
+      <w>21</w>
+      <h>1246</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;1760.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>308</y>
+      <w>91</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>SetRnti (rnti)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>287</y>
+      <w>448</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>620.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1057</x>
+      <y>294</y>
+      <w>14</w>
+      <h>931</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>336</y>
+      <w>77</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>SetRnti (rnti)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>343</y>
+      <w>301</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>410.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>371</y>
+      <w>119</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>ConfigureUplink (SlPreconfig, ulEarfcn, slBandwidth)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>406</y>
+      <w>595</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>830.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1211</x>
+      <y>413</y>
+      <w>14</w>
+      <h>812</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>476</x>
+      <y>441</y>
+      <w>777</w>
+      <h>266</h>
+    </coordinates>
+    <panel_attributes>alt</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>483</x>
+      <y>469</y>
+      <w>49</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>if (rx)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>917</x>
+      <y>525</y>
+      <w>14</w>
+      <h>700</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>924</x>
+      <y>651</y>
+      <w>14</w>
+      <h>574</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1218</x>
+      <y>588</y>
+      <w>14</w>
+      <h>637</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=4</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>504</x>
+      <y>1064</y>
+      <w>98</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>Also creates PDCP/RLC instances 
+bg=blue
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>497</x>
+      <y>1043</y>
+      <w>462</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>AddSlrb function</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>518</y>
+      <w>301</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>410.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>497</y>
+      <w>126</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>AddSlDestination (group)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>553</y>
+      <w>126</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>AddSlDestination (group)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>581</y>
+      <w>595</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=5</panel_attributes>
+    <additional_attributes>830.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>630</y>
+      <w>126</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>SetSlRxPools (pools)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>644</y>
+      <w>301</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>410.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>665</y>
+      <w>126</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>SetSlRxPools (pools)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>623</x>
+      <y>679</y>
+      <w>595</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=5</panel_attributes>
+    <additional_attributes>830.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>1225</x>
+      <y>686</y>
+      <w>14</w>
+      <h>539</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=5</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>469</x>
+      <y>931</y>
+      <w>504</w>
+      <h>294</h>
+    </coordinates>
+    <panel_attributes>lw=2
+LteUeRrc::
+DoNotifySidelink
+Reception function
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>770</x>
+      <y>1120</y>
+      <w>14</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>938</x>
+      <y>1183</y>
+      <w>14</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=4</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>1113</x>
+      <y>784</y>
+      <w>91</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>ReceivePhyPdu (Ptr&lt;Packet&gt; p)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>938</x>
+      <y>805</y>
+      <w>280</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=4</panel_attributes>
+    <additional_attributes>10.0;10.0;380.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>784</x>
+      <y>826</y>
+      <w>189</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>LteUeMac::
+DoReceivePhyPdu
+function
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>784</x>
+      <y>882</y>
+      <w>133</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>NotifySidelinkReception (lcId, srcL2Id, dstL2Id)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>903</y>
+      <w>294</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-
+layer=3</panel_attributes>
+    <additional_attributes>10.0;10.0;400.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>623</x>
+      <y>910</y>
+      <w>14</w>
+      <h>315</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=4</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>931</x>
+      <y>812</y>
+      <w>14</w>
+      <h>413</h>
+    </coordinates>
+    <panel_attributes>transparency=0
+bg=pink
+layer=4</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

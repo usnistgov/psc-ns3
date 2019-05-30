@@ -36,6 +36,7 @@
 #include <ns3/phy-tx-stats-calculator.h>
 #include <ns3/phy-rx-stats-calculator.h>
 #include <ns3/mac-stats-calculator.h>
+#include <ns3/rrc-stats-calculator.h>
 #include <ns3/radio-bearer-stats-calculator.h>
 #include <ns3/radio-bearer-stats-connector.h>
 #include <ns3/epc-tft.h>
@@ -89,7 +90,7 @@ class SpectrumPropagationLossModel;
  *     * Handover algorithm
  *     * FFR (frequency reuse) algorithm
  *     * ANR (automatic neighbour relation)
- *     * CCM (Carrier Component Manager) 
+ *     * CCM (Carrier Component Manager)
  *   + EPC related models (EPC application, Internet stack, X2 interface)
  * - UE node(s)
  *   + Mobility model
@@ -120,7 +121,7 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose (void);
 
-  /** 
+  /**
    * Set the EpcHelper to be used to setup the EPC network in
    * conjunction with the setup of the LTE radio access network.
    *
@@ -130,14 +131,14 @@ public:
    * words, it will be a radio-level simulation involving only LTE PHY
    * and MAC and the FF Scheduler, with a saturation traffic model for
    * the RLC.
-   * 
+   *
    * \param h A pointer to the EpcHelper to be used
    */
   void SetEpcHelper (Ptr<EpcHelper> h);
 
-  /** 
+  /**
    * Set the type of path loss model to be used for both DL and UL channels.
-   * 
+   *
    * \param type The type of path loss model, must be a type name of any class
    *             inheriting from ns3::PropagationLossModel, for example:
    *             "ns3::FriisPropagationLossModel"
@@ -146,15 +147,15 @@ public:
 
   /**
    * Set an attribute for the path loss models to be created.
-   * 
+   *
    * \param n The name of the attribute
    * \param v The value of the attribute
    */
   void SetPathlossModelAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Set the type of scheduler to be used by eNodeB devices.
-   * 
+   *
    * \param type The type of scheduler, must be a type name of any class
    *             inheriting from ns3::FfMacScheduler, for example:
    *             "ns3::PfFfMacScheduler"
@@ -167,11 +168,11 @@ public:
    *
    * \return The scheduler type
    */
-  std::string GetSchedulerType () const; 
+  std::string GetSchedulerType () const;
 
   /**
    * Set an attribute for the scheduler to be created.
-   * 
+   *
    * \param n The name of the attribute
    * \param v The value of the attribute
    */
@@ -229,15 +230,15 @@ public:
 
   /**
    * Set an attribute for the eNodeB devices (LteEnbNetDevice) to be created.
-   * 
+   *
    * \param n The name of the attribute.
    * \param v The value of the attribute
    */
   void SetEnbDeviceAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Set the type of antenna model to be used by eNodeB devices.
-   * 
+   *
    * \param type The type of antenna model, must be a type name of any class
    *             inheriting from ns3::AntennaModel, for example:
    *             "ns3::IsotropicAntennaModel"
@@ -246,7 +247,7 @@ public:
 
   /**
    * Set an attribute for the eNodeB antenna model to be created.
-   * 
+   *
    * \param n The name of the attribute.
    * \param v The value of the attribute
    */
@@ -260,9 +261,9 @@ public:
    */
   void SetUeDeviceAttribute (std::string n, const AttributeValue &v);
 
-  /** 
+  /**
    * Set the type of antenna model to be used by UE devices.
-   * 
+   *
    * \param type The type of antenna model, must be a type name of any class
    *             inheriting from ns3::AntennaModel, for example:
    *             "ns3::IsotropicAntennaModel"
@@ -271,7 +272,7 @@ public:
 
   /**
    * Set an attribute for the UE antenna model to be created.
-   * 
+   *
    * \param n The name of the attribute
    * \param v The value of the attribute
    */
@@ -288,7 +289,7 @@ public:
 
   /**
    * Set an attribute for the spectrum channel to be created (both DL and UL).
-   * 
+   *
    * \param n The name of the attribute
    * \param v The value of the attribute
    */
@@ -434,23 +435,23 @@ public:
    */
   void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
-  /** 
+  /**
    * \brief Manual attachment of a set of UE devices to the network via the
    *        closest eNodeB (with respect to distance) among those in the set.
    * \param ueDevices The set of UE devices to be attached
    * \param enbDevices The set of eNodeB devices to be considered
-   * 
+   *
    * This function finds among the eNodeB set the closest eNodeB for each UE,
    * and then invokes manual attachment between the pair.
-   * 
+   *
    * Users are encouraged to use automatic attachment (Idle mode cell selection)
    * instead of this function.
-   * 
+   *
    * \sa LteHelper::Attach(NetDeviceContainer ueDevices);
    */
   void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
-  /** 
+  /**
    * \brief Manual attachment of a UE device to the network via the closest
    *        eNodeB (with respect to distance) among those in the set.
    * \param ueDevice The UE device to be attached
@@ -458,7 +459,7 @@ public:
    *
    * This function finds among the eNodeB set the closest eNodeB for the UE,
    * and then invokes manual attachment between the pair.
-   * 
+   *
    * Users are encouraged to use automatic attachment (Idle mode cell selection)
    * instead of this function.
    *
@@ -543,27 +544,27 @@ public:
   void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev,
                         Ptr<NetDevice> sourceEnbDev, uint16_t targetCellId);
 
-  /** 
+  /**
    * Activate a Data Radio Bearer on a given UE devices (for LTE-only simulation).
-   * 
+   *
    * \param ueDevices The set of UE devices
    * \param bearer The characteristics of the bearer to be activated
    */
   void ActivateDataRadioBearer (NetDeviceContainer ueDevices,  EpsBearer bearer);
 
-  /** 
+  /**
    * Activate a Data Radio Bearer on a UE device (for LTE-only simulation).
    * This method will schedule the actual activation
    * the bearer so that it happens after the UE got connected.
-   * 
+   *
    * \param ueDevice The UE device
    * \param bearer The characteristics of the bearer to be activated
    */
   void ActivateDataRadioBearer (Ptr<NetDevice> ueDevice,  EpsBearer bearer);
 
-  /** 
+  /**
    * Set the type of fading model to be used in both DL and UL.
-   * 
+   *
    * \param type The type of fading model, must be a type name of any class
    *             inheriting from ns3::SpectrumPropagationLossModel, for
    *             example: "ns3::TraceFadingLossModel"
@@ -645,8 +646,8 @@ public:
    */
   void EnableRlcTraces (void);
 
-  /** 
-   * 
+  /**
+   *
    * \return The RLC stats calculator object
    */
   Ptr<RadioBearerStatsCalculator> GetRlcStats (void);
@@ -656,8 +657,8 @@ public:
    */
   void EnablePdcpTraces (void);
 
-  /** 
-   * 
+  /**
+   *
    * \return The PDCP stats calculator object
    */
   Ptr<RadioBearerStatsCalculator> GetPdcpStats (void);
@@ -678,13 +679,13 @@ public:
   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
-  /** 
+  /**
    * \return A pointer to the SpectrumChannel instance used for the uplink
    */
   Ptr<SpectrumChannel> GetUplinkSpectrumChannel (void) const;
 
 
-  /** 
+  /**
    * \return A pointer to the SpectrumChannel instance used for the downlink
    */
   Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;
@@ -733,41 +734,6 @@ public:
 
   void DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft);
 
- /**
-   * Activate Sidelink Discovery for given UEs for certain applications
-   *
-   * \param ueDevices The set of UE devices
-   * \param apps The applications to start
-   * \param rxtx The interest in monitoring or announcing (0 for rx and 1 for tx)
-   */
-  void StartDiscovery (NetDeviceContainer ueDevices, std::list<uint32_t> apps, bool rxtx);
-
-  /**
-   * Deactivate discovery for given UEs for certain applications
-   *
-   * \param ueDevices the set of UE devices
-   * \param apps The applications to stop
-   * \param rxtx The interest in monitoring or announcing (0 for rx and 1 for tx)
-   */
-  void StopDiscovery (NetDeviceContainer ueDevices, std::list<uint32_t> apps, bool rxtx);
-
-  /**
-   *  Activate discovery for one UE for given applications
-   *
-   * \param ueDevice The UE device
-   * \param apps The applications to start
-   * \param rxtx The interest in monitoring or announcing (0 for rx and 1 for tx)
-   */
-  void StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx);
-
-  /**
-   *  Deactivate discovery for one UE for given applications
-   *  \param ueDevice the UE device
-   *  \param apps The applications to stop
-   *  \param rxtx The interest in monitoring or announcing (0 for rx and 1 for tx)
-   */
-  void StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx);
-
   /**
    * Enable trace sinks for Sidelink reception PHY layer.
    */
@@ -787,6 +753,21 @@ public:
    * Enable trace sinks for Sidelink PSSCH UE MAC layer.
    */
   void EnableSlPsschMacTraces (void);
+
+  /**
+   * Enable trace sinks for Discovery Announcement at MAC layer.
+   */
+  void EnableSlPsdchMacTraces (void);
+
+  /**
+   * Enable trace sinks for RRC layer
+   */
+  void EnableRrcTraces (void);
+
+  /**
+   * Enable trace sinks for ProSe discovery monitoring at RRC layer.
+   */
+  void EnableDiscoveryMonitoringRrcTraces (void);
 
   /**
    * Deploys the Sidelink configuration to the eNodeBs
@@ -826,7 +807,6 @@ protected:
   virtual void DoInitialize (void);
 
 private:
-
   /**
    * Configure the component carriers
    *
@@ -856,8 +836,6 @@ private:
    * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
    * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
    *                     (originally the UE is attached to this eNB)
-   * \param ueDev The UE that hands off, must be of the type LteUeNetDevice
-   * \param sourceEnbDev The source eNB, must be of the type LteEnbNetDevice
    * \param targetCellId The target CellId (the UE primary component carrier will
    *                     be connected to this cell after the handover)
    *
@@ -943,6 +921,9 @@ private:
   Ptr<RadioBearerStatsCalculator> m_rlcStats;
   /// Container of PDCP layer statistics.
   Ptr<RadioBearerStatsCalculator> m_pdcpStats;
+  /// Container of RRC layer statistics.
+  Ptr<RrcStatsCalculator> m_rrcStats;
+
   /// Connects RLC and PDCP statistics containers to appropriate trace sources
   RadioBearerStatsConnector m_radioBearerStatsConnector;
 

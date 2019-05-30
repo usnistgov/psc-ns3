@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>510</x>
+      <y>50</y>
+      <w>330</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;LteSlEnbRrc&gt;&gt;
+--
+
+Responsibilities
+-- Holds Sidelink Comm and Disc  pool config
+-- Build SIB 18 and 19 msgs
+
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>40</x>
+      <y>40</y>
+      <w>280</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;LteEnbRrc&gt;&gt;
+--
+
+_-ClassAttribute:
+
+Name : SidelinkConfiguration
+Type : Ptr&lt;LteSlEnbRrc&gt; 
+                    m_sidelinkConfiguration
+
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>310</x>
+      <y>80</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=.&gt;
+&lt;&lt;Friend&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
+  </element>
+</diagram>

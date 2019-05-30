@@ -65,13 +65,13 @@ PhyRxStatsCalculator::GetTypeId (void)
                    MakeStringAccessor (&PhyRxStatsCalculator::SetUlRxOutputFilename),
                    MakeStringChecker ())
     .AddAttribute ("SlRxOutputFilename",
-                   "Name of the file where the Sidelink results will be saved.",
+                   "Name of the file where the PSSCH and PSDCH phy reception results will be saved.",
                    StringValue ("SlRxPhyStats.txt"),
                    MakeStringAccessor (&PhyRxStatsCalculator::SetSlRxOutputFilename),
                    MakeStringChecker ())
-    .AddAttribute ("SlPscchRxOutputFilename",
-                   "Name of the file where the Sidelink PSCHCH results will be saved.",
-                   StringValue ("SlPscchRxPhyStats.txt"),
+    .AddAttribute ("SlCchRxOutputFilename",
+                   "Name of the file where the Sidelink PSCCH results will be saved.",
+                   StringValue ("SlCchRxPhyStats.txt"),
                    MakeStringAccessor (&PhyRxStatsCalculator::SetSlPscchRxOutputFilename),
                    MakeStringChecker ())
   ;
@@ -276,7 +276,7 @@ PhyRxStatsCalculator::SlPscchReception (SlPhyReceptionStatParameters params)
           return;
         }
       m_slPscchRxFirstWrite = false;
-      outFile << "% time\tcellId\tIMSI\tRNTI\tmcs\tsize\tresPscch\trbLen\trbStart\tiTrp\thopping\tgroupDstId\tcorrect";
+      outFile << "% time\tcellId\tIMSI\tRNTI\tresPscch\tsizeTb\thopping\thoppingInfo\tpsschRbLen\tpsschStartRb\tiTrp\tmcs\tl1GroupDstId\tcorrect";
       outFile << std::endl;
     }
   else
@@ -290,16 +290,17 @@ PhyRxStatsCalculator::SlPscchReception (SlPhyReceptionStatParameters params)
     }
 
   outFile << params.m_timestamp << "\t";
-  outFile << (uint32_t) params.m_cellId << "\t";
+  outFile << params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
   outFile << params.m_rnti << "\t";
-  outFile << (uint32_t) params.m_mcs << "\t";
-  outFile << params.m_size << "\t";
   outFile << params.m_resPscch << "\t";
+  outFile << params.m_size << "\t";
+  outFile << (uint32_t) params.m_hopping << "\t";
+  outFile << (uint32_t) params.m_hoppingInfo << "\t";
   outFile << (uint32_t) params.m_rbLen << "\t";
   outFile << (uint32_t) params.m_rbStart << "\t";
   outFile << (uint32_t) params.m_iTrp << "\t";
-  outFile << (uint32_t) params.m_hopping << "\t";
+  outFile << (uint32_t) params.m_mcs << "\t";
   outFile << (uint32_t) params.m_groupDstId << "\t";
   outFile << (uint32_t) params.m_correctness <<std::endl;
   outFile.close ();

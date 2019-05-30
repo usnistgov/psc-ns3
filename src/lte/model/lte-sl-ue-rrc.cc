@@ -34,6 +34,7 @@
  */
 
 #include "lte-sl-ue-rrc.h"
+#include <ns3/lte-ue-rrc.h>
 
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
@@ -56,7 +57,11 @@ TypeId LteSlUeRrc::GetTypeId (void)
   static TypeId  tid = TypeId ("ns3::LteSlUeRrc")
     .SetParent<Object> ()
     .AddConstructor<LteSlUeRrc> ()
-
+    .AddAttribute ("Rrc",
+                   "The rrc layer",
+                   PointerValue (),
+                   MakePointerAccessor (&LteSlUeRrc::m_rrc),
+                   MakePointerChecker <LteUeRrc> ())
   ;
   return tid;
 }
@@ -173,15 +178,44 @@ bool
 LteSlUeRrc::IsMonitoringInterested ()
 {
   NS_LOG_FUNCTION (this);
-  return m_monitorApps.size () > 0;
+  //Todo: device is monitoring if model A/monitoring OR model B (since it needs to monitor for requests/responses)
+  bool monitoring = m_monitoringAppsMap.size () > 0;
+  if (!monitoring)
+    {
+      //check relays 
+      for (std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.begin (); itInfo != m_relayServicesMap.end (); ++itInfo)
+        {
+          if ( itInfo->second.role == RemoteUE || (itInfo->second.role == RelayUE && itInfo->second.model == ModelB) )
+            {
+              monitoring = true;
+              break;
+            }
+        }
+    }
+  return monitoring;
 }
 
 bool
 LteSlUeRrc::IsAnnouncingInterested ()
 {
   NS_LOG_FUNCTION (this);
-  return m_announceApps.size () > 0;
+  //Todo: device is announcing if model A/announcing OR model B (since it needs to send requests/responses)
+  //maybe we can use a variable that is update when calling start/stop applications and relays
+  bool announcing = m_announcingAppsMap.size () > 0;
+  if (!announcing)
+    { //check relays 
+      for (std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.begin (); itInfo != m_relayServicesMap.end (); ++itInfo)
+        {
+          if ( itInfo->second.role == RelayUE || (itInfo->second.role == RemoteUE && itInfo->second.model == ModelB) )
+            {
+              announcing = true;
+              break;
+            }
+        }
+    }
+  return announcing;
 }
+
 
 std::list<uint32_t>
 LteSlUeRrc::GetTxDestinations ()
@@ -264,7 +298,7 @@ LteSlUeRrc::DeleteSidelinkRadioBearer (uint32_t src, uint32_t group)
 Ptr<LteSidelinkRadioBearerInfo>
 LteSlUeRrc::GetSidelinkRadioBearer (uint32_t src, uint32_t group)
 {
-  Ptr<LteSidelinkRadioBearerInfo> slrb = NULL;
+  Ptr<LteSidelinkRadioBearerInfo> slrb = nullptr;
 
   NS_LOG_LOGIC ("Searching SLRB " << src << "->" << group);
 
@@ -286,37 +320,105 @@ LteSlUeRrc::GetSidelinkRadioBearer (uint32_t group)
   return GetSidelinkRadioBearer (m_sourceL2Id, group);
 }
 
-void
-LteSlUeRrc::AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
+void 
+LteSlUeRrc::StartDiscoveryApps (std::list<uint64_t> appCodes, DiscoveryRole role)
 {
-  for (std::list<uint32_t>::iterator it = apps.begin (); it != apps.end (); ++it)
+  NS_LOG_FUNCTION (this);
+  for (std::list<uint64_t>::iterator it = appCodes.begin (); it != appCodes.end (); ++it)
+  {
+    AppServiceInfo info;
+    info.role = role;
+    info.appCode = *it;
+    if (role == Discoveree)
     {
-      if (rxtx)
-        {
-          m_announceApps.push_back (*it);
-        }
-      else
-        {
-          m_monitorApps.push_back (*it);
-        }
+      NS_LOG_DEBUG ("Adding monitoring app code");
+      m_monitoringAppsMap.insert ( std::pair <uint64_t, AppServiceInfo> (*it, info) );
     }
+    else 
+    {
+      NS_LOG_DEBUG ("Adding announcing app code");
+      m_announcingAppsMap.insert ( std::pair <uint64_t, AppServiceInfo> (*it, info) );
+    }
+  }
 }
 
 
-void
-LteSlUeRrc::RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx)
+void 
+LteSlUeRrc::StopDiscoveryApps (std::list<uint64_t> appCodes, DiscoveryRole role)
 {
-  for (std::list<uint32_t>::iterator it = apps.begin (); it != apps.end (); ++it)
+  NS_LOG_FUNCTION (this);
+  std::map <uint64_t, AppServiceInfo>::iterator itInfo;
+    
+  for (std::list<uint64_t>::iterator it = appCodes.begin (); it != appCodes.end (); ++it)
+  {
+    if (role == Discoveree)
     {
-      if (rxtx)
+      itInfo = m_monitoringAppsMap.find (*it);
+      if (itInfo != m_monitoringAppsMap.end())
         {
-          m_announceApps.remove (*it);
-        }
-      else
-        {
-          m_monitorApps.remove (*it);
+          //found app to remove
+          m_monitoringAppsMap.erase (itInfo);
+          break;
         }
     }
+    else 
+    {
+      itInfo = m_announcingAppsMap.find (*it);
+      if (itInfo != m_announcingAppsMap.end())
+        {
+          //found app to remove
+          if (itInfo->second.txTimer.IsRunning())
+            { //stop sending announcements
+              itInfo->second.txTimer.Cancel();
+            }
+          m_announcingAppsMap.erase (itInfo);
+          break;
+        }
+    }
+  }
+}
+
+bool
+LteSlUeRrc::IsMonitoringApp (uint64_t appCode)
+{
+  NS_LOG_FUNCTION (this);
+  return m_monitoringAppsMap.find (appCode) != m_monitoringAppsMap.end();
+}
+
+bool
+LteSlUeRrc::IsAnnouncingApp (uint64_t appCode)
+{
+  NS_LOG_FUNCTION (this);  
+  return m_announcingAppsMap.find (appCode) != m_announcingAppsMap.end();
+}
+
+void
+LteSlUeRrc::StartAnnouncing ()
+{
+  NS_LOG_FUNCTION (this);
+  Time period = MilliSeconds (m_activeDiscTxPool->GetDiscPeriod ());
+  //Applications
+  for (std::map<uint64_t, AppServiceInfo>::iterator itInfo = m_announcingAppsMap.begin (); itInfo != m_announcingAppsMap.end (); ++itInfo)
+    {
+      if (!itInfo->second.txTimer.IsRunning())
+        { 
+          TransmitApp (itInfo->first);
+        }
+    }
+
+
+  //Relay
+  for (std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.begin (); itInfo != m_relayServicesMap.end (); ++itInfo)
+    {
+      if ( (itInfo->second.role == RemoteUE && itInfo->second.model == ModelB) || (itInfo->second.role == RelayUE && itInfo->second.model == ModelA) )
+        {
+          if (!itInfo->second.txTimer.IsRunning())
+            { 
+              TransmitRelayMessage (itInfo->first);
+            }
+        }
+    }
+ 
 }
 
 void
@@ -371,6 +473,131 @@ LteSlUeRrc::IsCellBroadcastingSIB19 (uint16_t cellId)
 {
   std::map <uint16_t, LteSlCellConfiguration>::iterator it = m_slMap.find (cellId);
   return (it != m_slMap.end () && it->second.haveSib19);
+}
+
+void
+LteSlUeRrc::SetActiveTxDiscoveryPool (Ptr<SidelinkTxDiscResourcePool> pool)
+{
+  NS_LOG_FUNCTION (this);
+  m_activeDiscTxPool = pool;
+}
+
+Ptr<SidelinkTxDiscResourcePool>
+LteSlUeRrc::GetActiveTxDiscoveryPool ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_activeDiscTxPool;
+}
+
+void
+LteSlUeRrc::TransmitApp (uint64_t appCode)
+{
+  NS_LOG_FUNCTION (this);
+  
+  std::map <uint64_t, AppServiceInfo>::iterator it;
+
+  it = m_announcingAppsMap.find (appCode);
+  NS_ASSERT (it != m_announcingAppsMap.end());
+  //build message to transmit
+  LteSlDiscHeader discHeader;
+
+  discHeader.SetOpenDiscoveryAnnounceParameters (appCode); //Open Discovery announcement
+  
+  m_rrc->TransmitDiscoveryMessage (discHeader);
+  //reschedule
+  Time period = MilliSeconds (m_activeDiscTxPool->GetDiscPeriod ());
+  NS_LOG_DEBUG ("period " << m_activeDiscTxPool->GetDiscPeriod () << ", " << period);
+  it->second.txTimer = Simulator::Schedule (period, &LteSlUeRrc::TransmitApp, this, appCode);
+}
+
+void 
+LteSlUeRrc::StartRelayService (uint32_t serviceCode, LteSlUeRrc::DiscoveryModel model, LteSlUeRrc::RelayRole role)
+{
+  NS_LOG_FUNCTION (this << serviceCode << model << role);
+  NS_ASSERT_MSG (m_relayServicesMap.find (serviceCode) == m_relayServicesMap.end(), "Cannot add already existing service " << serviceCode);
+
+  RelayServiceInfo info;
+  info.model = model;
+  info.role = role;
+  info.serviceCode = serviceCode;
+  
+  m_relayServicesMap.insert ( std::pair <uint32_t, RelayServiceInfo> (serviceCode, info) );
+
+}
+    
+void 
+LteSlUeRrc::StopRelayService (uint32_t serviceCode)
+{
+  NS_LOG_FUNCTION (this << serviceCode);
+
+  std::map <uint32_t, RelayServiceInfo>::iterator it = m_relayServicesMap.find (serviceCode);
+  if (it != m_relayServicesMap.end ())
+    {
+      //stop timer and remove from list
+      if (it->second.txTimer.IsRunning())
+        {
+          it->second.txTimer.Cancel();
+        }
+      m_relayServicesMap.erase (it);
+    }
+}
+
+void 
+LteSlUeRrc::TransmitRelayMessage (uint32_t serviceCode)
+{
+  NS_LOG_FUNCTION (this << serviceCode);
+
+  std::map <uint32_t, RelayServiceInfo>::iterator it;
+
+  it = m_relayServicesMap.find (serviceCode);
+  NS_ASSERT (it != m_relayServicesMap.end());
+  //build message to transmit
+  LteSlDiscHeader discHeader;
+
+  //Right now we only have model A, but additional cases will be added for model B
+  NS_ASSERT (it->second.model == ModelA && it->second.role == RelayUE);  
+  discHeader.SetRelayAnnouncementParameters (serviceCode, 0, m_sourceL2Id, 1);
+  
+  m_rrc->TransmitDiscoveryMessage (discHeader);
+   
+  //reschedule
+  Time period = MilliSeconds (m_activeDiscTxPool->GetDiscPeriod ());
+  NS_LOG_DEBUG ("period " << m_activeDiscTxPool->GetDiscPeriod () << ", " << period);
+  it->second.txTimer = Simulator::Schedule (period, &LteSlUeRrc::TransmitRelayMessage, this, serviceCode);
+}
+
+bool
+LteSlUeRrc::IsMonitoringRelayServiceCode (uint32_t serviceCode)
+{
+  NS_LOG_FUNCTION (this << serviceCode);
+
+  //This function will probably have to be updated to include the role or message type we are looking for
+  //for example in model B both devices are monitoring but not for the same type of messages
+  std::map <uint32_t, RelayServiceInfo>::iterator it;
+  it = m_relayServicesMap.find (serviceCode);
+  
+  return (it != m_relayServicesMap.end() && ( (it->second.model == ModelA && it->second.role == RemoteUE) || (it->second.model == ModelB && it->second.role == RelayUE) ));
+}
+
+void
+LteSlUeRrc::RecvRelayServiceDiscovery (uint32_t serviceCode, uint64_t announcerInfo, uint32_t proseRelayUeId, uint8_t statusIndicator)
+{
+  NS_LOG_FUNCTION (this << serviceCode << announcerInfo << proseRelayUeId << (uint16_t)statusIndicator);
+
+  //Here we can have a complex logic that decides if the remote UE needs to connect
+  //for now, let's just connect on first discovery received
+
+  //StartDirectCommunication (serviceCode, proseRelayUeId);
+}
+
+void
+LteSlUeRrc::NotifySidelinkRadioBearerActivated (uint32_t proseUeId)
+{
+  NS_LOG_FUNCTION (this << proseUeId);
+
+  //check in which state we are
+  //if this is a remote UE trying to establish a link to a relay, initiate request
+  //Send direct communication request 
 }
 
 int64_t

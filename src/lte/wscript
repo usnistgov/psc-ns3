@@ -48,6 +48,7 @@ def build(bld):
         'helper/radio-bearer-stats-connector.cc',
         'helper/phy-stats-calculator.cc',
         'helper/mac-stats-calculator.cc',
+        'helper/rrc-stats-calculator.cc',
         'helper/phy-tx-stats-calculator.cc',
         'helper/phy-rx-stats-calculator.cc',
         'helper/radio-environment-map-helper.cc',
@@ -153,6 +154,8 @@ def build(bld):
         'model/lte-sl-enb-rrc.cc',
         'model/lte-sl-ue-rrc.cc',
         'model/lte-sl-tft.cc',
+        'model/lte-sl-header.cc',
+        'model/lte-sl-tag.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -264,6 +267,7 @@ def build(bld):
         'helper/point-to-point-epc-helper.h',
         'helper/phy-stats-calculator.h',
         'helper/mac-stats-calculator.h',
+        'helper/rrc-stats-calculator.h',
         'helper/phy-tx-stats-calculator.h',
         'helper/phy-rx-stats-calculator.h',
         'helper/radio-bearer-stats-calculator.h',
@@ -371,6 +375,8 @@ def build(bld):
         'model/lte-sl-enb-rrc.h',
         'model/lte-sl-ue-rrc.h',
         'model/lte-sl-tft.h',
+        'model/lte-sl-header.h',
+        'model/lte-sl-tag.h',
         ]
 
     if (bld.env['ENABLE_EMU']):

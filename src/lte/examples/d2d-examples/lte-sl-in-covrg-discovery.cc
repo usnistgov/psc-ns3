@@ -47,32 +47,6 @@
 
 using namespace ns3;
 
-
-void SlStartDiscovery (Ptr<LteHelper> helper, Ptr<NetDevice> ue, std::list<uint32_t> apps, bool rxtx)
-{
-  helper->StartDiscovery (ue, apps, rxtx);
-}
-
-void SlStopDiscovery (Ptr<LteHelper> helper, Ptr<NetDevice> ue, std::list<uint32_t> apps, bool rxtx)
-{
-  helper->StopDiscovery (ue, apps, rxtx);
-}
-
-void DiscoveryMonitoringTrace (Ptr<OutputStreamWrapper> stream, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint32_t proSeAppCode)
-{
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << imsi << "\t" << cellId << "\t" << rnti << "\t" << proSeAppCode << std::endl;
-}
-
-void DiscoveryAnnouncementPhyTrace (Ptr<OutputStreamWrapper> stream, std::string imsi, uint16_t cellId, uint16_t rnti, uint32_t proSeAppCode)
-{
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << imsi << "\t" << cellId << "\t"  << rnti << "\t" << proSeAppCode << std::endl;
-}
-
-void DiscoveryAnnouncementMacTrace (Ptr<OutputStreamWrapper> stream, std::string imsi, uint16_t rnti, uint32_t proSeAppCode)
-{
-  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << imsi << "\t" << rnti << "\t" << proSeAppCode << std::endl;
-}
-
 /*
  * The topology is the following:
  *
@@ -252,18 +226,19 @@ int main (int argc, char *argv[])
   lteHelper->Attach (ueDevs);
 
   NS_LOG_INFO ("Configuring discovery applications");
-  std::map<Ptr<NetDevice>, std::list<uint32_t> > announceApps;
-  std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorApps;
+  std::map<Ptr<NetDevice>, std::list<uint64_t> > announceApps;
+  std::map<Ptr<NetDevice>, std::list<uint64_t> > monitorApps;
   for (uint32_t i = 1; i <= ueNodes.GetN (); ++i)
     {
-      announceApps[ueDevs.Get (i - 1)].push_back ((uint32_t)i);
+      announceApps[ueDevs.Get (i - 1)].push_back(i);
+       
       NS_LOG_DEBUG ("Ue Device " << i - 1 << " announce app = " << i);
       for (uint32_t j = 1; j <= ueNodes.GetN (); ++j)
         {
           if (i != j)
             {
-              monitorApps[ueDevs.Get (i - 1)].push_back ((uint32_t)j);
-              NS_LOG_DEBUG ("Ue Device " << i - 1 << " monitor app = " << j);
+               monitorApps[ueDevs.Get (i - 1)].push_back(j);
+               NS_LOG_DEBUG ("Ue Device " << i - 1 << " monitor app = " << j);
             }
         }
     }
@@ -271,63 +246,38 @@ int main (int argc, char *argv[])
   for (auto itAnnounceApps : announceApps)
     {
       Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itAnnounceApps.first);
-      std::list<uint32_t> apps = itAnnounceApps.second;
+      std::list<uint64_t> apps = itAnnounceApps.second;
       std::cout << "Scheduling " << apps.size () << " announce apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
-      std::list<uint32_t>::iterator itAppList;
+      std::list<uint64_t>::iterator itAppList;
       for (auto itAppList : apps)
         {
           std::cout << "Announcing App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, lteHelper, ueNetDevice, apps, true); // true for announce
+      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discovered);
     }
 
   for (auto itMonitorApps : monitorApps)
     {
       Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itMonitorApps.first);
-      std::list<uint32_t> apps = itMonitorApps.second;
+      std::list<uint64_t> apps = itMonitorApps.second;
       std::cout << "Scheduling " << apps.size () << " monitor apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
-      std::list<uint32_t>::iterator itAppList;
+      std::list<uint64_t>::iterator itAppList;
       for (auto itAppList : apps)
         {
           std::cout << "Monitoring App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, lteHelper, ueNetDevice, apps, false); // false for monitor
+      Simulator::Schedule (Seconds(2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discoveree);
     }
 
   ///*** End of application configuration ***///
 
-  // Set Discovery Traces
-  AsciiTraceHelper ascii;
-  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("discovery-out-monitoring.tr");
-  *stream->GetStream () << "Time\tIMSI\tCellId\tRNTI\tProSeAppCode" << std::endl;
-
-  AsciiTraceHelper ascii1;
-  Ptr<OutputStreamWrapper> stream1 = ascii1.CreateFileStream ( "discovery-out-announcement-phy.tr");
-  *stream1->GetStream () << "Time\tIMSI\tCellId\tRNTI\tProSeAppCode" << std::endl;
-
-  AsciiTraceHelper ascii2;
-  Ptr<OutputStreamWrapper> stream2 = ascii1.CreateFileStream ( "discovery-out-announcement-mac.tr");
-  *stream2->GetStream () << "Time\tIMSI\tRNTI\tProSeAppCode" << std::endl;
-
-  std::ostringstream oss;
-  oss.str ("");
-  for (uint32_t i = 0; i < ueDevs.GetN (); ++i)
-    {
-      Ptr<LteUeRrc> ueRrc = DynamicCast<LteUeRrc> ( ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetRrc () );
-      ueRrc->TraceConnectWithoutContext ("DiscoveryMonitoring", MakeBoundCallback (&DiscoveryMonitoringTrace, stream));
-      oss << ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetImsi ();
-      Ptr<LteUePhy> uePhy = DynamicCast<LteUePhy> ( ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetPhy () );
-      uePhy->TraceConnect ("DiscoveryAnnouncement", oss.str (), MakeBoundCallback (&DiscoveryAnnouncementPhyTrace, stream1));
-      Ptr<LteUeMac> ueMac = DynamicCast<LteUeMac> ( ueDevs.Get (i)->GetObject<LteUeNetDevice> ()->GetMac () );
-      ueMac->TraceConnect ("DiscoveryAnnouncement", oss.str (), MakeBoundCallback (&DiscoveryAnnouncementMacTrace, stream2));
-      oss.str ("");
-    }
-
   NS_LOG_INFO ("Enabling Sidelink discovery reception trace...");
 
   lteHelper->EnableSlRxPhyTraces ();
+  lteHelper->EnableSlPsdchMacTraces ();
+  lteHelper->EnableDiscoveryMonitoringRrcTraces ();
 
   NS_LOG_INFO ("Starting simulation...");
 

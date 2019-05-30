@@ -239,18 +239,18 @@ struct PhyReceptionStatParameters
 /// PhyTransmissionStatParameters structure
 struct SlPhyTransmissionStatParameters
 {
-  int64_t  m_timestamp; ///< in millisecond
-  uint16_t m_cellId;  ///< Cell ID of the attached Enb
-  uint64_t m_imsi;    ///< IMSI of the scheduled UE
-  uint16_t m_rnti; ///< RNTI
-  uint16_t m_resPscch; ///< Resource for PSCCH
-  uint8_t  m_tpc; ///< TPC
-  uint8_t  m_hopping; ///< hopping flag
-  uint8_t  m_rbStart; ///< models rb assignment
-  uint8_t  m_rbLen;   ///< models rb assignment
-  uint8_t  m_hoppingInfo; ///< models rb assignment when hopping is enabled
-  uint8_t  m_iTrp; ///< Time recourse pattern (TRP) index
-  uint8_t  m_ccId;    ///< component carrier id
+  int64_t  m_timestamp {std::numeric_limits<int64_t>::max ()}; ///< in millisecond
+  uint16_t m_cellId {std::numeric_limits<uint16_t>::max ()}; ///< Cell ID of the attached Enb
+  uint64_t m_imsi {std::numeric_limits<int64_t>::max ()}; ///< IMSI of the scheduled UE
+  uint16_t m_rnti {std::numeric_limits<uint16_t>::max ()}; ///< RNTI
+  uint16_t m_resPscch {std::numeric_limits<uint16_t>::max ()}; ///< Resource for PSCCH
+  uint8_t  m_tpc {std::numeric_limits<uint8_t>::max ()}; ///< TPC
+  uint8_t  m_hopping {std::numeric_limits<uint8_t>::max ()}; ///< hopping flag
+  uint8_t  m_rbStart {std::numeric_limits<uint8_t>::max ()}; ///< models rb assignment
+  uint8_t  m_rbLen {std::numeric_limits<uint8_t>::max ()}; ///< models rb assignment
+  uint8_t  m_hoppingInfo {std::numeric_limits<uint8_t>::max ()}; ///< models rb assignment when hopping is enabled
+  uint8_t  m_iTrp {std::numeric_limits<uint8_t>::max ()}; ///< Time recourse pattern (TRP) index
+  uint8_t  m_ccId {std::numeric_limits<uint8_t>::max ()}; ///< component carrier id
 
   /**
    *  TracedCallback signature.
@@ -265,19 +265,20 @@ struct SlPhyTransmissionStatParameters
 /// SlPhyTransmissionStatParameters structure
 struct SlPhyReceptionStatParameters
 {
-  int64_t  m_timestamp; ///< in millisecond
-  uint16_t m_cellId;  ///< Cell ID of the attached Enb
-  uint64_t m_imsi;    ///< IMSI of the scheduled UE
-  uint16_t m_rnti; ///< RNTI
-  uint16_t m_resPscch; ///< Resource for PSCCH
-  uint8_t  m_mcs;     ///< MCS for transport block
-  uint8_t  m_hopping; ///< hopping flag
-  uint8_t  m_rbStart; ///< models RB assignment
-  uint8_t  m_rbLen;   ///< models RB assignment
-  uint16_t m_size;         ///< Size of transport block
-  uint8_t  m_correctness;  ///< correctness of the TB received
-  uint8_t  m_iTrp; ///< Time recourse pattern (TRP) index
-  uint8_t   m_groupDstId; ///< Group destination ID
+  int64_t m_timestamp {std::numeric_limits<int64_t>::max ()}; ///< in millisecond
+  uint16_t m_cellId {std::numeric_limits<uint16_t>::max ()}; ///< Cell ID of the attached Enb
+  uint64_t m_imsi {std::numeric_limits<int64_t>::max ()}; ///< IMSI of the scheduled UE
+  uint16_t m_rnti {std::numeric_limits<uint16_t>::max ()}; ///< RNTI
+  uint16_t m_resPscch {std::numeric_limits<uint16_t>::max ()}; ///< Resource for PSCCH
+  uint8_t m_mcs {std::numeric_limits<uint8_t>::max ()}; ///< MCS for transport block
+  uint8_t m_hopping {std::numeric_limits<uint8_t>::max ()}; ///< hopping flag
+  uint8_t m_hoppingInfo {std::numeric_limits<uint8_t>::max ()}; ///< hopping info
+  uint8_t m_rbStart {std::numeric_limits<uint8_t>::max ()}; ///< models RB assignment
+  uint8_t m_rbLen {std::numeric_limits<uint8_t>::max ()}; ///< models RB assignment
+  uint16_t m_size {std::numeric_limits<uint16_t>::max ()}; ///< Size of transport block
+  uint8_t m_correctness {std::numeric_limits<uint8_t>::max ()};  ///< correctness of the TB received
+  uint8_t m_iTrp {std::numeric_limits<uint8_t>::max ()}; ///< Time recourse pattern (TRP) index
+  uint8_t m_groupDstId {std::numeric_limits<uint8_t>::max ()}; ///< Group destination ID
 
   /**
    *  TracedCallback signature.
@@ -291,26 +292,27 @@ struct SlPhyReceptionStatParameters
 /// SlUeMacStatParameters structure
 struct SlUeMacStatParameters
 {
-  int64_t  m_timestamp;    ///< in millisecond
-  uint16_t m_cellId;       ///< Cell ID of the attached Enb
-  uint64_t m_imsi;         ///< IMSI of the scheduled UE
-  uint16_t m_rnti;         ///< C-RNTI scheduled
-  uint32_t m_frameNo;       ///< the frame number
-  uint32_t m_subframeNo;   ///< the subframe number
-  uint8_t  m_mcs;          ///< MCS for transport block
-  uint16_t m_tbSize;       ///< Size of transport block in bytes
-  uint16_t m_pscchRi;      ///< PSCCH resource index
-  uint32_t m_pscchFrame1;    ///< PSCCH 1st transmission frame number
-  uint32_t m_pscchSubframe1; ///< PSCCH 1st transmission subframe number
-  uint32_t m_pscchFrame2;    ///< PSCCH 2st transmission frame number
-  uint32_t m_pscchSubframe2; ///< PSCCH 2st transmission subframe number
-  uint16_t m_psschTxStartRB;   ///< PSSCH transmission start RB
-  uint16_t m_psschTxLengthRB;  ///< PSSCH transmission length RB
-  uint16_t m_psschItrp;   ///< PSSCH I_TRP
-  uint32_t m_psschFrame;    ///< PSSCH frame used to transmitt
-  uint32_t m_psschSubframe;    ///< PSSCH subframe used to transmitt
-  uint32_t m_psschFrameStart;    ///< PSSCH frame start
-  uint32_t m_psschSubframeStart;    ///< PSSCH frame start
+  int64_t m_timestamp {std::numeric_limits<int64_t>::max ()}; ///< in millisecond
+  uint16_t m_cellId {std::numeric_limits<uint16_t>::max ()}; ///< Cell ID of the attached Enb
+  uint64_t m_imsi {std::numeric_limits<uint64_t>::max ()}; ///< IMSI of the scheduled UE
+  uint16_t m_rnti {std::numeric_limits<uint16_t>::max ()}; ///< C-RNTI scheduled
+  uint32_t m_frameNo {std::numeric_limits<uint32_t>::max ()}; ///< the frame number
+  uint32_t m_subframeNo {std::numeric_limits<uint32_t>::max ()}; ///< the subframe number
+  uint32_t m_periodStartFrame {std::numeric_limits<uint32_t>::max ()}; ///< Sidelink control or discovery period starting frame number
+  uint32_t m_periodStartSubframe {std::numeric_limits<uint32_t>::max ()}; ///< Sidelink control or discovery period starting subframe number
+  uint8_t  m_mcs {std::numeric_limits<uint8_t>::max ()}; ///< MCS for transport block
+  uint16_t m_tbSize {std::numeric_limits<uint16_t>::max ()}; ///< PSCCH or PSSCH transport block size in bytes
+  uint16_t m_resIndex {std::numeric_limits<uint16_t>::max ()}; ///< PSCCH or PSDCH resource index
+  uint8_t m_pscchTxStartRB {std::numeric_limits<uint8_t>::max ()}; ///< PSCCH transmission start RB
+  uint8_t m_pscchTxLengthRB {std::numeric_limits<uint8_t>::max ()}; ///< PSCCH transmission length in RBs
+  uint8_t m_txStartRB {std::numeric_limits<uint8_t>::max ()}; ///< PSSCH or PSDCH transmission start RB
+  uint8_t m_txLengthRB {std::numeric_limits<uint8_t>::max ()}; ///< PSSCH or PSDCH transmission length in RBs
+  uint8_t m_psschItrp {std::numeric_limits<uint8_t>::max ()}; ///< PSSCH I_TRP
+  uint8_t m_hopping {std::numeric_limits<uint8_t>::max ()}; ///< hopping flag
+  uint8_t m_hoppingInfo {std::numeric_limits<uint8_t>::max ()}; ///< hopping info
+  uint8_t m_groupDstId {std::numeric_limits<uint8_t>::max ()}; ///< Group destination ID
+  uint8_t m_rv {std::numeric_limits<uint8_t>::max ()}; ///< the redundancy version (HARQ)
+  uint8_t m_sidelinkDropped {std::numeric_limits<uint8_t>::max ()}; ///< Flag to indicate the drop of PSCCH, PSSCH and PSDCH message
 
   /**
    *  TracedCallback signature.
@@ -325,14 +327,14 @@ struct SlUeMacStatParameters
 /// DlSchedulingCallbackInfo structure
 struct DlSchedulingCallbackInfo
 {
-  uint32_t frameNo; ///< frame number
-  uint32_t subframeNo; ///< subframe number
-  uint16_t rnti; ///< RNTI
-  uint8_t  mcsTb1; ///< MCS TB1
-  uint16_t sizeTb1; ///< size TB1
-  uint8_t  mcsTb2; ///< MCS TB2
-  uint16_t sizeTb2; ///< size TB2
-  uint8_t  componentCarrierId; ///< component carrier ID
+  uint32_t frameNo {std::numeric_limits<uint32_t>::max ()}; ///< frame number
+  uint32_t subframeNo {std::numeric_limits<uint32_t>::max ()}; ///< subframe number
+  uint16_t rnti {std::numeric_limits<uint16_t>::max ()}; ///< RNTI
+  uint8_t mcsTb1 {std::numeric_limits<uint8_t>::max ()}; ///< MCS TB1
+  uint16_t sizeTb1 {std::numeric_limits<uint16_t>::max ()}; ///< size TB1
+  uint8_t mcsTb2 {std::numeric_limits<uint8_t>::max ()}; ///< MCS TB2
+  uint16_t sizeTb2 {std::numeric_limits<uint16_t>::max ()}; ///< size TB2
+  uint8_t componentCarrierId {std::numeric_limits<uint8_t>::max ()}; ///< component carrier ID
 }; 
 
 /**

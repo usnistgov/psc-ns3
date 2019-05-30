@@ -981,10 +981,6 @@ public:
     uint16_t  directFrameNo;   ///< Frame number of the frame in which is sent this MIB-SL
     uint16_t  directSubframeNo;  ///< Subframe number of the subframe in which is sent this MIB-SL
     bool    inCoverage;   ///< Indicates if the SyncRef sending the MIB-SL is in coverage
-    uint64_t  slssid;   ///< SLSSID of the SyncRef sending the MIB-SL
-    Time rxTimestamp;   ///< Reception timestamp filled upon reception
-    Time creationTimestamp;   ///< Creation timestamp filled when created
-    uint16_t rxOffset;   ///< Reception offset
   };
 
   /// SlPreconfigSync structure, representing the Sidelink synchronization preconfigured parameters to be used in the out-of-coverage case

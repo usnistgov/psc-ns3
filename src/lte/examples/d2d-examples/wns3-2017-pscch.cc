@@ -427,7 +427,7 @@ main (int argc, char *argv[])
   *stream->GetStream () << "time\ttx/rx\tNID\tIMSI\tUEtype\tsize\tIP[src]\tIP[dst]" << std::endl;
 
   std::vector<uint32_t> groupL2Addresses;
-  uint32_t groupL2Address = 0x00;
+  uint32_t groupL2Address = 200;
   Ipv4AddressGenerator::Init (Ipv4Address ("225.0.0.0"), Ipv4Mask ("255.0.0.0"));
   Ipv4Address clientRespondersAddress = Ipv4AddressGenerator::NextAddress (Ipv4Mask ("255.0.0.0"));
 

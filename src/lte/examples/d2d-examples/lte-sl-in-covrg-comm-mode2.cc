@@ -147,6 +147,9 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteSpectrumPhy::SlDataErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (false));
 
+  // Reduce frequency of CQI report to allow for sidelink transmissions
+  Config::SetDefault ("ns3::LteUePhy::DownlinkCqiPeriodicity", TimeValue (MilliSeconds (79)));
+
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
   // parse again so we can override input file default values via command line

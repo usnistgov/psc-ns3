@@ -43,6 +43,7 @@
 
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/lte-sl-pool.h>
+#include <ns3/lte-sl-header.h>
 #include <ns3/lte-radio-bearer-info.h>
 #include <ns3/random-variable-stream.h>
 
@@ -52,6 +53,7 @@
 
 namespace ns3 {
 
+class LteUeRrc;
 /**
  * \ingroup lte
  * Manages Sidelink information for this UE
@@ -73,6 +75,49 @@ class LteSlUeRrc : public Object
 public:
   LteSlUeRrc ();
   virtual ~LteSlUeRrc (void);
+
+  /// The type of discovery model
+  enum DiscoveryModel
+  {
+    ModelA = 0,     //announce
+    ModelB          //request/response
+  };
+
+  /// The role of the UE in the discovery process
+  enum DiscoveryRole
+  {
+    Discoveree = 0,     // equivalent to monitor in model A
+    Discovered          // equivalent to announce in model A
+  };
+
+  /// The role of the UE in the UE-to-Network relay process
+  enum RelayRole
+  {
+    RemoteUE = 0,
+    RelayUE
+  };
+
+  /**
+   * Information for application discovery
+   */
+  struct AppServiceInfo
+  {
+    DiscoveryRole role;   ///< The role of the UE in the discovery process
+    uint64_t appCode;   ///< The application code to announce or monitor
+    EventId txTimer;   ///< Timer for transmitting announcement or requests
+  };
+
+  /**
+   * Information for relay service discovery
+   */
+  struct RelayServiceInfo
+  {
+    DiscoveryModel model;   ///< The discovery model to use
+    RelayRole role;   ///< The role of the UE in the UE-to-Network relay operation
+    uint32_t serviceCode;   ///< The relay service code
+    EventId txTimer;   ///< Timer for transmitting announcement or requests
+  };
+
   /**
    * \brief makes a copy of the sidelink configuration
    * \return a copy of the sidelink configuration
@@ -168,6 +213,10 @@ protected:
    */
   bool IsAnnouncingInterested ();
   /**
+   * Schedule transmission of announcements/requests
+   */
+  void StartAnnouncing ();
+  /**
    * \brief Get Tx destination function
    * Returns the list of Sidelink communication destinations this UE is interested in transmitting to
    * \return the list of destinations
@@ -204,18 +253,19 @@ protected:
   Ptr<LteSidelinkRadioBearerInfo> GetSidelinkRadioBearer (uint32_t group);
   /**
    * \brief Add discovery applications
-   * Add applications depending on the interest (monitoring or announcing)
-   * \param apps applications IDs to be added
-   * \param rxtx 0 to monitor and 1 to announce
+   * Add payloads depending on the interest (monitoring or announcing)
+   * \param payloads payloads to be added
+   * \param role Indicates if announcing or monitoring
    */
-  void AddDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
+  void StartDiscoveryApps (std::list<uint64_t> payloads, DiscoveryRole role);
+
   /**
-   * \brief Remove Sidelink discovery application
+   * \brief Remove Sidelink discovery applications
    * Remove applications depending on the interest (monitoring or announcing)   *
-   * \param apps applications IDs to be removed
-   * \param rxtx 0 to monitor and 1 to announce
+   * \param payloads payloads to be removed
+   * \param role Indicates if announcing or monitoring
    */
-  void RemoveDiscoveryApps (std::list<uint32_t> apps, bool rxtx);
+  void StopDiscoveryApps (std::list<uint64_t> payloads, DiscoveryRole role);
   /**
    * \brief Record transmission time of the Sidelink UE information
    */
@@ -245,6 +295,80 @@ protected:
    */
   bool IsCellBroadcastingSIB19 (uint16_t cellId);
   /**
+   * Checks if the given app must be discovered
+   * \param appCode The application code
+   * \return true if the UE is monitoring announcements for the given application code
+   */
+  bool IsMonitoringApp (uint64_t appCode);
+
+  /**
+   * Checks if the given app must be announced
+   * \param appCode The application code
+   * \return true if the UE is announcing the given application code
+   */
+  bool IsAnnouncingApp (uint64_t appCode);
+
+  /**
+   * Set active discovery pool
+   * \param pool transmission pool
+   */
+  void SetActiveTxDiscoveryPool (Ptr<SidelinkTxDiscResourcePool> pool);
+
+  /**
+   * Get active discovery pool
+   * \return active discovery pool
+   */
+  Ptr<SidelinkTxDiscResourcePool> GetActiveTxDiscoveryPool ();
+
+  /**
+   * Trigger transmission of application discovery message
+   * \param appCode The Prose Application Code
+   */
+  void TransmitApp (uint64_t appCode);
+
+  /**
+   * Starts UE-to-Network relay process
+   * \param serviceCode relay service code to use
+   * \param model discovery model (A or B)
+   * \param role UE role (remote UE or relay node)
+   */
+  void StartRelayService (uint32_t serviceCode, LteSlUeRrc::DiscoveryModel model, LteSlUeRrc::RelayRole role);
+
+  /**
+   * Stops UE-to-Network relay process
+   * \param serviceCode relay service code to use
+   */
+  void StopRelayService (uint32_t serviceCode);
+
+  /**
+   * Trigger transmission of a relay service discovery message
+   * \param serviceCode relay service code to use
+   */
+  void TransmitRelayMessage (uint32_t serviceCode);
+
+  /**
+   * Indicates if the device is monitoring messages for the given service code
+   * \param serviceCode relay service code to use
+   * \return true is the UE is monitoring for the given relay service code
+   */
+  bool IsMonitoringRelayServiceCode (uint32_t serviceCode);
+
+  /**
+   * Notification of the received relay discovery message
+   * \param serviceCode The relay service code
+   * \param announcerInfo The announcer info included in the discovery message
+   * \param proseRelayUeId The layer 2 ID for the relay node
+   * \param statusIndicator The status field
+   */
+  void RecvRelayServiceDiscovery (uint32_t serviceCode, uint64_t announcerInfo, uint32_t proseRelayUeId, uint8_t statusIndicator);
+
+  /**
+   * Notification that the bearer with the given peer has been established
+   * \param proseUeId The layer 2 ID of the peer node
+   */
+  void NotifySidelinkRadioBearerActivated (uint32_t proseUeId);
+
+  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this class. Return the number of stream indices assigned.
    *
@@ -253,6 +377,10 @@ protected:
    */
   int64_t AssignStreams (int64_t stream);
 private:
+  /**
+   * Reference to the RRC layer
+   */
+  Ptr<LteUeRrc> m_rrc;
   /**
    * Indicates if sidelink is enabled
    */
@@ -291,13 +419,21 @@ private:
    */
   std::vector< std::pair <LteRrcSap::SlCommResourcePool, Ptr<SidelinkRxCommResourcePool> > > rxPools; ///<
   /**
-   * List of IDs of applications to monitor
+   * list of IDs of applications to monitor/request
    */
-  std::list<uint32_t> m_monitorApps;
+  std::map <uint64_t, AppServiceInfo> m_monitoringAppsMap;
   /**
-   * list of IDs of applications to announce
+   * list of IDs of applications to announce/response
    */
-  std::list<uint32_t> m_announceApps;
+  std::map <uint64_t, AppServiceInfo> m_announcingAppsMap;
+  /**
+   * list of relay services used by this device
+   */
+  std::map <uint32_t, RelayServiceInfo> m_relayServicesMap;
+  /**
+   * Active Tx pool for discovery
+   */
+  Ptr<SidelinkTxDiscResourcePool> m_activeDiscTxPool;
   /**
    * List of discovery receiving pools
    */

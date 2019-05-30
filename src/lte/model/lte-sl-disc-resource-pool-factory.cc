@@ -58,7 +58,8 @@ LteSlDiscResourcePoolFactory::LteSlDiscResourcePoolFactory ()
     m_rsrpBased (true),
     m_rsrpThreshLow (0),
     m_rsrpThreshHigh (7),
-    m_discTxProb ("p100")
+    m_discTxProb ("p100"),
+    m_rxParam(false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -193,6 +194,10 @@ LteSlDiscResourcePoolFactory::CreatePool ()
     {
       NS_FATAL_ERROR ("UNSUPPORTED DISCOVERY PROBABILITY");
     }
+
+  m_pool.haveRxParameters = m_rxParam;
+  //todo: add other Rx parameters
+  
   return m_pool;
 }
 

@@ -269,6 +269,10 @@ main (int argc, char *argv[])
 
   Ptr<Lte3gppHexGridEnbTopologyHelper> topoHelper = CreateObject<Lte3gppHexGridEnbTopologyHelper> ();
   topoHelper->SetLteHelper (lteHelper);
+  //Fix the random number stream
+  uint16_t randomStream = 1;
+  randomStream += topoHelper->AssignStreams(randomStream);
+
 
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
@@ -315,8 +319,7 @@ main (int argc, char *argv[])
   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
   NetDeviceContainer ueRespondersDevs = topoHelper->DropUEsUniformlyPerSector (ueResponders);
 
-  //Fix the random number stream
-  uint16_t randomStream = 1;
+  //Fix the random number stream for LTE stack
   randomStream += lteHelper->AssignStreams (ueRespondersDevs, randomStream);
 
 
@@ -408,7 +411,7 @@ main (int argc, char *argv[])
   std::ostringstream oss;
 
   std::vector<uint32_t> groupL2Addresses;
-  uint32_t groupL2Address = 0x00;
+  uint32_t groupL2Address = 200;
 
   Ipv4AddressGenerator::Init (Ipv4Address ("225.0.0.0"), Ipv4Mask ("255.0.0.0"));
   Ipv4Address groupRespondersIpv4Address = Ipv4AddressGenerator::NextAddress (Ipv4Mask ("255.0.0.0"));
@@ -611,6 +614,14 @@ main (int argc, char *argv[])
       NotifyChangeOfSyncRef (streamSyncRef,param );
     }
   /*END Synchronization*/
+
+  NS_LOG_INFO ("Enabling Sidelink traces...");
+
+  lteHelper->EnableSlPscchMacTraces ();
+  lteHelper->EnableSlPsschMacTraces ();
+
+  lteHelper->EnableSlRxPhyTraces ();
+  lteHelper->EnableSlPscchRxPhyTraces ();
 
 
 

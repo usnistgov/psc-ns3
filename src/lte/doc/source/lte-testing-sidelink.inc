@@ -9,7 +9,12 @@ Unit Tests
 Sidelink Communication pool
 +++++++++++++++++++++++++++
 
-The test suite ``Sidelink-comm-pool`` checks the validity of Sidelink communication parameters computed during a simulation, e.g., the expected starting frame and subframe number, index of the starting Resource Block (RB), and the number of RBs in a subframe. The test suite contains a pre-configured communication pool for which these parameters are computed. Table :ref:`tab-sl-comm-pool-params` below lists the configuration of the pool used.
+The test suite ``Sidelink-comm-pool`` checks the validity of Sidelink
+communication parameters computed during a simulation, e.g., the expected
+starting frame and subframe number, index of the starting Resource Block (RB),
+and the number of RBs in a subframe. The test suite contains a pre-configured
+communication pool for which these parameters are computed. Table
+:ref:`tab-sl-comm-pool-params` below lists the configuration of the pool used.
 
 .. _tab-sl-comm-pool-params:
 
@@ -35,13 +40,18 @@ There are four test cases:
 
 1. SidelinkCommPoolNextFrameSubframeTestCase
 --------------------------------------------
-This test checks the starting frame and subframe number of the next Sidelink Control (SC) period given the current frame and subframe number. Let :math:`Fr` be the current frame number and :math:`Sf` the current subframe number. The absolute subframe number :math:`Sf_\mathrm{abs}`, since the :math:`Sf = 0` of :math:`Fr = 0` is give by :
+This test checks the starting frame and subframe number of the next Sidelink
+Control (SC) period given the current frame and subframe number. Let :math:`Fr`
+be the current frame number and :math:`Sf` the current subframe number. The
+absolute subframe number :math:`Sf_\mathrm{abs}`, since the :math:`Sf = 0` of
+:math:`Fr = 0` is give by :
 
 .. math::
 
    Sf_\mathrm{abs} = 10 * (Fr \bmod 1024) + Sf \bmod 10;
 
-The number of current Sidelink control period :math:`ScPr_\mathrm{cur}` is calculated as, 
+The number of current Sidelink control period :math:`ScPr_\mathrm{cur}` is
+calculated as, 
 
 .. math::
 
@@ -66,19 +76,29 @@ Three different configuration has been tested:
 
 1. :math:`Fr = 0` and :math:`Sf = 5` 
 
-For this configuration, the expected behavior is that the next Sidelink control period will start in frame number 8 and subframe 0 because of the :math:`Sc_\mathrm{offset}` of 80 msec.
+For this configuration, the expected behavior is that the next Sidelink control
+period will start in frame number 8 and subframe 0 because of the
+:math:`Sc_\mathrm{offset}` of 80 msec.
 
 2. :math:`Fr = 1023` and :math:`Sf = 0`
 
-This configuration tests the roll over upon reaching the maximum frame number range. Here, the expected behavior is to have a :math:`Sc_\mathrm{offset}` of 80 msec once again starting from :math:`Sf = 0` of :math:`Fr = 0`.
+This configuration tests the roll over upon reaching the maximum frame number
+range. Here, the expected behavior is to have a :math:`Sc_\mathrm{offset}` of 80
+msec once again starting from :math:`Sf = 0` of :math:`Fr = 0`.
 
 3. :math:`Fr = 1002` and :math:`Sf = 0`
 
-This configuration reflects the condition when the current frame and subframe number are part of an on going Sidelink control period. The expected behavior is that the next period will start in frame 1004 and subframe 0, i.e., right after the remaining frames/subframes of the current Sidelink control period.
+This configuration reflects the condition when the current frame and subframe
+number are part of an on going Sidelink control period. The expected behavior is
+that the next period will start in frame 1004 and subframe 0, i.e., right after
+the remaining frames/subframes of the current Sidelink control period.
 
 2. SidelinkCommPoolResourceOpportunityTestCase
 ----------------------------------------------
-This test takes the PSCCH resource and transmission number as an input and verifies the frame, subframe number, index of the starting RB, and the number of RBs available in a subframe. The total number of resources in a PSCCH pool are calculated as per [TS36213]_ 14.2.1.1.
+This test takes the PSCCH resource and transmission number as an input and
+verifies the frame, subframe number, index of the starting RB, and the number of
+RBs available in a subframe. The total number of resources in a PSCCH pool are
+calculated as per [TS36213]_ 14.2.1.1.
 
 .. math::
 
@@ -93,7 +113,17 @@ for PSCCH in this pool.
 
 Hence, :math:`RES_\mathrm{PSCCH} = 2`
 
-These resources in time and frequency are indexed from 0 to :math:`RES_\mathrm{PSCCH} - 1`. In this test, it will range from 0 -> 1, therefore, we test both the PSCCH resources to verify the frame/subframe number, index of the starting RB and the total number of RBs in a subframe available for Sidelink Control Information (SCI) transmission. We note that, to ensure the reliability of the SCI message delivery, each message is transmitted in two identical instances, where each instance occupies one RB. The two instances are transmitted over two different subframes. Therefore, for each PSCCH resource there will be two transmissions. As per [TS36213]_ 14.2.1.1, for a resource index :math:`n_\mathrm{PSCCH}` first transmission occurs in RB :math:`a1` of subframe :math:`b1` where
+These resources in time and frequency are indexed from 0 to
+:math:`RES_\mathrm{PSCCH} - 1`. In this test, it will range from 0 -> 1,
+therefore, we test both the PSCCH resources to verify the frame/subframe number,
+index of the starting RB and the total number of RBs in a subframe available for
+Sidelink Control Information (SCI) transmission. We note that, to ensure the
+reliability of the SCI message delivery, each message is transmitted in two
+identical instances, where each instance occupies one RB. The two instances are
+transmitted over two different subframes. Therefore, for each PSCCH resource
+there will be two transmissions. As per [TS36213]_ 14.2.1.1, for a resource
+index :math:`n_\mathrm{PSCCH}` first transmission occurs in RB :math:`a1` of
+subframe :math:`b1` where
 
 .. math::
 
@@ -113,42 +143,63 @@ and the second transmission occurs in RB :math:`a2` of subframe :math:`b2` where
 
 1. :math:`n_\mathrm{PSCCH} = 0`, Transmission 0:
 
-For :math:`n_\mathrm{PSCCH} = 0`, the expected behavior is that the first transmission of PSCCH would be in :math:`RB = 10` of :math:`Fr = 0` and :math:`Sf = 0` and number of RBs for this transmission would be 1.
+For :math:`n_\mathrm{PSCCH} = 0`, the expected behavior is that the first
+transmission of PSCCH would be in :math:`RB = 10` of :math:`Fr = 0` and
+:math:`Sf = 0` and number of RBs for this transmission would be 1.
 
 2. :math:`n_\mathrm{PSCCH} = 0`, Transmission 1:
 
-For :math:`n_\mathrm{PSCCH} = 0`, the expected behavior is that the second transmission of PSCCH would be in :math:`RB = 40` of :math:`Fr = 0` and :math:`Sf = 1` and number of RBs for this transmission would be 1.
+For :math:`n_\mathrm{PSCCH} = 0`, the expected behavior is that the second
+transmission of PSCCH would be in :math:`RB = 40` of :math:`Fr = 0` and
+:math:`Sf = 1` and number of RBs for this transmission would be 1.
 
 3. :math:`n_\mathrm{PSCCH} = 1`, Transmission 0:
 
-For :math:`n_\mathrm{PSCCH} = 1`, the expected behavior is that the first transmission of PSCCH would be in :math:`RB = 40` of :math:`Fr = 0` and :math:`Sf = 0` and number of RBs for this transmission would be 1.
+For :math:`n_\mathrm{PSCCH} = 1`, the expected behavior is that the first
+transmission of PSCCH would be in :math:`RB = 40` of :math:`Fr = 0` and
+:math:`Sf = 0` and number of RBs for this transmission would be 1.
 
 4. :math:`n_\mathrm{PSCCH} = 1`, Transmission 1:
 
-For :math:`n_\mathrm{PSCCH} = 1`, the expected behavior is that the second transmission of PSCCH would be in :math:`RB = 10` of :math:`Fr = 0` and :math:`Sf = 1` and number of RBs for this transmission would be 1.
+For :math:`n_\mathrm{PSCCH} = 1`, the expected behavior is that the second
+transmission of PSCCH would be in :math:`RB = 10` of :math:`Fr = 0` and
+:math:`Sf = 1` and number of RBs for this transmission would be 1.
 
 3. SidelinkCommPoolSubframeOpportunityTestCase
 ----------------------------------------------
-This test verifies index/indices of the RBs available for a given frame - subframe number. The following three configurations have been tested.
+This test verifies index/indices of the RBs available for a given frame -
+subframe number. The following three configurations have been tested.
 
 1. :math:`Fr = 8` and :math:`Sf = 0`
 
-This configuration refers to the start of SC period, i.e., after 80 ms of offset from :math:`Fr = 0` and :math:`Sf = 0`. Thus, we should be on the first subframe of the control channel. The expected RB indices available for this subframe are 10 and 40.
+This configuration refers to the start of SC period, i.e., after 80 ms of offset
+from :math:`Fr = 0` and :math:`Sf = 0`. Thus, we should be on the first subframe
+of the control channel. The expected RB indices available for this subframe are
+10 and 40.
 
 2. :math:`Fr = 8` and :math:`Sf = 1`
 
-This configuration refers to second subframe of the SC period. The expected RB indices available for this subframe are 10 and 40.
+This configuration refers to second subframe of the SC period. The expected RB
+indices available for this subframe are 10 and 40.
 
 3. :math:`Fr = 8` and :math:`Sf = 2`
 
-This configuration refers the subframe number, which is not part of SC period as indicated by control bit map. Thus, in this subframe none of the resource block will be allocated for PSCCH transmission.
+This configuration refers the subframe number, which is not part of SC period as
+indicated by control bit map. Thus, in this subframe none of the resource block
+will be allocated for PSCCH transmission.
 
 .. _SidelinkCommPoolPsschTestCase:
 
 4. SidelinkCommPoolPsschTestCase
 --------------------------------
-This test checks for the frame-subframe number for PSSCH transmissions. In this test beside the parameters from the pool configuration, an important parameter, i.e., Time Resource Pattern index (iTRP) is provided. All the tests are performed with :math:`iTRP = 5`, which corresponds to the bit map of (0,0,0,0,0,1,0,0) give by the table 
-Table 14.1.1.1.1-1 of [TS36213]_. Every transmission on PSSCH is transmitted using 4 HARQ processes using 4 different subframes. Therefore, this test verifies the frame and subframe number of all the 4 transmissions.
+This test checks for the frame-subframe number for PSSCH transmissions. In this
+test beside the parameters from the pool configuration, an important parameter,
+i.e., Time Resource Pattern index (iTRP) is provided. All the tests are
+performed with :math:`iTRP = 5`, which corresponds to the bit map of
+(0,0,0,0,0,1,0,0) give by the table Table 14.1.1.1.1-1 of [TS36213]_. Every
+transmission on PSSCH is transmitted using 4 HARQ processes using 4 different
+subframes. Therefore, this test verifies the frame and subframe number of all
+the 4 transmissions.
 
 1. :math:`Fr = 0`, :math:`Sf = 5`, :math:`iTRP = 5`, Transmission 0
 
@@ -158,15 +209,23 @@ Starting from :math:`Fr = 0`, the first PSSCH transmission should occur on subfr
 
    Sf_\mathrm{T0} = Sc_\mathrm{offset} + Data_\mathrm{offset} + Sf_\mathrm{TRP}
 
-where :math:`Sc_\mathrm{offset}` and :math:`Data_\mathrm{offset}` values are from the Table :ref:`tab-sl-comm-pool-params` and :math:`Sf_\mathrm{TRP}` are obtained after applying TRP bit map on active bits of data bit map. For example,
+where :math:`Sc_\mathrm{offset}` and :math:`Data_\mathrm{offset}` values are
+from the Table :ref:`tab-sl-comm-pool-params` and :math:`Sf_\mathrm{TRP}` are
+obtained after applying TRP bit map on active bits of data bit map. For example,
 
 .. figure:: figures/lte-sl-pssch-bitmap.*
    :width: 80 %
    :align: center
 
-If we apply the TRP bit map on the active bits of data bit map, starting from the least significant bit (lbs) of TRP bit map the sixth bit indicates an active subframe. In other words, an offset of 11 subframes as per data bit map, hence, :math:`Sf_\mathrm{TRP} = 11`. By using above equation the first PSSCH transmission since subframe 0, would occur on 80 + 8 + 11 = 99 subframe, i.e. :math:`Fr = 9` and :math:`Sf = 9`.
+If we apply the TRP bit map on the active bits of data bit map, starting from
+the least significant bit (lbs) of TRP bit map the sixth bit indicates an active
+subframe. In other words, an offset of 11 subframes as per data bit map, hence,
+:math:`Sf_\mathrm{TRP} = 11`. By using above equation the first PSSCH
+transmission since subframe 0, would occur on 80 + 8 + 11 = 99 subframe, i.e.
+:math:`Fr = 9` and :math:`Sf = 9`.
 
-Similarly, the remaining three transmissions and all other transmissions will occur every 16 ms. This has been tested by the following tests.
+Similarly, the remaining three transmissions and all other transmissions will
+occur every 16 ms. This has been tested by the following tests.
 
 2. :math:`Fr = 0`, :math:`Sf = 5`, :math:`iTRP = 5`, Transmission 1
 
@@ -182,7 +241,12 @@ The transmission should occur after 16 ms of transmission 2, i.e., in :math:`Fr 
 
 Sidelink discovery pool
 +++++++++++++++++++++++
-The test suite ``Sidelink-disc-pool`` checks the validity of Sidelink discovery parameters computed during a simulation, e.g., the expected starting frame and subframe number, index of the starting Resource Block (RB) and the number of RBs in a subframe. The test suite contains a pre-configured discovery pool for which these parameters are computed. Table :ref:`tab-sl-disc-pool-params` below lists the configuration of the pool used.
+The test suite ``Sidelink-disc-pool`` checks the validity of Sidelink discovery
+parameters computed during a simulation, e.g., the expected starting frame and
+subframe number, index of the starting Resource Block (RB) and the number of RBs
+in a subframe. The test suite contains a pre-configured discovery pool for which
+these parameters are computed. Table :ref:`tab-sl-disc-pool-params` below lists
+the configuration of the pool used.
 
 .. _tab-sl-disc-pool-params:
 
@@ -206,7 +270,11 @@ There are three test cases:
 
 1. SidelinkDiscPoolNextFrameSubframeTestCase
 --------------------------------------------
-This test checks the starting frame and subframe number of the next Discovery Period (DiscPr) given the current frame and subframe number. Let :math:`Fr` be the current frame number and :math:`Sf` the current subframe number. The absolute subframe number :math:`Sf_\mathrm{abs}` , since :math:`Sf = 0` of :math:`Fr = 0` is given by :
+This test checks the starting frame and subframe number of the next Discovery
+Period (DiscPr) given the current frame and subframe number. Let :math:`Fr` be
+the current frame number and :math:`Sf` the current subframe number. The
+absolute subframe number :math:`Sf_\mathrm{abs}` , since :math:`Sf = 0` of
+:math:`Fr = 0` is given by :
 
 .. math::
 
@@ -218,7 +286,9 @@ The number of current discovery period :math:`DiscPr_\mathrm{cur}` is calculated
 
    DiscPr_\mathrm{cur} = \left\lfloor \frac{Sf_\mathrm{abs} - Disc_\mathrm{offset}}{DiscPr} \right\rfloor
 
-where :math:`Disc_\mathrm{offset}` is the discovery offset and :math:`DiscPr` is the discovery period from Table :ref:`tab-sl-disc-pool-params`. The range of :math:`DiscPr_\mathrm{cur}` is : :math:`0 \leq DiscPr_\mathrm{cur} < \frac{10240}{DiscPr}`
+where :math:`Disc_\mathrm{offset}` is the discovery offset and :math:`DiscPr`
+is the discovery period from Table :ref:`tab-sl-disc-pool-params`. The range of
+:math:`DiscPr_\mathrm{cur}` is : :math:`0 \leq DiscPr_\mathrm{cur} < \frac{10240}{DiscPr}`
 
 If the frame number is the last period, the next DiscPr will start after :math:`Disc_\mathrm{offset}`
 
@@ -236,23 +306,37 @@ Four different configurations have been tested:
 
 1. :math:`Fr = 0` and :math:`Sf = 5` 
 
-For this configuration, the expected behavior is that the next discovery period will start in frame number 8 and subframe 0 because of the :math:`Disc_\mathrm{offset}` of 80 msec.
+For this configuration, the expected behavior is that the next discovery period
+will start in frame number 8 and subframe 0 because of the
+:math:`Disc_\mathrm{offset}` of 80 msec.
 
 2. :math:`Fr = 8` and :math:`Sf = 0`
 
-Here, we are at the start of first discovery period the next discovery period will start after :math:`DiscPr = 320 ms` in frame number 40 and subframe 0.
+Here, we are at the start of first discovery period the next discovery period
+will start after :math:`DiscPr = 320 ms` in frame number 40 and subframe 0.
 
 3. :math:`Fr = 1023` and :math:`Sf = 0`
 
-This configuration tests the roll over upon reaching the maximum frame number range. Here the expected behavior is to have a :math:`Disc_\mathrm{offset}` of 80 msec once again starting from frame number 0.
+This configuration tests the roll over upon reaching the maximum frame number
+range. Here the expected behavior is to have a :math:`Disc_\mathrm{offset}` of
+80 msec once again starting from frame number 0.
 
 4. :math:`Fr = 800` and :math:`Sf = 0`
 
-This configuration reflects the condition when the current frame and subframe number are part of an on going discovery period. The expected behavior is that the next discovery period will start in frame 808 and subframe 0, i.e., right after the remaining frames/subframes of the current discovery period.
+This configuration reflects the condition when the current frame and subframe
+number are part of an on going discovery period. The expected behavior is that
+the next discovery period will start in frame 808 and subframe 0, i.e., right
+after the remaining frames/subframes of the current discovery period.
 
 2. SidelinkDiscPoolResourceOpportunityTestCase
 ----------------------------------------------
-This test takes as input the PSDCH resource number from the configured pool and checks for the correct frame/subframe number of the starting RB and the total number of RBs in a subframe assigned for Sidelink discovery. The computation of these parameters are done as per 14.3.1 and 14.3.3 of [TS36213]_. Specifically, the methods ``GetPsdchTransmissions`` and ``ComputeNumberOfPsdchResources`` in ``lte-sl-pool.cc``, respectively implements the mentioned clauses of the standard.
+This test takes as input the PSDCH resource number from the configured pool and
+checks for the correct frame/subframe number of the starting RB and the total
+number of RBs in a subframe assigned for Sidelink discovery. The computation of
+these parameters are done as per 14.3.1 and 14.3.3 of [TS36213]_. Specifically,
+the methods ``GetPsdchTransmissions`` and ``ComputeNumberOfPsdchResources`` in
+``lte-sl-pool.cc``, respectively implements the mentioned clauses of the
+standard.
 
 The total number of resources for PSDCH are calculated as,
 
@@ -262,26 +346,37 @@ The total number of resources for PSDCH are calculated as,
 
 where 
 
-:math:`L_\mathrm{PSDCH} = 2` is the total number of subframes available for PSDCH in this pool
+:math:`L_\mathrm{PSDCH} = 2` is the total number of subframes available for
+PSDCH in this pool
 
 :math:`Retx = 0` is the total number of retransmission allowed
 
-:math:`RB_\mathrm{PSDCH} = 2` (i.e., RB 10 and RB 11) is the total number of resource blocks per subframe available for PSDCH in this pool.
+:math:`RB_\mathrm{PSDCH} = 2` (i.e., RB 10 and RB 11) is the total number of
+resource blocks per subframe available for PSDCH in this pool.
 
-These resources in time and frequency are indexed from 0 to :math:`RES_\mathrm{PSDCH} - 1`. In this test, it will range from 0 -> 1, therefore, we test both the PSDCH resources to verify the frame/subframe number, index of the starting RB and the total number of RBs in a subframe available for Sidelink discovery.
+These resources in time and frequency are indexed from 0 to
+:math:`RES_\mathrm{PSDCH} - 1`. In this test, it will range from 0 -> 1,
+therefore, we test both the PSDCH resources to verify the frame/subframe number,
+index of the starting RB and the total number of RBs in a subframe available for
+Sidelink discovery.
 
 1. PsdchResourceNo:0
 
-By selecting the PsdchResourceNo = 0 the expected frame and subframe would be 0 and since, the first RB index of the configured pool is 10 the index of the starting RB is expected to be 10 and, at last, the total number of resource blocks are expected to be 2.
+By selecting the PsdchResourceNo = 0 the expected frame and subframe would be 0
+and since, the first RB index of the configured pool is 10 the index of the
+starting RB is expected to be 10 and, at last, the total number of resource
+blocks are expected to be 2.
 
 2. PsdchResourceNo:1 
 
-Compared to the PsdchResourceNo:0 case, by choosing resource number 1 we expect the discovery transmission to occur 
-on subframe = 1.
+Compared to the PsdchResourceNo:0 case, by choosing resource number 1 we expect
+the discovery transmission to occur on subframe = 1.
 
 3. SidlelinkDiscPoolRbsPerSubframeTestCase
 -------------------------------------------
-This test checks for the total number of resource blocks available in a single subframe and also verifies the indices of the resource blocks. The following three configurations have been tested.
+This test checks for the total number of resource blocks available in a single
+subframe and also verifies the indices of the resource blocks. The following
+three configurations have been tested.
 
 1. :math:`Fr = 8` and :math:`Sf = 0`
 
@@ -295,18 +390,33 @@ and RB 10 and 11 should be assigned for discovery transmission.
 
 2. :math:`Fr = 8` and :math:`Sf = 2`
 
-If we go to 82 ms, we we should be outside the discovery channel and there should be no resource block assignment during this 
-subframe.
+If we go to 82 ms, we we should be outside the discovery channel and there
+should be no resource block assignment during this subframe.
 
 System Tests
 ++++++++++++
 
 In-coverage Sidelink communication
 ----------------------------------
-The test suite ``sidelink-in-coverage-comm`` is a system test to test in-coverage Sidelink communication. In particular, it contains two cases to test Mode 1 and Mode 2 for Sidelink communication, respectively. In Mode 1, D2D communications are assisted by the eNodeB, i.e., resource scheduling is performed dynamically by the eNodeB. In Mode 2, UEs manage resource scheduling autonomously relying on pre-configured settings, and both, PSCCH and PSSCH, resources are selected at random from their respective resource pools.
+The test suite ``sidelink-in-coverage-comm`` is a system test to test
+in-coverage Sidelink communication. In particular, it contains two cases to test
+Mode 1 and Mode 2 for Sidelink communication, respectively. In Mode 1, D2D
+communications are assisted by the eNodeB, i.e., resource scheduling is
+performed dynamically by the eNodeB. In Mode 2, UEs manage resource scheduling
+autonomously relying on pre-configured settings, and both, PSCCH and PSSCH,
+resources are selected at random from their respective resource pools.
 
-This test creates a scenario with two UEs, which are in coverage of one eNodeB. One of the UE will send traffic directly to the other UE via Sidelink as per configured mode, i.e., Mode 1 or Mode 2. Default configuration will send 10 packets per second for 2 seconds. The expected output is that the receiver UE node would receive 20 packets.
+This test creates a scenario with two UEs, which are in coverage of one eNodeB.
+One of the UE will send traffic directly to the other UE via Sidelink as per
+configured mode, i.e., Mode 1 or Mode 2. Default configuration will send 10
+packets per second for 2 seconds. The expected output is that the receiver UE
+node would receive 20 packets.
 
 Out of coverage Sidelink communication
 --------------------------------------
-Similar to the in-coverage test, the test suite ``sidelink-out-of-coverage-comm`` is a system test to test the out of coverage Sidelink communication. This test creates a scenario with two out of coverage UEs, where one of the UE will send traffic directly to the other UE via Sidelink. Default configuration will send 10 packets per second for 2 seconds. The expected output is that the receiver UE node would receive 20 packets.
+Similar to the in-coverage test, the test suite
+``sidelink-out-of-coverage-comm`` is a system test to test the out of coverage
+Sidelink communication. This test creates a scenario with two out of coverage
+UEs, where one of the UE will send traffic directly to the other UE via
+Sidelink. Default configuration will send 10 packets per second for 2 seconds.
+The expected output is that the receiver UE node would receive 20 packets.

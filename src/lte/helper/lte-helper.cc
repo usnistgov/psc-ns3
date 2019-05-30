@@ -54,6 +54,7 @@
 #include <ns3/epc-enb-s1-sap.h>
 #include <ns3/lte-rrc-protocol-ideal.h>
 #include <ns3/lte-rrc-protocol-real.h>
+#include <ns3/rrc-stats-calculator.h>
 #include <ns3/mac-stats-calculator.h>
 #include <ns3/phy-stats-calculator.h>
 #include <ns3/phy-tx-stats-calculator.h>
@@ -96,6 +97,7 @@ LteHelper::DoInitialize (void)
   m_phyTxStats = CreateObject<PhyTxStatsCalculator> ();
   m_phyRxStats = CreateObject<PhyRxStatsCalculator> ();
   m_macStats = CreateObject<MacStatsCalculator> ();
+  m_rrcStats = CreateObject<RrcStatsCalculator> ();
   Object::DoInitialize ();
 
 }
@@ -1007,6 +1009,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
       ueSidelinkConfiguration->SetSourceL2Id ((uint32_t) (imsi & 0xFFFFFF)); //use lower 24 bits of IMSI as source
       rrc->SetAttribute ("SidelinkConfiguration", PointerValue (ueSidelinkConfiguration));
+      ueSidelinkConfiguration->SetAttribute ("Rrc", PointerValue (rrc));
     }
 
   dev->SetNode (n);
@@ -1029,6 +1032,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
         {
           ccPhy->GetSlSpectrumPhy ()->SetDevice (dev);
           ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, ccPhy));
+          ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxPsbchEndOkCallback (MakeCallback (&LteUePhy::PhyPsbchPduReceived, ccPhy));
+          ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxPscchEndOkCallback (MakeCallback (&LteUePhy::PhyPscchPduReceived, ccPhy));
+          ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxPsdchEndOkCallback (MakeCallback (&LteUePhy::PhyPsdchPduReceived, ccPhy));
           ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, ccPhy));
           ccPhy->GetSlSpectrumPhy ()->SetLtePhyRxSlssCallback (MakeCallback (&LteUePhy::ReceiveSlss,ccPhy));
         }
@@ -1228,45 +1234,6 @@ LteHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft)
   NS_ASSERT_MSG (m_epcHelper != 0, "sidelink bearers cannot be set up when the EPC is not used");
 
   m_epcHelper->DeactivateSidelinkBearer (ueDevice, tft);
-}
-void
-LteHelper::StartDiscovery (NetDeviceContainer ueDevices, std::list<uint32_t> apps, bool rxtx)
-{
-  NS_LOG_FUNCTION (this);
-  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
-    {
-      StartDiscovery (*i, apps, rxtx);
-    }
-}
-
-void
-LteHelper::StartDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_ASSERT_MSG (m_epcHelper != 0, "discovery can't start when the EPC is not used");
-
-  m_epcHelper->StartDiscovery (ueDevice, apps, rxtx);
-}
-
-void
-LteHelper::StopDiscovery (NetDeviceContainer ueDevices, std::list<uint32_t> apps, bool rxtx)
-{
-  NS_LOG_FUNCTION (this);
-  for (NetDeviceContainer::Iterator i = ueDevices.Begin (); i != ueDevices.End (); ++i)
-    {
-      StopDiscovery (*i, apps, rxtx);
-    }
-}
-
-void
-LteHelper::StopDiscovery (Ptr<NetDevice> ueDevice, std::list<uint32_t> apps, bool rxtx)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_ASSERT_MSG (m_epcHelper != 0, "no EPC is used");
-
-  m_epcHelper->StopDiscovery (ueDevice, apps, rxtx);
 }
 
 /**
@@ -1608,6 +1575,7 @@ LteHelper::EnableTraces (void)
   EnableMacTraces ();
   EnableRlcTraces ();
   EnablePdcpTraces ();
+  EnableRrcTraces ();
 }
 
 void
@@ -1736,6 +1704,7 @@ LteHelper::EnableMacTraces (void)
     {
       EnableSlPscchMacTraces ();
       EnableSlPsschMacTraces ();
+      EnableSlPsdchMacTraces ();
     }
 }
 
@@ -1770,6 +1739,13 @@ LteHelper::EnableSlPsschMacTraces (void)
   NS_LOG_FUNCTION_NOARGS ();
   Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUeMac/SlPsschScheduling",
                    MakeBoundCallback (&MacStatsCalculator::SlUeSchSchedulingCallback, m_macStats));
+}
+
+void
+LteHelper::EnableSlPsdchMacTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUeMac/SlPsdchScheduling",MakeBoundCallback (&MacStatsCalculator::SlUeDchSchedulingCallback, m_macStats));	
 }
 
 void
@@ -1809,6 +1785,19 @@ Ptr<RadioBearerStatsCalculator>
 LteHelper::GetPdcpStats (void)
 {
   return m_pdcpStats;
+}
+
+void
+LteHelper::EnableRrcTraces (void)
+{
+  EnableDiscoveryMonitoringRrcTraces ();
+}
+
+void
+LteHelper::EnableDiscoveryMonitoringRrcTraces (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/DiscoveryMonitoring", MakeBoundCallback (&RrcStatsCalculator::DiscoveryMonitoringRrcTraceCallback, m_rrcStats));	
 }
 
 void

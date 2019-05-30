@@ -345,6 +345,10 @@ protected:
    */
   std::string m_discTxProb;
 
+  /**
+   * the reception parameters for discovery
+   */
+  bool m_rxParam;
 };
 
 } // namespace ns3

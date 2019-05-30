@@ -53,6 +53,8 @@ public:
     uint8_t componentCarrierId; /**< the component carrier id corresponding to the sending Mac istance */
     uint32_t srcL2Id;  /**< Source L2 ID (24 bits) */
     uint32_t dstL2Id;  /**< Destination L2 ID (24 bits) */
+    bool        discMsg; /**< indicates if this a discovery message coming from RRC instead of RLC */
+    bool        mibslMsg; /**< indicates if this is a MIB-SL message coming from RRC instead of RLC */
   };
 
   /**

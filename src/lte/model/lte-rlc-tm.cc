@@ -34,7 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteRlcTm);
 
 LteRlcTm::LteRlcTm ()
   : m_maxTxBufferSize (0),
-    m_txBufferSize (0)
+  m_txBufferSize (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -49,14 +49,14 @@ LteRlcTm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcTm")
     .SetParent<LteRlc> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteRlcTm> ()
     .AddAttribute ("MaxTxBufferSize",
                    "Maximum Size of the Transmission Buffer (in Bytes)",
                    UintegerValue (2 * 1024 * 1024),
                    MakeUintegerAccessor (&LteRlcTm::m_maxTxBufferSize),
                    MakeUintegerChecker<uint32_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -89,7 +89,7 @@ LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
       NS_LOG_LOGIC ("Tx Buffer: New packet added");
       m_txBuffer.push_back (p);
       m_txBufferSize += p->GetSize ();
-      NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
+      NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size () );
       NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
     }
   else
@@ -116,7 +116,7 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << txOpParams.bytes  << (uint32_t) txOpParams.layer << (uint32_t) txOpParams.harqId);
 
-  // 5.1.1.1 Transmit operations 
+  // 5.1.1.1 Transmit operations
   // 5.1.1.1.1 General
   // When submitting a new TMD PDU to lower layer, the transmitting TM RLC entity shall:
   // - submit a RLC SDU without any modification to lower layer.
@@ -136,9 +136,9 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       return;
     }
 
-  m_txBufferSize -= (*(m_txBuffer.begin()))->GetSize ();
+  m_txBufferSize -= (*(m_txBuffer.begin ()))->GetSize ();
   m_txBuffer.erase (m_txBuffer.begin ());
- 
+
   // Sender timestamp
   RlcTag rlcTag (Simulator::Now ());
   packet->ReplacePacketTag (rlcTag);
@@ -154,10 +154,12 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   params.layer = txOpParams.layer;
   params.harqProcessId = txOpParams.harqId;
   params.componentCarrierId = txOpParams.componentCarrierId;
+  params.discMsg = false;
+  params.mibslMsg = false;
 
   m_macSapProvider->TransmitPdu (params);
 
-  if (! m_txBuffer.empty ())
+  if (!m_txBuffer.empty ())
     {
       m_rbsTimer.Cancel ();
       m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcTm::ExpireRbsTimer, this);
@@ -180,15 +182,15 @@ LteRlcTm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   Time delay;
   NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
   rxPduParams.p->RemovePacketTag (rlcTag);
-  delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
+  delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
   m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
 
-  // 5.1.1.2 Receive operations 
+  // 5.1.1.2 Receive operations
   // 5.1.1.2.1  General
   // When receiving a new TMD PDU from lower layer, the receiving TM RLC entity shall:
   // - deliver the TMD PDU without any modification to upper layer.
 
-   m_rlcSapUser->ReceivePdcpPdu (rxPduParams.p);
+  m_rlcSapUser->ReceivePdcpPdu (rxPduParams.p);
 }
 
 
@@ -198,7 +200,7 @@ LteRlcTm::DoReportBufferStatus (void)
   Time holDelay (0);
   uint32_t queueSize = 0;
 
-  if (! m_txBuffer.empty ())
+  if (!m_txBuffer.empty ())
     {
       RlcTag holTimeTag;
       NS_ASSERT_MSG (m_txBuffer.front ()->PeekPacketTag (holTimeTag), "RlcTag is missing");
@@ -214,7 +216,7 @@ LteRlcTm::DoReportBufferStatus (void)
   r.srcL2Id = m_srcL2Id;
   r.dstL2Id = m_dstL2Id;
   r.txQueueSize = queueSize;
-  r.txQueueHolDelay = holDelay.GetMilliSeconds () ;
+  r.txQueueHolDelay = holDelay.GetMilliSeconds ();
   r.retxQueueSize = 0;
   r.retxQueueHolDelay = 0;
   r.statusPduSize = 0;
@@ -228,7 +230,7 @@ LteRlcTm::ExpireRbsTimer (void)
 {
   NS_LOG_LOGIC ("RBS Timer expires");
 
-  if (! m_txBuffer.empty ())
+  if (!m_txBuffer.empty ())
     {
       DoReportBufferStatus ();
       m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcTm::ExpireRbsTimer, this);
