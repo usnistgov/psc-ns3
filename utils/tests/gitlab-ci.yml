@@ -48,29 +48,32 @@ stages:
 # Defines the per-commit jobs. They are executed for any branch
 per-commit-compile-debug:
   extends: .base-build
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: debug
   before_script:
+    - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 per-commit-compile-release:
   extends: .base-build
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: release
   before_script:
+    - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 per-commit-compile-optimized:
   extends: .base-build
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: optimized
   before_script:
+    - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 # Weekly jobs for other distribution and compilers

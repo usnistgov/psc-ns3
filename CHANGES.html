@@ -54,14 +54,21 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.29 to ns-3.30</h1>
 <h2>New API:</h2>
 <ul>
-<li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Intead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.</li>
+<li>Added the attribute <b>Release</b> to the class <b>EpsBearer</b>, to select the release (e.g., release 15)</li>
+<li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Instead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.</li>
+<li>The attributes <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmsduSize</b> and <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmpduSize</b> have been removed. Instead, it is necessary to use <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmsduSize</b> and <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmpduSize</b>.</li>
 <li>A new attribute <b>WifiPhy::PostReceptionErrorModel</b> has been added to force specific packet drops.</li>
 <li>A new attribute <b>WifiPhy::PreambleDetectionModel</b> has been added to decide whether PHY preambles are successfully detected.</li>
 <li>New attributes <b>QosTxop::AddBaResponseTimeout</b> and <b>QosTxop::FailedAddBaTimeout</b> have been added to set the timeout to wait for an ADDBA response after the ACK to the ADDBA request is received and to set the timeout after a failed BA agreement, respectively.</li>
 <li>A new attribute <b>QosTxop::UseExpliciteBarAfterMissedBlockAck</b> has been added to specify whether explicit Block Ack Request should be sent upon missed Block Ack Response.</li>
 <li>Added a new trace source <b>EndOfHePreamble</b> in WifiPhy for tracing end of preamble (after training fields) for received 802.11ax packets.</li>
-<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the frame capture model</li>
-<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the preamble detection model</li>
+<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the frame capture model.</li>
+<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the preamble detection model.</li>
+<li>Added a new helper method to WifiPhyHelper to disable the preamble detection model.</li>
+<li>Added a method to ObjectFactory to check whether a TypeId has been configured on the factory.</li>
+<li>Added a new helper method to WifiHelper to set the 802.11ax OBSS PD spatial reuse algorithm.</li>
+<li>Added the Cobalt queuing discipline.</li>
+</ul>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -75,16 +82,32 @@ us a note on ns-developers mailing list.</p>
     The WifiPhy attribute "CcaMode1Threshold" has been renamed to "CcaEdThreshold", 
     and the WifiPhy attribute "EnergyDetectionThreshold" has been replaced by a new attribute called "RxSensitivity"
   </li>
+  <li>
+    It is now possible to know the size of the SpectrumValue underlying std::vector, as well as
+    accessing read-only every element of it.
+  </li>
+  <li>
+    The GetClosestSide method of the Rectangle class returns the correct closest side also for positions outside the rectangle.
+  </li>
+  <li> The trace sources BackoffTrace and CwTrace were moved from class QosTxop to base class Txop, allowing these values to be traced for DCF operation.  In addition, the trace signature for BackoffTrace was changed from TracedValue to TracedCallback (callback taking one argument instead of two).  Most users of CwTrace for QosTxop configurations will not need to change existing programs, but users of BackoffTrace will need to adjust the callback signature to match.
+  </li>
+  <li> A new buffer has been introduced in the LteEnbRrc class. This buffer will be used by a target eNB during handover to buffer the packets comming from a source eNB on X2 inteface. The target eNB will buffer this data until it receives RRC Connection Reconfiguration Complete from a UE.
+  </li>
+  <li> New trace sources, namely DrbCreated, Srb1Created and DrbCreated have beed implemented in LteEnbRrc and LteUeRrc classes repectively. These new traces are used to improve the connection of the RLC and PDCP stats in the RadioBearerStatsConnector API.
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-<li> The trace sources BackoffTrace and CwTrace were moved from class QosTxop to base class Txop, allowing these values to be traced for DCF operation.  In addition, the trace signature for BackoffTrace was changed from TracedValue to TracedCallback (callback taking one argument instead of two).  Most users of CwTrace for QosTxop configurations will not need to change existing programs, but users of BackoffTrace will need to adjust the callback signature to match.</li>
+  <li>Waf upgraded from 2.0.9 to 2.0.15.
+  </li>
+  <li> Options to run a program through Waf without invoking a project rebuild have been added.  The command './waf --run-no-build <program-name>' parallels the behavior of './waf --run <program-name>' and, likewise, the command './waf --pyrun-no-build' parallels the behavior of './waf --pyrun <program-name>'.
+  </li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
   <li>The wifi ADDBA handshake process is now protected with the use of two timeouts who makes sure we do not end up in a blocked situation. If the handshake process is not established, packets that are in the queue are sent as normal MPDUs. Once handshake is successfully established, A-MPDUs can be transmitted.</li>
-  <li> The default value of the <b>Margin</b> attribute in SimpleFrameCaptureModel was changed from 10 to 5.
-  <li>LTE/EPC model has been enhanced with the new features. These new features allow the simulation user to test more realistic simulations related to the core network. These features are:<li>
+  <li> The default value of the <b>Margin</b> attribute in SimpleFrameCaptureModel was changed from 10 to 5.</li>
+  <li>LTE/EPC model has been enhanced with the new features. These new features allow the simulation user to test more realistic simulations related to the core network. These features are:</li>
     <ul>
       <li>SGW, PGW and MME are full nodes.</li>
       <li>There are P2P links between core network nodes.</li>
@@ -97,6 +120,20 @@ us a note on ns-developers mailing list.</p>
       <li>S1 signalling with the core network is initiated after the RRC connection establishment procedure is finished.</li>
       <li>New ATTACH_REQUEST state to wait for finalization of the S1 signalling with the core network.</li>
       <li>New InitialContextSetupRequest primitive of the S1 SAP that is received by the eNB RRC when the S1 signalling from the core network is finished.</li>
+    </ul>
+  </li>
+  <li> The default qdisc installed on single-queue devices (such as PointToPoint, Csma and Simple) is now FqCodel (instead of PfifoFast). On multi-queue devices (such as Wifi), the default root qdisc is now Mq with as many FqCoDel child qdiscs as the number of device queues. The new defaults are motivated by the willingness to align with the behavior of major Linux distributions and by the need to preserve the effectiveness of Wifi EDCA Functions in differentiating Access Categories (see issue #35).</li>
+  <li>LTE RLC TM mode does not report anymore the layer-to-layer delay, as it misses (by standard) an header to which attach the timestamp tag. Users can switch to the PDCP layer delay measurements, which must be the same.</li>
+  <li> Token Bank Fair Queue Scheduler (ns3::FdTbfqFfMacScheduler) will not anymore schedule a UE, which does not have any RBG left after removng the RBG from its allocation map if the computed TB size is greater than the "budget" computed in the scheduler.
+  </li>
+  <li> LTE module now supports the Radio Link Failure (RLF) functionality. This implementation introduced following key behavioral changes:
+    <ul>
+      <li> The UE RRC state will not remain in "CONNECTED_NORMALLY" state if the DL control channel SINR is below a set threshold.</li>
+      <li> The LTE RRC protocol APIs of UE i.e., LteUeRrcProtocolIdeal, LteUeRrcProtocolReal have been extended to send an ideal (i.e., using SAPs instead to transmitting over the air) UE context remove request to the eNB. Similarly, the eNB RRC protocol APIs, i.e, LteEnbRrcProtocolIdeal and LteEnbRrcProtocolReal have been extended to receive this ideal UE context remove request.</li>
+      <li> The UE will not synchronize to a cell whose RSRP is less than -140 dBm.</li>
+      <li> The non-contention based preambles during a handover are re-assigning to an UE only if it has not been assign to another UE (An UE can be using the preamble even after the expiryTime duration).</li>
+      <li> The RachConfigCommon structure in LteRrcSap API has been extended to include "TxFailParam". This new field would enable an eNB to indicate how many times T300 timer can expire at the UE. Upon reaching this count, the UE aborts the connection establishment, and performs the cell selection again. See TS 36.331 5.3.3.6. </li>
+      <li> The timer T300 in LteUeRrc class is now bounded by the standard min and max values defined in 3GPP TS 36.331.</li>
     </ul>
   </li>
 </ul>

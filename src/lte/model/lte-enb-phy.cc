@@ -268,31 +268,22 @@ void
 LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  bool haveNodeId = false;
-  uint32_t nodeId = 0;
-  if (m_netDevice != 0)
-    {
-      Ptr<Node> node = m_netDevice->GetNode ();
-      if (node != 0)
-        {
-          nodeId = node->GetId ();
-          haveNodeId = true;
-        }
-    }
- if(!m_disableEnbPhy)
-  {
-   if (haveNodeId)
-     {
-       Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
-     }
-   else
-     {
-       Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
-     }
-  }
+
+  NS_ABORT_MSG_IF (m_netDevice == nullptr, "LteEnbDevice is not available in LteEnbPhy");
+  Ptr<Node> node = m_netDevice->GetNode ();
+  NS_ABORT_MSG_IF (node == nullptr, "Node is not available in the LteNetDevice of LteEnbPhy");
+  uint32_t nodeId = node->GetId ();
+
+  //ScheduleWithContext() is needed here to set context for logs,
+  //because Initialize() is called outside of Node::AddDevice().
+
+ if (!m_disableEnbPhy)
+   {
+     Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
+   }
  else
    {
-       NS_LOG_INFO ("eNB disabled!");
+     NS_LOG_INFO ("eNB disabled!");
    }
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
   m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
@@ -974,6 +965,58 @@ LteEnbPhy::DoRemoveUe (uint16_t rnti)
   if (it != m_paMap.end ())
     {
       m_paMap.erase (it);
+    }
+
+  //additional data to be removed
+  m_uplinkSpectrumPhy->RemoveExpectedTb (rnti);
+  //remove srs info to avoid trace errors
+  std::map<uint16_t, uint16_t>::iterator sit = m_srsSampleCounterMap.find (rnti);
+  if (sit != m_srsSampleCounterMap.end ())
+    {
+      m_srsSampleCounterMap.erase (rnti);
+    }
+  //remove DL_DCI message otherwise errors occur for m_dlPhyTransmission trace
+  //remove also any UL_DCI message for the UE to be removed
+
+  for (auto & ctrlMessageList : m_controlMessagesQueue)
+    {
+      std::list<Ptr<LteControlMessage> >::iterator ctrlMsgListIt = ctrlMessageList.begin ();
+      while (ctrlMsgListIt != ctrlMessageList.end ())
+        {
+          Ptr<LteControlMessage> msg = (*ctrlMsgListIt);
+          if (msg->GetMessageType () == LteControlMessage::DL_DCI)
+            {
+              auto dci = DynamicCast<DlDciLteControlMessage> (msg);
+              if (dci->GetDci ().m_rnti == rnti)
+                {
+                  NS_LOG_INFO ("DL_DCI to be sent from cell id : "
+                        << m_cellId << " to RNTI : " << rnti << " is deleted");
+                  ctrlMsgListIt = ctrlMessageList.erase (ctrlMsgListIt);
+                }
+              else
+                {
+                  ++ctrlMsgListIt;
+                }
+            }
+          else if (msg->GetMessageType () == LteControlMessage::UL_DCI)
+            {
+              auto dci = DynamicCast<UlDciLteControlMessage> (msg);
+              if (dci->GetDci ().m_rnti == rnti)
+                {
+                  NS_LOG_INFO ("UL_DCI to be sent from cell id : "
+                        << m_cellId << " to RNTI : " << rnti << " is deleted");
+                  ctrlMsgListIt = ctrlMessageList.erase (ctrlMsgListIt);
+                }
+              else
+                {
+                  ++ctrlMsgListIt;
+                }
+            }
+          else
+            {
+              ++ctrlMsgListIt;
+            }
+        }
     }
 
 }

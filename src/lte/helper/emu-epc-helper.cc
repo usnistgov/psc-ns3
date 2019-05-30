@@ -421,7 +421,7 @@ EmuEpcHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> t
 }
 
 Ptr<Node>
-EmuEpcHelper::GetPgwNode ()
+EmuEpcHelper::GetPgwNode () const
 {
   return m_sgwPgw;
 }

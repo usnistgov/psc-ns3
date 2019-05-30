@@ -22,6 +22,7 @@
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/socket.h"
 #include "txop.h"
 #include "channel-access-manager.h"
 #include "wifi-mac-queue.h"
@@ -307,8 +308,12 @@ void
 Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
-  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
-  m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
+  Ptr<Packet> packetCopy = packet->Copy ();
+  // remove the priority tag attached, if any
+  SocketPriorityTag priorityTag;
+  packetCopy->RemovePacketTag (priorityTag);
+  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packetCopy);
+  m_queue->Enqueue (Create<WifiMacQueueItem> (packetCopy, hdr));
   StartAccessIfNeeded ();
 }
 
@@ -493,13 +498,15 @@ Txop::NotifyAccessGranted (void)
       m_currentParams.DisableAck ();
       m_currentParams.DisableNextData ();
       NS_LOG_DEBUG ("tx broadcast");
-      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+      GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                    m_currentParams, this);
     }
   else
     {
       m_currentParams.EnableAck ();
       if (NeedFragmentation ())
         {
+          m_currentParams.DisableRts ();
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
           if (IsLastFragment ())
@@ -512,12 +519,27 @@ Txop::NotifyAccessGranted (void)
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
               m_currentParams.EnableNextData (GetNextFragmentSize ());
             }
-          GetLow ()->StartTransmission (fragment, &hdr, m_currentParams, this);
+          GetLow ()->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr),
+                                        m_currentParams, this);
         }
       else
         {
+          WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
+                                                                         &m_currentHdr, m_currentPacket);
+
+          if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                         m_currentPacket, dataTxVector)
+              && !m_low->IsCfPeriod ())
+            {
+              m_currentParams.EnableRts ();
+            }
+          else
+            {
+              m_currentParams.DisableRts ();
+            }
           m_currentParams.DisableNextData ();
-          GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+          GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                        m_currentParams, this);
         }
     }
 }
@@ -732,7 +754,7 @@ Txop::StartNextFragment (void)
     {
       m_currentParams.EnableNextData (GetNextFragmentSize ());
     }
-  GetLow ()->StartTransmission (fragment, &hdr, m_currentParams, this);
+  GetLow ()->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr), m_currentParams, this);
 }
 
 void
@@ -862,10 +884,17 @@ Txop::MissedBlockAck (uint8_t nMpdus)
   NS_LOG_WARN ("MissedBlockAck should not be called for non QoS!");
 }
 
-bool
-Txop::HasTxop (void) const
+Time
+Txop::GetTxopRemaining (void) const
 {
-  return false;
+  NS_LOG_WARN ("GetTxopRemaining should not be called for non QoS!");
+  return Seconds (0);
+}
+
+void
+Txop::TerminateTxop (void)
+{
+  NS_LOG_WARN ("TerminateTxop should not be called for non QoS!");
 }
 
 } //namespace ns3

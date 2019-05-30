@@ -113,7 +113,6 @@ ChannelAccessManager::ChannelAccessManager ()
     m_lastBusyDuration (MicroSeconds (0)),
     m_lastSwitchingStart (MicroSeconds (0)),
     m_lastSwitchingDuration (MicroSeconds (0)),
-    m_rxing (false),
     m_sleeping (false),
     m_off (false),
     m_slot (Seconds (0.0)),
@@ -139,6 +138,7 @@ ChannelAccessManager::DoDispose (void)
       i->Dispose ();
       i = 0;
     }
+  m_phy = 0;
 }
 
 void
@@ -148,6 +148,7 @@ ChannelAccessManager::SetupPhyListener (Ptr<WifiPhy> phy)
   NS_ASSERT (m_phyListener == 0);
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
+  m_phy = phy;
 }
 
 void
@@ -159,6 +160,7 @@ ChannelAccessManager::RemovePhyListener (Ptr<WifiPhy> phy)
       phy->UnregisterListener (m_phyListener);
       delete m_phyListener;
       m_phyListener = 0;
+      m_phy = 0;
     }
 }
 
@@ -205,32 +207,10 @@ ChannelAccessManager::Add (Ptr<Txop> dcf)
 }
 
 Time
-ChannelAccessManager::MostRecent (Time a, Time b) const
+ChannelAccessManager::MostRecent (std::initializer_list<Time> list) const
 {
-  return Max (a, b);
-}
-
-Time
-ChannelAccessManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const
-{
-  Time g = MostRecent (a, b);
-  Time h = MostRecent (c, d);
-  Time i = MostRecent (e, f);
-  Time k = MostRecent (g, h);
-  Time retval = MostRecent (k, i);
-  return retval;
-}
-
-Time
-ChannelAccessManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const
-{
-  Time h = MostRecent (a, b);
-  Time i = MostRecent (c, d);
-  Time j = MostRecent (e, f);
-  Time k = MostRecent (h, i);
-  Time l = MostRecent (j, g);
-  Time retval = MostRecent (k, l);
-  return retval;
+  NS_ASSERT (list.size () > 0);
+  return *std::max_element (list.begin (), list.end ());
 }
 
 bool
@@ -238,7 +218,7 @@ ChannelAccessManager::IsBusy (void) const
 {
   NS_LOG_FUNCTION (this);
   // PHY busy
-  if (m_rxing)
+  if (m_lastRxEnd > Simulator::Now ())
     {
       return true;
     }
@@ -281,6 +261,10 @@ void
 ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
 {
   NS_LOG_FUNCTION (this << state);
+  if (m_phy)
+    {
+      m_phy->NotifyChannelAccessRequested ();
+    }
   //Deny access if in sleep mode or off
   if (m_sleeping || m_off)
     {
@@ -289,7 +273,7 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
   if (isCfPeriod)
     {
       state->NotifyAccessRequested ();
-      Time delay = (MostRecent (GetAccessGrantStart (true), Simulator::Now ()) - Simulator::Now ());
+      Time delay = (MostRecent ({GetAccessGrantStart (true), Simulator::Now ()}) - Simulator::Now ());
       m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::DoGrantPcfAccess, this, state);
       return;
     }
@@ -407,7 +391,7 @@ ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
 {
   NS_LOG_FUNCTION (this);
   Time rxAccessStart;
-  if (!m_rxing)
+  if (m_lastRxEnd <= Simulator::Now ())
     {
       rxAccessStart = m_lastRxEnd + m_sifs;
       if (!m_lastRxReceivedOk)
@@ -428,23 +412,23 @@ ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
   Time accessGrantedStart;
   if (ignoreNav)
     {
-      accessGrantedStart = MostRecent (rxAccessStart,
-                                       busyAccessStart,
-                                       txAccessStart,
-                                       ackTimeoutAccessStart,
-                                       ctsTimeoutAccessStart,
-                                       switchingAccessStart
+      accessGrantedStart = MostRecent ({rxAccessStart,
+                                        busyAccessStart,
+                                        txAccessStart,
+                                        ackTimeoutAccessStart,
+                                        ctsTimeoutAccessStart,
+                                        switchingAccessStart}
                                        );
     }
   else
     {
-      accessGrantedStart = MostRecent (rxAccessStart,
-                                       busyAccessStart,
-                                       txAccessStart,
-                                       navAccessStart,
-                                       ackTimeoutAccessStart,
-                                       ctsTimeoutAccessStart,
-                                       switchingAccessStart
+      accessGrantedStart = MostRecent ({rxAccessStart,
+                                        busyAccessStart,
+                                        txAccessStart,
+                                        navAccessStart,
+                                        ackTimeoutAccessStart,
+                                        ctsTimeoutAccessStart,
+                                        switchingAccessStart}
                                        );
     }
   NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
@@ -459,8 +443,8 @@ Time
 ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> state)
 {
   NS_LOG_FUNCTION (this << state);
-  Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
-                                     GetAccessGrantStart () + (state->GetAifsn () * m_slot));
+  Time mostRecentEvent = MostRecent ({state->GetBackoffStart (),
+                                     GetAccessGrantStart () + (state->GetAifsn () * m_slot)});
 
   return mostRecentEvent;
 }
@@ -559,7 +543,7 @@ ChannelAccessManager::NotifyRxStartNow (Time duration)
   UpdateBackoff ();
   m_lastRxStart = Simulator::Now ();
   m_lastRxDuration = duration;
-  m_rxing = true;
+  m_lastRxEnd = m_lastRxStart + m_lastRxDuration;
 }
 
 void
@@ -568,8 +552,8 @@ ChannelAccessManager::NotifyRxEndOkNow (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end ok");
   m_lastRxEnd = Simulator::Now ();
+  m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
   m_lastRxReceivedOk = true;
-  m_rxing = false;
 }
 
 void
@@ -578,15 +562,15 @@ ChannelAccessManager::NotifyRxEndErrorNow (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end error");
   m_lastRxEnd = Simulator::Now ();
+  m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
   m_lastRxReceivedOk = false;
-  m_rxing = false;
 }
 
 void
 ChannelAccessManager::NotifyTxStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  if (m_rxing)
+  if (m_lastRxEnd > Simulator::Now ())
     {
       //this may be caused only if PHY has started to receive a packet
       //inside SIFS, so, we check that lastRxStart was maximum a SIFS ago
@@ -594,7 +578,6 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
       m_lastRxReceivedOk = true;
-      m_rxing = false;
     }
   NS_LOG_DEBUG ("tx start for " << duration);
   UpdateBackoff ();
@@ -620,13 +603,12 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
   NS_ASSERT (m_lastTxStart + m_lastTxDuration <= now);
   NS_ASSERT (m_lastSwitchingStart + m_lastSwitchingDuration <= now);
 
-  if (m_rxing)
+  if (m_lastRxEnd > Simulator::Now ())
     {
       //channel switching during packet reception
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
       m_lastRxReceivedOk = true;
-      m_rxing = false;
     }
   if (m_lastNavStart + m_lastNavDuration > now)
     {

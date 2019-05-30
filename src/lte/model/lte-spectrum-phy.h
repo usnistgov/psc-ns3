@@ -18,7 +18,7 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  *         Giuseppe Piro  <g.piro@poliba.it>
  * Modified by: Marco Miozzo <mmiozzo@cttc.es> (introduce physical error model)
- * Modified by: NIST // Contributions may not be subject to US copyright.
+ *              NIST // Contributions may not be subject to US copyright. (D2D extensions)
  */
 
 #ifndef LTE_SPECTRUM_PHY_H
@@ -712,10 +712,21 @@ public:
    * \param downlink true when the TB is for DL
    */
   void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, uint8_t rv, bool downlink);
-
   /**
+   * \brief Remove expected transport block.
    *
+   * When UE context at eNodeB is removed and if UL TB is expected to be received
+   * but not transmitted due to break in radio link. The TB with different rnti or lcid
+   * remains during the transmission of a new TB and causes problems with
+   * m_ulPhyReception trace, since the UE context was already removed. TB has to be
+   * removed when ue context at eNodeB is removed
    *
+   * \param rnti The RNTI of the UE
+   */
+  void RemoveExpectedTb (uint16_t  rnti);
+  
+  /**
+   * \brief Add Expected TB method for Sidelink communication
    * \param rnti The RNTI of the source of the TB
    * \param l1dst the layer 1 destination id of the TB
    * \param ndi The new data indicator flag
@@ -727,7 +738,8 @@ public:
   void AddExpectedTb (uint16_t  rnti, uint8_t l1dst, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t rv);
 
   /**
-   * For Sidelink Discovery
+   * \brief Add Expected TB method for Sidelink Discovery
+   * 
    * no mcs, size fixed to 232 bits, no l1dst
    *
    * \param rnti The RNTI of the source of the TB

@@ -355,7 +355,7 @@ EpcSgwApplication::DoRecvDeleteBearerCommand (Ptr<Packet> packet)
   std::list<GtpcDeleteBearerCommandMessage::BearerContext> bearerContextsOut;
   for (auto &bearerContext : msg.GetBearerContexts ())
     {
-      NS_LOG_DEBUG ("ebid " << bearerContext.m_epsBearerId);
+      NS_LOG_DEBUG ("ebid " << (uint16_t) bearerContext.m_epsBearerId);
       GtpcDeleteBearerCommandMessage::BearerContext bearerContextOut;
       bearerContextOut.m_epsBearerId = bearerContext.m_epsBearerId;
       bearerContextsOut.push_back (bearerContextOut);
@@ -369,7 +369,7 @@ EpcSgwApplication::DoRecvDeleteBearerCommand (Ptr<Packet> packet)
   Ptr<Packet> packetOut = Create <Packet> ();
   packetOut->AddHeader (msgOut);
   NS_LOG_DEBUG ("Send DeleteBearerCommand to PGW " << m_pgwAddr);
-  m_s11Socket->SendTo (packetOut, 0, InetSocketAddress (m_pgwAddr, m_gtpcUdpPort));
+  m_s5cSocket->SendTo (packetOut, 0, InetSocketAddress (m_pgwAddr, m_gtpcUdpPort));
 }
 
 void

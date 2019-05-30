@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011, 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2018 Fraunhofer ESK : RLF extensions
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -20,7 +21,8 @@
  *          Manuel Requena <manuel.requena@cttc.es>
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
  *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
- * Modified by: NIST // Contributions may not be subject to US copyright.
+ *              Vignesh Babu <ns3-dev@esk.fraunhofer.de> (RLF extensions)
+ *              NIST // Contributions may not be subject to US copyright. (D2D extensions)
  */
 
 #ifndef LTE_ENB_RRC_H
@@ -215,7 +217,12 @@ public:
   LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover ();
 
   /**
-   * Send a data packet over the appropriate Data Radio Bearer
+   * Send a data packet over the appropriate Data Radio Bearer.
+   * If state is HANDOVER_JOINING (i.e. target eNB has received the
+   * Handover Request), the packet is buffered.
+   * If state is HANDOVER_LEAVING (i.e. source eNB has received the
+   * RRC Connection Reconfiguration, the packet is sent through the
+   * X2 interface.
    *
    * \param bid the corresponding EPS Bearer ID
    * \param p the packet
@@ -295,10 +302,17 @@ public:
    */
   void RecvMeasurementReport (LteRrcSap::MeasurementReport msg);
   /**
-   * Implement the LteEnbRrcSapProvider::RecvSidelinkUeInformation interface.
+   * Implement the LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest interface.
+   *
+   * \param rnti the C-RNTI identifying the user
+   */
+  void RecvIdealUeContextRemoveRequest (uint16_t rnti);
+  /**
+   * \breif Implement the LteEnbRrcSapProvider::RecvSidelinkUeInformation interface.
    * \param msg the Sidelink UE information
    */
   void RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg);
+
 
   // METHODS FORWARDED FROM ENB CMAC SAP //////////////////////////////////////
 
@@ -361,6 +375,12 @@ public:
    * \param pdschConfigDedicated new pdschConfigDedicated (i.e. P_A value) to be set
    */
   void SetPdschConfigDedicated (LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
+
+  /**
+   * Cancel all timers which are running for the UE
+   *
+   */
+  void CancelPendingEvents ();
 
   /**
    * TracedCallback signature for state transition events.
@@ -468,6 +488,17 @@ private:
   uint8_t Bid2Drbid (uint8_t bid);
 
   /**
+   * Send a data packet over the appropriate Data Radio Bearer.
+   * It is called by SendData if the UE is in a connected state
+   * or when the RRC Connection Reconfiguration Complete message
+   * is received and the packets are debuffered.
+   *
+   * \param bid the corresponding EPS Bearer ID
+   * \param p the packet
+   */
+  void SendPacket (uint8_t bid, Ptr<Packet> p);
+
+  /** 
    * Switch the UeManager to the given state
    *
    * \param s the given state
@@ -524,7 +555,15 @@ private:
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
 
+  /**
+   * The `DrbCreated` trace source. Fired when DRB is created, i.e.
+   * the RLC and PDCP entities are created for one logical channel.
+   * Exporting IMSI, cell ID, RNTI, and LCID
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
+
   uint16_t m_sourceX2apId; ///< source X2 ap ID
+  uint16_t m_targetX2apId; ///< target X2 ap ID
   uint16_t m_sourceCellId; ///< source cell ID
   uint16_t m_targetCellId; ///< target cell ID
   std::list<uint8_t> m_drbsToBeStarted; ///< DRBS to be started
@@ -569,6 +608,18 @@ private:
 
   /// Pending start data radio bearers
   bool m_pendingStartDataRadioBearers;
+
+
+  /**
+   * Packet buffer for when UE is doing the handover.
+   * The packets are stored with the bid (bearer ID).
+   *
+   * Source eNB starts forwarding data to target eNB through the X2 interface
+   * when it sends RRC Connection Reconfiguration to the UE.
+   * Target eNB buffers data until it receives RRC Connection Reconfiguration
+   * Complete from the UE.
+   */
+  std::list<std::pair<uint8_t, Ptr<Packet> > > m_packetBuffer;
 
   /**
    * List of destinations for sidelink communications
@@ -877,13 +928,13 @@ public:
    *
    * \param ccPhyConf the component carrier configuration
    */
-  void ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb> > ccPhyConf);
+  void ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierBaseStation> > ccPhyConf);
 
   /**
    * \brief Configure carriers.
    * \param ccPhyConf the component carrier configuration
    */
-  void ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb> > ccPhyConf);
+  void ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> ccPhyConf);
 
   /**
    * set the cell id of this eNB
@@ -1050,6 +1101,19 @@ public:
   typedef void (*ReceiveReportTracedCallback)(const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
                                               const LteRrcSap::MeasurementReport report);
 
+  /**
+   * TracedCallback signature for timer expiry events
+   *
+   * \param [in] imsi
+   * \param [in] rnti
+   * \param [in] cellId
+   * \param [in] cause
+   */
+  typedef void (*TimerExpiryTracedCallback)
+      (const uint64_t imsi, const uint16_t rnti, const uint16_t cellId,
+       const std::string cause);
+
+
 private:
   // RRC SAP methods
 
@@ -1102,7 +1166,18 @@ private:
    */
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
   /**
-   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::SidelinkUeInformation interface to UeManager::SidelinkUeInformation
+   * \brief Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest interface to UeManager::RecvIdealUeContextRemoveRequest.
+   *
+   * Remove the UE context at eNodeB and also remove the bearers established
+   * at SGW/PGW node. Bearer info at MME is not deleted since they are added at
+   * MME only at the beginning of simulation and if they are removed,
+   * the bearers cannot be activated again.
+   *
+   * \param rnti the C-RNTI identifying the user
+   */
+  void DoRecvIdealUeContextRemoveRequest (uint16_t rnti);
+  /**
+   * \brief Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::SidelinkUeInformation interface to UeManager::SidelinkUeInformation
    *
    * \param rnti the RNTI
    * \param msg the LteRrcSap::SidelinkUeInformation
@@ -1297,6 +1372,20 @@ private:
    * \return the type of RLC that is to be created for the given EPS bearer
    */
   TypeId GetRlcType (EpsBearer bearer);
+
+  /**
+   * \brief Is random access completed function
+   *
+   * This method is executed to decide if the non contention based
+   * preamble has to reused or not upon preamble expiry. If the random access
+   * in connected mode is completed, then the preamble can be reused by other UEs.
+   * If not, the same UE retains the preamble and other available preambles is
+   * assigned to the required UEs.
+   *
+   * \param rnti the C-RNTI identifying the user
+   * \return true if the random access in connected mode is completed
+   */
+  bool IsRandomAccessCompleted (uint16_t rnti);
 
 
 
@@ -1606,12 +1695,24 @@ private:
    * received. Exporting IMSI, cell ID, and RNTI.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport> m_recvMeasurementReportTrace;
+  /**
+   * The `NotifyConnectionRelease` trace source. Fired when an UE leaves the eNB.
+   * Exporting IMSI, cell ID, RNTI.
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReleaseTrace;
+  /**
+   * The 'TimerExpiry' Trace source. Fired when any of the RRC timers maintained
+   * at eNB expires. Exporting IMSI, cell ID, and RNTI and name of timer
+   * which expired.
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, std::string> m_rrcTimeoutTrace;
 
   uint16_t m_numberOfComponentCarriers; ///< number of component carriers
 
   bool m_carriersConfigured; ///< are carriers configured
 
-  std::map<uint8_t, Ptr<ComponentCarrierEnb> > m_componentCarrierPhyConf; ///< component carrier phy configuration
+  std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> m_componentCarrierPhyConf; ///< component carrier phy configuration
 
 }; // end of `class LteEnbRrc`
 

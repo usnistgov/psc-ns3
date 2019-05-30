@@ -27,6 +27,7 @@
 #include "ht-configuration.h"
 #include "he-configuration.h"
 #include "wifi-mode.h"
+#include "ampdu-subframe-header.h"
 
 namespace ns3 {
 
@@ -132,7 +133,7 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     }
   else if (modulation == WIFI_MOD_CLASS_VHT)
     {
-      return WIFI_PREAMBLE_VHT;
+      return WIFI_PREAMBLE_VHT_SU;
     }
   else if (modulation == WIFI_MOD_CLASS_HT && useGreenfield)
     {
@@ -237,6 +238,69 @@ GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu)
       size = packet->GetSize () + hdr->GetSize () + fcs.GetSerializedSize ();
     }
   return size;
+}
+
+Time
+GetPpduMaxTime (WifiPreamble preamble)
+{
+  Time duration;
+
+  switch (preamble)
+    {
+    case WIFI_PREAMBLE_HT_GF:
+      duration = MicroSeconds (10000);
+      break;
+    case WIFI_PREAMBLE_HT_MF:
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
+    case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_ER_SU:
+    case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
+      duration = MicroSeconds (5484);
+      break;
+    default:
+      duration = MicroSeconds (0);
+      break;
+    }
+  return duration;
+}
+
+bool
+IsAmpdu (Ptr<const Packet> packet)
+{
+  AmpduSubframeHeader hdr;
+  //Rely on metadata if present
+  bool metadataEnabled = false;
+  PacketMetadata::ItemIterator metadataIterator = packet->BeginItem ();
+  while (metadataIterator.HasNext ())
+    {
+      metadataEnabled = true;
+      PacketMetadata::Item item = metadataIterator.Next ();
+      if (item.tid == hdr.GetTypeId ())
+        {
+          return true;
+        }
+    }
+  if (metadataEnabled)
+    {
+      //Didn't find header in metadata
+      return false;
+    }
+
+  //No metadata so peek manually into buffer and check consistency of extracted data
+  uint32_t totalSize = packet->GetSize ();
+  uint32_t deserialized = packet->PeekHeader (hdr);
+  if (deserialized == hdr.GetSerializedSize ()
+      && hdr.IsSignatureValid ()
+      && hdr.GetLength () <= (totalSize - deserialized))
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 } //namespace ns3

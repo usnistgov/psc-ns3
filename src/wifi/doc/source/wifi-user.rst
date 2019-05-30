@@ -678,7 +678,7 @@ priority to the user priority, thus overwriting the value determined by the
 socket priority (users can read :ref:`Socket-options` for details on how to
 set the packet priority). Also, given that the Traffic Control layer calls
 :cpp:func:`ns3::WifiNetDevice::SelectQueue()` before enqueuing the packet
-into a queue disc, it turns out that queuing disciplines (such as the default
+into a queue disc, it turns out that queuing disciplines (such as
 PfifoFastQueueDisc) that classifies packets based on their priority will
 use the user priority instead of the socket priority.
 
@@ -736,7 +736,15 @@ In order to change parameters that are overwritten by ``WifiHelper::SetStandard`
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BasicBlockAckTimeout", TimeValue (MicroSeconds (basicBlockAckTimeout)));
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/CompressedBlockAckTimeout", TimeValue (MicroSeconds (compressedBlockAckTimeout)));
 
-There are many |ns3| attributes that can be set on the above helpers to
+The WifiHelper is also used to configure OBSS PD spatial reuse for 802.11ax.
+The following line configure a WifiHelper to support OBSS PD spatial reuse 
+using the ``ConstantObssPdAlgorithm`` with a threshold set to -72 dBm::
+
+  WifiHelper wifi;
+  wifi.SetObssPdAlgorithm ("ns3::ConstantObssPdAlgorithm",
+                           "ObssPdLevel", DoubleValue (-72.0));
+
+There are many other |ns3| attributes that can be set on the above helpers to
 deviate from the default behavior; the example scripts show how to do some of
 this reconfiguration.
 

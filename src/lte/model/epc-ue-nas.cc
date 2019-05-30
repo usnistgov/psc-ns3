@@ -184,8 +184,8 @@ void
 EpcUeNas::Disconnect ()
 {
   NS_LOG_FUNCTION (this);
-  m_asSapProvider->Disconnect ();
   SwitchToState (OFF);
+  m_asSapProvider->Disconnect ();
 }
 
 
@@ -204,6 +204,7 @@ EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
       btba.bearer = bearer;
       btba.tft = tft;
       m_bearersToBeActivatedList.push_back (btba);
+      m_bearersToBeActivatedListForReconnection.push_back (btba);
       break;
     }
 }
@@ -361,7 +362,16 @@ void
 EpcUeNas::DoNotifyConnectionReleased ()
 {
   NS_LOG_FUNCTION (this);
-  SwitchToState (OFF);
+  // remove tfts
+  while (m_bidCounter > 0)
+    {
+      m_tftClassifier.Delete (m_bidCounter);
+      m_bidCounter--;
+    }
+  //restore the bearer list to be activated for the next RRC connection
+  m_bearersToBeActivatedList = m_bearersToBeActivatedListForReconnection;
+
+  Disconnect ();
 }
 
 void

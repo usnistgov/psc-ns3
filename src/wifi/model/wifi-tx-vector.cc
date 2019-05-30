@@ -24,7 +24,7 @@
 namespace ns3 {
 
 WifiTxVector::WifiTxVector ()
-  : m_preamble (WIFI_PREAMBLE_NONE),
+  : m_preamble (WIFI_PREAMBLE_LONG),
     m_channelWidth (20),
     m_guardInterval (800),
     m_nTx (1),
@@ -33,8 +33,7 @@ WifiTxVector::WifiTxVector ()
     m_aggregation (false),
     m_stbc (false),
     m_bssColor (0),
-    m_modeInitialized (false),
-    m_txPowerLevelInitialized (false)
+    m_modeInitialized (false)
 {
 }
 
@@ -60,9 +59,14 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_aggregation (aggregation),
     m_stbc (stbc),
     m_bssColor (bssColor),
-    m_modeInitialized (true),
-    m_txPowerLevelInitialized (true)
+    m_modeInitialized (true)
 {
+}
+
+bool
+WifiTxVector::GetModeInitialized (void) const
+{
+  return m_modeInitialized;
 }
 
 WifiMode
@@ -78,10 +82,6 @@ WifiTxVector::GetMode (void) const
 uint8_t
 WifiTxVector::GetTxPowerLevel (void) const
 {
-  if (!m_txPowerLevelInitialized)
-    {
-      NS_FATAL_ERROR ("WifiTxVector txPowerLevel must be set before using");
-    }
   return m_txPowerLevel;
 }
 
@@ -144,7 +144,6 @@ void
 WifiTxVector::SetTxPowerLevel (uint8_t powerlevel)
 {
   m_txPowerLevel = powerlevel;
-  m_txPowerLevelInitialized = true;
 }
 
 void

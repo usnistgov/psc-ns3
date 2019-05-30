@@ -34,7 +34,7 @@ struct IdealWifiRemoteStation : public WifiRemoteStation
 {
   double m_lastSnrObserved;  //!< SNR of most recently reported packet sent to the remote station
   double m_lastSnrCached;    //!< SNR most recently used to select a rate
-  uint8_t m_nss;             //!< Number of spacial streams
+  uint8_t m_nss;             //!< Number of spatial streams
   WifiMode m_lastMode;       //!< Mode most recently used to the remote station
 };
 
@@ -282,16 +282,12 @@ void
 IdealWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  IdealWifiRemoteStation *st = (IdealWifiRemoteStation *)station;
-  st->m_lastSnrObserved = 0.0;
 }
 
 void
 IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  IdealWifiRemoteStation *st = (IdealWifiRemoteStation *)station;
-  st->m_lastSnrObserved = 0.0;
 }
 
 WifiTxVector

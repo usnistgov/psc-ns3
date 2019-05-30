@@ -36,6 +36,7 @@
 #include <vector>
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
+#include <ns3/traced-callback.h>
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/lte-sl-header.h"
@@ -63,6 +64,19 @@ public:
   LteUeMac ();
   virtual ~LteUeMac ();
   virtual void DoDispose (void);
+
+  /**
+   * \brief TracedCallback signature for RA response timeout events
+   * exporting IMSI, contention flag, preamble transmission counter
+   * and the max limit of preamble transmission
+   *
+   * \param [in] imsi
+   * \param [in] contention
+   * \param [in] preambleTxCounter
+   * \param [in] maxPreambleTxLimit
+   */
+  typedef void (* RaResponseTimeoutTracedCallback)
+    (uint64_t imsi, bool contention, uint8_t preambleTxCounter, uint8_t maxPreambleTxLimit);
 
   /**
   * \brief Get the LTE MAC SAP provider
@@ -196,9 +210,20 @@ private:
    */
   void DoRemoveLc (uint8_t lcId);
   /**
-   * Reset function
+   * \brief Reset function
    */
   void DoReset ();
+  /**
+   * \brief Notify MAC about the successful RRC connection
+   * establishment.
+   */
+  void DoNotifyConnectionSuccessful ();
+  /**
+   * Set IMSI
+   *
+   * \param imsi the IMSI of the UE
+   */
+  void DoSetImsi (uint64_t imsi);
   /**
    * Adds a new Logical Channel (LC) used for Sidelink
    *
@@ -325,9 +350,7 @@ private:
   void DoNotifyUlTransmission ();
 
   // internal methods
-  /**
-   * Randomly select and send RA preamble function
-   */
+  /// Randomly select and send RA preamble function
   void RandomlySelectAndSendRaPreamble ();
   /**
    * Send RA preamble function
@@ -398,6 +421,7 @@ private:
   std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; ///< timer for packet life in the buffer
 
   uint16_t m_rnti; ///< RNTI
+  uint16_t m_imsi; ///< IMSI
 
   bool m_rachConfigured; ///< is RACH configured?
   LteUeCmacSapProvider::RachConfig m_rachConfig; ///< RACH configuration
@@ -412,6 +436,12 @@ private:
   uint8_t m_raRnti; ///< RA RNTI
   bool m_waitingForRaResponse; ///< waiting for RA response
 
+  /**
+   * \brief The `RaResponseTimeout` trace source. Fired RA response timeout.
+   * Exporting IMSI, contention flag, preamble transmission counter
+   * and the max limit of preamble transmission.
+   */
+  TracedCallback<uint64_t, bool, uint8_t, uint8_t> m_raResponseTimeoutTrace;
   /// Sidelink Communication related variables
   struct SidelinkLcIdentifier
   {

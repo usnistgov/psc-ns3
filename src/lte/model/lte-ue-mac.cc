@@ -17,7 +17,8 @@
  *
  * Author: Nicola Baldo  <nbaldo@cttc.es>
  * Author: Marco Miozzo <mmiozzo@cttc.es>
- * Modified by: NIST // Contributions may not be subject to US copyright.
+ * Modified by:
+ *          NIST // Contributions may not be subject to US copyright. (D2D extensions)
  */
 
 
@@ -80,6 +81,8 @@ public:
   virtual void AddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   virtual void RemoveLc (uint8_t lcId);
   virtual void Reset ();
+  virtual void NotifyConnectionSuccessful ();
+  virtual void SetImsi (uint64_t imsi);
   virtual void AddSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   virtual void RemoveSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
   //Sidelink Communication
@@ -145,6 +148,18 @@ UeMemberLteUeCmacSapProvider::Reset ()
   m_mac->DoReset ();
 }
 
+void
+UeMemberLteUeCmacSapProvider::NotifyConnectionSuccessful ()
+{
+  m_mac->DoNotifyConnectionSuccessful ();
+}
+
+void
+ UeMemberLteUeCmacSapProvider::SetImsi (uint64_t imsi)
+ {
+   m_mac->DoSetImsi (imsi);
+ }
+ 
 void
 UeMemberLteUeCmacSapProvider::AddSlLc (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, LogicalChannelConfig lcConfig, LteMacSapUser* msu)
 {
@@ -339,6 +354,10 @@ LteUeMac::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Lte")
     .AddConstructor<LteUeMac> ()
+    .AddTraceSource ("RaResponseTimeout",
+                     "trace fired upon RA response timeout",
+                     MakeTraceSourceAccessor (&LteUeMac::m_raResponseTimeoutTrace),
+                     "ns3::LteUeMac::RaResponseTimeoutTracedCallback")
     .AddAttribute ("Ktrp",
                    "Number of active subframes used for PSSCH in the TRP",
                    UintegerValue (4),
@@ -388,6 +407,7 @@ LteUeMac::LteUeMac ()
   m_freshUlBsr (false),
   m_harqProcessId (0),
   m_rnti (0),
+     m_imsi (0),
   m_rachConfigured (false),
   m_waitingForRaResponse (false),
   m_slBsrPeriodicity (MilliSeconds (1)),
@@ -830,6 +850,9 @@ LteUeMac::RaResponseTimeout (bool contention)
   m_waitingForRaResponse = false;
   // 3GPP 36.321 5.1.4
   ++m_preambleTransmissionCounter;
+  //fire RA response timeout trace
+  m_raResponseTimeoutTrace (m_imsi, contention, m_preambleTransmissionCounter,
+                            m_rachConfig.preambleTransMax + 1);
   if (m_preambleTransmissionCounter == m_rachConfig.preambleTransMax + 1)
     {
       NS_LOG_INFO ("RAR timeout, preambleTransMax reached => giving up");
@@ -876,14 +899,22 @@ LteUeMac::DoSetRnti (uint16_t rnti)
   m_rnti = rnti;
 }
 
+void
+LteUeMac::DoSetImsi (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this);
+  m_imsi = imsi;
+}
+
 
 void
 LteUeMac::DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask)
 {
-  NS_LOG_FUNCTION (this << " rnti" << rnti);
+  NS_LOG_FUNCTION (this << rnti << (uint16_t) preambleId << (uint16_t) prachMask);
   NS_ASSERT_MSG (prachMask == 0, "requested PRACH MASK = " << (uint32_t) prachMask << ", but only PRACH MASK = 0 is supported");
   m_rnti = rnti;
   m_raPreambleId = preambleId;
+  m_preambleTransmissionCounter = 0;
   bool contention = false;
   SendRaPreamble (contention);
 }
@@ -956,11 +987,19 @@ LteUeMac::DoReset ()
           m_lcInfoMap.erase (it++);
         }
     }
-
+  // note: rnti will be assigned by the eNB using RA response message
+  m_rnti = 0;
   m_noRaResponseReceivedEvent.Cancel ();
   m_rachConfigured = false;
   m_freshUlBsr = false;
   m_ulBsrReceived.clear ();
+}
+
+void
+LteUeMac::DoNotifyConnectionSuccessful ()
+{
+  NS_LOG_FUNCTION (this);
+  m_uePhySapProvider->NotifyConnectionSuccessful ();
 }
 
 void

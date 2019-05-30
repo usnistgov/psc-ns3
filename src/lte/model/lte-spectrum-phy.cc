@@ -1641,6 +1641,24 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t resPsdch, uint8_t ndi, st
     }
 }
 
+void
+LteSpectrumPhy::RemoveExpectedTb (uint16_t  rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  TbId_t tbId;
+  tbId.m_rnti = rnti;
+  //Remove TB of both the layers
+  for (uint8_t i = 0; i < 2; i++)
+    {
+      tbId.m_layer = i;
+      expectedTbs_t::iterator it;
+      it = m_expectedTbs.find (tbId);
+      if (it != m_expectedTbs.end ())
+        {
+          m_expectedTbs.erase (it);
+        }
+    }
+}
 
 void
 LteSpectrumPhy::EndRxData ()
@@ -1848,6 +1866,8 @@ LteSpectrumPhy::EndRxData ()
   m_rxControlMessageList.clear ();
   m_expectedTbs.clear ();
 }
+
+
 
 void
 LteSpectrumPhy::EndRxSlFrame ()
@@ -2601,7 +2621,6 @@ LteSpectrumPhy::RxSlPsbch (std::vector<uint32_t> pktIndexes)
           m_ltePhyRxSlssCallback (params->slssId, params->psd);
         }
     }
-
 
   // When control messages collide in the PSBCH, the receiver cannot know how many transmissions occurred
   // we sort the messages by SINR and try to decode the ones with highest average SINR per RB first

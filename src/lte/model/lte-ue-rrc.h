@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2018 Fraunhofer ESK : RLF extensions
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,7 +20,8 @@
  *         Budiarto Herman <budiarto.herman@magister.fi>
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
  *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
- * Modified by: NIST // Contributions may not be subject to US copyright.
+ *              Vignesh Babu <ns3-dev@esk.fraunhofer.de> (RLF extensions)
+ *              NIST // Contributions may not be subject to US copyright. (D2D extensions)
  */
 
 #ifndef LTE_UE_RRC_H
@@ -260,6 +262,13 @@ public:
   void SetImsi (uint64_t imsi);
 
   /**
+   * \brief Store the previous cell id
+   *
+   * \param cellId The cell id of the previous cell the UE was attached to
+   */
+  void StorePreviousCellId (uint16_t cellId);
+
+  /**
    *
    * \return imsi the unique UE identifier
    */
@@ -304,6 +313,13 @@ public:
   State GetState () const;
 
   /**
+   * \brief Get the previous cell id
+   *
+   * \return The cell Id of the previous cell the UE was attached to.
+   */
+  uint16_t GetPreviousCellId () const;
+
+  /** 
    *
    *
    * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
@@ -375,6 +391,31 @@ public:
     uint16_t  currSubframeNo; ///< Current subframe number (after the change)
   };
 
+  /**
+   * TracedCallback signature for in-sync and out-of-sync detection events.
+   *
+   *
+   * \param [in] imsi
+   * \param [in] rnti
+   * \param [in] cellId
+   * \param [in] type
+   * \param [in] count
+   */
+  typedef void (*PhySyncDetectionTracedCallback)
+      (uint64_t imsi, uint16_t rnti, uint16_t cellId, std::string type, uint16_t count);
+
+  /**
+   * TracedCallback signature for imsi, cellId, rnti and counter for
+   * random access events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] count
+   */
+  typedef void (* ImsiCidRntiCountTracedCallback)
+  (uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t count);
+  
   /**
    * \brief Set the SLSSID for the UE
    * \param slssid
@@ -881,9 +922,18 @@ private:
    * \param nonCec LteRrcSap::NonCriticalExtensionConfiguration
    */
   void ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriticalExtensionConfiguration nonCec);
-  /// Start connetion function
+  /// Start connection function
   void StartConnection ();
-  /// Leave connected mode
+  /**
+   * \brief Leave connected mode method
+   * Resets the UE back to an appropiate state depending
+   * on the nature of cause. For example, the UE is move
+   * to the IDLE_START state upon radio link failure. At
+   * RRC, all radio bearers except SRB 0 are removed,
+   * measurement reports are cleared and the appropriate
+   * flags are reset to their default values. This method
+   * in turn triggers the reset methods of UE PHY and MAC layers.
+   */
   void LeaveConnectedMode ();
   /// Dispose old SRB1
   void DisposeOldSrb1 ();
@@ -1057,7 +1107,7 @@ private:
    * The `ConnectionTimeout` trace source. Fired upon timeout RRC connection
    * establishment because of T300. Exporting IMSI, cell ID, and RNTI.
    */
-  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionTimeoutTrace;
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_connectionTimeoutTrace;
   /**
    * The `ConnectionReconfiguration` trace source. Fired upon RRC connection
    * reconfiguration. Exporting IMSI, cell ID, and RNTI.
@@ -1084,6 +1134,29 @@ private:
    * message.
    */
   TracedCallback<Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod> > m_sCarrierConfiguredTrace;
+  /**
+   * The `Srb1Created` trace source. Fired when SRB1 is created, i.e.
+   * the RLC and PDCP entities are created for logical channel = 1.
+   * Exporting IMSI, cell ID, and RNTI
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_srb1CreatedTrace;
+  /**
+   * The `DrbCreated` trace source. Fired when DRB is created, i.e.
+   * the RLC and PDCP entities are created for one logical channel.
+   * Exporting IMSI, cell ID, RNTI, and LCID
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
+  /**
+   * The 'PhySyncDetection' trace source. Fired when UE RRC
+   * receives in-sync or out-of-sync indications from UE PHY
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, std::string, uint8_t> m_phySyncDetectionTrace;
+  /**
+   * The 'RadioLinkFailure' trace source. Fired when T310 timer expires.
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_radioLinkFailureTrace;
 
   /// True if a connection request by upper layers is pending.
   bool m_connectionPending;
@@ -1102,9 +1175,6 @@ private:
 
   /// List of CSG ID which this UE entity has access to.
   uint32_t m_csgWhiteList;
-
-  /// Sidelink configuration
-  Ptr<LteSlUeRrc> m_sidelinkConfiguration;
 
   // INTERNAL DATA STRUCTURE RELATED TO UE MEASUREMENTS
 
@@ -1255,7 +1325,7 @@ private:
    * applied to the measurement results and they are used by *UE measurements*
    * function:
    * - LteUeRrc::MeasurementReportTriggering: in this case it is not set any
-   *   measurement related to seconday carrier components since the
+   *   measurement related to secondary carrier components since the
    *   A6 event is not implemented
    * - LteUeRrc::SendMeasurementReport: in this case the report are sent.
    */
@@ -1395,7 +1465,89 @@ private:
    */
   void ConnectionTimeout ();
 
+  /**
+   * The 'T310' attribute. After detecting N310 out-of-sync indications,
+   * if number of in-sync indications detected is less than N311 before this
+   * time, then the radio link is considered to have failed and the UE
+   * transitions to state CONNECTED_PHY_PROMLEM and eventually IDLE_START
+   * and UE context at eNodeB is destroyed. RRC connection re-establishment
+   * is not initiated after this time. See 3GPP TS 36.331 7.3.
+   */
+  Time m_t310;
+
+  /**
+   * The 'N310' attribute. This specifies the maximum
+   * consecutive out-of-sync indications from lower layers.
+   */
+  uint8_t m_n310;
+
+  /**
+   *  The 'N311' attribute. This specifies the minimum
+   *  consecutive in-sync indications from lower layers.
+   */
+  uint8_t m_n311;
+
+  /**
+   * Time limit (given by m_t310) before the radio link is considered to have failed.
+   * It is set upon detecting physical layer problems i.e. upon receiving
+   * N310 consecutive out-of-sync indications from lower layers. Calling
+   * LteUeRrc::RadioLinkFailureDetected() when it expires.
+   * It is cancelled upon receiving N311 consecutive in-sync indications. Upon
+   * expiry, the UE transitions to RRC_IDLE and no RRC connection
+   * re-establishment is initiated.
+   */
+  EventId m_radioLinkFailureDetected;
+
+  uint8_t m_noOfSyncIndications; ///< number of in-sync or out-of-sync indications coming from PHY layer
+
+  bool m_leaveConnectedMode; ///< true if UE NAS ask UE RRC to leave connected mode, e.g., after RLF, i.e. T310 has expired
+
+  uint16_t m_previousCellId; ///< the cell id of the previous cell UE was attached to
+
+  uint8_t m_connEstFailCountLimit; ///< the counter value for T300 timer expiration received from the eNB
+
+  uint8_t m_connEstFailCount; ///< the counter to count T300 timer expiration
+  /**
+   * \brief Radio link failure detected function
+   *
+   * Upon detection of radio link failure, the UE is reverted
+   * back to idle state and the UE context at eNodeB and EPC
+   * is deleted, thus releasing the RRC connection. The eNodeB is notified
+   * in an ideal way since there is no radio link failure detection
+   * implemented at the eNodeB. If the deletion process is not synchronous,
+   * then errors occur due to triggering of assert messages.
+   */
+  void RadioLinkFailureDetected ();
+
+  /**
+   * \brief Do notify in sync function
+   *
+   * Triggered upon receiving an in sync indication from UE PHY.
+   * When the count equals N311, then T310 is cancelled.
+   */
+  void DoNotifyInSync ();
+
+  /**
+   * \brief Do notify out of sync function
+   *
+   * Triggered upon receiving an out of sync indication from UE PHY.
+   * When the count equals N310, then T310 is started.
+   */
+  void DoNotifyOutOfSync ();
+
+  /**
+   * \brief Do reset sync indication counter function
+   *
+   * Reset the sync indication counter
+   * if the Qin or Qout condition at PHY
+   * is not fulfilled for the number of
+   * consecutive frames.
+   */
+  void DoResetSyncIndicationCounter ();
+
 //Sidelink related code
+  /// Sidelink configuration
+  Ptr<LteSlUeRrc> m_sidelinkConfiguration;
   /**
    * Used to detect changes in tx pool
    */

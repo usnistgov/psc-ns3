@@ -33,7 +33,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteRlc");
 
-
 /// LteRlcSpecificLteMacSapUser class
 class LteRlcSpecificLteMacSapUser : public LteMacSapUser
 {
@@ -257,8 +256,8 @@ LteRlcSm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   // RLC Performance evaluation
   RlcTag rlcTag;
   Time delay;
-  NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
-  rxPduParams.p->RemovePacketTag (rlcTag);
+  bool ret = rxPduParams.p->FindFirstMatchingByteTag (rlcTag);
+  NS_ASSERT_MSG (ret, "RlcTag is missing");
   delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
   NS_LOG_LOGIC (" RNTI=" << m_rnti
                          << " LCID=" << (uint32_t) m_lcid
@@ -272,7 +271,16 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 {
   NS_LOG_FUNCTION (this << txOpParams.bytes);
   LteMacSapProvider::TransmitPduParameters params;
+  RlcTag tag (Simulator::Now ());
+
   params.pdu = Create<Packet> (txOpParams.bytes);
+  NS_ABORT_MSG_UNLESS (txOpParams.bytes > 0, "Bytes must be > 0");
+  /**
+   * For RLC SM, the packets are not passed to the upper layers, therefore,
+   * in the absence of an header we can safely byte tag the entire packet.
+   */
+  params.pdu->AddByteTag (tag, 1, params.pdu->GetSize ());
+
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.srcL2Id = m_srcL2Id;
@@ -284,11 +292,9 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   params.mibslMsg = false;
 
   // RLC Performance evaluation
-  RlcTag tag (Simulator::Now ());
-  params.pdu->AddPacketTag (tag);
   NS_LOG_LOGIC (" RNTI=" << m_rnti
-                         << " LCID=" << (uint32_t) m_lcid
-                         << " size=" << txOpParams.bytes);
+                << " LCID=" << (uint32_t) m_lcid
+                << " size=" << txOpParams.bytes);
   m_txPdu (m_rnti, m_lcid, txOpParams.bytes);
 
   m_macSapProvider->TransmitPdu (params);

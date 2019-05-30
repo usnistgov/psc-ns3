@@ -74,6 +74,9 @@ IMAGES_DIA = \
 	$(FIGURES)/sidelink-pssch-bitmap.dia \
 	$(FIGURES)/prose-non-roaming-arch.dia \
 	$(FIGURES)/sidelink-scenarios-1c.dia \
+	$(FIGURES)/lte-test-rlf-one-enb.dia \
+	$(FIGURES)/lena-radio-link-failure-one-enb.dia \
+	$(FIGURES)/lena-radio-link-failure-two-enb.dia \
 	$(FIGURES)/sidelink-scenarios-1a.dia \
 	$(FIGURES)/lte-sl-ue-phy.dia \
 	$(FIGURES)/lte-sl-simple-scenario.dia \
@@ -130,6 +133,9 @@ IMAGES_SEQDIAG = \
 	$(FIGURES)/ca-downlink-bsr.seqdiag \
 	$(FIGURES)/ca-setup-radio-bearer.seqdiag \
 	$(FIGURES)/ca-uplink-bsr.seqdiag \
+	$(FIGURES)/lte-ue-context-removal-from-epc.seqdiag \
+	$(FIGURES)/lte-ue-context-removal-from-enb-stack.seqdiag \
+	$(FIGURES)/lte-ue-procedures-after-rlf.seqdiag
 
 IMAGES_DOT = \
 	$(FIGURES)/lte-enb-rrc-states.dot \
@@ -188,6 +194,8 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/ca-test-example-dl.png \
 	$(FIGURES)/lte-sl-enb-rrc.png \
 	$(FIGURES)/lte-sl-pool-config.png \
+	$(FIGURES)/lena-radio-link-failure-one-enb-thrput.png \
+	$(FIGURES)/lena-radio-link-failure-two-enb-thrput.png \
 	$(FIGURES)/lte-sl-ue-rrc.png \
 	$(FIGURES)/lte-sl-in-coverage-tx.png \
 	$(FIGURES)/lte-sl-in-coverage-rx.png \

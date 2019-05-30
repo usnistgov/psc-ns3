@@ -138,6 +138,7 @@ def maybe_decode(input):
 
 def options(opt):
     # options provided by the modules
+    opt.load('md5_tstamp')
     opt.load('compiler_c')
     opt.load('compiler_cxx')
     opt.load('cflags')
@@ -177,6 +178,10 @@ def options(opt):
                    help=('Run a locally built program; argument can be a program name,'
                          ' or a command starting with the program name.'),
                    type="string", default='', dest='run')
+    opt.add_option('--run-no-build',
+                   help=('Run a locally built program without rebuilding the project; argument can be a program name,'
+                         ' or a command starting with the program name.'),
+                   type="string", default='', dest='run_no_build')
     opt.add_option('--visualize',
                    help=('Modify --run arguments to enable the visualizer'),
                    action="store_true", default=False, dest='visualize')
@@ -190,6 +195,11 @@ def options(opt):
                          ' argument is the path to the python program, optionally followed'
                          ' by command-line options that are passed to the program.'),
                    type="string", default='', dest='pyrun')
+    opt.add_option('--pyrun-no-build',
+                   help=('Run a python program using locally built ns3 python module without rebuilding the project;'
+                         ' argument is the path to the python program, optionally followed'
+                         ' by command-line options that are passed to the program.'),
+                   type="string", default='', dest='pyrun_no_build')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
@@ -679,7 +689,7 @@ def configure(conf):
 class SuidBuild_task(Task.Task):
     """task that makes a binary Suid
     """
-    after = 'link'
+    after = ['cxxprogram', 'cxxshlib', 'cxxstlib']
     def __init__(self, *args, **kwargs):
         super(SuidBuild_task, self).__init__(*args, **kwargs)
         self.m_display = 'build-suid'
@@ -1049,6 +1059,18 @@ def build(bld):
         _doxygen(bld)
         raise SystemExit(0)
 
+    if Options.options.run_no_build:
+        # Check that the requested program name is valid
+        program_name, dummy_program_argv = wutils.get_run_program(Options.options.run_no_build, wutils.get_command_template(bld.env))
+        # Run the program
+        wutils.run_program(Options.options.run_no_build, bld.env, wutils.get_command_template(bld.env), visualize=Options.options.visualize)
+        raise SystemExit(0)
+
+    if Options.options.pyrun_no_build:
+        wutils.run_python_program(Options.options.pyrun_no_build, bld.env,
+                                  visualize=Options.options.visualize)
+        raise SystemExit(0)
+
 def _cleandir(name):
     try:
         shutil.rmtree(name)
@@ -1151,65 +1173,6 @@ class CheckContext(Context.Context):
         
         wutils.bld = bld
         wutils.run_python_program("test.py -n -c core", bld.env)
-
-
-class print_introspected_doxygen_task(Task.TaskBase):
-    after = 'cxx link'
-    color = 'BLUE'
-
-    def __init__(self, bld):
-        self.bld = bld
-        super(print_introspected_doxygen_task, self).__init__(generator=self)
-        
-    def __str__(self):
-        return 'print-introspected-doxygen\n'
-
-    def runnable_status(self):
-        return Task.RUN_ME
-
-    def run(self):
-        ## generate the trace sources list docs
-        env = wutils.bld.env
-        proc_env = wutils.get_proc_env()
-        try:
-            program_obj = wutils.find_program('print-introspected-doxygen', env)
-        except ValueError: # could happen if print-introspected-doxygen is
-                           # not built because of waf configure
-                           # --enable-modules=xxx
-            pass
-        else:
-            prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).get_bld().abspath(env)
-
-            # Create a header file with the introspected information.
-            doxygen_out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
-            if subprocess.Popen([prog], stdout=doxygen_out, env=proc_env).wait():
-                raise SystemExit(1)
-            doxygen_out.close()
-        
-            # Create a text file with the introspected information.
-            text_out = open(os.path.join('doc', 'ns3-object.txt'), 'w')
-            if subprocess.Popen([prog, '--output-text'], stdout=text_out, env=proc_env).wait():
-                raise SystemExit(1)
-            text_out.close()
-
-class run_python_unit_tests_task(Task.TaskBase):
-    after = 'cxx link'
-    color = 'BLUE'
-
-    def __init__(self, bld):
-        self.bld = bld
-        super(run_python_unit_tests_task, self).__init__(generator=self)
-        
-    def __str__(self):
-        return 'run-python-unit-tests\n'
-
-    def runnable_status(self):
-        return Task.RUN_ME
-
-    def run(self):
-        proc_env = wutils.get_proc_env()
-        wutils.run_argv([self.bld.env['PYTHON'], os.path.join("..", "utils", "python-unit-tests.py")],
-                        self.bld.env, proc_env, force_no_valgrind=True)
 
 def check_shell(bld):
     if ('NS3_MODULE_PATH' not in os.environ) or ('NS3_EXECUTABLE_PATH' not in os.environ):

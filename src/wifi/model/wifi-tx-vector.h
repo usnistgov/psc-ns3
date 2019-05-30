@@ -89,6 +89,10 @@ public:
                 bool stbc,
                 uint8_t bssColor = 0);
   /**
+   * \returns whether mode has been initialized
+   */
+  bool GetModeInitialized (void) const;
+  /**
    * \returns the selected payload transmission mode
    */
   WifiMode GetMode (void) const;
@@ -210,7 +214,7 @@ public:
    *
    * \return true if the WifiTxVector parameters are allowed by the standard
    */
-   bool IsValid (void) const;
+  bool IsValid (void) const;
 
 
 private:
@@ -231,7 +235,6 @@ private:
   uint8_t  m_bssColor;           /**< BSS color */
 
   bool     m_modeInitialized;         /**< Internal initialization flag */
-  bool     m_txPowerLevelInitialized; /**< Internal initialization flag */
 };
 
 /**

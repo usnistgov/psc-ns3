@@ -307,6 +307,11 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )&', u'ns3::Time::TracedCallback&')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
+    ## trace-fading-loss-model.h (module 'spectrum'): ns3::TraceFadingLossModel [class]
+    module.add_class('TraceFadingLossModel', parent=root_module['ns3::SpectrumPropagationLossModel'])
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >', u'ns3::TraceFadingLossModel::ChannelRealizationId_t')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >*', u'ns3::TraceFadingLossModel::ChannelRealizationId_t*')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >&', u'ns3::TraceFadingLossModel::ChannelRealizationId_t&')
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
@@ -594,12 +599,11 @@ def register_types(module):
     typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::SpectrumPhy > >*', u'ns3::SingleModelSpectrumChannel::PhyList*')
     typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::SpectrumPhy > >&', u'ns3::SingleModelSpectrumChannel::PhyList&')
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type=u'map')
-    module.add_container('std::set< ns3::Ptr< ns3::SpectrumPhy > >', 'ns3::Ptr< ns3::SpectrumPhy >', container_type=u'set')
+    module.add_container('std::vector< ns3::Ptr< ns3::SpectrumPhy > >', 'ns3::Ptr< ns3::SpectrumPhy >', container_type=u'vector')
     module.add_container('ns3::SpectrumConverterMap_t', ('unsigned int', 'ns3::SpectrumConverter'), container_type=u'map')
     module.add_container('std::vector< std::pair< unsigned int, unsigned int > >', 'std::pair< unsigned int, unsigned int >', container_type=u'vector')
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
-    module.add_container('std::vector< ns3::Ptr< ns3::SpectrumPhy > >', 'ns3::Ptr< ns3::SpectrumPhy >', container_type=u'vector')
     typehandlers.add_type_alias(u'std::map< unsigned int, ns3::SpectrumConverter >', u'ns3::SpectrumConverterMap_t')
     typehandlers.add_type_alias(u'std::map< unsigned int, ns3::SpectrumConverter >*', u'ns3::SpectrumConverterMap_t*')
     typehandlers.add_type_alias(u'std::map< unsigned int, ns3::SpectrumConverter >&', u'ns3::SpectrumConverterMap_t&')
@@ -882,6 +886,7 @@ def register_methods(root_module):
     register_Ns3SpectrumValue_methods(root_module, root_module['ns3::SpectrumValue'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
+    register_Ns3TraceFadingLossModel_methods(root_module, root_module['ns3::TraceFadingLossModel'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TriangularRandomVariable_methods(root_module, root_module['ns3::TriangularRandomVariable'])
@@ -2989,8 +2994,8 @@ def register_Ns3RxSpectrumModelInfo_methods(root_module, cls):
     cls.add_constructor([param('ns3::RxSpectrumModelInfo const &', 'arg0')])
     ## multi-model-spectrum-channel.h (module 'spectrum'): ns3::RxSpectrumModelInfo::RxSpectrumModelInfo(ns3::Ptr<const ns3::SpectrumModel> rxSpectrumModel) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::SpectrumModel const >', 'rxSpectrumModel')])
-    ## multi-model-spectrum-channel.h (module 'spectrum'): ns3::RxSpectrumModelInfo::m_rxPhySet [variable]
-    cls.add_instance_attribute('m_rxPhySet', 'std::set< ns3::Ptr< ns3::SpectrumPhy > >', is_const=False)
+    ## multi-model-spectrum-channel.h (module 'spectrum'): ns3::RxSpectrumModelInfo::m_rxPhys [variable]
+    cls.add_instance_attribute('m_rxPhys', 'std::vector< ns3::Ptr< ns3::SpectrumPhy > >', is_const=False)
     ## multi-model-spectrum-channel.h (module 'spectrum'): ns3::RxSpectrumModelInfo::m_rxSpectrumModel [variable]
     cls.add_instance_attribute('m_rxSpectrumModel', 'ns3::Ptr< ns3::SpectrumModel const >', is_const=False)
     return
@@ -4620,6 +4625,16 @@ def register_Ns3SpectrumValue_methods(root_module, cls):
                    'ns3::SpectrumModelUid_t', 
                    [], 
                    is_const=True)
+    ## spectrum-value.h (module 'spectrum'): uint32_t ns3::SpectrumValue::GetValuesN() const [member function]
+    cls.add_method('GetValuesN', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## spectrum-value.h (module 'spectrum'): double const & ns3::SpectrumValue::ValuesAt(uint32_t pos) const [member function]
+    cls.add_method('ValuesAt', 
+                   'double const &', 
+                   [param('uint32_t', 'pos')], 
+                   is_const=True)
     ## spectrum-value.h (module 'spectrum'): std::vector<double, std::allocator<double> >::iterator ns3::SpectrumValue::ValuesBegin() [member function]
     cls.add_method('ValuesBegin', 
                    'std::vector< double > iterator', 
@@ -4849,6 +4864,32 @@ def register_Ns3Time_methods(root_module, cls):
                    'int64_t', 
                    [param('ns3::Time::Unit', 'unit')], 
                    is_const=True)
+    return
+
+def register_Ns3TraceFadingLossModel_methods(root_module, cls):
+    ## trace-fading-loss-model.h (module 'spectrum'): ns3::TraceFadingLossModel::TraceFadingLossModel(ns3::TraceFadingLossModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TraceFadingLossModel const &', 'arg0')])
+    ## trace-fading-loss-model.h (module 'spectrum'): ns3::TraceFadingLossModel::TraceFadingLossModel() [constructor]
+    cls.add_constructor([])
+    ## trace-fading-loss-model.h (module 'spectrum'): int64_t ns3::TraceFadingLossModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## trace-fading-loss-model.h (module 'spectrum'): void ns3::TraceFadingLossModel::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## trace-fading-loss-model.h (module 'spectrum'): static ns3::TypeId ns3::TraceFadingLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## trace-fading-loss-model.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::TraceFadingLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<const ns3::SpectrumValue> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):

@@ -138,7 +138,17 @@ private:
    */
   void DoSendMeasurementReport (LteRrcSap::MeasurementReport msg);
   /**
-   * Send sidelink UE information function
+   * \brief Send ideal UE context remove request function
+   *
+   * Notify eNodeB to release UE context once radio link failure
+   * or random access failure is detected. It is needed since no
+   * RLF detection mechanism at eNodeB is implemented
+   *
+   * \param rnti the RNTI of the UE
+   */
+  void DoSendIdealUeContextRemoveRequest (uint16_t rnti);
+  /**
+   * \brief Send sidelink UE information function
    *
    * \param msg LteRrcSap::SidelinkUeInformation 
    */

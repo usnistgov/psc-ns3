@@ -22,6 +22,7 @@
 #define CHANNEL_ACCESS_MANAGER_H
 
 #include <vector>
+#include <algorithm>
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 
@@ -233,39 +234,11 @@ private:
   /**
    * Return the most recent time.
    *
-   * \param a
-   * \param b
+   * \param list the initializer list including the times to compare
    *
    * \return the most recent time
    */
-  Time MostRecent (Time a, Time b) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
-   * \param d
-   * \param e
-   * \param f
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
-   * \param d
-   * \param e
-   * \param f
-   * \param g
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const;
+  Time MostRecent (std::initializer_list<Time> list) const;
   /**
    * Access will never be granted to the medium _before_
    * the time returned by this method.
@@ -338,7 +311,6 @@ private:
   Time m_lastBusyDuration;      //!< the last busy duration time
   Time m_lastSwitchingStart;    //!< the last switching start time
   Time m_lastSwitchingDuration; //!< the last switching duration time
-  bool m_rxing;                 //!< flag whether it is in receiving state
   bool m_sleeping;              //!< flag whether it is in sleeping state
   bool m_off;                   //!< flag whether it is in off state
   Time m_eifsNoDifs;            //!< EIFS no DIFS time
@@ -346,6 +318,7 @@ private:
   Time m_slot;                  //!< the slot time
   Time m_sifs;                  //!< the SIFS time
   PhyListener* m_phyListener;   //!< the phy listener
+  Ptr<WifiPhy> m_phy;           //!< Ptr to the PHY
 };
 
 } //namespace ns3

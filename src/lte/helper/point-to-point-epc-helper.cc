@@ -450,9 +450,6 @@ PointToPointEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 
   // Create a point to point link between the two eNBs with
   // the corresponding new NetDevices on each side
-  NodeContainer enbNodes;
-  enbNodes.Add (enb1);
-  enbNodes.Add (enb2);
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_x2LinkDataRate));
   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_x2LinkMtu));
@@ -478,20 +475,39 @@ PointToPointEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 
   // Add X2 interface to both eNBs' X2 entities
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
-  Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();
-  uint16_t enb1CellId = enb1LteDev->GetCellId ();
-  NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
-
   Ptr<EpcX2> enb2X2 = enb2->GetObject<EpcX2> ();
-  Ptr<LteEnbNetDevice> enb2LteDev = enb2->GetDevice (0)->GetObject<LteEnbNetDevice> ();
-  uint16_t enb2CellId = enb2LteDev->GetCellId ();
+
+  Ptr<NetDevice> enb1LteDev = enb1->GetDevice (0);
+  Ptr<NetDevice> enb2LteDev = enb2->GetDevice (0);
+
+  DoAddX2Interface (enb1X2, enb1LteDev, enb1X2Address, enb2X2, enb2LteDev, enb2X2Address);
+}
+
+void
+PointToPointEpcHelper::DoAddX2Interface (const Ptr<EpcX2> &enb1X2, const Ptr<NetDevice> &enb1LteDev,
+                                         const Ipv4Address &enb1X2Address,
+                                         const Ptr<EpcX2> &enb2X2, const Ptr<NetDevice> &enb2LteDev,
+                                         const Ipv4Address &enb2X2Address) const
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<LteEnbNetDevice> enb1LteDevice = enb1LteDev->GetObject<LteEnbNetDevice> ();
+  Ptr<LteEnbNetDevice> enb2LteDevice = enb2LteDev->GetObject<LteEnbNetDevice> ();
+
+  NS_ABORT_MSG_IF (enb1LteDevice == nullptr , "Unable to find LteEnbNetDevice for the first eNB");
+  NS_ABORT_MSG_IF (enb2LteDevice == nullptr , "Unable to find LteEnbNetDevice for the second eNB");
+
+  uint16_t enb1CellId = enb1LteDevice->GetCellId ();
+  uint16_t enb2CellId = enb2LteDevice->GetCellId ();
+
+  NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
   NS_LOG_LOGIC ("LteEnbNetDevice #2 = " << enb2LteDev << " - CellId = " << enb2CellId);
 
   enb1X2->AddX2Interface (enb1CellId, enb1X2Address, enb2CellId, enb2X2Address);
   enb2X2->AddX2Interface (enb2CellId, enb2X2Address, enb1CellId, enb1X2Address);
 
-  enb1LteDev->GetRrc ()->AddX2Neighbour (enb2LteDev->GetCellId ());
-  enb2LteDev->GetRrc ()->AddX2Neighbour (enb1LteDev->GetCellId ());
+  enb1LteDevice->GetRrc ()->AddX2Neighbour (enb2CellId);
+  enb2LteDevice->GetRrc ()->AddX2Neighbour (enb1CellId);
 }
 
 
@@ -505,7 +521,8 @@ PointToPointEpcHelper::AddUe (Ptr<NetDevice> ueDevice, uint64_t imsi)
 }
 
 uint8_t
-PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
+PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi,
+                                          Ptr<EpcTft> tft, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << ueDevice << imsi);
 
@@ -538,12 +555,29 @@ PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi
         }
     }
   uint8_t bearerId = m_mmeApp->AddBearer (imsi, tft, bearer);
-  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-  if (ueLteDevice)
+
+  DoActivateEpsBearerForUe (ueDevice, tft, bearer);
+
+  return bearerId;
+}
+
+void
+PointToPointEpcHelper::DoActivateEpsBearerForUe (const Ptr<NetDevice> &ueDevice,
+                                                 const Ptr<EpcTft> &tft,
+                                                 const EpsBearer &bearer) const
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<LteUeNetDevice> ueLteDevice = DynamicCast<LteUeNetDevice> (ueDevice);
+  if (ueLteDevice == nullptr)
+    {
+      // You may wonder why this is not an assert. Well, take a look in epc-test-s1u-downlink
+      // and -uplink: we are using CSMA to simulate UEs.
+      NS_LOG_WARN ("Unable to find LteUeNetDevice while activating the EPS bearer");
+    }
+  else
     {
       Simulator::ScheduleNow (&EpcUeNas::ActivateEpsBearer, ueLteDevice->GetNas (), bearer, tft);
     }
-  return bearerId;
 }
 
 void
@@ -567,7 +601,7 @@ PointToPointEpcHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<Lt
 }
  
 Ptr<Node>
-PointToPointEpcHelper::GetPgwNode ()
+PointToPointEpcHelper::GetPgwNode () const
 {
   return m_pgw;
 }

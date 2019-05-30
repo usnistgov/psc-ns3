@@ -383,6 +383,11 @@ LteEnbMac::GetTypeId (void)
                    UintegerValue (3),
                    MakeUintegerAccessor (&LteEnbMac::m_raResponseWindowSize),
                    MakeUintegerChecker<uint8_t> (2, 10))
+    .AddAttribute ("ConnEstFailCount",
+                   "how many time T300 timer can expire on the same cell",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbMac::m_connEstFailCount),
+                   MakeUintegerChecker<uint8_t> (1, 4))
     .AddTraceSource ("DlScheduling",
                      "Information regarding DL scheduling.",
                      MakeTraceSourceAccessor (&LteEnbMac::m_dlScheduling),
@@ -886,6 +891,39 @@ LteEnbMac::DoRemoveUe (uint16_t rnti)
   m_cschedSapProvider->CschedUeReleaseReq (params);
   m_rlcAttached.erase (rnti);
   m_miDlHarqProcessesPackets.erase (rnti);
+
+  NS_LOG_DEBUG ("start checking for unprocessed preamble for rnti: " << rnti);
+  //remove unprocessed preamble received for RACH during handover
+  std::map<uint8_t, NcRaPreambleInfo>::iterator jt = m_allocatedNcRaPreambleMap.begin ();
+  while (jt != m_allocatedNcRaPreambleMap.end ())
+    {
+      if (jt->second.rnti == rnti)
+        {
+          std::map<uint8_t, uint32_t>::const_iterator it = m_receivedRachPreambleCount.find (jt->first);
+          if (it != m_receivedRachPreambleCount.end ())
+            {
+              m_receivedRachPreambleCount.erase (it->first);
+            }
+          jt = m_allocatedNcRaPreambleMap.erase (jt);
+        }
+      else
+        {
+          ++jt;
+        }
+    }
+
+  std::vector<MacCeListElement_s>::iterator itCeRxd = m_ulCeReceived.begin ();
+  while (itCeRxd != m_ulCeReceived.end ())
+    {
+      if (itCeRxd->m_rnti == rnti)
+        {
+          itCeRxd = m_ulCeReceived.erase (itCeRxd);
+        }
+      else
+        {
+          itCeRxd++;
+        }
+    }
 }
 
 void
@@ -1022,6 +1060,7 @@ LteEnbMac::DoGetRachConfig ()
   rc.numberOfRaPreambles = m_numberOfRaPreambles;
   rc.preambleTransMax = m_preambleTransMax;
   rc.raResponseWindowSize = m_raResponseWindowSize;
+  rc.connEstFailCount = m_connEstFailCount;
   return rc;
 }
  
@@ -1033,6 +1072,26 @@ LteEnbMac::DoAllocateNcRaPreamble (uint16_t rnti)
   for (preambleId = m_numberOfRaPreambles; preambleId < 64; ++preambleId)
     {
       std::map<uint8_t, NcRaPreambleInfo>::iterator it = m_allocatedNcRaPreambleMap.find (preambleId);
+      /**
+       * Allocate preamble only if its free. The non-contention preamble
+       * assigned to UE during handover or PDCCH order is valid only until the
+       * time duration of the “expiryTime” of the preamble is reached. This
+       * timer value is only maintained at the eNodeB and the UE has no way of
+       * knowing if this timer has expired. If the UE tries to send the preamble
+       * again after the expiryTime and the preamble is re-assigned to another
+       * UE, it results in errors. This has been solved by re-assigning the
+       * preamble to another UE only if it is not being used (An UE can be using
+       * the preamble even after the expiryTime duration).
+       */
+      if ((it != m_allocatedNcRaPreambleMap.end ()) && (it->second.expiryTime < Simulator::Now ()))
+        {
+          if (!m_cmacSapUser->IsRandomAccessCompleted (rnti))
+            {
+              //random access of the UE is not completed,
+              //check other preambles
+              continue;
+            }
+        }
       if ((it ==  m_allocatedNcRaPreambleMap.end ())
           || (it->second.expiryTime < Simulator::Now ()))
         {

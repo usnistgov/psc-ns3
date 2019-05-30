@@ -274,6 +274,13 @@ private:
 
   std::list<Ptr<LteSlTft> > m_slBearersActivatedList; ///< Sidelink bearers activated list
 
+  /**
+   * bearers to be activated list maintained and to be used for reconnecting
+   * an out-of-sync UE
+   *
+   */
+  std::list<BearerToBeActivated> m_bearersToBeActivatedListForReconnection;
+
 };
 
 
