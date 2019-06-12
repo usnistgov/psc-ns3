@@ -1249,7 +1249,7 @@ RrSlFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
           poolIt->second.m_npscch = poolIt->second.m_pool->GetNPscch ();
           poolIt->second.m_currentScPeriod.frameNo = 0; //init to 0 to make it invalid
           poolIt->second.m_currentScPeriod.subframeNo = 0;
-          poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (frameNo, subframeNo);
+          poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (frameNo - 1, subframeNo - 1);
           //adjust because scheduler starts with frame/subframe = 1
           poolIt->second.m_nextScPeriod.frameNo++;
           poolIt->second.m_nextScPeriod.subframeNo++;
@@ -1332,7 +1332,7 @@ RrSlFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sch
           poolIt->second.m_currentAllocation = poolIt->second.m_nextAllocation;
           poolIt->second.m_nextAllocation.clear ();
           poolIt->second.m_currentScPeriod = poolIt->second.m_nextScPeriod;
-          poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (frameNo, subframeNo);
+          poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (frameNo - 1, subframeNo - 1);
           //adjust because scheduler starts with frame/subframe = 1
           poolIt->second.m_nextScPeriod.frameNo++;
           poolIt->second.m_nextScPeriod.subframeNo++;

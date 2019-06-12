@@ -81,6 +81,8 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-sl-ue-phy.dia \
 	$(FIGURES)/lte-sl-simple-scenario.dia \
 	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.dia \
+	$(FIGURES)/lte-sl-synch-test-topology1.dia \
+	$(FIGURES)/lte-sl-synch-test-topology2.dia \
 
 # specify eps figures from which .png and .pdf figures need to be built
 

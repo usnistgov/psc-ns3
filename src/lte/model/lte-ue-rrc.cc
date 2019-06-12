@@ -323,7 +323,7 @@ LteUeRrc::GetTypeId (void)
                    MakeDoubleChecker<double>())
     .AddTraceSource ("ChangeOfSyncRef",
                      "trace fired upon report of a change of SyncRef",
-                     MakeTraceSourceAccessor (&LteUeRrc::m_ChangeOfSyncRefTrace),
+                     MakeTraceSourceAccessor (&LteUeRrc::m_changeOfSyncRefTrace),
                      "ns3::LteUeRrc::ChangeOfSyncRefTracedCallback")
     .AddTraceSource ("SendSLSS",
                      "trace fired upon send of a SLSS",
@@ -4495,7 +4495,7 @@ void LteUeRrc::ActivateSlssTransmission ()
           //Notify lower layers about the new SlSSID
           SetSlssid (m_slssId);
 
-          m_ChangeOfSyncRefTrace (param);
+          m_changeOfSyncRefTrace (param);
 
           //Choose SyncOffsetIndicator randomly between the two preconfigured values
           Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
@@ -4508,6 +4508,7 @@ void LteUeRrc::ActivateSlssTransmission ()
               m_txSlSyncOffsetIndicator = preconf.preconfigSync.syncOffsetIndicator2;
             }
         }
+      NS_LOG_DEBUG ("Randomly chosen offset = " << m_txSlSyncOffsetIndicator);
       //Schedule the sending of the first MIB-SL according the selected SyncOffsetIndicator
       uint16_t nextSLSS = 0;
       uint16_t currOffset = (m_currFrameNo * 10 + m_currSubframeNo) % 40;
@@ -4519,10 +4520,14 @@ void LteUeRrc::ActivateSlssTransmission ()
         {
           nextSLSS = 40 - currOffset + m_txSlSyncOffsetIndicator;
         }
-      NS_LOG_INFO (this << " UE IMSI " << m_imsi << " activating SLSS transmission with SLSSID " << m_slssId << ", first SLSS in " << nextSLSS << "ms");
 
+      double offset = 1e6 - ((Simulator::Now ().GetNanoSeconds ()) - Simulator::Now ().GetMilliSeconds () * 1e6);
+      double nextSLSSns = nextSLSS * 1e6 + offset;
+      NS_LOG_INFO (this << " UE IMSI " << m_imsi << " activating SLSS transmission with SLSSID "
+                                       << m_slssId << ", first SLSS in " << NanoSeconds (nextSLSSns));
+      m_slssTxEvent = Simulator::Schedule (NanoSeconds (nextSLSSns), &LteUeRrc::SendSlss, this);
 
-      m_slssTxEvent = Simulator::Schedule (MilliSeconds (nextSLSS), &LteUeRrc::SendSlss, this);
+      //m_slssTxEvent = Simulator::Schedule (MilliSeconds (nextSLSS), &LteUeRrc::SendSlss, this);
       //m_slssTxTime = MilliSeconds (Simulator::Now ().GetMilliSeconds () + nextSLSS);
     }
 }
@@ -4568,25 +4573,33 @@ LteUeRrc::SendSlss ()
           //Calculate the Subframe indication when the MIB-SL will be received
           //There is a delay of 4 ms
           SidelinkCommResourcePool::SubframeInfo currentTime;
-          currentTime.frameNo = m_currFrameNo;
-          currentTime.subframeNo = m_currSubframeNo;
+          currentTime.frameNo = m_currFrameNo - 1;
+          currentTime.subframeNo = m_currSubframeNo - 1;
           SidelinkCommResourcePool::SubframeInfo delay;
           delay.frameNo = 0;
+          /**
+           * Note, we have still the frame and subframe number from the previous
+           * subframe indication because the event triggering this method
+           * happen before (but at the same time) the subframe indication event
+           * at the PHY. Therefore, we are adding 5 subframes. Thus, adding 5
+           * does not mean that this MIB-SL will be received after 5 ms of the
+           * delay. The delay is still 4 ms.
+           */
           delay.subframeNo = 5;
           SidelinkCommResourcePool::SubframeInfo mibTime = currentTime + delay;
 
-          mibSl.directFrameNo = mibTime.frameNo;
-          mibSl.directSubframeNo = mibTime.subframeNo;
+          mibSl.directFrameNo = mibTime.frameNo + 1;
+          mibSl.directSubframeNo = mibTime.subframeNo + 1;
 
           uint16_t slssid = (m_hasSyncRef ? m_currSyncRef.slssid : m_slssId );
 
           //Send the SLSS
-          NS_LOG_INFO (" UE IMSI " << m_imsi << " sending SLSS at " << m_currFrameNo << "/" << m_currSubframeNo);
-          NS_LOG_INFO (" mibSl.slBandwidth " << mibSl.slBandwidth
-                                             << " mibSl.inCoverage " << mibSl.inCoverage
-                                             << " mibSl.directFrameNo " << mibSl.directFrameNo
-                                             << " mibSl.directSubframeNo " << mibSl.directSubframeNo
-                                             << " mibSl.slssid " << slssid);
+          NS_LOG_INFO ("UE RRC with IMSI " << m_imsi << " has frame/subframe number = " << m_currFrameNo << "/" << m_currSubframeNo);
+          NS_LOG_INFO ("mibSl parameters : slBandwidth = " << mibSl.slBandwidth
+                                             << ", inCoverage = " << mibSl.inCoverage
+                                             << ", directFrameNo = " << mibSl.directFrameNo
+                                             << ", directSubframeNo = " << mibSl.directSubframeNo
+                                             << ", slssid = " << slssid);
 
           MasterInformationBlockSlHeader mibslHeader;
           mibslHeader.SetMessage (mibSl);
@@ -5135,7 +5148,7 @@ LteUeRrc::DoReportChangeOfSyncRef (LteSlSyncParams params)
   traceParam.currFrameNo = m_currFrameNo;
   traceParam.currSubframeNo = m_currSubframeNo;
 
-  m_ChangeOfSyncRefTrace (traceParam);
+  m_changeOfSyncRefTrace (traceParam);
 
   NS_LOG_INFO (this << " UE IMSI " << m_imsi << " reported successful change of SyncRef, selected SyncRef SLSSID " << params.slssid << "offset " << params.offset);
 }

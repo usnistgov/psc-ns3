@@ -544,8 +544,13 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
           std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator allocIt = poolIt->second.m_psschTx.begin ();
 
           //For sanity check, but to be removed once the code is checked
-          uint32_t frameNo = m_frameNo;
-          uint32_t subframeNo = m_subframeNo;
+
+         uint32_t frameNo = m_slSchedTime.frameNo;
+         uint32_t subframeNo = m_slSchedTime.subframeNo;
+
+          //Following conversion is not needed because we are now
+          //using the frame and subframe number, which is 4ms ahead of PHY
+          /*
           if (subframeNo + UL_PUSCH_TTIS_DELAY > 10)
             {
               frameNo++;
@@ -559,6 +564,10 @@ LteUeMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
             {
               subframeNo = subframeNo + UL_PUSCH_TTIS_DELAY;
             }
+          */
+          NS_LOG_DEBUG ("Before assert: Sidelink MAC current frame/subframe number = " << frameNo << "/" << subframeNo);
+          NS_LOG_DEBUG  ("Allocated frame/subframe number = " << (*allocIt).subframe.frameNo << "/" << (*allocIt).subframe.subframeNo);
+
           NS_ASSERT ((*allocIt).subframe.frameNo == frameNo && (*allocIt).subframe.subframeNo == subframeNo);
 
           LteRadioBearerTag tag (params.rnti, params.lcid, params.srcL2Id, params.dstL2Id);
@@ -1012,7 +1021,15 @@ LteUeMac::DoSetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool)
   info.m_npsdch = info.m_pool->GetNPsdch ();
   info.m_currentDiscPeriod.frameNo = 0; //init to 0 to make it invalid
   info.m_currentDiscPeriod.subframeNo = 0; //init to 0 to make it invalid
-  info.m_nextDiscPeriod = info.m_pool->GetNextDiscPeriod (m_frameNo, m_subframeNo);
+
+  /**
+   * After learning the correct usage of GetNextDiscPeriod, i.e, subtracting 1
+   * from a frame and a subframe number before calling this method and adding 1
+   * after, we should use the frame and subframe number, which is 4 ms ahead of
+   * PHY.
+   */
+
+  info.m_nextDiscPeriod = info.m_pool->GetNextDiscPeriod (m_slSchedTime.frameNo - 1, m_slSchedTime.subframeNo - 1);
   //adjust because scheduler starts with frame/subframe = 1
   info.m_nextDiscPeriod.frameNo++;
   info.m_nextDiscPeriod.subframeNo++;
@@ -1049,11 +1066,22 @@ LteUeMac::DoAddSlCommTxPool (uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> p
   info.m_npscch = info.m_pool->GetNPscch ();
   info.m_currentScPeriod.frameNo = 0; //init to 0 to make it invalid
   info.m_currentScPeriod.subframeNo = 0; //init to 0 to make it invalid
-  NS_LOG_DEBUG ("frame no : " << info.m_nextScPeriod.frameNo << " Subframe no : " << info.m_nextScPeriod.subframeNo);
-  info.m_nextScPeriod = info.m_pool->GetNextScPeriod (m_frameNo, m_subframeNo);
+
+  /**
+   * After learning the correct usage of GetNextScPeriod, i.e, subtracting 1
+   * from a frame and a subframe number before calling this method and adding 1
+   * after, we should use the frame and subframe number, which is 4 ms ahead of
+   * PHY.
+   */
+
+  NS_LOG_DEBUG ("sidelink current MAC frame/subframe number : " << m_slSchedTime.frameNo << "/" << m_slSchedTime.subframeNo);
+  info.m_nextScPeriod = info.m_pool->GetNextScPeriod (m_slSchedTime.frameNo - 1, m_slSchedTime.subframeNo - 1);
   //adjust because scheduler starts with frame/subframe = 1
   info.m_nextScPeriod.frameNo++;
   info.m_nextScPeriod.subframeNo++;
+
+  NS_LOG_DEBUG ("Next SC frame/subframe number : " << info.m_nextScPeriod.frameNo << "/" << info.m_nextScPeriod.subframeNo);
+
   NS_ABORT_MSG_IF (info.m_nextScPeriod.frameNo > 1024 || info.m_nextScPeriod.subframeNo > 10,
                    "Invalid frame or subframe number");
   info.m_grantReceived = false;
@@ -1184,7 +1212,14 @@ LteUeMac::DoReceiveSlSciPhyPdu (Ptr<Packet> p)
 
           std::list <Ptr<SidelinkRxCommResourcePool> >::iterator poolIt = m_sidelinkRxPools.begin ();
 
-          SidelinkCommResourcePool::SubframeInfo tmp = (*poolIt)->GetCurrentScPeriod (m_frameNo, m_subframeNo);
+          /**
+           * After learning the correct usage of GetCurrentScPeriod, i.e,
+           * subtracting 1 from a frame and a subframe number before calling
+           * this method and adding 1 after, we should use the frame and
+           * subframe number, which is 4 ms ahead of PHY.
+           */
+
+          SidelinkCommResourcePool::SubframeInfo tmp = (*poolIt)->GetCurrentScPeriod (m_slSchedTime.frameNo - 1, m_slSchedTime.subframeNo - 1);
 
           std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> psschTx = (*poolIt)->GetPsschTransmissions (tmp, sciHeader.GetTrp (), sciHeader.GetRbStart (), sciHeader.GetRbLen ());
           std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator rxIt;
@@ -1491,7 +1526,7 @@ LteUeMac::RefreshHarqProcessesPacketBuffer (void)
 void
 LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << frameNo << subframeNo);
   m_frameNo = frameNo;
   m_subframeNo = subframeNo;
   RefreshHarqProcessesPacketBuffer ();
@@ -1532,7 +1567,7 @@ LteUeMac::DoSlDelayedSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       subframeNo = subframeNo + UL_PUSCH_TTIS_DELAY;
     }
 
-  NS_LOG_INFO ("Adjusted Frame no. " << frameNo << " Subframe no. " << subframeNo);
+  NS_LOG_INFO (this << " Adjusted Frame/Subframe number from " << m_frameNo << "/" << m_subframeNo << " to " << frameNo << "/" << subframeNo);
   m_slSchedTime.frameNo = frameNo;
   m_slSchedTime.subframeNo = subframeNo;
 
@@ -1588,7 +1623,7 @@ LteUeMac::DoSlDelayedSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       if (frameNo == poolIt->second.m_nextScPeriod.frameNo && subframeNo == poolIt->second.m_nextScPeriod.subframeNo)
         {
           poolIt->second.m_currentScPeriod = poolIt->second.m_nextScPeriod;
-          poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (frameNo, subframeNo);
+          poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (frameNo - 1, subframeNo - 1);
           //adjust because scheduler starts with frame/subframe = 1
           poolIt->second.m_nextScPeriod.frameNo++;
           poolIt->second.m_nextScPeriod.subframeNo++;
@@ -2034,7 +2069,7 @@ LteUeMac::DoSlDelayedSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
         {
           //define periods and frames
           m_discTxPool.m_currentDiscPeriod = m_discTxPool.m_nextDiscPeriod;
-          m_discTxPool.m_nextDiscPeriod = m_discTxPool.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
+          m_discTxPool.m_nextDiscPeriod = m_discTxPool.m_pool->GetNextDiscPeriod (frameNo - 1, subframeNo - 1);
           m_discTxPool.m_nextDiscPeriod.frameNo++;
           m_discTxPool.m_nextDiscPeriod.subframeNo++;
           NS_LOG_INFO ("Starting new discovery period " << ". Next period at " << m_discTxPool.m_nextDiscPeriod.frameNo << "/"
@@ -2254,7 +2289,7 @@ LteUeMac::DoNotifyChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
   std::map <uint32_t, PoolInfo>::iterator poolIt;
   for (poolIt = m_sidelinkTxPoolsMap.begin (); poolIt != m_sidelinkTxPoolsMap.end (); poolIt++)
     {
-      poolIt->second.m_currentScPeriod = poolIt->second.m_pool->GetCurrentScPeriod (frameNo, subframeNo);
+      poolIt->second.m_currentScPeriod = poolIt->second.m_pool->GetCurrentScPeriod (frameNo - 1, subframeNo - 1);
       poolIt->second.m_nextScPeriod = poolIt->second.m_pool->GetNextScPeriod (poolIt->second.m_currentScPeriod.frameNo, poolIt->second.m_currentScPeriod.subframeNo);
       //adjust because scheduler starts with frame/subframe = 1
       poolIt->second.m_nextScPeriod.frameNo++;

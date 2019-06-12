@@ -61,6 +61,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-sl-bler-pssch-harq4.png \
 	$(SRC)/lte/doc/source/figures/lte-sl-simple-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-simple-OofCovrg-scenario.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology1.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology2.dia \
         $(SRC)/lte/doc/source/figures/helpers.pdf \
         $(SRC)/lte/doc/source/figures/helpers.png \
 
@@ -85,6 +87,8 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-sl-bler-pssch-harq4.png \
 	$(FIGURES)/lte-sl-simple-scenario.eps \
 	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.eps \
+	$(FIGURES)/lte-sl-synch-test-topology1.eps \
+	$(FIGURES)/lte-sl-synch-test-topology2.eps \
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}

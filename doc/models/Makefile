@@ -324,6 +324,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-sl-bler-pssch-harq4.png \
 	$(SRC)/lte/doc/source/figures/lte-sl-simple-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-simple-OofCovrg-scenario.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology1.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology2.dia \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/netanim/doc/figures/PacketStatistics.png \
 	$(SRC)/netanim/doc/figures/PacketStatistics.pdf \
@@ -450,6 +452,8 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-sl-bler-pssch-harq4.png \
 	$(FIGURES)/lte-sl-simple-scenario.eps \
 	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.eps \
+	$(FIGURES)/lte-sl-synch-test-topology1.eps \
+	$(FIGURES)/lte-sl-synch-test-topology2.eps \
 	$(FIGURES)/lte-strongest-cell-handover-algorithm.eps \
 	$(FIGURES)/auvmobility-classes.eps \
 	$(FIGURES)/spectrum-analyzer-example.eps \

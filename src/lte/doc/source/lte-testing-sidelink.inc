@@ -420,3 +420,79 @@ Sidelink communication. This test creates a scenario with two out of coverage
 UEs, where one of the UE will send traffic directly to the other UE via
 Sidelink. Default configuration will send 10 packets per second for 2 seconds.
 The expected output is that the receiver UE node would receive 20 packets.
+
+Sidelink synchronization
+------------------------
+The test suite ``sidelink-synch`` is a system test to test the synchronization
+of the UEs in a test scenario with a selected SyncRef UE. In particular, it
+simulates the following two topologies by varying the traffic type, traffic
+direction in the sidelink TFT, and the random stream.
+
+.. _fig-lte-sl-synch-test-topology1:
+.. figure:: figures/lte-sl-synch-test-topology1.*
+   :align: center
+
+   Sidelink synchronization test topology 1
+
+.. _fig-lte-sl-synch-test-topology2:
+.. figure:: figures/lte-sl-synch-test-topology2.*
+   :align: center
+
+   Sidelink synchronization test topology 2
+
+There are four test cases,
+two for each topology. Each of the four tests uses ten different random number
+streams. The reason behind changing the random stream value is to make sure that
+at the time of applying the change of timings, the newly computed frame and
+subframe number is aligned with the selected SyncRef UE since the computation of an
+absolute subframe number is sensitive to the combination of the frame and
+subframe number used. Currently, all the tests are performed using an OnOff
+application configured to generate CBR traffic. The test for the alignment of
+the frame and subframe number is performed after 0.3 ms the trace
+``ChangeOfSyncRef`` gets trigger from the RRC layer of the synchronizing UE.
+This delay of 0.3 ms is needed because if the SynchRef UE is instantiated after
+the synchronizing UE in the simulation script, the event triggering the
+subframe indication method, which is responsible to update the frame and
+subframe number at the physical layer of the SyncRef will happen after this UE.
+
+Let's take an example of node 5 (RX UE) and node 6 (TX UE/SyncRef) in topology
+2. In the following logs, node 5 is synchronizing with node 6 by changing its
+frame to 982 and subframe to 7. At this stage, the frame and subframe number
+at the SyncRef UE (i.e., Node 6) would be 982 and 6, respectively. This is
+because the ``SubframeIndication`` method with frame 982 and subframe 7 for node
+6 is later in the simulator event list. Therefore, we chose to delay the
+CheckSfnAlignment method in the test. ::
+
+  +6.440000000s 5 LteUePhy:SubframeIndication(0xf6e430, 973, 10)
+
+  +6.440000000s 5 LteUePhy:ChangeOfTiming(0xf6e430, 973, 10)
+
+  +6.440000000s 5 LteUePhy:ChangeOfTiming(): The UE is not currently transmitting
+                  Sidelink communication... Applying the change of timing
+
+  +6.440000000s 5 LteUePhy:ChangeOfTiming(): mibTime frame/subframe = 982/3
+
+  +6.440000000s 5 LteUePhy:ChangeOfTiming(): currentTime frame/subframe = 973/10
+
+  +6.440000000s 5 LteUePhy:ChangeOfTiming(): rxSubframe frame/subframe = 973/6
+
+  +6.440000000s 5 LteUePhy:ChangeOfTiming(): UE RNTI 3 does not have a Tx pool and
+                  changed the Subframe Indication from 973/10 to 982/7
+
+  +6.440000000s 5 LteUeRrc:DoReportChangeOfSyncRef(0xf70080)
+
+  +6.440000000s 5 LteUeRrc:DoReportChangeOfSyncRef(): 0xf70080 UE IMSI 3
+                  reported successful change of SyncRef, selected SyncRef SLSSID
+                  40 offset 36
+
+  +6.440000000s 5 LteUePhy:SubframeIndication(): (re)synchronization successfully
+                  performed
+   .
+   .
+  +6.440000000s 6 LteUePhy:SubframeIndication(0xf73e60, 982, 7)
+
+  +6.440299999s Time of CheckSfnAlignment in the test
+
+
+Finally, the test would pass if the synchronizing UE has a similar frame and
+subframe number as its SyncRef UE.

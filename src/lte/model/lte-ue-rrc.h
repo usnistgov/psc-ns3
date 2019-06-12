@@ -1650,7 +1650,7 @@ private:
    * Exporting SlChangeOfSyncRefStatParameters containing IMSI, prevSLSSID, prevRxOffset, prevFrameNo, prevSubframeNo,
    * currSLSSID, currRxOffset, currFrameNo and currSubframeNo.
    */
-  TracedCallback<SlChangeOfSyncRefStatParameters> m_ChangeOfSyncRefTrace;
+  TracedCallback<SlChangeOfSyncRefStatParameters> m_changeOfSyncRefTrace;
   /**
    * The `SendSlss` trace source. Fired upon transmission of a SLSS.
    * Exporting IMSI, SLSSID, txSlSyncOffsetIndicator, inCoverage, FrameNo and SubframeNo.

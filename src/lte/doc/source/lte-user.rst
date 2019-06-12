@@ -429,8 +429,6 @@ And finally, in UL and DL reception files the parameters included are:
 will have a discontinuity in time from the moment of the RLF event until the UE
 connects again to an eNB.
 
-.. _sec-sidelink-simulation-output:
-
 .. include:: lte-user-sidelink-traces.inc
 
 

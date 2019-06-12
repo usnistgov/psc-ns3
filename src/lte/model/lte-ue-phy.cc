@@ -1561,7 +1561,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           if (m_slTxPoolInfo.m_nextScPeriod.frameNo == 0)
             {
               //pool not initialized yet
-              m_slTxPoolInfo.m_nextScPeriod = m_slTxPoolInfo.m_pool->GetNextScPeriod (frameNo, subframeNo);
+              m_slTxPoolInfo.m_nextScPeriod = m_slTxPoolInfo.m_pool->GetNextScPeriod (frameNo - 1, subframeNo - 1);
               //adjust because scheduler starts with frame/subframe = 1
               m_slTxPoolInfo.m_nextScPeriod.frameNo++;
               m_slTxPoolInfo.m_nextScPeriod.subframeNo++;
@@ -1571,7 +1571,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           if (frameNo == m_slTxPoolInfo.m_nextScPeriod.frameNo && subframeNo == m_slTxPoolInfo.m_nextScPeriod.subframeNo)
             {
               m_slTxPoolInfo.m_currentScPeriod = m_slTxPoolInfo.m_nextScPeriod;
-              m_slTxPoolInfo.m_nextScPeriod = m_slTxPoolInfo.m_pool->GetNextScPeriod (frameNo, subframeNo);
+              m_slTxPoolInfo.m_nextScPeriod = m_slTxPoolInfo.m_pool->GetNextScPeriod (frameNo - 1, subframeNo - 1);
               //adjust because scheduler starts with frame/subframe = 1
               m_slTxPoolInfo.m_nextScPeriod.frameNo++;
               m_slTxPoolInfo.m_nextScPeriod.subframeNo++;
@@ -1601,7 +1601,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                 {
                   NS_LOG_INFO ("New grant received");
                   //TODO: how to identify pool if multiple are presents?
-                  SidelinkCommResourcePool::SubframeInfo tmp = it->m_pool->GetCurrentScPeriod (frameNo, subframeNo);
+                  SidelinkCommResourcePool::SubframeInfo tmp = it->m_pool->GetCurrentScPeriod (frameNo - 1, subframeNo - 1);
                   grantIt->second.m_psschTx = it->m_pool->GetPsschTransmissions (tmp, grantIt->second.m_grant.m_trp,
                                                                                  grantIt->second.m_grant.m_rbStart, grantIt->second.m_grant.m_rbLen);
 
@@ -2405,7 +2405,7 @@ LteUePhy::InitializeDiscRxPool (uint32_t frameNo, uint32_t subframeNo)
       if (it.m_nextDiscPeriod.frameNo == 0)
         {
           //pool not initialized yet
-          it.m_nextDiscPeriod = it.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
+          it.m_nextDiscPeriod = it.m_pool->GetNextDiscPeriod (frameNo - 1, subframeNo - 1);
           it.m_nextDiscPeriod.frameNo++;
           it.m_nextDiscPeriod.subframeNo++;
           NS_LOG_DEBUG ("Total discovery RX pool = " << m_discRxPools.size ());
@@ -2420,7 +2420,7 @@ LteUePhy::InitializeDiscRxPool (uint32_t frameNo, uint32_t subframeNo)
           //clear the info from expextedTb and Tx count map of previous discovery period
           m_sidelinkSpectrumPhy->ClearExpectedDiscTb ();
           it.m_currentDiscPeriod = it.m_nextDiscPeriod;
-          it.m_nextDiscPeriod = it.m_pool->GetNextDiscPeriod (frameNo, subframeNo);
+          it.m_nextDiscPeriod = it.m_pool->GetNextDiscPeriod (frameNo - 1, subframeNo - 1);
           //adjust because scheduler starts with frame/subframe = 1
           it.m_nextDiscPeriod.frameNo++;
           it.m_nextDiscPeriod.subframeNo++;
@@ -2739,12 +2739,12 @@ LteUePhy::StartSlssMeasurements (uint64_t slssid, uint16_t offset)
   if (slssid == 0) //Measurement
     {
       t = m_ueSlssMeasurementPeriod;
-      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the measurement sub-process... Report happening in " << t << " ms");
+      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the measurement sub-process... Report happening in " << t);
     }
   else  //Evaluation
     {
       t = m_ueSlssEvaluationPeriod;
-      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the evaluation sub-process... Report happening in " << t << " ms");
+      NS_LOG_LOGIC ("Starting S-RSRP measurement corresponding to the evaluation sub-process... Report happening in " << t);
     }
   Simulator::Schedule (t, &LteUePhy::ReportSlssMeasurements, this, slssid, offset);
 }
@@ -2873,6 +2873,8 @@ LteUePhy::ScheduleNextSyncRefReselection (uint16_t endOfPrevious)
 
   int32_t t_nextProcess = m_nextScanRdm->GetInteger ();
 
+  NS_LOG_DEBUG ("t_nextProcess " << t_nextProcess << " m_ueSlssScanningPeriod.GetMilliSeconds "  << m_ueSlssScanningPeriod.GetMilliSeconds ());
+
   switch (endOfPrevious)
     {
     case 0:
@@ -2924,21 +2926,29 @@ LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
 
           //Calculate the new subframe indication
           SidelinkCommResourcePool::SubframeInfo mibTime;
-          mibTime.frameNo = m_resyncParams.syncRefMib.directFrameNo;
-          mibTime.subframeNo = m_resyncParams.syncRefMib.directSubframeNo;
-          SidelinkCommResourcePool::SubframeInfo currentTime;
-          currentTime.frameNo = frameNo;
-          currentTime.subframeNo = subframeNo;
-          NS_LOG_INFO ("mibTime " << mibTime.frameNo << "/" << mibTime.subframeNo);
-          NS_LOG_INFO ("currentTime " << currentTime.frameNo << "/" << currentTime.subframeNo);
-          NS_LOG_INFO ("rxSubframe " << m_resyncParams.rxSubframe.frameNo << "/" << m_resyncParams.rxSubframe.subframeNo);
+          NS_LOG_INFO ("mibTime frame/subframe = " << m_resyncParams.syncRefMib.directFrameNo << "/" << m_resyncParams.syncRefMib.directSubframeNo);
+          mibTime.frameNo = m_resyncParams.syncRefMib.directFrameNo - 1;
+          mibTime.subframeNo = m_resyncParams.syncRefMib.directSubframeNo - 1;
 
-          m_resyncParams.newSubframe = mibTime + (currentTime - m_resyncParams.rxSubframe);
+          SidelinkCommResourcePool::SubframeInfo currentTime;
+          NS_LOG_INFO ("currentTime frame/subframe = " << frameNo << "/" << subframeNo);
+          currentTime.frameNo = frameNo - 1;
+          currentTime.subframeNo = subframeNo - 1;
+
+          NS_LOG_INFO ("rxSubframe frame/subframe = " << m_resyncParams.rxSubframe.frameNo << "/" << m_resyncParams.rxSubframe.subframeNo);
+          SidelinkCommResourcePool::SubframeInfo rxTime;
+          rxTime.frameNo = m_resyncParams.rxSubframe.frameNo -1;
+          rxTime.subframeNo = m_resyncParams.rxSubframe.subframeNo -1;
+
+          m_resyncParams.newSubframe = mibTime + (currentTime - rxTime);
+
+          m_resyncParams.newSubframe.frameNo++;
+          m_resyncParams.newSubframe.subframeNo++;
 
           m_resyncRequested = false;
           NS_LOG_INFO ("UE RNTI " << m_rnti
                                   << " has a TxPool and changed the Subframe Indication"
-                                  << " from " << currentTime.frameNo << "/" << currentTime.subframeNo
+                                  << " from " << frameNo << "/" << subframeNo
                                   << " to " << m_resyncParams.newSubframe.frameNo << "/" << m_resyncParams.newSubframe.subframeNo);
 
           //Updating values used bellow
@@ -3013,22 +3023,33 @@ LteUePhy::ChangeOfTiming (uint32_t frameNo, uint32_t subframeNo)
 
       //Calculate the new subframe indication
       SidelinkCommResourcePool::SubframeInfo mibTime;
-      mibTime.frameNo = m_resyncParams.syncRefMib.directFrameNo;
-      mibTime.subframeNo = m_resyncParams.syncRefMib.directSubframeNo;
-      SidelinkCommResourcePool::SubframeInfo currentTime;
-      currentTime.frameNo = frameNo;
-      currentTime.subframeNo = subframeNo;
+      NS_LOG_INFO ("mibTime frame/subframe = " << m_resyncParams.syncRefMib.directFrameNo << "/" << m_resyncParams.syncRefMib.directSubframeNo);
+      mibTime.frameNo = m_resyncParams.syncRefMib.directFrameNo - 1;
+      mibTime.subframeNo = m_resyncParams.syncRefMib.directSubframeNo - 1;
 
-      m_resyncParams.newSubframe = mibTime + (currentTime - m_resyncParams.rxSubframe);
+      SidelinkCommResourcePool::SubframeInfo currentTime;
+      NS_LOG_INFO ("currentTime frame/subframe = " << frameNo << "/" << subframeNo);
+      currentTime.frameNo = frameNo - 1;
+      currentTime.subframeNo = subframeNo - 1;
+
+      SidelinkCommResourcePool::SubframeInfo rxTime;
+      NS_LOG_INFO ("rxSubframe frame/subframe = " << m_resyncParams.rxSubframe.frameNo << "/" << m_resyncParams.rxSubframe.subframeNo);
+      rxTime.frameNo = m_resyncParams.rxSubframe.frameNo -1;
+      rxTime.subframeNo = m_resyncParams.rxSubframe.subframeNo -1;
+      m_resyncParams.newSubframe = mibTime + (currentTime - rxTime);
+
+      m_resyncParams.newSubframe.frameNo++;
+      m_resyncParams.newSubframe.subframeNo++;
 
       m_resyncRequested = false;
 
+      NS_LOG_INFO ("UE RNTI " << m_rnti
+                              << " does not have a Tx pool and changed the Subframe Indication"
+                              << " from " << frameNo << "/" << subframeNo
+                              << " to " << m_resyncParams.newSubframe.frameNo << "/" << m_resyncParams.newSubframe.subframeNo);
+
       frameNo = m_resyncParams.newSubframe.frameNo;
       subframeNo = m_resyncParams.newSubframe.subframeNo;
-
-      NS_LOG_INFO ("UE RNTI " << m_rnti << "did not have a Tx pool and changed the Subframe Indication"
-                              << " from " << currentTime.frameNo << "/" << currentTime.subframeNo
-                              << " to " << m_resyncParams.newSubframe.frameNo << "/" << m_resyncParams.newSubframe.subframeNo);
 
       //Notify RRC about the successful change of SyncRef and timing
       m_ueCphySapUser->ReportChangeOfSyncRef (m_resyncParams);

@@ -112,7 +112,13 @@ SidelinkOutOfCoverageCommTestCase::DoRun (void)
   * MODE 2. Default configuration will send 10 packets per second for 2 seconds.
   * The expected output is that the receiver UE node would receive 20 packets.
   */
-
+  /*
+   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
+   LogComponentEnable ("LteUePhy", logLevel);
+   LogComponentEnable ("LteUeRrc", logLevel);
+   LogComponentEnable ("LteUeMac", logLevel);
+   LogComponentEnable ("LteSlPool", logLevel);
+  */
   //Initialize simulation time
   double simTime = 6;
   uint32_t groupL2Address = 0xFF;

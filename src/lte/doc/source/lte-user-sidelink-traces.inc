@@ -1,3 +1,6 @@
+
+.. _sec-sidelink-simulation-output:
+
 --------------------------
 ﻿Sidelink simulation output
 --------------------------
@@ -124,8 +127,8 @@ In the SlPscchRx file, the following content is available:
       MAC)
   14. Correctness in the reception of the TB (correct = 1 : error = 0)
 
-The parameters of SlRx file, which stores the PSSCH and PSDCH PHY reception
-results are:
+The parameters of SlRx file, which stores the PSSCH, PSDCH and PSBCH PHY
+reception results are:
 
   1. Simulation time in milliseconds
   2. Cell ID (Fixed to 0 for Sidelink)
@@ -139,8 +142,8 @@ results are:
   10. Correctness in the reception of the TB (correct = 1 : error = 0)
   11. Average perceived SINR per RB in linear units
 
-**Note: This file is used to store the above parameters for both PSSCH and
-PSDCH reception.**
+**Note: At the time of writing this documentation, the RNTI for the PSBCH
+signals is not reported, thus, is set to zero.**
 
 And Finally, the name of the file, which stores the RRC level KPIs for PSDCH
 monitoring is configurable through the attribute

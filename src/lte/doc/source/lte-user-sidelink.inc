@@ -73,8 +73,8 @@ following scenario.
 Both the UEs are in-coverage of the eNB where UE1 sends the data to UE2 via
 Sidelink by using the resources assigned by the eNB. A user can configure the
 simulation time and the output of NS logs of the specified classes by using the
-corresponding global variables in the simulation script. For example, a user can
-run the simulation as follows::
+corresponding command line variables in the simulation script. For example, a
+user can run the simulation as follows::
 
 ./waf --run "lte-sl-in-covrg-comm-mode1 --simTime=7 --enableNsLogs=false"
 
@@ -354,13 +354,13 @@ will also output the LTE traces.
 Upon the completion of the simulation, the following trace files can be found in
 the repository's root folder,
 
-* SlUeMacStats.txt
-* SlSchUeMacStats.txt
-* SlPscchRxPhyStats.txt
+* SlCchMacStats.txt
+* SlSchMacStats.txt
+* SlCchRxPhyStats.txt
 * SlRxPhyStats.txt
 
 For more information related to the above files please refer to the
-lte-user:ref:`sec-sidelink-simulation-output` section.
+:any:ref:`sec-sidelink-simulation-output` section.
 
 * UePacketTrace.tr
 
@@ -381,20 +381,20 @@ lte-user:ref:`sec-sidelink-simulation-output` section.
      - IP[dst]
    * - 3
      - tx
-     - 2
+     - 4
      - 1
      - 200
      - 7.0.0.2:49153
      - 225.0.0.0:8000
-   * - 3.08893
+   * - 3.09693
      - rx
-     - 3
+     - 5
      - 2
      - 200
      - 7.0.0.2:49153
      - 7.0.0.3:8000
 
-The first row shows that the UE 1 with node id 2 and IMSI 1 transmits a multicast
+The first row shows that the UE 1 with IMSI 1 transmits a multicast
 packet of 200 bytes and the UE 2 receives the packet transmitted by the UE 1.
 As per the client's application data rate and ON time, i.e., 16 kb/s and 2 seconds,
 respectively, a total of 20 packets are sent and received by the transmitting and
@@ -497,8 +497,8 @@ is done are referred to :ref:`SidelinkCommPoolPsschTestCase`.
 
 Finally, at the end of the simulation the trace files, similar to the previous
 example, can be found in the repository's root folder. One important difference,
-compared to MODE 1, is that in the trace files "SlUeMacStats.txt" and
-"SlPscchRxPhyStats.txt" the parameters, e.g., PSCCH resource index and the
+compared to MODE 1, is that in the trace files "SlCchMacStats.txt" and
+"SlCchRxPhyStats.txt" the parameters, e.g., PSCCH resource index and the
 starting RB for PSSCH are randomly selected by the UE for every SC period.
 Furthermore, a similar amount of packets, i.e. 20, are sent and received by the
 UEs.
@@ -517,8 +517,9 @@ the following scenario.
    Sidelink simple out-of-coverage scenario
 
 This example allows a user to configure the simulation time and the output of NS
-logs of the specified classes by using the corresponding global variables in the
-simulation script. For example, a user can run the simulation as follows::
+logs of the specified classes by using the corresponding command line variables
+in the simulation script. For example, a user can run the simulation as
+follows::
 
 ./waf --run "lte-sl-out-of-covrg-comm --simTime=7 --enableNsLogs=false"
 
@@ -806,13 +807,13 @@ The above code will enable all the Sidelink related traces.
 Upon the completion of the simulation, the following trace files can be found in
 the repository's root folder,
 
-* SlUeMacStats.txt
-* SlSchUeMacStats.txt
-* SlPscchRxPhyStats.txt
+* SlCchMacStats.txt
+* SlSchMacStats.txt
+* SlCchRxPhyStats.txt
 * SlRxPhyStats.txt
 
 For more information related to the above files please refer to the
-lt-user:ref:`sec-sidelink-simulation-output` section.
+:any:ref:`sec-sidelink-simulation-output` section.
 
 * UePacketTrace.tr
 
@@ -834,24 +835,24 @@ lt-user:ref:`sec-sidelink-simulation-output` section.
      - IP[dst]
    * - 3
      - tx
-     - 1
+     - 3
      - 1
      - 200
      - 7.0.0.2:49153
      - 225.0.0.0:8000
    * - 3.08893
      - rx
-     - 2
+     - 4
      - 2
      - 200
      - 7.0.0.2:49153
      - 7.0.0.3:8000
 
-The first row shows that the UE 1 with node id 1 and IMSI 1 transmits a
-multicast packet of 200 bytes and the UE 2 receives the packet transmitted by
-the UE 1. As per the client's application data rate and ON time, i.e., 16 kb/s
-and 2 seconds, respectively, a total of 20 packets are sent and received by the
-transmitting and the receiving UE.
+The first row shows that the UE 1 with IMSI 1 transmits a multicast packet of
+200 bytes and the UE 2 receives the packet transmitted by the UE 1. As per the
+client's application data rate and ON time, i.e., 16 kb/s and 2 seconds,
+respectively, a total of 20 packets are sent and received by the transmitting
+and the receiving UE.
 
 
 In the following we will discuss the detailed examples mentioned above, however,
@@ -992,7 +993,7 @@ of groups, i.e., 1 in this example, by choosing the transmitting UE randomly
 from the total number of UEs. After choosing the transmitting UE, the receiving
 UEs of the group are selected if the Sidelink RSRP, calculated as per the method
 defined in [TS36214]_, between the transmitting UE and the receiving UE is
-higher than -112 dBm. In this example, UE node 4 with IMSI 1 is selected as a
+higher than -112 dBm. In this example, UE node 7 with IMSI 2 is selected as a
 transmitter while remaining 2 UEs will act as receivers. It is to be noted that
 ``AssociateForBroadcast`` is only responsible for forming the groups and not
 installing any application.
@@ -1246,7 +1247,7 @@ is written to the following files,
      - 0
      - 0
      - 0
-     - 141969
+     - 148921
      - 0
      - 0
      - 0
@@ -1256,7 +1257,7 @@ is written to the following files,
      - 0
      - 0
      - 0
-     - 199946
+     - 175823
      - 0
      - 0
      - 0
@@ -1266,66 +1267,66 @@ is written to the following files,
      - 0
      - 0
      - 0
-     - 105029
+     - 170827
      - 0
      - 0
      - 0
-   * - 20025
+   * - 20023
+     - 2
+     - 175823
+     - 0
+     - 637
+     - 5
+     - 20
+     - 0
+     - 637
+     - 5
+   * - 21407
      - 1
-     - 141696
+     - 148921
      - 0
-     - 985
-     - 5
-     - 10
-     - 0
-     - 985
-     - 5
-   * - 20585
+     - 224
+     - 3
+     - 20
      - 2
-     - 199946
+     - 775
+     - 9
+   * - 21460
+     - 3
+     - 170827
      - 0
-     - 161
-     - 5
-     - 10
-     - 3
-     - 17
-     - 5
-   * - 21567
-     - 3
-     - 105029
-     - 0
-     - 856
-     - 2
-     - 10
-     - 3
-     - 115
+     - 791
      - 7
+     - 20
+     - 2
+     - 781
+     - 2
    * - 50000
      - 1
-     - 10
+     - 20
      - 0
-     - 910
-     - 10
+     - 563
+     - 5
      - 0
      - 0
      - 0
      - 0
    * - 50000
      - 2
-     - 10
+     - 20
      - 0
-     - 910
-     - 10
+     - 563
+     - 5
      - 0
      - 0
      - 0
      - 0
    * - 50000
      - 3
-     - 10
+     - 20
      - 0
-     - 910
-     - 10
+     - 563
+     - 5
      - 0
      - 0
      - 0
@@ -1358,34 +1359,34 @@ is written to the following files,
      - size (bytes)
      - IP[src]
      - IP[dst]
-   * - 21690
+   * - 21485
      - t
-     - 4
-     - 1
-     - resp
-     - 40
-     - 7.0.0.2:49153
-     - 225.0.0.1:8000
-   * - 21690
-     - r
-     - 5
+     - 7
      - 2
      - resp
      - 40
-     - 7.0.0.2:49153
-     - 7.0.0.3:8000
-   * - 21690
+     - 7.0.0.3:49153
+     - 225.0.0.1:8000
+   * - 21488
      - r
      - 6
+     - 1
+     - resp
+     - 40
+     - 7.0.0.3:49153
+     - 7.0.0.2:8000
+   * - 21488
+     - r
+     - 8
      - 3
      - resp
      - 40
-     - 7.0.0.2:49153
+     - 7.0.0.3:49153
      - 7.0.0.4:8000
 
 The first row shows that the first UE with node id 4 and IMSI 1 acts as a
 transmitter and sends a multicast packet of 40 bytes. Similarly, the other two
-UEs act as receiver and receive the packet transmitted by the first UE.
+UEs act as receiver.
 
  * TxSlss.txt
 
@@ -1404,34 +1405,34 @@ UEs act as receiver and receive the packet transmitted by the first UE.
      - inCoverage
      - FrameNo
      - SframeNo
-   * - 20040
-     - 1
-     - 10
+   * - 20038
+     - 2
+     - 20
      - 29
      - 0
-     - 986
-     - 9
-   * - 20080
-     - 1
-     - 10
+     - 639
+     - 4
+   * - 20078
+     - 2
+     - 20
      - 29
      - 0
-     - 990
-     - 9
-   * - 20120
-     - 1
-     - 10
+     - 643
+     - 4
+   * - 20118
+     - 2
+     - 20
      - 29
      - 0
-     - 994
-     - 9
-   * - 20160
-     - 1
-     - 10
+     - 647
+     - 4
+   * - 20158
+     - 2
+     - 20
      - 29
      - 0
-     - 998
-     - 9
+     - 651
+     - 4
 
 It can be observed that UE with IMSI 1 being a SyncRef is transmitting SLSS with
 a fixed periodicity of 40 ms. Moreover, at the time when this UE chose to become
@@ -1651,117 +1652,78 @@ containing the information of the simulated discovery process.
 
    This file stores the position of all the UEs in the simulation.
 
- * discovery-out-announcement-mac.tr
+ * SlDchMacStats.txt
 
    This file logs the discovery message transmissions (announcements)
-   by listening to the "DiscoveryAnnouncement" trace of ``LteUeMac`` class.
-   Following is the snippet from this file,
+   by listening to the "SlPsdchScheduling" trace of ``LteUeMac`` class.
+   
+ * SlRxPhyStats.txt
 
-  .. tabularcolumns:: |l|l|l|l|
-  .. list-table:: discovery-out-announcement-mac.tr
-   :header-rows: 1
-
-   * - Time (s)
-     - IMSI
-     - RNTI
-     - ProSeAppCode
-   * - 2.236
-     - 1
-     - 1
-     - 1
-   * - 2.236
-     - 3
-     - 3
-     - 3
-   * - 2.236
-     - 5
-     - 5
-     - 5
-   * - 2.236
-     - 9
-     - 9
-     - 9
-
- * discovery-out-announcement-phy.tr
-
-   Similar to the information in "discovery-out-announcement-mac.tr" file this
-   file contains the information about the discovery announcements but with the
-   perspective of phy layer. In particular, it is obtained by listening to the
-   "DiscoveryAnnouncement" trace of ``LteUePhy`` class. Following is the snippet
-   from this file,
-
-  .. tabularcolumns:: |l|l|l|l|l|
-  .. list-table:: discovery-out-announcement-phy.tr
-   :header-rows: 1
-
-   * - Time (s)
-     - IMSI
-     - CellId
-     - RNTI
-     - ProSeAppCode
-   * - 2.24
-     - 1
-     - 0
-     - 1
-     - 1
-   * - 2.24
-     - 3
-     - 0
-     - 3
-     - 3
-   * - 2.24
-     - 5
-     - 0
-     - 5
-     - 5
-   * - 2.24
-     - 9
-     - 0
-     - 9
-     - 9
+   This file contains the information about the reception of the discovery
+   announcements at the physical layer of a recepient UE. In particular, it is
+   obtained by listening to the "SlPhyReception" trace of ``LteSpectrumPhy``
+   class. 
 
 By comparing the traces from UE MAC and UE PHY, one can notice that the phy
-layer transmits a particular discovery messages exactly after 4 ms of the
+layer receives a particular discovery messages exactly after 4 ms of the
 processing delay between UE MAC and PHY. The CellId is 0 because of
 out-of-coverage scenario.
 
- * discovery-out-monitoring.tr
+ * SlDchRxRrcStats.txt
 
    This file contains the information about the reception of discovery messages
    by each UE. The data is obtained by listening to the "DiscoveryMonitoring"
    trace of ``LteUeRrc`` class. Following is snippet from this file,
 
-  .. tabularcolumns:: |l|l|l|l|l|
-  .. list-table:: discovery-out-monitoring.tr
+  .. tabularcolumns:: |l|l|l|l|l|l|l|l|
+  .. list-table:: SlDchRxRrcStats.txt
    :header-rows: 1
 
-   * - Time (s)
+   * - Time (ms)
      - IMSI
      - CellId
      - RNTI
-     - ProSeAppCode
-   * - 2.24093
-     - 2
-     - 0
-     - 2
-     - 3
-   * - 2.24093
-     - 2
-     - 0
-     - 2
-     - 9
-   * - 2.24093
+     - DisType
+     - ContentType
+     - DiscModel
+     - Content
+   * - 2240
      - 2
      - 0
      - 2
      - 1
-   * - 2.24093
-     - 2
      - 0
-     - 2
+     - 1
+     - 1
+   * - 2240
+     - 3
+     - 0
+     - 3
+     - 1
+     - 0
+     - 1
+     - 1
+   * - 2240
+     - 4
+     - 0
+     - 4
+     - 1
+     - 0
+     - 1
+     - 1
+   * - 2240
      - 5
+     - 0
+     - 5
+     - 1
+     - 0
+     - 1
+     - 1
 
-From the above table it can be observed that the UE with IMSI 2 has received the
-discovery messages with ProSeAppCode of 3,9,1,5. In other words, this UE has
-discovered 4 other UEs transmitting their discovery announcements using the
-ProSeAppCode of 3, 9, 1, 5 respectively.
+From the above table it can be observed that the UE with IMSI 2, 3, 4, and 5 have
+received a discovery message. This is a message of type open discovery 
+(indicated by DiscType) used to announce (indicated by ContentType) a discovery
+model A (indicated by DiscModel) content. The content in this message is the
+ProSeAppCode of IMSI 1. In other words, these UEs have discovered a UE with
+ProSeAppCode 1. For more information about the discovery message parameters
+please have a look at [TS24334]_.
