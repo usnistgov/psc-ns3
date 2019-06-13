@@ -237,7 +237,7 @@ WrapAroundTopologyTestCase::DoRun ()
   Ptr<Object> downlinkPathlossModel = lteHelper->GetDownlinkPathlossModel ();
   Ptr<PropagationLossModel> lossModel = downlinkPathlossModel->GetObject<PropagationLossModel> ();
 
-  NS_ASSERT_MSG (lossModel > 0, "No PathLossModel");
+  NS_ABORT_MSG_IF (lossModel == nullptr, "No PathLossModel");
   topoHelper->AttachWithWrapAround (lossModel, ueDevs, enbDevs);
   NS_LOG_INFO ("Attached UE's to the eNB with wrap-around");
 
