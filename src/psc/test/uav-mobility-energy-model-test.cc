@@ -124,6 +124,7 @@ UavMobilityEnergyModelTestCaseEnergyConsumption::DoRun (void)
   Simulator::Schedule (Seconds(1), &UavMobilityEnergyModel::Hover, model);
   Simulator::Schedule (Seconds(2), &UavMobilityEnergyModel::Stop, model);
   
+  Simulator::Stop (Seconds (3.0));
   Simulator::Run ();
 
 
@@ -189,6 +190,7 @@ UavMobilityEnergyModelTestCaseZeroEnergyCost::DoRun (void)
   Simulator::Schedule (Seconds (4), &UavMobilityEnergyModel::Hover, model);
   Simulator::Schedule (Seconds (5), &UavMobilityEnergyModel::Stop, model);
   
+  Simulator::Stop (Seconds (6.0));
   Simulator::Run ();
 
   NS_TEST_ASSERT_MSG_EQ (energySource->GetRemainingEnergy (),
@@ -333,6 +335,7 @@ UavMobilityEnergyModelTestCaseLowEnergyTrace::DoRun (void)
   // Be sure we stop before we go over the energy source's capacity
   Simulator::Schedule (Seconds (MAX_RUN_TIME),
                       &UavMobilityEnergyModel::Stop, model);
+  Simulator::Stop (Seconds (MAX_RUN_TIME));
   Simulator::Run ();
 
   NS_TEST_ASSERT_MSG_EQ (m_lowEnergyCount, 1,
@@ -471,6 +474,7 @@ UavMobilityEnergyModelTestCaseMobilityModel::DoRun (void)
                       &ConstantVelocityMobilityModel::SetVelocity,
                       mobilityModel, STOPPED_VELOCITY);
                     
+  Simulator::Stop (Seconds (DURATION + 1.0));
   Simulator::Run ();
 
   NS_TEST_ASSERT_MSG_EQ (energySource->GetRemainingEnergy (),
@@ -552,6 +556,7 @@ UavMobilityEnergyModelTestCaseChangeCostsRuntime::DoRun (void)
                       &ConstantVelocityMobilityModel::SetVelocity,
                       mobilityModel, STOPPED_VELOCITY);
                     
+  Simulator::Stop (Seconds (DURATION + 1));
   Simulator::Run ();
 
   // Both values are held for one second, so duration is not included
@@ -633,6 +638,7 @@ void UavMobilityEnergyModelTestCaseTotalEnergyConsumption::DoRun (void)
                       &ConstantVelocityMobilityModel::SetVelocity,
                       mobilityModel, STOPPED_VELOCITY);
                     
+  Simulator::Stop (Seconds (DURATION + 1));
   Simulator::Run ();
   
 
@@ -718,7 +724,7 @@ void UavMobilityEnergyModelTestCaseInitialVelocity::DoRun (void)
 
   // The energy source will not update once the simulation stops
   //  so, we only consume energy until DURATION - 1 Seconds
-  Simulator::Stop (Seconds (DURATION + 1));                    
+  Simulator::Stop (Seconds (DURATION));                    
   Simulator::Run ();
  
   NS_TEST_ASSERT_MSG_EQ (energySource->GetRemainingEnergy (),
