@@ -481,7 +481,9 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::ReceiveFloorTaken (McpttOnNe
       //TODO: Provide notification to user indicating the type of call.
     }
 
-  machine.GetT103 ()->Start ();
+  // It is possible for this timer to be running due to previous activity
+  // of another MCPTT user, so issue Restart() instead of Start()
+  machine.GetT103 ()->Restart ();
 }
 
 void
@@ -734,9 +736,9 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveMedia (McpttOnNetworkF
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  //TODO: Rrequest the MCPTT client to start rendering the received RTP media packets.
+  //TODO: Request the MCPTT client to start rendering the received RTP media packets.
 
-  //TODO: Not in standard - "restart/start T103" not just "start T103".
+  //TODO: Possibly a bug in standard - should be "restart/start T103" not just "start T103".
   machine.GetT103 ()->Restart ();
 }
 
@@ -1112,7 +1114,9 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorTaken (McpttOnNet
       //TODO: Provide notification to user indicating the type of call.
     }
 
-  machine.GetT103 ()->Start ();
+  // It is possible for this timer to be running due to previous activity
+  // of another MCPTT user, so issue Restart() instead of Start()
+  machine.GetT103 ()->Restart ();
   machine.GetT100 ()->Stop ();
   machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
 }
@@ -1124,7 +1128,9 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveMedia (McpttOnNetworkF
 
   //TODO: Request MCPTT client to start rendering received RTP media packets.
 
-  machine.GetT103 ()->Start ();
+  // It is possible for this timer to be running due to previous activity
+  // of another MCPTT user, so issue Restart() instead of Start()
+  machine.GetT103 ()->Restart ();
   machine.GetT100 ()->Stop ();
   machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
 }
