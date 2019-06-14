@@ -309,7 +309,6 @@ private:
  Ptr<McpttCounter> m_c20; //!< The counter associated with T20.
  bool m_dualFloorSupported; //!< A flag that to indicate dual floor indication.
  Ptr<McpttOnNetworkFloorDualControl> m_dualControl; //!< The dual floor control state machine.
- bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
  McpttServerApp* m_owner; //!< The client application that owns this floor machine.
  bool m_mcGranted; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
