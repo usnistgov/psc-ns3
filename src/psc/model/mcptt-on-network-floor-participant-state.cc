@@ -777,6 +777,11 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorQueuePositionInfo
       machine.Send (ackMsg);
     }
 
+  if (machine.GetT101 ()->IsRunning ())
+    {
+      machine.GetT101 ()->Stop ();
+    }
+
   //TODO: Provide floor request queued response to the user.
   //TODO: Provide queue position and priority to the MCPTT user.
 
