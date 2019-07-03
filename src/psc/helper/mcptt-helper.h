@@ -35,6 +35,9 @@
 
 #include <stdint.h>
 #include <string>
+#include <fstream>
+#include <utility>
+#include <map>
 
 #include <ns3/application-container.h>
 #include <ns3/attribute.h>
@@ -110,6 +113,11 @@ public:
   * Enables the MCPTT state machine traces.
   */
  virtual void EnableStateMachineTraces (void);
+ /**
+  * Enables a trace for MCPTT mouth-to-ear latency statistics
+  * \param filename Filename to open for writing the trace
+  */
+ virtual void EnableMouthToEarLatencyTrace (std::string filename);
  /**
   * Configures the MCPTT PTT app.
   * \param tid the string representation of the ns3::TypeId associated with the model to set
@@ -273,6 +281,10 @@ private:
  ObjectFactory m_mediaSrcFac; //!< The MCPTT send requester object factory.
  Ptr<McpttMsgStats> m_msgTracer; //!< The object used to trace MCPTT messages.
  Ptr<McpttStateMachineStats> m_stateMachineTracer; //!< The object used to trace MCPTT state machine traces.
+ std::map<std::pair<uint32_t, uint16_t>, Time> m_mouthToEarLatencyMap;
+ std::ofstream m_mouthToEarLatencyTraceFile; //!< file stream for latency trace
+
+  void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
 };
 
 } // namespace ns3

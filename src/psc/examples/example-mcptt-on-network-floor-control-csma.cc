@@ -216,6 +216,7 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttClientHelper.EnableMsgTraces ();
   mcpttClientHelper.EnableStateMachineTraces ();
+  mcpttClientHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
   NS_LOG_INFO ("Starting simulation...");
   Simulator::Stop (Seconds (stopSec + 2));

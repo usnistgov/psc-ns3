@@ -123,6 +123,7 @@ private:
   */
  McpttMediaSink* m_sink; //!< A pointer to the sink.
  bool m_started; //!< Indicates if the requester has started making request.
+ Time m_startTime; //!< Start time of talk spurt
  uint16_t m_totalBytes; //!< The total number of bytes that have been sent.
  uint16_t m_nextSeqNum; //!< Next RTP sequence number value
 public:
@@ -158,11 +159,6 @@ protected:
   */
  virtual EventId GetReqEvent (void) const;
  /**
-  * Gets the flag that indicates if the requester has started making request.
-  * \returns The flag.
-  */
- virtual bool GetStarted (void) const;
- /**
   * \brief Sets the event that describes when a send request will be made.
   * \param reqEvent The event.
   */
@@ -172,11 +168,6 @@ protected:
   * \param totalBytes The total number of bytes.
   */
  virtual void SetTotalBytes (uint16_t totalBytes);
- /**
-  * Sets the flag that indicates if the requester has started making request.
-  * \param started The flag.
-  */
- virtual void SetStarted (const bool& started);
 };
 
 } // namespace ns3

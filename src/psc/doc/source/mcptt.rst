@@ -463,7 +463,7 @@ option to enable |ns3| logging, ``--enableNsLogs``, will not enable LTE
 logging as in the LTE D2D example, but will instead enable all MCPTT logs,
 as shown above.
 
-Finally, we note two tracing statements inserted near the bottom of the
+Finally, we note three tracing statements inserted near the bottom of the
 program: 
  
 .. sourcecode:: cpp
@@ -471,6 +471,7 @@ program:
    NS_LOG_INFO ("Enabling MCPTT traces...");
    mcpttHelper.EnableMsgTraces ();
    mcpttHelper.EnableStateMachineTraces ();
+   mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
 These statements are explained in the next section.  Some other aspects
 of LTE tracing are omitted in this modified example, in order to focus on
@@ -479,7 +480,7 @@ the MCPTT configuration.
 Traces
 ######
 
-There are currently only two traces that can be activated by using the
+There are currently only three traces that can be activated by using the
 ``ns3::McpttHelper``, and this can be done by following the example given
 below, after all the applications have been created.
 
@@ -488,6 +489,7 @@ below, after all the applications have been created.
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttHelper.EnableMsgTraces (); // Enable message trace
   mcpttHelper.EnableStateMachineTraces (); // Enable state trace
+  mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
 The ``ns3::McpttMsgStats`` class is used for tracing MCPTT messages at
 the application layer and produces a file with the default name
@@ -495,13 +497,15 @@ the application layer and produces a file with the default name
 
 .. sourcecode:: text
 
-  time(ms)	userid	rx/tx	bytes
+  time(ms) nodeid callid  ssrc    rx/tx   bytes   message
 
 There may also be an additional field at the end of the row called "message"
 that will be included if the ``ns3::McpttMsgStats::IncludeMessageContent``
 attribute is set to "true". The "time(ms)" column describes the time (in
-milliseconds) at which a message was sent/received. The "userid" column
-contains the user ID of the MCPTT user that sent/received the message. The
+milliseconds) at which a message was sent/received. The "nodeid" column
+contains the ns3::Node ID value of the sender or receiver, and the 
+"callid" column contains the call ID for this message.  The "ssrc" field
+prints the RTP synchronization source (SSRC) field if available.  The  
 "rx/tx" column indicates if the message was sent or received, i.e. if "rx"
 is the value in the column then that means the message was received, while a
 value of "tx" indicates that the message was sent. The "bytes" columns
@@ -530,6 +534,30 @@ column contains the string representation of the ``ns3::McpttEntityId`` which
 gives the name of the state that the state machine was in AFTER the transition
 took place.
 
+Finally, one of the key performance indicators (KPI) defined for MCPTT is
+the mouth-to-ear latency.  More information about this statistic can be
+found in NIST technical report NISTIR 8206 [NIST.IR.8206]_.  When the
+|ns3| model generates the first RTP packet of a talk spurt, the timestamp
+is encoded into the payload of that RTP packet and every subsequent RTP
+packet of the talk spurt.  Upon receipt of an ``ns3::McpttMediaMsg``, the 
+receiving application will check whether the packet contains a newer
+'start-of-talkspurt' timestamp.  If so, this indicates the reception of the
+first RTP packet of a new talk spurt from a sender.  The latency of all
+such talk spurts, traced from the perspective of each receiving application,
+can be traced using the helper method 
+``ns3::McpttHelper::EnableMouthToEarLatencyTrace()`` which takes a single
+argument, the trace filename.  The output file is formatted as follows.
+
+.. sourcecode:: text
+
+  time(ms) nodeid callid  latency(ms)
+  5063    6       0       35
+  10134   7       0       35
+
+In the example, node ID 6 started to receive a talk spurt at time 5.063s, 
+on call ID 0, with a mouth-to-ear latency of 35 ms (see Figure 1 of 
+[NIST.IR.8206]_).
+
 Testing Documentation
 =====================
 
@@ -544,5 +572,7 @@ can be found in NIST technical report NISTIR 8236 [NIST.IR.8236]_.
 
 .. [TS24380] 3GPP TS 24.380 `"Mission Critical Push To Talk (MCPTT) media plane control; Protocol specification"
    <http://www.3gpp.org/ftp//Specs/archive/24_series/24.380/24380-e40.zip>`_
+
+.. [NIST.IR.8206] Frey, J., Pieper, J., and Thompson, T., `"Mission Critical Voice QoE Mouth-to-Ear Latency Measurement Methods" <https://doi.org/10.6028/NIST.IR.8206>`_, February 2018.
 
 .. [NIST.IR.8236] Varin, P., Sun, Y., and Garey, W., `"Test Scenarios for Mission Critical Push-To-Talk (MCPTT) Off-Network Mode Protocols Implementation" <https://doi.org/10.6028/NIST.IR.8236>`_, October 2018.

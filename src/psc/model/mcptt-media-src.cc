@@ -109,9 +109,7 @@ McpttMediaSrc::IsMakingReq (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  bool isMakingReq = GetStarted ();
-
-  return isMakingReq;
+  return m_started;
 }
 
 void
@@ -119,7 +117,8 @@ McpttMediaSrc::StartMakingReq (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetStarted (true);
+  m_started = true;
+  m_startTime = Simulator::Now ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester starting to make request.");
 
@@ -131,7 +130,7 @@ McpttMediaSrc::StopMakingReq (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetStarted (false);
+  m_started = false;
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester stopping request.");
 
@@ -187,7 +186,7 @@ McpttMediaSrc::MakeRequest (void)
   // we can run for 42949 seconds (almost 12 hours) without rolling over.
   hdr.SetTimestamp (static_cast<uint32_t> (Simulator::Now ().GetMicroSeconds ()/10));
   hdr.SetSeqNum (m_nextSeqNum++);
-  McpttMediaMsg msg (hdr, m_bytes);
+  McpttMediaMsg msg (hdr, m_bytes, m_startTime);
 
   uint32_t size = msg.GetSerializedSize ();
   
@@ -263,14 +262,6 @@ McpttMediaSrc::GetReqEvent (void) const
   return m_reqEvent;
 }
 
-bool
-McpttMediaSrc::GetStarted (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  return m_started;
-}
-
 void
 McpttMediaSrc::SetLastReq (const Time& lastReq)
 {
@@ -293,14 +284,6 @@ McpttMediaSrc::SetTotalBytes (uint16_t totalBytes)
   NS_LOG_FUNCTION (this << totalBytes);
 
   m_totalBytes = totalBytes;
-}
-
-void
-McpttMediaSrc::SetStarted (const bool& started)
-{
-  NS_LOG_FUNCTION (this << started);
-
-  m_started = started;
 }
 
 } // namespace ns3

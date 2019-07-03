@@ -41,6 +41,7 @@
 #include <ns3/log.h>
 #include <ns3/mcptt-floor-participant.h>
 #include <ns3/mcptt-media-src.h>
+#include <ns3/mcptt-media-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 #include <ns3/mcptt-pusher.h>
 #include <ns3/packet-socket-address.h>
@@ -130,7 +131,9 @@ McpttHelper::McpttHelper (void)
 }
 
 McpttHelper::~McpttHelper ()
-{ }
+{
+  m_mouthToEarLatencyTraceFile.close ();
+}
 
 void
 McpttHelper::ConfigureBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId)
@@ -212,6 +215,44 @@ McpttHelper::EnableStateMachineTraces (void)
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/FloorParticipants/*/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
       Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/DualFloorControl/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
     }
+}
+
+void
+McpttHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg)
+{
+  if (msg.IsA (McpttMediaMsg::GetTypeId ()))
+    {
+      std::pair<uint32_t, uint16_t> key = std::make_pair (app->GetNode ()->GetId (), callId);
+      Time talkSpurtStart = static_cast<const McpttMediaMsg&>(msg).GetTalkSpurtStart ();
+      auto it = m_mouthToEarLatencyMap.find (key);
+      if (it == m_mouthToEarLatencyMap.end ())
+        {
+          m_mouthToEarLatencyMap.insert (std::make_pair (key, talkSpurtStart));
+          m_mouthToEarLatencyTraceFile << Simulator::Now ().GetMilliSeconds () << "\t"
+            << app->GetNode ()->GetId () << "\t" << callId << "\t" 
+            << (Simulator::Now () - talkSpurtStart).GetMilliSeconds ()
+            << std::endl;
+        }
+      else
+        {
+          if (it->second < talkSpurtStart)
+            {
+              it->second = talkSpurtStart;
+              m_mouthToEarLatencyTraceFile << Simulator::Now ().GetMilliSeconds () << "\t"
+                << app->GetNode ()->GetId () << "\t" << callId << "\t" 
+                << (Simulator::Now () - talkSpurtStart).GetMilliSeconds ()
+                << std::endl;
+            }
+        }
+    }
+}
+
+void
+McpttHelper::EnableMouthToEarLatencyTrace (std::string filename)
+{
+  m_mouthToEarLatencyTraceFile.open (filename.c_str ());
+  m_mouthToEarLatencyTraceFile << "time(ms) nodeid\tcallid\tlatency(ms)" << std::endl;
+  Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/RxTrace", MakeCallback (&McpttHelper::TraceMcpttMediaMsg, this));
 }
 
 void

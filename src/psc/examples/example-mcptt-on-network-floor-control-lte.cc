@@ -235,6 +235,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttClientHelper.EnableMsgTraces ();
   mcpttClientHelper.EnableStateMachineTraces ();
+  mcpttClientHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
   lteHelper->EnableTraces ();
   // Uncomment to enable PCAP tracing

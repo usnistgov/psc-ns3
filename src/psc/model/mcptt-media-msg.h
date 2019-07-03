@@ -47,6 +47,16 @@ class McpttCallMachinePrivate;
  *
  * A class used to represent an RTP media message described in TS 24.380 for
  * floor control.
+ *
+ * The McpttMediaMsg is an ns3::Header object that may be serialized in
+ * the usual way.  It starts with an instance of McpttRtpHeader, followed
+ * by a notional payload (of size GetPayloadSize ()).  The actual bytes
+ * encoded in the buffer following the McpttRtpHeader are the size of the
+ * payload field (encoded as a 16-bit unsigned integer), and, if room permits,
+ * a 64-bit timestamp encoding the start of talk spurt time.  Any further
+ * notional payload bytes are encoded as zero.
+ *
+ * The payload size of the media message must be >= 2 bytes;
  */
 class McpttMediaMsg : public McpttMsg
 {
@@ -76,6 +86,13 @@ public:
   * \param payloadSize The number of bytes to include in the payload.
   */
  McpttMediaMsg (const McpttRtpHeader& head, uint16_t payloadSize);
+ /**
+  * Creates an instance of the McpttMediaMsg class.
+  * \param head The head of the message.
+  * \param payloadSize The number of bytes to include in the payload.
+  * \param talkSpurtStart Talk spurt start time
+  */
+ McpttMediaMsg (const McpttRtpHeader& head, uint16_t payloadSize, Time talkSpurtStart);
  /**
   * The destructor of the McpttMediaMsg class.
   */
@@ -129,6 +146,7 @@ public:
 private:
  McpttRtpHeader m_head; //!< The head of the message.
  uint16_t m_payloadSize; //!< The size (in bytes) of the payload of the message.
+ Time m_talkSpurtStart; //!< Start of talk spurt
 public:
  /**
   * Gets the head of the message.
@@ -141,6 +159,11 @@ public:
   */
  virtual uint16_t GetPayloadSize (void) const;
  /**
+  * Gets the time of the talk spurt start, if set (will return zero if unset)
+  * \returns The stored value of the talk spurt start time
+  */
+ virtual Time GetTalkSpurtStart (void) const;
+ /**
   * Sets the head of the message.
   * \param head The head of the message.
   */
@@ -148,8 +171,15 @@ public:
  /**
   * Sets the size (in bytes) of the payload.
   * \param payloadSize The size (in bytes).
+  *
+  * Payload size must be at least two bytes.
   */
  virtual void SetPayloadSize (uint16_t payloadSize);
+ /**
+  * Sets the time of the talk spurt start
+  * \param talkSpurtStart Talk spurt start time
+  */
+ virtual void SetTalkSpurtStart (Time talkSpurtStart);
 };
 
 } // namespace ns3
