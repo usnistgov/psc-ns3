@@ -255,6 +255,13 @@ protected:
   * \param msg The message that was sent.
   */
  virtual void TxCb (const McpttCall& call, const McpttMsg& msg);
+ /**
+  * TracedCallback signature for McpttMsg transmission or reception events
+  * \param [in] app Ptr<Application>
+  * \param [in] callId Call ID
+  * \param [in] msg McpttMsg
+  */ 
+ typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
 private:
  static uint16_t s_portNumber; //!< A port number.
  uint16_t m_callPort; //!< The port on which call control messages will flow.
@@ -267,11 +274,11 @@ private:
  Ipv4Address m_peerAddress; //!< The address of the node that the peer application is on.
  Ptr<McpttPusher> m_pusher; //!< The object that randomly calls the Pushed() function.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
- TracedCallback<const Application&, const McpttMsg&> m_rxTrace; //!< The Tx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
  Ptr<McpttCall> m_selectedCall; //!< The currenctly selected call.
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
- TracedCallback<const Application&, const McpttMsg&> m_txTrace; //!< The Rx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
 public:
  /**
   * Gets the channel used for call control messages.

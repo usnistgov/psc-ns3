@@ -104,10 +104,10 @@ McpttPttApp::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
                      MakeTraceSourceAccessor (&McpttPttApp::m_rxTrace),
-                     "ns3::McpttPttApp::RxTrace")
+                     "ns3::McpttPttApp::TxRxTracedCallback")
     .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
                      MakeTraceSourceAccessor (&McpttPttApp::m_txTrace),
-                     "ns3::McpttPttApp::TxTrace")
+                     "ns3::McpttPttApp::TxRxTracedCallback")
    ;
 
     return tid;
@@ -777,7 +777,7 @@ McpttPttApp::RxCb (const McpttCall& call, const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << &call << &msg);
 
-  m_rxTrace (*this, msg);
+  m_rxTrace (this, call.GetCallId (), msg);
 }
 
 void
@@ -850,7 +850,7 @@ McpttPttApp::TxCb (const McpttCall& call, const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << &call << &msg);
 
-  m_txTrace (*this, msg);
+  m_txTrace (this, call.GetCallId (), msg);
 }
 
 Ptr<McpttChan>

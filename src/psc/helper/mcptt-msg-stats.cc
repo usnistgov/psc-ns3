@@ -109,25 +109,25 @@ McpttMsgStats::GetInstanceTypeId (void) const
 }
 
 void
-McpttMsgStats::ReceiveRxTrace (const Application& app, const McpttMsg& msg)
+McpttMsgStats::ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &app << &msg);
+  NS_LOG_FUNCTION (this << app << callId << &msg);
 
-  Trace (app, msg, true);
+  Trace (app, callId, msg, true);
 }
 
 void
-McpttMsgStats::ReceiveTxTrace (const Application& app, const McpttMsg& msg)
+McpttMsgStats::ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << app << callId << &msg);
 
-  Trace (app, msg, false);
+  Trace (app, callId, msg, false);
 }
 
 void
-McpttMsgStats::Trace (const Application& app, const McpttMsg& msg, bool rx)
+McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg, bool rx)
 {
-  NS_LOG_FUNCTION (this << &app << &msg);
+  NS_LOG_FUNCTION (this << app << callId << &msg);
 
   if ((msg.IsA (McpttCallMsg::GetTypeId ()) && m_callControl == true)
       || (msg.IsA (McpttFloorMsg::GetTypeId ()) && m_floorControl == true)
@@ -139,7 +139,7 @@ McpttMsgStats::Trace (const Application& app, const McpttMsg& msg, bool rx)
         {
           m_firstMsg = false;
           outFile.open (m_outputFileName.c_str ());
-          outFile << "time(ms)\tssrc\trx/tx\tbytes\tmessage";
+          outFile << "time(ms) nodeid\tcallid\tssrc\trx/tx\tbytes\tmessage";
           outFile << std::endl;
         }
       else
@@ -148,20 +148,20 @@ McpttMsgStats::Trace (const Application& app, const McpttMsg& msg, bool rx)
         }
 
       outFile << Simulator::Now ().GetMilliSeconds ();
+      outFile << "\t" << app->GetNode ()->GetId ();
+      outFile << "\t" << callId;
 
-      if (app.GetInstanceTypeId () == McpttPttApp::GetTypeId ()
-          || app.GetInstanceTypeId ().IsChildOf (McpttPttApp::GetTypeId ()))
+      if (msg.IsA (McpttMediaMsg::GetTypeId ()))
         {
-          outFile << "\t" << dynamic_cast<const McpttPttApp&>(app).GetUserId ();
+          outFile << "\t" << static_cast<const McpttMediaMsg&> (msg).GetSsrc ();
         }
-      else if (app.GetInstanceTypeId () == McpttServerApp::GetTypeId ()
-          || app.GetInstanceTypeId ().IsChildOf (McpttServerApp::GetTypeId ()))
+      else if (msg.IsA (McpttFloorMsg::GetTypeId ()))
         {
-          outFile << "\t" << dynamic_cast<const McpttServerApp&>(app).GetArbitrator ()->GetTxSsrc ();
+          outFile << "\t" << static_cast<const McpttFloorMsg&> (msg).GetSsrc ();
         }
       else
         {
-          NS_ABORT_MSG ("Application being traced is not an MCPTT application.");
+          outFile << "\t" << "N/A";  // not applicable
         }
 
       outFile << "\t" << (rx ? "RX" : "TX");

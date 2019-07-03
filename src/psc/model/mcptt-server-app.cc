@@ -96,7 +96,8 @@ McpttServerApp::RxCb (const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  m_rxTrace (*this, msg);
+  // No notion of separate calls at the server yet, so use 0 as placeholder
+  m_rxTrace (this, 0, msg);
 }
 
 void
@@ -120,7 +121,8 @@ McpttServerApp::TxCb (const McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  m_txTrace (*this, msg);
+  // No notion of separate calls at the server yet, so use 0 as placeholder
+  m_txTrace (this, 0, msg);
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>

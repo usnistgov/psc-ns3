@@ -94,11 +94,18 @@ protected:
   * \param msg The message that was sent.
   */
  virtual void TxCb (const McpttMsg& msg);
+ /**
+  * TracedCallback signature for McpttMsg transmission or reception events
+  * \param [in] app Ptr<Application>
+  * \param [in] callId Call ID
+  * \param [in] msg McpttMsg
+  */
+ typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
 private:
  Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The arbitrator.
  Ipv4Address m_localAddress; //!< The local IP address.
- TracedCallback<const Application&, const McpttMsg&> m_rxTrace; //!< The Tx trace.
- TracedCallback<const Application&, const McpttMsg&> m_txTrace; //!< The Tx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
 public:
  /**
   * Gets the arbitrator.
