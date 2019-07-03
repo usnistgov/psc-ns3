@@ -72,7 +72,8 @@ McpttMediaSrc::McpttMediaSrc (void)
     m_reqEvent (EventId ()),
     m_sink (0),
     m_started (false),
-    m_totalBytes (0)
+    m_totalBytes (0),
+    m_nextSeqNum (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -180,7 +181,13 @@ McpttMediaSrc::MakeRequest (void)
 
   McpttMediaSink* sink = GetSink ();
 
-  McpttMediaMsg msg (0, m_bytes);
+  McpttRtpHeader hdr;
+  // RTP timestamp semantics are application-specific.  Here, we will try
+  // to make best use of 32 bits.  If units are in tens of microseconds,
+  // we can run for 42949 seconds (almost 12 hours) without rolling over.
+  hdr.SetTimestamp (static_cast<uint32_t> (Simulator::Now ().GetMicroSeconds ()/10));
+  hdr.SetSeqNum (m_nextSeqNum++);
+  McpttMediaMsg msg (hdr, m_bytes);
 
   uint32_t size = msg.GetSerializedSize ();
   

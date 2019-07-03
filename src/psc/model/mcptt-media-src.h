@@ -124,6 +124,7 @@ private:
  McpttMediaSink* m_sink; //!< A pointer to the sink.
  bool m_started; //!< Indicates if the requester has started making request.
  uint16_t m_totalBytes; //!< The total number of bytes that have been sent.
+ uint16_t m_nextSeqNum; //!< Next RTP sequence number value
 public:
  /**
   * \brief Gets a pointer to the sink.
