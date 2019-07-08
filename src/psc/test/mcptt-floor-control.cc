@@ -1656,10 +1656,10 @@ McpttFloorRequestPreemptive::Configure (void)
 
   ueAPusher->SchedulePush (Seconds (2.24));
 
-  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("68.75b/s")));
-  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
-  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("68.75b/s")));
-  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
+  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("275b/s")));
+  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
+  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("275b/s")));
+  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
 
   ueAMachine->SetPriority (7);
   ueAMachine->SetCurrentSsrc (ueBMachine->GetTxSsrc ());
@@ -2151,10 +2151,10 @@ void McpttFloorRequestQueued::Configure (void)
   ueAPusher->SchedulePush (Seconds (2.04179));
   ueBPusher->SetAttribute ("ReleaseVariable", StringValue ("ns3::ConstantRandomVariable[Constant=0.90]"));
 
-  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("25b/s")));
-  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
-  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("24b/s")));
-  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
+  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("200b/s")));
+  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
+  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("192b/s")));
+  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
 
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueAT203);
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueBT206);
@@ -2967,12 +2967,15 @@ McpttSessionInitLoss::Configure (void)
 
   McpttTestCase::Configure ();
 
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
   Ptr<McpttPttApp> ueBPttApp = GetApp (1);
   Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<TestFloorMachine> ueAMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (0));
   Ptr<TestFloorMachine> ueBMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (1));
   Ptr<TestFloorMachine> ueCMachine = DynamicCast<TestFloorMachine, McpttFloorParticipant> (GetFloorMachine (2));
+
+  Ptr<McpttMediaSrc> ueAMediaSrc = ueAPttApp->GetMediaSrc ();
 
   Ptr<McpttMsgDropperImpl> ueBPttAppDropper = Create<McpttMsgDropperImpl> (2, McpttFloorMsgGranted::GetTypeId ());
   Ptr<McpttMsgDropperImpl> ueCPttAppDropper = Create<McpttMsgDropperImpl> (2, McpttFloorMsgGranted::GetTypeId ());
@@ -2986,6 +2989,8 @@ McpttSessionInitLoss::Configure (void)
   ueAMachine->SetPostTxCb (MakeCallback (&McpttSessionInitLoss::UeATxCb, this));
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitLoss::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitLoss::UeAStateChangeCb, this));
+  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("64b/s")));
+  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
 
   ueBMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueBMachine->SetStartState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ());
@@ -3612,8 +3617,8 @@ McpttFloorReleaseAfterReq::Configure (void)
 
   Ptr<McpttFloorQueue> ueBMachineQueue = ueBMachine->GetQueue ();
 
-  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("8b/s")));
-  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
+  ueBMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("64b/s")));
+  ueBMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
 
   ueAMachine->SetAttribute ("GenMedia", BooleanValue (false));
   ueAMachine->SetStartState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
@@ -5001,8 +5006,8 @@ McpttFloorRequestIdleBis::Configure (void)
   ueAMachine->SetPreRxCb (MakeCallback (&McpttFloorRequestIdleBis::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttFloorRequestIdleBis::UeAStateChangeCb, this));
 
-  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("8b/s")));
-  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
+  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("64b/s")));
+  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
 
   ueAT201->SetDelay (Seconds (0.160));
   ueAT205->SetDelay (Seconds (0.120));
@@ -5331,8 +5336,8 @@ McpttSessionInitPrivateCall::Configure (void)
   ueAMachine->SetPostRxCb (MakeCallback (&McpttSessionInitPrivateCall::UeARxCb, this));
   ueAMachine->SetStateChangeTestCb (MakeCallback (&McpttSessionInitPrivateCall::UeAStateChangeCb, this));
 
-  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("8b/s")));
-  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (1));
+  ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("64b/s")));
+  ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (8));
 
   ueACallMachine->SetAttribute ("CallType", UintegerValue (McpttCallMsgFieldCallType::PRIVATE));
 
