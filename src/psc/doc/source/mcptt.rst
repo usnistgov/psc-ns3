@@ -159,7 +159,7 @@ MCPTT Application
 ~~~~~~~~~~~~~~~~~
 
 The ``ns3::McpttPttApp`` is the core component of the MCPTT model. It is the
-object used to manages calls and provide an API with functions that would be
+object used to manage calls and provide an API with functions that would be
 available to a user like, starting a call, releasing a call, entering an
 emergency alert, etc. It also houses a few entities to help simulate the
 behavior of how an MCPTT application may be used. This class also implements
@@ -291,11 +291,13 @@ control.
 Helpers
 ~~~~~~~
 
-There are four helpers:
+There are five helpers:
   * ``ns3::McpttHelper`` for deploying MCPTT applications,
   * ``ns3::McpttMsgStats`` for tracing transmitted MCPTT application messages,
   * ``ns3::McpttProseCollisionDetector`` for examining ProSe operation, and
   * ``ns3::McpttStateMachineStats`` for tracing state machine state transitions.
+  * ``ns3::ImsHelper`` for adding an optional IMS (IP Multimedia Subsystem);
+      the IMS is modeled as a single node connected to the PGW.
 
 As stated previously, the ``ns3::McpttHelper`` is used to configure and deploy
 MCPTT applications. This is the class that a user should use to configure
@@ -476,6 +478,26 @@ program:
 These statements are explained in the next section.  Some other aspects
 of LTE tracing are omitted in this modified example, in order to focus on
 the MCPTT configuration.
+
+Adding IP Multimedia Subsystem (IMS)
+####################################
+
+An IMS node can be added to a simulation in a manner similar to the optional
+configuration of an EPC network.  In the below snippet, the ImsHelper object
+is LteHelper, and the ImsHelper also is connected to
+the PGW node::
+
+   Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
+   imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
+
+The IMS node itself can be fetched as follows::
+
+   Ptr<Node> ims = imsHelper->GetImsNode ();
+
+The ConnectPgw() method creates the IMS node, adds an IP (internet) stack to
+it, and then adds a point-to-point link between it and the PGW node.  The
+SGi interface is assigned the 15.0.0.0/8 network.  Finally, a static route
+towards the UE subnetwork (7.0.0.0/8) is inserted on the IMS.
 
 Traces
 ######

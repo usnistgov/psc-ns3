@@ -87,6 +87,8 @@ main (int argc, char *argv[])
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
+  Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
+  imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
@@ -106,8 +108,6 @@ main (int argc, char *argv[])
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
   Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
-  // interface 0 is localhost, 1 is the p2p device
-  Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
 
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
                          "CallTypeId", UintegerValue (McpttCallMsgFieldCallType::BASIC_GROUP),
                          "TemporaryGroup", BooleanValue (false));
 
-  serverApps.Add (mcpttServerHelper.Install (remoteHostContainer));
+  serverApps.Add (mcpttServerHelper.Install (imsHelper->GetImsNode ()));
   serverApps.Start (start);
   serverApps.Stop (stop);
 
@@ -203,8 +203,9 @@ main (int argc, char *argv[])
   for (uint32_t idx = 0; idx < serverApps.GetN (); idx++)
     {
       Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp, Application> (serverApps.Get (idx));
-      serverApp->SetLocalAddress (remoteHostAddr);
-      NS_LOG_INFO ("server " << idx << " ip address = " << remoteHostAddr);
+      Ipv4Address serverAddress = Ipv4Address::ConvertFrom (imsHelper->GetImsGmAddress ());
+      serverApp->SetLocalAddress (serverAddress);
+      NS_LOG_INFO ("server " << idx << " IMS IP address = " << serverAddress);
     }
 
   ObjectFactory callFac;
@@ -239,7 +240,7 @@ main (int argc, char *argv[])
 
   lteHelper->EnableTraces ();
   // Uncomment to enable PCAP tracing
-  //p2ph.EnablePcapAll("lena-simple-epc");
+  // p2ph.EnablePcap("example-mcptt-on-network-floor-control-lte.ims.pcap", imsHelper->GetImsGmDevice (), true, true);
 
   Simulator::Stop (simTime);
   Simulator::Run ();
