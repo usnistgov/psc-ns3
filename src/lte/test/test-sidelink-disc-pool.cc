@@ -467,7 +467,7 @@ void SidlelinkDiscPoolOverlapResourcesTestCase::DoRun ()
   NS_LOG_INFO ( " res2 " << it2->subframe.frameNo << "/" << it2->subframe.subframeNo << " rbstart=" << (uint16_t) it2->rbStart << " nrb=" << (uint16_t) it2->nbRb);
 
 
-  std::unordered_set<uint32_t> overlappingResources = txpool->GetConflictingResources (m_res1);
+  std::set<uint32_t> overlappingResources = txpool->GetConflictingResources (m_res1);
 
   bool flag = overlappingResources.find (m_res2) != overlappingResources.end ();
 

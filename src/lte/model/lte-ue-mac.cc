@@ -2108,8 +2108,8 @@ LteUeMac::DoSlDelayedSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
                       m_discTxPool.m_nextGrants.push_back (grant);
                       NS_LOG_INFO ("UE selected grant: resource =" << (uint16_t) grant.m_resPsdch << "/" << m_discTxPool.m_npsdch);
                       //remove overlapping resources
-                      std::unordered_set <uint32_t> conflictingResources = m_discTxPool.m_pool->GetConflictingResources (grant.m_resPsdch);
-                      std::unordered_set <uint32_t>::iterator resIt;
+                      std::set <uint32_t> conflictingResources = m_discTxPool.m_pool->GetConflictingResources (grant.m_resPsdch);
+                      std::set <uint32_t>::iterator resIt;
                       for (resIt = conflictingResources.begin (); resIt != conflictingResources.end (); resIt++)
                         {
                           resourcesAvailable.erase (*resIt);
