@@ -4300,6 +4300,9 @@ sequence diagram of Distributed Fractional Frequency Reuse Scheme.
       
         \clearpage
 
+
+.. _sec-carrier-aggregation:
+
 --------------------
 Carrier Aggregation
 --------------------
@@ -4698,3 +4701,42 @@ equally among carriers, by diving the buffer status report among different carri
 SRB0 and SRB1 flows will be forwarded only over primary carrier.
 
 .. include:: lte-design-sidelink.inc
+-------
+Helpers
+-------
+
+Two helper objects are used to setup simulations and configure the 
+various components. These objects are:
+
+ * ``LteHelper``, which takes care of the configuration of the LTE radio access network, 
+   as well as of coordinating the setup and release of EPS bearers. The ``LteHelper`` class 
+   provides both the API definition and its implementation.  
+ * ``EpcHelper``, which takes care of the configuration of the Evolved Packet Core. The 
+   ``EpcHelper`` class is an abstract base class, which only provides the API definition; 
+   the implementation is delegated to the child classes in order to allow for different 
+   EPC network models.
+
+A third helper object is used to configure the :ref:`_sec-carrier-aggregation` functionality:
+
+ * ``CcHelper``, which takes care of the configuration of the ``LteEnbComponentCarrierMap``, 
+   basically, it creates a user specified number of ``LteEnbComponentCarrier``. 
+   ``LteUeComponentCarrierMap`` is currently created starting from the 
+   ``LteEnbComponentCarrierMap``. ``LteHelper:InstallSingleUeDevice``, 
+   in this implementation, is needed to invoke after the ``LteHelper:InstallSingleEnbDevice`` 
+   to ensure that the ``LteEnbComponentCarrierMap`` is properly initialized.
+
+It is possible to create a simple LTE-only simulations by
+using the ``LteHelper`` alone, or to create complete LTE-EPC simulations by using both 
+``LteHelper`` and ``EpcHelper``. When both helpers are used, they interact in a master-slave 
+fashion, with the ``LteHelper`` being the Master that interacts directly with the user program, 
+and the ``EpcHelper`` working "under the hood" to configure the EPC upon explicit methods 
+called by the ``LteHelper``. The exact interactions are displayed in the Figure :ref:`fig-helpers`.
+
+.. _fig-helpers:
+   
+.. figure:: figures/helpers.*
+   :align: center
+
+   Sequence diagram of the interaction between ``LteHelper`` and ``EpcHelper``.
+
+>>>>>>> master
