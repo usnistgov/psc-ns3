@@ -293,23 +293,27 @@ pool and MODE 2 for resource allocation.
 Sidelink direct discovery
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For the Sidelink discovery, ``LteUeRrc`` class now supports creation/removal of
-discovery applications for both in-coverage and out-of-coverage scenarios. This
-procedure triggers the process of conveying the list of applications and the
-resource pool configuration to the lower layers (Tx or Rx depending on type of
-discovery application). Similar to the direct communication, for in-coverage
-scenario, this process triggers the communication with the eNB by transmitting
-the ``SidelinkUeInformation`` message for resource allocation, followed by the
-eNB ``RrcConnectionReconfiguration`` message. An in-coverage UE only transmits
-``SidelinkUeInformation`` if it has received SIB19 message. We note that, for
-in-coverage scenario, "Scheduled" mode is not supported yet. The model supports
-only ``Type1``, i.e., "UeSelected" resource allocation. An in-coverage UE can
-receive a list of multiple pools (only 1 pool is supported now) with the
-criteria of selection either ``RANDOM`` or ``RSRSPBased`` via the
-``RrcConnectionReconfiguration`` message. A UE in "IDLE_CAMPED_NORMALLY" or in
-"CONNECTED_NORMALLY" is able to receive SIB19 messages, upon which, Rx pools are
-updated and also populated to the MAC and PHY layers. On the other hand, in
-out-of-coverage scenarios, the UE only uses the pre-configured pool.
+For the Sidelink direct discovery, ``LteUeRrc`` and ``LteSlUeRrc``
+classes now support creation/removal of discovery applications for
+both in-coverage and out-of-coverage scenarios. The ``LteSlUeRrc``
+class has functions called StartDiscoveryApps and StopDiscoveryApps to
+accomplish this process and is also responsible for transmitting
+discovery messages. These functions take in as arguments the
+application codes as payloads and the discovery role of the UE which
+are populated using the Sidelink Helper. For the in-coverage scenario,
+communication occurs with the eNB by transmitting the
+``SidelinkUeInformation`` message for resource allocation, followed by
+the eNB ``RrcConnectionReconfiguration`` message. An in-coverage UE
+only transmits ``SidelinkUeInformation`` if it has received SIB19
+message. We note that, for in-coverage scenario, Scheduled resource
+allocation mode is not supported yet. The model supports only Type1,
+i.e., UE Selected resource allocation. An in-coverage UE can receive a
+list of multiple pools with the criteria of selection either RANDOM or
+RSRPBASED via the ``RrcConnectionReconfiguration`` message. A UE in
+IDLE_CAMPED_NORMALLY or in CONNECTED_NORMALLY can receive SIB19
+messages, upon which, Rx pools are updated and populated to the MAC
+and PHY layers. On the other hand, in out-of-coverage scenarios, the
+UE only uses the pre-configured pool.
 
 **Note: At this stage only one pool is supported**
 
@@ -443,8 +447,20 @@ stated before, the "Scheduled" mode is not implemented yet.
 UE MAC
 ------
 
-The ``LteUeMac`` is extended to support all the three ProSe services. In the
-following we explain these extensions in context of each ProSe service.
+The ``LteUeMac`` is extended to support all the three ProSe
+services. The scheduling of sidelink transmissions is executed in
+a new function called ``DoSlDelayedSubframeIndication`` that occurs
+after the downlink control messages are processed in order to know if
+there are any uplink transmissions scheduled in the current subframe.
+
+The DoNotifyUlTransmission function in the UE MAC is where the PHY
+notifies the MAC that it has scheduled a transmission. The UE MAC now
+processes the discovery message’s PHY PDU, the Sidelink Control
+Information message’s PHY PDU and the data message’s PHY PDU
+separately.
+
+In the following we explain these extensions in context of each ProSe
+service.
 
 Sidelink direct communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -489,15 +505,21 @@ reception.
 Sidelink direct discovery
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In case of direct discovery, the ``LteUeMac`` class is responsible of creating
-and scheduling the discovery messages. It is ``LteUeMac`` class where ProSe APP
-code is assigned to each announcing discovery application and then is embedded
-in the discovery messages. We note that, the discovery messages are modeled as
-control messages. Each discovery message can be retransmitted up to 3 times. The
-number of retransmissions is provided by the eNB with the pool configuration if
-the UE is in-coverage, or is specified by the pre-configured pool configuration
-for out-of-covergae scenarios. Each discovery message occupies 2 contiguous RBs
-in a subframe belonging to the assigned pool.
+The list of pending discovery messages (received from RRC) to be sent
+are stored in the m_discPendingTxMsgs variable. The sidelink discovery
+grant related variables are stored in the ``DiscGrant``
+structure. This contains the discovery message to be sent in a
+selected resource and a list of PSDCH transmissions within the pool
+(each discovery message can be retransmitted up to 3 times). The
+sidelink discovery pool information is stored in the ``DiscPoolInfo``
+structure. This contains a list of grants for the current discovery
+period and the next discovery period. These extensions help the model
+support the transmission of multiple discovery messages within a
+sidelink period. Each discovery message occupies 2 contiguous RBs in a
+subframe belonging to the assigned pool.
+
+In reception, the discovery messages are passed to the RRC layer,
+where they are appropriately processed.
 
 Sidelink synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -516,7 +538,11 @@ The LTE module of |ns3| at the time of writing this documentation does not
 support Radio Link Failure (RLF) functionality. Therefore, to simulate
 out-of-coverage scenarios a workaround has been implemented to disable eNB PHY
 layer. An eNB can be disable by configuring the attribute "DisableEnbPhy" of
-``LteHelper``.
+``LteHelper``. Additionally, new
+conditions have been implemented to disregard control messages such as
+Sidelink Control Information SCI, Master Information Block for
+Sidelink MIB_SL, and Sidelink Discovery Message SL_DISC_MSG as these do
+not pertain to uplink control messages to the eNB.
 
 UE PHY
 ------
@@ -525,7 +551,22 @@ transmission in the uplink channel the ``LteUePhy`` includes an additional
 ``LteSpectrumPhy`` instance. In particular, the function ``DoConfigureUplink``,
 which is called by ``LteUeRrc`` is responsible of adding this new instance to
 the channel. The ``LteUePhy`` class is extensively edited to support all the
-three ProSe services.
+three ProSe services. In particular, the ``LteUePhy`` class has
+new functions PhyPscchPduReceived, PhyPsdchPduReceived and
+PhyPsbchPduReceived to respectively receive control, discovery, and
+broadcast PHY PDU respectively. It also has the function
+StartRandomInitialSubframeIndication for triggering the
+SubframeIndication method by randomly choosing the frame and subframe
+number.
+ 
+To differentiate between sending uplink and sidelink MAC PDUs,
+separate functions DoSendMacPdu and DoSendSlMacPdu respectively have
+been used. To aid in packet burst transfer, the function
+GetSlPhyParameters has been created to get the transmission parameters
+for the given packet burst. Occasionally, the UE PHY informs the MAC
+through the NotifyUlTransmission function that other transmissions
+with higher priority needs to occur and that the MAC should not
+schedule any sidelink transmissions.
 
 Sidelink direct communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -544,19 +585,10 @@ since a grant is valid only for one SC period.
 Sidelink direct discovery
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For the discovery, the ``LteUePhy`` now also supports the transmission and
-reception of the discovery messages. The discovery message structure is
-implemented as per [TS24334]_ with two additional identifiers, i.e., UE RNTI and
-the PSDCH resource number. We note that, the discovery message is modeled as a
-broadcast control message, thus, is received by every UE. Similar to the direct
-communication, the UE PHY receives the information related to the Sidelink
-discovery pool from the UE RRC in order to compute the boundaries of a discovery
-period to correctly map the frame/subframe and the RBs associated with the
-PSDCH. At the beginning of each subframe, it checks if the discovery
-transmission pool is added, it make sure to initialize it in order to compute
-exactly the frame and subframe number of the next discovery period. A UE upon
-the reception of a discovery message, simply passes it to the MAC layer, which
-in turn delivers it to the RRC for further filtering.
+For the discovery, the ``LteUePhy`` now also supports the transmission
+and reception of the discovery messages. A UE upon the reception of a
+discovery message, simply passes it to the MAC layer, which in turn
+delivers it to the RRC for further filtering.
 
 .. _sec-lte-sl-ue-phy-sync:
 
@@ -627,17 +659,22 @@ LteSpectrumPhy
 ^^^^^^^^^^^^^^
 
 As mentioned before, the ``LteUePhy`` class includes an additional
-``LteSpectrumPhy`` instance to receive Sidelink transmissions from other UEs.
-Therefore, new functions are implemented in ``LteSpectrumPhy`` class to relay
-the received Sidelink transmission to the ``LteUePhy`` class. To model the half
-duplex for Sidelink, since it is difficult for the UE to receive and transmit at
-the same time using the same frequency, a new attribute "CtrlFullDuplexEnabled"
-is introduced. This attribute is "false" by default, thus, all the Sidelink
-simulations are performed using half duplex mode. To notify ``LteUePhy`` about
-the reception of SLSS a new function ``SetLtePhyRxSlssCallback`` is implemented,
-which is hooked to the ``ReceiveSlss`` fucntion of ``LteUePhy`` through a
-callback, while installing UE devices in the ``LteHelper`` class. For other
-Sidelink signals, i.e., control and data the already implemented callbacks are
+``LteSpectrumPhy`` instance to receive Sidelink transmissions from
+other UEs.  Therefore, new functions are implemented in
+``LteSpectrumPhy`` class to relay the received Sidelink transmission
+to the ``LteUePhy`` class. Those functions are RxSlPscch, RxSlPsdch,
+and RxSlPsbch (and corresponding callbacks for interconnecting PHY and
+MAC) to accomplish reception of control, discovery, and broadcast
+messages, respectively. To model the half duplex for Sidelink, since it
+is difficult for the UE to receive and transmit at the same time using
+the same frequency, a new attribute "CtrlFullDuplexEnabled" is
+introduced. This attribute is "false" by default, thus, all the
+Sidelink simulations are performed using half duplex mode. To notify
+``LteUePhy`` about the reception of SLSS a new function
+``SetLtePhyRxSlssCallback`` is implemented, which is hooked to the
+``ReceiveSlss`` fucntion of ``LteUePhy`` through a callback, while
+installing UE devices in the ``LteHelper`` class. For other Sidelink
+signals, i.e., control and data the already implemented callbacks are
 utilized.
 
 The ``LteSpectrumPhy`` class is still responsible for evaluating the TB BLER,
