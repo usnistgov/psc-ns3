@@ -87,7 +87,7 @@ public:
   * \param peer The peer address.
   * \returns 0 on success; otherwise the error number.
   */
- virtual int Open (Ptr<Node>  node, uint16_t port, const Ipv4Address& local, const Ipv4Address& peer);
+ virtual int Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer);
  /**
   * Sends a packet.
   * \param pkt The packet to send.

@@ -1056,14 +1056,14 @@ BroadcastCallScenario3::Configure (void)
 
   uint32_t grpId = 1;
   uint16_t callId = 1;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueAPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -1372,13 +1372,13 @@ BroadcastCallScenario4::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   std::string orgName = "EMS";
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueAPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 

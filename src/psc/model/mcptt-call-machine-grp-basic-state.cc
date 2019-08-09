@@ -286,7 +286,7 @@ McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
           McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
 
           uint16_t floorPort = mySdp.GetFloorPort ();
-          Ipv4Address grpAddr = mySdp.GetGrpAddr ();
+          Address grpAddr = mySdp.GetGrpAddr ();
           uint16_t speechPort = mySdp.GetSpeechPort ();
 
           call->OpenFloorChan (grpAddr, floorPort);
@@ -368,8 +368,8 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   uint32_t callId = rndCallId->GetInteger ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4AddressValue grpAddress;
-  Ipv4Address origAddress = pttApp->GetLocalAddress ();
+  AddressValue grpAddress;
+  Address origAddress = pttApp->GetLocalAddress ();
   Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
   McpttCallMsgFieldRefreshInterval selectedRefInt = machine.GetRefInt ();
   McpttCallMsgFieldUserId lastChgUserId = typeMachine->GetLastChgUserId ();
@@ -480,7 +480,7 @@ McpttCallMachineGrpBasicStateS2::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   McpttCallMsgFieldRefreshInterval theirRefInt = msg.GetRefInt ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
   uint16_t floorPort = theirSdp.GetFloorPort ();
-  Ipv4Address grpAddr = theirSdp.GetGrpAddr ();
+  Address grpAddr = theirSdp.GetGrpAddr ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
 
   if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ())
@@ -683,7 +683,7 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
   uint16_t floorPort = theirSdp.GetFloorPort ();
-  Ipv4Address grpAddr = theirSdp.GetGrpAddr ();
+  Address grpAddr = theirSdp.GetGrpAddr ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
 
   if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
@@ -855,7 +855,7 @@ McpttCallMachineGrpBasicStateS4::AcceptCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
-  Ipv4Address grpAddr = mySdp.GetGrpAddr ();
+  Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
   parent->OpenFloorChan (grpAddr, floorPort);
@@ -994,7 +994,7 @@ McpttCallMachineGrpBasicStateS5::AcceptCall (McpttCallMachineGrpBasic& machine)
   McpttCallMsgFieldCallType myCallType = typeMachine->GetCallType ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
-  Ipv4Address grpAddr = mySdp.GetGrpAddr ();
+  Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
   parent->OpenFloorChan (grpAddr, floorPort);
@@ -1174,7 +1174,7 @@ McpttCallMachineGrpBasicStateS6::InitiateCall (McpttCallMachineGrpBasic& machine
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
-  Ipv4Address grpAddr = mySdp.GetGrpAddr ();
+  Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
   tfg5->Stop ();

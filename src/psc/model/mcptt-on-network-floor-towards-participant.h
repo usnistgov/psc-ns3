@@ -262,7 +262,7 @@ private:
  bool m_overridden; //!< Flag that indicates if associated participant is overridden without revoke.
  bool m_overriding; //!< Flag that indicates if associated participant is overriding without revoke.
  McpttOnNetworkFloorArbitrator* m_owner; //!< The floor abitration server.
- Ipv4Address m_peerAddress; //!< The address of the node that the peer application is on.
+ Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_receiveOnly; //!< Flag that indicates if the associated participant is "receive only".
  McpttFloorMsgRevoke m_revokeMsg; //!< The Floor Revoke message to retransmit when T8 expires.
  Callback<void, const McpttMsg&> m_rxCb; //!< The message received call back.
@@ -304,7 +304,7 @@ public:
   * Gets the peer address.
   * \returns The peer address.
   */
- virtual Ipv4Address GetPeerAddress (void) const;
+ virtual Address GetPeerAddress (void) const;
  /**
   * Gets the floor revoke message to retransmit.
   * \returns The revoke message.
@@ -379,7 +379,7 @@ public:
   * Sets the address of the participant.
   * \param peerAddress The address of the participant.
   */
- virtual void SetPeerAddress (const Ipv4Address& peerAddress);
+ virtual void SetPeerAddress (const Address& peerAddress);
  /**
   * Sets the floor revoke message to retransmit when the T8 expires.
   * \param revokeMsg The message to retransmit.

@@ -154,7 +154,7 @@ int main (int argc, char *argv[])
   ApplicationContainer clientApps;
   McpttHelper mcpttHelper;
   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
-                         "PeerAddress", Ipv4AddressValue (peerAddress),
+                         "PeerAddress", AddressValue (peerAddress),
                          "PushOnStart", BooleanValue (true));
   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),

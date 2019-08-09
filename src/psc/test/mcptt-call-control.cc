@@ -759,14 +759,14 @@ McpttCallSetupJoinCall::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -1781,14 +1781,14 @@ McpttCallMerge::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -2372,7 +2372,7 @@ McpttCallRelease::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time exitTime = Seconds (2.9);
@@ -2380,7 +2380,7 @@ McpttCallRelease::Configure (void)
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -2796,7 +2796,7 @@ McpttCallReleaseAfterProbe::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 1000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time exitTime = Seconds (2.11);
@@ -2804,7 +2804,7 @@ McpttCallReleaseAfterProbe::Configure (void)
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -3074,7 +3074,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 1000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.10);
   Time exitTime = Seconds (2.11);
@@ -3083,7 +3083,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -3366,7 +3366,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.10);
   Time exitTime = Seconds (2.11);
@@ -3374,7 +3374,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -3784,14 +3784,14 @@ McpttCallReleaseMaxDuration::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.10);
   Time ueATfg5Delay = Seconds (0.5);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 

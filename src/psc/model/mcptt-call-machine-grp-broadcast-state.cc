@@ -178,8 +178,8 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
   uint32_t callId = rndCallId->GetInteger ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = pttApp->GetLocalAddress ();
-  Ipv4AddressValue grpAddress;
+  Address origAddress = pttApp->GetLocalAddress ();
+  AddressValue grpAddress;
   pttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
@@ -254,7 +254,7 @@ McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast (McpttCallMachineGr
           McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
 
           uint16_t floorPort = mySdp.GetFloorPort ();
-          Ipv4Address grpAddr = mySdp.GetGrpAddr ();
+          Address grpAddr = mySdp.GetGrpAddr ();
           uint16_t speechPort = mySdp.GetSpeechPort ();
 
           call->OpenFloorChan (grpAddr, floorPort);
@@ -498,7 +498,7 @@ McpttCallMachineGrpBroadcastStateB3::AcceptCall (McpttCallMachineGrpBroadcast& m
   Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   uint16_t floorPort = mySdp.GetFloorPort ();
-  Ipv4Address grpAddr = mySdp.GetGrpAddr ();
+  Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
   call->OpenFloorChan (grpAddr, floorPort);

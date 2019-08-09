@@ -123,7 +123,7 @@ McpttTestCaseConfig::Configure (void)
   for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
     {
       Ptr<McpttPttApp> app = DynamicCast<McpttPttApp, Application> (clientApps.Get (idx));
-      app->SetAttribute ("PeerAddress", Ipv4AddressValue (Ipv4Address ("255.255.255.255")));
+      app->SetAttribute ("PeerAddress", AddressValue (Ipv4Address ("255.255.255.255")));
       app->CreateCall (callFac, floorFac);
       app->SelectCall (0);
     }

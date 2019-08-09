@@ -33,6 +33,7 @@
 
 #include <ns3/buffer.h>
 #include <ns3/ipv4-address.h>
+#include <ns3/ipv6-address.h>
 #include <ns3/log.h>
 #include <ns3/nstime.h>
 #include <ns3/object-base.h>
@@ -609,14 +610,16 @@ McpttCallMsgFieldSdp::FromStr (const std::string& strRep)
   int begIdx = 0;
   int endIdx = 0;
   int spaces = 0;
-  int spaceLim = 5;
-  char termChar = ';';
+  int spaceLim = 4;
+  char termChar = ' ';
   std::string grpAddrStr;
+  std::string grpAddrTypeStr;
   std::string origAddrStr;
+  std::string origAddrTypeStr;
   std::string floorPortStr;
   std::string speechPortStr;
 
-  for (int step = 0; step < 4; step++)
+  for (int step = 0; step < 6; step++)
     {
       while (spaces < spaceLim)
         {
@@ -639,30 +642,66 @@ McpttCallMsgFieldSdp::FromStr (const std::string& strRep)
 
       if (step == 0)
         {
-          spaceLim = 7;
-          termChar = '/';
-          origAddrStr = strRep.substr (begIdx, (endIdx - begIdx));
+          spaceLim = 5;
+          termChar = ';';
+          origAddrTypeStr = strRep.substr (begIdx, (endIdx - begIdx));
         }
       else if (step == 1)
+        {
+          spaceLim = 6;
+          termChar = ' ';
+          origAddrStr = strRep.substr (begIdx, (endIdx - begIdx));
+        }
+      else if (step == 2)
+        {
+          spaceLim = 7;
+          termChar = '/';
+          grpAddrTypeStr = strRep.substr (begIdx, (endIdx - begIdx));
+        }
+      else if (step == 3)
         {
           spaceLim = 8;
           termChar = ' ';
           grpAddrStr = strRep.substr (begIdx, (endIdx - begIdx));
         }
-      else if (step == 2)
+      else if (step == 4)
         {
           spaceLim = 11;
           termChar = ' ';
           speechPortStr = strRep.substr (begIdx, (endIdx - begIdx));
         }
-      else if (step == 3)
+      else if (step == 5)
         {
           floorPortStr = strRep.substr (begIdx, (endIdx - begIdx));
         }
     }
 
-  SetOrigAddr (Ipv4Address (origAddrStr.c_str ()));
-  SetGrpAddr (Ipv4Address (grpAddrStr.c_str ()));
+  if (origAddrTypeStr == "IP4")
+    {
+      SetOrigAddr (Ipv4Address (origAddrStr.c_str ()));
+    }
+  else if (origAddrTypeStr == "IP6")
+    {
+      SetOrigAddr (Ipv6Address (origAddrStr.c_str ()));
+    }
+  else
+    {
+      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+    }
+
+  if (grpAddrTypeStr == "IP4")
+    {
+      SetGrpAddr (Ipv4Address (grpAddrStr.c_str ()));
+    }
+  else if (grpAddrTypeStr == "IP6")
+    {
+      SetGrpAddr (Ipv6Address (grpAddrStr.c_str ()));
+    }
+  else
+    {
+      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+    }
+
   SetSpeechPort ((uint16_t)atoi (speechPortStr.c_str ()));
   SetFloorPort ((uint16_t)atoi (floorPortStr.c_str ()));
 }
@@ -706,15 +745,49 @@ std::string
 McpttCallMsgFieldSdp::ToStr (void) const
 {
   std::stringstream ss;
+  std::string grpAddrType;
+  std::string origAddrType;
+  std::stringstream grpAddrStr;
+  std::stringstream origAddrStr;
   uint16_t floorPort = GetFloorPort ();
-  Ipv4Address grpAddr = GetGrpAddr ();
-  Ipv4Address origAddr = GetOrigAddr ();
+  Address grpAddr = GetGrpAddr ();
+  Address origAddr = GetOrigAddr ();
   uint16_t speechPort = GetSpeechPort ();
 
+  if (Ipv4Address::IsMatchingType (grpAddr))
+    {
+      grpAddrType = "IP4";
+      grpAddrStr << Ipv4Address::ConvertFrom (grpAddr);
+    }
+  else if (Ipv6Address::IsMatchingType (grpAddr))
+    {
+      grpAddrType = "IP6";
+      grpAddrStr << Ipv6Address::ConvertFrom (grpAddr);
+    }
+  else
+    {
+      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+    }
+
+  if (Ipv4Address::IsMatchingType (origAddr))
+    {
+      origAddrType = "IP4";
+      origAddrStr << Ipv4Address::ConvertFrom (origAddr);
+    }
+  else if (Ipv6Address::IsMatchingType (origAddr))
+    {
+      origAddrType = "IP6";
+      origAddrStr << Ipv6Address::ConvertFrom (origAddr);
+    }
+  else
+    {
+      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+    }
+
   ss << "v=0;"; // 4 characters
-  ss << "o=- 0 0 IN IP4 " << origAddr << ";"; // 23 characters
+  ss << "o=- 0 0 IN " << origAddrType << " " << origAddrStr.str () << ";"; // 23 characters
   ss << "s=-;"; // 4 characters
-  ss << "c=IN IP4 " << grpAddr << "/255;"; // 21 characters
+  ss << "c=IN " << grpAddrType << " " << grpAddrStr.str () << "/255;"; // 21 characters
   ss << "m=audio " << (uint32_t)speechPort << " RTP/AVP 0;"; // 20 characters
   ss << "i=speech;"; // 9 characters
   ss << "m=application " << (uint32_t)floorPort << " udp MCPTT;"; // 26 characters
@@ -740,13 +813,13 @@ McpttCallMsgFieldSdp::GetFloorPort (void) const
   return m_floorPort;
 }
 
-Ipv4Address
+Address
 McpttCallMsgFieldSdp::GetGrpAddr (void) const
 {
   return m_grpAddr;
 }
 
-Ipv4Address
+Address
 McpttCallMsgFieldSdp::GetOrigAddr (void) const
 {
   return m_origAddr;
@@ -769,7 +842,7 @@ McpttCallMsgFieldSdp::SetFloorPort (uint16_t floorPort)
 }
 
 void
-McpttCallMsgFieldSdp::SetGrpAddr (const Ipv4Address& grpAddr)
+McpttCallMsgFieldSdp::SetGrpAddr (const Address& grpAddr)
 {
   NS_LOG_FUNCTION (this << grpAddr);
 
@@ -779,7 +852,7 @@ McpttCallMsgFieldSdp::SetGrpAddr (const Ipv4Address& grpAddr)
 }
 
 void
-McpttCallMsgFieldSdp::SetOrigAddr (const Ipv4Address& origAddr)
+McpttCallMsgFieldSdp::SetOrigAddr (const Address& origAddr)
 {
   NS_LOG_FUNCTION (this << origAddr);
 

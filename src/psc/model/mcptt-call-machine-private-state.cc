@@ -273,7 +273,7 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   NS_LOG_FUNCTION (this << &machine);
 
   UintegerValue targetId;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   McpttCallMsgFieldCommMode commMode;
   Ptr<McpttTimer> tfp1 = machine.GetTfp1 ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
@@ -291,7 +291,7 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   uint32_t theirUserId = (uint32_t)targetId.Get ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = pttApp->GetLocalAddress ();
+  AddressValue origAddress = pttApp->GetLocalAddress ();
   McpttCallMsgFieldCallType callType = typeMachine->GetCallType ();
 
   machine.SetCallId (callId);
@@ -316,7 +316,7 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
-  sdp.SetOrigAddr (origAddress);
+  sdp.SetOrigAddr (origAddress.Get ());
   sdp.SetSpeechPort (speechPort);
 
   machine.SetSdp (sdp);
@@ -371,7 +371,7 @@ McpttCallMachinePrivateStateP0::ReceiveSetupRequest (McpttCallMachinePrivate& ma
 
   uint16_t floorPort = theirSdp.GetFloorPort ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
-  Ipv4Address grpAddress = theirSdp.GetGrpAddr ();
+  Address grpAddress = theirSdp.GetGrpAddr ();
 
   if (myCallId.GetCallId () != theirCallId.GetCallId ())
     {
@@ -702,7 +702,7 @@ McpttCallMachinePrivateStateP2::ReceiveAccept (McpttCallMachinePrivate& machine,
 
   uint16_t floorPort = theirSdp.GetFloorPort ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
-  Ipv4Address grpAddress = theirSdp.GetGrpAddr ();
+  Address grpAddress = theirSdp.GetGrpAddr ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {
@@ -1145,7 +1145,7 @@ McpttCallMachinePrivateStateP5::AcceptCall (McpttCallMachinePrivate& machine)
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
-  Ipv4Address grpAddress = mySdp.GetGrpAddr ();
+  Address grpAddress = mySdp.GetGrpAddr ();
 
   McpttCallMsgPrivateAccept acceptMsg;
   acceptMsg.SetCallId (myCallId);

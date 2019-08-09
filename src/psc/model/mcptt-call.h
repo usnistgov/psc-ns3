@@ -101,13 +101,13 @@ public:
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- void OpenFloorChan (const Ipv4Address& peerAddr, const uint16_t port);
+ void OpenFloorChan (const Address& peerAddr, const uint16_t port);
  /**
   * Opens the media channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- void OpenMediaChan (const Ipv4Address& peerAddr, const uint16_t port);
+ void OpenMediaChan (const Address& peerAddr, const uint16_t port);
  /**
   * Receives a call message.
   * \param msg The message that was received.

@@ -392,7 +392,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveAccept (McpttCallTypeMachinePrivate& 
 
   uint16_t floorPort = theirSdp.GetFloorPort ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
-  Ipv4Address grpAddress = theirSdp.GetGrpAddr ();
+  Address grpAddress = theirSdp.GetGrpAddr ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {
@@ -447,7 +447,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancel (McpttCallTypeMachine
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
-  Ipv4Address grpAddress = mySdp.GetGrpAddr ();
+  Address grpAddress = mySdp.GetGrpAddr ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {
@@ -493,7 +493,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancelAck (McpttCallTypeMach
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
-  Ipv4Address grpAddress = mySdp.GetGrpAddr ();
+  Address grpAddress = mySdp.GetGrpAddr ();
 
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {
@@ -579,12 +579,12 @@ McpttCallTypeMachinePrivateStateQ1::UpgradeTo (McpttCallTypeMachinePrivate& mach
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();
   Ptr<McpttCounter> cfp1 = callMachine->GetCfp1 ();
 
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   Vector myLoc = pttApp->GetNodeLoc ();
   uint32_t myUserId = pttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = pttApp->GetLocalAddress ();
+  Address origAddress = pttApp->GetLocalAddress ();
   pttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldCallId myCallId = callMachine->GetCallId ();
@@ -767,7 +767,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp8 (McpttCallTypeMachinePrivate& m
 
   uint16_t floorPort = mySdp.GetFloorPort ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
-  Ipv4Address grpAddress = mySdp.GetGrpAddr ();
+  Address grpAddress = mySdp.GetGrpAddr ();
 
   //TODO: Not in standard - does not require closing previous session
   call->CloseFloorChan ();

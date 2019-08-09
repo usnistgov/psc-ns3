@@ -133,7 +133,7 @@ McpttServerApp::GetArbitrator (void) const
   return m_arbitrator;
 }
 
-Ipv4Address
+Address
 McpttServerApp::GetLocalAddress (void) const
 {
   return m_localAddress;
@@ -161,7 +161,7 @@ McpttServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrat
 }
 
 void
-McpttServerApp::SetLocalAddress (const Ipv4Address& localAddress)
+McpttServerApp::SetLocalAddress (const Address& localAddress)
 {
   NS_LOG_FUNCTION (this);
 

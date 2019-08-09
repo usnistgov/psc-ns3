@@ -511,8 +511,8 @@ public:
  virtual void UpdateLength (void);
 private:
  uint16_t m_floorPort; //!< The port for floor control.
- Ipv4Address m_grpAddr; //!< The address of the group.
- Ipv4Address m_origAddr; //!< The address of the originator.
+ Address m_grpAddr; //!< The address of the group.
+ Address m_origAddr; //!< The address of the originator.
  uint16_t m_speechPort; //!< The port for MCPTT speech.
 public:
  /**
@@ -524,12 +524,12 @@ public:
   * Gets the address of the group.
   * \returns The group address.
   */
- virtual Ipv4Address GetGrpAddr (void) const;
+ virtual Address GetGrpAddr (void) const;
  /**
   * Gets the address of the originator.
   * \returns The originator's address.
   */
- virtual Ipv4Address GetOrigAddr (void) const;
+ virtual Address GetOrigAddr (void) const;
  /**
   * Gets the port for MCPTT speech.
   * \returns The port for MCPTT speech.
@@ -544,12 +544,12 @@ public:
   * Sets the address of the group.
   * \param grpAddr The address of the group.
   */
- virtual void SetGrpAddr (const Ipv4Address& grpAddr);
+ virtual void SetGrpAddr (const Address& grpAddr);
  /**
   * Sets the address of the originator.
   * \param origAddr The address of the originator.
   */
- virtual void SetOrigAddr (const Ipv4Address& origAddr);
+ virtual void SetOrigAddr (const Address& origAddr);
  /**
   * Sets the MCPTT speech port.
   * \param speechPort The MCPTT speech port.

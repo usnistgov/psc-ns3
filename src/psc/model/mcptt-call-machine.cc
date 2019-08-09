@@ -346,7 +346,7 @@ McpttCallMachineNull::Start (void)
 
   McpttCall* call = GetOwner ();
   McpttPttApp* pttApp = call->GetOwner ();
-  Ipv4AddressValue grpAddr;
+  AddressValue grpAddr;
 
   pttApp->GetAttribute ("PeerAddress", grpAddr);
 

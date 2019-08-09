@@ -94,10 +94,15 @@ McpttPttApp::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&McpttPttApp::m_calls),
                    MakeObjectVectorChecker<McpttCall> ())
-    .AddAttribute ("PeerAddress", "The Ipv4 address of the node that the peer application is on.",
-                   Ipv4AddressValue (Ipv4Address ("255.255.255.255")),
-                   MakeIpv4AddressAccessor (&McpttPttApp::m_peerAddress),
-                   MakeIpv4AddressChecker ())
+    .AddAttribute ("PeerAddress", "The address of the node that the peer application is on.",
+                   AddressValue (Ipv4Address ("255.255.255.255")),
+                   MakeAddressAccessor (&McpttPttApp::m_peerAddress),
+                   MakeAddressChecker ())
+    .AddAttribute ("LocalAddress", "The local address of the node.",
+                   AddressValue (Ipv4Address::GetAny ()),
+                   MakeAddressAccessor (&McpttPttApp::GetLocalAddress,
+                                        &McpttPttApp::SetLocalAddress),
+                   MakeAddressChecker ())
     .AddAttribute ("PushOnStart", "The flag that indicates if the pusher should be started with the application.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttPttApp::m_pushOnStart),
@@ -117,7 +122,6 @@ McpttPttApp::McpttPttApp (void)
   : Application (),
     m_callChan (0),
     m_floorGrantedCb (MakeNullCallback<void> ()),
-    m_localAddress (Ipv4Address::GetAny ()),
     m_mediaSrc (0),
     m_newCallCb (MakeNullCallback<void, uint16_t> ()),
     m_pusher (0),
@@ -594,7 +598,7 @@ McpttPttApp::DoDispose (void)
   SetCallChan (0);
   SetCalls (std::vector<Ptr<McpttCall> > ());
   SetMediaSrc (0);
-  SetLocalAddress (Ipv4Address ());
+  SetLocalAddress (Address ());
   SetPusher (0);
   m_pushOnStart = false;
   SetSelectedCall (0);
@@ -787,7 +791,7 @@ McpttPttApp::StartApplication (void)
 
   Ptr<Node> node = GetNode ();
   Ptr<McpttCallMachine> callMachine = 0;
-  Ipv4Address localAddr = GetLocalAddress ();
+  Address localAddr = GetLocalAddress ();
   Ptr<McpttPusher> pusher = GetPusher ();
   std::vector<Ptr<McpttCall> > calls = GetCalls ();
   Ptr<McpttChan> callChan = CreateObject<McpttChan> ();
@@ -865,7 +869,7 @@ McpttPttApp::GetCalls (void) const
   return m_calls;
 }
 
-Ipv4Address
+Address
 McpttPttApp::GetLocalAddress (void) const
 {
   return m_localAddress;
@@ -920,7 +924,7 @@ McpttPttApp::SetFloorGrantedCb (const Callback<void>  floorGrantedCb)
 }
 
 void
-McpttPttApp::SetLocalAddress (const Ipv4Address& localAddress)
+McpttPttApp::SetLocalAddress (const Address& localAddress)
 {
   NS_LOG_FUNCTION (this << &localAddress);
 

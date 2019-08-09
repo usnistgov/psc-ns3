@@ -103,7 +103,7 @@ protected:
  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
 private:
  Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The arbitrator.
- Ipv4Address m_localAddress; //!< The local IP address.
+ Address m_localAddress; //!< The local IP address.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
 public:
@@ -116,7 +116,7 @@ public:
   * Gets the address of the host.
   * \returns The address.
   */
- virtual Ipv4Address GetLocalAddress (void) const;
+ virtual Address GetLocalAddress (void) const;
  /**
   * Sets the arbitrator.
   * \param arbitrator The arbitrator.
@@ -126,7 +126,7 @@ public:
   * Sets the address of the host.
   * \param localAddress The address.
   */
- virtual void SetLocalAddress (const Ipv4Address& localAddress);
+ virtual void SetLocalAddress (const Address& localAddress);
 };
 
 } // namespace ns3

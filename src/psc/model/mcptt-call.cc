@@ -136,27 +136,27 @@ McpttCall::IsMediaChanOpen (void) const
 }
 
 void
-McpttCall::OpenFloorChan (const Ipv4Address& peerAddr, const uint16_t port)
+McpttCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
   McpttPttApp* owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
   Ptr<McpttChan> floorChan = GetFloorChan ();
-  Ipv4Address localAddr = owner->GetLocalAddress ();
+  Address localAddr = owner->GetLocalAddress ();
 
   floorChan->Open (node, port, localAddr, peerAddr);
 }
 
 void
-McpttCall::OpenMediaChan (const Ipv4Address& peerAddr, const uint16_t port)
+McpttCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
   McpttPttApp* owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
   Ptr<McpttChan> mediaChan = GetMediaChan ();
-  Ipv4Address localAddr = owner->GetLocalAddress ();
+  Address localAddr = owner->GetLocalAddress ();
 
   mediaChan->Open (node, port, localAddr, peerAddr);
 }

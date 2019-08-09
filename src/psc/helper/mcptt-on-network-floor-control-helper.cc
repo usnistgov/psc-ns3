@@ -224,11 +224,11 @@ McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer&
 
       clientFloorControl->GetAttribute ("McImplicitRequest", mcImplicitRequest);
 
-      clientApp->SetAttribute ("PeerAddress", Ipv4AddressValue (serverApp->GetLocalAddress ()));
+      clientApp->SetAttribute ("PeerAddress", AddressValue (serverApp->GetLocalAddress ()));
       clientApp->SetAttribute ("CallPort", UintegerValue (callPort));
       clientCallControl->SetAttribute ("FloorPort", UintegerValue (floorPort));
       clientCallControl->SetAttribute ("MediaPort", UintegerValue (mediaPort));
-      participant->SetAttribute ("PeerAddress", Ipv4AddressValue (clientApp->GetLocalAddress ()));
+      participant->SetAttribute ("PeerAddress", AddressValue (clientApp->GetLocalAddress ()));
       participant->SetAttribute ("FloorPort", UintegerValue (floorPort));
       participant->SetAttribute ("MediaPort", UintegerValue (mediaPort));
       participant->SetAttribute ("McImplicitRequest", mcImplicitRequest);

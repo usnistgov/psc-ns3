@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
 {
   Time simTime = Seconds (15);
   bool enableNsLogs = false;
-  bool useIPv6 = false;  // Placeholder; keep 'false' until IPv6 supported
+  bool useIPv6 = true;
 
   // MCPTT configuration
   uint32_t usersPerGroup = 2;
@@ -71,7 +71,6 @@ int main (int argc, char *argv[])
   double pushTimeVariance = 2.0; // seconds
   double releaseTimeMean = 5.0; // seconds
   double releaseTimeVariance = 2.0; // seconds
-  Ipv4Address peerAddress = Ipv4Address ("225.0.0.0");
   Time startTime = Seconds (2);
   Time stopTime = simTime;
 
@@ -96,6 +95,7 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("enableNsLogs", "Enable ns-3 logging (debug builds)", enableNsLogs);
+  cmd.AddValue ("useIPv6", "Use IPv6 instead of IPv4", useIPv6);
   cmd.Parse (argc, argv);
 
   //Sidelink bearers activation time
@@ -198,6 +198,8 @@ int main (int argc, char *argv[])
   uint32_t groupL2Address = 255;
   Ipv4Address groupAddress4 ("225.0.0.0");     //use multicast address as destination
   Ipv6Address groupAddress6 ("ff0e::1");     //use multicast address as destination
+  Address peerIp;
+  Address localIp;
   Address remoteAddress;
   Address localAddress;
   Ptr<LteSlTft> tft;
@@ -215,6 +217,8 @@ int main (int argc, char *argv[])
           Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
         }
+      peerIp = groupAddress4;
+      localIp = Ipv4Address::GetAny ();
       remoteAddress = InetSocketAddress (groupAddress4, 8000);
       localAddress = InetSocketAddress (Ipv4Address::GetAny (), 8000);
       tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, groupAddress4, groupL2Address);
@@ -232,7 +236,10 @@ int main (int argc, char *argv[])
           // Set the default gateway for the UE
           Ptr<Ipv6StaticRouting> ueStaticRouting = ipv6RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv6> ());
           ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress6 (), 1);
+          ueNode->GetObject<Ipv6L3Protocol> ()->AddMulticastAddress (groupAddress6);
         }
+      peerIp = groupAddress6;
+      localIp = Ipv6Address::GetAny ();
       remoteAddress = Inet6SocketAddress (groupAddress6, 8000);
       localAddress = Inet6SocketAddress (Ipv6Address::GetAny (), 8000);
       tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, groupAddress6, groupL2Address);
@@ -247,7 +254,8 @@ int main (int argc, char *argv[])
     }
 
   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
-                         "PeerAddress", Ipv4AddressValue (peerAddress),
+                         "PeerAddress", AddressValue (peerIp),
+                         "LocalAddress", AddressValue (localIp),
                          "PushOnStart", BooleanValue (true));
   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),

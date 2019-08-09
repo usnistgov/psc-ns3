@@ -268,10 +268,10 @@ private:
  Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
  std::vector<Ptr<McpttCall> > m_calls; //!< The collection of calls.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
- Ipv4Address m_localAddress; //!< The local IP address.
+ Address m_localAddress; //!< The local IP address.
  Ptr<McpttMediaSrc> m_mediaSrc; //!< The media source.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
- Ipv4Address m_peerAddress; //!< The address of the node that the peer application is on.
+ Address m_peerAddress; //!< The address of the node that the peer application is on.
  Ptr<McpttPusher> m_pusher; //!< The object that randomly calls the Pushed() function.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
@@ -294,7 +294,7 @@ public:
   * Gets the local address.
   * \returns The local address.
   */
- virtual Ipv4Address GetLocalAddress (void) const;
+ virtual Address GetLocalAddress (void) const;
  /**
   * Gets the media source.
   * \returns The media source.
@@ -334,7 +334,7 @@ public:
   * Sets the local IP address.
   * \param localAddress The local IP address.
   */
- virtual void SetLocalAddress (const Ipv4Address& localAddress);
+ virtual void SetLocalAddress (const Address& localAddress);
  /**
   * Sets the media source.
   * \param mediaSrc The media source.

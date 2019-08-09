@@ -1009,22 +1009,22 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetGrpId (grpId);
@@ -1297,22 +1297,22 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetGrpId (grpId);
@@ -1582,22 +1582,22 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time joinTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetGrpId (grpId);
@@ -1865,21 +1865,21 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetGrpId (grpId);
@@ -2158,21 +2158,21 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetGrpId (grpId);
@@ -2448,22 +2448,22 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -2855,22 +2855,22 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -3275,22 +3275,22 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -3695,22 +3695,22 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -4111,21 +4111,21 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -4414,22 +4414,22 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time upgradeTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -4715,22 +4715,22 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time exitTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);
@@ -4986,22 +4986,22 @@ McpttCallTypeMerge::Configure (void)
   uint32_t grpId = 1;
   uint16_t callId = 1;
   uint16_t refInt = 10000;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   std::string orgName = "EMS";
   Time startTime = Seconds (2.1);
   Time exitTime = Seconds (2.2);
   uint32_t origId = ueBPttApp->GetUserId ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
+
+  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
   sdp.SetOrigAddr (origAddress);
   sdp.SetSpeechPort (speechPort);
-
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
 
   // UE A
   ueAMachine->SetCallId (callId);

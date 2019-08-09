@@ -82,10 +82,10 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
                                          &McpttOnNetworkFloorTowardsParticipant::SetMediaPort),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("PeerAddress", "The Ipv4 address of the node that the peer application is on.",
-                   Ipv4AddressValue (Ipv4Address ("255.255.255.255")),
-                   MakeIpv4AddressAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerAddress,
+                   AddressValue (Ipv4Address ()),
+                   MakeAddressAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerAddress,
                                             &McpttOnNetworkFloorTowardsParticipant::SetPeerAddress),
-                   MakeIpv4AddressChecker ())
+                   MakeAddressChecker ())
     .AddAttribute ("ReceiveOnly", "Indicates if the associated participant is \"receive only\"",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_receiveOnly),
@@ -645,7 +645,7 @@ McpttOnNetworkFloorTowardsParticipant::GetOwner (void) const
   return m_owner;
 }
 
-Ipv4Address
+Address
 McpttOnNetworkFloorTowardsParticipant::GetPeerAddress (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -766,7 +766,7 @@ McpttOnNetworkFloorTowardsParticipant::SetOwner (McpttOnNetworkFloorArbitrator* 
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetPeerAddress (const Ipv4Address& peerAddress)
+McpttOnNetworkFloorTowardsParticipant::SetPeerAddress (const Address& peerAddress)
 {
   NS_LOG_FUNCTION (this);
 

@@ -104,21 +104,55 @@ McpttChan::IsOpen (void) const
 }
 
 int
-McpttChan::Open (Ptr<Node>  node, uint16_t port, const Ipv4Address& local, const Ipv4Address& peer)
+McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer)
 {
   NS_LOG_FUNCTION (this << node << port << local << peer);
 
+  int result = -1;
+  std::stringstream ssPeer;
+  std::stringstream ssLocal;
   Ptr<Socket> socket = Socket::CreateSocket (node, UdpSocketFactory::GetTypeId ());
-  InetSocketAddress peerAddress = InetSocketAddress (peer, port);
-  InetSocketAddress localAddress = InetSocketAddress (local, port);
 
-  socket->Bind (localAddress);
+  if (Ipv4Address::IsMatchingType (local))
+    {
+      Ipv4Address localIpv4 = Ipv4Address::ConvertFrom (local);
+      socket->Bind (InetSocketAddress (localIpv4, port));
+      ssLocal << localIpv4;
+    }
+  else if (Ipv6Address::IsMatchingType (local))
+    {
+      Ipv6Address localIpv6 = Ipv6Address::ConvertFrom (local);
+      socket->Bind (Inet6SocketAddress (localIpv6, port));
+      ssLocal << localIpv6;
+    }
+  else
+    {
+      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+    }
+
   socket->SetAllowBroadcast (true);
   socket->SetRecvCallback (MakeCallback (&McpttChan::ReceivePkts, this));
-  NS_LOG_DEBUG ("Create socket on " << node->GetId () << " to " << peer << " port " << port);
-  int result = socket->Connect (peerAddress);
-  bool success = (result == 0);
 
+  if (Ipv4Address::IsMatchingType (peer))
+    {
+      Ipv4Address peerIpv4 = Ipv4Address::ConvertFrom (peer);
+      result = socket->Connect (InetSocketAddress (peerIpv4, port));
+      ssPeer << peerIpv4;
+    }
+  else if (Ipv6Address::IsMatchingType (peer))
+    {
+      Ipv6Address peerIpv6 = Ipv6Address::ConvertFrom (peer);
+      result = socket->Connect (Inet6SocketAddress (peerIpv6, port));
+      ssPeer << peerIpv6;
+    }
+  else
+    {
+      NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+    }
+
+  NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
+
+  bool success = (result == 0);
   if (success == true)
     {
       SetSocket (socket);
@@ -175,13 +209,30 @@ McpttChan::ReceivePkts (Ptr<Socket> socket)
 
   Address from;
   Ptr<Packet> pkt;
+  std::stringstream ssAddress;
+  std::stringstream ssPort;
 
   while ((pkt = socket->RecvFrom (from)))
     {
       uint32_t pktSize = pkt->GetSize ();
-      InetSocketAddress peer = InetSocketAddress::ConvertFrom (from);
+      if (InetSocketAddress::IsMatchingType (from))
+        {
+          InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          ssAddress << address.GetIpv4 ();
+          ssPort << (uint32_t)address.GetPort ();
+        }
+      else if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          Inet6SocketAddress address6 = Inet6SocketAddress::ConvertFrom (from);
+          ssAddress << address6.GetIpv6 ();
+          ssPort << (uint32_t)address6.GetPort ();
+        }
+      else
+        {
+          NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
+        }
 
-      NS_LOG_INFO (Simulator::Now ().GetSeconds () << "s: McpttChan received " << pktSize << " byte packet from " << peer.GetIpv4 () << ":" << peer.GetPort () << ".");
+      NS_LOG_INFO (Simulator::Now ().GetSeconds () << "s: McpttChan received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
       ReceivePkt (pkt);
    }
 }

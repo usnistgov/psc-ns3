@@ -1130,10 +1130,10 @@ McpttCallTypePrivateUpgradeCall1::Configure (void)
   uint32_t callerId = ueAPttApp->GetUserId ();
   uint32_t calleeId = ueBPttApp->GetUserId ();
   uint8_t commMode = McpttCallMsgFieldCommMode::AUTOMATIC_MODE;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -1463,10 +1463,10 @@ McpttCallTypePrivateUpgradeCall2::Configure (void)
   uint32_t callerId = ueAPttApp->GetUserId ();
   uint32_t calleeId = ueBPttApp->GetUserId ();
   uint8_t commMode = McpttCallMsgFieldCommMode::AUTOMATIC_MODE;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -1808,10 +1808,10 @@ McpttCallTypePrivateUpgradeCall3::Configure (void)
   uint32_t callerId = ueAPttApp->GetUserId ();
   uint32_t calleeId = ueBPttApp->GetUserId ();
   uint8_t commMode = McpttCallMsgFieldCommMode::AUTOMATIC_MODE;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -2088,10 +2088,10 @@ McpttCallTypePrivateDowngradeCall1::Configure (void)
   uint32_t callerId = ueAPttApp->GetUserId ();
   uint32_t calleeId = ueBPttApp->GetUserId ();
   uint8_t commMode = McpttCallMsgFieldCommMode::AUTOMATIC_MODE;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -2446,10 +2446,10 @@ McpttCallTypePrivateDowngradeCall2::Configure (void)
   uint32_t callerId = ueAPttApp->GetUserId ();
   uint32_t calleeId = ueBPttApp->GetUserId ();
   uint8_t commMode = McpttCallMsgFieldCommMode::AUTOMATIC_MODE;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
 
@@ -2706,10 +2706,10 @@ McpttCallTypePrivateDowngradeCall3::Configure (void)
   uint32_t callerId = ueAPttApp->GetUserId ();
   uint32_t calleeId = ueBPttApp->GetUserId ();
   uint8_t commMode = McpttCallMsgFieldCommMode::AUTOMATIC_MODE;
-  Ipv4AddressValue grpAddress;
+  AddressValue grpAddress;
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
-  Ipv4Address origAddress = ueBPttApp->GetLocalAddress ();
+  Address origAddress = ueBPttApp->GetLocalAddress ();
 
   ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
 
