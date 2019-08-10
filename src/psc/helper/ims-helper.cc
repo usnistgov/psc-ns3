@@ -16,16 +16,21 @@
  */
 
 #include <ns3/ims-helper.h>
+#include <ns3/boolean.h>
 #include <ns3/log.h>
 #include <ns3/node.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/point-to-point-net-device.h>
 #include <ns3/ipv4-address-helper.h>
+#include <ns3/ipv6-address-helper.h>
 #include <ns3/net-device-container.h>
 #include <ns3/ipv4-interface-container.h>
+#include <ns3/ipv6-interface-container.h>
 #include <ns3/ipv4-static-routing-helper.h>
+#include <ns3/ipv6-static-routing-helper.h>
 #include <ns3/ipv4-address.h>
+#include <ns3/ipv6-address.h>
 #include <ns3/epc-tft.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/epc-ue-nas.h>
@@ -51,7 +56,13 @@ ImsHelper::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ImsHelper")
     .SetParent<Object> ()
-    ;
+    .AddAttribute ("UseIPv6",
+                   "The flag that indicates if IPv6 should be used.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&ImsHelper::m_useIpv6),
+                   MakeBooleanChecker ())
+  ;
+
   return tid;
 }
 
@@ -78,20 +89,35 @@ ImsHelper::ConnectPgw (Ptr<Node> pgw)
 
   // Setup point-to-point link to P-GW
   PointToPointHelper p2ph;
-  Ipv4AddressHelper ipv4h;
   p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.001)));
   NetDeviceContainer imsDevices = p2ph.Install (m_pgwNode, m_imsNode);
   m_imsDevice = imsDevices.Get (1)->GetObject<PointToPointNetDevice> ();
-  
-  // Configure IP addresses across the SGi interface
-  ipv4h.SetBase ("15.0.0.0", "255.0.0.0");
-  Ipv4InterfaceContainer imsIpIfaces = ipv4h.Assign (imsDevices);
 
-  // Configure static route from IMS back to the UEs
-  Ipv4StaticRoutingHelper ipv4RoutingHelper;
-  Ptr<Ipv4StaticRouting> imsStaticRouting = ipv4RoutingHelper.GetStaticRouting (m_imsNode->GetObject<Ipv4> ());
-  imsStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
+  if (!m_useIpv6)
+    {
+      Ipv4AddressHelper ipv4h;
+      // Configure IP addresses across the SGi interface
+      ipv4h.SetBase ("15.0.0.0", "255.0.0.0");
+      Ipv4InterfaceContainer imsIpIfaces = ipv4h.Assign (imsDevices);
 
+      // Configure static route from IMS back to the UEs
+      Ipv4StaticRoutingHelper ipv4RoutingHelper;
+      Ptr<Ipv4StaticRouting> imsStaticRouting = ipv4RoutingHelper.GetStaticRouting (m_imsNode->GetObject<Ipv4> ());
+      imsStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
+    }
+  else
+    {
+      Ipv6AddressHelper ipv6h;
+      ipv6h.SetBase (Ipv6Address ("6001:db80::"), Ipv6Prefix (64));
+      Ipv6InterfaceContainer imsIpIfaces = ipv6h.Assign (imsDevices);
+
+      imsIpIfaces.SetForwarding (0, true);
+      imsIpIfaces.SetDefaultRouteInAllNodes (0);
+
+      Ipv6StaticRoutingHelper ipv6RoutingHelper;
+      Ptr<Ipv6StaticRouting> imsStaticRouting = ipv6RoutingHelper.GetStaticRouting (m_imsNode->GetObject<Ipv6> ());
+      imsStaticRouting->AddNetworkRouteTo ("7777:f000::", Ipv6Prefix (60), imsIpIfaces.GetAddress (0, 1), 1, 0);
+    }
 }
 
 Ptr<Node>
@@ -103,20 +129,30 @@ ImsHelper::GetImsNode (void) const
 Address
 ImsHelper::GetImsGmAddress (void) const
 {
-  Ptr<Ipv4> ipv4 = m_imsNode->GetObject<Ipv4> ();
-  NS_ABORT_MSG_UNLESS (ipv4, "No IPv4 interface on IMS node");
-  uint32_t numInterfaces = ipv4->GetNInterfaces ();
-  // There should only be one non-loopback address on the IMS
-  // When IPv6 is supported in the EPC network, support will need to be added
-  for (uint32_t i = 0; i < numInterfaces; i++)
+  if (!m_useIpv6)
     {
-      Ipv4InterfaceAddress addr = ipv4->GetAddress (i, 0);
-      if (addr.GetLocal () != Ipv4Address::GetLoopback ())
+      Ptr<Ipv4> ipv4 = m_imsNode->GetObject<Ipv4> ();
+      NS_ABORT_MSG_UNLESS (ipv4, "No IPv4 interface on IMS node");
+      uint32_t numInterfaces = ipv4->GetNInterfaces ();
+      // There should only be one non-loopback address on the IMS
+      // When IPv6 is supported in the EPC network, support will need to be added
+      for (uint32_t i = 0; i < numInterfaces; i++)
         {
-           NS_LOG_DEBUG ("Server address " << addr.GetLocal ());
-           return addr.GetLocal ();
+          Ipv4InterfaceAddress addr = ipv4->GetAddress (i, 0);
+          if (addr.GetLocal () != Ipv4Address::GetLoopback ())
+            {
+              NS_LOG_DEBUG ("Server address " << addr.GetLocal ());
+              return addr.GetLocal ();
+            }
         }
     }
+  else
+    {
+      Ptr<Ipv6> ipv6 = m_imsNode->GetObject<Ipv6> ();
+      NS_ABORT_MSG_UNLESS (ipv6, "No IPv6 interface on IMS node");
+      Ipv6InterfaceAddress addr = ipv6->GetAddress (1, 1);
+      return addr.GetAddress ();
+     }
   NS_FATAL_ERROR ("Server address not found");
   return Address ();
 }

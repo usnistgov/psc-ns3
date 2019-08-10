@@ -92,6 +92,7 @@ public:
   Ptr<PointToPointNetDevice> GetImsGmDevice (void) const;
 
 private:
+  bool m_useIpv6; //!< A flag that indicates if IPv6 should be used.
   Ptr<Node> m_imsNode;
   Ptr<Node> m_pgwNode;
   Ptr<PointToPointNetDevice> m_imsDevice;
