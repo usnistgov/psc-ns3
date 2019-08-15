@@ -1368,8 +1368,6 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorQueuePositionInfo (McpttO
     {
       machine.GetT104 ()->Stop ();
     }
-
-  machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
 }
 
 void
