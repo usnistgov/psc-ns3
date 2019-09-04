@@ -140,7 +140,7 @@ public:
    *
    * \return the application code
    */
-  uint64_t GetApplicationCode () const;
+  uint32_t GetApplicationCode () const;
 
   /**
    * \brief Get the relay service code
@@ -196,14 +196,14 @@ public:
    *
    * \param appCode The application code
    */
-  void SetOpenDiscoveryAnnounceParameters (uint64_t appCode);
+  void SetOpenDiscoveryAnnounceParameters (uint32_t appCode);
 
   /**
    * \brief Set the parameters for the restricted discovery announcement
    *
    * \param appCode The application code
    */
-  void SetRestrictedDiscoveryAnnounceParameters (uint64_t appCode);
+  void SetRestrictedDiscoveryAnnounceParameters (uint32_t appCode);
 
   /**
    * \brief Set the parameters for the UE-to-Network relay announcement
@@ -251,7 +251,7 @@ private:
   uint8_t m_discoveryContentType; ///< Discovery content type
   uint8_t m_discoveryModel; ///< Discovery model
 
-  uint64_t m_appCode; ///< Application code
+  uint32_t m_appCode; ///< ProSe Application Code (32 bits instead of 184 bits defined in standard)
   uint32_t m_relayServiceCode; ///< Relay service code
   uint64_t m_info; ///< Info for announcer, or discoverer, or discoveree, or user
   uint32_t m_relayUeId; ///< Relay layer 2 ID

@@ -190,7 +190,7 @@ public:
    * \param appCodes app code payloads to be added
    * \param role UE role (discovered or discoveree)
    */
-  void StartDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+  void StartDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role);
   
   /**
    * Stops discovery process for given applications depending on the interest (monitoring or announcing)
@@ -198,7 +198,7 @@ public:
    * \param appCodes app code payloads to be removed
    * \param role UE role (discovered or discoveree)
    */
-  void StopDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+  void StopDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role);
 
   /**
    * Starts UE-to-Network relay process

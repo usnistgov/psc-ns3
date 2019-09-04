@@ -189,8 +189,8 @@ main (int argc, char *argv[])
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
   NS_LOG_INFO ("Configuring discovery applications");
-  std::map<Ptr<NetDevice>, std::list<uint64_t> > announcePayloads; 
-  std::map<Ptr<NetDevice>, std::list<uint64_t> > monitorPayloads; 
+  std::map<Ptr<NetDevice>, std::list<uint32_t> > announcePayloads; 
+  std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorPayloads; 
 
   for (uint32_t i = 1; i <= nbUes; ++i)
   {

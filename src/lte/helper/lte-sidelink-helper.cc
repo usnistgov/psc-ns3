@@ -492,14 +492,14 @@ LteSidelinkHelper::DoActivateSidelinkBearer (NetDeviceContainer ues, Ptr<LteSlTf
 }
 
 void
-LteSidelinkHelper::StartDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role)
+LteSidelinkHelper::StartDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role)
 {
   NS_LOG_FUNCTION (this);
   ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->StartDiscoveryApps (appCodes, role);
 }
   
 void
-LteSidelinkHelper::StopDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role)
+LteSidelinkHelper::StopDiscoveryApps (Ptr<NetDevice> ueDevice, std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role)
 {
   NS_LOG_FUNCTION (this);
   ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ()->StopDiscoveryApps (appCodes, role);

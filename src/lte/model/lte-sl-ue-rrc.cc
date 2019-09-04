@@ -321,10 +321,10 @@ LteSlUeRrc::GetSidelinkRadioBearer (uint32_t group)
 }
 
 void 
-LteSlUeRrc::StartDiscoveryApps (std::list<uint64_t> appCodes, DiscoveryRole role)
+LteSlUeRrc::StartDiscoveryApps (std::list<uint32_t> appCodes, DiscoveryRole role)
 {
   NS_LOG_FUNCTION (this);
-  for (std::list<uint64_t>::iterator it = appCodes.begin (); it != appCodes.end (); ++it)
+  for (std::list<uint32_t>::iterator it = appCodes.begin (); it != appCodes.end (); ++it)
   {
     AppServiceInfo info;
     info.role = role;
@@ -332,24 +332,24 @@ LteSlUeRrc::StartDiscoveryApps (std::list<uint64_t> appCodes, DiscoveryRole role
     if (role == Discoveree)
     {
       NS_LOG_DEBUG ("Adding monitoring app code");
-      m_monitoringAppsMap.insert ( std::pair <uint64_t, AppServiceInfo> (*it, info) );
+      m_monitoringAppsMap.insert ( std::pair <uint32_t, AppServiceInfo> (*it, info) );
     }
     else 
     {
       NS_LOG_DEBUG ("Adding announcing app code");
-      m_announcingAppsMap.insert ( std::pair <uint64_t, AppServiceInfo> (*it, info) );
+      m_announcingAppsMap.insert ( std::pair <uint32_t, AppServiceInfo> (*it, info) );
     }
   }
 }
 
 
 void 
-LteSlUeRrc::StopDiscoveryApps (std::list<uint64_t> appCodes, DiscoveryRole role)
+LteSlUeRrc::StopDiscoveryApps (std::list<uint32_t> appCodes, DiscoveryRole role)
 {
   NS_LOG_FUNCTION (this);
-  std::map <uint64_t, AppServiceInfo>::iterator itInfo;
+  std::map <uint32_t, AppServiceInfo>::iterator itInfo;
     
-  for (std::list<uint64_t>::iterator it = appCodes.begin (); it != appCodes.end (); ++it)
+  for (std::list<uint32_t>::iterator it = appCodes.begin (); it != appCodes.end (); ++it)
   {
     if (role == Discoveree)
     {
@@ -379,14 +379,14 @@ LteSlUeRrc::StopDiscoveryApps (std::list<uint64_t> appCodes, DiscoveryRole role)
 }
 
 bool
-LteSlUeRrc::IsMonitoringApp (uint64_t appCode)
+LteSlUeRrc::IsMonitoringApp (uint32_t appCode)
 {
   NS_LOG_FUNCTION (this);
   return m_monitoringAppsMap.find (appCode) != m_monitoringAppsMap.end();
 }
 
 bool
-LteSlUeRrc::IsAnnouncingApp (uint64_t appCode)
+LteSlUeRrc::IsAnnouncingApp (uint32_t appCode)
 {
   NS_LOG_FUNCTION (this);  
   return m_announcingAppsMap.find (appCode) != m_announcingAppsMap.end();
@@ -398,7 +398,7 @@ LteSlUeRrc::StartAnnouncing ()
   NS_LOG_FUNCTION (this);
   Time period = MilliSeconds (m_activeDiscTxPool->GetDiscPeriod ());
   //Applications
-  for (std::map<uint64_t, AppServiceInfo>::iterator itInfo = m_announcingAppsMap.begin (); itInfo != m_announcingAppsMap.end (); ++itInfo)
+  for (std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_announcingAppsMap.begin (); itInfo != m_announcingAppsMap.end (); ++itInfo)
     {
       if (!itInfo->second.txTimer.IsRunning())
         { 
@@ -490,11 +490,11 @@ LteSlUeRrc::GetActiveTxDiscoveryPool ()
 }
 
 void
-LteSlUeRrc::TransmitApp (uint64_t appCode)
+LteSlUeRrc::TransmitApp (uint32_t appCode)
 {
   NS_LOG_FUNCTION (this);
   
-  std::map <uint64_t, AppServiceInfo>::iterator it;
+  std::map <uint32_t, AppServiceInfo>::iterator it;
 
   it = m_announcingAppsMap.find (appCode);
   NS_ASSERT (it != m_announcingAppsMap.end());

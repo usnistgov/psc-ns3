@@ -431,14 +431,14 @@ public:
   * \param appCodes app code payloads to be removed
   * \param role UE role (discovered or discoveree)
   */
-  void StartDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+  void StartDiscoveryApps (std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role);
 
   /**
    * Stops discovery process for given applications depending on the interest (monitoring or announcing)
    * \param appCodes app code payloads to be removed
    * \param role UE role (discovered or discoveree)
    */
-  void StopDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role);
+  void StopDiscoveryApps (std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role);
 
   /**
    * Starts UE-to-Network relay process

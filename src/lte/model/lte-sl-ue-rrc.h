@@ -103,7 +103,7 @@ public:
   struct AppServiceInfo
   {
     DiscoveryRole role;   ///< The role of the UE in the discovery process
-    uint64_t appCode;   ///< The application code to announce or monitor
+    uint32_t appCode;   ///< The application code to announce or monitor
     EventId txTimer;   ///< Timer for transmitting announcement or requests
   };
 
@@ -257,7 +257,7 @@ protected:
    * \param payloads payloads to be added
    * \param role Indicates if announcing or monitoring
    */
-  void StartDiscoveryApps (std::list<uint64_t> payloads, DiscoveryRole role);
+  void StartDiscoveryApps (std::list<uint32_t> payloads, DiscoveryRole role);
 
   /**
    * \brief Remove Sidelink discovery applications
@@ -265,7 +265,7 @@ protected:
    * \param payloads payloads to be removed
    * \param role Indicates if announcing or monitoring
    */
-  void StopDiscoveryApps (std::list<uint64_t> payloads, DiscoveryRole role);
+  void StopDiscoveryApps (std::list<uint32_t> payloads, DiscoveryRole role);
   /**
    * \brief Record transmission time of the Sidelink UE information
    */
@@ -299,14 +299,14 @@ protected:
    * \param appCode The application code
    * \return true if the UE is monitoring announcements for the given application code
    */
-  bool IsMonitoringApp (uint64_t appCode);
+  bool IsMonitoringApp (uint32_t appCode);
 
   /**
    * Checks if the given app must be announced
    * \param appCode The application code
    * \return true if the UE is announcing the given application code
    */
-  bool IsAnnouncingApp (uint64_t appCode);
+  bool IsAnnouncingApp (uint32_t appCode);
 
   /**
    * Set active discovery pool
@@ -324,7 +324,7 @@ protected:
    * Trigger transmission of application discovery message
    * \param appCode The Prose Application Code
    */
-  void TransmitApp (uint64_t appCode);
+  void TransmitApp (uint32_t appCode);
 
   /**
    * Starts UE-to-Network relay process
@@ -421,11 +421,11 @@ private:
   /**
    * list of IDs of applications to monitor/request
    */
-  std::map <uint64_t, AppServiceInfo> m_monitoringAppsMap;
+  std::map <uint32_t, AppServiceInfo> m_monitoringAppsMap;
   /**
    * list of IDs of applications to announce/response
    */
-  std::map <uint64_t, AppServiceInfo> m_announcingAppsMap;
+  std::map <uint32_t, AppServiceInfo> m_announcingAppsMap;
   /**
    * list of relay services used by this device
    */

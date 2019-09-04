@@ -3820,7 +3820,7 @@ LteUeRrc::AddSlrb (uint32_t source, uint32_t destination, uint8_t lcid)
 }
 
 void
-LteUeRrc::StartDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role)
+LteUeRrc::StartDiscoveryApps (std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role)
 {
   NS_LOG_FUNCTION (this);
 
@@ -3908,7 +3908,7 @@ LteUeRrc::StartDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::Discover
 }
 
 void
-LteUeRrc::StopDiscoveryApps (std::list<uint64_t> appCodes, LteSlUeRrc::DiscoveryRole role)
+LteUeRrc::StopDiscoveryApps (std::list<uint32_t> appCodes, LteSlUeRrc::DiscoveryRole role)
 {
   NS_LOG_FUNCTION (this);
 

@@ -69,7 +69,7 @@ LteSlDiscHeader::~LteSlDiscHeader ()
 }
 
 void
-LteSlDiscHeader::SetOpenDiscoveryAnnounceParameters (uint64_t appCode)
+LteSlDiscHeader::SetOpenDiscoveryAnnounceParameters (uint32_t appCode)
 {
   //DISC_OPEN_ANNOUNCEMENT
   m_discoveryType = 1;
@@ -79,7 +79,7 @@ LteSlDiscHeader::SetOpenDiscoveryAnnounceParameters (uint64_t appCode)
   m_appCode = appCode;
 }
 void
-LteSlDiscHeader::SetRestrictedDiscoveryAnnounceParameters (uint64_t appCode)
+LteSlDiscHeader::SetRestrictedDiscoveryAnnounceParameters (uint32_t appCode)
 {
   //DISC_RESTRICTED_ANNOUNCEMENT;
   m_discoveryType = 2;
@@ -154,7 +154,7 @@ LteSlDiscHeader::SetUtcBaseCounder (uint8_t counter)
   m_utcBasedCounter = counter;
 }
 
-uint64_t
+uint32_t
 LteSlDiscHeader::GetApplicationCode () const
 {
   return m_appCode;
@@ -281,8 +281,8 @@ LteSlDiscHeader::Serialize (Buffer::Iterator start) const
     {
     case DISC_OPEN_ANNOUNCEMENT:
     case DISC_RESTRICTED_ANNOUNCEMENT:
-      i.WriteU64 (m_appCode);
-      i.WriteU8 ( padding, 15);
+      i.WriteU32 (m_appCode);
+      i.WriteU8 (padding, 19);
       break;
     case DISC_RESTRICTED_RESPONSE:
       break;
@@ -334,14 +334,14 @@ LteSlDiscHeader::Deserialize (Buffer::Iterator start)
   m_discoveryContentType = (m_discoveryMsgType >> 2) & 0x0F;
   m_discoveryModel = m_discoveryMsgType & 0x03;
 
-  uint8_t padding[15];
+  uint8_t padding[19];
   uint64_t tmp;
   switch (m_discoveryMsgType)
     {
     case DISC_OPEN_ANNOUNCEMENT:
     case DISC_RESTRICTED_ANNOUNCEMENT:
-      m_appCode = i.ReadU64 ();
-      i.Read (padding, 15);
+      m_appCode = i.ReadU32 ();
+      i.Read (padding, 19);
       break;
     case DISC_RESTRICTED_RESPONSE:
       break;
