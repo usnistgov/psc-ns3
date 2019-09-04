@@ -84,7 +84,7 @@ public:
    *
    * \param counter the UTC base counter
    */
-  void SetUtcBaseCounder (uint8_t counter);
+  void SetUtcBaseCounter (uint8_t counter);
 
   /**
    * \brief Builds and return the discovery message type value

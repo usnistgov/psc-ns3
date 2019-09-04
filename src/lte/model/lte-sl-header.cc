@@ -149,7 +149,7 @@ LteSlDiscHeader::SetMic (uint32_t mic)
 }
 
 void
-LteSlDiscHeader::SetUtcBaseCounder (uint8_t counter)
+LteSlDiscHeader::SetUtcBaseCounter (uint8_t counter)
 {
   m_utcBasedCounter = counter;
 }
