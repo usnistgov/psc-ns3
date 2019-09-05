@@ -15,4 +15,5 @@ Public Safety Communications
    udp-group-echo
    uav-mobility-energy
    mcptt
+   intel-http
    psc-references

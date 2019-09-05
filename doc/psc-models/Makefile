@@ -31,6 +31,7 @@ SOURCES = \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
 	$(SRC)/psc/doc/source/uav-mobility-energy.rst \
 	$(SRC)/psc/doc/source/mcptt.rst \
+	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 
 # list all model library figure files that need to be copied to 
@@ -65,6 +66,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology2.dia \
         $(SRC)/lte/doc/source/figures/helpers.pdf \
         $(SRC)/lte/doc/source/figures/helpers.png \
+	$(SRC)/psc/doc/source/figures/intel-http.png \
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)

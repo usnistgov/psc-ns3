@@ -9,6 +9,9 @@
 def build(bld):
     module = bld.create_ns3_module('psc', ['energy', 'mobility', 'network', 'antenna', 'buildings', 'lte'])
     module.source = [
+        'model/intel-http-client.cc',
+        'model/intel-http-header.cc',
+        'model/intel-http-server.cc',
         'model/mcptt-msg.cc',
         'model/mcptt-floor-msg.cc',
         'model/mcptt-media-msg.cc',
@@ -42,6 +45,7 @@ def build(bld):
         'model/mcptt-emerg-alert-machine-basic.cc',
         'model/mcptt-chan.cc',
         'model/mcptt-call.cc',
+        'helper/intel-http-helper.cc',
         'helper/mcptt-helper.cc',
         'helper/mcptt-msg-stats.cc',
         'helper/mcptt-state-machine-stats.cc',
@@ -53,6 +57,7 @@ def build(bld):
 
     module_test = bld.create_ns3_module_test_library('psc')
     module_test.source = [
+        'test/intel-http-model-test.cc',
         'test/mcptt-call-control-broadcast.cc',
         'test/mcptt-call-control-private.cc',
         'test/mcptt-call-control.cc',
@@ -72,6 +77,9 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'psc'
     headers.source = [
+        'model/intel-http-client.h',
+        'model/intel-http-header.h',
+        'model/intel-http-server.h',
         'model/mcptt-media-sink.h',
         'model/mcptt-pushable.h',
         'model/mcptt-floor-msg.h',
@@ -108,6 +116,7 @@ def build(bld):
         'model/mcptt-emerg-alert-machine-basic.h',
         'model/mcptt-chan.h',
         'model/mcptt-call.h',
+        'helper/intel-http-helper.h',
         'helper/mcptt-helper.h',
         'helper/mcptt-msg-stats.h',
         'helper/mcptt-state-machine-stats.h',

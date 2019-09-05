@@ -19,3 +19,7 @@ def build(bld):
     obj = bld.create_ns3_program('mcptt-lte-sl-out-of-covrg-comm',
                                  ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
     obj.source = 'mcptt-lte-sl-out-of-covrg-comm.cc'
+
+    obj = bld.create_ns3_program('example-intel-http',
+                                 ['psc'])
+    obj.source = 'example-intel-http.cc'
