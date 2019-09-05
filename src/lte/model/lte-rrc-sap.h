@@ -779,16 +779,17 @@ public:
   /// SlHoppingConfigComm structure
   struct SlHoppingConfigComm
   {
-    uint16_t hoppingParameter; ///< Sidelink communication hopping parameter. Valid range 0..504
+    uint16_t hoppingParameter {std::numeric_limits<uint16_t>::max ()}; ///< Sidelink communication hopping parameter. Valid range 0..504
     /// enumeration for selecting number of sub bands
     enum
     {
       ns1 = 1,
       ns2 = 2,
       ns4 = 4,
-    } numSubbands; ///< Number of sub bands
-    uint8_t rbOffset; ///< valid range 0..110
-    uint8_t hoppingInfo; ///< Information in hopping bits. Valid range [0,3]. Values 0..2 are used for Type 1 hopping.
+      uninitialized = 7,
+    } numSubbands {uninitialized}; ///< Number of sub bands
+    uint8_t rbOffset {std::numeric_limits<uint8_t>::max ()}; ///< valid range 0..110
+    uint8_t hoppingInfo {std::numeric_limits<uint8_t>::max ()}; ///< Information in hopping bits. Valid range [0,3]. Values 0..2 are used for Type 1 hopping.
 
    /**
     * Comparison operator
@@ -941,21 +942,21 @@ public:
   /// SlCommTxPoolList structure
   struct SlCommTxPoolList
   {
-    uint8_t nbPools; ///< Number of pools
+    uint8_t nbPools {0}; ///< Number of pools
     SlCommResourcePool pools [MAXSL_TXPOOL]; ///< An array holding the Sidelink communication Tx pool configuration
   };
 
   /// SlCommRxPoolList structure
   struct SlCommRxPoolList
   {
-    uint8_t nbPools; ///< Number of pools
+    uint8_t nbPools {0}; ///< Number of pools
     SlCommResourcePool pools [MAXSL_RXPOOL]; ///< An array holding the Sidelink communication Rx pool configuration
   };
 
   /// SlSyncConfigList structure
   struct SlSyncConfigList
   {
-    uint8_t nbConfig; ///< Number of Sidelink synchronization configuration
+    uint8_t nbConfig {0}; ///< Number of Sidelink synchronization configuration
   };
 
   /// SlCommConfig structure used in RRC Connection
@@ -1020,7 +1021,7 @@ public:
   /// SlPreconfigCommPoolList structure
   struct SlPreconfigCommPoolList
   {
-    uint8_t nbPools; ///< Number of pools
+    uint8_t nbPools {0}; ///< Number of pools
     SlPreconfigCommPool pools [MAXSL_TXPOOL]; ///< An array holding the Sidelink communication preconfigured Tx pool configuration
   };
 

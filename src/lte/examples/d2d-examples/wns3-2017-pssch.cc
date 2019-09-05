@@ -230,6 +230,7 @@ main (int argc, char *argv[])
   pfactory.SetControlPeriod (period);
   pfactory.SetDataOffset (pscchLength);
   preconfiguration.preconfigComm.pools[0] = pfactory.CreatePool ();
+  preconfiguration.preconfigComm.nbPools = 1;
   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
 
   NS_LOG_INFO ("Installing Sidelink configuration...");

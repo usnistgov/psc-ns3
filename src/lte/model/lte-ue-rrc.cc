@@ -221,6 +221,10 @@ void
 LteUeRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  if (m_sidelinkConfiguration)
+    {
+      m_sidelinkConfiguration->Dispose ();
+    }
   for ( uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       delete m_cphySapUser.at (i);
@@ -602,6 +606,7 @@ LteUeRrc::DoInitialize (void)
   NS_LOG_FUNCTION (this);
 
   m_currSyncRef.slssid = 0;
+  m_currSyncRef.offset = 0;
 
   // setup the UE side of SRB0
   uint8_t lcid = 0;

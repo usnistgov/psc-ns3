@@ -257,6 +257,7 @@ int main (int argc, char *argv[])
   pfactory.SetDataPrbEnd (49);
 
   preconfiguration.preconfigComm.pools[0] = pfactory.CreatePool ();
+  preconfiguration.preconfigComm.nbPools = 1;
 
   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);

@@ -81,7 +81,8 @@ LteRlcUm::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_reorderingTimer.Cancel ();
   m_rbsTimer.Cancel ();
-
+  m_txBuffer.clear ();
+  m_rxBuffer.clear ();
   LteRlc::DoDispose ();
 }
 

@@ -986,7 +986,7 @@ private:
     uint8_t m_rbStart; ///< models rb assignment
     uint8_t m_rbLen;  ///< models rb assignment
     uint8_t m_hoppingInfo; ///< models rb assignment when hopping is enabled
-    uint8_t m_trp; ///< Time resourse pattern (TRP)
+    uint8_t m_trp; ///< Time resource pattern (TRP)
     uint8_t m_groupDstId; ///< Group destination id
 
     //other fields

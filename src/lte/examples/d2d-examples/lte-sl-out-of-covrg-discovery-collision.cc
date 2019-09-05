@@ -208,6 +208,7 @@ int main (int argc, char *argv[])
   pfactory.SetDiscBitmap (0x00001);
 
   preconfiguration.preconfigDisc.pools[0] = pfactory.CreatePool ();
+  preconfiguration.preconfigDisc.nbPools = 1;
 
   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);

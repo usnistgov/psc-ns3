@@ -87,6 +87,10 @@ void
 LteSlUeRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_activeDiscTxPool = 0;
+  m_rrc = 0;
+  rxPools.clear ();
+  monitorPools.clear ();
 }
 /**
  * \brief makes a copy of the sidelink configuration
