@@ -112,7 +112,7 @@ public:
  virtual void EnableStateMachineTraces (void);
  /**
   * Configures the MCPTT PTT app.
-  * \param name the name of the model to set
+  * \param tid the string representation of the ns3::TypeId associated with the model to set
   * \param n0 the name of the attribute to set
   * \param v0 the value of the attribute to set
   * \param n1 the name of the attribute to set
@@ -141,7 +141,7 @@ public:
                          std::string n7 = "", const AttributeValue& v7 = EmptyAttributeValue ());
  /**
   * Configures the media source model.
-  * \param name the name of the model to set
+  * \param tid the string representation of the ns3::TypeId associated with the model to set
   * \param n0 the name of the attribute to set
   * \param v0 the value of the attribute to set
   * \param n1 the name of the attribute to set
@@ -170,7 +170,7 @@ public:
                            std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
   * Configures the pusher model.
-  * \param name the name of the model to set
+  * \param tid the string representation of the ns3::TypeId associated with the model to set
   * \param n0 the name of the attribute to set
   * \param v0 the value of the attribute to set
   * \param n1 the name of the attribute to set
@@ -199,7 +199,7 @@ public:
                          std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
   * Configures the MCPTT pusher's push variable.
-  * \param name the name of the model to set
+  * \param tid the string representation of the ns3::TypeId associated with the model to set
   * \param n0 the name of the attribute to set
   * \param v0 the value of the attribute to set
   * \param n1 the name of the attribute to set
@@ -228,7 +228,7 @@ public:
                                      std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
   * Configures the MCPTT pusher's release variable.
-  * \param name the name of the model to set
+  * \param tid the string representation of the ns3::TypeId associated with the model to set
   * \param n0 the name of the attribute to set
   * \param v0 the value of the attribute to set
   * \param n1 the name of the attribute to set

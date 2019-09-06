@@ -308,7 +308,7 @@ public:
    */
   void RecvIdealUeContextRemoveRequest (uint16_t rnti);
   /**
-   * \breif Implement the LteEnbRrcSapProvider::RecvSidelinkUeInformation interface.
+   * \brief Implement the LteEnbRrcSapProvider::RecvSidelinkUeInformation interface.
    * \param msg the Sidelink UE information
    */
   void RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg);

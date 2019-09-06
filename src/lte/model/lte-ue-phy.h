@@ -958,7 +958,7 @@ private:
 
   uint16_t m_numOfQoutEvalSf; ///< the downlink radio link quality is estimated over this period for detecting out-of-syncs
   uint16_t m_numOfQinEvalSf; ///< the downlink radio link quality is estimated over this period for detecting in-syncs
-  /*
+  /**
    * If true the values of frameNo and subframeNo are selected randomly,
    * if false, frameNo=1 and subframeNo=1
    */

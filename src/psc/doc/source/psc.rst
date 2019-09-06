@@ -13,8 +13,8 @@ Public Safety Communications
 .. toctree::
 
    psc-design
+   mcptt
    udp-group-echo
    uav-mobility-energy
-   mcptt
    intel-http
    psc-references

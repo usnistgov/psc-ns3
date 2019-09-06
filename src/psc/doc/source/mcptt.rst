@@ -340,9 +340,9 @@ Examples
 
 There are two MCPTT examples in the 'psc/examples' folder:
   * ``example-mcptt.cc`` is a basic scenario with two users deployed randomly
-    using the |ns3| WiFi module in Adhoc mode,
+    using the |ns3| WiFi module in Adhoc mode
   * ``mcptt-lte-sl-out-of-covrg-comm.cc`` is an adaptation of the LTE Sidelink
-    example ``lte-sl-out-of-covrg-comm`` Mode 2 ProSe example, and
+    example ``lte-sl-out-of-covrg-comm`` Mode 2 ProSe example
 ..
    Note: the below is commented out until this program is made available
 
