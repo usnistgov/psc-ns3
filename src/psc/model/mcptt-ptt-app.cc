@@ -340,7 +340,7 @@ McpttPttApp::Pushed (void)
 
   if (!IsPushed ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp button pushed.");
+      NS_LOG_LOGIC ("PttApp button pushed.");
 
       pusher->NotifyPushed ();
     }
@@ -403,7 +403,7 @@ McpttPttApp::Released (void)
 
   if (IsPushed ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp button released.");
+      NS_LOG_LOGIC ("PttApp button released.");
 
       pusher->NotifyReleased ();
     }
@@ -467,7 +467,7 @@ McpttPttApp::SelectCall (uint32_t callIdx)
       m_selectedCallChangeCb (oldCall, newCall);
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp switching from call " << (uint32_t)oldCallId << " to " << (uint32_t)newCallId << ".");
+  NS_LOG_LOGIC ("PttApp switching from call " << (uint32_t)oldCallId << " to " << (uint32_t)newCallId << ".");
 }
 
 void
@@ -487,7 +487,7 @@ McpttPttApp::Send (const McpttCallMsg& msg)
 
   pkt->AddHeader (msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp sending " << msg << ".");
+  NS_LOG_LOGIC ("PttApp sending " << msg << ".");
 
   callChan->Send (pkt);
 }
@@ -550,7 +550,7 @@ McpttPttApp::TakeSendReq (McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp taking request to send " << msg << ".");
+  NS_LOG_LOGIC ("PttApp taking request to send " << msg << ".");
 
   bool sent = false;
   Ptr<McpttFloorParticipant> floorMachine = 0;
@@ -592,8 +592,6 @@ void
 McpttPttApp::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC ("Disposing of McpttPttApp app.");
 
   SetCallChan (0);
   SetCalls (std::vector<Ptr<McpttCall> > ());
@@ -642,7 +640,7 @@ McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
 {
   NS_LOG_FUNCTION (this << pkt);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp receieved " << pkt->GetSize () << " byte(s).");
+  NS_LOG_LOGIC ("PttApp receieved " << pkt->GetSize () << " byte(s).");
 
   McpttCallMsg temp;
   pkt->PeekHeader (temp);
@@ -796,7 +794,7 @@ McpttPttApp::StartApplication (void)
   std::vector<Ptr<McpttCall> > calls = GetCalls ();
   Ptr<McpttChan> callChan = CreateObject<McpttChan> ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttPttApp starting application.");
+  NS_LOG_LOGIC ("McpttPttApp starting application.");
 
   callChan->SetRxPktCb (MakeCallback (&McpttPttApp::ReceiveCallPkt, this));
   callChan->Open (node, m_callPort, localAddr, m_peerAddress);
@@ -820,7 +818,7 @@ McpttPttApp::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: PttApp application stopping.");
+  NS_LOG_LOGIC ("PttApp application stopping.");
 
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttPusher> pusher = GetPusher ();
