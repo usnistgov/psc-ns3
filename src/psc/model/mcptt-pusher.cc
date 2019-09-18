@@ -92,7 +92,7 @@ void
 McpttPusher::CancelEvents (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Pusher canceling events.");
+  NS_LOG_LOGIC ("Pusher canceling events.");
   for (auto it = m_pushReleaseEvents.begin(); it != m_pushReleaseEvents.end(); ++it)
     {
       Simulator::Cancel (*it);
@@ -104,7 +104,7 @@ void
 McpttPusher::Push (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Pusher about to push pushable.");
+  NS_LOG_LOGIC ("Pusher about to push pushable.");
   PushPushable ();
   NotifyPushed ();
 }
@@ -124,7 +124,7 @@ void
 McpttPusher::Release (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Pusher about to release pushable.");
+  NS_LOG_LOGIC ("Pusher about to release pushable.");
   ReleasePushable ();
   NotifyReleased ();
 }
@@ -157,7 +157,7 @@ void
 McpttPusher::SchedulePush (const Time& delay)
 {
   NS_LOG_FUNCTION (this << delay);
-  NS_LOG_LOGIC ("Pusher scheduling to push button at " << delay.GetSeconds () << "s.");
+  NS_LOG_LOGIC ("Pusher scheduling to push button in " << delay.GetSeconds () << "s.");
   EventId eventId = Simulator::Schedule (delay, &McpttPusher::Push, this);
   m_pushReleaseEvents.insert (eventId);
 }
@@ -179,7 +179,7 @@ void
 McpttPusher::ScheduleRelease (const Time& delay)
 {
   NS_LOG_FUNCTION (this << delay);
-  NS_LOG_LOGIC ("Pusher scheduling to release button at " << delay.GetSeconds() << "s.");
+  NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds() << "s.");
   EventId eventId = Simulator::Schedule (delay, &McpttPusher::Release, this);
   m_pushReleaseEvents.insert (eventId);
 }
@@ -190,12 +190,12 @@ McpttPusher::Start (void)
   NS_LOG_FUNCTION (this);
   if (m_automatic)
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Pusher starting pushes and releases.");
+      NS_LOG_LOGIC ("Pusher starting pushes and releases.");
       SchedulePush ();
     }
   else
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Pusher starting but waiting for manual push event.");
+      NS_LOG_LOGIC ("Pusher starting but waiting for manual push event.");
     }
 }
 
@@ -203,7 +203,7 @@ void
 McpttPusher::Stop (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Pusher stopping pushes and releases.");
+  NS_LOG_LOGIC ("Pusher stopping pushes and releases.");
   if (IsPushing ())
     {
       SetPushing (false);
