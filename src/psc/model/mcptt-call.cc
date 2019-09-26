@@ -78,8 +78,8 @@ McpttCall::McpttCall (void)
     m_floorChan (0),
     m_mediaChan (0),
     m_owner (0),
-    m_rxCb (MakeNullCallback<void, const McpttCall&, const McpttMsg&> ()),
-    m_txCb (MakeNullCallback<void, const McpttCall&, const McpttMsg&> ())
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ()),
+    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -168,7 +168,7 @@ McpttCall::Receive (const McpttCallMsg& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (*this, msg);
+      m_rxCb (this, msg);
     }
 
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
@@ -182,7 +182,7 @@ McpttCall::Receive (const McpttFloorMsg& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (*this, msg);
+      m_rxCb (this, msg);
     }
 
   Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
@@ -196,7 +196,7 @@ McpttCall::Receive (const McpttMediaMsg& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (*this, msg);
+      m_rxCb (this, msg);
     }
 
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
@@ -213,7 +213,7 @@ McpttCall::Send (const McpttCallMsg& msg)
 
   if (!m_txCb.IsNull ())
     {
-      m_txCb (*this, msg);
+      m_txCb (this, msg);
     }
 
   Ptr<McpttPttApp> parent = GetOwner ();
@@ -227,7 +227,7 @@ McpttCall::Send (const McpttFloorMsg& msg)
 
   if (!m_txCb.IsNull ())
     {
-      m_txCb (*this, msg);
+      m_txCb (this, msg);
     }
 
   Ptr<Packet> pkt = Create<Packet> ();
@@ -253,7 +253,7 @@ McpttCall::Send (const McpttMediaMsg& msg)
 
   if (!m_txCb.IsNull ())
     {
-      m_txCb (*this, msg);
+      m_txCb (this, msg);
     }
 
   pkt->AddHeader (txMsg);
@@ -460,15 +460,15 @@ McpttCall::SetOwner (McpttPttApp* const& owner)
 }
 
 void
-McpttCall::SetRxCb (const Callback<void, const McpttCall&, const McpttMsg&>  rxCb)
+McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  rxCb)
 {
-  NS_LOG_FUNCTION (this << &rxCb);
+  NS_LOG_FUNCTION (this);
 
   m_rxCb = rxCb;
 }
 
 void
-McpttCall::SetTxCb (const Callback<void, const McpttCall&, const McpttMsg&>  txCb)
+McpttCall::SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb)
 {
   NS_LOG_FUNCTION (this << &txCb);
 

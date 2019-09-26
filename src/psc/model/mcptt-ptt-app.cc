@@ -775,11 +775,11 @@ McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttPttApp::RxCb (const McpttCall& call, const McpttMsg& msg)
+McpttPttApp::RxCb (Ptr<const McpttCall> call, const McpttMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &call << &msg);
+  NS_LOG_FUNCTION (this << call << &msg);
 
-  m_rxTrace (this, call.GetCallId (), msg);
+  m_rxTrace (this, call->GetCallId (), msg);
 }
 
 void
@@ -848,11 +848,11 @@ McpttPttApp::StopApplication (void)
 }
 
 void
-McpttPttApp::TxCb (const McpttCall& call, const McpttMsg& msg)
+McpttPttApp::TxCb (Ptr<const McpttCall> call, const McpttMsg& msg)
 {
-  NS_LOG_FUNCTION (this << &call << &msg);
+  NS_LOG_FUNCTION (this << call << &msg);
 
-  m_txTrace (this, call.GetCallId (), msg);
+  m_txTrace (this, call->GetCallId (), msg);
 }
 
 Ptr<McpttChan>

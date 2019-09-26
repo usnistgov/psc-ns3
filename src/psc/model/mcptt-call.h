@@ -159,8 +159,8 @@ protected:
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
  McpttPttApp* m_owner; //!< The owner of this call.
- Callback<void, const McpttCall&, const McpttMsg&> m_rxCb; //!< The received message callback.
- Callback<void, const McpttCall&, const McpttMsg&> m_txCb; //!< The transmitted message callback.
+ Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
+ Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
 public:
  /**
   * Gets the call control state machine.
@@ -216,12 +216,12 @@ public:
   * Sets the received message callback.
   * \param rxCb The callback.
   */
- void SetRxCb (const Callback<void, const McpttCall&, const McpttMsg&>  rxCb);
+ void SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  rxCb);
  /**
   * Sets the transmitted message callback.
   * \param txCb The callback.
   */
- void SetTxCb (const Callback<void, const McpttCall&, const McpttMsg&>  txCb);
+ void SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb);
 };
 
 } // namespace ns3

@@ -240,7 +240,7 @@ protected:
   * \param call The call that the message is for.
   * \param msg The message that was received.
   */
- virtual void RxCb (const McpttCall& call, const McpttMsg& msg);
+ virtual void RxCb (Ptr<const McpttCall> call, const McpttMsg& msg);
  /**
   * Starts the McpttPttApp application.
   */
@@ -254,7 +254,7 @@ protected:
   * \param call The call that the message is for.
   * \param msg The message that was sent.
   */
- virtual void TxCb (const McpttCall& call, const McpttMsg& msg);
+ virtual void TxCb (Ptr<const McpttCall> call, const McpttMsg& msg);
  /**
   * TracedCallback signature for McpttMsg transmission or reception events
   * \param [in] app Ptr<Application>
