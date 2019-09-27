@@ -147,7 +147,7 @@ McpttFloorParticipantNull::SetOriginator (const bool& originator)
 }
 
 void
-McpttFloorParticipantNull::SetOwner (McpttCall* const& owner)
+McpttFloorParticipantNull::SetOwner (Ptr<McpttCall> owner)
 {
   NS_LOG_FUNCTION (this);
 }

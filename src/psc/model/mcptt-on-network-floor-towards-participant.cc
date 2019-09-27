@@ -637,7 +637,7 @@ McpttOnNetworkFloorTowardsParticipant::GetMediaPort (void) const
   return m_mediaPort;
 }
 
-McpttOnNetworkFloorArbitrator*
+Ptr<McpttOnNetworkFloorArbitrator>
 McpttOnNetworkFloorTowardsParticipant::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -758,7 +758,7 @@ McpttOnNetworkFloorTowardsParticipant::SetOverriding (const bool overriding)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetOwner (McpttOnNetworkFloorArbitrator* const& owner)
+McpttOnNetworkFloorTowardsParticipant::SetOwner (Ptr<McpttOnNetworkFloorArbitrator> owner)
 {
   NS_LOG_FUNCTION (this);
 

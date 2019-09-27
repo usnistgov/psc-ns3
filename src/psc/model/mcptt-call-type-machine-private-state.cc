@@ -223,7 +223,7 @@ McpttCallTypeMachinePrivateStateQ0::InitiateCall (McpttCallTypeMachinePrivate& m
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttEmergAlertMachine> emergMachine = callMachine->GetEmergMachine ();
 
   if (emergMachine->IsInEmergState ())
@@ -335,7 +335,7 @@ McpttCallTypeMachinePrivateStateQ1::ExpiryOfTfp6 (McpttCallTypeMachinePrivate& m
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
 
   Ptr<McpttTimer> tfp8 = callMachine->GetTfp8 ();
   Ptr<McpttTimer> tfp6 = callMachine->GetTfp6 ();
@@ -379,7 +379,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveAccept (McpttCallTypeMachinePrivate& 
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
 
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();
@@ -434,7 +434,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancel (McpttCallTypeMachine
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
 
   Ptr<McpttTimer> tfp8 = callMachine->GetTfp8 ();
@@ -482,7 +482,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancelAck (McpttCallTypeMach
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
 
   Ptr<McpttTimer> tfp6 = callMachine->GetTfp6 ();
@@ -515,7 +515,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveSetupRequest (McpttCallTypeMachinePri
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
@@ -572,7 +572,7 @@ McpttCallTypeMachinePrivateStateQ1::UpgradeTo (McpttCallTypeMachinePrivate& mach
 {
   NS_LOG_FUNCTION (this << &machine << &callType);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
@@ -687,7 +687,7 @@ McpttCallTypeMachinePrivateStateQ2::Downgrade (McpttCallTypeMachinePrivate& mach
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
 
   Ptr<McpttTimer> tfp8 = callMachine->GetTfp8 ();
   Ptr<McpttTimer> tfp6 = callMachine->GetTfp6 ();
@@ -720,7 +720,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp1 (McpttCallTypeMachinePrivate& m
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
@@ -760,7 +760,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp8 (McpttCallTypeMachinePrivate& m
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
 
   McpttCallMsgFieldSdp mySdp = callMachine->GetSdp ();
@@ -814,7 +814,7 @@ McpttCallTypeMachinePrivateStateQ2::ReceiveReject (McpttCallTypeMachinePrivate& 
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  McpttCallMachinePrivate* callMachine = machine.GetOwner ();
+  Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
 
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();
 

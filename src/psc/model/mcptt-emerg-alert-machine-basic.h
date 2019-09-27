@@ -98,7 +98,7 @@ public:
   * Creates an instance of the  class.
   * \param owner The owner of the machine.
   */
- McpttEmergAlertMachineBasic (McpttCallMachineGrp* const& owner = 0);
+ McpttEmergAlertMachineBasic (Ptr<McpttCallMachineGrp> owner = 0);
  /**
   * \brief The destructor of the McpttEmergAlertMachineBasic class.
   */
@@ -196,7 +196,7 @@ private:
  bool m_emerg; //!< The flag that indicates if the machine is in the emergency state.
  std::list<EmergUser> m_emergUsers; //!< The list of users in emergency.
  McpttCallMsgFieldOrgName m_orgName; //!< The name of the MCPTT organization.
- McpttCallMachineGrp* m_owner; //!< The owner of the emergency alert machine.
+ Ptr<McpttCallMachineGrp> m_owner; //!< The owner of the emergency alert machine.
  bool m_started; //!< A flag that indicates if the emergency alert machine has been started.
  Callback<void, bool> m_stateChangeCb; //!< The state change callback.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
@@ -237,7 +237,7 @@ public:
   * Gets the owner of this emergency alert state machine.
   * \returns The owner.
   */
- virtual McpttCallMachineGrp* GetOwner (void) const;
+ virtual Ptr<McpttCallMachineGrp> GetOwner (void) const;
  /**
   * Gets the flag used to indicate if the emergency alert machine has been started.
   * \returns The flag.
@@ -257,7 +257,7 @@ public:
   * Sets the owner of this emergency alert state machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCallMachineGrp* const& owner);
+ virtual void SetOwner (Ptr<McpttCallMachineGrp> owner);
  /**
   * Sets the flag used to indicate if the machine has been started.
   * \param started The flag.

@@ -800,7 +800,7 @@ McpttOnNetworkFloorParticipant::GetC104 (void) const
   return m_c104;
 }
 
-McpttCall*
+Ptr<McpttCall>
 McpttOnNetworkFloorParticipant::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -905,7 +905,7 @@ McpttOnNetworkFloorParticipant::SetOverriding (const bool& overriding)
 }
 
 void
-McpttOnNetworkFloorParticipant::SetOwner (McpttCall* const& owner)
+McpttOnNetworkFloorParticipant::SetOwner (Ptr<McpttCall> owner)
 {
   NS_LOG_FUNCTION (this);
 

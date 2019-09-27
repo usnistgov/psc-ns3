@@ -971,7 +971,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttCall* callOwner = machine.GetOwner ();
+  Ptr<McpttCall> callOwner = machine.GetOwner ();
   Ptr<McpttPttApp> appOwner = callOwner->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 

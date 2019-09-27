@@ -84,7 +84,7 @@ McpttEmergAlertMachineBasic::GetTypeId (void)
   return tid;
 }
 
-McpttEmergAlertMachineBasic::McpttEmergAlertMachineBasic (McpttCallMachineGrp* const& owner)
+McpttEmergAlertMachineBasic::McpttEmergAlertMachineBasic (Ptr<McpttCallMachineGrp> owner)
   : McpttEmergAlertMachine (),
     m_emerg (false),
     m_emergUsers (std::list<McpttEmergAlertMachineBasic::EmergUser> ()),
@@ -272,7 +272,7 @@ McpttEmergAlertMachineBasic::Send (const McpttCallMsg& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " trying to send " << msg << ".");
 
-  McpttCallMachineGrp* owner = GetOwner ();
+  Ptr<McpttCallMachineGrp> owner = GetOwner ();
   owner->Send (msg);
 }
 
@@ -290,7 +290,7 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " sending emergency alert.");
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
-  McpttCallMachineGrp* owner = GetOwner ();
+  Ptr<McpttCallMachineGrp> owner = GetOwner ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
   uint32_t userId = owner->GetOwner ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldOrgName orgName = GetOrgName ();
@@ -422,7 +422,7 @@ McpttEmergAlertMachineBasic::ExpiryOfTfe2 (void)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFE2 timer expired.");
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
-  McpttCallMachineGrp* owner = GetOwner ();
+  Ptr<McpttCallMachineGrp> owner = GetOwner ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
   uint32_t userId = owner->GetOwner ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldOrgName orgName = GetOrgName ();
@@ -539,7 +539,7 @@ McpttEmergAlertMachineBasic::GetOrgName (void) const
   return m_orgName;
 }
 
-McpttCallMachineGrp*
+Ptr<McpttCallMachineGrp>
 McpttEmergAlertMachineBasic::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -572,7 +572,7 @@ McpttEmergAlertMachineBasic::SetOrgName (const McpttCallMsgFieldOrgName& orgName
 }
 
 void
-McpttEmergAlertMachineBasic::SetOwner (McpttCallMachineGrp* const& owner)
+McpttEmergAlertMachineBasic::SetOwner (Ptr<McpttCallMachineGrp> owner)
 {
   NS_LOG_FUNCTION (this << owner);
 

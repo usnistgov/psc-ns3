@@ -804,7 +804,7 @@ McpttOnNetworkFloorArbitrator::GetDualControl (void) const
   return m_dualControl;
 }
 
-McpttServerApp*
+Ptr<McpttServerApp>
 McpttOnNetworkFloorArbitrator::GetOwner (void) const
 {
   return m_owner;
@@ -904,7 +904,7 @@ McpttOnNetworkFloorArbitrator::SetDualControl (const Ptr<McpttOnNetworkFloorDual
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetOwner (McpttServerApp* const& owner)
+McpttOnNetworkFloorArbitrator::SetOwner (Ptr<McpttServerApp> owner)
 {
   NS_LOG_FUNCTION (this);
 

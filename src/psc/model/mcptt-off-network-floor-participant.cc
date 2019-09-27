@@ -241,7 +241,7 @@ McpttOffNetworkFloorParticipant::ClearCurrentSsrc (void)
 uint8_t
 McpttOffNetworkFloorParticipant::GetCallTypeId (void) const
 {
-  McpttCall* owner = GetOwner ();
+  Ptr<McpttCall> owner = GetOwner ();
   Ptr<McpttCallMachine> callMachine = owner->GetCallMachine ();
   McpttCallMsgFieldCallType callType = callMachine->GetCallType ();
   uint8_t callTypeId = callType.GetType ();
@@ -628,7 +628,7 @@ McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
       return;
     }
 
-  McpttCall* owner = GetOwner ();
+  Ptr<McpttCall> owner = GetOwner ();
 
   if (msg.IsA (McpttFloorMsgGranted::GetTypeId ()))
     {
@@ -1127,7 +1127,7 @@ McpttOffNetworkFloorParticipant::GetOriginator (void) const
   return m_originator;
 }
 
-McpttCall*
+Ptr<McpttCall>
 McpttOffNetworkFloorParticipant::GetOwner (void) const
 {
   return m_owner;
@@ -1266,7 +1266,7 @@ McpttOffNetworkFloorParticipant::SetOriginator (const bool& originator)
 }
 
 void
-McpttOffNetworkFloorParticipant::SetOwner (McpttCall* const& owner)
+McpttOffNetworkFloorParticipant::SetOwner (Ptr<McpttCall> owner)
 {
   NS_LOG_FUNCTION (this);
 

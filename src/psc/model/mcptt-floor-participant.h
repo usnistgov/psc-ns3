@@ -111,7 +111,7 @@ public:
   * Sets the owner of the floor machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner) = 0;
+ virtual void SetOwner (Ptr<McpttCall> owner) = 0;
   /**
   * Sets the current priority of the floor.
   * \param priority The current priority.
@@ -201,7 +201,7 @@ public:
   * Sets the owner.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner);
+ virtual void SetOwner (Ptr<McpttCall> owner);
  /**
   * Sets the current priority of the floor.
   * \param priority The current priority.

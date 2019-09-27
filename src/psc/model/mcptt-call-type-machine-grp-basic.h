@@ -116,7 +116,7 @@ public:
   * Creates an instance of the McpttCallTypeMachineGrpBasic class.
   * \param owner The owner of this machine.
   */
- McpttCallTypeMachineGrpBasic (McpttCallMachineGrpBasic* const& owner = 0);
+ McpttCallTypeMachineGrpBasic (Ptr<McpttCallMachineGrpBasic> owner = 0);
  /**
   * \brief The destructor of the McpttCallTypeMachineGrpBasic class.
   */
@@ -263,7 +263,7 @@ private:
   * pointer's sole purpose is to provide access to the
   * object that the user has provided.
   */
- McpttCallMachineGrpBasic* m_owner; //!< The owner of this call type machine
+ Ptr<McpttCallMachineGrpBasic> m_owner; //!< The owner of this call type machine
  uint8_t m_priority; //!< The ProSe per-packet priority.
  bool m_started; //!< The flag that indicates if the machine has been started.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
@@ -303,7 +303,7 @@ public:
   * Gets the owner of this call type machine.
   * \returns The owner.
   */
- virtual McpttCallMachineGrpBasic* GetOwner (void) const;
+ virtual Ptr<McpttCallMachineGrpBasic> GetOwner (void) const;
  /**
   * Gets the ProSe per-packet priority.
   * \returns The ProSe per-packet priority.
@@ -373,7 +373,7 @@ public:
   * Sets the owner of this call type machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCallMachineGrpBasic* const& owner);
+ virtual void SetOwner (Ptr<McpttCallMachineGrpBasic> owner);
  /**
   * Sets the ProSe per-packet priority.
   * \param priority The ProSe per-packet priority.

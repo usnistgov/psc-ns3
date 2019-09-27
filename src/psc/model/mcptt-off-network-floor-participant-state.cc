@@ -143,7 +143,7 @@ void
 McpttOffNetworkFloorParticipantState::ReceiveCallRelease (McpttOffNetworkFloorParticipant& floorMachine) const
 {
   NS_LOG_FUNCTION (this);
-  McpttCall* callOwner = floorMachine.GetOwner ();
+  Ptr<McpttCall> callOwner = floorMachine.GetOwner ();
   Ptr<McpttPttApp> appOwner = callOwner->GetOwner ();
 
   if (appOwner->IsPushed ())
@@ -972,7 +972,7 @@ McpttOffNetworkFloorParticipantStateHasPerm::Selected (McpttOffNetworkFloorParti
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
-  McpttCall* callOwner = floorMachine.GetOwner ();
+  Ptr<McpttCall> callOwner = floorMachine.GetOwner ();
   Ptr<McpttPttApp> appOwner = callOwner->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 

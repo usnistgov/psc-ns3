@@ -156,7 +156,7 @@ protected:
   */
  virtual void ExpiryOfT12 (void);
 private:
- McpttOnNetworkFloorArbitrator* m_owner; //!< The floor abitration server.
+ Ptr<McpttOnNetworkFloorArbitrator> m_owner; //!< The floor abitration server.
  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorDualControlState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
@@ -172,7 +172,7 @@ public:
   * Gets the owner of the state machine.
   * \returns The owner.
   */
- virtual McpttOnNetworkFloorArbitrator* GetOwner (void) const;
+ virtual Ptr<McpttOnNetworkFloorArbitrator> GetOwner (void) const;
  /**
   * Gets the SSRC of the participant who currently has permission to send media.
   * \returns The SSRC.
@@ -202,7 +202,7 @@ public:
   * Sets the owner of the floor machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttOnNetworkFloorArbitrator* const& owner);
+ virtual void SetOwner (Ptr<McpttOnNetworkFloorArbitrator> owner);
  /**
   * Sets the received message call back.
   * \param rxCb The received message call back.

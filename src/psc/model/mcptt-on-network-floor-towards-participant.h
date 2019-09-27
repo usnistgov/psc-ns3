@@ -261,7 +261,7 @@ private:
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.
  bool m_overridden; //!< Flag that indicates if associated participant is overridden without revoke.
  bool m_overriding; //!< Flag that indicates if associated participant is overriding without revoke.
- McpttOnNetworkFloorArbitrator* m_owner; //!< The floor abitration server.
+ Ptr<McpttOnNetworkFloorArbitrator> m_owner; //!< The floor abitration server.
  Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_receiveOnly; //!< Flag that indicates if the associated participant is "receive only".
  McpttFloorMsgRevoke m_revokeMsg; //!< The Floor Revoke message to retransmit when T8 expires.
@@ -299,7 +299,7 @@ public:
   * Gets the owner of the state machine.
   * \returns The owner.
   */
- virtual McpttOnNetworkFloorArbitrator* GetOwner (void) const;
+ virtual Ptr<McpttOnNetworkFloorArbitrator> GetOwner (void) const;
  /**
   * Gets the peer address.
   * \returns The peer address.
@@ -374,7 +374,7 @@ public:
   * Sets the owner of the floor machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttOnNetworkFloorArbitrator* const& owner);
+ virtual void SetOwner (Ptr<McpttOnNetworkFloorArbitrator> owner);
  /**
   * Sets the address of the participant.
   * \param peerAddress The address of the participant.

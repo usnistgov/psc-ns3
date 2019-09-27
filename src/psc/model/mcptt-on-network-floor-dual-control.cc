@@ -303,7 +303,7 @@ McpttOnNetworkFloorDualControl::ExpiryOfT12 (void)
   m_state->ExpiryOfT12 (*this);
 }
 
-McpttOnNetworkFloorArbitrator*
+Ptr<McpttOnNetworkFloorArbitrator>
 McpttOnNetworkFloorDualControl::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -352,7 +352,7 @@ McpttOnNetworkFloorDualControl::GetT12 (void) const
 }
 
 void
-McpttOnNetworkFloorDualControl::SetOwner (McpttOnNetworkFloorArbitrator* const& owner)
+McpttOnNetworkFloorDualControl::SetOwner (Ptr<McpttOnNetworkFloorArbitrator> owner)
 {
   NS_LOG_FUNCTION (this);
 
