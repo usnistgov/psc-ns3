@@ -249,7 +249,7 @@ McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetOwner ();
   Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   //TODO: The following check should make sure that the received group ID
@@ -357,7 +357,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg3 = machine.GetTfg3 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetOwner ();
   McpttPttApp* pttApp = call->GetOwner ();
   bool isConfirmMode = machine.IsConfirmMode ();
   McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
@@ -470,7 +470,7 @@ McpttCallMachineGrpBasicStateS2::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg3 = machine.GetTfg3 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   McpttCallMsgFieldSdp theirSdp = msg.GetSdp ();
   McpttCallMsgFieldGrpId theirGrpId = msg.GetGrpId ();
   McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
@@ -608,7 +608,7 @@ McpttCallMachineGrpBasicStateS3::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine
   
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
@@ -658,7 +658,7 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 
   Time delayTfg2;
   Time delayTfg6;
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
   bool myProbeRespVal = machine.GetProbeRespVal ();
@@ -786,7 +786,7 @@ McpttCallMachineGrpBasicStateS3::ReleaseCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
@@ -850,7 +850,7 @@ McpttCallMachineGrpBasicStateS4::AcceptCall (McpttCallMachineGrpBasic& machine)
   Time delayTfg6;
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
@@ -923,7 +923,7 @@ McpttCallMachineGrpBasicStateS4::ReleaseCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
@@ -985,7 +985,7 @@ McpttCallMachineGrpBasicStateS5::AcceptCall (McpttCallMachineGrpBasic& machine)
   uint32_t myUserId = machine.GetOwner ()->GetOwner ()->GetUserId ();
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
   McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
   McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
@@ -1070,7 +1070,7 @@ McpttCallMachineGrpBasicStateS5::ReleaseCall (McpttCallMachineGrpBasic& machine)
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg4 = machine.GetTfg4 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 
   floorMachine->Stop ();
@@ -1169,7 +1169,7 @@ McpttCallMachineGrpBasicStateS6::InitiateCall (McpttCallMachineGrpBasic& machine
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
-  McpttCall* parent = machine.GetOwner ();
+  Ptr<McpttCall> parent = machine.GetOwner ();
   McpttCallMsgFieldSdp mySdp = machine.GetSdp ();
   Ptr<McpttFloorParticipant> floorMachine = parent->GetFloorMachine ();
 

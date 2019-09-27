@@ -70,7 +70,7 @@ public:
   * Creates an instance of the  class.
   * \param owner The owner of this machine
   */
- McpttCallMachinePrivate (McpttCall* const& owner = 0);
+ McpttCallMachinePrivate (Ptr<McpttCall> owner = 0);
  /**
   * \brief The destructor of the McpttCallMachinePrivate class.
   */
@@ -377,7 +377,7 @@ private:
  bool m_failure; //!< Indicates if the call should fail.
  McpttCallMsgFieldGrpId m_grpId; //!< TODO: Not in standard - private call use of emergency alert machine
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
- McpttCall* m_owner; //!< The call under which this MCPTT call control machine is under.
+ Ptr<McpttCall> m_owner; //!< The call under which this MCPTT call control machine is under.
  Ptr<RandomVariableStream> m_rndCallId; //!< The random number generator used for call ID selction.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
  McpttCallMsgFieldSdp m_sdpEmerg; //!< Emergency SDP information.
@@ -445,7 +445,7 @@ public:
   * Gets the owner of this call control state machine.
   * \returns The owner.
   */
- virtual McpttCall* GetOwner (void) const;
+ virtual Ptr<McpttCall> GetOwner (void) const;
  /**
   * Gets the random number generator used for call ID selection.
   * \returns The random number generator.
@@ -565,7 +565,7 @@ public:
   * Sets the owner of this call control machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner);
+ virtual void SetOwner (Ptr<McpttCall> owner);
  /**
   * Sets the random number generator used for call ID selection.
   * \param rndCallId The random number generator.

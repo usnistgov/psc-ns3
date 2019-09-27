@@ -144,7 +144,7 @@ McpttCallMachinePrivate::GetTypeId (void)
   return tid;
 }
 
-McpttCallMachinePrivate::McpttCallMachinePrivate (McpttCall* const& owner)
+McpttCallMachinePrivate::McpttCallMachinePrivate (Ptr<McpttCall> owner)
   : McpttCallMachineGrp (),
     m_callId (McpttCallMsgFieldCallId ()),
     m_calleeId (McpttCallMsgFieldUserId ()),
@@ -744,7 +744,7 @@ McpttCallMachinePrivate::Send (const McpttCallMsg& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
 
-  McpttCall* owner = GetOwner ();
+  Ptr<McpttCall> owner = GetOwner ();
   owner->Send (msg);
 }
 
@@ -1212,7 +1212,7 @@ McpttCallMachinePrivate::GetEmergMachine (void) const
   return m_emergMachine;
 }
 
-McpttCall*
+Ptr<McpttCall>
 McpttCallMachinePrivate::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -1410,7 +1410,7 @@ McpttCallMachinePrivate::SetNewCallCb (const Callback<void, uint16_t>  newCallCb
 }
 
 void
-McpttCallMachinePrivate::SetOwner (McpttCall* const& owner)
+McpttCallMachinePrivate::SetOwner (Ptr<McpttCall> owner)
 {
   NS_LOG_FUNCTION (this << owner);
 

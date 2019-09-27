@@ -113,7 +113,7 @@ public:
   * Creates an instance of the  class.
   * \param owner The owner of this machine
   */
- McpttCallMachineGrpBasic (McpttCall* const& owner = 0);
+ McpttCallMachineGrpBasic (Ptr<McpttCall> owner = 0);
  /**
   * \brief The destructor of the McpttCallMachineGrpBasic class.
   */
@@ -380,7 +380,7 @@ private:
  Callback<void, uint16_t> m_mergeCb; //!< The merge callback.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  McpttCallMsgFieldUserId m_origId; //!< The ID of MCPTT user that the call originated from.
- McpttCall* m_owner; //!< The call under which this MCPTT call control machine is under.
+ Ptr<McpttCall> m_owner; //!< The call under which this MCPTT call control machine is under.
  bool m_probeRespVal; //!< The probe response value flag.
  McpttCallMsgFieldRefreshInterval m_refInt; //!< The minimum time interval of periodic announcements.
  Ptr<RandomVariableStream> m_rndCallId; //!< The random number generator used for call ID selction.
@@ -429,7 +429,7 @@ public:
   * Gets the owner of this call control state machine.
   * \returns The owner.
   */
- virtual McpttCall* GetOwner (void) const;
+ virtual Ptr<McpttCall> GetOwner (void) const;
  /**
   * Gets the probe response value flag.
   * \returns The flag.
@@ -539,7 +539,7 @@ public:
   * Sets the owner of this call control machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner);
+ virtual void SetOwner (Ptr<McpttCall> owner);
  /**
   * Sets the probe response value flag.
   * \param probeRespVal The flag.

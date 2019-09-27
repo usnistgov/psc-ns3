@@ -249,7 +249,7 @@ McpttCallMachineNull::GetInstanceTypeId (void) const
   return McpttCallMachineNull::GetTypeId ();
 }
 
-McpttCall*
+Ptr<McpttCall>
 McpttCallMachineNull::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -332,7 +332,7 @@ McpttCallMachineNull::SetNewCallCb (const Callback<void, uint16_t>  newCallCb)
 }
 
 void
-McpttCallMachineNull::SetOwner (McpttCall* const& owner)
+McpttCallMachineNull::SetOwner (Ptr<McpttCall> owner)
 {
   NS_LOG_FUNCTION (this << owner);
 
@@ -344,7 +344,7 @@ McpttCallMachineNull::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  McpttCall* call = GetOwner ();
+  Ptr<McpttCall> call = GetOwner ();
   McpttPttApp* pttApp = call->GetOwner ();
   AddressValue grpAddr;
 
@@ -363,7 +363,7 @@ McpttCallMachineNull::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  McpttCall* call = GetOwner ();
+  Ptr<McpttCall> call = GetOwner ();
 
   Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 

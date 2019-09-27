@@ -109,7 +109,7 @@ public:
   * Gets the owner of the call machine.
   * \returns The owner.
   */
- virtual McpttCall* GetOwner (void) const = 0;
+ virtual Ptr<McpttCall> GetOwner (void) const = 0;
  /**
   * Gets the ID of the current state.
   * \returns The state ID.
@@ -168,7 +168,7 @@ public:
   * Sets the owner of the call machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner) = 0;
+ virtual void SetOwner (Ptr<McpttCall> owner) = 0;
  /**
   * Starts the state machine.
   */
@@ -298,7 +298,7 @@ public:
   * Gets the owner of the call machine.
   * \returns The owner.
   */
- virtual McpttCall* GetOwner (void) const;
+ virtual Ptr<McpttCall> GetOwner (void) const;
  /**
   * Gets the ID of the current state.
   * \returns The state ID.
@@ -357,7 +357,7 @@ public:
   * Sets the owner of the call machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner);
+ virtual void SetOwner (Ptr<McpttCall> owner);
  /**
   * Starts the state machine.
   */
@@ -377,7 +377,7 @@ protected:
   */
  virtual void DoDispose (void);
 private:
- McpttCall* m_owner; //!< The owner.
+ Ptr<McpttCall> m_owner; //!< The owner.
  uint16_t m_floorPort; //!< The port number to use for floor control.
  uint16_t m_mediaPort; //!< The port number to use for media.
  uint8_t m_callType; //!< The call type.

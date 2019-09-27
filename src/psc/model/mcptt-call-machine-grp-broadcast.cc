@@ -85,7 +85,7 @@ McpttCallMachineGrpBroadcast::GetTypeId (void)
   return tid;
 }
 
-McpttCallMachineGrpBroadcast::McpttCallMachineGrpBroadcast (McpttCall* const& owner)
+McpttCallMachineGrpBroadcast::McpttCallMachineGrpBroadcast (Ptr<McpttCall> owner)
   : McpttCallMachineGrp (),
     m_callId (McpttCallMsgFieldCallId ()),
     m_callType (McpttCallMsgFieldCallType::BROADCAST_GROUP),
@@ -375,7 +375,7 @@ McpttCallMachineGrpBroadcast::Send (const McpttCallMsg& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
 
-  McpttCall* call = GetOwner ();
+  Ptr<McpttCall> call = GetOwner ();
   call->Send (msg);
 }
 
@@ -611,7 +611,7 @@ McpttCallMachineGrpBroadcast::GetOrigId (void) const
   return m_origId;
 }
 
-McpttCall*
+Ptr<McpttCall>
 McpttCallMachineGrpBroadcast::GetOwner (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -716,7 +716,7 @@ McpttCallMachineGrpBroadcast::SetOrigId (const McpttCallMsgFieldUserId& origId)
 }
 
 void
-McpttCallMachineGrpBroadcast::SetOwner (McpttCall* const& owner)
+McpttCallMachineGrpBroadcast::SetOwner (Ptr<McpttCall> owner)
 {
   NS_LOG_FUNCTION (this << owner);
 

@@ -64,7 +64,7 @@ public:
   * Creates an instance of the McpttCallMachineGrpBroadcast class.
   * \param owner The owner of the call machine.
   */
- McpttCallMachineGrpBroadcast (McpttCall* const& owner = 0);
+ McpttCallMachineGrpBroadcast (Ptr<McpttCall> owner = 0);
  /**
   * \brief The destructor of the McpttCallMachineGrpBroadcast class.
   */
@@ -228,7 +228,7 @@ private:
  McpttCallMsgFieldGrpId m_grpId; //!< The group ID of the call.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  McpttCallMsgFieldUserId m_origId; //!< The originating MCPTT user's ID.
- McpttCall* m_owner; //!< The owner under which the call machine resides.
+ Ptr<McpttCall> m_owner; //!< The owner under which the call machine resides.
  uint8_t m_priority; //!< The ProSe per-packet priority.
  Ptr<UniformRandomVariable> m_rndCallId; //!< The random number generator used for call ID selection.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
@@ -265,7 +265,7 @@ public:
   * Gets the owner of this call control state machine.
   * \returns The owner.
   */
- virtual McpttCall* GetOwner (void) const;
+ virtual Ptr<McpttCall> GetOwner (void) const;
  /**
   * Gets the ProSe per-packet priority.
   * \returns The ProSe per-packet priority.
@@ -330,7 +330,7 @@ public:
   * Sets the owner of this call control machine.
   * \param owner The owner.
   */
- virtual void SetOwner (McpttCall* const& owner);
+ virtual void SetOwner (Ptr<McpttCall> owner);
  /**
   * Sets the ProSe per-packet priority.
   * \param priority The ProSe per-packet priority.
