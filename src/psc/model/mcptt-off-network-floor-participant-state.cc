@@ -144,7 +144,7 @@ McpttOffNetworkFloorParticipantState::ReceiveCallRelease (McpttOffNetworkFloorPa
 {
   NS_LOG_FUNCTION (this);
   McpttCall* callOwner = floorMachine.GetOwner ();
-  McpttPttApp* appOwner = callOwner->GetOwner ();
+  Ptr<McpttPttApp> appOwner = callOwner->GetOwner ();
 
   if (appOwner->IsPushed ())
     {
@@ -594,7 +594,7 @@ McpttOffNetworkFloorParticipantStateNoPerm::Selected (McpttOffNetworkFloorPartic
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
-  McpttPttApp* appOwner = floorMachine.GetOwner ()->GetOwner ();
+  Ptr<McpttPttApp> appOwner = floorMachine.GetOwner ()->GetOwner ();
 
   if (appOwner->IsPushed ())
     {
@@ -973,7 +973,7 @@ McpttOffNetworkFloorParticipantStateHasPerm::Selected (McpttOffNetworkFloorParti
   NS_LOG_FUNCTION (this << &floorMachine);
 
   McpttCall* callOwner = floorMachine.GetOwner ();
-  McpttPttApp* appOwner = callOwner->GetOwner (); 
+  Ptr<McpttPttApp> appOwner = callOwner->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 
   if (!appOwner->IsPushed ())
@@ -1057,7 +1057,7 @@ McpttOffNetworkFloorParticipantStateHasPerm::Unselected (McpttOffNetworkFloorPar
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
-  McpttPttApp* appOwner = floorMachine.GetOwner ()->GetOwner (); 
+  Ptr<McpttPttApp> appOwner = floorMachine.GetOwner ()->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 
   if (appOwner->IsPushed ())
@@ -2242,7 +2242,7 @@ McpttOffNetworkFloorParticipantStateSilence::Selected (McpttOffNetworkFloorParti
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
-  McpttPttApp* appOwner = floorMachine.GetOwner ()->GetOwner ();
+  Ptr<McpttPttApp> appOwner = floorMachine.GetOwner ()->GetOwner ();
 
   if (appOwner->IsPushed ())
     {

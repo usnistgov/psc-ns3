@@ -140,7 +140,7 @@ McpttCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
-  McpttPttApp* owner = GetOwner ();
+  Ptr<McpttPttApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
   Ptr<McpttChan> floorChan = GetFloorChan ();
   Address localAddr = owner->GetLocalAddress ();
@@ -153,7 +153,7 @@ McpttCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
-  McpttPttApp* owner = GetOwner ();
+  Ptr<McpttPttApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
   Ptr<McpttChan> mediaChan = GetMediaChan ();
   Address localAddr = owner->GetLocalAddress ();
@@ -393,7 +393,7 @@ McpttCall::GetMediaChan (void) const
   return m_mediaChan;
 }
 
-McpttPttApp*
+Ptr<McpttPttApp>
 McpttCall::GetOwner (void) const
 {
   return m_owner;
@@ -452,7 +452,7 @@ McpttCall::SetMediaChan (Ptr<McpttChan>  mediaChan)
 }
 
 void
-McpttCall::SetOwner (McpttPttApp* const& owner)
+McpttCall::SetOwner (Ptr<McpttPttApp> owner)
 {
   NS_LOG_FUNCTION (this << owner);
 

@@ -167,7 +167,7 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
   NS_LOG_FUNCTION (this << &machine);
 
   Ptr<McpttCall> call = machine.GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
   Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
   Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
   McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
@@ -413,7 +413,7 @@ McpttCallMachineGrpBroadcastStateB2::ReleaseCall (McpttCallMachineGrpBroadcast& 
   NS_LOG_FUNCTION (this << &machine);
 
   Ptr<McpttCall> call = machine.GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
   Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
   uint32_t myUserId = pttApp->GetUserId ();
   Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();

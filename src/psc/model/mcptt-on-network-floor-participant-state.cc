@@ -524,7 +524,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::Selected (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine);
   
-  McpttPttApp* appOwner = machine.GetOwner ()->GetOwner ();
+  Ptr<McpttPttApp> appOwner = machine.GetOwner ()->GetOwner ();
 
   if (appOwner->IsPushed ())
     {
@@ -972,7 +972,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
   NS_LOG_FUNCTION (this << &machine);
 
   McpttCall* callOwner = machine.GetOwner ();
-  McpttPttApp* appOwner = callOwner->GetOwner (); 
+  Ptr<McpttPttApp> appOwner = callOwner->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 
   if (!appOwner->IsPushed ())
@@ -992,7 +992,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttPttApp* appOwner = machine.GetOwner ()->GetOwner (); 
+  Ptr<McpttPttApp> appOwner = machine.GetOwner ()->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 
   if (appOwner->IsPushed ())

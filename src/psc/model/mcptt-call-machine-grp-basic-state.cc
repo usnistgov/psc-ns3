@@ -358,7 +358,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   Ptr<McpttTimer> tfg3 = machine.GetTfg3 ();
   Ptr<McpttTimer> tfg6 = machine.GetTfg6 ();
   Ptr<McpttCall> call = machine.GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
   bool isConfirmMode = machine.IsConfirmMode ();
   McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
   Ptr<RandomVariableStream> rndCallId = machine.GetRndCallId ();

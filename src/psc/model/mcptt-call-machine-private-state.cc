@@ -353,7 +353,7 @@ McpttCallMachinePrivateStateP0::ReceiveSetupRequest (McpttCallMachinePrivate& ma
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<McpttCall> call = machine.GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   Ptr<McpttTimer> tfp2 = machine.GetTfp2 ();
   Ptr<McpttTimer> tfp4 = machine.GetTfp4 ();

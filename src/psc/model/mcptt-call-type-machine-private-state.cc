@@ -517,7 +517,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveSetupRequest (McpttCallTypeMachinePri
 
   McpttCallMachinePrivate* callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   uint32_t myUserId = pttApp->GetUserId ();
   Ptr<McpttTimer> tfp8 = callMachine->GetTfp8 ();
@@ -574,7 +574,7 @@ McpttCallTypeMachinePrivateStateQ1::UpgradeTo (McpttCallTypeMachinePrivate& mach
 
   McpttCallMachinePrivate* callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();
   Ptr<McpttCounter> cfp1 = callMachine->GetCfp1 ();
@@ -722,7 +722,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp1 (McpttCallTypeMachinePrivate& m
 
   McpttCallMachinePrivate* callMachine = machine.GetOwner ();
   Ptr<McpttCall> call = callMachine->GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   Vector myLoc = pttApp->GetNodeLoc ();
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();

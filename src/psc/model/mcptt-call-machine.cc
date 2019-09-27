@@ -345,7 +345,7 @@ McpttCallMachineNull::Start (void)
   NS_LOG_FUNCTION (this);
 
   Ptr<McpttCall> call = GetOwner ();
-  McpttPttApp* pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = call->GetOwner ();
   AddressValue grpAddr;
 
   pttApp->GetAttribute ("PeerAddress", grpAddr);

@@ -158,7 +158,7 @@ protected:
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
- McpttPttApp* m_owner; //!< The owner of this call.
+ Ptr<McpttPttApp> m_owner; //!< The owner of this call.
  Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
  Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
 public:
@@ -186,7 +186,7 @@ public:
   * Gets the owner of this call.
   * \returns The owner.
   */
- McpttPttApp* GetOwner (void) const;
+ Ptr<McpttPttApp> GetOwner (void) const;
  /**
   * Sets the call control state machine.
   * \param callMachine The call control state machine.
@@ -211,7 +211,7 @@ public:
   * Sets the owner of this call.
   * \param owner The owner.
   */
- void SetOwner (McpttPttApp* const& owner);
+ void SetOwner (Ptr<McpttPttApp> owner);
  /**
   * Sets the received message callback.
   * \param rxCb The callback.
