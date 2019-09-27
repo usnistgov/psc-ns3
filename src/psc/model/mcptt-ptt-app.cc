@@ -257,8 +257,7 @@ McpttPttApp::GetInstanceTypeId (void) const
 Vector
 McpttPttApp::GetNodeLoc (void) const
 {
-  Ptr<Node> node = GetNode ();
-  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
+  Ptr<MobilityModel> mobility = GetNode ()->GetObject<MobilityModel> ();
   Vector current = mobility->GetPosition();
 
   NS_LOG_LOGIC ("McpttPttApp located at " << current << ".");
@@ -322,13 +321,8 @@ McpttPttApp::InitiateCall (void)
 bool
 McpttPttApp::IsPushed (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   Ptr<McpttPusher> pusher = GetPusher ();
-
-  bool isPushed = pusher->IsPushing ();
-
-  return isPushed;
+  return pusher->IsPushing ();
 }
 
 void
@@ -640,7 +634,7 @@ McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
 {
   NS_LOG_FUNCTION (this << pkt);
 
-  NS_LOG_LOGIC ("PttApp receieved " << pkt->GetSize () << " byte(s).");
+  NS_LOG_LOGIC ("PttApp received " << pkt->GetSize () << " byte(s).");
 
   McpttCallMsg temp;
   pkt->PeekHeader (temp);
@@ -787,17 +781,14 @@ McpttPttApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<Node> node = GetNode ();
   Ptr<McpttCallMachine> callMachine = 0;
   Address localAddr = GetLocalAddress ();
   Ptr<McpttPusher> pusher = GetPusher ();
   std::vector<Ptr<McpttCall> > calls = GetCalls ();
   Ptr<McpttChan> callChan = CreateObject<McpttChan> ();
 
-  NS_LOG_LOGIC ("McpttPttApp starting application.");
-
   callChan->SetRxPktCb (MakeCallback (&McpttPttApp::ReceiveCallPkt, this));
-  callChan->Open (node, m_callPort, localAddr, m_peerAddress);
+  callChan->Open (GetNode (), m_callPort, localAddr, m_peerAddress);
 
   SetCallChan (callChan);
 
