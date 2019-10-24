@@ -33,6 +33,7 @@
 #define MCPTT_SERVER_APP_H
 
 #include <vector>
+#include <map>
 
 #include <ns3/application.h>
 #include <ns3/object.h>
@@ -43,12 +44,15 @@
 
 namespace ns3 {
 
-class McpttOnNetworkFloorArbitrator;
+class McpttServerCall;
+class McpttCallMsg;
+class McpttMsg;
 
 /**
  * \ingroup mcptt
  *
- * This class represents the MCPTT server application.
+ * This class represents the MCPTT server application.  It holds state for
+ * a number of MCPTT calls.
  */
 class McpttServerApp : public Application
 {
@@ -66,11 +70,21 @@ public:
   * The destructor of the McpttServerApp class.
   */
  virtual ~McpttServerApp (void);
+  /**
+   * Return a new call ID value
+   * \return new call ID value
+   */
+  uint16_t AllocateCallId (void);
  /**
-  * Gets the type ID fo this McpttServerApp instance.
-  * \returns The type ID.
+  * Add a call definition to the server
+  * \param call a pointer to the call object
   */
- virtual TypeId GetInstanceTypeId (void) const;
+ void AddCall (Ptr<McpttServerCall> call);
+ /**
+  * Sends a call control message.
+  * \param msg The message to send.
+  */
+ virtual void Send (const McpttCallMsg& msg);
 protected:
  /**
   * The callback to fire when a message is received.
@@ -102,31 +116,22 @@ protected:
   */
  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
 private:
- Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The arbitrator.
+ static uint16_t s_callId; //!< Call ID counter
+ std::map<uint16_t, Ptr<McpttServerCall> > m_calls; //!< Call container keyed by callId
  Address m_localAddress; //!< The local IP address.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
 public:
  /**
-  * Gets the arbitrator.
-  * \returns The arbitrator.
-  */
- virtual Ptr<McpttOnNetworkFloorArbitrator> GetArbitrator (void) const;
- /**
   * Gets the address of the host.
   * \returns The address.
   */
- virtual Address GetLocalAddress (void) const;
- /**
-  * Sets the arbitrator.
-  * \param arbitrator The arbitrator.
-  */
- virtual void SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrator);
+ Address GetLocalAddress (void) const;
  /**
   * Sets the address of the host.
   * \param localAddress The address.
   */
- virtual void SetLocalAddress (const Address& localAddress);
+ void SetLocalAddress (const Address& localAddress);
 };
 
 } // namespace ns3

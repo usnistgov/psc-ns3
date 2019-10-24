@@ -80,7 +80,7 @@ class McpttCallMachinePrivate;
 /**
  * \ingroup mcptt
  * 
- * This class provides a common base for all off-netork, MCPTT, call control
+ * This class provides a common base for all off-network, MCPTT, call control
  * messages that are described in TS 24.379 v14.4.0.
  */
 class McpttCallMsg : public McpttMsg

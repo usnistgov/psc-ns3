@@ -29,6 +29,9 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#define NS_LOG_APPEND_CONTEXT \
+  if (m_owner) { std::clog << " [callId " << m_owner->GetCallId () << "] "; }
+
 #include <unordered_map>
 #include <sstream>
 
@@ -42,12 +45,12 @@
 #include <ns3/type-id.h>
 
 #include "mcptt-counter.h"
-#include "mcptt-call-control-info.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-msg-sink.h"
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator-state.h"
 #include "mcptt-server-app.h"
+#include "mcptt-server-call-machine.h"
 #include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
@@ -195,7 +198,7 @@ McpttOnNetworkFloorArbitrator::CallInitialized (McpttOnNetworkFloorTowardsPartic
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") call initialized.");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") call initialized by " << participant.GetPeerAddress ());
 
   m_state->CallInitialized (*this, participant);
 }
@@ -252,7 +255,11 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
           m_stateChangeCb (currStateId, stateId);
         }
 
-      m_stateChangeTrace (GetTxSsrc (), GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetTxSsrc (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+    }
+  else
+    {
+      NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") staying in state " << *m_state);
     }
 }
 
@@ -260,7 +267,7 @@ McpttFloorMsgFieldIndic
 McpttOnNetworkFloorArbitrator::GetIndicator (void) const
 {
   McpttFloorMsgFieldIndic indicator;
-  uint8_t callTypeId = GetCallInfo ()->GetCallTypeId ();
+  uint8_t callTypeId = GetOwner ()->GetCallMachine ()->GetCallType ().GetType ();
 
   if (IsDualFloor ())
     {
@@ -458,7 +465,7 @@ McpttOnNetworkFloorArbitrator::NextSeqNum (void)
 
   m_seqNum++;
 
-  NS_LOG_LOGIC (" McpttOnNetworkFloorArbitrator (" << this << ") next sequence number = " << (uint32_t)m_seqNum << ".");
+  NS_LOG_LOGIC (" McpttOnNetworkFloorArbitrator (" << this << ") next sequence number = " << m_seqNum << ".");
 
   return m_seqNum;
 }
@@ -519,7 +526,7 @@ McpttOnNetworkFloorArbitrator::SendToAll (McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") sending " << msg << " to all.");
+  NS_LOG_LOGIC ("Sending " << msg << " to " << m_participants.size () << " participants");
 
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin ();
 
@@ -537,7 +544,7 @@ McpttOnNetworkFloorArbitrator::SendToAllExcept (McpttMsg& msg, const uint32_t ss
 
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator pit = m_participants.begin ();
 
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") sending " << msg << " to all except " << ssrc << ".");
+  NS_LOG_LOGIC ("Sending " << msg << " to " << m_participants.size () << " except " << ssrc);
 
   while (pit != m_participants.end ())
     {
@@ -625,7 +632,9 @@ void
 McpttOnNetworkFloorArbitrator::Start (void)
 {
   NS_LOG_FUNCTION (this);
+  // Start arbitrator state machine
 
+  // Start participant state machines
   for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
     {
       (*it)->Start ();
@@ -780,12 +789,6 @@ McpttOnNetworkFloorArbitrator::TxCb (const McpttMsg& msg)
     }
 }
 
-Ptr<McpttCallControlInfo>
-McpttOnNetworkFloorArbitrator::GetCallInfo (void) const
-{
-  return m_callInfo;
-}
-
 Ptr<McpttCounter>
 McpttOnNetworkFloorArbitrator::GetC7 (void) const
 {
@@ -804,7 +807,7 @@ McpttOnNetworkFloorArbitrator::GetDualControl (void) const
   return m_dualControl;
 }
 
-Ptr<McpttServerApp>
+Ptr<McpttServerCall>
 McpttOnNetworkFloorArbitrator::GetOwner (void) const
 {
   return m_owner;
@@ -883,14 +886,6 @@ McpttOnNetworkFloorArbitrator::GetT20 (void) const
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetCallInfo (const Ptr<McpttCallControlInfo> callInfo)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_callInfo = callInfo;
-}
-
-void
 McpttOnNetworkFloorArbitrator::SetDualControl (const Ptr<McpttOnNetworkFloorDualControl> dualControl)
 {
   NS_LOG_FUNCTION (this);
@@ -904,7 +899,7 @@ McpttOnNetworkFloorArbitrator::SetDualControl (const Ptr<McpttOnNetworkFloorDual
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetOwner (Ptr<McpttServerApp> owner)
+McpttOnNetworkFloorArbitrator::SetOwner (Ptr<McpttServerCall> owner)
 {
   NS_LOG_FUNCTION (this);
 

@@ -53,8 +53,14 @@ class McpttOnNetworkFloorArbitrator;
 /**
  * \ingroup mcptt
  *
- * This class represents the MCPTT dual floor control state mahine described in TS
- * 24.380 v14.8.0.
+ * This class represents the MCPTT dual floor control state machine 
+ * described in TS 24.380 v14.8.0.  As specified there, dual floor control
+ * is used when a floor participant requests floor with a pre-emptive 
+ * floor priority allowing the floor control to continue without 
+ * revoking the floor from the MCPTT client permitted to send media.
+ *
+ * This class declaration is for an optional object that can be added
+ * to class McpttOnNetworkFloorArbitrator if dual floor control is desired.
  */
 class McpttOnNetworkFloorDualControl : public Object, public McpttFloorMsgSink
 {

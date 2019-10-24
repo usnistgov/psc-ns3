@@ -33,7 +33,6 @@
 
 #include <ns3/names.h>
 #include <ns3/mcptt-call.h>
-#include <ns3/mcptt-call-control-info.h>
 #include <ns3/mcptt-on-network-floor-arbitrator.h>
 #include <ns3/mcptt-on-network-floor-dual-control.h>
 #include <ns3/mcptt-on-network-floor-participant.h>
@@ -41,50 +40,37 @@
 #include <ns3/mcptt-on-network-floor-towards-participant.h>
 #include <ns3/mcptt-ptt-app.h>
 
-#include "mcptt-on-network-floor-control-helper.h"
+#include "mcptt-server-helper.h"
 
 namespace ns3 {
 
-McpttOnNetworkFloorControlHelper::McpttOnNetworkFloorControlHelper (void)
+McpttServerHelper::McpttServerHelper (void)
 { 
-  m_appFac.SetTypeId (McpttServerApp::GetTypeId ());
+  m_serverFactory.SetTypeId (McpttServerApp::GetTypeId ());
   m_arbitratorFac.SetTypeId (McpttOnNetworkFloorArbitrator::GetTypeId ());
   m_dualControlFac.SetTypeId (McpttOnNetworkFloorDualControl::GetTypeId ());
   m_participantFac.SetTypeId (McpttOnNetworkFloorTowardsParticipant::GetTypeId ());
-  m_callInfoFac.SetTypeId (McpttCallControlInfo::GetTypeId ());
 }
 
-McpttOnNetworkFloorControlHelper::~McpttOnNetworkFloorControlHelper ()
+McpttServerHelper::~McpttServerHelper ()
 { }
 
-ApplicationContainer
-McpttOnNetworkFloorControlHelper::Install (const Ptr<Node>& node)
+Ptr<McpttServerApp>
+McpttServerHelper::Install (Ptr<Node> node)
 {
-  return ApplicationContainer (InstallPriv (node));
+  return (InstallPriv (node));
 }
 
-ApplicationContainer
-McpttOnNetworkFloorControlHelper::Install (const std::string& nodeName)
+Ptr<McpttServerApp>
+McpttServerHelper::Install (const std::string& nodeName)
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
   
-  return ApplicationContainer (InstallPriv (node));
-}
-
-ApplicationContainer
-McpttOnNetworkFloorControlHelper::Install (const NodeContainer& c)
-{
-  ApplicationContainer apps;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      apps.Add (InstallPriv (*i));
-    }
-
-  return apps;
+  return (InstallPriv (node));
 }
 
 void
-McpttOnNetworkFloorControlHelper::SetApp (std::string name,
+McpttServerHelper::SetServerAttributes (
                         std::string n0, const AttributeValue& v0,
                         std::string n1, const AttributeValue& v1,
                         std::string n2, const AttributeValue& v2,
@@ -94,21 +80,18 @@ McpttOnNetworkFloorControlHelper::SetApp (std::string name,
                         std::string n6, const AttributeValue& v6,
                         std::string n7, const AttributeValue& v7)
 {
-  ObjectFactory factory;
-  factory.SetTypeId (name);
-  factory.Set (n0, v0);
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  m_appFac = factory;
+  m_serverFactory.Set (n0, v0);
+  m_serverFactory.Set (n1, v1);
+  m_serverFactory.Set (n2, v2);
+  m_serverFactory.Set (n3, v3);
+  m_serverFactory.Set (n4, v4);
+  m_serverFactory.Set (n5, v5);
+  m_serverFactory.Set (n6, v6);
+  m_serverFactory.Set (n7, v7);
 }
 
 void
-McpttOnNetworkFloorControlHelper::SetArbitrator (std::string name,
+McpttServerHelper::SetDefaultArbitrator (std::string name,
                           std::string n0, const AttributeValue& v0,
                           std::string n1, const AttributeValue& v1,
                           std::string n2, const AttributeValue& v2,
@@ -132,7 +115,7 @@ McpttOnNetworkFloorControlHelper::SetArbitrator (std::string name,
 }
 
 void
-McpttOnNetworkFloorControlHelper::SetDualControl (std::string name,
+McpttServerHelper::SetDefaultDualControl (std::string name,
                         std::string n0, const AttributeValue& v0,
                         std::string n1, const AttributeValue& v1,
                         std::string n2, const AttributeValue& v2,
@@ -156,7 +139,7 @@ McpttOnNetworkFloorControlHelper::SetDualControl (std::string name,
 }
 
 void
-McpttOnNetworkFloorControlHelper::SetParticipant (std::string name,
+McpttServerHelper::SetDefaultParticipant (std::string name,
                                     std::string n0, const AttributeValue& v0,
                                     std::string n1, const AttributeValue& v1,
                                     std::string n2, const AttributeValue& v2,
@@ -179,35 +162,12 @@ McpttOnNetworkFloorControlHelper::SetParticipant (std::string name,
   m_participantFac = factory;
 }
 
+// XXX deprecate
 void
-McpttOnNetworkFloorControlHelper::SetCallInfo (std::string name,
-                                       std::string n0, const AttributeValue& v0,
-                                       std::string n1, const AttributeValue& v1,
-                                       std::string n2, const AttributeValue& v2,
-                                       std::string n3, const AttributeValue& v3,
-                                       std::string n4, const AttributeValue& v4,
-                                       std::string n5, const AttributeValue& v5,
-                                       std::string n6, const AttributeValue& v6,
-                                       std::string n7, const AttributeValue& v7)
-{
-  ObjectFactory factory;
-  factory.SetTypeId (name);
-  factory.Set (n0, v0);
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  m_callInfoFac = factory;
-}
-
-void
-McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer& server, const ApplicationContainer& clients)
+McpttServerHelper::SetupFloorControl (const ApplicationContainer& server, const ApplicationContainer& clients)
 {
   Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp, Application> (server.Get (0));
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = serverApp->GetArbitrator ();
+  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = CreateObject<McpttOnNetworkFloorArbitrator> ();
 
   for (uint32_t pidx = 0; pidx < clients.GetN (); pidx++)
     {
@@ -240,19 +200,14 @@ McpttOnNetworkFloorControlHelper::SetupFloorControl (const ApplicationContainer&
     }
 }
 
-Ptr<Application>
-McpttOnNetworkFloorControlHelper::InstallPriv (const Ptr<Node>& node)
+Ptr<McpttServerApp>
+McpttServerHelper::InstallPriv (Ptr<Node> node)
 {
-  Ptr<McpttServerApp> app = m_appFac.Create<McpttServerApp> ();
+  Ptr<McpttServerApp> app = m_serverFactory.Create<McpttServerApp> ();
+  node->AddApplication (app);
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = m_arbitratorFac.Create<McpttOnNetworkFloorArbitrator> ();
   Ptr<McpttOnNetworkFloorDualControl> dualControl = m_dualControlFac.Create<McpttOnNetworkFloorDualControl> ();
-  Ptr<McpttCallControlInfo> callInfo = m_callInfoFac.Create<McpttCallControlInfo> ();
-
-  app->SetArbitrator (arbitrator);
-  arbitrator->SetCallInfo (callInfo);
   arbitrator->SetDualControl (dualControl);
-
-  node->AddApplication (app);
 
   return app;
 }

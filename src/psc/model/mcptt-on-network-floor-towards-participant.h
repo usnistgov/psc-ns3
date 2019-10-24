@@ -54,8 +54,8 @@ class McpttOnNetworkFloorArbitrator;
 /**
  * \ingroup mcptt
  *
- * This class represents the MCPTT dual floor control state mahine described in TS
- * 24.380 v14.8.0.
+ * This class represents the MCPTT server state machine for basic floor control
+ * operation towards the floor participant, as described in TS 24.380 v14.8.0.
  */
 class McpttOnNetworkFloorTowardsParticipant : public Object, public McpttFloorMsgSink
 {
@@ -74,7 +74,7 @@ public:
   */
  virtual ~McpttOnNetworkFloorTowardsParticipant (void);
  /**
-  * Notifies the floor machien that the call has been initiated.
+  * Notifies the floor machine that the call has been initiated.
   */
  virtual void CallInitiated (void);
  /**
@@ -261,7 +261,7 @@ private:
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.
  bool m_overridden; //!< Flag that indicates if associated participant is overridden without revoke.
  bool m_overriding; //!< Flag that indicates if associated participant is overriding without revoke.
- Ptr<McpttOnNetworkFloorArbitrator> m_owner; //!< The floor abitration server.
+ Ptr<McpttOnNetworkFloorArbitrator> m_owner; //!< The floor arbitration server.
  Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_receiveOnly; //!< Flag that indicates if the associated participant is "receive only".
  McpttFloorMsgRevoke m_revokeMsg; //!< The Floor Revoke message to retransmit when T8 expires.

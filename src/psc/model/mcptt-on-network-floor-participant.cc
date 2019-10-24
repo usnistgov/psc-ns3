@@ -216,6 +216,10 @@ McpttOnNetworkFloorParticipant::ChangeState (Ptr<McpttOnNetworkFloorParticipantS
 
       m_stateChangeTrace (GetOwner ()->GetOwner ()->GetUserId (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
+  else
+    {
+      NS_LOG_LOGIC ("UserId " << GetOwner ()->GetOwner ()->GetUserId () << " staying in state " << *m_state);
+    }
 }
 
 void

@@ -30,8 +30,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_ON_NETWORK_FLOOR_CONTROL_HELPER_H
-#define MCPTT_ON_NETWORK_FLOOR_CONTROL_HELPER_H
+#ifndef MCPTT_SERVER_HELPER_H
+#define MCPTT_SERVER_HELPER_H
 
 #include <string>
 
@@ -47,42 +47,33 @@ namespace ns3 {
  * \ingroup psc
  * \brief A helper for creating, configuring, and installing MCPTT apps.
  */
-class McpttOnNetworkFloorControlHelper
+class McpttServerHelper
 {
 public:
  /**
-  * \brief Creates an instance of the McpttOnNetworkFloorControlHelper class.
+  * \brief Creates an instance of the McpttServerHelper class.
   */
- McpttOnNetworkFloorControlHelper (void);
+ McpttServerHelper (void);
  /**
-  * \brief Destructor of the McpttOnNetworkFloorControlHelper class.
+  * \brief Destructor of the McpttServerHelper class.
   */
- virtual ~McpttOnNetworkFloorControlHelper (void);
+ virtual ~McpttServerHelper (void);
  /**
-  * \brief Install an ns3::McpttPttApp on each node of the input container.
+  * \brief Install an ns3::McpttServerApp on the node. 
   *
-  * \param c NodeContainer of the set of nodes on which an McpttPttApp 
-  * will be installed.
-  * \returns Container of Ptr to the applications installed.
+  * \param node The node on which an McpttServerApp will be installed.
+  * \returns Ptr to the McpttServerApp app
   */
- virtual ApplicationContainer Install (const NodeContainer& c);
+ Ptr<McpttServerApp> Install (Ptr<Node> node);
  /**
-  * \brief Install an ns3::McpttPttApp on the node. 
+  * \brief Install an ns3::McpttServerApp on the node.
   *
-  * \param node The node on which an McpttPttApp will be installed.
-  * \returns Container of Ptr to the applications installed.
+  * \param nodeName The node on which an McpttServerApp will be installed.
+  * \returns Ptr to the McpttServerApp app 
   */
- virtual ApplicationContainer Install (const Ptr<Node>& node);
- /**
-  * \brief Install an ns3::McpttPttApp on the node.
-  *
-  * \param nodeName The node on which an McpttPttApp will be installed.
-  * \returns Container of Ptr to the applications installed.
-  */
- virtual ApplicationContainer Install (const std::string& nodeName);
+ Ptr<McpttServerApp> Install (const std::string& nodeName);
  /**
   * Configures the floor control server app.
-  * \param name the name of the model to set
   * \param n0 the name of the attribute to set
   * \param v0 the value of the attribute to set
   * \param n1 the name of the attribute to set
@@ -100,7 +91,7 @@ public:
   * \param n7 the name of the attribute to set
   * \param v7 the value of the attribute to set
   */
- virtual void SetApp (std::string tid,
+ void SetServerAttributes (
                       std::string n0 = "", const AttributeValue& v0 = EmptyAttributeValue (),
                       std::string n1 = "", const AttributeValue& v1 = EmptyAttributeValue (),
                       std::string n2 = "", const AttributeValue& v2 = EmptyAttributeValue (),
@@ -129,7 +120,7 @@ public:
   * \param n7 the name of the attribute to set
   * \param v7 the value of the attribute to set
   */
- virtual void SetArbitrator (std::string tid,
+ virtual void SetDefaultArbitrator (std::string tid,
                              std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                              std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                              std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -158,7 +149,7 @@ public:
   * \param n7 the name of the attribute to set
   * \param v7 the value of the attribute to set
   */
- virtual void SetDualControl (std::string tid,
+ void SetDefaultDualControl (std::string tid,
                               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -187,7 +178,7 @@ public:
   * \param n7 the name of the attribute to set
   * \param v7 the value of the attribute to set
   */
- virtual void SetParticipant (std::string tid,
+ virtual void SetDefaultParticipant (std::string tid,
                               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -197,35 +188,6 @@ public:
                               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
  /**
-  * Configures the call control information object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetCallInfo (std::string tid,
-                           std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                           std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                           std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                           std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                           std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                           std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                           std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
   * Sets the server clients up for communication without the use of call control.
   * \param server The server application.
   * \param client The client applications.
@@ -233,21 +195,20 @@ public:
  virtual void SetupFloorControl (const ApplicationContainer& server, const ApplicationContainer& clients);
 protected:
  /**
-  * \brief Install an ns3::McpttPttApp on the node.
+  * \brief Install an ns3::McpttServerApp on the node.
   *
-  * \param node The node on which an McpttPttApp will be installed.
+  * \param node The node on which an McpttServerApp will be installed.
   * \returns Ptr to the application installed.
   */
- virtual Ptr<Application> InstallPriv (const Ptr<Node>& node);
+ Ptr<McpttServerApp> InstallPriv (Ptr<Node> node);
 private:
- ObjectFactory m_appFac; //!< The MCPTT application object factory.
+ ObjectFactory m_serverFactory; //!< The MCPTT server object factory.
  ObjectFactory m_arbitratorFac; //!< The floor arbitrator factory.
  ObjectFactory m_dualControlFac; //!< The dual floor control factory
  ObjectFactory m_participantFac; //!< The floor towards participant factory.
- ObjectFactory m_callInfoFac; //!< The floor towards participant factory.
 };
 
 } // namespace ns3
 
-#endif /* MCPTT_ON_NETWORK_FLOOR_CONTROL_HELPER_H */
+#endif /* MCPTT_SERVER_HELPER */
 

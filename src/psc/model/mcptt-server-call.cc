@@ -36,91 +36,101 @@
 #include <ns3/pointer.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
+#include <ns3/fatal-error.h>
+#include <ns3/boolean.h>
 
-#include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-chan.h"
-#include "mcptt-floor-participant.h"
+#include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
-#include "mcptt-ptt-app.h"
+#include "mcptt-server-app.h"
 
-#include "mcptt-call.h"
+#include "mcptt-server-call.h"
+#include "mcptt-server-call-machine.h"
 
 namespace ns3
 {
 
-NS_LOG_COMPONENT_DEFINE ("McpttCall");
+NS_LOG_COMPONENT_DEFINE ("McpttServerCall");
 
-NS_OBJECT_ENSURE_REGISTERED (McpttCall);
+NS_OBJECT_ENSURE_REGISTERED (McpttServerCall);
 
 TypeId
-McpttCall::GetTypeId (void)
+McpttServerCall::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCall")
+  static TypeId tid = TypeId ("ns3::McpttServerCall")
     .SetParent<Object> ()
-    .AddConstructor<McpttCall> ()
+    .AddConstructor<McpttServerCall> ()
     .AddAttribute ("CallMachine", "The call machine of the call.",
                    PointerValue (0),
-                   MakePointerAccessor (&McpttCall::m_callMachine),
-                   MakePointerChecker<McpttCallMachine> ())
+                   MakePointerAccessor (&McpttServerCall::m_callMachine),
+                   MakePointerChecker<McpttServerCallMachine> ())
+#ifdef NOTYET
     .AddAttribute ("FloorMachine", "The floor machine of the call.",
                    PointerValue (0),
-                   MakePointerAccessor (&McpttCall::m_floorMachine),
-                   MakePointerChecker<McpttFloorParticipant> ())
+                   MakePointerAccessor (&McpttServerCall::m_floorMachine),
+                   MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
+#endif
+    .AddAttribute ("AmbientListening", "Indicates if the call is configured for ambient listening.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&McpttServerCall::m_ambientListening),
+                   MakeBooleanChecker ())
+    .AddAttribute ("TemporaryGroup", "Indicates if the call is configured for a temporary group session.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&McpttServerCall::m_temporaryGroup),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
 
-McpttCall::McpttCall (void)
+McpttServerCall::McpttServerCall (void)
   : Object (),
     m_floorChan (0),
     m_mediaChan (0),
     m_owner (0),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ()),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ())
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const McpttMsg&> ()),
+    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const McpttMsg&> ())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCall::~McpttCall (void)
+McpttServerCall::~McpttServerCall (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttCall::CloseFloorChan (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  Ptr<McpttChan> floorChan = GetFloorChan ();
-  floorChan->Close ();
-}
-
-void
-McpttCall::CloseMediaChan (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
-  mediaChan->Close ();
-}
-
-void
-McpttCall::SetCallId (uint16_t callId)
+McpttServerCall::SetCallId (uint16_t callId)
 {
   NS_LOG_DEBUG (this << callId);
   m_callId = callId;
 }
 
 uint16_t
-McpttCall::GetCallId (void) const
+McpttServerCall::GetCallId (void) const
 {
   return m_callId;
 }
 
 bool
-McpttCall::IsFloorChanOpen (void) const
+McpttServerCall::IsAmbientListening (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_ambientListening;
+}
+
+bool
+McpttServerCall::IsTemporaryGroup (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_temporaryGroup;
+}
+
+bool
+McpttServerCall::IsFloorChanOpen (void) const
 {
   Ptr<McpttChan> floorChan = GetFloorChan ();
   bool isOpen = floorChan->IsOpen ();
@@ -129,7 +139,7 @@ McpttCall::IsFloorChanOpen (void) const
 }
 
 bool
-McpttCall::IsMediaChanOpen (void) const
+McpttServerCall::IsMediaChanOpen (void) const
 {
   Ptr<McpttChan> mediaChan = GetMediaChan ();
   bool isOpen = mediaChan->IsOpen ();
@@ -138,11 +148,11 @@ McpttCall::IsMediaChanOpen (void) const
 }
 
 void
-McpttCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
+McpttServerCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
-  Ptr<McpttPttApp> owner = GetOwner ();
+  Ptr<McpttServerApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
   Ptr<McpttChan> floorChan = GetFloorChan ();
   Address localAddr = owner->GetLocalAddress ();
@@ -151,11 +161,11 @@ McpttCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
 }
 
 void
-McpttCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
+McpttServerCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
-  Ptr<McpttPttApp> owner = GetOwner ();
+  Ptr<McpttServerApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
   Ptr<McpttChan> mediaChan = GetMediaChan ();
   Address localAddr = owner->GetLocalAddress ();
@@ -164,7 +174,7 @@ McpttCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
 }
 
 void
-McpttCall::Receive (const McpttCallMsg& msg)
+McpttServerCall::Receive (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << & msg);
 
@@ -173,12 +183,15 @@ McpttCall::Receive (const McpttCallMsg& msg)
       m_rxCb (this, msg);
     }
 
+  NS_FATAL_ERROR ("Unreachable?");
+#ifdef NOTYET
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
   callMachine->Receive (msg);
+#endif
 }
 
 void
-McpttCall::Receive (const McpttFloorMsg& msg)
+McpttServerCall::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -186,13 +199,11 @@ McpttCall::Receive (const McpttFloorMsg& msg)
     {
       m_rxCb (this, msg);
     }
-
-  Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
-  floorMachine->Receive (msg);
+  NS_FATAL_ERROR ("Unreachable?");
 }
 
 void
-McpttCall::Receive (const McpttMediaMsg& msg)
+McpttServerCall::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -200,16 +211,18 @@ McpttCall::Receive (const McpttMediaMsg& msg)
     {
       m_rxCb (this, msg);
     }
+  NS_FATAL_ERROR ("Unreachable?");
 
+#ifdef NOTYET
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
-  Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
-
   callMachine->Receive (msg);
-  floorMachine->Receive (msg);
+  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = GetArbitrator ();
+  arbitrator->Receive (msg);
+#endif
 }
 
 void
-McpttCall::Send (const McpttCallMsg& msg)
+McpttServerCall::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -218,12 +231,12 @@ McpttCall::Send (const McpttCallMsg& msg)
       m_txCb (this, msg);
     }
 
-  Ptr<McpttPttApp> parent = GetOwner ();
-  parent->Send (msg);
+  Ptr<McpttServerApp> owner = GetOwner ();
+  owner->Send (msg);
 }
 
 void
-McpttCall::Send (const McpttFloorMsg& msg)
+McpttServerCall::Send (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
@@ -241,17 +254,17 @@ McpttCall::Send (const McpttFloorMsg& msg)
 }
 
 void
-McpttCall::Send (const McpttMediaMsg& msg)
+McpttServerCall::Send (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<Packet> pkt = Create<Packet> ();
   Ptr<McpttChan> mediaChan = GetMediaChan ();
-  Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
+  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = GetArbitrator ();
 
   McpttMediaMsg txMsg (msg);
 
-  floorMachine->MediaReady (txMsg);
+  //arbitrator->MediaReady (txMsg);
 
   if (!m_txCb.IsNull ())
     {
@@ -264,13 +277,12 @@ McpttCall::Send (const McpttMediaMsg& msg)
 }
 
 void
-McpttCall::DoDispose (void)
+McpttServerCall::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetCallMachine (0);
   SetFloorChan (0);
-  SetFloorMachine (0);
+  SetArbitrator (0);
   SetMediaChan (0);
   SetOwner (0);
 
@@ -278,7 +290,7 @@ McpttCall::DoDispose (void)
 }
 
 void
-McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
+McpttServerCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
 {
   NS_LOG_FUNCTION (this << &pkt);
 
@@ -360,7 +372,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
+McpttServerCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
 {
   NS_LOG_FUNCTION (this << &pkt);
 
@@ -371,38 +383,38 @@ McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
   Receive (msg);
 }
 
-Ptr<McpttCallMachine>
-McpttCall::GetCallMachine (void) const
+Ptr<McpttServerCallMachine>
+McpttServerCall::GetCallMachine (void) const
 {
   return m_callMachine;
 }
 
 Ptr<McpttChan>
-McpttCall::GetFloorChan (void) const
+McpttServerCall::GetFloorChan (void) const
 {
   return m_floorChan;
 }
 
-Ptr<McpttFloorParticipant>
-McpttCall::GetFloorMachine (void) const
+Ptr<McpttOnNetworkFloorArbitrator>
+McpttServerCall::GetArbitrator (void) const
 {
-  return m_floorMachine;
+  return m_arbitrator;
 }
 
 Ptr<McpttChan>
-McpttCall::GetMediaChan (void) const
+McpttServerCall::GetMediaChan (void) const
 {
   return m_mediaChan;
 }
 
-Ptr<McpttPttApp>
-McpttCall::GetOwner (void) const
+Ptr<McpttServerApp>
+McpttServerCall::GetOwner (void) const
 {
   return m_owner;
 }
 
 void
-McpttCall::SetCallMachine (Ptr<McpttCallMachine>  callMachine)
+McpttServerCall::SetCallMachine (Ptr<McpttServerCallMachine>  callMachine)
 {
   NS_LOG_FUNCTION (this << &callMachine);
 
@@ -415,46 +427,46 @@ McpttCall::SetCallMachine (Ptr<McpttCallMachine>  callMachine)
 }
 
 void
-McpttCall::SetFloorChan (Ptr<McpttChan>  floorChan)
+McpttServerCall::SetFloorChan (Ptr<McpttChan>  floorChan)
 {
   NS_LOG_FUNCTION (this << &floorChan);
 
   if (floorChan != 0)
     {
-      floorChan->SetRxPktCb (MakeCallback (&McpttCall::ReceiveFloorPkt, this));
+      floorChan->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveFloorPkt, this));
     }
 
   m_floorChan = floorChan;
 }
 
 void
-McpttCall::SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine)
+McpttServerCall::SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator)
 {
-  NS_LOG_FUNCTION (this << &floorMachine);
+  NS_LOG_FUNCTION (this << &arbitrator);
 
-  if (floorMachine != 0)
+  if (arbitrator != 0)
     {
-      floorMachine->SetOwner (this);
+      arbitrator->SetOwner (this);
     }
 
-  m_floorMachine = floorMachine;
+  m_arbitrator = arbitrator;
 }
 
 void
-McpttCall::SetMediaChan (Ptr<McpttChan>  mediaChan)
+McpttServerCall::SetMediaChan (Ptr<McpttChan>  mediaChan)
 {
   NS_LOG_FUNCTION (this << &mediaChan);
 
   if (mediaChan != 0)
     {
-      mediaChan->SetRxPktCb (MakeCallback (&McpttCall::ReceiveMediaPkt, this));
+      mediaChan->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveMediaPkt, this));
     }
 
   m_mediaChan = mediaChan;
 }
 
 void
-McpttCall::SetOwner (Ptr<McpttPttApp> owner)
+McpttServerCall::SetOwner (Ptr<McpttServerApp> owner)
 {
   NS_LOG_FUNCTION (this << owner);
 
@@ -462,7 +474,7 @@ McpttCall::SetOwner (Ptr<McpttPttApp> owner)
 }
 
 void
-McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  rxCb)
+McpttServerCall::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -470,7 +482,7 @@ McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&> 
 }
 
 void
-McpttCall::SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb)
+McpttServerCall::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  txCb)
 {
   NS_LOG_FUNCTION (this << &txCb);
 

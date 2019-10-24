@@ -139,7 +139,7 @@ McpttOnNetworkFloorTowardsParticipant::CallInitiated (void)
 {
   NS_LOG_FUNCTION (this);
   
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking call initiated notification.");
+  NS_LOG_LOGIC ("Taking call initiated notification towards participant " << GetPeerAddress ());
 
   m_state->CallInitiated (*this);
 }
@@ -185,7 +185,7 @@ McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowar
 
   if (currStateId != stateId)
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
+      NS_LOG_LOGIC ("TowardsParticipant " << GetPeerAddress () << " moving from state " << *m_state << " to state " << *state);
 
       m_state->Unselected (*this);
       SetState (state);
@@ -196,13 +196,14 @@ McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowar
           m_stateChangeCb (currStateId, stateId);
         }
 
-      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 {
+  NS_LOG_FUNCTION (this << msg);
   Ptr<Packet> pkt = Create<Packet> ();
   pkt->AddHeader (msg);
 
@@ -213,10 +214,12 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
     {
+      NS_LOG_DEBUG ("Send floor msg towards participant " << GetPeerAddress ());
       GetFloorChan ()->Send (pkt);
     }
   else if (msg.IsA (McpttMediaMsg::GetTypeId ()))
     {
+      NS_LOG_DEBUG ("Send media msg towards participant " << GetPeerAddress ());
       GetMediaChan ()->Send (pkt);
     }
 }
@@ -238,56 +241,42 @@ McpttOnNetworkFloorTowardsParticipant::GetStateId (void) const
 bool
 McpttOnNetworkFloorTowardsParticipant::IsDualFloor (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_dualFloor;
 }
 
 bool
 McpttOnNetworkFloorTowardsParticipant::IsMcImplicitRequest (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_mcImplicitRequest;
 }
 
 bool
 McpttOnNetworkFloorTowardsParticipant::IsMcQueuing (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_mcQueuing;
 }
 
 bool
 McpttOnNetworkFloorTowardsParticipant::IsOriginator (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_originator;
 }
 
 bool
 McpttOnNetworkFloorTowardsParticipant::IsOverridden (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_overridden;
 }
 
 bool
 McpttOnNetworkFloorTowardsParticipant::IsOverriding (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_overriding;
 }
 
 bool
 McpttOnNetworkFloorTowardsParticipant::IsReceiveOnly (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_receiveOnly;
 }
 
@@ -423,15 +412,16 @@ McpttOnNetworkFloorTowardsParticipant::Start (void)
 
   Ptr<McpttChan> floorChan = GetFloorChan ();
   Ptr<McpttChan> mediaChan = GetMediaChan ();
+  Ptr<McpttServerApp> app = GetOwner ()->GetOwner ()->GetOwner ();
 
   if (!floorChan->IsOpen ())
     {
-      floorChan->Open (GetOwner ()->GetOwner ()->GetNode (), GetFloorPort (), GetOwner ()->GetOwner ()->GetLocalAddress (), GetPeerAddress ());
+      floorChan->Open (app->GetNode (), GetFloorPort (), app->GetLocalAddress (), GetPeerAddress ());
     }
 
   if (!mediaChan->IsOpen ())
     {
-      mediaChan->Open (GetOwner ()->GetOwner ()->GetNode (), GetMediaPort (), GetOwner ()->GetOwner ()->GetLocalAddress (), GetPeerAddress ());
+      mediaChan->Open (app->GetNode (), GetMediaPort (), app->GetLocalAddress (), GetPeerAddress ());
     }
 
   CallInitiated ();
@@ -608,88 +598,66 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
 Ptr<McpttChan>
 McpttOnNetworkFloorTowardsParticipant::GetFloorChan (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_floorChan;
 }
 
 uint16_t
 McpttOnNetworkFloorTowardsParticipant::GetFloorPort (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_floorPort;
 }
 
 Ptr<McpttChan>
 McpttOnNetworkFloorTowardsParticipant::GetMediaChan (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_mediaChan;
 }
 
 uint16_t
 McpttOnNetworkFloorTowardsParticipant::GetMediaPort (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_mediaPort;
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
 McpttOnNetworkFloorTowardsParticipant::GetOwner (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_owner;
 }
 
 Address
 McpttOnNetworkFloorTowardsParticipant::GetPeerAddress (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_peerAddress;
 }
 
 McpttFloorMsgRevoke
 McpttOnNetworkFloorTowardsParticipant::GetRevokeMsg (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_revokeMsg;
 }
 
 uint32_t
 McpttOnNetworkFloorTowardsParticipant::GetStoredSsrc (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_storedSsrc;
 }
 
 uint8_t
 McpttOnNetworkFloorTowardsParticipant::GetStoredPriority (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_storedPriority;
 }
 
 McpttFloorMsgFieldTrackInfo
 McpttOnNetworkFloorTowardsParticipant::GetTrackInfo (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_trackInfo;
 }
 
 Ptr<McpttTimer>
 McpttOnNetworkFloorTowardsParticipant::GetT8 (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_t8;
 }
 

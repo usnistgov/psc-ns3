@@ -38,7 +38,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-call-control-info.h"
+#include "mcptt-server-call.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-msg-sink.h"
@@ -49,7 +49,6 @@
 namespace ns3 {
 
 class McpttOnNetworkFloorArbitratorState;
-class McpttServerApp;
 class McpttOnNetworkFloorTowardsParticipant;
 
 /**
@@ -304,12 +303,11 @@ protected:
 private:
  bool m_ackRequired; //!< A flag that indicates if acknowledgement is required.
  bool m_audioCutIn;  //!< The flag that indicates if audio cut-in is configured for the group.
- Ptr<McpttCallControlInfo> m_callInfo; //!< The call control information.
  Ptr<McpttCounter> m_c7; //!< The counter associated with T7.
  Ptr<McpttCounter> m_c20; //!< The counter associated with T20.
  bool m_dualFloorSupported; //!< A flag that to indicate dual floor indication.
  Ptr<McpttOnNetworkFloorDualControl> m_dualControl; //!< The dual floor control state machine.
- Ptr<McpttServerApp> m_owner; //!< The client application that owns this floor machine.
+ Ptr<McpttServerCall> m_owner; //!< The call object that owns this floor machine.
  bool m_mcGranted; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
  Ptr<McpttFloorQueue> m_queue; //!< The queue of floor requests.
@@ -332,11 +330,6 @@ private:
  Callback<void, const McpttMsg&> m_txCb; //!< The message tranmission call back.
 public:
  /**
-  * Gets the call control information.
-  * \returns The call control information.
-  */
- virtual Ptr<McpttCallControlInfo> GetCallInfo (void) const;
- /**
   * Gets the counter C7
   * \returns The counter.
   */
@@ -355,7 +348,7 @@ public:
   * Gets the owner of the state machine.
   * \returns The owner.
   */
- virtual Ptr<McpttServerApp> GetOwner (void) const;
+ virtual Ptr<McpttServerCall> GetOwner (void) const;
  /**
   * Gets the queue.
   * \returns The queue.
@@ -417,11 +410,6 @@ public:
   */
  virtual Ptr<McpttTimer> GetT20 (void) const;
  /**
-  * Sets the call control info.
-  * \param callInfo The call control information.
-  */
- virtual void SetCallInfo (const Ptr<McpttCallControlInfo> callInfo);
- /**
   * Sets the dual floor control state machine.
   * \param dualControl The state machine.
   */
@@ -430,7 +418,7 @@ public:
   * Sets the owner of the floor machine.
   * \param owner The owner.
   */
- virtual void SetOwner (Ptr<McpttServerApp> owner);
+ virtual void SetOwner (Ptr<McpttServerCall> owner);
  /**
   * Sets the reject cause to include in the revoke message when entering the 'G: pending Floor Revoke' state.
   * \param rejectCause The reject cause.

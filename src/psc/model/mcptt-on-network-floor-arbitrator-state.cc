@@ -36,6 +36,8 @@
 
 #include "mcptt-call-msg-field.h"
 #include "mcptt-entity-id.h"
+#include "mcptt-server-call.h"
+#include "mcptt-server-call-machine.h"
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-floor-msg.h"
@@ -106,7 +108,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT4 (McpttOnNetworkFloorArbitrator& m
 void
 McpttOnNetworkFloorArbitratorState::ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << &machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T7."); 
 }
@@ -128,8 +130,6 @@ McpttOnNetworkFloorArbitratorState::GetInstanceStateId (void) const
 bool
 McpttOnNetworkFloorArbitratorState::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
-
   return false;
 }
 
@@ -254,6 +254,7 @@ void
 McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
 {
   NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " CallInitialized()");
 
   //TODO: Check if a confirmed indication is required and at least one invited
   //      MCPTT client has accepted the invitation; or check that a confirmed
@@ -263,16 +264,19 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloo
   //TODO: Wait for the 'basic floor control operation towards the floor
   //      participant' to be initialized.
 
-  if (machine.GetCallInfo ()->IsTemporaryGroup ())
+  if (machine.GetOwner ()->IsTemporaryGroup ())
     {
+      NS_LOG_DEBUG ("machine IsTemporaryGroup () is true");
       McpttOnNetworkFloorArbitratorStateInitialising::GetInstance ()->Enter (machine);
     }
   else
     {
       if (!machine.IsMcGranted ())
         {
+          NS_LOG_DEBUG ("machine IsMcGranted () is false");
           if (participant.IsMcImplicitRequest ())
             {
+              NS_LOG_DEBUG ("participant IsMcImplicitRequest is true");
               McpttFloorMsgRequest msg;
               msg.SetSsrc (participant.GetStoredSsrc ());
               msg.SetPriority (McpttFloorMsgFieldPriority (participant.GetStoredPriority ()));
@@ -280,12 +284,14 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloo
             }
           else
             {
+              NS_LOG_DEBUG ("participant IsMcImplicitRequest is false");
               McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
             }
         }
       else
         {
           //TODO: Not in standard - set needed attributes (SSRC, Priority, and Track Info)
+          NS_LOG_DEBUG ("machine IsMcGranted () is true");
           machine.SetStoredSsrc (participant.GetStoredSsrc ());
           machine.SetStoredPriority (participant.GetStoredPriority ());
           machine.SetTrackInfo (participant.GetTrackInfo ());
@@ -331,11 +337,18 @@ McpttOnNetworkFloorArbitratorStateIdle::GetInstanceStateId (void) const
 void
 McpttOnNetworkFloorArbitratorStateIdle::Enter (McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " Enter from " << machine.GetStateId ());
 
-  if ((machine.GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
-        && !machine.GetQueue ()->IsEnabled ())
-      || !machine.IsDualFloor ())
+  if (machine.GetStateId () == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ())
+    {
+      // TODO:  24.380 section 6.3.4.2.2
+      machine.ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
+      machine.GetC7 ()->Reset ();
+      machine.GetT7 ()->Start ();
+      machine.GetT4 ()->Start ();
+    }
+  // Remainder of method covers 24.380 section 6.3.4.3.2  
+  else if (!machine.GetQueue ()->IsEnabled () || !machine.IsDualFloor ())
     {
       machine.SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
       if (machine.GetQueue ()->HasNext ())
@@ -358,11 +371,9 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (McpttOnNetworkFloorArbitrator& ma
           machine.ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
         }
     }
-  else if (machine.GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
-      && machine.IsDualFloor ())
+  else if (machine.IsDualFloor ())
     {
       machine.SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
-
       McpttFloorMsgIdle idleMsg;
       idleMsg.SetSsrc (machine.GetTxSsrc ());
       idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
@@ -415,20 +426,25 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (McpttOnNetworkFloor
     }
 }
 
+// Section 6.3.4.3.4
 void
 McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << &machine);
 
   if (machine.GetC7 ()->IsLimitReached ())
     {
+      // Continue to schedule timer T7 but keep count at same high value
+      NS_LOG_DEBUG ("Reschedule timer T7");
+      machine.GetT7 ()->Start ();
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Send Idle and reschedule timer T7");
       McpttFloorMsgIdle idleMsg;
       idleMsg.SetSsrc (machine.GetTxSsrc ());
       idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
       machine.SendToAll (idleMsg);
-    }
-  else
-    {
       machine.GetT7 ()->Start ();
       machine.GetC7 ()->Increment ();
     }
@@ -439,8 +455,8 @@ McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT4 (McpttOnNetworkFloorArbitrato
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  //TODO: Shall indicate to the application and signallying plane that timer T4 has expired
-  //TODO: If the application and signaling plane initiates MCPTT call relase,
+  //TODO: Shall indicate to the application and signaling plane that timer T4 has expired
+  //TODO: If the application and signaling plane initiates MCPTT call release,
   //      shall enter the 'Releasing' state
   //      otherwise:
   machine.GetT4 ()->Start ();
@@ -504,8 +520,6 @@ McpttOnNetworkFloorArbitratorStateTaken::GetInstanceStateId (void) const
 bool
 McpttOnNetworkFloorArbitratorStateTaken::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
-
   return true;
 }
 
@@ -530,7 +544,7 @@ McpttOnNetworkFloorArbitratorStateTaken::Enter (McpttOnNetworkFloorArbitrator& m
   takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetStoredSsrc ()));
   takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
 
-  if (machine.GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  if (machine.GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
       takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (0));
     }
@@ -810,8 +824,6 @@ McpttOnNetworkFloorArbitratorStateRevoke::GetInstanceStateId (void) const
 bool
 McpttOnNetworkFloorArbitratorStateRevoke::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
-
   return true;
 }
 

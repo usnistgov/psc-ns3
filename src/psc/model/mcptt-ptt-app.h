@@ -32,7 +32,7 @@
 #ifndef MCPTT_PTT_APP_H
 #define MCPTT_PTT_APP_H
 
-#include <vector>
+#include <map>
 
 #include <ns3/application.h>
 #include <ns3/callback.h>
@@ -63,17 +63,17 @@ namespace ns3 {
  * \defgroup mcptt
  * \ingroup mcptt
  *
- * This class is the main component of the MCPTT model, and it is what ties all
- * of the MCPTT components together. The application is the object used to
- * create and manage calls, as well as definining the functions for expected
- * user actions like starting an emergency alert or chaning the call type. When
+ * This class is the main component of the MCPTT off-network model, and it 
+ * is what ties all of the MCPTT components together (MCPTT on-network relies
+ * on additional server components). The application is the object used to
+ * create and manage calls, as well as defining the functions for expected
+ * user actions like starting an emergency alert or changing the call type. When
  * creating calls the user must give two object factories, one factory for
- * creating the approprate call machine and another for the appropriate floor
- * machine depending on which call control and floor control protocols are
- * desired for a call. Once created, the user must use the "SelectCall"
- * function to select a call based on the call's index that will then link the
- * application to receive notifications and to have user actions applied to a
- * particular call.
+ * creating the desired call control machine and another for the desired floor
+ * control machine. Once started, the user must use the "SelectCall"
+ * function to select a call based on the call's index.  This will result in
+ * a call notionally being in the foreground of the user's app and will allow
+ * user actions such as push-to-talk to be applied to a particular call.
  */
 class McpttPttApp : public Application, public McpttMediaSink, public McpttPushable
 {
@@ -121,17 +121,26 @@ public:
   * Creates a call.
   * \param callFac The factory used to create an ns3::McpttCallMachine.
   * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
+  * \return pointer to newly created call
   */
- virtual void CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac);
+ virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac);
+ /**
+  * Creates a call.
+  * \param callFac The factory used to create an ns3::McpttCallMachine.
+  * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
+  * \param callId The call ID to use
+  * \return pointer to newly created call
+  */
+ virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId);
+  /**
+   * Adds a call.
+   * \param call The call to add
+   */
+  void AddCall (Ptr<McpttCall> call);
  /**
   * Downgrades the call type.
   */
  virtual void DowngradeCallType (void);
- /**
-  * Gets the type ID fo this McpttPttApp instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
  /**
   * Gets the location of the node that this application is installed on.
   * \return The location of the node.
@@ -185,13 +194,15 @@ public:
  virtual void Receive (const McpttCallMsg& msg);
  /**
   * Selects a call.
-  * \param callIdx The index of the call.
+  * \param callId The ID of the call.
+  * \param pushOnSelect Whether to start the pusher upon call selection
   */
- virtual void SelectCall (uint32_t callIdx);
+ virtual void SelectCall (uint32_t callId, bool pushOnSelect = false);
  /**
   * Selects the last call in the list of calls.
+  * \param pushOnSelect Whether to start the pusher upon call selection
   */
- virtual void SelectLastCall (void);
+ virtual void SelectLastCall (bool pushOnSelect = false);
  /**
   * Sends a call control message.
   * \param msg The message to send.
@@ -264,18 +275,20 @@ protected:
  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
 private:
  static uint16_t s_portNumber; //!< A port number.
+ bool m_isRunning; //!< Whether application is running or not
+ uint16_t m_callIdAllocator; //!< Counter to allocate call IDs
  uint16_t m_callPort; //!< The port on which call control messages will flow.
  Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
- std::vector<Ptr<McpttCall> > m_calls; //!< The collection of calls.
+ std::map<uint16_t, Ptr<McpttCall> > m_calls; //!< The container of calls.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  Address m_localAddress; //!< The local IP address.
  Ptr<McpttMediaSrc> m_mediaSrc; //!< The media source.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  Address m_peerAddress; //!< The address of the node that the peer application is on.
- Ptr<McpttPusher> m_pusher; //!< The object that randomly calls the Pushed() function.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
+ Ptr<McpttPusher> m_pusher; //!< The object that calls the Pushed() function.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
- Ptr<McpttCall> m_selectedCall; //!< The currenctly selected call.
+ Ptr<McpttCall> m_selectedCall; //!< The currently selected call.
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
@@ -286,10 +299,10 @@ public:
   */
  virtual Ptr<McpttChan> GetCallChan (void) const;
  /**
-  * Gets the collection of calls.
-  * \returns The collection of calls.
+  * Gets the container of calls.
+  * \returns The container of calls.
   */
- virtual std::vector<Ptr<McpttCall> > GetCalls (void) const;
+ virtual std::map<uint16_t, Ptr<McpttCall> > GetCalls (void) const;
  /**
   * Gets the local address.
   * \returns The local address.
@@ -321,10 +334,10 @@ public:
   */
  virtual void SetCallChan (Ptr<McpttChan>  callChan);
  /**
-  * Sets the collection of calls.
-  * \param calls The collection of calls.
+  * Sets the container of calls.
+  * \param calls The container of calls.
   */
- virtual void SetCalls (const std::vector<Ptr<McpttCall> >  calls);
+ virtual void SetCalls (const std::map<uint16_t, Ptr<McpttCall> >  calls);
  /**
   * Sets the callback used to notify a floor granted.
   * \param floorGrantedCb The callback.
@@ -350,11 +363,6 @@ public:
   * \param pusher The pusher.
   */
  virtual void SetPusher (Ptr<McpttPusher>  pusher);
- /**
-  * Sets the currently selected call.
-  * \param selectedCall The call.
-  */
- virtual void SetSelectedCall (Ptr<McpttCall>  selectedCall);
  /**
   * Sets the selected call change callback.
   * \param selectedCallChangeCb The callback.

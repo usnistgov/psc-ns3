@@ -56,3 +56,7 @@ def build(bld):
     obj = bld.create_ns3_program('example-mcptt-on-network-floor-control-lte',
                                  ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
     obj.source = 'example-mcptt-on-network-floor-control-lte.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-on-network-two-calls',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'example-mcptt-on-network-two-calls.cc'

@@ -151,7 +151,7 @@ McpttOnNetworkFloorDualControl::ChangeState (Ptr<McpttOnNetworkFloorDualControlS
           m_stateChangeCb (currStateId, stateId);
         }
 
-      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetCallInfo ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

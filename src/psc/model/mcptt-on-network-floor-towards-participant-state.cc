@@ -38,6 +38,8 @@
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-on-network-floor-arbitrator-state.h"
 #include "mcptt-server-app.h"
+#include "mcptt-server-call.h"
+#include "mcptt-server-call-machine.h"
 #include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-floor-msg.h"
@@ -279,8 +281,17 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
 {
   NS_LOG_FUNCTION (this);
 
-  if (!machine.GetOwner ()->GetCallInfo ()->IsTemporaryGroup ()
-      || !machine.GetOwner ()->GetCallInfo ()->IsAmbientListening ())
+  // Procedures are drawn from 24.380 section 6.3.5.2.2 SIP Session initiated
+  NS_LOG_DEBUG ("IsTemporaryGroup: " << machine.GetOwner ()->GetOwner ()->IsTemporaryGroup () 
+      << " IsAmbientListening: " << machine.GetOwner ()->GetOwner ()->IsAmbientListening ()
+      << " IsStarted: " << machine.GetOwner ()->IsStarted ()
+      << " IsMcImplicitRequest: " << machine.IsMcImplicitRequest ()
+      << " IsFloorOccupied: " << machine.GetOwner ()->IsFloorOccupied ()
+      << " IsEnabled: " << machine.GetOwner ()->GetQueue ()->IsEnabled ()
+      << " IsMcQueuing: " <<  machine.IsMcQueuing () 
+      << " IsDualFloor: " <<  machine.IsDualFloor ()); 
+  if (!machine.GetOwner ()->GetOwner ()->IsTemporaryGroup ()
+      || !machine.GetOwner ()->GetOwner ()->IsAmbientListening ())
     {
       if (!machine.GetOwner ()->IsStarted ()
           && machine.IsMcImplicitRequest ())
@@ -312,7 +323,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
           takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
           takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
           takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+          if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
             {
               takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
             }
@@ -354,7 +365,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
               takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
               takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
               takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-              if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+              if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
                 {
                   takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
                 }
@@ -375,7 +386,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
           takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
           takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
           takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-          if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+          if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
             {
               takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
             }
@@ -462,7 +473,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveFloorRequest 
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () != McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () != McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
       machine.GetOwner ()->ReceiveFloorRequest (msg);
     }
@@ -664,7 +675,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
         }
       machine.DoSend (denyMsg);
     }
-  else if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  else if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
       McpttFloorMsgDeny denyMsg;
       denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
@@ -767,7 +778,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
       takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
       takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
 
-      if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+      if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
         {
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
         }
@@ -802,7 +813,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
       McpttFloorMsgTaken takenMsg;
       takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
       takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-      if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+      if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
         {
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
         }
@@ -1333,7 +1344,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ReceiveFloorRelease
       takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
       takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
 
-      if (machine.GetOwner ()->GetCallInfo ()->GetCallTypeId () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+      if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
         {
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
         }

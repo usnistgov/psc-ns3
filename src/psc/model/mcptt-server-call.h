@@ -29,15 +29,14 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_CALL_H
-#define MCPTT_CALL_H
+#ifndef MCPTT_SERVER_CALL_H
+#define MCPTT_SERVER_CALL_H
 
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-chan.h"
 #include "mcptt-floor-participant.h"
@@ -46,41 +45,39 @@
 
 namespace ns3 {
 
-class McpttPttApp;
+class McpttServerApp;
+class McpttOnNetworkFloorArbitrator;
+class McpttServerCallMachine;
 
 /**
  * \ingroup mcptt
  *
- * This class used to represent an MCPTT call, which is just a logical channel
- * between MCPTT applications. Associated with a call is a call ID, to identify
- * the particular call, a call machine to perform call control, a floor
- * machine to do floor control, a floor control message channel, and a media
- * message channel. An MCPTT call should be subordinate of an MCPTT application.
+ * This class used to encapsulate the state to represent an MCPTT call on the
+ * MCPTT server.  Associated with a call is a call ID, to identify
+ * the particular call, a call machine to perform call control, an arbitrator
+ * (floor control server), a floor control message channel, and a media
+ * message channel. An MCPTT server call should be subordinate of an MCPTT 
+ * server application.
+ *
+ * The corresponding call encapsulation class on the MCPTT clients is the
+ * class ns3::McpttCall.
  */
-class McpttCall : public Object
+class McpttServerCall : public Object
 {
 public:
  /**
-  * Gets the type ID of the McpttCall class.
+  * Gets the type ID of the McpttServerCall class.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttCall class.
+  * Creates an instance of the McpttServerCall class.
   */
-  McpttCall (void);
+  McpttServerCall (void);
  /**
-  * The destructor of the McpttCall class.
+  * The destructor of the McpttServerCall class.
   */
- virtual ~McpttCall (void);
- /**
-  * Closes the floor channel.
-  */
- void CloseFloorChan (void);
- /**
-  * Closes the media channel.
-  */
- void CloseMediaChan (void);
+ virtual ~McpttServerCall (void);
  /**
   * Sets the ID of the call.
   * \param callId The call ID.
@@ -91,6 +88,16 @@ public:
   * \returns The call ID.
   */
  uint16_t GetCallId (void) const;
+ /**
+  * Indicates if the call is configured for ambient listening.
+  * \returns True, if the call is configured for ambient listening; otherwise, false.
+  */
+ virtual bool IsAmbientListening (void) const;
+ /**
+  * Indicates if the call is configured for a temporary group session.
+  * \returns True, if the call is configured for a temporary group session; false, otherwise.
+  */
+ virtual bool IsTemporaryGroup (void) const;
  /**
   * Indicates if the floor channel is open.
   * \returns True, if the channel is open.
@@ -145,7 +152,7 @@ public:
  void Send (const McpttMediaMsg& msg);
 protected:
  /**
-  * Disposes of the McpttCall instance.
+  * Disposes of the McpttServerCall instance.
   */
  void DoDispose (void);
  /**
@@ -160,29 +167,31 @@ protected:
  void ReceiveMediaPkt (Ptr<Packet>  pkt);
  private:
  uint16_t m_callId;  //!< Call ID of the call.
- Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
+ bool m_ambientListening; //!< The flag that indicates if the call is configured for ambient listening.
+ bool m_temporaryGroup; //!< The flag that indicates if the call is configured for a temporary group.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
- Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
+ Ptr<McpttServerCallMachine> m_callMachine; //!< The call control machine.
+ Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The floor control machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
- Ptr<McpttPttApp> m_owner; //!< The owner of this call.
- Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
- Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
+ Ptr<McpttServerApp> m_owner; //!< The owner of this call.
+ Callback<void, Ptr<const McpttServerCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
+ Callback<void, Ptr<const McpttServerCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
 public:
  /**
   * Gets the call control state machine.
   * \returns The call machine.
   */
- Ptr<McpttCallMachine> GetCallMachine (void) const;
+ Ptr<McpttServerCallMachine> GetCallMachine (void) const;
  /**
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
  Ptr<McpttChan> GetFloorChan (void) const;
  /**
-  * Gets the floor machine.
-  * \returns The floor machine.
+  * Gets the arbitrator.
+  * \returns The arbitrator
   */
- Ptr<McpttFloorParticipant> GetFloorMachine (void) const;
+ Ptr<McpttOnNetworkFloorArbitrator> GetArbitrator (void) const;
  /**
   * Gets the channel to use for floor control messages.
   * \returns The channel.
@@ -192,22 +201,22 @@ public:
   * Gets the owner of this call.
   * \returns The owner.
   */
- Ptr<McpttPttApp> GetOwner (void) const;
+ Ptr<McpttServerApp> GetOwner (void) const;
  /**
   * Sets the call control state machine.
   * \param callMachine The call control state machine.
   */
- void SetCallMachine (Ptr<McpttCallMachine>  callMachine);
+ void SetCallMachine (Ptr<McpttServerCallMachine> callMachine);
  /**
   * Sets the channel to use for floor control messages.
   * \param floorChan The channel.
   */
  void SetFloorChan (Ptr<McpttChan>  floorChan);
  /**
-  * Sets the floor machine.
-  * \param floorMachine The floor machine.
+  * Sets the arbitrator.
+  * \param arbitrator The arbitrator
   */
- void SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine);
+ void SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator);
  /**
   * Sets the channel to use for media messages.
   * \param mediaChan The channel.
@@ -217,20 +226,20 @@ public:
   * Sets the owner of this call.
   * \param owner The owner.
   */
- void SetOwner (Ptr<McpttPttApp> owner);
+ void SetOwner (Ptr<McpttServerApp> owner);
  /**
   * Sets the received message callback.
   * \param rxCb The callback.
   */
- void SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  rxCb);
+ void SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  rxCb);
  /**
   * Sets the transmitted message callback.
   * \param txCb The callback.
   */
- void SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb);
+ void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  txCb);
 };
 
 } // namespace ns3
 
-#endif /* MCPTT_CALL_H */
+#endif /* MCPTT_SERVER_CALL_H */
 

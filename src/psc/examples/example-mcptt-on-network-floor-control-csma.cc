@@ -134,29 +134,12 @@ int main (int argc, char *argv[])
 
   NS_LOG_INFO ("Creating applications...");
   ApplicationContainer serverApps;
-  McpttOnNetworkFloorControlHelper mcpttServerHelper;
-  mcpttServerHelper.SetApp ("ns3::McpttServerApp");
-  mcpttServerHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "TxSsrc", UintegerValue (100),
-                         "QueueCapacity", UintegerValue (1),
-                         "McGranted", BooleanValue (false));
-  mcpttServerHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
-  mcpttServerHelper.SetParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
-                         "McImplicitRequest", BooleanValue (false),
-                         "McQueuing", BooleanValue (true),
-                         "ReceiveOnly", BooleanValue (false));
-  mcpttServerHelper.SetCallInfo ("ns3::McpttCallControlInfo",
-                         "AmbientListening", BooleanValue (false),
-                         "CallId", UintegerValue (1),
-                         "CallTypeId", UintegerValue (McpttCallMsgFieldCallType::BASIC_GROUP),
-                         "TemporaryGroup", BooleanValue (false));
-
-  serverApps.Add (mcpttServerHelper.Install (servers));
+  McpttServerHelper mcpttServerHelper;
+  serverApps.Add (mcpttServerHelper.Install (servers.Get (0)));
   serverApps.Start (start);
   serverApps.Stop (stop);
+  // For use below
+  Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverApps.Get (0));
 
   ApplicationContainer clientApps;
   McpttHelper mcpttClientHelper;
@@ -180,36 +163,48 @@ int main (int argc, char *argv[])
 
   for (uint32_t idx = 0; idx < servers.GetN (); idx++)
     {
-      Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp, Application> (serverApps.Get (idx));
+      Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverApps.Get (idx));
       Ipv4Address serverAddress = interfaces.GetAddress (idx);
       serverApp->SetLocalAddress (serverAddress);
       NS_LOG_INFO ("server " << idx << " ip address = " << serverAddress);
     }
 
-  ObjectFactory callFac;
-  callFac.SetTypeId ("ns3::McpttCallMachineNull");
-
-  ObjectFactory floorFac;
-  floorFac.SetTypeId ("ns3::McpttOnNetworkFloorParticipant");
-  floorFac.Set ("McImplicitRequest", BooleanValue (false));
-  floorFac.Set ("AckRequired", BooleanValue (false));
-  floorFac.Set ("GenMedia", BooleanValue (true));
-
   for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
     {
-      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp, Application> (clientApps.Get (idx));
+      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clientApps.Get (idx));
 
       Ipv4Address clientAddress = interfaces.GetAddress (idx + servers.GetN ());
       pttApp->SetLocalAddress (clientAddress);
       NS_LOG_INFO ("client " << idx << " ip address = " << clientAddress);
 
-      //floorFac.Set ("Priority", UintegerValue ((idx + 6) % 7));
-
-      pttApp->CreateCall (callFac, floorFac);
-      pttApp->SelectLastCall ();
     }
 
-  mcpttServerHelper.SetupFloorControl (serverApps, clientApps);
+
+  McpttCallHelper callHelper;
+  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+                         "AckRequired", BooleanValue (false),
+                         "AudioCutIn", BooleanValue (false),
+                         "DualFloorSupported", BooleanValue (false),
+                         "TxSsrc", UintegerValue (100),
+                         "QueueCapacity", UintegerValue (1),
+                         "McGranted", BooleanValue (false));
+  // Dual control not yet in the refactoring
+  // callHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
+  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+                         "McImplicitRequest", BooleanValue (false),
+                         "McQueuing", BooleanValue (true),
+                         "ReceiveOnly", BooleanValue (false));
+  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+                         "McImplicitRequest", BooleanValue (false),
+                         "AckRequired", BooleanValue (false),
+                         "GenMedia", BooleanValue (true));
+  callHelper.SetServerCall ("ns3::McpttCallControlInfo",
+                         "AmbientListening", BooleanValue (false),
+                         "TemporaryGroup", BooleanValue (false));
+
+  McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+  uint32_t groupId = 1;
+  callHelper.AddCall (clientApps, serverApp, groupId, callType, start, stop);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

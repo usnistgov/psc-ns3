@@ -34,6 +34,9 @@
 #include <ns3/pointer.h>
 
 #include "mcptt-on-network-floor-arbitrator.h"
+#include "mcptt-server-call.h"
+#include "mcptt-call-msg.h"
+#include "mcptt-server-call-machine.h"
 
 #include "mcptt-server-app.h"
 
@@ -44,17 +47,14 @@ NS_LOG_COMPONENT_DEFINE ("McpttServerApp");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttServerApp);
 
+uint16_t McpttServerApp::s_callId = 0;
+
 TypeId
 McpttServerApp::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::McpttServerApp")
     .SetParent<Application> ()
     .AddConstructor<McpttServerApp>()
-    .AddAttribute ("FloorArbitrator", "The floor arbitration state machine.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttServerApp::GetArbitrator,
-                                        &McpttServerApp::SetArbitrator),
-                   MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
                      MakeTraceSourceAccessor (&McpttServerApp::m_rxTrace),
                      "ns3::McpttServerApp::RxTrace")
@@ -77,10 +77,22 @@ McpttServerApp::~McpttServerApp (void)
   NS_LOG_FUNCTION (this);
 }
 
-TypeId
-McpttServerApp::GetInstanceTypeId (void) const
+uint16_t
+McpttServerApp::AllocateCallId (void)
 {
-  return McpttServerApp::GetTypeId ();
+  return s_callId++;
+}
+
+void
+McpttServerApp::AddCall (Ptr<McpttServerCall> call)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF (call->GetCallId () > s_callId, "CallID out of range");
+  call->GetArbitrator ()->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
+  call->GetArbitrator ()->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
+  NS_LOG_DEBUG ("Inserting call with callId " << call->GetCallId () << " to list");
+  call->SetOwner (this);
+  m_calls.insert ({call->GetCallId (), call});
 }
 
 void
@@ -105,7 +117,11 @@ McpttServerApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  GetArbitrator ()->Start ();
+  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    {
+      NS_LOG_DEBUG ("Starting call for id " << it->first);
+      it->second->GetCallMachine ()->Start ();
+    }
 }
 
 void
@@ -113,8 +129,22 @@ McpttServerApp::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  GetArbitrator ()->Stop ();
+  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    {
+      NS_LOG_DEBUG ("Stopping call for id " << it->first);
+      it->second->GetCallMachine ()->Stop ();
+    }
 }
+
+void
+McpttServerApp::Send (const McpttCallMsg& msg)
+{
+  NS_LOG_FUNCTION (this << &msg);
+
+  NS_FATAL_ERROR ("Not yet implemented server call msg send");
+
+}
+
 
 void
 McpttServerApp::TxCb (const McpttMsg& msg)
@@ -125,39 +155,10 @@ McpttServerApp::TxCb (const McpttMsg& msg)
   m_txTrace (this, 0, msg);
 }
 
-Ptr<McpttOnNetworkFloorArbitrator>
-McpttServerApp::GetArbitrator (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  return m_arbitrator;
-}
-
 Address
 McpttServerApp::GetLocalAddress (void) const
 {
   return m_localAddress;
-}
-
-void
-McpttServerApp::SetArbitrator (const Ptr<McpttOnNetworkFloorArbitrator> arbitrator)
-{
-  NS_LOG_FUNCTION (this);
-
-  if (m_arbitrator != 0)
-    {
-      arbitrator->SetRxCb (MakeNullCallback<void, const McpttMsg&> ());
-      arbitrator->SetTxCb (MakeNullCallback<void, const McpttMsg&> ());
-    }
-
-  if (arbitrator != 0)
-    {
-      arbitrator->SetOwner (this);
-      arbitrator->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
-      arbitrator->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
-    }
-
-  m_arbitrator = arbitrator;
 }
 
 void

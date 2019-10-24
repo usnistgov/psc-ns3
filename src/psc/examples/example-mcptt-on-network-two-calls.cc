@@ -24,52 +24,68 @@
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/config-store-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/psc-module.h"
-//#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 
 /**
- * Sample simulation script for LTE+EPC. It instantiates several eNodeBs,
- * attaches one UE per eNodeB starts a flow for each UE to and from a remote host.
- * It also starts another flow between each UE pair.
+ * Adaptation of lena-simple-epc.cc to experiment with two MCPTT on-network
+ * calls involving two pairs of UEs to a single MCPTT server managing both 
+ * calls.  The first group call (between the first pair of UEs) starts 
+ * when the McpttPttApps start at time 2 seconds.  The second call starts
+ * at time 10 seconds.
  */
 
-NS_LOG_COMPONENT_DEFINE ("LenaSimpleEpc");
+NS_LOG_COMPONENT_DEFINE ("ExampleMcpttOnNetworkTwoCalls");
 
 int
 main (int argc, char *argv[])
 {
-  DataRate dataRate = DataRate ("24kb/s");
+  DataRate dataRate = DataRate ("12kb/s");
   double distance = 60.0;
-  uint16_t numNodePairs = 2;
+  uint16_t numEnb = 2;  // do not change
+  uint16_t numUe = 4;   // do not change
   uint32_t msgSize = 60; //60 + RTP header = 60 + 12 = 72
   double onOffMean = 5.0;
-  Time simTime = Seconds (14.0);
+  Time simTime = Seconds (20.1);
   Time start = Seconds (2.0);
-  Time stop = Seconds (12.0);
+  Time stop = Seconds (20.0);
   bool useCa = false;
+  bool verbose = false;
  
   // Command line arguments
   CommandLine cmd;
   cmd.AddValue ("data-rate", "The data rate at which media will be sent at.", dataRate);
   cmd.AddValue ("distance", "Distance between eNBs [m]", distance);
   cmd.AddValue ("media-size", "The size (in bytes) of the media packets that will be sent.", msgSize);
-  cmd.AddValue ("numNodePairs", "Number of eNodeBs + UE pairs", numNodePairs);
   cmd.AddValue ("on-off-mean", "The average number of seconds a user pushes and releases the button.", onOffMean);
-  cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
-  cmd.AddValue ("start-time", "The number of seconds into the simulation that the applications should start.", start);
-  cmd.AddValue ("stop-time", "The number of seconds into the simulation that the applications should stop.", stop);
   cmd.AddValue ("useCa", "Whether to use carrier aggregation.", useCa);
+  cmd.AddValue ("verbose", "Whether to enable debug logging", verbose);
   cmd.Parse (argc, argv);
-
-  ConfigStore inputConfig;
-  inputConfig.ConfigureDefaults ();
 
   // parse again so you can override default values from the command line
   cmd.Parse(argc, argv);
+
+  if (verbose)
+    {
+      LogComponentEnableAll (LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC));
+      LogComponentEnable ("McpttChan", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttPttApp", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttCall", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttServerCall", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttCallHelper", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttCallMachine", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttServerCallMachine", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttPusher", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttServerApp", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttOnNetworkFloorParticipant", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttOnNetworkFloorParticipantState", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttOnNetworkFloorArbitrator", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttOnNetworkFloorTowardsParticipant", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttOnNetworkFloorTowardsParticipantState", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttOnNetworkFloorArbitratorState", LOG_LEVEL_ALL);
+    }
 
   if (useCa)
    {
@@ -113,22 +129,33 @@ main (int argc, char *argv[])
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
   remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
 
+  NodeContainer ueNodePair1;
+  NodeContainer ueNodePair2;
   NodeContainer ueNodes;
   NodeContainer enbNodes;
-  enbNodes.Create (numNodePairs);
-  ueNodes.Create (numNodePairs);
+  enbNodes.Create (numEnb);
+  ueNodePair1.Create (numUe/2);
+  ueNodePair2.Create (numUe/2);
+  ueNodes.Add (ueNodePair1);
+  ueNodes.Add (ueNodePair2);
 
   // Install Mobility Model
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  for (uint16_t i = 0; i < numNodePairs; i++)
-    {
-      positionAlloc->Add (Vector (distance * i, 0, 0));
-    }
+  // eNB positions
+  positionAlloc->Add (Vector (distance, 0, 0));
+  positionAlloc->Add (Vector (distance * 2, 0, 0));
+  // UE pair 1 positions
+  positionAlloc->Add (Vector (distance, 10, 0));
+  positionAlloc->Add (Vector (distance * 2, 10, 0));
+  // UE pair 2 positions
+  positionAlloc->Add (Vector (distance, -10, 0));
+  positionAlloc->Add (Vector (distance * 2, -10, 0));
   MobilityHelper mobility;
   mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
   mobility.SetPositionAllocator(positionAlloc);
   mobility.Install(enbNodes);
-  mobility.Install(ueNodes);
+  mobility.Install(ueNodePair1);
+  mobility.Install(ueNodePair2);
 
   // Install LTE Devices to the nodes
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
@@ -148,26 +175,25 @@ main (int argc, char *argv[])
     }
 
   // Attach one UE per eNodeB
-  for (uint16_t i = 0; i < numNodePairs; i++)
-    {
-      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
-      // side effect: the default EPS bearer will be activated
-    }
+  // side effect: the default EPS bearer will be activated
+  lteHelper->Attach (ueLteDevs.Get(0), enbLteDevs.Get(0));
+  lteHelper->Attach (ueLteDevs.Get(1), enbLteDevs.Get(1));
+  lteHelper->Attach (ueLteDevs.Get(2), enbLteDevs.Get(0));
+  lteHelper->Attach (ueLteDevs.Get(3), enbLteDevs.Get(1));
 
   NS_LOG_INFO ("Creating applications...");
-  ApplicationContainer serverApps;
+  ApplicationContainer serverAppContainer;
   McpttServerHelper mcpttServerHelper;
-  serverApps.Add (mcpttServerHelper.Install (imsHelper->GetImsNode ()));
-  serverApps.Start (start);
-  serverApps.Stop (stop);
-  // For use below
-  Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverApps.Get (0));
 
+  serverAppContainer.Add (mcpttServerHelper.Install (imsHelper->GetImsNode ()));
+  serverAppContainer.Start (start);
+  serverAppContainer.Stop (stop);
 
-  ApplicationContainer clientApps;
+  ApplicationContainer clientAppContainer;
+  ApplicationContainer clientAppContainer1;
+  ApplicationContainer clientAppContainer2;
   McpttHelper mcpttClientHelper;
-  mcpttClientHelper.SetPttApp ("ns3::McpttPttApp",
-                         "PushOnStart", BooleanValue (true));
+  mcpttClientHelper.SetPttApp ("ns3::McpttPttApp");
   mcpttClientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
                          "DataRate", DataRateValue (dataRate));
@@ -180,32 +206,37 @@ main (int argc, char *argv[])
                          "Mean", DoubleValue (onOffMean),
                          "Variance", DoubleValue (2.0));
 
-  clientApps.Add (mcpttClientHelper.Install (ueNodes));
-  clientApps.Start (start);
-  clientApps.Stop (stop);
+  clientAppContainer1.Add (mcpttClientHelper.Install (ueNodePair1));
+  clientAppContainer2.Add (mcpttClientHelper.Install (ueNodePair2));
+  clientAppContainer1.Start (start);
+  clientAppContainer1.Stop (stop);
+  clientAppContainer2.Start (start);
+  clientAppContainer2.Stop (stop);
+  clientAppContainer.Add (clientAppContainer1);
+  clientAppContainer.Add (clientAppContainer2);
 
-  for (uint32_t idx = 0; idx < serverApps.GetN (); idx++)
+  Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverAppContainer.Get (0));
+  Ipv4Address serverAddress = Ipv4Address::ConvertFrom (imsHelper->GetImsGmAddress ());
+  serverApp->SetLocalAddress (serverAddress);
+  NS_LOG_INFO ("server IMS IP address = " << serverAddress);
+
+  for (uint32_t idx = 0; idx < ueIpIface.GetN (); idx++)
     {
-      Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverApps.Get (idx));
-      Ipv4Address serverAddress = Ipv4Address::ConvertFrom (imsHelper->GetImsGmAddress ());
-      serverApp->SetLocalAddress (serverAddress);
-      NS_LOG_INFO ("server " << idx << " IMS IP address = " << serverAddress);
-    }
-
-  ObjectFactory floorFac;
-  floorFac.SetTypeId ("ns3::McpttOnNetworkFloorParticipant");
-  floorFac.Set ("McImplicitRequest", BooleanValue (false));
-
-  for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
-    {
-      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clientApps.Get (idx));
+      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clientAppContainer.Get (idx));
 
       Ipv4Address clientAddress = ueIpIface.GetAddress (idx);
       pttApp->SetLocalAddress (clientAddress);
       NS_LOG_INFO ("client " << idx << " ip address = " << clientAddress);
     }
 
+#if 0
+  ObjectFactory callFac;
+  callFac.SetTypeId ("ns3::McpttCallMachineNull");
+
+#endif
+
   McpttCallHelper callHelper;
+  // Optional statements to tailor the configurable attributes
   callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
@@ -213,8 +244,6 @@ main (int argc, char *argv[])
                          "TxSsrc", UintegerValue (100),
                          "QueueCapacity", UintegerValue (1),
                          "McGranted", BooleanValue (false));
-  // Dual control not yet in the refactoring
-  // callHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                          "McImplicitRequest", BooleanValue (false),
                          "McQueuing", BooleanValue (true),
@@ -222,29 +251,32 @@ main (int argc, char *argv[])
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
                          "McImplicitRequest", BooleanValue (false),
                          "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttCallControlInfo",
+                         "GenMedia", BooleanValue (false));
+  callHelper.SetServerCall ("ns3::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+  // Add first call, to start at time 2 and stop at time 10
+  // Call will involve two nodes (7 and 8) and the MCPTT server (node 3)
   uint32_t groupId = 1;
-  callHelper.AddCall (clientApps, serverApp, groupId, callType, start, stop);
+  callHelper.AddCall (clientAppContainer1, serverApp, groupId, callType, Seconds (2), Seconds (10));
+
+  // Add second call, on new groupId, to start at time 8 and stop at time 15
+  // Call will involve two nodes (9 and 10) and the MCPTT server (node 3)
+  groupId = 2;
+  callHelper.AddCall (clientAppContainer2, serverApp, groupId, callType, Seconds (8), Seconds (15));
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttClientHelper.EnableMsgTraces ();
   mcpttClientHelper.EnableStateMachineTraces ();
   mcpttClientHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
-  lteHelper->EnableTraces ();
   // Uncomment to enable PCAP tracing
   // p2ph.EnablePcap("example-mcptt-on-network-floor-control-lte.ims.pcap", imsHelper->GetImsGmDevice (), true, true);
 
   Simulator::Stop (simTime);
   Simulator::Run ();
-
-  /*GtkConfigStore config;
-  config.ConfigureAttributes();*/
 
   Simulator::Destroy ();
   return 0;

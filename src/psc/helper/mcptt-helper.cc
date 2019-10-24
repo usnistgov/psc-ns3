@@ -98,6 +98,8 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttRtpHeader", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttTimer", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttServerApp", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttServerCall", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttServerCallMachine", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttFloorParticipant", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttOnNetworkFloorParticipant", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttOnNetworkFloorParticipantState", LOG_LEVEL_ALL);
