@@ -134,7 +134,7 @@ McpttCallMachineGrpBasic::McpttCallMachineGrpBasic (Ptr<McpttCall> owner)
     m_owner (owner),
     m_probeRespVal (false),
     m_refInt (McpttCallMsgFieldRefreshInterval ()),
-    m_rndCallId (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (65535.0))),
+    m_randomCallIdGenerator (CreateObject<UniformRandomVariable> ()),
     m_rndDelays (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (1.0))),
     m_sdp (McpttCallMsgFieldSdp ()),
     m_started (false),
@@ -845,7 +845,6 @@ McpttCallMachineGrpBasic::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   SetEmergMachine (0);
-  SetRndCallId (0);
   SetRndDelays (0);
   SetState (0);
   SetTfg1 (0);
@@ -1040,12 +1039,12 @@ McpttCallMachineGrpBasic::GetRefInt (void) const
   return m_refInt;
 }
 
-Ptr<RandomVariableStream>
-McpttCallMachineGrpBasic::GetRndCallId (void) const
+uint16_t
+McpttCallMachineGrpBasic::GenerateRandomCallId (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return m_rndCallId;
+  return m_randomCallIdGenerator->GetInteger (0, 65535);
 }
 
 Ptr<RandomVariableStream>
@@ -1219,14 +1218,6 @@ McpttCallMachineGrpBasic::SetRefInt (const McpttCallMsgFieldRefreshInterval& ref
   NS_LOG_FUNCTION (this << refInt);
 
   m_refInt = refInt;
-}
-
-void
-McpttCallMachineGrpBasic::SetRndCallId (Ptr<RandomVariableStream>  rndCallId)
-{
-  NS_LOG_FUNCTION (this << &rndCallId);
-
-  m_rndCallId = rndCallId;
 }
 
 void

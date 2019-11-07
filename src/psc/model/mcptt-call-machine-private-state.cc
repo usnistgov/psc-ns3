@@ -279,15 +279,15 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCounter> cfp1 = machine.GetCfp1 ();
   Ptr<McpttPttApp> pttApp = machine.GetOwner ()->GetOwner ();
-  Ptr<RandomVariableStream> rndCallId = machine.GetRndCallId ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
 
   machine.GetAttribute ("TargetId", targetId);
   pttApp->GetAttribute ("PeerAddress", grpAddress);
 
   Vector myLoc = pttApp->GetNodeLoc ();
+  uint16_t callId = machine.GenerateRandomCallId ();
+  NS_LOG_DEBUG ("Generate call ID of " << callId);
   uint32_t myUserId = pttApp->GetUserId ();
-  uint32_t callId = rndCallId->GetInteger ();
   uint32_t theirUserId = (uint32_t)targetId.Get ();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();

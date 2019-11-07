@@ -182,7 +182,8 @@ McpttCallMachineNull::GetTypeId (void)
 
 McpttCallMachineNull::McpttCallMachineNull (void)
   : McpttCallMachine (),
-    m_owner (0)
+    m_owner (0),
+    m_callId (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -228,8 +229,7 @@ McpttCallMsgFieldCallId
 McpttCallMachineNull::GetCallId (void) const
 {
   NS_LOG_FUNCTION (this);
-
-  return McpttCallMsgFieldCallId ();
+  return m_callId;
 }
 
 McpttCallMsgFieldCallType
@@ -323,6 +323,13 @@ void
 McpttCallMachineNull::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
+}
+
+void
+McpttCallMachineNull::SetCallId (const McpttCallMsgFieldCallId& callId)
+{ 
+  NS_LOG_DEBUG (this << callId);
+  m_callId = callId.GetCallId ();
 }
 
 void

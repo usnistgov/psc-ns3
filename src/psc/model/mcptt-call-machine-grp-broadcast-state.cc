@@ -171,11 +171,11 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
   Ptr<McpttTimer> tfb1 = machine.GetTfb1 ();
   Ptr<McpttTimer> tfb2 = machine.GetTfb2 ();
   McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
-  Ptr<UniformRandomVariable> rndCallId = machine.GetRndCallId ();
   Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
 
   uint32_t myUserId = machine.GetOwner ()->GetOwner ()->GetUserId ();
-  uint32_t callId = rndCallId->GetInteger ();
+  uint16_t callId = machine.GenerateRandomCallId ();
+  NS_LOG_DEBUG ("Generate call ID of " << callId);
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = pttApp->GetLocalAddress ();

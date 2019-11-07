@@ -361,11 +361,11 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
   bool isConfirmMode = machine.IsConfirmMode ();
   McpttCallMsgFieldGrpId grpId = machine.GetGrpId ();
-  Ptr<RandomVariableStream> rndCallId = machine.GetRndCallId ();
   Ptr<McpttCallTypeMachineGrpBasic> typeMachine = machine.GetTypeMachine ();
 
   uint32_t myUserId = machine.GetOwner ()->GetOwner ()->GetUserId ();
-  uint32_t callId = rndCallId->GetInteger ();
+  uint16_t callId = machine.GenerateRandomCallId ();
+  NS_LOG_DEBUG ("Generate call ID of " << callId);
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   AddressValue grpAddress;

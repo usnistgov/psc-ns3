@@ -378,7 +378,7 @@ private:
  McpttCallMsgFieldGrpId m_grpId; //!< TODO: Not in standard - private call use of emergency alert machine
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  Ptr<McpttCall> m_owner; //!< The call under which this MCPTT call control machine is under.
- Ptr<RandomVariableStream> m_rndCallId; //!< The random number generator used for call ID selction.
+ Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
  McpttCallMsgFieldSdp m_sdpEmerg; //!< Emergency SDP information.
  bool m_started; //!< The flag that indicates if the machine has been started.
@@ -447,10 +447,10 @@ public:
   */
  virtual Ptr<McpttCall> GetOwner (void) const;
  /**
-  * Gets the random number generator used for call ID selection.
-  * \returns The random number generator.
+  * Generate and return a randomly generated call ID
+  * \returns The random call ID generated.
   */
- virtual Ptr<RandomVariableStream> GetRndCallId (void) const;
+ virtual uint16_t GenerateRandomCallId (void) const;
  /**
   * Gets the SDP information.
   * \returns The SDP information.
@@ -566,11 +566,6 @@ public:
   * \param owner The owner.
   */
  virtual void SetOwner (Ptr<McpttCall> owner);
- /**
-  * Sets the random number generator used for call ID selection.
-  * \param rndCallId The random number generator.
-  */
- virtual void SetRndCallId (Ptr<RandomVariableStream>  rndCallId);
  /**
   * Sets the SDP inforamtion.
   * \param sdp The SDP information.

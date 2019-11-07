@@ -230,7 +230,7 @@ private:
  McpttCallMsgFieldUserId m_origId; //!< The originating MCPTT user's ID.
  Ptr<McpttCall> m_owner; //!< The owner under which the call machine resides.
  uint8_t m_priority; //!< The ProSe per-packet priority.
- Ptr<UniformRandomVariable> m_rndCallId; //!< The random number generator used for call ID selection.
+ Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
  bool m_started; //!< The flag that indicates if the state machine has been started.
  Ptr<McpttCallMachineGrpBroadcastState> m_state; //!< The current state.
@@ -272,10 +272,10 @@ public:
   */
  virtual uint8_t GetPriority (void) const;
  /**
-  * Gets the random number generator used for call ID selection.
-  * \returns The random number generator.
+  * Generate and return a randomly generated call ID
+  * \returns The random call ID generated.
   */
- virtual Ptr<UniformRandomVariable> GetRndCallId (void) const;
+ virtual uint16_t GenerateRandomCallId (void) const;
  /**
   * Gets the SDP information.
   * \returns The SDP information.
@@ -336,11 +336,6 @@ public:
   * \param priority The ProSe per-packet priority.
   */
  virtual void SetPriority (uint8_t priority);
- /**
-  * Sets the random number generator used for call ID selection.
-  * \param rndCallId The random number generator.
-  */
- virtual void SetRndCallId (Ptr<UniformRandomVariable>  rndCallId);
  /**
   * Sets the SDP inforamtion.
   * \param sdp The SDP information.

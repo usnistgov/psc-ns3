@@ -160,6 +160,11 @@ public:
   */
  virtual void Send (const McpttCallMsg& msg) = 0;
  /**
+  * Sets the ID of the MCPTT call.
+  * \param callId The ID of the MCPTT call.
+  */
+ virtual void SetCallId (const McpttCallMsgFieldCallId& callId) = 0;
+ /**
   * Sets the callback used to indicate that a new call exists.
   * \param newCallCb The callback.
   */
@@ -349,6 +354,11 @@ public:
   */
  virtual void Send (const McpttCallMsg& msg);
  /**
+  * Sets the ID of the MCPTT call.
+  * \param callId The ID of the MCPTT call.
+  */
+ virtual void SetCallId (const McpttCallMsgFieldCallId& callId);
+ /**
   * Sets the callback used to indicate that a new call exists.
   * \param newCallCb The callback.
   */
@@ -378,6 +388,7 @@ protected:
  virtual void DoDispose (void);
 private:
  Ptr<McpttCall> m_owner; //!< The owner.
+ uint16_t m_callId;    //!< The call ID
  uint16_t m_floorPort; //!< The port number to use for floor control.
  uint16_t m_mediaPort; //!< The port number to use for media.
  uint8_t m_callType; //!< The call type.

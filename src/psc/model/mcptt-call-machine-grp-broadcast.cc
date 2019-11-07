@@ -94,7 +94,7 @@ McpttCallMachineGrpBroadcast::McpttCallMachineGrpBroadcast (Ptr<McpttCall> owner
     m_origId (McpttCallMsgFieldUserId ()),
     m_owner (owner),
     m_priority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::BROADCAST_GROUP)),
-    m_rndCallId (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (65535.0))),
+    m_randomCallIdGenerator (CreateObject<UniformRandomVariable> ()),
     m_sdp (McpttCallMsgFieldSdp ()),
     m_started (false),
     m_state (McpttCallMachineGrpBroadcastStateB1::GetInstance ()),
@@ -500,7 +500,6 @@ McpttCallMachineGrpBroadcast::DoDispose (void)
   SetOrigId (McpttCallMsgFieldUserId ());
   SetOwner (0);
   SetPriority (0);
-  SetRndCallId (0);
   SetSdp (McpttCallMsgFieldSdp ());
   SetStarted (false);
   SetState (0);
@@ -627,12 +626,12 @@ McpttCallMachineGrpBroadcast::GetPriority (void) const
   return m_priority;
 }
 
-Ptr<UniformRandomVariable>
-McpttCallMachineGrpBroadcast::GetRndCallId (void) const
+uint16_t
+McpttCallMachineGrpBroadcast::GenerateRandomCallId (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return m_rndCallId;
+  return m_randomCallIdGenerator->GetInteger (0, 65535);
 }
 
 McpttCallMsgFieldSdp
@@ -729,14 +728,6 @@ McpttCallMachineGrpBroadcast::SetPriority (uint8_t priority)
   NS_LOG_FUNCTION (this << (uint32_t)priority);
 
   m_priority = priority;
-}
-
-void
-McpttCallMachineGrpBroadcast::SetRndCallId (Ptr<UniformRandomVariable>  rndCallId)
-{
-  NS_LOG_FUNCTION (this << &rndCallId);
-
-  m_rndCallId = rndCallId;
 }
 
 void

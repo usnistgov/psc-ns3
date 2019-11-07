@@ -159,7 +159,6 @@ protected:
   */
  void ReceiveMediaPkt (Ptr<Packet>  pkt);
  private:
- uint16_t m_callId;  //!< Call ID of the call.
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.

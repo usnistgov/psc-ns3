@@ -110,13 +110,27 @@ void
 McpttCall::SetCallId (uint16_t callId)
 {
   NS_LOG_DEBUG (this << callId);
-  m_callId = callId;
+  if (m_callMachine)
+    {
+      m_callMachine->SetCallId (callId);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Error:  setting call ID on a call without a call machine");
+    }
 }
 
 uint16_t
 McpttCall::GetCallId (void) const
 {
-  return m_callId;
+  if (m_callMachine)
+    {
+      return m_callMachine->GetCallId ().GetCallId ();
+    }
+  else
+    {
+      return 0;
+    }
 }
 
 bool

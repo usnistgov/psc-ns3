@@ -157,7 +157,7 @@ McpttCallMachinePrivate::McpttCallMachinePrivate (Ptr<McpttCall> owner)
     m_emergMachine (CreateObject<McpttEmergAlertMachineBasic> (this)),
     m_newCallCb (MakeNullCallback<void, uint16_t> ()),
     m_owner (owner),
-    m_rndCallId (CreateObjectWithAttributes<UniformRandomVariable> ("Min", DoubleValue (0.0), "Max", DoubleValue (65535.0))),
+    m_randomCallIdGenerator (CreateObject<UniformRandomVariable> ()),
     m_sdp (McpttCallMsgFieldSdp ()),
     m_sdpEmerg (McpttCallMsgFieldSdp ()),
     m_started (false),
@@ -969,7 +969,6 @@ McpttCallMachinePrivate::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   SetEmergMachine (0);
-  SetRndCallId (0);
   SetState (0);
   SetTfp1 (0);
   SetTfp2 (0);
@@ -1220,12 +1219,12 @@ McpttCallMachinePrivate::GetOwner (void) const
   return m_owner;
 }
 
-Ptr<RandomVariableStream>
-McpttCallMachinePrivate::GetRndCallId (void) const
+uint16_t
+McpttCallMachinePrivate::GenerateRandomCallId (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return m_rndCallId;
+  return m_randomCallIdGenerator->GetInteger (0, 65535);
 }
 
 McpttCallMsgFieldSdp
@@ -1415,14 +1414,6 @@ McpttCallMachinePrivate::SetOwner (Ptr<McpttCall> owner)
   NS_LOG_FUNCTION (this << owner);
 
   m_owner = owner;
-}
-
-void
-McpttCallMachinePrivate::SetRndCallId (Ptr<RandomVariableStream>  rndCallId)
-{
-  NS_LOG_FUNCTION (this << &rndCallId);
-
-  m_rndCallId = rndCallId;
 }
 
 void

@@ -383,7 +383,7 @@ private:
  Ptr<McpttCall> m_owner; //!< The call under which this MCPTT call control machine is under.
  bool m_probeRespVal; //!< The probe response value flag.
  McpttCallMsgFieldRefreshInterval m_refInt; //!< The minimum time interval of periodic announcements.
- Ptr<RandomVariableStream> m_rndCallId; //!< The random number generator used for call ID selction.
+ Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation. 
  Ptr<RandomVariableStream> m_rndDelays; //!< The random number generator used for timer delay calculations.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
  bool m_started; //!< The flag that indicates if the machine has been started.
@@ -441,10 +441,10 @@ public:
   */
  virtual McpttCallMsgFieldRefreshInterval GetRefInt (void) const;
  /**
-  * Gets the random number generator used for call ID selection.
-  * \returns The random number generator.
+  * Generate and return a randomly generated call ID
+  * \returns The random call ID generated.
   */
- virtual Ptr<RandomVariableStream> GetRndCallId (void) const;
+ virtual uint16_t GenerateRandomCallId (void) const;
  /**
   * Gets the random number generator used for timer delay calculations.
   * \returns The random number generator.
@@ -550,11 +550,6 @@ public:
   * \param refInt The minimum interval.
   */
  virtual void SetRefInt (const McpttCallMsgFieldRefreshInterval& refInt);
- /**
-  * Sets the random number generator used for call ID selection.
-  * \param rndCallId The random number generator.
-  */
- virtual void SetRndCallId (Ptr<RandomVariableStream>  rndCallId);
  /**
   * Sets the random number generator used for timer delay calculations.
   * \param rndDelays The random number generator.
