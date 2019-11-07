@@ -154,8 +154,8 @@ McpttHelper::ConfigureBasicGrpCall (ApplicationContainer& apps, uint32_t usersPe
 
       callFac.Set ("GroupId", UintegerValue (groupId));
 
-      pttApp->CreateCall (callFac, floorFac);
-      pttApp->SelectLastCall ();
+      Ptr<McpttCall> call = pttApp->CreateCall (callFac, floorFac);
+      pttApp->SelectCall (call->GetCallId ());
  
       if ((idx + 1) % usersPerGroup == 0)
         {

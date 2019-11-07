@@ -199,11 +199,6 @@ public:
   */
  virtual void SelectCall (uint32_t callId, bool pushOnSelect = false);
  /**
-  * Selects the last call in the list of calls.
-  * \param pushOnSelect Whether to start the pusher upon call selection
-  */
- virtual void SelectLastCall (bool pushOnSelect = false);
- /**
   * Sends a call control message.
   * \param msg The message to send.
   */
