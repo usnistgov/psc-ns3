@@ -242,10 +242,9 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
 
   McpttEntityId currStateId = GetStateId ();
 
+  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
   if (currStateId != stateId)
     {
-      NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
-
       m_state->Unselected (*this);
       SetState (state);
       state->Selected (*this);
@@ -256,10 +255,6 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
         }
 
       m_stateChangeTrace (GetTxSsrc (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
-    }
-  else
-    {
-      NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") staying in state " << *m_state);
     }
 }
 

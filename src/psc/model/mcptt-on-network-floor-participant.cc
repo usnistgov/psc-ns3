@@ -204,21 +204,15 @@ McpttOnNetworkFloorParticipant::ChangeState (Ptr<McpttOnNetworkFloorParticipantS
 
   McpttEntityId currStateId = GetStateId ();
 
+  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  NS_LOG_LOGIC ("UserId " << userId << " moving from state " << *m_state << " to state " << *state << ".");
   if (currStateId != stateId)
     {
-      uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-
-      NS_LOG_LOGIC ("UserId " << userId << " moving from state " << *m_state << " to state " << *state << ".");
-
       m_state->Unselected (*this);
       SetState (state);
       state->Selected (*this);
 
       m_stateChangeTrace (GetOwner ()->GetOwner ()->GetUserId (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
-    }
-  else
-    {
-      NS_LOG_LOGIC ("UserId " << GetOwner ()->GetOwner ()->GetUserId () << " staying in state " << *m_state);
     }
 }
 
