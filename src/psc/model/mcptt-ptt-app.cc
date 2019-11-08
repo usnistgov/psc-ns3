@@ -228,13 +228,8 @@ McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16
   call->SetFloorChan (floorChan);
   call->SetFloorMachine (floorMachine);
   call->SetMediaChan (mediaChan);
-  call->SetOwner (this);
-
-  call->SetRxCb (MakeCallback (&McpttPttApp::RxCb, this));
-  call->SetTxCb (MakeCallback (&McpttPttApp::TxCb, this));
   call->SetCallId (callId);
-
-  m_calls.insert (std::pair<uint16_t, Ptr<McpttCall> > (call->GetCallId (), call));
+  AddCall (call);
   return call;
 }
 

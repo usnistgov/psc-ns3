@@ -118,14 +118,16 @@ public:
   */
  virtual void CancelEmergAlert (void);
  /**
-  * Creates a call.
+  * Creates a call using factory objects, and add to the container of calls
+  * on this application instance.
   * \param callFac The factory used to create an ns3::McpttCallMachine.
   * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
   * \return pointer to newly created call
   */
  virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac);
  /**
-  * Creates a call.
+  * Creates a call using factory objects and a provided call ID, and add
+  * to the container of calls on this application instance.
   * \param callFac The factory used to create an ns3::McpttCallMachine.
   * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
   * \param callId The call ID to use
@@ -133,7 +135,8 @@ public:
   */
  virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId);
   /**
-   * Adds a call.
+   * Adds a previously created call to the container of calls on this
+   * application instance.
    * \param call The call to add
    */
   void AddCall (Ptr<McpttCall> call);
