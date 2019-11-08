@@ -32,32 +32,24 @@
 #include <stdint.h>
 #include <string>
 
-#include <ns3/address.h>
 #include <ns3/callback.h>
 #include <ns3/config.h>
-#include <ns3/data-rate.h>
-#include <ns3/double.h>
 #include <ns3/names.h>
 #include <ns3/log.h>
-#include <ns3/mcptt-floor-participant.h>
 #include <ns3/mcptt-media-src.h>
 #include <ns3/mcptt-media-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 #include <ns3/mcptt-pusher.h>
-#include <ns3/packet-socket-address.h>
 #include <ns3/pointer.h>
 #include <ns3/ptr.h>
 #include <ns3/string.h>
-#include <ns3/udp-socket-factory.h>
-#include <ns3/uinteger.h>
-
 #include "mcptt-msg-stats.h"
 #include "mcptt-state-machine-stats.h"
-
 #include "mcptt-helper.h"
 
-
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("McpttHelper");
 
 void
 McpttHelper::EnableLogComponents (void)
@@ -65,7 +57,9 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_FUNC);
   LogComponentEnableAll (LOG_PREFIX_NODE);
+  LogComponentEnable ("ImsHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCall", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttCallHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMachine", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMachineGrpBasic", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallMachineGrpBasicState", LOG_LEVEL_ALL);
@@ -92,11 +86,14 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttMediaMsg", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttMediaSrc", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttMsg", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttMsgStats", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttPttApp", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttPusher", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttQueuedUserInfo", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttRtpHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttStateMachineStats", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttTimer", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttTraceHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttServerApp", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttServerCall", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttServerCallMachine", LOG_LEVEL_ALL);
@@ -123,9 +120,7 @@ McpttHelper::GetNextUserId (void)
 
 McpttHelper::McpttHelper (void)
   : m_pushConfigured (false),
-    m_releaseConfigured (false),
-    m_msgTracer (0),
-    m_stateMachineTracer (0)
+    m_releaseConfigured (false)
 { 
   m_appFac.SetTypeId (McpttPttApp::GetTypeId ());
   m_pusherFac.SetTypeId (McpttPusher::GetTypeId ());
@@ -134,7 +129,6 @@ McpttHelper::McpttHelper (void)
 
 McpttHelper::~McpttHelper ()
 {
-  m_mouthToEarLatencyTraceFile.close ();
 }
 
 ApplicationContainer
@@ -161,73 +155,6 @@ McpttHelper::Install (const NodeContainer& c)
     }
 
   return apps;
-}
-
-void
-McpttHelper::EnableMsgTraces (void)
-{
-  if (m_msgTracer == 0)
-    {
-      m_msgTracer = CreateObject<McpttMsgStats> ();
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/RxTrace", MakeCallback (&McpttMsgStats::ReceiveRxTrace, m_msgTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/TxTrace", MakeCallback (&McpttMsgStats::ReceiveTxTrace, m_msgTracer));
-    }
-}
-
-void
-McpttHelper::EnableStateMachineTraces (void)
-{
-  if (m_stateMachineTracer == 0)
-    {
-      m_stateMachineTracer = CreateObject<McpttStateMachineStats> ();
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/CallMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/CallMachine/CallTypeMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/CallMachine/EmergAlertMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/FloorParticipants/*/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-      Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttServerApp/FloorArbitrator/DualFloorControl/StateChangeTrace", MakeCallback (&McpttStateMachineStats::StateChangeCb, m_stateMachineTracer));
-    }
-}
-
-void
-McpttHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg)
-{
-  if (msg.IsA (McpttMediaMsg::GetTypeId ()))
-    {
-      std::pair<uint32_t, uint16_t> key = std::make_pair (app->GetNode ()->GetId (), callId);
-      Time talkSpurtStart = static_cast<const McpttMediaMsg&>(msg).GetTalkSpurtStart ();
-      auto it = m_mouthToEarLatencyMap.find (key);
-      if (it == m_mouthToEarLatencyMap.end ())
-        {
-          m_mouthToEarLatencyMap.insert (std::make_pair (key, talkSpurtStart));
-          m_mouthToEarLatencyTraceFile << Simulator::Now ().GetMilliSeconds () << "\t"
-            << app->GetNode ()->GetId () << "\t" << callId << "\t" 
-            << (Simulator::Now () - talkSpurtStart).GetMilliSeconds ()
-            << std::endl;
-        }
-      else
-        {
-          if (it->second < talkSpurtStart)
-            {
-              it->second = talkSpurtStart;
-              m_mouthToEarLatencyTraceFile << Simulator::Now ().GetMilliSeconds () << "\t"
-                << app->GetNode ()->GetId () << "\t" << callId << "\t" 
-                << (Simulator::Now () - talkSpurtStart).GetMilliSeconds ()
-                << std::endl;
-            }
-        }
-    }
-}
-
-void
-McpttHelper::EnableMouthToEarLatencyTrace (std::string filename)
-{
-  m_mouthToEarLatencyTraceFile.open (filename.c_str ());
-  m_mouthToEarLatencyTraceFile << "time(ms) nodeid\tcallid\tlatency(ms)" << std::endl;
-  Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/RxTrace", MakeCallback (&McpttHelper::TraceMcpttMediaMsg, this));
 }
 
 void

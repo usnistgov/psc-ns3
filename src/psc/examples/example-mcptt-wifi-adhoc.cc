@@ -174,8 +174,9 @@ int main (int argc, char *argv[])
   callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, usersPerGroup);
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
-  mcpttHelper.EnableMsgTraces ();
-  mcpttHelper.EnableStateMachineTraces ();
+  McpttTraceHelper traceHelper;
+  traceHelper.EnableMsgTraces ();
+  traceHelper.EnableStateMachineTraces ();
 
   NS_LOG_INFO ("Starting simulation...");
   Simulator::Stop (Seconds (stopSec + 2));

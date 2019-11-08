@@ -289,9 +289,10 @@ int main (int argc, char *argv[])
   lteHelper->EnableSlPscchRxPhyTraces ();
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
-  mcpttHelper.EnableMsgTraces ();
-  mcpttHelper.EnableStateMachineTraces ();
-  mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
+  McpttTraceHelper traceHelper;
+  traceHelper.EnableMsgTraces ();
+  traceHelper.EnableStateMachineTraces ();
+  traceHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
   NS_LOG_INFO ("Starting simulation...");
 

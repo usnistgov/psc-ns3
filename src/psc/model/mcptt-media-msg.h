@@ -33,6 +33,7 @@
 #define MCPTT_MEDIA_MSG_H
 
 #include <ns3/type-id.h>
+#include <ns3/nstime.h>
 
 #include "mcptt-msg.h"
 #include "mcptt-rtp-header.h"

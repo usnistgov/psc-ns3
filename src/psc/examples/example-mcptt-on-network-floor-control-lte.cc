@@ -232,9 +232,10 @@ main (int argc, char *argv[])
   callHelper.AddCall (clientApps, serverApp, groupId, callType, start, stop);
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
-  mcpttClientHelper.EnableMsgTraces ();
-  mcpttClientHelper.EnableStateMachineTraces ();
-  mcpttClientHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
+  McpttTraceHelper traceHelper;
+  traceHelper.EnableMsgTraces ();
+  traceHelper.EnableStateMachineTraces ();
+  traceHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
   lteHelper->EnableTraces ();
   // Uncomment to enable PCAP tracing
