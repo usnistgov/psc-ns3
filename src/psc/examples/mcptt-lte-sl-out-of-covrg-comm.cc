@@ -273,7 +273,8 @@ int main (int argc, char *argv[])
   clientApps.Start (startTime);
   clientApps.Stop (stopTime);
 
-  mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);
+  McpttCallHelper callHelper;
+  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, usersPerGroup);
 
   //Set Sidelink bearers
   proseHelper->ActivateSidelinkBearer (slBearersActivationTime, ueDevs, tft);

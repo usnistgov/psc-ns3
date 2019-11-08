@@ -24,6 +24,7 @@
 #include "ns3/ptr.h"
 #include "ns3/attribute.h"
 #include "ns3/object-factory.h"
+#include "ns3/application-container.h"
 
 namespace ns3 {
 
@@ -59,6 +60,13 @@ public:
    * \return the call ID of the call
    */
   uint16_t AddCall (ApplicationContainer clients, Ptr<McpttServerApp> server, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
+ /**
+  * Configures and selects a call for a set of MCPTT applications.
+  * \param apps The application container with the set of apps to configure.
+  * \param usersPerGroup The number of users to put in each group.
+  * \param baseGroupId The starting group ID.
+  */
+ virtual void ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
  /**
   * Configures the default floor control arbitrator object.
   * \param name the name of the model to set

@@ -77,13 +77,6 @@ public:
   */
  virtual ~McpttHelper (void);
  /**
-  * Configures and selects a call for a set of MCPTT applications.
-  * \param apps The application container with the set of apps to configure.
-  * \param usersPerGroup The number of users to put in each group.
-  * \param baseGroupId The starting group ID.
-  */
- virtual void ConfigureBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
- /**
   * \brief Install an ns3::McpttPttApp on each node of the input container.
   *
   * \param c NodeContainer of the set of nodes on which an McpttPttApp 

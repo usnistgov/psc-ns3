@@ -35,8 +35,6 @@
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/psc-module.h"
-#include "ns3/stats-module.h"
-#include "ns3/udp-socket-factory.h"
 #include "ns3/wifi-module.h"
 
 #include <iostream>
@@ -172,7 +170,8 @@ int main (int argc, char *argv[])
   clientApps.Start (start);
   clientApps.Stop (stop);
 
-  mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);
+  McpttCallHelper callHelper;
+  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, usersPerGroup);
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttHelper.EnableMsgTraces ();

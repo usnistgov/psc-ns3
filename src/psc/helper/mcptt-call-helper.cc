@@ -20,6 +20,7 @@
 #include "ns3/nstime.h"
 #include "ns3/address.h"
 #include "ns3/log.h"
+#include "ns3/object-factory.h"
 #include "ns3/mcptt-call-helper.h"
 #include "ns3/mcptt-call-msg-field.h"
 #include "ns3/mcptt-server-app.h"
@@ -205,6 +206,33 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
   
   server->AddCall (call);
   return callId;
+}
+
+void
+McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId)
+{
+  uint32_t groupId = baseGroupId;
+
+  ObjectFactory callFac;
+  callFac.SetTypeId ("ns3::McpttCallMachineGrpBasic");
+
+  ObjectFactory floorFac;
+  floorFac.SetTypeId ("ns3::McpttOffNetworkFloorParticipant");
+
+  for (uint32_t idx = 0; idx < apps.GetN (); idx++)
+    {
+      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (apps.Get (idx));
+
+      callFac.Set ("GroupId", UintegerValue (groupId));
+
+      Ptr<McpttCall> call = pttApp->CreateCall (callFac, floorFac);
+      pttApp->SelectCall (call->GetCallId ());
+ 
+      if ((idx + 1) % usersPerGroup == 0)
+        {
+          groupId += 1;
+        }
+    }
 }
 
 } // namespace ns3
