@@ -19,6 +19,20 @@ server via the core-network. But in off-network mode, communication is
 supported by UE devices in a peer-to-peer like fashion, where signals are only
 sent from UE to UE.
 
+Model Description
+=================
+
+The purpose of the MCPTT model is to enable research into the performance
+of MCPTT protocols in both off-network and on-network public safety scenarios. 
+Users are expected to be interested in studying Key Performance Indicators
+(KPIs) such as the push-to-talk access time (KPI1) or the mouth-to-ear
+latency (KPI3) metrics described in [TS22179]_.
+
+*Insert TS22.179 Figure 6.15.3.1.1: Illustration of MCPTT access time and mouth-to-ear latency*
+
+Design
+######
+
 A call is the logical channel between MCPTT applications. Call control is the
 protocol used to create and manage these logical channels. There are three
 types of calls that can take place between a set of users: basic, broadcast,
@@ -31,6 +45,24 @@ is terminated. A private call exists when there is a logical channel between
 two applications for two users to communicate. Each type of call may be basic,
 imminent peril, or emergency, and this "call status" dictates which physical
 resources are used by this call.
+
+In the specifications, on-network calls are described not only by their 
+call type (basic, broadcast, and private) but also by how the supporting 
+session is established (on-demand or pre-established), the group call
+model (pre-arranged or chat group (restricted)), and whether the call
+requires elevated access privileges to network resources (emergency
+or imminent peril calls).  The mode of call commencement (automatic or
+manually with user intervention) also can be defined.  The difference 
+between an on-demand and pre-established session is that in the 
+pre-established case, certain network setup steps are completed before 
+a user initiates the call; these steps include negotiation of IP 
+addresses and ports (e.g. ICE procedures) and coordination of bearers in 
+the IMS core.  In a prearranged group call, the group members will be 
+defined a priori, while the chat group (restricted) call model allows 
+members to join calls without being invited.  The initial support in 
+|ns3| for on-network call types is the 'prearranged group call, using 
+on-demand session, with automatic commencement,' 
+defined in TS 24.379 [TS24379]_.
 
 When off-network, all call control messages are sent to all other applications
 using the same socket. When a user wants to start or join a group call for a
@@ -101,14 +133,15 @@ Per-Packet Priority (PPPP). Even though the MCPTT model includes and
 appropriately maintains PPPP as specified in the standards, there currently
 is no support in ProSe for this feature and, thus, it is not used.
 
-Note: MCPTT was created specifically for LTE, and the main component that ties
-      MCPTT to LTE is the use of PPPP, which is provided to lower layers of LTE
-      when sending messages for physical resource selection, but the current
-      implementation of the off-network model does not make use of this feature
-      since there is currently no support for it in the current ns-3
-      implementation of ProSe. This means that the current MCPTT model is
-      capable of being used over more technologies than just LTE since it is
-      just an application in |ns3|.
+.. note::
+   MCPTT was created specifically for LTE, and the main component that ties
+   MCPTT to LTE is the use of PPPP, which is provided to lower layers of LTE
+   when sending messages for physical resource selection, but the current
+   implementation of the off-network model does not make use of this feature
+   since there is currently no support for it in the current ns-3
+   implementation of ProSe. This means that the current MCPTT model is
+   capable of being used over more technologies than just LTE since it is
+   just an application in |ns3|.
 
 Design
 ######
@@ -334,8 +367,11 @@ Priority that is taken into consideration at the application but is not
 propagated to the lower layers as specified because currently this feature is
 not supported by the ProSe model.
 
-User Documentation
-==================
+Usage
+=====
+
+Helpers
+#######
 
 Examples
 ########
@@ -580,14 +616,18 @@ In the example, node ID 6 started to receive a talk spurt at time 5.063s,
 on call ID 0, with a mouth-to-ear latency of 35 ms (see Figure 1 of 
 [NIST.IR.8206]_).
 
-Testing Documentation
-=====================
+Testing and Validation
+======================
 
 The National Institute of Standards and Technology (NIST) used the 3GPP
-standards to create over 50 test cases. More information about those test cases
+standards to create over 50 test cases for off-network MCPTT operation.
+More information about those test cases
 can be found in NIST technical report NISTIR 8236 [NIST.IR.8236]_.
 
 .. References below will be placed in separate Bibliography section
+
+.. [TS22179] 3GPP TS 22.179 `"Mission Critical Push To Talk (MCPTT) Mission Critical Push to Talk (MCPTT) over LTE; Stage 1"
+   <http://www.3gpp.org/ftp//Specs/archive/22_series/22.179/22179-e30.zip>`_
 
 .. [TS24379] 3GPP TS 24.379 `"Mission Critical Push To Talk (MCPTT) call control; Protocol specification"
    <http://www.3gpp.org/ftp//Specs/archive/24_series/24.379/24379-e40.zip>`_
