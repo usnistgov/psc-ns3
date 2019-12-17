@@ -29,6 +29,8 @@
 #include "ns3/mcptt-ptt-app.h"
 #include "ns3/mcptt-chan.h"
 #include "ns3/mcptt-server-call-machine.h"
+#include "ns3/mcptt-server-call-machine-group-prearranged.h"
+#include "ns3/mcptt-on-network-call-machine-client.h"
 #include "ns3/mcptt-on-network-floor-participant.h"
 #include "ns3/mcptt-on-network-floor-towards-participant.h"
 #include "ns3/mcptt-on-network-floor-arbitrator.h"
@@ -146,17 +148,21 @@ McpttCallHelper::SetServerCall (std::string name,
 }
 
 uint16_t
-McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> server, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime)
+McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttPttApp> originator, Ptr<McpttServerApp> server,
+                          uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime)
 {
-  NS_LOG_FUNCTION (this << clients.GetN () << server->GetNode ()->GetId () << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
-  // GroupId, callType, stopTime not presently used
+  NS_LOG_FUNCTION (this << clients.GetN () << originator->GetNode ()->GetId () << server->GetNode ()->GetId ()
+    << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
+  // callType not presently used
   uint16_t callId = server->AllocateCallId ();
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = m_arbitratorFactory.Create<McpttOnNetworkFloorArbitrator> ();
   NS_LOG_DEBUG ("Creating call with callID " << callId);
+  std::vector<uint32_t> clientUserIds;
   
   for (uint32_t i = 0; i < clients.GetN (); i++)
     {
       Ptr<McpttPttApp> app = clients.Get (i)->GetObject<McpttPttApp> ();
+      clientUserIds.push_back (app->GetUserId ());
       app->SetAttribute ("PeerAddress", AddressValue (server->GetLocalAddress ()));
       // McpttPttApp uses a static integer for allocating unique port numbers
       uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
@@ -167,7 +173,8 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
       // Each application gets its own instance of a McpttCall object
       Ptr<McpttCall> call = CreateObject<McpttCall> ();
       // XXX TODO: configure call machine type from call type 
-      Ptr<McpttCallMachine> callMachine = CreateObject<McpttCallMachineNull> ();
+      Ptr<McpttCallMachine> callMachine =
+        CreateObjectWithAttributes<McpttOnNetworkCallMachineClient> ("GroupId", UintegerValue (groupId));
       call->SetCallMachine (callMachine);
       call->SetCallId (callId);
       Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
@@ -176,17 +183,33 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
       Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
       call->SetMediaChan (mediaChan);
       call->GetCallMachine ()->SetAttribute ("MediaPort", UintegerValue (mediaPort));
-      Ptr<McpttOnNetworkFloorParticipant> clientFloorControl = m_participantFactory.Create<McpttOnNetworkFloorParticipant> ();
+      Ptr<McpttOnNetworkFloorParticipant> clientFloorControl =
+        m_participantFactory.Create<McpttOnNetworkFloorParticipant> ();
       call->SetFloorMachine (clientFloorControl);
-
+      if (app == originator)
+        {
+          clientFloorControl->SetOriginator (true);
+        }
       app->AddCall (call);
-      bool pushOnSelect = true;
-      Simulator::Schedule (startTime - Simulator::Now (), &McpttPttApp::SelectCall, app, callId, pushOnSelect);
+      bool pushOnSelect;
+      if (app == originator)
+        {
+          pushOnSelect = true;
+          Simulator::Schedule (startTime - Simulator::Now (), &McpttPttApp::SelectCall, app, callId, pushOnSelect);
+          Simulator::Schedule (stopTime - Simulator::Now (), &McpttPttApp::ReleaseCall, app);
+        }
+      else
+        {
+          pushOnSelect = false;
+          Simulator::Schedule (startTime - Simulator::Now (), &McpttPttApp::SelectCall, app, callId, pushOnSelect);
+        }
 
-      Ptr<McpttOnNetworkFloorTowardsParticipant> serverTowardsParticipant = m_towardsParticipantFactory.Create<McpttOnNetworkFloorTowardsParticipant> ();
-      serverTowardsParticipant->SetAttribute ("PeerAddress", AddressValue (app->GetLocalAddress()));
-      serverTowardsParticipant->SetAttribute ("FloorPort", UintegerValue (floorPort));
-      serverTowardsParticipant->SetAttribute ("MediaPort", UintegerValue (mediaPort));
+      Ptr<McpttOnNetworkFloorTowardsParticipant> serverTowardsParticipant =
+        m_towardsParticipantFactory.Create<McpttOnNetworkFloorTowardsParticipant> ();
+      serverTowardsParticipant->SetPeerAddress (app->GetLocalAddress());
+      serverTowardsParticipant->SetPeerUserId (app->GetUserId());
+      serverTowardsParticipant->SetFloorPort (floorPort);
+      serverTowardsParticipant->SetMediaPort (mediaPort);
       serverTowardsParticipant->SetOriginator (clientFloorControl->IsOriginator ());
       serverTowardsParticipant->SetStoredSsrc (clientFloorControl->GetTxSsrc ());
       serverTowardsParticipant->SetStoredPriority (clientFloorControl->GetPriority ());
@@ -198,9 +221,12 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
   // Each server application gets an instance of a McpttServerCall object
   Ptr<McpttServerCall> call = m_serverCallFactory.Create<McpttServerCall> ();
   // XXX TODO configure call machine type from call type 
-  Ptr<McpttServerCallMachine> callMachine = CreateObject<McpttServerCallMachineNull> ();
+  Ptr<McpttServerCallMachine> callMachine =
+    CreateObjectWithAttributes<McpttServerCallMachineGroupPrearranged> ("GroupId", UintegerValue (groupId));
   call->SetCallMachine (callMachine);
   call->SetCallId (callId);
+  call->SetClientUserIds (clientUserIds);
+  call->SetOriginator (originator->GetUserId ());
   arbitrator->SetOwner (call);
   call->SetArbitrator (arbitrator);
   

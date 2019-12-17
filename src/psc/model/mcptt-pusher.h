@@ -79,15 +79,15 @@ public:
   */
  virtual void Push (void);
  /**
-  * Notify (callback) that the pushable has successfully pushed.
+  * Enter the pushed state based on a callback.
   */
  virtual void NotifyPushed (void);
  /**
-  * \brief Releases the pushable's button and enters the released state.
+  * Releases the pushable's button and enters the released state.
   */
  virtual void Release (void);
  /**
-  * Notify (callback) that the pushable has successfully released.
+  * Enter the released state based on a callback.
   */
  virtual void NotifyReleased (void);
  /**
@@ -114,6 +114,7 @@ public:
  virtual void Start (void);
  /**
   * \brief Stops pushing and releasing the pushables button.
+  * This method may be called multiple times consecutively without side effect.
   */
  virtual void Stop (void);
 protected:
@@ -121,14 +122,6 @@ protected:
   * \brief Disposes of the McpttPttApp instance.
   */
  virtual void DoDispose (void);
- /**
-  * Actually calls the pushable's "TakePushNotification" function.
-  */
- virtual void PushPushable (void);
- /**
-  * Actually calls the pushable's "TakeReleaseNotification" function.
-  */
- virtual void ReleasePushable (void);
 private:
  /**
   * The flag that indicates if the button should automatically be pushed/released.

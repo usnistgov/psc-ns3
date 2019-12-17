@@ -74,8 +74,6 @@ McpttServerCallMachine::~McpttServerCallMachine (void)
 TypeId
 McpttServerCallMachine::GetInstanceTypeId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return McpttServerCallMachine::GetTypeId ();
 }
 /** McpttServerCallMachine - end **/
@@ -86,8 +84,6 @@ NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGrp);
 TypeId
 McpttServerCallMachineGrp::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   static TypeId tid = TypeId ("ns3::McpttServerCallMachineGrp")
     .SetParent<McpttServerCallMachine> ()
     .AddAttribute ("GroupId",
@@ -114,8 +110,6 @@ McpttServerCallMachineGrp::~McpttServerCallMachineGrp (void)
 TypeId
 McpttServerCallMachineGrp::GetInstanceTypeId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return McpttServerCallMachineGrp::GetTypeId ();
 }
 
@@ -149,8 +143,6 @@ NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineNull);
 McpttEntityId
 McpttServerCallMachineNull::GetNullStateId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   static McpttEntityId stateId = McpttEntityId (0, "Null");
 
   return stateId;
@@ -159,8 +151,6 @@ McpttServerCallMachineNull::GetNullStateId (void)
 TypeId
 McpttServerCallMachineNull::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   static TypeId tid = TypeId ("ns3::McpttServerCallMachineNull")
     .SetParent<McpttServerCallMachine> ()
     .AddConstructor<McpttServerCallMachineNull> ()
@@ -183,7 +173,7 @@ McpttServerCallMachineNull::GetTypeId (void)
 
 McpttServerCallMachineNull::McpttServerCallMachineNull (void)
   : McpttServerCallMachine (),
-    m_owner (0)
+    m_serverCall (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -220,16 +210,12 @@ McpttServerCallMachineNull::DowngradeCallType (void)
 uint32_t
 McpttServerCallMachineNull::GetCallerUserId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return 0;
 }
 
 McpttCallMsgFieldCallId
 McpttServerCallMachineNull::GetCallId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return McpttCallMsgFieldCallId ();
 }
 
@@ -245,31 +231,19 @@ McpttServerCallMachineNull::GetCallType (void) const
 TypeId
 McpttServerCallMachineNull::GetInstanceTypeId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return McpttServerCallMachineNull::GetTypeId ();
 }
 
 Ptr<McpttServerCall>
-McpttServerCallMachineNull::GetOwner (void) const
+McpttServerCallMachineNull::GetServerCall (void) const
 {
-  NS_LOG_FUNCTION (this);
-
-  return m_owner;
+  return m_serverCall;
 }
 
 McpttEntityId
 McpttServerCallMachineNull::GetStateId (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return McpttServerCallMachineNull::GetNullStateId ();
-}
-
-void
-McpttServerCallMachineNull::InitiateCall (void)
-{
-  NS_LOG_FUNCTION (this);
 }
 
 bool
@@ -297,6 +271,12 @@ McpttServerCallMachineNull::IsPrivateCall (uint32_t userId) const
 }
 
 void
+McpttServerCallMachineNull::ReceiveCallPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+}
+
+void
 McpttServerCallMachineNull::Receive (const McpttCallMsg& msg) 
 {
   NS_LOG_FUNCTION (this << &msg);
@@ -306,12 +286,6 @@ void
 McpttServerCallMachineNull::Receive (const McpttMediaMsg& msg) 
 {
   NS_LOG_FUNCTION (this << &msg);
-}
-
-void
-McpttServerCallMachineNull::ReleaseCall (void)
-{
-  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -333,11 +307,11 @@ McpttServerCallMachineNull::SetNewCallCb (const Callback<void, uint16_t>  newCal
 }
 
 void
-McpttServerCallMachineNull::SetOwner (Ptr<McpttServerCall> owner)
+McpttServerCallMachineNull::SetServerCall (Ptr<McpttServerCall> call)
 {
-  NS_LOG_FUNCTION (this << owner);
+  NS_LOG_FUNCTION (this << call);
 
-  m_owner = owner;
+  m_serverCall = call;
 }
 
 void
@@ -345,7 +319,7 @@ McpttServerCallMachineNull::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttServerCall> call = GetOwner ();
+  Ptr<McpttServerCall> call = GetServerCall ();
   Ptr<McpttServerApp> serverApp = call->GetOwner ();
 
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
@@ -357,7 +331,7 @@ McpttServerCallMachineNull::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttServerCall> call = GetOwner ();
+  Ptr<McpttServerCall> call = GetServerCall ();
 
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
 
@@ -376,7 +350,7 @@ McpttServerCallMachineNull::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetOwner (0);
+  m_serverCall = 0;
 
   McpttServerCallMachine::DoDispose ();
 }

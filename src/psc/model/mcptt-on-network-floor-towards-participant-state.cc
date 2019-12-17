@@ -58,7 +58,7 @@ McpttOnNetworkFloorTowardsParticipantState::~McpttOnNetworkFloorTowardsParticipa
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::CallInitiated (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -66,7 +66,7 @@ McpttOnNetworkFloorTowardsParticipantState::CallInitiated (McpttOnNetworkFloorTo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::CallRelease1 (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::CallRelease1 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -78,13 +78,13 @@ McpttOnNetworkFloorTowardsParticipantState::CallRelease1 (McpttOnNetworkFloorTow
   //TODO: Shall ignore any floor control messages received from the associated
   //      floor participant
 
-  machine.GetOwner ()->CallRelease1 ();
+  machine->GetOwner ()->CallRelease1 ();
   
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStateReleasing::GetInstance ());
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateReleasing::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::CallRelease2 (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::CallRelease2 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -92,7 +92,7 @@ McpttOnNetworkFloorTowardsParticipantState::CallRelease2 (McpttOnNetworkFloorTow
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -100,7 +100,7 @@ McpttOnNetworkFloorTowardsParticipantState::Enter (McpttOnNetworkFloorTowardsPar
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ExpiryOfT8 (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -114,7 +114,7 @@ McpttOnNetworkFloorTowardsParticipantState::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorQueuePositionRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgQueuePositionRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorQueuePositionRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgQueuePositionRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
@@ -122,7 +122,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorQueuePositionRequest (Mc
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
@@ -130,7 +130,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRelease (McpttOnNetworkF
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
@@ -138,7 +138,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRequest (McpttOnNetworkF
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantState::ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
@@ -146,21 +146,13 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveMedia (McpttOnNetworkFloorTow
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring implicit floor request."); 
-}
-
-void
-McpttOnNetworkFloorTowardsParticipantState::Selected (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::Selected (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::SendFloorDeny (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgDeny& msg) const
+McpttOnNetworkFloorTowardsParticipantState::SendFloorDeny (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgDeny& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -168,7 +160,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorDeny (McpttOnNetworkFloorTo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const
+McpttOnNetworkFloorTowardsParticipantState::SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -176,7 +168,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorGranted (McpttOnNetworkFloo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const
+McpttOnNetworkFloorTowardsParticipantState::SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -184,7 +176,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorIdle (McpttOnNetworkFloorTo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::SendFloorRevoke (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgRevoke& msg) const
+McpttOnNetworkFloorTowardsParticipantState::SendFloorRevoke (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgRevoke& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -192,7 +184,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorRevoke (McpttOnNetworkFloor
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const
+McpttOnNetworkFloorTowardsParticipantState::SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
@@ -200,16 +192,16 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorTaken (McpttOnNetworkFloorT
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::SendMedia (McpttOnNetworkFloorTowardsParticipant& machine, McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantState::SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::ClientRelease (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::ClientRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -217,7 +209,7 @@ McpttOnNetworkFloorTowardsParticipantState::ClientRelease (McpttOnNetworkFloorTo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::Terminate (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::Terminate (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -225,7 +217,7 @@ McpttOnNetworkFloorTowardsParticipantState::Terminate (McpttOnNetworkFloorToward
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantState::Unselected (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantState::Unselected (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 }
@@ -277,53 +269,55 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstanceStateId (void) c
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
-  NS_LOG_FUNCTION (this);
+//  NS_LOG_FUNCTION (this);
 
   // Procedures are drawn from 24.380 section 6.3.5.2.2 SIP Session initiated
-  NS_LOG_DEBUG ("IsTemporaryGroup: " << machine.GetOwner ()->GetOwner ()->IsTemporaryGroup () 
-      << " IsAmbientListening: " << machine.GetOwner ()->GetOwner ()->IsAmbientListening ()
-      << " IsStarted: " << machine.GetOwner ()->IsStarted ()
-      << " IsMcImplicitRequest: " << machine.IsMcImplicitRequest ()
-      << " IsFloorOccupied: " << machine.GetOwner ()->IsFloorOccupied ()
-      << " IsEnabled: " << machine.GetOwner ()->GetQueue ()->IsEnabled ()
-      << " IsMcQueuing: " <<  machine.IsMcQueuing () 
-      << " IsDualFloor: " <<  machine.IsDualFloor ()); 
-  if (!machine.GetOwner ()->GetOwner ()->IsTemporaryGroup ()
-      || !machine.GetOwner ()->GetOwner ()->IsAmbientListening ())
+  NS_LOG_DEBUG ("IsTemporaryGroup: " << machine->GetOwner ()->GetOwner ()->IsTemporaryGroup () 
+      << " IsAmbientListening: " << machine->GetOwner ()->GetOwner ()->IsAmbientListening ()
+      << " IsStarted: " << machine->GetOwner ()->IsStarted ()
+      << " IsMcImplicitRequest: " << machine->IsMcImplicitRequest ()
+      << " IsFloorOccupied: " << machine->GetOwner ()->IsFloorOccupied ()
+      << " IsEnabled: " << machine->GetOwner ()->GetQueue ()->IsEnabled ()
+      << " IsMcQueuing: " <<  machine->IsMcQueuing () 
+      << " IsDualFloor: " <<  machine->IsDualFloor ()); 
+  if (!machine->GetOwner ()->GetOwner ()->IsTemporaryGroup ()
+      || !machine->GetOwner ()->GetOwner ()->IsAmbientListening ())
     {
-      if (!machine.GetOwner ()->IsStarted ()
-          && machine.IsMcImplicitRequest ())
+      if (!machine->GetOwner ()->IsStarted ()
+          && machine->IsMcImplicitRequest ())
         {
-          machine.GetOwner ()->CallInitialized (machine);
+          NS_LOG_DEBUG ("Call not started and implicit request");
           McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
         }
-      else if (machine.GetOwner ()->IsStarted ()
-          && !machine.GetOwner ()->IsFloorOccupied ())
+      else if (machine->GetOwner ()->IsStarted ()
+          && !machine->GetOwner ()->IsFloorOccupied ())
         {
+          NS_LOG_DEBUG ("Call is started and floor is not occupied");
           McpttFloorMsgIdle idleMsg;
-          idleMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-          idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-          idleMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          machine.DoSend (idleMsg);
+          idleMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+          idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+          idleMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          machine->DoSend (idleMsg);
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
-      else if (!machine.GetOwner ()->IsStarted ()
-          && !machine.IsMcImplicitRequest ())
+      else if (!machine->GetOwner ()->IsStarted ()
+          && !machine->IsMcImplicitRequest ())
         {
-          machine.GetOwner ()->CallInitialized (machine);
+          NS_LOG_DEBUG ("Call is not started and no implicit floor request");
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
-      else if (machine.GetOwner ()->IsStarted ()
-          && machine.GetOwner ()->IsFloorOccupied ())
+      else if (machine->GetOwner ()->IsStarted ()
+          && machine->GetOwner ()->IsFloorOccupied ())
         {
+          NS_LOG_DEBUG ("Call is started and floor is occupied");
           McpttFloorMsgTaken takenMsg;
-          takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-          takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-          takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-          takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+          takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+          takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+          takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+          takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
             {
               takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
             }
@@ -331,41 +325,44 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
             {
               takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (true));
             }
-          machine.DoSend (takenMsg);
+          machine->DoSend (takenMsg);
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
         }
-      else if (machine.GetOwner ()->IsStarted ()
-          && machine.IsMcImplicitRequest ())
+      else if (machine->GetOwner ()->IsStarted ()
+          && machine->IsMcImplicitRequest ())
         {
-          if (!machine.GetOwner ()->IsFloorOccupied ())
+          if (!machine->GetOwner ()->IsFloorOccupied ())
             {
+              NS_LOG_DEBUG ("Call is started and implicit floor request and floor not occupied");
               McpttFloorMsgRequest reqMsg;
-              reqMsg.SetSsrc (machine.GetStoredSsrc ());
-              reqMsg.SetPriority (machine.GetStoredSsrc ());
-              machine.GetOwner ()->ReceiveFloorRequest (reqMsg);
+              reqMsg.SetSsrc (machine->GetStoredSsrc ());
+              reqMsg.SetPriority (machine->GetStoredSsrc ());
+              machine->GetOwner ()->ReceiveFloorRequest (reqMsg);
               McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
             }
-          else if (machine.GetOwner ()->GetQueue ()->IsEnabled ()
-              && machine.IsMcQueuing ())
+          else if (machine->GetOwner ()->GetQueue ()->IsEnabled ()
+              && machine->IsMcQueuing ())
             {
               //TODO: shall set the priority level to the negotated maximum priotiy level
-              McpttQueuedUserInfo queueInfo = McpttQueuedUserInfo (machine.GetStoredSsrc (), McpttFloorMsgFieldQueuedUserId (machine.GetStoredSsrc ()), McpttFloorMsgFieldQueuePositionInfo (0, machine.GetStoredPriority ()));
-              machine.GetOwner ()->GetQueue ()->Enqueue (queueInfo);
+              NS_LOG_DEBUG ("Call is started and implicit floor request and floor is occupied (with queueing enabled)");
+              McpttQueuedUserInfo queueInfo = McpttQueuedUserInfo (machine->GetStoredSsrc (), McpttFloorMsgFieldQueuedUserId (machine->GetStoredSsrc ()), McpttFloorMsgFieldQueuePositionInfo (0, machine->GetStoredPriority ()));
+              machine->GetOwner ()->GetQueue ()->Enqueue (queueInfo);
               McpttFloorMsgQueuePositionInfo queuedMsg;
-              queuedMsg.SetSsrc (machine.GetOwner ()->GetStoredSsrc ());
+              queuedMsg.SetSsrc (machine->GetOwner ()->GetStoredSsrc ());
               queuedMsg.SetQueuePositionInfo (queueInfo.GetInfo ());
-              queuedMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-              machine.DoSend (queuedMsg);
+              queuedMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+              machine->DoSend (queuedMsg);
               McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
             }
           else
             {
+              NS_LOG_DEBUG ("Call is started and implicit floor request and floor is occupied (with queueing disabled)");
               McpttFloorMsgTaken takenMsg;
-              takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-              takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-              takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-              takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-              if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+              takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+              takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+              takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+              takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+              if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
                 {
                   takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
                 }
@@ -373,20 +370,22 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
                 {
                   takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (true));
                 }
-              machine.DoSend (takenMsg);
+              machine->DoSend (takenMsg);
               McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
             }
         }
     }
   else // The client was invited
     {
-      if (machine.GetOwner ()->IsFloorOccupied ())
+      NS_LOG_DEBUG ("The client was invited");
+      if (machine->GetOwner ()->IsFloorOccupied ())
         {
+          NS_LOG_DEBUG ("Floor occupied; generate taken message");
           McpttFloorMsgTaken takenMsg;
-          takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-          takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-          takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-          if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+          takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+          takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+          takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+          if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
             {
               takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
             }
@@ -394,16 +393,17 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitiated (McpttOnNetwo
             {
               takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (true));
             }
-          takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          machine.DoSend (takenMsg);
+          takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          machine->DoSend (takenMsg);
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
          }
       else
         {
+          NS_LOG_DEBUG ("Floor not occupied; generate idle message");
           McpttFloorMsgIdle idleMsg;
-          idleMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-          idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-          idleMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+          idleMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+          idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+          idleMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
     }
@@ -445,144 +445,138 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstanceStateId (
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ());
+  machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () != McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () != McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
-      machine.GetOwner ()->ReceiveFloorRequest (msg);
+      machine->GetOwner ()->ReceiveFloorRequest (msg);
     }
   else //The call IS a Broadcast Group Call
     {
-      if (machine.IsOriginator ())
+      if (machine->IsOriginator ())
         {
-          machine.GetOwner ()->ReceiveFloorRequest (msg);
+          machine->GetOwner ()->ReceiveFloorRequest (msg);
         }
       else
         {
           McpttFloorMsgDeny denyMsg;
-          denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_5));
-          if (machine.GetOwner ()->IsAckRequired ())
+          if (machine->GetOwner ()->IsAckRequired ())
             {
               denyMsg.SetSubtype (McpttFloorMsgDeny::SUBTYPE_ACK);
             }
-          denyMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          machine.DoSend (denyMsg);
+          denyMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          machine->DoSend (denyMsg);
         }
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgGranted::SUBTYPE_ACK);
     }
-  machine.DoSend (msg);
+  machine->DoSend (msg);
   McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorDeny (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgDeny& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorDeny (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgDeny& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgDeny::SUBTYPE_ACK);
     }
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
-      ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
-      machine.DoSend (ackMsg);
+      machine->DoSend (ackMsg);
     }
 
   McpttFloorMsgIdle idleMsg;
-  idleMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-  idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
+  idleMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+  idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       idleMsg.SetSubtype (McpttFloorMsgIdle::SUBTYPE_ACK);
     }
 
-  idleMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-  machine.DoSend (idleMsg);
+  idleMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+  machine->DoSend (idleMsg);
 
-  machine.GetOwner ()->GetQueue ()->Pull (msg.GetSsrc ());
+  machine->GetOwner ()->GetQueue ()->Pull (msg.GetSsrc ());
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const
 {
   //TODO: Shall request the MCPTT server not to foward the received RTP media packets
 
   McpttFloorMsgRevoke revokeMsg;
-  revokeMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+  revokeMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
   revokeMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
-  revokeMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-  machine.DoSend (revokeMsg);
-  machine.SetRevokeMsg (revokeMsg);
+  revokeMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+  machine->DoSend (revokeMsg);
+  machine->SetRevokeMsg (revokeMsg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine) const
-{
-  machine.GetOwner ()->ImplicitFloorRequest (machine);
-}
-
-void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgIdle::SUBTYPE_ACK);
     }
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 }
 /** McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle - end **/
 
@@ -620,29 +614,29 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstanceStateId 
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ());
+  machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgIdle::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
-  if (machine.IsDualFloor ())
+  if (machine->IsDualFloor ())
     {
-      machine.SetDualFloor (false);
+      machine->SetDualFloor (false);
     }
   else
     {
@@ -651,83 +645,83 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorIdle (Mcpt
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine.GetOwner ()->IsAudioCutIn ())
+  if (machine->GetOwner ()->IsAudioCutIn ())
     {
-      machine.GetOwner ()->ReceiveFloorRequest (msg);
+      machine->GetOwner ()->ReceiveFloorRequest (msg);
     }
   else if (!msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL)
       && !msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
-      && (!machine.GetOwner ()->GetQueue ()->IsEnabled () || !machine.IsMcQueuing ())
+      && (!machine->GetOwner ()->GetQueue ()->IsEnabled () || !machine->IsMcQueuing ())
       && msg.GetPriority ().GetPriority () == 0)
     {
       McpttFloorMsgDeny denyMsg;
-      denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_1));
       denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      denyMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-      if (machine.GetOwner ()->IsAckRequired ())
+      denyMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+      if (machine->GetOwner ()->IsAckRequired ())
         {
           denyMsg.SetSubtype (McpttFloorMsgDeny::SUBTYPE_ACK);
         }
-      machine.DoSend (denyMsg);
+      machine->DoSend (denyMsg);
     }
-  else if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  else if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
       McpttFloorMsgDeny denyMsg;
-      denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_5));
       denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      denyMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-      if (machine.GetOwner ()->IsAckRequired ())
+      denyMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+      if (machine->GetOwner ()->IsAckRequired ())
         {
           denyMsg.SetSubtype (McpttFloorMsgDeny::SUBTYPE_ACK);
         }
-      machine.DoSend (denyMsg);
+      machine->DoSend (denyMsg);
     }
-  else if (machine.GetOwner ()->IsPreemptive (msg) == false)
+  else if (machine->GetOwner ()->IsPreemptive (msg) == false)
     {
       uint16_t position;
       McpttQueuedUserInfo queueInfo;
-      if (machine.IsReceiveOnly ())
+      if (machine->IsReceiveOnly ())
         {
           McpttFloorMsgDeny denyMsg;
-          denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_5));
           denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-          denyMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          if (machine.GetOwner ()->IsAckRequired ())
+          denyMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          if (machine->GetOwner ()->IsAckRequired ())
             {
               denyMsg.SetSubtype (McpttFloorMsgDeny::SUBTYPE_ACK);
             }
-          machine.DoSend (denyMsg);
+          machine->DoSend (denyMsg);
         }
-      else if (!machine.GetOwner ()->GetQueue ()->IsEnabled ()
-          || !machine.IsMcQueuing ())
+      else if (!machine->GetOwner ()->GetQueue ()->IsEnabled ()
+          || !machine->IsMcQueuing ())
         {
           McpttFloorMsgDeny denyMsg;
-          denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_1));
           denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-          denyMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          if (machine.GetOwner ()->IsAckRequired ())
+          denyMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          if (machine->GetOwner ()->IsAckRequired ())
             {
               denyMsg.SetSubtype (McpttFloorMsgDeny::SUBTYPE_ACK);
             }
-          machine.DoSend (denyMsg);
+          machine->DoSend (denyMsg);
         }
-      else if (machine.GetOwner ()->GetQueue ()->View (msg.GetSsrc (), queueInfo, position))
+      else if (machine->GetOwner ()->GetQueue ()->View (msg.GetSsrc (), queueInfo, position))
         {
           McpttFloorMsgQueuePositionInfo queueInfoMsg;
-          queueInfoMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          queueInfoMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           queueInfoMsg.SetQueuedUserId (queueInfo.GetUserId ());
           queueInfoMsg.SetQueuePositionInfo (queueInfo.GetInfo ());
           queueInfoMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-          queueInfoMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          machine.DoSend (queueInfoMsg);
+          queueInfoMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          machine->DoSend (queueInfoMsg);
         }
       else
         {
@@ -736,49 +730,49 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
           queueInfo.SetSsrc (msg.GetSsrc ());
           queueInfo.SetUserId (McpttFloorMsgFieldQueuedUserId (msg.GetSsrc ()));
           queueInfo.SetInfo (queuePositionInfo);
-          machine.GetOwner ()->GetQueue ()->Enqueue (queueInfo);
+          machine->GetOwner ()->GetQueue ()->Enqueue (queueInfo);
           McpttFloorMsgQueuePositionInfo queueInfoMsg;
-          queueInfoMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          queueInfoMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           queueInfoMsg.SetQueuedUserId (queueInfo.GetUserId ());
           queueInfoMsg.SetQueuePositionInfo (queueInfo.GetInfo ());
           queueInfoMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-          queueInfoMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-          if (machine.GetOwner ()->IsAckRequired ())
+          queueInfoMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+          if (machine->GetOwner ()->IsAckRequired ())
             {
               queueInfoMsg.SetSubtype (McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK);
             }
-          machine.DoSend (queueInfoMsg);
+          machine->DoSend (queueInfoMsg);
         }
     }
-  else if (machine.GetOwner ()->IsPreemptive (msg) == true)
+  else if (machine->GetOwner ()->IsPreemptive (msg) == true)
     {
-      machine.GetOwner ()->ReceiveFloorRequest (msg);
+      machine->GetOwner ()->ReceiveFloorRequest (msg);
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if ((!machine.GetOwner ()->GetQueue ()->IsEnabled ()
-      || !machine.IsMcQueuing ()))
+  if ((!machine->GetOwner ()->GetQueue ()->IsEnabled ()
+      || !machine->IsMcQueuing ()))
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
           McpttFloorMsgAck ackMsg;
-          ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
           ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
-          machine.DoSend (ackMsg);
+          machine->DoSend (ackMsg);
         }
 
       McpttFloorMsgTaken takenMsg;
-      takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
+      takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
 
-      if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+      if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
         {
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
         }
@@ -789,31 +783,31 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
 
       takenMsg.UpdateTrackInfo (msg.GetTrackInfo ());
 
-      if (machine.GetOwner ()->IsAckRequired ())
+      if (machine->GetOwner ()->IsAckRequired ())
         {
           takenMsg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
         }
 
-      takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-      machine.DoSend (takenMsg);
+      takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+      machine->DoSend (takenMsg);
      }
   else
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
           McpttFloorMsgAck ackMsg;
-          ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+          ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
           ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
           ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
-          machine.DoSend (ackMsg);
+          machine->DoSend (ackMsg);
         }
 
-      machine.GetOwner ()->GetQueue ()->Pull (msg.GetSsrc ());
+      machine->GetOwner ()->GetQueue ()->Pull (msg.GetSsrc ());
 
       McpttFloorMsgTaken takenMsg;
-      takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-      if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+      takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+      if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
         {
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
         }
@@ -823,102 +817,94 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
         }
 
       takenMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-      takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+      takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-      if (machine.GetOwner ()->IsAckRequired ())
+      if (machine->GetOwner ()->IsAckRequired ())
         {
           takenMsg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
         }
 
-      machine.DoSend (takenMsg);
+      machine->DoSend (takenMsg);
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   //TODO: Request the network media interface to not forward the RTP media packets
 
   McpttFloorMsgRevoke revokeMsg;
-  revokeMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+  revokeMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
   revokeMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
-  revokeMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
-  machine.DoSend (revokeMsg);
+  revokeMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
+  machine->DoSend (revokeMsg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorQueuePositionRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgQueuePositionRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorQueuePositionRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgQueuePositionRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   uint16_t position;
   McpttQueuedUserInfo queuedInfo;
 
-  machine.GetOwner ()->GetQueue ()->View (msg.GetSsrc (), queuedInfo, position);
+  machine->GetOwner ()->GetQueue ()->View (msg.GetSsrc (), queuedInfo, position);
 
   McpttFloorMsgQueuePositionInfo queueInfoMsg;
-  queueInfoMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+  queueInfoMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
   queueInfoMsg.SetQueuePositionInfo (queuedInfo.GetInfo ());
   queueInfoMsg.UpdateTrackInfo (msg.GetTrackInfo ());
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       queueInfoMsg.SetSubtype (McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK);
     }
 
-  queueInfoMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+  queueInfoMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-  machine.DoSend (queueInfoMsg);
+  machine->DoSend (queueInfoMsg);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.GetOwner ()->ImplicitFloorRequest (machine);
-}
-
-void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgGranted::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
-      machine.SetOverriding (true);
+      machine->SetOverriding (true);
     }
 
   McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
     }
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
-      machine.DoSend (msg);
+      machine->DoSend (msg);
 
-      machine.SetDualFloor (true);
+      machine->SetDualFloor (true);
     }
 }
 /** McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken - end **/
@@ -957,67 +943,67 @@ McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstanceStateId (void) c
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ());
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
-      ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
 
-      machine.DoSend (ackMsg);
+      machine->DoSend (ackMsg);
     }
 
-  if (machine.IsOverriding ())
+  if (machine->IsOverriding ())
     {
       //TODO: May need to remove ACK bit
       //msg.SetSubtype (McpttFloorMsgRelease::SUBTYPE);
-      machine.GetOwner ()->GetDualControl ()->ReceiveFloorRelease (msg);
-      machine.SetOverriding (false);
+      machine->GetOwner ()->GetDualControl ()->ReceiveFloorRelease (msg);
+      machine->SetOverriding (false);
       McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
     }
-  else if (machine.IsOverridden ())
+  else if (machine->IsOverridden ())
     {
       //TODO: May need to remove ACK bit
       //msg.SetSubtype (McpttFloorMsgRelease::SUBTYPE);
-      machine.GetOwner ()->ReceiveFloorRelease (msg);
-      machine.SetOverridden (false);
+      machine->GetOwner ()->ReceiveFloorRelease (msg);
+      machine->SetOverridden (false);
       McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
     }
   else
     {
       //TODO: May need to remove ACK bit
       //msg.SetSubtype (McpttFloorMsgRelease::SUBTYPE);
-      machine.GetOwner ()->ReceiveFloorRelease (msg);
+      machine->GetOwner ()->ReceiveFloorRelease (msg);
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR
-      && machine.IsOverridden ()))
+      && machine->IsOverridden ()))
     {
-      machine.DoSend (msg);
-      machine.SetOverridden (false);
+      machine->DoSend (msg);
+      machine->SetOverridden (false);
     }
-  else if (machine.IsOverriding ())
+  else if (machine->IsOverriding ())
     {
-      machine.DoSend (msg);
-      machine.SetOverriding (false);
+      machine->DoSend (msg);
+      machine->SetOverriding (false);
     }
   else
     {
@@ -1026,42 +1012,42 @@ McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorIdle (McpttOnNetwo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorRevoke (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgRevoke& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorRevoke (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgRevoke& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.DoSend (msg);
-  machine.SetRevokeMsg (msg);
-  machine.SetTrackInfo (msg.GetTrackInfo ());
+  machine->DoSend (msg);
+  machine->SetRevokeMsg (msg);
+  machine->SetTrackInfo (msg.GetTrackInfo ());
 
   McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (!machine.IsOverriding ())
+  if (!machine->IsOverriding ())
     {
       //TODO: Shall request the network media interface in the MCPTT server to foward RTP media packets.
     }
 
   //TODO: Not in standard
-  machine.GetOwner ()->ReceiveMedia (msg);
+  machine->GetOwner ()->ReceiveMedia (msg);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  machine.GetOwner ()->ReceiveFloorRequest (msg);
+  machine->GetOwner ()->ReceiveFloorRequest (msg);
 
   //TODO: Shall instruct the media distributor to foward the RTP media packets
   //      to MCPTT clients.
 
-  if (machine.IsOverriding ())
+  if (machine->IsOverriding ())
     {
       //TODO: Shall request the network media interface in the MCPTT server
       //      to foward RTP media packets to the media distributor.
@@ -1075,30 +1061,30 @@ McpttOnNetworkFloorTowardsParticipantStatePermitted::ReceiveFloorRequest (McpttO
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::SendMedia (McpttOnNetworkFloorTowardsParticipant& machine, McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine.IsOverridden ()
-      || machine.IsOverriding ())
+  if (machine->IsOverridden ()
+      || machine->IsOverriding ())
     {
-      machine.DoSend (msg);
+      machine->DoSend (msg);
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
-      machine.DoSend (msg);
-      machine.SetOverridden (true);
+      machine->DoSend (msg);
+      machine->SetOverridden (true);
     }
   else
     {
-      machine.DoSend (msg);
+      machine->DoSend (msg);
       McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
     }
 }
@@ -1138,23 +1124,23 @@ McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::GetInstanceStateId (voi
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.GetT8 ()->Start ();
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::GetInstance ());
+  machine->GetT8 ()->Start ();
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ExpiryOfT8 (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  McpttFloorMsgRevoke revokeMsg = machine.GetRevokeMsg ();
+  McpttFloorMsgRevoke revokeMsg = machine->GetRevokeMsg ();
 
-  machine.DoSend (revokeMsg);
-  machine.GetT8 ()->Start ();
+  machine->DoSend (revokeMsg);
+  machine->GetT8 ()->Start ();
   
   //TODO: How many times before giving up is up to implementation but it is
   //      recommnded that the client is disconnected once the floor control
@@ -1162,86 +1148,86 @@ McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ExpiryOfT8 (McpttOnNetw
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   //TODO: Foward RTP media packets to the media distributor
   //TODO: Not in standard
-  machine.GetOwner ()->ReceiveMedia (msg);
+  machine->GetOwner ()->ReceiveMedia (msg);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
-      ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
 
-      machine.DoSend (ackMsg);
+      machine->DoSend (ackMsg);
     }
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
-      if (machine.GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateTaken::GetStateId ())
+      if (machine->GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateTaken::GetStateId ())
         {
           McpttFloorMsgTaken takenMsg;
-          takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-          takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-          takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+          takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+          takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+          takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-          machine.DoSend (takenMsg);
+          machine->DoSend (takenMsg);
 
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
         }
-      else if (machine.GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateIdle::GetStateId ())
+      else if (machine->GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateIdle::GetStateId ())
         {
           McpttFloorMsgIdle idleMsg;
-          idleMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-          idleMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+          idleMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+          idleMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-          machine.DoSend (idleMsg);
+          machine->DoSend (idleMsg);
 
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
     }
   else
     {
-      machine.GetOwner ()->ReceiveFloorRelease (msg);
+      machine->GetOwner ()->ReceiveFloorRelease (msg);
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgIdle::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const
+McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
 }
@@ -1281,12 +1267,12 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::GetInstanceStateId 
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.GetT8 ()->Start ();
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::GetInstance ());
+  machine->GetT8 ()->Start ();
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::GetInstance ());
 
   //TODO: Shall not request the network media interface in the MCPTT server to
   //      forward RTP media packets from the MCPTT client to the media
@@ -1294,18 +1280,18 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::Enter (McpttOnNetwo
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ExpiryOfT8 (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
   McpttFloorMsgRevoke revokeMsg;
-  revokeMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+  revokeMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
   revokeMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
-  revokeMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+  revokeMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-  machine.DoSend (revokeMsg);
+  machine->DoSend (revokeMsg);
 
-  machine.GetT8 ()->Start ();
+  machine->GetT8 ()->Start ();
  
   //TODO: How many times before giving up is up to implementation but it is
   //      recommnded that the client is disconnected once the floor control
@@ -1313,38 +1299,38 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ExpiryOfT8 (McpttOn
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
-      ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
-      machine.DoSend (ackMsg);
+      machine->DoSend (ackMsg);
     }
 
-  if (machine.GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateIdle::GetStateId ())
+  if (machine->GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateIdle::GetStateId ())
     {
       McpttFloorMsgIdle idleMsg;
-      idleMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-      idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
-      idleMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+      idleMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+      idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
+      idleMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-      machine.DoSend (idleMsg);
+      machine->DoSend (idleMsg);
 
       McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
     }
-  else if (machine.GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateTaken::GetStateId ())
+  else if (machine->GetOwner ()->GetStateId () == McpttOnNetworkFloorArbitratorStateTaken::GetStateId ())
     {
       McpttFloorMsgTaken takenMsg;
-      takenMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
-      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetOwner ()->GetStoredSsrc ()));
-      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.GetOwner ()->NextSeqNum ()));
+      takenMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
+      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetOwner ()->GetStoredSsrc ()));
+      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->GetOwner ()->NextSeqNum ()));
 
-      if (machine.GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+      if (machine->GetOwner ()->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
         {
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (false));
         }
@@ -1353,14 +1339,14 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ReceiveFloorRelease
           takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (true));
         }
 
-      if (machine.GetOwner ()->IsAckRequired ())
+      if (machine->GetOwner ()->IsAckRequired ())
         {
           takenMsg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
         }
       
-      takenMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+      takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-      machine.DoSend (takenMsg);
+      machine->DoSend (takenMsg);
 
       McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
     }
@@ -1401,14 +1387,14 @@ McpttOnNetworkFloorTowardsParticipantStateReleasing::GetInstanceStateId (void) c
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateReleasing::CallRelease2 (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateReleasing::CallRelease2 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this);
 
   //TODO: Shall request the network media interface to release all resources
   //      associated with this MCPTT client for this MCPTT call.
 
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ());
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ());
 }
 /** McpttOnNetworkFloorTowardsParticipantStateReleasing - end **/
 
@@ -1446,49 +1432,49 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::GetInstanceSta
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::Enter (McpttOnNetworkFloorTowardsParticipant& machine) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  machine.ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::GetInstance ());
+  machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::GetInstance ());
 }
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgIdle::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine.GetOwner ()->GetQueue ()->IsEnabled ()
-      && machine.IsMcQueuing ())
+  if (machine->GetOwner ()->GetQueue ()->IsEnabled ()
+      && machine->IsMcQueuing ())
     {
       McpttQueuedUserInfo queueInfo;
       queueInfo.SetSsrc (msg.GetSsrc ());
@@ -1499,63 +1485,63 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRe
 
       queueInfo.SetInfo (queuePositionInfo);
 
-      machine.GetOwner ()->GetQueue ()->Enqueue (queueInfo);
+      machine->GetOwner ()->GetQueue ()->Enqueue (queueInfo);
 
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
-      queueInfoMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      queueInfoMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       queueInfoMsg.SetQueuedUserId (queueInfo.GetUserId ());
       queueInfoMsg.SetQueuePositionInfo (queueInfo.GetInfo ());
       queueInfoMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      queueInfoMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+      queueInfoMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
-      if (machine.GetOwner ()->IsAckRequired ())
+      if (machine->GetOwner ()->IsAckRequired ())
         {
           queueInfoMsg.SetSubtype (McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK);
         }
 
-      machine.DoSend (queueInfoMsg);
+      machine->DoSend (queueInfoMsg);
      }
   else
     {
       McpttFloorMsgDeny denyMsg;
-      denyMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_1));
       denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      denyMsg.SetIndicator (machine.GetOwner ()->GetIndicator ());
+      denyMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
     }
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  if (machine.GetOwner ()->IsAckRequired ())
+  if (machine->GetOwner ()->IsAckRequired ())
     {
       msg.SetSubtype (McpttFloorMsgGranted::SUBTYPE_ACK);
     }
 
-  machine.DoSend (msg);
+  machine->DoSend (msg);
 
   McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
-      ackMsg.SetSsrc (machine.GetOwner ()->GetTxSsrc ());
+      ackMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
       ackMsg.SetMsgType (McpttFloorMsgFieldType (McpttFloorMsgRelease::SUBTYPE));
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::CONTROLLING_FUNCTION));
 
-      machine.DoSend (ackMsg);
+      machine->DoSend (ackMsg);
     }
 
-  machine.GetOwner ()->GetQueue ()->Pull (msg.GetSsrc ());
+  machine->GetOwner ()->GetQueue ()->Pull (msg.GetSsrc ());
 }
 /** McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating - end **/
 

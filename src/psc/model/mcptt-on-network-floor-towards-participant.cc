@@ -29,6 +29,7 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include <limits>
 #include <ns3/boolean.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/log.h>
@@ -86,6 +87,11 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
                    MakeAddressAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerAddress,
                                             &McpttOnNetworkFloorTowardsParticipant::SetPeerAddress),
                    MakeAddressChecker ())
+    .AddAttribute ("PeerUserId", "The MCPTT User ID of the node that the peer application is on.",
+                   UintegerValue (std::numeric_limits<uint32_t>::max ()),
+                   MakeUintegerAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerUserId,
+                                            &McpttOnNetworkFloorTowardsParticipant::SetPeerUserId),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ReceiveOnly", "Indicates if the associated participant is \"receive only\"",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_receiveOnly),
@@ -135,67 +141,54 @@ McpttOnNetworkFloorTowardsParticipant::~McpttOnNetworkFloorTowardsParticipant (v
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::CallInitiated (void)
+McpttOnNetworkFloorTowardsParticipant::CallInitialized (bool implicitRequest)
 {
-  NS_LOG_FUNCTION (this);
-  
-  NS_LOG_LOGIC ("Taking call initiated notification towards participant " << GetPeerAddress ());
-
-  m_state->CallInitiated (*this);
+  NS_LOG_FUNCTION (this << implicitRequest);
+  NS_LOG_LOGIC ("Taking call initiated notification towards participant " << GetPeerUserId ());
+  m_mcImplicitRequest = implicitRequest;
+  m_state->CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::CallRelease1 (void)
 {
   NS_LOG_FUNCTION (this);
-  
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking call release notification (part I).");
-
-  m_state->CallRelease1 (*this);
+  NS_LOG_LOGIC ("Taking call release notification (part I).");
+  m_state->CallRelease1 (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::CallRelease2 (void)
 {
   NS_LOG_FUNCTION (this);
-  
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking call release notification (part II).");
-
-  m_state->CallRelease2 (*this);
+  NS_LOG_LOGIC ("Taking call release notification (part II).");
+  m_state->CallRelease2 (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::ClientRelease (void)
 {
   NS_LOG_FUNCTION (this);
-  
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking client release notification.");
-
-  m_state->ClientRelease (*this);
+  NS_LOG_LOGIC ("Taking client release notification.");
+  m_state->ClientRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowardsParticipantState>  state)
 {
   NS_LOG_FUNCTION (this << state);
-
   McpttEntityId stateId = state->GetInstanceStateId ();
-
   McpttEntityId currStateId = GetStateId ();
-
   if (currStateId != stateId)
     {
-      NS_LOG_LOGIC ("TowardsParticipant " << GetPeerAddress () << " moving from state " << *m_state << " to state " << *state);
-
-      m_state->Unselected (*this);
+      NS_LOG_LOGIC ("TowardsParticipant " << GetPeerUserId () << " moving from state " << *m_state << " to state " << *state);
+      m_state->Unselected (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
       SetState (state);
-      state->Selected (*this);
-
+      state->Selected (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
       if (!m_stateChangeCb.IsNull ())
         {
           m_stateChangeCb (currStateId, stateId);
         }
-
       m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
@@ -214,12 +207,12 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
     {
-      NS_LOG_DEBUG ("Send floor msg towards participant " << GetPeerAddress ());
+      NS_LOG_DEBUG ("Send floor msg towards participant " << GetPeerUserId ());
       GetFloorChan ()->Send (pkt);
     }
   else if (msg.IsA (McpttMediaMsg::GetTypeId ()))
     {
-      NS_LOG_DEBUG ("Send media msg towards participant " << GetPeerAddress ());
+      NS_LOG_DEBUG ("Send media msg towards participant " << GetPeerUserId ());
       GetMediaChan ()->Send (pkt);
     }
 }
@@ -316,40 +309,32 @@ void
 McpttOnNetworkFloorTowardsParticipant::ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg)
 {
   NS_LOG_FUNCTION (this << msg);
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") received " << msg.GetInstanceTypeId () << ".");
-
-  m_state->ReceiveFloorQueuePositionRequest (*this, msg);
+  NS_LOG_LOGIC ("Received " << msg.GetInstanceTypeId () << ".");
+  m_state->ReceiveFloorQueuePositionRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
 {
   NS_LOG_FUNCTION (this << msg);
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") received " << msg.GetInstanceTypeId () << ".");
-
-  m_state->ReceiveFloorRelease (*this, msg);
+  NS_LOG_LOGIC ("Received " << msg.GetInstanceTypeId () << ".");
+  m_state->ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
 {
   NS_LOG_FUNCTION (this << msg);
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") received " << msg.GetInstanceTypeId () << ".");
-
-  m_state->ReceiveFloorRequest (*this, msg);
+  NS_LOG_LOGIC ("Received " << msg.GetInstanceTypeId () << ".");
+  m_state->ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
 McpttOnNetworkFloorTowardsParticipant::ReceiveMedia (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") received " << msg.GetInstanceTypeId () << ".");
-
-  m_state->ReceiveMedia (*this, msg);
+  NS_LOG_LOGIC ("Received " << msg.GetInstanceTypeId () << ".");
+  m_state->ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
@@ -357,6 +342,7 @@ McpttOnNetworkFloorTowardsParticipant::Send (McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
+  NS_LOG_LOGIC ("Send " << msg.GetInstanceTypeId () << ".");
   if (msg.IsA (McpttFloorMsgDeny::GetTypeId ()))
     {
       SendFloorDeny (static_cast<McpttFloorMsgDeny&>(msg));
@@ -392,9 +378,9 @@ McpttOnNetworkFloorTowardsParticipant::Terminate (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant (" << this << ") taking terminate notification.");
+  NS_LOG_LOGIC ("Taking terminate notification.");
 
-  m_state->Terminate (*this);
+  m_state->Terminate (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
 void
@@ -423,8 +409,6 @@ McpttOnNetworkFloorTowardsParticipant::Start (void)
     {
       mediaChan->Open (app->GetNode (), GetMediaPort (), app->GetLocalAddress (), GetPeerAddress ());
     }
-
-  CallInitiated ();
 }
 
 void
@@ -532,7 +516,7 @@ McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8 (void)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorTowardsParticipant T8 expired.");
 
-  m_state->ExpiryOfT8 (*this);
+  m_state->ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
 void
@@ -542,7 +526,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorDeny (McpttFloorMsgDeny& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
-  m_state->SendFloorDeny (*this, msg);
+  m_state->SendFloorDeny (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
@@ -552,7 +536,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorGranted (McpttFloorMsgGranted& m
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
-  m_state->SendFloorGranted (*this, msg);
+  m_state->SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
@@ -562,7 +546,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorIdle (McpttFloorMsgIdle& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
-  m_state->SendFloorIdle (*this, msg);
+  m_state->SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
@@ -572,7 +556,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorRevoke (McpttFloorMsgRevoke& msg
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
-  m_state->SendFloorRevoke (*this, msg);
+  m_state->SendFloorRevoke (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
@@ -582,7 +566,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorTaken (McpttFloorMsgTaken& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
-  m_state->SendFloorTaken (*this, msg);
+  m_state->SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 void
@@ -592,7 +576,7 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
-  m_state->SendMedia (*this, msg);
+  m_state->SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
 Ptr<McpttChan>
@@ -629,6 +613,12 @@ Address
 McpttOnNetworkFloorTowardsParticipant::GetPeerAddress (void) const
 {
   return m_peerAddress;
+}
+
+uint32_t
+McpttOnNetworkFloorTowardsParticipant::GetPeerUserId (void) const
+{
+  return m_peerUserId;
 }
 
 McpttFloorMsgRevoke
@@ -739,6 +729,13 @@ McpttOnNetworkFloorTowardsParticipant::SetPeerAddress (const Address& peerAddres
   NS_LOG_FUNCTION (this);
 
   m_peerAddress = peerAddress;
+}
+
+void
+McpttOnNetworkFloorTowardsParticipant::SetPeerUserId (uint32_t userId)
+{
+  NS_LOG_FUNCTION (this);
+  m_peerUserId = userId;
 }
 
 void

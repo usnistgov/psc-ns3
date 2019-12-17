@@ -74,9 +74,10 @@ public:
   */
  virtual ~McpttOnNetworkFloorTowardsParticipant (void);
  /**
-  * Notifies the floor machine that the call has been initiated.
+  * Notifies the floor towards participant machine that the call has been initiated.
+  * \param implicitRequest whether the floor is taken by an implicit request
   */
- virtual void CallInitiated (void);
+ virtual void CallInitialized (bool implicitRequest);
  /**
   * Notifies the floor machine that the call has been released (part I).
   */
@@ -263,6 +264,7 @@ private:
  bool m_overriding; //!< Flag that indicates if associated participant is overriding without revoke.
  Ptr<McpttOnNetworkFloorArbitrator> m_owner; //!< The floor arbitration server.
  Address m_peerAddress; //!< The address of the node that the peer application is on.
+ uint32_t m_peerUserId; //!< The MCPTT user ID of the node that the peer application is on.
  bool m_receiveOnly; //!< Flag that indicates if the associated participant is "receive only".
  McpttFloorMsgRevoke m_revokeMsg; //!< The Floor Revoke message to retransmit when T8 expires.
  Callback<void, const McpttMsg&> m_rxCb; //!< The message received call back.
@@ -305,6 +307,11 @@ public:
   * \returns The peer address.
   */
  virtual Address GetPeerAddress (void) const;
+ /**
+  * Gets the peer user ID
+  * \returns The peer user ID
+  */
+ virtual uint32_t GetPeerUserId (void) const;
  /**
   * Gets the floor revoke message to retransmit.
   * \returns The revoke message.
@@ -380,6 +387,11 @@ public:
   * \param peerAddress The address of the participant.
   */
  virtual void SetPeerAddress (const Address& peerAddress);
+ /**
+  * Sets the user ID of the peer.
+  * \param userId The user ID of the peer.
+  */
+ virtual void SetPeerUserId (uint32_t userId);
  /**
   * Sets the floor revoke message to retransmit when the T8 expires.
   * \param revokeMsg The message to retransmit.

@@ -116,43 +116,65 @@ McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Add
   if (Ipv4Address::IsMatchingType (local))
     {
       Ipv4Address localIpv4 = Ipv4Address::ConvertFrom (local);
-      socket->Bind (InetSocketAddress (localIpv4, port));
+      result = socket->Bind (InetSocketAddress (localIpv4, port));
       ssLocal << localIpv4;
     }
   else if (Ipv6Address::IsMatchingType (local))
     {
       Ipv6Address localIpv6 = Ipv6Address::ConvertFrom (local);
-      socket->Bind (Inet6SocketAddress (localIpv6, port));
+      result = socket->Bind (Inet6SocketAddress (localIpv6, port));
       ssLocal << localIpv6;
     }
   else
     {
       NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
     }
+  if (result != 0)
+    {
+      return result;
+    }
 
   socket->SetAllowBroadcast (true);
   socket->SetRecvCallback (MakeCallback (&McpttChan::ReceivePkts, this));
 
+  bool success = false;
   if (Ipv4Address::IsMatchingType (peer))
     {
       Ipv4Address peerIpv4 = Ipv4Address::ConvertFrom (peer);
-      result = socket->Connect (InetSocketAddress (peerIpv4, port));
-      ssPeer << peerIpv4;
+      if (!peerIpv4.IsAny ())
+        {
+          result = socket->Connect (InetSocketAddress (peerIpv4, port));
+          ssPeer << peerIpv4;
+          NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
+          success = (result == 0) ? true : false;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Create unconnected socket locally on " << node->GetId () << " address " << ssLocal.str () << " port " << port);
+          success = true;
+        }
     }
   else if (Ipv6Address::IsMatchingType (peer))
     {
       Ipv6Address peerIpv6 = Ipv6Address::ConvertFrom (peer);
-      result = socket->Connect (Inet6SocketAddress (peerIpv6, port));
-      ssPeer << peerIpv6;
+      if (!peerIpv6.IsAny ())
+        {
+          result = socket->Connect (Inet6SocketAddress (peerIpv6, port));
+          ssPeer << peerIpv6;
+          NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
+          success = (result == 0) ? true : false;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Create unconnected socket locally on " << node->GetId () << " address " << ssLocal.str () << " port " << port);
+          success = true;
+        }
     }
   else
     {
       NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
     }
 
-  NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
-
-  bool success = (result == 0);
   if (success == true)
     {
       SetSocket (socket);
@@ -176,6 +198,13 @@ McpttChan::Send (Ptr<Packet>  pkt)
   int result = subject->Send (pkt);
 
   return result;
+}
+
+int
+McpttChan::SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress)
+{
+  NS_LOG_FUNCTION (this << p << flags << toAddress);
+  return GetSocket ()->SendTo (p, flags, toAddress);
 }
 
 void

@@ -104,9 +104,14 @@ void
 McpttPusher::Push (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
   NS_LOG_LOGIC ("Pusher about to push pushable.");
-  PushPushable ();
-  NotifyPushed ();
+  SetPushing (true);
+  m_pushable->TakePushNotification ();
+  if (m_automatic == true)
+    {
+      ScheduleRelease ();
+    }
 }
 
 void
@@ -124,9 +129,14 @@ void
 McpttPusher::Release (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
+  m_pushable->TakeReleaseNotification ();
   NS_LOG_LOGIC ("Pusher about to release pushable.");
-  ReleasePushable ();
-  NotifyReleased ();
+  SetPushing (false);
+  if (m_automatic == true)
+    {
+      SchedulePush ();
+    }
 }
 
 void
@@ -219,22 +229,6 @@ McpttPusher::DoDispose (void)
   m_pushVariable = 0;
   m_releaseVariable = 0;
   Object::DoDispose ();
-}
-
-void
-McpttPusher::PushPushable (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
-  m_pushable->TakePushNotification ();
-}
-
-void
-McpttPusher::ReleasePushable (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
-  m_pushable->TakeReleaseNotification ();
 }
 
 McpttPushable*

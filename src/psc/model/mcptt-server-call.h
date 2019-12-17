@@ -121,6 +121,11 @@ public:
   */
  void OpenMediaChan (const Address& peerAddr, const uint16_t port);
  /**
+  * Receives a call control packet.
+  * \param pkt The packet that was received.
+  */
+ void ReceiveCallPacket (Ptr<Packet> pkt);
+ /**
   * Receives a call message.
   * \param msg The message that was received.
   */
@@ -167,6 +172,8 @@ protected:
  void ReceiveMediaPkt (Ptr<Packet>  pkt);
  private:
  uint16_t m_callId;  //!< Call ID of the call.
+ std::vector<uint32_t> m_clientUserIds; //!< Client user IDs
+ uint32_t m_originator;  //!< Originating UE user ID
  bool m_ambientListening; //!< The flag that indicates if the call is configured for ambient listening.
  bool m_temporaryGroup; //!< The flag that indicates if the call is configured for a temporary group.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
@@ -227,6 +234,26 @@ public:
   * \param owner The owner.
   */
  void SetOwner (Ptr<McpttServerApp> owner);
+ /**
+  * Sets the list of client MCPTT user IDs belonging to this call
+  * \param clientUserIds the client UserIds
+  */
+ void SetClientUserIds (std::vector<uint32_t> clientUserIds);
+ /**
+  * Gets the list of client MCPTT user IDs belonging to this call
+  * \return the client UserIds
+  */
+ std::vector<uint32_t> GetClientUserIds (void) const;
+ /**
+  * Sets the originating client MCPTT user IDs belonging to this call
+  * \param originator the originating client's user ID
+  */
+ void SetOriginator (uint32_t originator);
+ /**
+  * Gets the originating client MCPTT user IDs for this call
+  * \param originator the originating client's user ID
+  */
+ uint32_t GetOriginator (void) const;
  /**
   * Sets the received message callback.
   * \param rxCb The callback.

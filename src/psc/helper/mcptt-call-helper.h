@@ -29,6 +29,7 @@
 namespace ns3 {
 
 class McpttServerApp;
+class McpttPttApp;
 class ApplicationContainer;
 class Time;
 class McpttCallMsgFieldCallType;
@@ -52,6 +53,7 @@ public:
   /**
    * Configure a call in the scenario for a set of clients and a server.
    * \param clients container of client applications
+   * \param originator pointer to the call originating app
    * \param server pointer to the server application
    * \param groupId GroupId to assign
    * \param callType type of call to configure
@@ -59,7 +61,7 @@ public:
    * \param stopTime stop time of the call
    * \return the call ID of the call
    */
-  uint16_t AddCall (ApplicationContainer clients, Ptr<McpttServerApp> server, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
+  uint16_t AddCall (ApplicationContainer clients, Ptr<McpttPttApp> originator, Ptr<McpttServerApp> server, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
  /**
   * Configures and selects a call for a set of MCPTT applications.
   * \param apps The application container with the set of apps to configure.

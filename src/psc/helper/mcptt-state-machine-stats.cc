@@ -30,6 +30,8 @@
  */
 
 #include <fstream>
+#include <iomanip>
+#include <string>
 
 #include <ns3/boolean.h>
 #include <ns3/log.h>
@@ -95,19 +97,25 @@ McpttStateMachineStats::StateChangeCb (uint32_t userId, uint32_t callId, const s
     {
       m_firstCb = false;
       outFile.open (m_outputFileName.c_str ());
-      outFile << "time(ms)\tuserid\tcallid\ttypeid\toldstate\tnewstate";
+      outFile << "#";
+      outFile << std::setw (9) << "time(s)";
+      outFile << std::setw (7) << "userid";
+      outFile << std::setw (7) << "callid";
+      outFile << std::setw (38) << "typeid";
+      outFile << std::setw (36) << "oldstate";
+      outFile << std::setw (36) << "newstate";
       outFile << std::endl;
     }
   else
     {
       outFile.open (m_outputFileName.c_str (), std::ios_base::app);
     }
-  outFile << Simulator::Now ().GetMilliSeconds ();
-  outFile << "\t" << userId;
-  outFile << "\t" << callId;
-  outFile << "\t" << typeId;
-  outFile << "\t" << oldStateName;
-  outFile << "\t" << newStateName;
+  outFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+  outFile << std::setw (6) << userId;
+  outFile << std::setw (6) << callId;
+  outFile << std::setw (40) << typeId.substr (5); // trim leading 'ns3::'
+  outFile << std::setw (36) << oldStateName;
+  outFile << std::setw (36)  << newStateName;
   outFile << std::endl;
   outFile.close ();
 }

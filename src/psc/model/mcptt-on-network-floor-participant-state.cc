@@ -29,6 +29,7 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include <ns3/abort.h>
 #include <ns3/assert.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
@@ -126,6 +127,18 @@ void
 McpttOnNetworkFloorParticipantState::CallInitialized (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_ABORT_MSG (GetInstanceStateId ().GetName () << "(" << this << ")" << " should not be initializing call.");
+}
+
+void
+McpttOnNetworkFloorParticipantState::CallInitiated (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_ABORT_MSG (GetInstanceStateId ().GetName () << "(" << this << ")" << " should not be initiating call.");
+}
+
+void
+McpttOnNetworkFloorParticipantState::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_ABORT_MSG (GetInstanceStateId ().GetName () << "(" << this << ")" << " should not be establishing call.");
 }
 
 void
@@ -298,24 +311,27 @@ void
 McpttOnNetworkFloorParticipantStateStartStop::CallInitialized (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC ("Call initialized-- staying in start-stop state until call is established or initiated");
+}
 
-  if (machine.IsOriginator ())
-    {
-      if (!machine.IsMcImplicitRequest ())
-        {
-          machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
-        }
-      else
-        {
-          machine.GetC101 ()->Reset ();
-          machine.GetT101 ()->Start ();
-          machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
-        }
-    }
-  else
-    {
-      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
-    }
+void
+McpttOnNetworkFloorParticipantStateStartStop::CallInitiated (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ABORT_MSG_UNLESS (machine.IsOriginator (), "Originator should initiate call");
+  // Do not start T101 (floor request timeout) because call control exchange
+  // is driving the floor state machine
+  machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
+}
+
+void
+McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ABORT_MSG_UNLESS (!machine.IsOriginator (), "This transition is for terminating MCPTT user");
+  machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
 }
 
 void
@@ -528,7 +544,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::Selected (McpttOnNetworkFloo
 
   if (appOwner->IsPushed ())
     {
-      appOwner->Released ();
+      appOwner->PttRelease ();
     }
 }
 /** McpttOnNetworkFloorParticipantStateHasNoPermission - end **/
@@ -649,6 +665,34 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
         {
           NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
         }
+    }
+}
+
+void
+McpttOnNetworkFloorParticipantStatePendingRequest::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+
+  // TODO:  Handle Dual Floor conditions, if any
+  if (machine.GetT103 ()->IsRunning ())
+    {
+      NS_LOG_ERROR ("Stopping a running timer T103 in PendingRequest state");
+      machine.GetT103 ()->Stop ();
+    }
+  if (machine.GetT101 ()->IsRunning ())
+    {
+      NS_LOG_ERROR ("Stopping a running timer T101 in PendingRequest state");
+      machine.GetT101 ()->Stop ();
+    }
+  if (machine.IsMcImplicitRequest ())
+    {
+      NS_LOG_DEBUG ("Implicit floor control request; change to HasPermission");
+      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasPermission::GetInstance ());
+    }
+  else
+    {
+      NS_LOG_DEBUG ("No implicit floor control request; change to HasNoPermission");
+      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
     }
 }
 
@@ -977,7 +1021,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
 
   if (!appOwner->IsPushed ())
     {
-      appOwner->Pushed ();
+      appOwner->PttPush ();
     }
 
   if (machine.ShouldGenMedia ()
@@ -997,7 +1041,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloo
 
   if (appOwner->IsPushed ())
     {
-      appOwner->Released ();
+      appOwner->PttRelease ();
     }
 
   if (mediaSrc->IsMakingReq ())
@@ -1254,7 +1298,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorTaken (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  //TODO: May provide a floor taken notifiacation to the MCPTT user.
+  //TODO: May provide a floor taken notification to the MCPTT user.
 
   if (msg.GetSubtype () == McpttFloorMsgTaken::SUBTYPE_ACK)
     {

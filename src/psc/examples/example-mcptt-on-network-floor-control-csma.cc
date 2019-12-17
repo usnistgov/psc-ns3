@@ -198,13 +198,14 @@ int main (int argc, char *argv[])
                          "McImplicitRequest", BooleanValue (false),
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttCallControlInfo",
+  callHelper.SetServerCall ("ns3::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   uint32_t groupId = 1;
-  callHelper.AddCall (clientApps, serverApp, groupId, callType, start, stop);
+  Ptr<McpttPttApp> originator = clientApps.Get (0)->GetObject<McpttPttApp> ();
+  callHelper.AddCall (clientApps, originator, serverApp, groupId, callType, start, stop);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

@@ -58,65 +58,64 @@ McpttOnNetworkFloorArbitratorState::~McpttOnNetworkFloorArbitratorState (void)
 }
 
 void
-McpttOnNetworkFloorArbitratorState::CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
+McpttOnNetworkFloorArbitratorState::CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const
 {
-  NS_LOG_FUNCTION (this << &machine);
-
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call initialization."); 
+  NS_LOG_FUNCTION (this << machine);
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call initiation."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::Enter (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT1 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T1."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT2 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T2."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT3 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T3."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT4 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T4."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << &machine);
+  NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T7."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ExpiryOfT20 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T20."); 
 }
@@ -128,43 +127,43 @@ McpttOnNetworkFloorArbitratorState::GetInstanceStateId (void) const
 }
 
 bool
-McpttOnNetworkFloorArbitratorState::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::IsFloorOccupied (void) const
 {
   return false;
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ReceiveFloorRelease (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorArbitratorState::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorArbitratorState::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ReceiveMedia (McpttOnNetworkFloorArbitrator& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorArbitratorState::ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 }
 
 void
-McpttOnNetworkFloorArbitratorState::Selected (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::Selected (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ClientRelease (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -172,18 +171,18 @@ McpttOnNetworkFloorArbitratorState::ClientRelease (McpttOnNetworkFloorArbitrator
 }
 
 void
-McpttOnNetworkFloorArbitratorState::CallRelease1 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::CallRelease1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
   NS_LOG_FUNCTION (this);
 
   //TODO: shall request the media distributor in the MCPTT server to stop
   //      sending RTP media packets to MCPTT clients
 
-  machine.ChangeState (McpttOnNetworkFloorArbitratorStateReleasing::GetInstance ());
+  machine->ChangeState (McpttOnNetworkFloorArbitratorStateReleasing::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorArbitratorState::CallRelease2 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorState::CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -191,17 +190,9 @@ McpttOnNetworkFloorArbitratorState::CallRelease2 (McpttOnNetworkFloorArbitrator&
 }
 
 void
-McpttOnNetworkFloorArbitratorState::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
+McpttOnNetworkFloorArbitratorState::Unselected (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
-
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring implicit floor request."); 
-}
-
-void
-McpttOnNetworkFloorArbitratorState::Unselected (McpttOnNetworkFloorArbitrator& machine) const
-{
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 }
 
 McpttOnNetworkFloorArbitratorState::McpttOnNetworkFloorArbitratorState (void)
@@ -251,9 +242,9 @@ McpttOnNetworkFloorArbitratorStateStartStop::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
+McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << machine << participant);
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " CallInitialized()");
 
   //TODO: Check if a confirmed indication is required and at least one invited
@@ -264,27 +255,27 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloo
   //TODO: Wait for the 'basic floor control operation towards the floor
   //      participant' to be initialized.
 
-  if (machine.GetOwner ()->IsTemporaryGroup ())
+  if (machine->GetOwner ()->IsTemporaryGroup ())
     {
       NS_LOG_DEBUG ("machine IsTemporaryGroup () is true");
       McpttOnNetworkFloorArbitratorStateInitialising::GetInstance ()->Enter (machine);
     }
   else
     {
-      if (!machine.IsMcGranted ())
+      if (!machine->IsMcGranted ())
         {
           NS_LOG_DEBUG ("machine IsMcGranted () is false");
-          if (participant.IsMcImplicitRequest ())
+          if (participant->IsMcImplicitRequest ())
             {
-              NS_LOG_DEBUG ("participant IsMcImplicitRequest is true");
+              NS_LOG_DEBUG ("IsMcImplicitRequest is true");
               McpttFloorMsgRequest msg;
-              msg.SetSsrc (participant.GetStoredSsrc ());
-              msg.SetPriority (McpttFloorMsgFieldPriority (participant.GetStoredPriority ()));
+              msg.SetSsrc (participant->GetStoredSsrc ());
+              msg.SetPriority (McpttFloorMsgFieldPriority (participant->GetStoredPriority ()));
               McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->ReceiveFloorRequest (machine, msg);
             }
           else
             {
-              NS_LOG_DEBUG ("participant IsMcImplicitRequest is false");
+              NS_LOG_DEBUG ("IsMcImplicitRequest is false");
               McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
             }
         }
@@ -292,9 +283,9 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (McpttOnNetworkFloo
         {
           //TODO: Not in standard - set needed attributes (SSRC, Priority, and Track Info)
           NS_LOG_DEBUG ("machine IsMcGranted () is true");
-          machine.SetStoredSsrc (participant.GetStoredSsrc ());
-          machine.SetStoredPriority (participant.GetStoredPriority ());
-          machine.SetTrackInfo (participant.GetTrackInfo ());
+          machine->SetStoredSsrc (participant->GetStoredSsrc ());
+          machine->SetStoredPriority (participant->GetStoredPriority ());
+          machine->SetTrackInfo (participant->GetTrackInfo ());
           McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
         }
     }
@@ -335,75 +326,75 @@ McpttOnNetworkFloorArbitratorStateIdle::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorArbitratorStateIdle::Enter (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " Enter from " << machine.GetStateId ());
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " Enter from " << machine->GetStateId ());
 
-  if (machine.GetStateId () == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ())
+  if (machine->GetStateId () == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ())
     {
       // TODO:  24.380 section 6.3.4.2.2
-      machine.ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
-      machine.GetC7 ()->Reset ();
-      machine.GetT7 ()->Start ();
-      machine.GetT4 ()->Start ();
+      machine->ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
+      machine->GetC7 ()->Reset ();
+      machine->GetT7 ()->Start ();
+      machine->GetT4 ()->Start ();
     }
   // Remainder of method covers 24.380 section 6.3.4.3.2  
-  else if (!machine.GetQueue ()->IsEnabled () || !machine.IsDualFloor ())
+  else if (!machine->GetQueue ()->IsEnabled () || !machine->IsDualFloor ())
     {
-      machine.SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
-      if (machine.GetQueue ()->HasNext ())
+      machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
+      if (machine->GetQueue ()->HasNext ())
         {
-          McpttQueuedUserInfo queueInfo = machine.GetQueue ()->Dequeue ();
-          machine.SetStoredSsrc (queueInfo.GetSsrc ());
-          machine.SetStoredPriority (queueInfo.GetInfo ().GetPriority ());
+          McpttQueuedUserInfo queueInfo = machine->GetQueue ()->Dequeue ();
+          machine->SetStoredSsrc (queueInfo.GetSsrc ());
+          machine->SetStoredPriority (queueInfo.GetInfo ().GetPriority ());
           McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
         }
       else
         {
           McpttFloorMsgIdle idleMsg;
-          idleMsg.SetSsrc (machine.GetTxSsrc ());
-          idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
-          idleMsg.SetIndicator (machine.GetIndicator ());
-          machine.SendToAll (idleMsg);
-          machine.GetC7 ()->Reset ();
-          machine.GetT7 ()->Start ();
-          machine.GetT4 ()->Start ();
-          machine.ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
+          idleMsg.SetSsrc (machine->GetTxSsrc ());
+          idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
+          idleMsg.SetIndicator (machine->GetIndicator ());
+          machine->SendToAll (idleMsg);
+          machine->GetC7 ()->Reset ();
+          machine->GetT7 ()->Start ();
+          machine->GetT4 ()->Start ();
+          machine->ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
         }
     }
-  else if (machine.IsDualFloor ())
+  else if (machine->IsDualFloor ())
     {
-      machine.SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
+      machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
       McpttFloorMsgIdle idleMsg;
-      idleMsg.SetSsrc (machine.GetTxSsrc ());
-      idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
-      idleMsg.SetIndicator (machine.GetIndicator ());
-      machine.SendToAllExcept (idleMsg, machine.GetStoredSsrc ());
+      idleMsg.SetSsrc (machine->GetTxSsrc ());
+      idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
+      idleMsg.SetIndicator (machine->GetIndicator ());
+      machine->SendToAllExcept (idleMsg, machine->GetStoredSsrc ());
 
       McpttFloorMsgTaken takenMsg;
-      takenMsg.SetSsrc (machine.GetTxSsrc ());
-      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetDualControl ()->GetStoredSsrc ()));
-      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
-      machine.SendToAllExcept (takenMsg, machine.GetStoredSsrc ());
+      takenMsg.SetSsrc (machine->GetTxSsrc ());
+      takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetDualControl ()->GetStoredSsrc ()));
+      takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
+      machine->SendToAllExcept (takenMsg, machine->GetStoredSsrc ());
 
-      machine.ChangeState (McpttOnNetworkFloorArbitratorStateTaken::GetInstance ());
-      machine.GetDualControl ()->Terminate ();
+      machine->ChangeState (McpttOnNetworkFloorArbitratorStateTaken::GetInstance ());
+      machine->GetDualControl ()->Terminate ();
     }
 }
 
 void
-McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
-  bool isOnlyParticipant = machine.GetNParticipants () == 1;
-  bool isRxOnly = machine.GetParticipant (msg.GetSsrc ())->IsReceiveOnly ();
+  bool isOnlyParticipant = machine->GetNParticipants () == 1;
+  bool isRxOnly = machine->GetParticipantBySsrc (msg.GetSsrc ())->IsReceiveOnly ();
 
   if (isOnlyParticipant == true
       || isRxOnly == true)
     {
       McpttFloorMsgDeny denyMsg;
-      denyMsg.SetSsrc (machine.GetTxSsrc ());
+      denyMsg.SetSsrc (machine->GetTxSsrc ());
       if (isOnlyParticipant == true)
         {
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
@@ -413,74 +404,59 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (McpttOnNetworkFloor
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_5));
         }
       denyMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      machine.SendTo (denyMsg, msg.GetSsrc ());
+      machine->SendTo (denyMsg, msg.GetSsrc ());
     }
   else
     {
-      machine.GetT4 ()->Stop ();
-      machine.GetT7 ()->Stop ();
-      machine.SetStoredSsrc (msg.GetSsrc ());
-      machine.SetStoredPriority (msg.GetPriority ().GetPriority ());
-      machine.SetTrackInfo (msg.GetTrackInfo ());
+      if (machine->GetT4 ()->IsRunning ())
+        {
+          machine->GetT4 ()->Stop ();
+        }
+      if (machine->GetT7 ()->IsRunning ())
+        {
+          machine->GetT7 ()->Stop ();
+        }
+      machine->SetStoredSsrc (msg.GetSsrc ());
+      machine->SetStoredPriority (msg.GetPriority ().GetPriority ());
+      machine->SetTrackInfo (msg.GetTrackInfo ());
       McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
     }
 }
 
 // Section 6.3.4.3.4
 void
-McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << &machine);
+  NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << machine);
 
-  if (machine.GetC7 ()->IsLimitReached ())
+  if (machine->GetC7 ()->IsLimitReached ())
     {
       // Continue to schedule timer T7 but keep count at same high value
       NS_LOG_DEBUG ("Reschedule timer T7");
-      machine.GetT7 ()->Start ();
+      machine->GetT7 ()->Start ();
     }
   else
     {
       NS_LOG_DEBUG ("Send Idle and reschedule timer T7");
       McpttFloorMsgIdle idleMsg;
-      idleMsg.SetSsrc (machine.GetTxSsrc ());
-      idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
-      machine.SendToAll (idleMsg);
-      machine.GetT7 ()->Start ();
-      machine.GetC7 ()->Increment ();
+      idleMsg.SetSsrc (machine->GetTxSsrc ());
+      idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
+      machine->SendToAll (idleMsg);
+      machine->GetT7 ()->Start ();
+      machine->GetC7 ()->Increment ();
     }
 }
 
 void
-McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT4 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   //TODO: Shall indicate to the application and signaling plane that timer T4 has expired
   //TODO: If the application and signaling plane initiates MCPTT call release,
   //      shall enter the 'Releasing' state
   //      otherwise:
-  machine.GetT4 ()->Start ();
-}
-
-void
-McpttOnNetworkFloorArbitratorStateIdle::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-
-  if (machine.GetNParticipants () == 1)
-    {
-      McpttFloorMsgDeny denyMsg;
-      denyMsg.SetSsrc (machine.GetTxSsrc ());
-      denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
-      machine.SendTo (denyMsg, participant.GetStoredSsrc ());
-    }
-  else
-    {
-      machine.GetT7 ()->Stop ();
-      machine.SetStoredSsrc (participant.GetStoredSsrc ());
-      machine.SetStoredPriority (participant.GetStoredPriority ());
-      McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
-    }
+  machine->GetT4 ()->Start ();
 }
 /** McpttOnNetworkFloorArbitratorStateIdle - end **/
 
@@ -518,33 +494,33 @@ McpttOnNetworkFloorArbitratorStateTaken::GetInstanceStateId (void) const
 }
 
 bool
-McpttOnNetworkFloorArbitratorStateTaken::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::IsFloorOccupied (void) const
 {
   return true;
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::Enter (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   McpttFloorMsgGranted grantedMsg;
-  grantedMsg.SetSsrc (machine.GetTxSsrc ());
-  grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine.GetT2 ()->GetTimeLeft ().GetSeconds ()));
-  grantedMsg.SetPriority (McpttFloorMsgFieldPriority (machine.GetStoredPriority ()));
-  grantedMsg.UpdateTrackInfo (machine.GetTrackInfo ());
-  grantedMsg.SetIndicator (machine.GetIndicator ());
-  machine.SendTo (grantedMsg, machine.GetStoredSsrc ());
+  grantedMsg.SetSsrc (machine->GetTxSsrc ());
+  grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine->GetT2 ()->GetTimeLeft ().GetSeconds ()));
+  grantedMsg.SetPriority (McpttFloorMsgFieldPriority (machine->GetStoredPriority ()));
+  grantedMsg.UpdateTrackInfo (machine->GetTrackInfo ());
+  grantedMsg.SetIndicator (machine->GetIndicator ());
+  machine->SendTo (grantedMsg, machine->GetStoredSsrc ());
 
-  machine.GetC20 ()->Reset ();
-  machine.GetT20 ()->Start ();
+  machine->GetC20 ()->Reset ();
+  machine->GetT20 ()->Start ();
 
   McpttFloorMsgTaken takenMsg;
-  takenMsg.SetSsrc (machine.GetTxSsrc ());
-  takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine.GetStoredSsrc ()));
-  takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine.NextSeqNum ()));
+  takenMsg.SetSsrc (machine->GetTxSsrc ());
+  takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetStoredSsrc ()));
+  takenMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
 
-  if (machine.GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
+  if (machine->GetOwner ()->GetCallMachine ()->GetCallType ().GetType () == McpttCallMsgFieldCallType::BROADCAST_GROUP)
     {
       takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (0));
     }
@@ -553,25 +529,25 @@ McpttOnNetworkFloorArbitratorStateTaken::Enter (McpttOnNetworkFloorArbitrator& m
       takenMsg.SetPermission (McpttFloorMsgFieldPermToReq (1));
     }
 
-  takenMsg.SetIndicator (machine.GetIndicator ());
-  machine.SendToAllExcept (takenMsg, machine.GetStoredSsrc ());
-  machine.GetT1 ()->Start ();
-  machine.ChangeState (McpttOnNetworkFloorArbitratorStateTaken::GetInstance ());
+  takenMsg.SetIndicator (machine->GetIndicator ());
+  machine->SendToAllExcept (takenMsg, machine->GetStoredSsrc ());
+  machine->GetT1 ()->Start ();
+  machine->ChangeState (McpttOnNetworkFloorArbitratorStateTaken::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT1 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
-  if (machine.GetT2 ()->IsRunning ())
+  if (machine->GetT2 ()->IsRunning ())
     {
-      machine.GetT2 ()->Stop ();
+      machine->GetT2 ()->Stop ();
     }
   
-  if (machine.GetT20 ()->IsRunning ())
+  if (machine->GetT20 ()->IsRunning ())
     {
-      machine.GetT20 ()->Stop ();
+      machine->GetT20 ()->Stop ();
     }
 
   //TODO: Shall request the media distributor in the MCPTT server to stop
@@ -582,73 +558,73 @@ McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT1 (McpttOnNetworkFloorArbitrat
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT2 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
-  machine.GetT1 ()->Stop ();
+  machine->GetT1 ()->Stop ();
 
   //TODO: Communicate to the revoke state that Cause 2 should be sent
   McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ReceiveMedia (McpttOnNetworkFloorArbitrator& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorArbitratorStateTaken::ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
-  if (machine.GetStoredSsrc () == msg.GetSsrc ())
+  if (machine->GetStoredSsrc () == msg.GetSsrc ())
     {
-      if (!machine.GetT2 ()->IsRunning ())
+      if (!machine->GetT2 ()->IsRunning ())
         {
-          machine.GetT2 ()->Start ();
+          machine->GetT2 ()->Start ();
         }
 
-      machine.GetT1 ()->Restart ();
+      machine->GetT1 ()->Restart ();
 
-      if (machine.GetT20 ()->IsRunning ())
+      if (machine->GetT20 ()->IsRunning ())
         {
-          machine.GetT20 ()->Stop ();
+          machine->GetT20 ()->Stop ();
         }
 
       //TODO: shall instruct the media distibutor to foward the RTP media packets
       //      to MCPTT clients according to local policy
       McpttMediaMsg copy = msg;
-      machine.SendToAllExcept (copy, copy.GetSsrc ());
+      machine->SendToAllExcept (copy, copy.GetSsrc ());
     }
   else //TODO: Not in standard
     {
-      if (machine.GetDualControl ()->IsStarted ())
+      if (machine->GetDualControl ()->IsStarted ())
         {
-          machine.GetDualControl ()->ReceiveMedia (msg);
+          machine->GetDualControl ()->ReceiveMedia (msg);
         }
     }
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRelease (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
-  if (machine.GetStoredSsrc () == msg.GetSsrc ())
+  if (machine->GetStoredSsrc () == msg.GetSsrc ())
     {
       //TODO: Request the media distributor in the MCPTT server to stop fowarding
       //      RTP media packets
 
       //TODO: Not in standard - stop T1 if running
-      if (machine.GetT1 ()->IsRunning ())
+      if (machine->GetT1 ()->IsRunning ())
         {
-          machine.GetT1 ()->Stop ();
+          machine->GetT1 ()->Stop ();
         }
 
-      if (machine.GetT2 ()->IsRunning ())
+      if (machine->GetT2 ()->IsRunning ())
         {
-          machine.GetT2 ()->Stop ();
+          machine->GetT2 ()->Stop ();
         }
 
-      if (machine.GetT20 ()->IsRunning ())
+      if (machine->GetT20 ()->IsRunning ())
         {
-          machine.GetT20 ()->Stop ();
+          machine->GetT20 ()->Stop ();
         }
 
       McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
@@ -656,135 +632,92 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRelease (McpttOnNetworkFloo
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const
+McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
-  if (msg.GetSsrc () == machine.GetStoredSsrc ())
+  if (msg.GetSsrc () == machine->GetStoredSsrc ())
     {
       McpttFloorMsgGranted grantedMsg;
-      grantedMsg.SetSsrc (machine.GetTxSsrc ());
-      grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine.GetT2 ()->GetTimeLeft ().GetSeconds ()));
-      grantedMsg.SetPriority (McpttFloorMsgFieldPriority (machine.GetStoredPriority ()));
+      grantedMsg.SetSsrc (machine->GetTxSsrc ());
+      grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine->GetT2 ()->GetTimeLeft ().GetSeconds ()));
+      grantedMsg.SetPriority (McpttFloorMsgFieldPriority (machine->GetStoredPriority ()));
       grantedMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-      machine.SendTo (grantedMsg, machine.GetStoredSsrc ());
+      machine->SendTo (grantedMsg, machine->GetStoredSsrc ());
     }
-  else if (machine.IsPreemptive (msg) == true)
+  else if (machine->IsPreemptive (msg) == true)
     {
-      if (machine.IsDualFloorSupported ())
+      if (machine->IsDualFloorSupported ())
         {
-          machine.GetDualControl ()->ReceivePreemptiveFloorRequest (msg);
+          machine->GetDualControl ()->ReceivePreemptiveFloorRequest (msg);
         }
-      else if (machine.IsAudioCutIn ())
+      else if (machine->IsAudioCutIn ())
         {
-          if (machine.GetT1 ()->IsRunning ())
+          if (machine->GetT1 ()->IsRunning ())
             {
-              machine.GetT1 ()->Stop ();
+              machine->GetT1 ()->Stop ();
             }
 
           //TODO: Not in standard - stop T2 if running.
-          if (machine.GetT2 ()->IsRunning ())
+          if (machine->GetT2 ()->IsRunning ())
             {
-              machine.GetT2 ()->Stop ();
+              machine->GetT2 ()->Stop ();
             }
 
-          if (machine.GetT20 ()->IsRunning ())
+          if (machine->GetT20 ()->IsRunning ())
             {
-              machine.GetT20 ()->Stop ();
+              machine->GetT20 ()->Stop ();
             }
 
-          machine.SetRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_4);
+          machine->SetRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_4);
 
           McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ()->Enter (machine);
 
-          if (machine.GetQueue ()->IsEnabled ())
+          if (machine->GetQueue ()->IsEnabled ())
             { 
               McpttFloorMsgFieldQueuedUserId queuedUserId;
               queuedUserId.SetUserId (msg.GetSsrc ());
               McpttFloorMsgFieldQueuePositionInfo queueInfo (0, msg.GetPriority ().GetPriority ());
               McpttQueuedUserInfo userInfo (msg.GetSsrc (), queuedUserId, queueInfo);
  
-              machine.GetQueue ()->Pull (msg.GetSsrc ());
-              machine.GetQueue ()->Enqueue (userInfo);
+              machine->GetQueue ()->Pull (msg.GetSsrc ());
+              machine->GetQueue ()->Enqueue (userInfo);
           
               McpttFloorMsgQueuePositionInfo queuedMsg;
-              queuedMsg.SetSsrc (machine.GetTxSsrc ());
+              queuedMsg.SetSsrc (machine->GetTxSsrc ());
               queuedMsg.SetQueuePositionInfo (queueInfo);
               queuedMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-              machine.SendTo (queuedMsg, msg.GetSsrc ());
+              machine->SendTo (queuedMsg, msg.GetSsrc ());
             }
         }
     }
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT20 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
-  if (!machine.GetC20 ()->IsLimitReached ())
+  if (!machine->GetC20 ()->IsLimitReached ())
     {
       McpttFloorMsgGranted grantedMsg;
-      grantedMsg.SetSsrc (machine.GetTxSsrc ());
-      grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine.GetT2 ()->GetTimeLeft ().GetSeconds ()));
-      grantedMsg.SetPriority (McpttFloorMsgFieldPriority (machine.GetStoredPriority ()));
-      grantedMsg.SetIndicator (machine.GetIndicator ());
-      machine.SendTo (grantedMsg, machine.GetStoredSsrc ());
+      grantedMsg.SetSsrc (machine->GetTxSsrc ());
+      grantedMsg.SetDuration (McpttFloorMsgFieldDuration (machine->GetT2 ()->GetTimeLeft ().GetSeconds ()));
+      grantedMsg.SetPriority (McpttFloorMsgFieldPriority (machine->GetStoredPriority ()));
+      grantedMsg.SetIndicator (machine->GetIndicator ());
+      machine->SendTo (grantedMsg, machine->GetStoredSsrc ());
 
-      machine.GetC20 ()->Increment ();
-      machine.GetT20 ()->Start ();
+      machine->GetC20 ()->Increment ();
+      machine->GetT20 ()->Start ();
     }
 }
 
 void
-McpttOnNetworkFloorArbitratorStateTaken::ClientRelease (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateTaken::ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
   NS_LOG_FUNCTION (this);
 
   McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
-}
-
-void
-McpttOnNetworkFloorArbitratorStateTaken::ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-
-  if (machine.GetT1 ()->IsRunning ())
-    {
-      machine.GetT1 ()->Stop ();
-    }
-
-  //TODO: Not in standard - stop T2 if running.
-  if (machine.GetT2 ()->IsRunning ())
-    {
-      machine.GetT2 ()->Stop ();
-    }
-
-  if (machine.GetT20 ()->IsRunning ())
-    {
-      machine.GetT20 ()->Stop ();
-    }
-
-  machine.SetRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_4);
-  
-  McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ()->Enter (machine);
-
-  if (machine.GetQueue ()->IsEnabled ())
-    {
-      McpttFloorMsgFieldQueuedUserId queuedUserId;
-      queuedUserId.SetUserId (participant.GetStoredSsrc ());
-      McpttFloorMsgFieldQueuePositionInfo queueInfo (0, participant.GetStoredPriority ());
-      McpttQueuedUserInfo userInfo (participant.GetStoredSsrc (), queuedUserId, queueInfo);
- 
-      machine.GetQueue ()->Pull (participant.GetStoredSsrc ());
-      machine.GetQueue ()->Enqueue (userInfo);
- 
-      McpttFloorMsgQueuePositionInfo queuedMsg;
-      queuedMsg.SetSsrc (machine.GetTxSsrc ());
-      queuedMsg.SetQueuePositionInfo (queueInfo);
-      queuedMsg.SetIndicator (machine.GetIndicator ());
-      machine.SendTo (queuedMsg, participant.GetStoredSsrc ());
-    }
 }
 /** McpttOnNetworkFloorArbitratorStateTaken - end **/
 
@@ -822,71 +755,71 @@ McpttOnNetworkFloorArbitratorStateRevoke::GetInstanceStateId (void) const
 }
 
 bool
-McpttOnNetworkFloorArbitratorStateRevoke::IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateRevoke::IsFloorOccupied (void) const
 {
   return true;
 }
 
 void
-McpttOnNetworkFloorArbitratorStateRevoke::Enter (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateRevoke::Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   McpttFloorMsgRevoke revokeMsg;
-  revokeMsg.SetSsrc (machine.GetTxSsrc ());
-  revokeMsg.SetRejCause (McpttFloorMsgFieldRejectCause (machine.GetRejectCause ()));
-  revokeMsg.SetIndicator (machine.GetIndicator ());
-  machine.SendTo (revokeMsg, machine.GetStoredSsrc ());
+  revokeMsg.SetSsrc (machine->GetTxSsrc ());
+  revokeMsg.SetRejCause (McpttFloorMsgFieldRejectCause (machine->GetRejectCause ()));
+  revokeMsg.SetIndicator (machine->GetIndicator ());
+  machine->SendTo (revokeMsg, machine->GetStoredSsrc ());
 
-  machine.GetT3 ()->Start ();
-  machine.ChangeState (McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ());
+  machine->GetT3 ()->Start ();
+  machine->ChangeState (McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ());
 }
 
 void
-McpttOnNetworkFloorArbitratorStateRevoke::ReceiveMedia (McpttOnNetworkFloorArbitrator& machine, const McpttMediaMsg& msg) const
+McpttOnNetworkFloorArbitratorStateRevoke::ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
-  if (msg.GetSsrc () == machine.GetStoredSsrc ())
+  if (msg.GetSsrc () == machine->GetStoredSsrc ())
     {
-      machine.GetT1 ()->Restart ();
+      machine->GetT1 ()->Restart ();
 
       //TODO: Shall instruct the emdia distributor to foward the RTP media
       //      packets to MCPTT clients according to local policy.
       McpttMediaMsg copy = msg;
-      machine.SendToAllExcept (copy, copy.GetSsrc ());
+      machine->SendToAllExcept (copy, copy.GetSsrc ());
     }
   else //TODO: Not in standard
     {
-      if (machine.GetDualControl ()->IsStarted ())
+      if (machine->GetDualControl ()->IsStarted ())
         {
-          machine.GetDualControl ()->ReceiveMedia (msg);
+          machine->GetDualControl ()->ReceiveMedia (msg);
         }
     }
 }
 
 void
-McpttOnNetworkFloorArbitratorStateRevoke::ReceiveFloorRelease (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRelease& msg) const
+McpttOnNetworkFloorArbitratorStateRevoke::ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const
 {
-  NS_LOG_FUNCTION (this << &machine << msg);
+  NS_LOG_FUNCTION (this << machine << msg);
 
   //TODO: Shall request the media distrubtor in the MCPTT server to stop
   //      forwarding RTP media packets.
 
-  if (machine.GetT1 ()->IsRunning ())
+  if (machine->GetT1 ()->IsRunning ())
     {
-      machine.GetT1 ()->Stop ();
+      machine->GetT1 ()->Stop ();
     }
 
-  machine.GetT3 ()->Stop ();
+  machine->GetT3 ()->Stop ();
 
   McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
 }
 
 void
-McpttOnNetworkFloorArbitratorStateRevoke::ExpiryOfT3 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateRevoke::ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
   //TODO: Shall indicate to the interface twoards the MCPTT client that the
   //      general state machine is now in 'G: Floor Idle'
@@ -895,11 +828,11 @@ McpttOnNetworkFloorArbitratorStateRevoke::ExpiryOfT3 (McpttOnNetworkFloorArbitra
 }
 
 void
-McpttOnNetworkFloorArbitratorStateRevoke::ExpiryOfT1 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateRevoke::ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << machine);
 
-  machine.GetT3 ()->Stop ();
+  machine->GetT3 ()->Stop ();
 
   McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
 }
@@ -939,13 +872,13 @@ McpttOnNetworkFloorArbitratorStateReleasing::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorArbitratorStateReleasing::CallRelease2 (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateReleasing::CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
   NS_LOG_FUNCTION (this);
 
   //TODO: Shall release all resources reserved in the media plane.
 
-  machine.ChangeState (McpttOnNetworkFloorArbitratorStateStartStop::GetInstance ());
+  machine->ChangeState (McpttOnNetworkFloorArbitratorStateStartStop::GetInstance ());
 }
 /** McpttOnNetworkFloorArbitratorStateReleasing - end **/
 
@@ -983,17 +916,15 @@ McpttOnNetworkFloorArbitratorStateInitialising::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorArbitratorStateInitialising::Enter (McpttOnNetworkFloorArbitrator& machine) const
+McpttOnNetworkFloorArbitratorStateInitialising::Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
-
-  machine.ChangeState (McpttOnNetworkFloorArbitratorStateInitialising::GetInstance ());
+  NS_LOG_FUNCTION (this << machine);
 
   NS_ABORT_MSG ("'G: Floor Initialising' state not fully supported");
   //TODO: Still need the following sections implemented for the 'G: Initialising' state
   //        - 6.3.4.8.3 Receiving a floor request from a constituent MCPTT group (R: mcptt-floor-request)
   //        - 6.3.4.8.4 All final SIP responses received (R: final SIP responses)
- }
+}
 
 } //namespace ns3
 

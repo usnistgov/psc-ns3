@@ -49,6 +49,7 @@
 
 #include "mcptt-call-msg.h"
 #include "mcptt-call-machine-grp-basic.h"
+#include "mcptt-on-network-call-machine-client.h"
 #include "mcptt-call-machine-grp-broadcast.h"
 #include "mcptt-chan.h"
 #include "mcptt-floor-participant.h"
@@ -314,32 +315,38 @@ McpttPttApp::InitiateCall (void)
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
-
       callMachine->InitiateCall ();
     }
 }
 
+void
+McpttPttApp::SessionInitiateRequest (void)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<McpttCall> call = GetSelectedCall ();
+  if (call)
+    {
+      NS_LOG_DEBUG ("Starting pusher on call ID " << call->GetCallId ());
+      m_pusher->Start ();
+    }
+  else
+    {
+      NS_LOG_DEBUG ("No call is selected");
+    }
+  // floor control start is handled from the McpttCall or call control
+}
 
 bool
 McpttPttApp::IsPushed (void) const
 {
-  Ptr<McpttPusher> pusher = GetPusher ();
-  return pusher->IsPushing ();
+  return m_pusher->IsPushing ();
 }
 
 void
-McpttPttApp::Pushed (void)
+McpttPttApp::PttPush (void)
 {
   NS_LOG_FUNCTION (this);
-
-  Ptr<McpttPusher> pusher = GetPusher ();
-
-  if (!IsPushed ())
-    {
-      NS_LOG_LOGIC ("PttApp button pushed.");
-
-      pusher->NotifyPushed ();
-    }
+  m_pusher->NotifyPushed ();
 }
 
 void
@@ -369,9 +376,30 @@ McpttPttApp::ReleaseCall (void)
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
-
       callMachine->ReleaseCall ();
     }
+  if (m_pusher && m_isRunning)
+    {
+      NS_LOG_DEBUG ("Stopping pusher on call ID " << call->GetCallId ());
+      m_pusher->Stop ();
+    }
+}
+
+void
+McpttPttApp::SessionReleaseRequest (void)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<McpttCall> call = GetSelectedCall ();
+  if (call)
+    {
+      NS_LOG_DEBUG ("Stopping pusher on call ID " << call->GetCallId ());
+      m_pusher->Stop ();
+    }
+  else
+    {
+      NS_LOG_DEBUG ("No call is selected");
+    }
+  // floor control release is handled from the McpttCall or call control
 }
 
 void
@@ -388,20 +416,16 @@ McpttPttApp::ReleaseRequest (void)
 
       floorMachine->ReleaseRequest ();
     }
- }
+}
 
 void
-McpttPttApp::Released (void)
+McpttPttApp::PttRelease (void)
 {
   NS_LOG_FUNCTION (this);
-
-  Ptr<McpttPusher> pusher = GetPusher ();
-
-  if (IsPushed ())
+  if (m_pusher->IsPushing ())
     {
       NS_LOG_LOGIC ("PttApp button released.");
-
-      pusher->NotifyReleased ();
+      m_pusher->NotifyReleased ();
     }
 }
 
@@ -442,6 +466,10 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
           NS_LOG_DEBUG ("Stopping pusher on call ID " << oldCallId);
           m_pusher->Stop ();
         }
+      if (m_isRunning)
+        {
+          oldCallMachine->ReleaseCall ();
+        }
     }
 
   newCall = m_calls.find (callId)->second;
@@ -465,9 +493,11 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
           else
             {
               NS_LOG_DEBUG ("Starting pusher on call ID " << newCallId);
+              // Call will initiate once the first push notification arrives
               m_pusher->Start ();
             }
         }
+      // if pushOnSelect is false, the pusher must be externally started
     }
 
   m_selectedCall = newCall;
@@ -485,6 +515,13 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
     {
       NS_LOG_LOGIC ("PttApp switching from no previous call to " << newCallId);
     }
+}
+
+void
+McpttPttApp::SendCallControlPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+  GetCallChan ()->Send (pkt);
 }
 
 void
@@ -515,10 +552,14 @@ McpttPttApp::TakePushNotification (void)
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
 
-      Pushed ();
-
+      if (!m_pusher->IsPushing ())
+        {
+          NS_LOG_LOGIC ("PttApp button pushed.");
+          m_pusher->NotifyPushed ();
+        }
       if (callMachine->IsCallOngoing ())
         {
+          // Request for floor if needed
           floorMachine->PttPush ();
         }
       else
@@ -547,8 +588,11 @@ McpttPttApp::TakeReleaseNotification (void)
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
 
-      Released ();
-
+      if (m_pusher->IsPushing ())
+        {
+          NS_LOG_LOGIC ("PttApp button released.");
+          m_pusher->NotifyReleased ();
+        }
       floorMachine->PttRelease ();
 
       //Broadcast calls should be released when the originator is done talking.
@@ -655,6 +699,24 @@ McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
 
   NS_LOG_LOGIC ("PttApp received " << pkt->GetSize () << " byte(s).");
 
+  if (m_selectedCall == 0)
+    {
+      NS_LOG_LOGIC ("No selected call; packet discarded");
+      return;
+    }
+
+  Ptr<McpttCallMachine> machine = m_selectedCall->GetCallMachine ();
+  NS_ASSERT_MSG (machine, "No call machine found");
+  // Check if packet is an on-network (SIP-based) message
+  Ptr<McpttOnNetworkCallMachineClient> onNetworkMachine = machine->GetObject<McpttOnNetworkCallMachineClient> ();
+  if (onNetworkMachine)
+    {
+      NS_LOG_LOGIC ("Handling on-network call control packet");
+      onNetworkMachine->ReceiveCallPacket (pkt);
+      return;
+    }
+
+  NS_LOG_LOGIC ("Handling off-network call control packet");
   McpttCallMsg temp;
   pkt->PeekHeader (temp);
 

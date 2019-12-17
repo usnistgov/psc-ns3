@@ -48,9 +48,9 @@ main (int argc, char *argv[])
   uint16_t numUe = 4;   // do not change
   uint32_t msgSize = 60; //60 + RTP header = 60 + 12 = 72
   double onOffMean = 5.0;
-  Time simTime = Seconds (20.1);
+  Time simTime = Seconds (35.1);
   Time start = Seconds (2.0);
-  Time stop = Seconds (20.0);
+  Time stop = Seconds (35.0);
   bool useCa = false;
   bool verbose = false;
  
@@ -220,20 +220,13 @@ main (int argc, char *argv[])
   serverApp->SetLocalAddress (serverAddress);
   NS_LOG_INFO ("server IMS IP address = " << serverAddress);
 
-  for (uint32_t idx = 0; idx < ueIpIface.GetN (); idx++)
+  for (uint32_t index = 0; index < ueIpIface.GetN (); index++)
     {
-      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clientAppContainer.Get (idx));
-
-      Ipv4Address clientAddress = ueIpIface.GetAddress (idx);
+      Ptr<McpttPttApp> pttApp = clientAppContainer.Get (index)->GetObject<McpttPttApp> ();
+      Ipv4Address clientAddress = ueIpIface.GetAddress (index);
       pttApp->SetLocalAddress (clientAddress);
-      NS_LOG_INFO ("client " << idx << " ip address = " << clientAddress);
+      NS_LOG_INFO ("client " << index << " ip address = " << clientAddress);
     }
-
-#if 0
-  ObjectFactory callFac;
-  callFac.SetTypeId ("ns3::McpttCallMachineNull");
-
-#endif
 
   McpttCallHelper callHelper;
   // Optional statements to tailor the configurable attributes
@@ -245,13 +238,12 @@ main (int argc, char *argv[])
                          "QueueCapacity", UintegerValue (1),
                          "McGranted", BooleanValue (false));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
-                         "McImplicitRequest", BooleanValue (false),
                          "McQueuing", BooleanValue (true),
                          "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
-                         "McImplicitRequest", BooleanValue (false),
+                         "McImplicitRequest", BooleanValue (true),
                          "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (false));
+                         "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
@@ -259,13 +251,17 @@ main (int argc, char *argv[])
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   // Add first call, to start at time 2 and stop at time 10
   // Call will involve two nodes (7 and 8) and the MCPTT server (node 3)
+  // The zeroth node in the client container will initiate the call
   uint32_t groupId = 1;
-  callHelper.AddCall (clientAppContainer1, serverApp, groupId, callType, Seconds (2), Seconds (10));
+  Ptr<McpttPttApp> originator1 = clientAppContainer1.Get (0)->GetObject<McpttPttApp> ();
+  callHelper.AddCall (clientAppContainer1, originator1, serverApp, groupId, callType, Seconds (2), Seconds (16));
 
   // Add second call, on new groupId, to start at time 8 and stop at time 15
   // Call will involve two nodes (9 and 10) and the MCPTT server (node 3)
+  // The zeroth node in the client container will initiate the call
   groupId = 2;
-  callHelper.AddCall (clientAppContainer2, serverApp, groupId, callType, Seconds (8), Seconds (15));
+  Ptr<McpttPttApp> originator2 = clientAppContainer2.Get (0)->GetObject<McpttPttApp> ();
+  callHelper.AddCall (clientAppContainer2, originator2, serverApp, groupId, callType, Seconds (18), Seconds (34));
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
   McpttTraceHelper traceHelper;

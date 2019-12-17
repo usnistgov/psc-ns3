@@ -29,6 +29,7 @@
  * employees is not subject to copyright protection within the United States.
  */
 
+#include <limits>
 #include <ns3/callback.h>
 #include <ns3/log.h>
 #include <ns3/object.h>
@@ -66,12 +67,10 @@ McpttServerCall::GetTypeId (void)
                    PointerValue (0),
                    MakePointerAccessor (&McpttServerCall::m_callMachine),
                    MakePointerChecker<McpttServerCallMachine> ())
-#ifdef NOTYET
-    .AddAttribute ("FloorMachine", "The floor machine of the call.",
+    .AddAttribute ("FloorArbitrator", "The floor arbitrator of the call.",
                    PointerValue (0),
-                   MakePointerAccessor (&McpttServerCall::m_floorMachine),
+                   MakePointerAccessor (&McpttServerCall::m_arbitrator),
                    MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
-#endif
     .AddAttribute ("AmbientListening", "Indicates if the call is configured for ambient listening.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttServerCall::m_ambientListening),
@@ -86,6 +85,8 @@ McpttServerCall::GetTypeId (void)
 
 McpttServerCall::McpttServerCall (void)
   : Object (),
+    m_callId (std::numeric_limits<uint16_t>::max ()),
+    m_originator (std::numeric_limits<uint32_t>::max ()),
     m_floorChan (0),
     m_mediaChan (0),
     m_owner (0),
@@ -174,20 +175,26 @@ McpttServerCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
 }
 
 void
+McpttServerCall::ReceiveCallPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+  Ptr<McpttServerCallMachine> callMachine = GetCallMachine ();
+  callMachine->ReceiveCallPacket (pkt);
+}
+
+void
 McpttServerCall::Receive (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << & msg);
+  NS_FATAL_ERROR ("Unreachable?");
 
   if (!m_rxCb.IsNull ())
     {
       m_rxCb (this, msg);
     }
 
-  NS_FATAL_ERROR ("Unreachable?");
-#ifdef NOTYET
-  Ptr<McpttCallMachine> callMachine = GetCallMachine ();
+  Ptr<McpttServerCallMachine> callMachine = GetCallMachine ();
   callMachine->Receive (msg);
-#endif
 }
 
 void
@@ -214,7 +221,7 @@ McpttServerCall::Receive (const McpttMediaMsg& msg)
   NS_FATAL_ERROR ("Unreachable?");
 
 #ifdef NOTYET
-  Ptr<McpttCallMachine> callMachine = GetCallMachine ();
+  Ptr<McpttServerCallMachine> callMachine = GetCallMachine ();
   callMachine->Receive (msg);
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = GetArbitrator ();
   arbitrator->Receive (msg);
@@ -226,6 +233,7 @@ McpttServerCall::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
+  NS_FATAL_ERROR ("Unreachable?");
   if (!m_txCb.IsNull ())
     {
       m_txCb (this, msg);
@@ -420,7 +428,7 @@ McpttServerCall::SetCallMachine (Ptr<McpttServerCallMachine>  callMachine)
 
   if (callMachine != 0)
     {
-      callMachine->SetOwner (this);
+      callMachine->SetServerCall (this);
     }
 
   m_callMachine = callMachine;
@@ -471,6 +479,32 @@ McpttServerCall::SetOwner (Ptr<McpttServerApp> owner)
   NS_LOG_FUNCTION (this << owner);
 
   m_owner = owner;
+}
+
+void 
+McpttServerCall::SetClientUserIds (std::vector<uint32_t> clientUserIds)
+{
+  NS_LOG_FUNCTION (this);
+  m_clientUserIds = clientUserIds;
+}
+
+std::vector<uint32_t>
+McpttServerCall::GetClientUserIds (void) const
+{
+  return m_clientUserIds;
+}
+
+void 
+McpttServerCall::SetOriginator (uint32_t originator)
+{
+  NS_LOG_FUNCTION (this << originator);
+  m_originator = originator;
+}
+
+uint32_t
+McpttServerCall::GetOriginator (void) const
+{
+  return m_originator;
 }
 
 void

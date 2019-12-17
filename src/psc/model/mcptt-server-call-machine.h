@@ -104,19 +104,15 @@ public:
   */
  virtual TypeId GetInstanceTypeId (void) const;
  /**
-  * Gets the owner of the call machine.
-  * \returns The owner.
+  * Gets the pointer to the server call.
+  * \returns The pointer to the server call.
   */
- virtual Ptr<McpttServerCall> GetOwner (void) const = 0;
+ virtual Ptr<McpttServerCall> GetServerCall (void) const = 0;
  /**
   * Gets the ID of the current state.
   * \returns The state ID.
   */
  virtual McpttEntityId GetStateId (void) const = 0;
- /**
-  * Initiates a call.
-  */
- virtual void InitiateCall (void) = 0;
  /**
   * Indicates if the call is active.
   * \returns True, if the call is active.
@@ -135,6 +131,11 @@ public:
   */
  virtual bool IsPrivateCall (uint32_t userId = 0) const = 0;
  /**
+  * Receives a call control packet
+  * \param pkt The packet received.
+  */
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt) = 0;
+ /**
   * Receives a call control message.
   * \param msg The message to receive.
   */
@@ -144,10 +145,6 @@ public:
   * \param msg The message to receive.
   */
  virtual void Receive (const McpttMediaMsg& msg) = 0;
- /**
-  * Releases the call.
-  */
- virtual void ReleaseCall (void) = 0;
  /**
   * Rejects the call.
   */
@@ -163,10 +160,10 @@ public:
   */
  virtual void SetNewCallCb (const Callback<void, uint16_t>  newCallCb) = 0;
  /**
-  * Sets the owner of the call machine.
-  * \param owner The owner.
+  * Sets the server call pointer.
+  * \param call The pointer back to the server call object.
   */
- virtual void SetOwner (Ptr<McpttServerCall> owner) = 0;
+ virtual void SetServerCall (Ptr<McpttServerCall> call) = 0;
  /**
   * Starts the state machine.
   */
@@ -293,19 +290,15 @@ public:
   */
  virtual TypeId GetInstanceTypeId (void) const;
  /**
-  * Gets the owner of the call machine.
-  * \returns The owner.
+  * Gets the pointer to the server call.
+  * \returns The pointer to the server call.
   */
- virtual Ptr<McpttServerCall> GetOwner (void) const;
+ virtual Ptr<McpttServerCall> GetServerCall (void) const;
  /**
   * Gets the ID of the current state.
   * \returns The state ID.
   */
  virtual McpttEntityId GetStateId (void) const;
- /**
-  * Initiates a call.
-  */
- virtual void InitiateCall (void);
  /**
   * Indicates if the call is active.
   * \returns True, if the call is active.
@@ -324,6 +317,11 @@ public:
   */
  virtual bool IsPrivateCall (uint32_t userId = 0) const;
  /**
+  * Receives a call control packet
+  * \param pkt The packet received.
+  */
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt);
+ /**
   * Receives a call control message.
   * \param msg The message to receive.
   */
@@ -333,10 +331,6 @@ public:
   * \param msg The message to receive.
   */
  virtual void Receive (const McpttMediaMsg& msg);
- /**
-  * Releases the call.
-  */
- virtual void ReleaseCall (void);
  /**
   * Rejects the call.
   */
@@ -352,10 +346,10 @@ public:
   */
  virtual void SetNewCallCb (const Callback<void, uint16_t>  newCallCb);
  /**
-  * Sets the owner of the call machine.
-  * \param owner The owner.
+  * Sets the server call pointer.
+  * \param call The pointer back to the server call object.
   */
- virtual void SetOwner (Ptr<McpttServerCall> owner);
+ virtual void SetServerCall (Ptr<McpttServerCall> call);
  /**
   * Starts the state machine.
   */
@@ -375,7 +369,7 @@ protected:
   */
  virtual void DoDispose (void);
 private:
- Ptr<McpttServerCall> m_owner; //!< The owner.
+ Ptr<McpttServerCall> m_serverCall; //!< The server call.
  uint16_t m_floorPort; //!< The port number to use for floor control.
  uint16_t m_mediaPort; //!< The port number to use for media.
  uint8_t m_callType; //!< The call type.

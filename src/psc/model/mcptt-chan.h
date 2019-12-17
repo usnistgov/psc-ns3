@@ -94,6 +94,16 @@ public:
   * \returns The number of bytes accepted for transmission if no error occurs, and -1 otherwise.
   */
  virtual int Send (Ptr<Packet>  pkt);
+  /**
+   * \brief Send data to a specified peer.
+   *
+   * \param p packet to send
+   * \param flags Socket control flags
+   * \param toAddress IP Address of remote host
+   * \returns -1 in case of error or the number of bytes copied in the 
+   *          internal buffer and accepted for transmission.
+   */
+ virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
 protected:
  /**
   * Disposes of this McpttChan instance.

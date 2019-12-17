@@ -63,12 +63,6 @@ public:
   */
  virtual ~McpttEntityId (void);
  /**
-  * Indicates if the given McpttEntityId instance is equal to this instance.
-  * \param other The given instance.
-  * \returns True, if this instance is equal to the given instance.
-  */
- virtual bool IsEqualTo (const McpttEntityId& other) const;
- /**
   * Prints this instance of the McpttEntityId class to an output stream.
   * \param os The output stream to write to.
   */
@@ -77,6 +71,8 @@ private:
  std::string m_name; //!< The name of the entity.
  uint32_t m_number; //!< The number of the entity.
 public:
+ friend bool operator== (const McpttEntityId& rhs, const McpttEntityId& lhs);
+ friend bool operator!= (const McpttEntityId& rhs, const McpttEntityId& lhs);
  /**
   * Gets the name of the entity.
   * \returns The name.
@@ -97,6 +93,14 @@ public:
   * \param number The number.
   */
  virtual void SetNumber (uint32_t number);
+private:
+ /**
+  * Indicates if the given McpttEntityId instance is equal to this instance.
+  * Used to implement operator== (client code should use the operator instead)
+  * \param other The given instance.
+  * \returns True, if this instance is equal to the given instance.
+  */
+ virtual bool IsEqualTo (const McpttEntityId& other) const;
 };
 /**
  * The overloaded equality operator for the McpttEntityId class.
@@ -113,7 +117,7 @@ bool operator== (const McpttEntityId& rhs, const McpttEntityId& lhs);
  */
 bool operator!= (const McpttEntityId& rhs, const McpttEntityId& lhs);
 /**
- * The output operator for the McpttEneityId class.
+ * The output operator for the McpttEntityId class.
  * \param os The output stream to write to.
  * \param id The McpttEntityId instance to output.
  * \returns The output stream that was written to.

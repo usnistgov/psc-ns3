@@ -32,11 +32,15 @@
 #include <ns3/log.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/pointer.h>
+#include <ns3/uinteger.h>
+#include <ns3/object-map.h>
+#include <ns3/sip-header.h>
 
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-server-call.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-server-call-machine.h"
+#include "mcptt-chan.h"
 
 #include "mcptt-server-app.h"
 
@@ -55,6 +59,22 @@ McpttServerApp::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::McpttServerApp")
     .SetParent<Application> ()
     .AddConstructor<McpttServerApp>()
+    .AddAttribute ("CallPort", "The port that the application will use for call control messages.",
+                   UintegerValue (5060), // standard SIP call control port
+                   MakeUintegerAccessor (&McpttServerApp::m_callPort),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("Calls", "The map of all calls created during the simulation.",
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&McpttServerApp::m_calls),
+                   MakeObjectMapChecker<McpttServerCall> ())
+    .AddAttribute ("LocalAddress", "The local address of the server.",
+                   AddressValue (Ipv4Address::GetAny ()),
+                   MakeAddressAccessor (&McpttServerApp::m_localAddress),
+                   MakeAddressChecker ())
+    .AddAttribute ("PeerAddress", "The peer address of the server.",
+                   AddressValue (Ipv4Address::GetAny ()),
+                   MakeAddressAccessor (&McpttServerApp::m_peerAddress),
+                   MakeAddressChecker ())
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
                      MakeTraceSourceAccessor (&McpttServerApp::m_rxTrace),
                      "ns3::McpttServerApp::RxTrace")
@@ -67,7 +87,8 @@ McpttServerApp::GetTypeId (void)
 }  
 
 McpttServerApp::McpttServerApp (void)
-  : Application ()
+  : Application (),
+    m_callChan (0)
 {  
   NS_LOG_FUNCTION (this);
 }
@@ -116,7 +137,10 @@ void
 McpttServerApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-
+  m_callChan = CreateObject<McpttChan> ();
+  m_callChan->SetRxPktCb (MakeCallback (&McpttServerApp::ReceiveCallPacket, this));
+  NS_LOG_DEBUG ("Open socket for incoming call control on port " << m_callPort);
+  m_callChan->Open (GetNode (), m_callPort, m_localAddress, m_peerAddress);
   for (auto it = m_calls.begin (); it != m_calls.end (); it++)
     {
       NS_LOG_DEBUG ("Starting call for id " << it->first);
@@ -137,6 +161,41 @@ McpttServerApp::StopApplication (void)
 }
 
 void
+McpttServerApp::ReceiveCallPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+
+  NS_LOG_LOGIC ("ServerApp received " << pkt->GetSize () << " byte(s).");
+  SipHeader sipHeader;
+  pkt->PeekHeader (sipHeader);
+  NS_LOG_DEBUG ("SIP header: " << sipHeader);
+  auto it = m_calls.find (sipHeader.GetCallId ());
+  if (it != m_calls.end ())
+    {
+      NS_LOG_DEBUG ("Received packet for call ID " << it->first);
+      it->second->ReceiveCallPacket (pkt);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("No call found with call ID " << sipHeader.GetCallId ());
+    }
+}
+
+void
+McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+  m_callChan->Send (pkt);
+}
+
+void
+McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr)
+{
+  NS_LOG_FUNCTION (this << pkt << toAddr);
+  m_callChan->SendTo (pkt, 0, toAddr);
+}
+
+void
 McpttServerApp::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
@@ -144,7 +203,6 @@ McpttServerApp::Send (const McpttCallMsg& msg)
   NS_FATAL_ERROR ("Not yet implemented server call msg send");
 
 }
-
 
 void
 McpttServerApp::TxCb (const McpttMsg& msg)

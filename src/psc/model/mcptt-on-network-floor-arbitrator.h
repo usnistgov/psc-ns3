@@ -79,10 +79,11 @@ public:
   */
  virtual void AddParticipant (Ptr<McpttOnNetworkFloorTowardsParticipant> participant);
  /**
-  * Notifies the floor machine that the call has been initialized.
-  * \param participant The participant that initialized the call.
+  * Notifies this machine that a call has been initialized.
+  * \param participant The participant that initiated the call
+  * \param implicitRequest whether the request includes an implicit floor request
   */
- virtual void CallInitialized (McpttOnNetworkFloorTowardsParticipant& participant);
+ virtual void CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> participant, bool implicitRequest);
  /**
   * Notifies the floor machine that the call has been released (part I).
   */
@@ -116,21 +117,33 @@ public:
   */
  virtual uint32_t GetNParticipants (void) const;
  /**
-  * Gets the interface for the associated participant with the given SSRC.
-  * \param ssrc The SSRC of the associated participant.
-  * \return The interface, or 0 if the participant is not found.
+  * Gets the pointer for the indexed participant
+  * \param index index of participant
+  * \return The pointer of the participant
   */
- virtual Ptr<McpttOnNetworkFloorTowardsParticipant> GetParticipant (const uint32_t ssrc) const;
+ virtual Ptr<McpttOnNetworkFloorTowardsParticipant> GetParticipant (uint32_t index) const;
+ /**
+  * Gets the pointer for the associated participant with the given userId.
+  * \param userId The userId of the associated participant.
+  * \return The pointer of the participant, or 0 if the participant is not found.
+  */
+ virtual Ptr<McpttOnNetworkFloorTowardsParticipant> GetParticipantByUserId (uint32_t userId) const;
+ /**
+  * Gets the pointer for the associated participant with the given SSRC.
+  * \param ssrc The SSRC of the associated participant.
+  * \return The pointer, or 0 if the participant is not found.
+  */
+ virtual Ptr<McpttOnNetworkFloorTowardsParticipant> GetParticipantBySsrc (const uint32_t ssrc) const;
+ /**
+  * Gets the pointer for the originating participant
+  * \return The pointer of the participant, or 0 if the participant is not found.
+  */
+ virtual Ptr<McpttOnNetworkFloorTowardsParticipant> GetOriginatingParticipant (void) const;
  /**
   * Gets the ID of the state.
   * \returns The state ID.
   */
  virtual McpttEntityId GetStateId (void) const;
- /**
-  * Notifies this machine that an implicit floor request was recieved.
-  * \param participant The participant that initiated the implicit floor request.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& participant);
  /**
   * Indicates if the audio cut-in is supported for the group.
   * \returns True, if audio cut-in is supported, otherwise false.

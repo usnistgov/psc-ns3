@@ -47,6 +47,7 @@ namespace ns3 {
 class McpttServerCall;
 class McpttCallMsg;
 class McpttMsg;
+class McpttChan;
 
 /**
  * \ingroup mcptt
@@ -81,10 +82,31 @@ public:
   */
  void AddCall (Ptr<McpttServerCall> call);
  /**
+  * Sends a call control packet.
+  * \param pkt The packet to send.
+  */
+ virtual void SendCallControlPacket (Ptr<Packet> pkt);
+ /**
+  * Sends a call control packet.
+  * \param pkt The packet to send.
+  * \param toAddr The address to send to
+  */
+ virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr);
+ /**
   * Sends a call control message.
   * \param msg The message to send.
   */
  virtual void Send (const McpttCallMsg& msg);
+ /**
+  * Gets the address of the host.
+  * \returns The address.
+  */
+ Address GetLocalAddress (void) const;
+ /**
+  * Sets the address of the host.
+  * \param localAddress The address.
+  */
+ void SetLocalAddress (const Address& localAddress);
 protected:
  /**
   * The callback to fire when a message is received.
@@ -104,6 +126,11 @@ protected:
   */
  virtual void StopApplication (void);
  /**
+  * Receive a call control packet.
+  * \param pkt The call control packet that was received.
+  */
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt);
+ /**
   * The callback to fire when a message is sent.
   * \param msg The message that was sent.
   */
@@ -119,19 +146,11 @@ private:
  static uint16_t s_callId; //!< Call ID counter
  std::map<uint16_t, Ptr<McpttServerCall> > m_calls; //!< Call container keyed by callId
  Address m_localAddress; //!< The local IP address.
+ Address m_peerAddress; //!< The peer IP address.
+ uint16_t m_callPort; //!< The port on which call control messages will flow.
+ Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
  TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
-public:
- /**
-  * Gets the address of the host.
-  * \returns The address.
-  */
- Address GetLocalAddress (void) const;
- /**
-  * Sets the address of the host.
-  * \param localAddress The address.
-  */
- void SetLocalAddress (const Address& localAddress);
 };
 
 } // namespace ns3

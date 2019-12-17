@@ -52,7 +52,7 @@ class McpttOnNetworkFloorParticipantState;
 /**
  * \ingroup mcptt
  *
- * This class represents the MCPTT floor control state mahine described in TS
+ * This class represents the MCPTT floor control state machine described in TS
  * 24.380 v14.8.0.
  */
 class McpttOnNetworkFloorParticipant : public McpttFloorParticipant
@@ -79,6 +79,16 @@ public:
   * Notifies the floor machine that the call has been initialized.
   */
  virtual void CallInitialized (void);
+ /**
+  * Notifies the floor machine that the call has been initiated
+  * (originating MCPTT user).
+  */
+ virtual void CallInitiated (void);
+ /**
+  * Notifies the floor machine that the call has been established
+  * (terminating MCPTT user).
+  */
+ virtual void CallEstablished (void);
  /**
   * Notifies the floor machine that the call has been released (part I).
   */

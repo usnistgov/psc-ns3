@@ -194,60 +194,50 @@ McpttOnNetworkFloorArbitrator::AddParticipant (Ptr<McpttOnNetworkFloorTowardsPar
 }
 
 void
-McpttOnNetworkFloorArbitrator::CallInitialized (McpttOnNetworkFloorTowardsParticipant& participant)
+McpttOnNetworkFloorArbitrator::CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> participant, bool implicitRequest)
 {
-  NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") call initialized by " << participant.GetPeerAddress ());
-
-  m_state->CallInitialized (*this, participant);
+  NS_LOG_FUNCTION (this << participant << implicitRequest);
+  NS_LOG_LOGIC ("Call initialized");
+  participant->CallInitialized (implicitRequest);
+  m_state->CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> (this), participant);
 }
 
 void
 McpttOnNetworkFloorArbitrator::CallRelease1 (void)
 {
   NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") call released (part I).");
-
-  m_state->CallRelease1 (*this);
+  NS_LOG_LOGIC ("Call released (part I).");
+  m_state->CallRelease1 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
 McpttOnNetworkFloorArbitrator::CallRelease2 (void)
 {
   NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") call released (part II).");
-
-  m_state->CallRelease2 (*this);
+  NS_LOG_LOGIC ("Call released (part II).");
+  m_state->CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
 McpttOnNetworkFloorArbitrator::ClientRelease (void)
 {
   NS_LOG_FUNCTION (this);
-  
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") taking client release notification.");
-
-  m_state->ClientRelease (*this);
+  NS_LOG_LOGIC ("Taking client release notification.");
+  m_state->ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
 McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorState>  state)
 {
   NS_LOG_FUNCTION (this << state);
-
   McpttEntityId stateId = state->GetInstanceStateId ();
-
   McpttEntityId currStateId = GetStateId ();
-
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
+  NS_LOG_LOGIC ("Moving from state " << *m_state << " to state " << *state << ".");
   if (currStateId != stateId)
     {
-      m_state->Unselected (*this);
+      m_state->Unselected (Ptr<McpttOnNetworkFloorArbitrator> (this));
       SetState (state);
-      state->Selected (*this);
+      state->Selected (Ptr<McpttOnNetworkFloorArbitrator> (this));
 
       if (!m_stateChangeCb.IsNull ())
         {
@@ -310,21 +300,64 @@ McpttOnNetworkFloorArbitrator::GetNParticipants (void) const
 }
 
 Ptr<McpttOnNetworkFloorTowardsParticipant>
-McpttOnNetworkFloorArbitrator::GetParticipant (const uint32_t ssrc) const
+McpttOnNetworkFloorArbitrator::GetParticipant (uint32_t index) const
+{
+  NS_ASSERT_MSG (index < m_participants.size (), "Index out of bounds");
+  return m_participants[index];
+}
+
+Ptr<McpttOnNetworkFloorTowardsParticipant>
+McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
 {
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
-
   while (participant == 0 && it != m_participants.end ())
     {
-      if ((*it)->GetStoredSsrc () == ssrc)
+      if ((*it)->GetPeerUserId () == userId)
         {
           participant = *it;
         }
 
       it++;
     }
+  NS_LOG_WARN ("Participant not found by user ID");
+  return participant;
+}
 
+Ptr<McpttOnNetworkFloorTowardsParticipant>
+McpttOnNetworkFloorArbitrator::GetParticipantBySsrc (const uint32_t ssrc) const
+{
+  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
+  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
+  while (participant == 0 && it != m_participants.end ())
+    {
+      if ((*it)->GetStoredSsrc () == ssrc)
+        {
+          participant = *it;
+          break;
+        }
+
+      it++;
+    }
+  NS_LOG_WARN ("Participant not found by SSRC");
+  return participant;
+}
+Ptr<McpttOnNetworkFloorTowardsParticipant>
+McpttOnNetworkFloorArbitrator::GetOriginatingParticipant (void) const
+{
+  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
+  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
+  while (participant == 0 && it != m_participants.end ())
+    {
+      if ((*it)->IsOriginator ())
+        {
+          participant = *it;
+          break;
+        }
+
+      it++;
+    }
+  NS_LOG_WARN ("Originating participant not found");
   return participant;
 }
 
@@ -334,16 +367,6 @@ McpttOnNetworkFloorArbitrator::GetStateId (void) const
   McpttEntityId stateId = m_state->GetInstanceStateId ();
 
   return stateId;
-}
-
-void
-McpttOnNetworkFloorArbitrator::ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& participant)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") taking implicit floor request.");
-
-  m_state->ImplicitFloorRequest (*this, participant);
 }
 
 bool
@@ -374,7 +397,7 @@ McpttOnNetworkFloorArbitrator::IsDualFloorSupported (void) const
 bool
 McpttOnNetworkFloorArbitrator::IsFloorOccupied (void) const
 {
-  return m_state->IsFloorOccupied (*this);
+  return m_state->IsFloorOccupied ();
 }
 
 bool
@@ -388,7 +411,7 @@ McpttOnNetworkFloorArbitrator::IsPreemptive (const McpttFloorMsgRequest& msg) co
 {
   bool preemptive = false;
 
-  //if (!GetParticipant (msg.GetSsrc ())->IsReceiveOnly ())
+  //if (!GetParticipantBySsrc (msg.GetSsrc ())->IsReceiveOnly ())
     //{
       if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
         {
@@ -472,7 +495,7 @@ McpttOnNetworkFloorArbitrator::ReceiveFloorRelease (const McpttFloorMsgRelease& 
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
-  m_state->ReceiveFloorRelease (*this, msg);
+  m_state->ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> (this), msg);
 }
 
 void
@@ -482,7 +505,7 @@ McpttOnNetworkFloorArbitrator::ReceiveFloorRequest (const McpttFloorMsgRequest& 
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
-  m_state->ReceiveFloorRequest (*this, msg);
+  m_state->ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> (this), msg);
 }
 
 void
@@ -492,7 +515,7 @@ McpttOnNetworkFloorArbitrator::ReceiveMedia (const McpttMediaMsg& msg)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
-  m_state->ReceiveMedia (*this, msg);
+  m_state->ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> (this), msg);
 }
 
 void
@@ -709,7 +732,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT1 (void)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T1 (end-of-media) expired.");
 
-  m_state->ExpiryOfT1 (*this);
+  m_state->ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
@@ -719,7 +742,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT2 (void)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T2 (stop talking) expired.");
 
-  m_state->ExpiryOfT2 (*this);
+  m_state->ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
@@ -729,7 +752,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT3 (void)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T3 (stop talking grace) expired.");
 
-  m_state->ExpiryOfT3 (*this);
+  m_state->ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
@@ -739,7 +762,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT4 (void)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T4 (inactivity) expired.");
 
-  m_state->ExpiryOfT4 (*this);
+  m_state->ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
@@ -749,7 +772,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT7 (void)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T7 (Floor Idle) expired.");
 
-  m_state->ExpiryOfT7 (*this);
+  m_state->ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void
@@ -759,7 +782,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
 
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T20 (Floor Granted) expired.");
 
-  m_state->ExpiryOfT20 (*this);
+  m_state->ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> (this));
 }
 
 void

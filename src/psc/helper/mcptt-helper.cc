@@ -106,6 +106,8 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttOnNetworkFloorDualControlState", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttOnNetworkFloorTowardsParticipant", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttOnNetworkFloorTowardsParticipantState", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkCallMachineClient", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttOnNetworkCallMachineClientState", LOG_LEVEL_ALL);
 }
 
 uint32_t

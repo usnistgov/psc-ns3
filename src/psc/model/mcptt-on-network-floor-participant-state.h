@@ -53,7 +53,7 @@ class McpttOnNetworkFloorParticipant;
  *
  * 'Start-stop'
  *  - When a new instance of the state machine is created, before any floor
- *    control related input is applied, the state machne is in the
+ *    control related input is applied, the state machine is in the
  *    'Start-stop' state. Similarly, when the call is relased or the floor
  *    control session is terminated, the state machine shall return to the
  *    'Start-stop' state.
@@ -63,7 +63,7 @@ class McpttOnNetworkFloorParticipant;
  *    is not waiting for a floor control response.
  *
  * 'U: has permission'
- *  - In this state the MCPTT client is is permitted to send media.
+ *  - In this state the MCPTT client is permitted to send media.
  *
  * 'U: pending request'
  *  - In this state the MCPTT client is waiting for a response to a "Floor
@@ -98,6 +98,16 @@ public:
   * \param machine The FSM.
   */
  virtual void CallInitialized (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Notifies the floor machine state that the call was initiated.
+  * \param machine The FSM.
+  */
+ virtual void CallInitiated (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Notifies the floor machine state that the call was established.
+  * \param machine The FSM.
+  */
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
  /**
   * Notifies the floor machine state that the call was released (part I).
   * \param machine The FSM.
@@ -277,6 +287,16 @@ public:
   */
  virtual void CallInitialized (McpttOnNetworkFloorParticipant& machine) const;
  /**
+  * Notifies the floor machine state that the call was initiated.
+  * \param machine The FSM.
+  */
+ virtual void CallInitiated (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Notifies the floor machine state that the call was established.
+  * \param machine The FSM.
+  */
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
+ /**
   * Receives a floor ack message.
   * \param machine The FSM.
   * \param msg The received message.
@@ -429,6 +449,11 @@ public:
   * \param machine The FSM.
   */
  virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Notifies the floor machine state that the call was established.
+  * \param machine The FSM.
+  */
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
  /**
   * Receives a floor granted message.
   * \param machine The FSM.

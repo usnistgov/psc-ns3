@@ -80,8 +80,8 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_genMedia),
                    MakeBooleanChecker ())
-     .AddAttribute ("McImplicitRequest", "The flag that indicates if the SIP response included an implicit Floor Request.",
-                   BooleanValue (false),
+     .AddAttribute ("McImplicitRequest", "The flag that indicates if the SIP INVITE includes an implicit Floor Request.",
+                   BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_mcImplicitRequest),
                    MakeBooleanChecker ())
     .AddAttribute ("Priority", "The priority of the floor participant.",
@@ -171,8 +171,26 @@ McpttOnNetworkFloorParticipant::CallInitialized (void)
   NS_LOG_FUNCTION (this);
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call initialized.");
+}
 
-  m_state->CallInitialized (*this);
+void
+McpttOnNetworkFloorParticipant::CallInitiated (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call initiated.");
+
+  m_state->CallInitiated (*this);
+}
+
+void
+McpttOnNetworkFloorParticipant::CallEstablished (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call established.");
+
+  m_state->CallEstablished (*this);
 }
 
 void
@@ -181,7 +199,6 @@ McpttOnNetworkFloorParticipant::CallRelease1 (void)
   NS_LOG_FUNCTION (this);
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call release (part I).");
-
   m_state->CallRelease1 (*this);
 }
 
@@ -191,7 +208,6 @@ McpttOnNetworkFloorParticipant::CallRelease2 (void)
   NS_LOG_FUNCTION (this);
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call release (part II).");
-
   m_state->CallRelease2 (*this);
 }
 
@@ -633,11 +649,11 @@ McpttOnNetworkFloorParticipant::PttPush (void)
       //The originating user (or the user that started the call)
       //should have been given an implicit grant and thus should not
       //being making PTT request.
-      NS_LOG_LOGIC ("McpttOnNetworkFloorParticipant " << userId << " denied locally since termintating users can't make PTT request when part of a 'BROADCAST GROUP CALL'.");
+      NS_LOG_LOGIC ("McpttOnNetworkFloorParticipant " << userId << " denied locally since terminating users can't make PTT request when part of a 'BROADCAST GROUP CALL'.");
 
       if (pttApp->IsPushed ())
         {
-          pttApp->Released ();
+          pttApp->PttRelease ();
         }
     }
   else

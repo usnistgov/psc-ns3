@@ -90,101 +90,95 @@ public:
   * \param machine The FSM.
   * \param participant The participant that initiated the call.
   */
- virtual void CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
+ virtual void CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const;
  /**
   * Indicates to the floor control server that the call has been released (part I).
   * \param machine The FSM.
   */
- virtual void CallRelease1 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void CallRelease1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Indicates to the floor control server that the call has been released (part II).
   * \param machine The FSM.
   */
- virtual void CallRelease2 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Indicates to the floor control server that the client has disconnected.
   * \param machine The FSM.
   */
- virtual void ClientRelease (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Enters the given state.
   * \param machine The FSM.
   */
- virtual void Enter (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T1 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT1 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T2 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT2 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T3 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT3 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T4 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT4 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T7 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T20 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT20 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Gets the ID of the machine state.
   * \returns The ID of the state.
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
-  * Notifies this machine state that an implicit floor request has been received.
-  * \param machine The FSM.
-  * \param participant The participant that initiated the implicit floor request.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
- /**
   * Indicates if a client is permitted to send media.
-  * \returns True, if a client is permited; owtherwise, false.
+  * \returns True, if a client is permitted; otherwise, false.
   */
- virtual bool IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const;
+ virtual bool IsFloorOccupied (void) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorArbitrator& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
  /**
   * Notifies the machine state that it has been selected.
   * \param machine The FSM.
   */
- virtual void Selected (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void Selected (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the machine state that it has been unselected.
   * \param machine The FSM.
   */
- virtual void Unselected (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void Unselected (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 protected:
  /**
   * Creates an instance of the McpttOnNetworkFloorArbitratorState class.
@@ -233,7 +227,7 @@ public:
   * \param machine The FSM.
   * \param participant The participant that initiated the call.
   */
- virtual void CallInitialized (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
+ virtual void CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const;
 };
 /**
  * \ingroup mcptt
@@ -269,29 +263,23 @@ public:
   * Enters this state.
   * \param machine The FSM.
   */
- virtual void Enter (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Notifies the floor machine state that timer T7 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT7 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T4 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT4 (McpttOnNetworkFloorArbitrator& machine) const;
- /**
-  * Notifies this machine state that an implicit floor request has been received.
-  * \param machine The FSM.
-  * \param participant The participant that initiated the implicit floor request.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
+ virtual void ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -325,58 +313,52 @@ public:
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
   * Indicates if a client is permitted to send media.
-  * \returns True, if a client is permited; owtherwise, false.
+  * \returns True, if a client is permitted; otherwise, false.
   */
- virtual bool IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const;
+ virtual bool IsFloorOccupied (void) const;
  /**
   * Notifies the machine state that it has been selected.
   * \param machine The FSM.
   */
- virtual void Enter (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T1 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT1 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T2 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT2 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorArbitrator& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Notifies the floor machine state that timer T20 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT20 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Indicates to the floor control server that the client has disconnected.
   * \param machine The FSM.
   */
- virtual void ClientRelease (McpttOnNetworkFloorArbitrator& machine) const;
- /**
-  * Notifies this machine state that an implicit floor request has been received.
-  * \param machine The FSM.
-  * \param participant The participant that initiated the implicit floor request.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorArbitrator& machine, McpttOnNetworkFloorTowardsParticipant& participant) const;
+ virtual void ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -410,36 +392,36 @@ public:
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
   * Indicates if a client is permitted to send media.
-  * \returns True, if a client is permited; owtherwise, false.
+  * \returns True, if a client is permitted; otherwise, false.
   */
- virtual bool IsFloorOccupied (const McpttOnNetworkFloorArbitrator& machine) const;
+ virtual bool IsFloorOccupied (void) const;
  /**
   * Enters the given state.
   * \param machine The FSM.
   */
- virtual void Enter (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorArbitrator& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorArbitrator& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Notifies the floor machine state that timer T3 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT3 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
  /**
   * Notifies the floor machine state that timer T1 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT1 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -475,11 +457,14 @@ public:
   * Indicates to the floor control server that the call has been released (part II).
   * \param machine The FSM.
   */
- virtual void CallRelease2 (McpttOnNetworkFloorArbitrator& machine) const;
+ virtual void CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'G: Floor Initialising' state.
+ *
+ * This state is not implemented until support for temporary group sessions
+ * from Group Regroup or User Regroup is added.
  */
 class McpttOnNetworkFloorArbitratorStateInitialising : public McpttOnNetworkFloorArbitratorState
 {
@@ -511,10 +496,7 @@ public:
   * Enters the given state.
   * \param machine The FSM.
   */
- virtual void Enter (McpttOnNetworkFloorArbitrator& machine) const;
- //TODO:
- // 6.3.4.8.3	Receiving a floor request from a constituent MCPTT group (R: mcptt-floor-request)
- // 6.3.4.8.4	All final SIP responses received (R: final SIP responses)
+ virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 
 } // namespace ns3

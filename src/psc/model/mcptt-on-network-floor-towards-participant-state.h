@@ -78,7 +78,7 @@ class McpttOnNetworkFloorTowardsParticipant;
  *
  * 'Releasing'
  *  - The floor control interface is in this state while waiting for the
- *    application and signallying plane to finalize the disconnection of an
+ *    application and signalling plane to finalize the disconnection of an
  *    MCPTT call or the removal of the participant.
  *
  * 'U: not permitted and initiating'
@@ -94,119 +94,114 @@ public:
   */
  virtual ~McpttOnNetworkFloorTowardsParticipantState (void);
  /**
-  * Indicates to the floor control server that the call has been initiated.
+  * Indicates to the floor control server that the call has been initialized.
   * \param machine The FSM.
   */
- virtual void CallInitiated (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Indicates to the floor control server that the call has been released (part I).
   * \param machine The FSM.
   */
- virtual void CallRelease1 (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void CallRelease1 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Indicates to the floor control server that the call has been released (part II).
   * \param machine The FSM.
   */
- virtual void CallRelease2 (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void CallRelease2 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Indicates to the floor control server that the client has disconnected.
   * \param machine The FSM.
   */
- virtual void ClientRelease (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void ClientRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Notifies the floor machine state that timer T8 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT8 (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Gets the ID of the machine state.
   * \returns The ID of the state.
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
-  * Notifies this machine state that an implicit floor request has been received.
-  * \param machine The FSM.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine) const;
- /**
   * Receives Floor Queue Position Request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgQueuePositionRequest& msg) const;
+ virtual void ReceiveFloorQueuePositionRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgQueuePositionRequest& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const;
  /**
   * Notifies the machine state that it has been selected.
   * \param machine The FSM.
   */
- virtual void Selected (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Selected (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Sends a floor deny message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorDeny (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgDeny& msg) const;
+ virtual void SendFloorDeny (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgDeny& msg) const;
  /**
   * Sends a floor granted message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const;
+ virtual void SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const;
  /**
   * Sends a floor idle message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const;
+ virtual void SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const;
  /**
   * Sends a floor revoke message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorRevoke (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgRevoke& msg) const;
+ virtual void SendFloorRevoke (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgRevoke& msg) const;
  /**
   * Sends a floor taken message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const;
+ virtual void SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const;
  /**
   * Sends a media message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendMedia (McpttOnNetworkFloorTowardsParticipant& machine, McpttMediaMsg& msg) const;
+ virtual void SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttMediaMsg& msg) const;
  /**
   * Indicates to the floor control server to terminate.
   * \param machine The FSM.
   */
- virtual void Terminate (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Terminate (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Notifies the machine state that it has been unselected.
   * \param machine The FSM.
   */
- virtual void Unselected (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Unselected (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
 protected:
  /**
   * Creates an instance of the McpttOnNetworkFloorTowardsParticipantState class.
@@ -254,7 +249,7 @@ public:
   * Indicates to the floor control server that the call has been initiated.
   * \param machine The FSM.
   */
- virtual void CallInitiated (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -289,54 +284,49 @@ public:
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Sends a floor taken message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const;
+ virtual void SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Sends a floor granted message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const;
+ virtual void SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const;
  /**
   * Sends a floor deny message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorDeny (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgDeny& msg) const;
+ virtual void SendFloorDeny (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgDeny& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const;
- /**
-  * Notifies this machine state that an implicit floor request has been received.
-  * \param machine The FSM.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const;
  /**
   * Sends a floor idle message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const;
+ virtual void SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const;
 };
 /**
  * \ingroup mcptt
@@ -371,54 +361,49 @@ public:
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Sends a floor idle message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const;
+ virtual void SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const;
  /**
   * Receives Floor Queue Position Request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorQueuePositionRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgQueuePositionRequest& msg) const;
- /**
-  * Notifies this machine state that an implicit floor request has been received.
-  * \param machine The FSM.
-  */
- virtual void ImplicitFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void ReceiveFloorQueuePositionRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgQueuePositionRequest& msg) const;
  /**
   * Sends a floor granted message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const;
+ virtual void SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const;
  /**
   * Sends a floor taken message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const;
+ virtual void SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const;
 };
 /**
  * \ingroup mcptt
@@ -453,49 +438,49 @@ public:
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Sends a floor idle message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const;
+ virtual void SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const;
  /**
   * Sends a floor revoke message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorRevoke (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgRevoke& msg) const;
+ virtual void SendFloorRevoke (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgRevoke& msg) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Sends a media message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendMedia (McpttOnNetworkFloorTowardsParticipant& machine, McpttMediaMsg& msg) const;
+ virtual void SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttMediaMsg& msg) const;
  /**
   * Sends a floor taken message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const;
+ virtual void SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const;
 };
 /**
  * \ingroup mcptt
@@ -530,36 +515,36 @@ public:
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Notifies the floor machine state that timer T8 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT8 (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Receives a media message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveMedia (McpttOnNetworkFloorTowardsParticipant& machine, const McpttMediaMsg& msg) const;
+ virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttMediaMsg& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
  /**
   * Sends a floor idle message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const;
+ virtual void SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const;
  /**
   * Sends a floor taken message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const;
+ virtual void SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const;
 };
 /**
  * \ingroup mcptt
@@ -594,18 +579,18 @@ public:
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Notifies the floor machine state that timer T8 has expired.
   * \param machine The FSM.
   */
- virtual void ExpiryOfT8 (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
 };
 /**
  * \ingroup mcptt
@@ -641,7 +626,7 @@ public:
   * Indicates to the floor control server that the call has been released (part II).
   * \param machine The FSM.
   */
- virtual void CallRelease2 (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void CallRelease2 (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -676,37 +661,37 @@ public:
  /**
   * Enters the given state.
   */
- virtual void Enter (McpttOnNetworkFloorTowardsParticipant& machine) const;
+ virtual void Enter (Ptr<McpttOnNetworkFloorTowardsParticipant> machine) const;
  /**
   * Sends a floor taken message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorTaken (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgTaken& msg) const;
+ virtual void SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgTaken& msg) const;
  /**
   * Sends a floor idle message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorIdle (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgIdle& msg) const;
+ virtual void SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgIdle& msg) const;
  /**
   * Receives a floor request message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRequest (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRequest& msg) const;
+ virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRequest& msg) const;
  /**
   * Sends a floor granted message.
   * \param machine The FSM.
   * \param msg The message to send.
   */
- virtual void SendFloorGranted (McpttOnNetworkFloorTowardsParticipant& machine, McpttFloorMsgGranted& msg) const;
+ virtual void SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, McpttFloorMsgGranted& msg) const;
  /**
   * Receives a floor release message.
   * \param machine The FSM.
   * \param msg The received message.
   */
- virtual void ReceiveFloorRelease (McpttOnNetworkFloorTowardsParticipant& machine, const McpttFloorMsgRelease& msg) const;
+ virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
 };
 
 } // namespace ns3

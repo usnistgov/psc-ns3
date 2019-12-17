@@ -7,7 +7,7 @@
 #     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
 
 def build(bld):
-    module = bld.create_ns3_module('psc', ['energy', 'mobility', 'network', 'antenna', 'buildings', 'lte'])
+    module = bld.create_ns3_module('psc', ['energy', 'mobility', 'network', 'antenna', 'buildings', 'lte', 'sip'])
     module.source = [
         'model/intel-http-client.cc',
         'model/intel-http-header.cc',
@@ -50,6 +50,10 @@ def build(bld):
         'model/mcptt-call-machine-grp-broadcast-state.cc',
         'model/mcptt-call-machine-private.cc',
         'model/mcptt-call-machine-private-state.cc',
+        'model/mcptt-on-network-call-machine-client.cc',
+        'model/mcptt-on-network-call-machine-client-state.cc',
+        'model/mcptt-server-call-machine-group-prearranged.cc',
+        'model/mcptt-server-call-machine-group-prearranged-state.cc',
         'model/mcptt-call-type-machine.cc',
         'model/mcptt-call-type-machine-grp-basic.cc',
         'model/mcptt-call-type-machine-private.cc',
@@ -138,6 +142,10 @@ def build(bld):
         'model/mcptt-call-machine-grp-broadcast-state.h',
         'model/mcptt-call-machine-private.h',
         'model/mcptt-call-machine-private-state.h',
+        'model/mcptt-on-network-call-machine-client.h',
+        'model/mcptt-on-network-call-machine-client-state.h',
+        'model/mcptt-server-call-machine-group-prearranged.h',
+        'model/mcptt-server-call-machine-group-prearranged-state.h',
         'model/mcptt-call-type-machine.h',
         'model/mcptt-call-type-machine-grp-basic.h',
         'model/mcptt-call-type-machine-private.h',
