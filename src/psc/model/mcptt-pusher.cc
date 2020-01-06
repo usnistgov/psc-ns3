@@ -92,12 +92,12 @@ void
 McpttPusher::CancelEvents (void)
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = m_pushReleaseEvents.begin(); it != m_pushReleaseEvents.end(); ++it)
+  for (auto it = m_pushReleaseEvents.begin(); it != m_pushReleaseEvents.end(); it++)
     {
       NS_LOG_LOGIC ("Pusher canceling an event.");
       Simulator::Cancel (*it);
-      m_pushReleaseEvents.erase (*it);
     }
+  m_pushReleaseEvents.clear ();
 }
 
 void
