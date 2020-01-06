@@ -186,7 +186,6 @@ public:
                              std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                              std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 private:
-  uint16_t m_nextCallId {0}; //!< Next integer to assign as a call ID
   ObjectFactory m_arbitratorFactory; //!< The floor arbitrator factory
   ObjectFactory m_towardsParticipantFactory; //!< The towards participant factory
   ObjectFactory m_participantFactory; //!< The participant factory
