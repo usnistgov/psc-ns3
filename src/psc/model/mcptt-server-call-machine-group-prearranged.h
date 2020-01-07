@@ -214,6 +214,24 @@ public:
   */
  virtual McpttCallMsgFieldGrpId GetGrpId (void) const;
  /**
+  * Set list of pending SIP transactions
+  * (note:  will be replaced by SipTransaction class)
+  * probably a std::map<uint32_t, SipTransaction>
+  * \param pending vector of pending userIds
+  */
+ virtual void SetPendingTransactionList (std::vector<uint32_t> pending);
+ /**
+  * Get number of pending SIP transactions
+  * \param userId the user ID to remove from the list
+  * \return whether the pending transaction was found and removed
+  */
+ virtual bool RemoveFromPending (uint32_t userId);
+ /**
+  * Get number of pending SIP transactions
+  * \return number of pending transactions
+  */
+ virtual uint32_t GetNPendingTransactions (void) const;
+ /**
   * Starts the state machine.
   */
  virtual void Start (void);
@@ -238,6 +256,7 @@ private:
  uint16_t m_mediaPort; //!< The port number to use for media.
  uint8_t m_callType; //!< The call type.
  bool m_started;    //!< Whether the call is started
+ std::vector<uint32_t> m_pending; //!< pending transactions
  Ptr<McpttServerCallMachineGroupPrearrangedState> m_state; //!< The current state of the machine.
  McpttCallMsgFieldGrpId m_grpId; //!< The ID of the MCPTT group.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.

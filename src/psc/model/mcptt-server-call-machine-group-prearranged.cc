@@ -141,6 +141,7 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
   if (Ipv4Address::IsMatchingType (addr))
     {
       Ipv4Address ipv4Addr = Ipv4Address::ConvertFrom (addr);
+      NS_LOG_DEBUG ("IPv4 address for SIP request: " << ipv4Addr);
       UintegerValue portValue;
       GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
       uint16_t callPort = portValue.Get ();
@@ -410,6 +411,41 @@ McpttCallMsgFieldGrpId
 McpttServerCallMachineGroupPrearranged::GetGrpId (void) const
 {
   return m_grpId;
+}
+
+void
+McpttServerCallMachineGroupPrearranged::SetPendingTransactionList (std::vector<uint32_t> pending)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_pending.size ())
+    {
+      NS_LOG_DEBUG ("Replacing existing pending transaction list with size " << m_pending.size ());
+    }
+  m_pending = pending;
+}
+
+bool
+McpttServerCallMachineGroupPrearranged::RemoveFromPending (uint32_t userId)
+{
+  NS_LOG_FUNCTION (this << userId);
+  bool found = false;
+  for (auto it = m_pending.begin (); it != m_pending.end (); it++)
+    {
+      if (*it == userId)
+        {
+          NS_LOG_DEBUG ("Found entry for id " << userId);
+          m_pending.erase (it);
+          found = true;
+          break;
+        }
+    }
+  return found;
+}
+
+uint32_t
+McpttServerCallMachineGroupPrearranged::GetNPendingTransactions (void) const
+{
+  return m_pending.size ();
 }
 
 } // namespace ns3

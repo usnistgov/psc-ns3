@@ -142,6 +142,7 @@ void
 McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt);
+  std::vector<uint32_t> pending;
   if (machine.GetServerCall ()->GetOriginator () == from)
     {
       for (uint32_t i = 0; i < machine.GetServerCall ()->GetClientUserIds ().size (); i++)
@@ -151,6 +152,7 @@ McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMac
             {
               NS_LOG_DEBUG ("Forwarding invite to user ID: " << userId);
               machine.SendSipRequest (userId, pkt);
+              pending.push_back (userId);
             }
         }
       machine.SetState (McpttServerCallMachineGroupPrearrangedStateS2::GetInstance ());
@@ -158,6 +160,8 @@ McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMac
       participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
       bool implicitRequest = true; // XXX read this from SDP mc_implicit_request
       machine.GetServerCall ()->GetArbitrator ()->CallInitialized (participant, implicitRequest);
+      NS_ASSERT_MSG (pending.size (), "Error, no responses added to pending list");
+      machine.SetPendingTransactionList (pending);
     }
   else
     {
@@ -217,9 +221,15 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
   participant = machine.GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (from);
   NS_ASSERT_MSG (participant, "Participant " << from << " not found");
   participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ());
-
-  if (true) // TODO: check for all OKs received before sending OK to originator
+  bool found = machine.RemoveFromPending (from);
+  if (!found)
     {
+      NS_LOG_DEBUG ("Received response from " << from << " but not found in pending list");
+    }
+
+  if (machine.GetNPendingTransactions () == 0)
+    {
+      NS_LOG_DEBUG ("Processed last pending response; send response to originator");
       SipHeader sipHeader;
       sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
       sipHeader.SetStatusCode (200);
@@ -302,6 +312,7 @@ McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachin
   NS_LOG_FUNCTION (this << &machine << from << pkt);
 
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant;
+  std::vector<uint32_t> pending;
   participant = machine.GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (from);
   NS_ASSERT_MSG (participant, "Participant " << from << " not found");
   participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStateReleasing::GetInstance ());
@@ -316,10 +327,13 @@ McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachin
             {
               NS_LOG_DEBUG ("Forwarding BYE to user ID: " << userId);
               machine.SendSipRequest (userId, pkt);
+              pending.push_back (userId);
             }
         }
       machine.SetState (McpttServerCallMachineGroupPrearrangedStateS4::GetInstance ());
       machine.GetServerCall ()->GetArbitrator ()->CallRelease1 ();
+      NS_ASSERT_MSG (pending.size (), "Error, no responses added to pending list");
+      machine.SetPendingTransactionList (pending);
     }
   else
     {
@@ -378,9 +392,15 @@ McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallM
   participant = machine.GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (from);
   NS_ASSERT_MSG (participant, "Participant " << from << " not found");
   participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ());
-
-  if (true) // TODO: check for all OKs received before sending OK to originator
+  bool found = machine.RemoveFromPending (from);
+  if (!found)
     {
+      NS_LOG_DEBUG ("Received response from " << from << " but not found in pending list");
+    }
+
+  if (machine.GetNPendingTransactions () == 0)
+    {
+      NS_LOG_DEBUG ("Processed last pending response; send response to originator");
       participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
       participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ());
 
