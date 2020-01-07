@@ -184,7 +184,6 @@ McpttOnNetworkCallMachineClient::GetOwner (void) const
 McpttEntityId
 McpttOnNetworkCallMachineClient::GetStateId (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_state->GetInstanceStateId ();
 }
 
