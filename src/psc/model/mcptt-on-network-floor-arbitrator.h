@@ -165,15 +165,15 @@ public:
   */
  virtual bool IsDualFloorSupported (void) const;
  /**
-  * Indicates whether or not a client is currently premitted to send media.
+  * Indicates whether or not a client is currently permitted to send media.
   * \returns True, if a client is permitted to send media; otherwise, false.
   */
  virtual bool IsFloorOccupied (void) const;
  /**
-  * Indicates if the "mc_granted" fmtp attribute is negotiated.
+  * Indicates whether or not queueing of floor requests is supported.
   * \returns True, if it has been negotiated.
   */
- virtual bool IsMcGranted (void) const;
+ virtual bool IsQueueingSupported (void) const;
  /**
   * Indicates if the given floor request is a preemptive floor request.
   * \returns True, if the given floor request is preemptive.
@@ -321,7 +321,7 @@ private:
  bool m_dualFloorSupported; //!< A flag that to indicate dual floor indication.
  Ptr<McpttOnNetworkFloorDualControl> m_dualControl; //!< The dual floor control state machine.
  Ptr<McpttServerCall> m_owner; //!< The call object that owns this floor machine.
- bool m_mcGranted; //!<< The flag that indicates if the "mc_granted" fmtp attribute is negotiated.
+ bool m_queueingSupported; //!<< The flag that indicates if queueing of floor control requests is supported.
  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> > m_participants; //!< The associated floor participants.
  Ptr<McpttFloorQueue> m_queue; //!< The queue of floor requests.
  uint16_t m_rejectCause; //!< The reject cause to include when revoking the floor.

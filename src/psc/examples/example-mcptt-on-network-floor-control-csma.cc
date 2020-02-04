@@ -186,16 +186,12 @@ int main (int argc, char *argv[])
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
-                         "QueueCapacity", UintegerValue (1),
-                         "McGranted", BooleanValue (false));
+                         "QueueCapacity", UintegerValue (1));
   // Dual control not yet in the refactoring
   // callHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
-                         "McImplicitRequest", BooleanValue (false),
-                         "McQueuing", BooleanValue (true),
                          "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
-                         "McImplicitRequest", BooleanValue (false),
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::McpttServerCall",
@@ -204,8 +200,7 @@ int main (int argc, char *argv[])
 
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   uint32_t groupId = 1;
-  Ptr<McpttPttApp> originator = clientApps.Get (0)->GetObject<McpttPttApp> ();
-  callHelper.AddCall (clientApps, originator, serverApp, groupId, callType, start, stop);
+  callHelper.AddCall (clientApps, serverApp, groupId, callType, start, stop);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 

@@ -92,6 +92,8 @@ McpttServerCallMachineGroupPrearranged::McpttServerCallMachineGroupPrearranged (
 McpttServerCallMachineGroupPrearranged::~McpttServerCallMachineGroupPrearranged (void)
 {
   NS_LOG_FUNCTION (this);
+  m_pending.clear ();
+  m_pending.shrink_to_fit ();
 }
 
 void
@@ -420,6 +422,8 @@ McpttServerCallMachineGroupPrearranged::SetPendingTransactionList (std::vector<u
   if (m_pending.size ())
     {
       NS_LOG_DEBUG ("Replacing existing pending transaction list with size " << m_pending.size ());
+      m_pending.clear ();
+      m_pending.shrink_to_fit ();
     }
   m_pending = pending;
 }

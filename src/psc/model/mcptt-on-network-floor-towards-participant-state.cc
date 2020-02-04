@@ -277,16 +277,16 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
   NS_LOG_DEBUG ("IsTemporaryGroup: " << machine->GetOwner ()->GetOwner ()->IsTemporaryGroup () 
       << " IsAmbientListening: " << machine->GetOwner ()->GetOwner ()->IsAmbientListening ()
       << " IsStarted: " << machine->GetOwner ()->IsStarted ()
-      << " IsMcImplicitRequest: " << machine->IsMcImplicitRequest ()
+      << " IsImplicitRequest: " << machine->IsImplicitRequest ()
       << " IsFloorOccupied: " << machine->GetOwner ()->IsFloorOccupied ()
       << " IsEnabled: " << machine->GetOwner ()->GetQueue ()->IsEnabled ()
-      << " IsMcQueuing: " <<  machine->IsMcQueuing () 
+      << " IsQueueing: " <<  machine->IsQueueing () 
       << " IsDualFloor: " <<  machine->IsDualFloor ()); 
   if (!machine->GetOwner ()->GetOwner ()->IsTemporaryGroup ()
       || !machine->GetOwner ()->GetOwner ()->IsAmbientListening ())
     {
       if (!machine->GetOwner ()->IsStarted ()
-          && machine->IsMcImplicitRequest ())
+          && machine->IsImplicitRequest ())
         {
           NS_LOG_DEBUG ("Call not started and implicit request");
           McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
@@ -303,7 +303,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
       else if (!machine->GetOwner ()->IsStarted ()
-          && !machine->IsMcImplicitRequest ())
+          && !machine->IsImplicitRequest ())
         {
           NS_LOG_DEBUG ("Call is not started and no implicit floor request");
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
@@ -329,7 +329,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
         }
       else if (machine->GetOwner ()->IsStarted ()
-          && machine->IsMcImplicitRequest ())
+          && machine->IsImplicitRequest ())
         {
           if (!machine->GetOwner ()->IsFloorOccupied ())
             {
@@ -341,9 +341,9 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
               McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
             }
           else if (machine->GetOwner ()->GetQueue ()->IsEnabled ()
-              && machine->IsMcQueuing ())
+              && machine->IsQueueing ())
             {
-              //TODO: shall set the priority level to the negotated maximum priotiy level
+              //TODO: shall set the priority level to the negotated maximum priority level
               NS_LOG_DEBUG ("Call is started and implicit floor request and floor is occupied (with queueing enabled)");
               McpttQueuedUserInfo queueInfo = McpttQueuedUserInfo (machine->GetStoredSsrc (), McpttFloorMsgFieldQueuedUserId (machine->GetStoredSsrc ()), McpttFloorMsgFieldQueuePositionInfo (0, machine->GetStoredPriority ()));
               machine->GetOwner ()->GetQueue ()->Enqueue (queueInfo);
@@ -655,7 +655,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
     }
   else if (!msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL)
       && !msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
-      && (!machine->GetOwner ()->GetQueue ()->IsEnabled () || !machine->IsMcQueuing ())
+      && (!machine->GetOwner ()->GetQueue ()->IsEnabled () || !machine->IsQueueing ())
       && msg.GetPriority ().GetPriority () == 0)
     {
       McpttFloorMsgDeny denyMsg;
@@ -700,7 +700,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
           machine->DoSend (denyMsg);
         }
       else if (!machine->GetOwner ()->GetQueue ()->IsEnabled ()
-          || !machine->IsMcQueuing ())
+          || !machine->IsQueueing ())
         {
           McpttFloorMsgDeny denyMsg;
           denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
@@ -756,7 +756,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if ((!machine->GetOwner ()->GetQueue ()->IsEnabled ()
-      || !machine->IsMcQueuing ()))
+      || !machine->IsQueueing ()))
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
@@ -1474,7 +1474,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRe
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if (machine->GetOwner ()->GetQueue ()->IsEnabled ()
-      && machine->IsMcQueuing ())
+      && machine->IsQueueing ())
     {
       McpttQueuedUserInfo queueInfo;
       queueInfo.SetSsrc (msg.GetSsrc ());

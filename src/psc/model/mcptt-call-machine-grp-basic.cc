@@ -31,7 +31,7 @@
 
 // Override default context logging
 #define NS_LOG_APPEND_CONTEXT \
-  if (m_owner) { std::clog << " [node " << m_owner->GetOwner ()->GetNode ()->GetId () << "] "; }
+  if (m_owner && m_owner->GetOwner ()) { std::clog << " [node " << m_owner->GetOwner ()->GetNode ()->GetId () << "] "; }
 
 #include <ns3/assert.h>
 #include <ns3/boolean.h>

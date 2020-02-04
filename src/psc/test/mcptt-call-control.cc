@@ -949,7 +949,7 @@ McpttCallSetupJoinCall::UeAStateChangeCb (const TestCallMachine& machine, Ptr<Mc
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg4->IsRunning (), false, "UE A TFG4 is running.");
@@ -1427,7 +1427,7 @@ McpttCallSetupNewCall::UeAStateChangeCb (const TestCallMachine& machine, Ptr<Mcp
      }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg4->IsRunning (), false, "UE A timer TFG4 is running.");
@@ -1968,7 +1968,7 @@ McpttCallMerge::UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg
 void
 McpttCallMerge::UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
 }
 
 void
@@ -2075,7 +2075,7 @@ McpttCallMerge::UeBRxCb (const TestCallMachine& machine, const McpttCallMsg& msg
 void
 McpttCallMerge::UeBStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
 }
 
 void
@@ -2599,7 +2599,7 @@ McpttCallRelease::UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCal
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg1->IsRunning (), false, "UE A timer TFG1 is running.");
@@ -2969,7 +2969,7 @@ McpttCallReleaseAfterProbe::UeAStateChangeCb (const TestCallMachine& machine, Pt
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg2->IsRunning (), false, "UE A timer TFG2 is running.");
@@ -3245,7 +3245,7 @@ McpttCallReleasePendingUserAction1::UeAStateChangeCb (const TestCallMachine& mac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg1->IsRunning (), false, "UE A timer TFG1 is running.");
@@ -3602,7 +3602,7 @@ McpttCallReleasePendingUserAction2::UeAStateChangeCb (const TestCallMachine& mac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg1->IsRunning (), false, "UE A timer TFG1 is running.");
@@ -4195,7 +4195,7 @@ McpttCallReleaseAndSetup::UeAStateChangeCb (const TestCallMachine& machine, Ptr<
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg1->IsRunning (), true, "UE A timer TFG1 is not running.");
@@ -4491,7 +4491,7 @@ McpttCallReject::UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCall
      }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg4->IsRunning (), false, "UE A timer TFG4 is running.");

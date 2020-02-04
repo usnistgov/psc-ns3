@@ -55,7 +55,7 @@ public:
  /**
   * Creates an instance of the McpttEntityId class.
   * \param number The entity ID number.
-  * \param name The eneity ID name.
+  * \param name The entity ID name.
   */
  McpttEntityId (uint32_t number, const std::string& name);
  /**

@@ -235,13 +235,10 @@ main (int argc, char *argv[])
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
-                         "QueueCapacity", UintegerValue (1),
-                         "McGranted", BooleanValue (false));
+                         "QueueCapacity", UintegerValue (1));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
-                         "McQueuing", BooleanValue (true),
                          "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
-                         "McImplicitRequest", BooleanValue (true),
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::McpttServerCall",
@@ -251,17 +248,13 @@ main (int argc, char *argv[])
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   // Add first call, to start at time 2 and stop at time 10
   // Call will involve two nodes (7 and 8) and the MCPTT server (node 3)
-  // The zeroth node in the client container will initiate the call
   uint32_t groupId = 1;
-  Ptr<McpttPttApp> originator1 = clientAppContainer1.Get (0)->GetObject<McpttPttApp> ();
-  callHelper.AddCall (clientAppContainer1, originator1, serverApp, groupId, callType, Seconds (2), Seconds (16));
+  callHelper.AddCall (clientAppContainer1, serverApp, groupId, callType, Seconds (2), Seconds (16));
 
   // Add second call, on new groupId, to start at time 8 and stop at time 15
   // Call will involve two nodes (9 and 10) and the MCPTT server (node 3)
-  // The zeroth node in the client container will initiate the call
   groupId = 2;
-  Ptr<McpttPttApp> originator2 = clientAppContainer2.Get (0)->GetObject<McpttPttApp> ();
-  callHelper.AddCall (clientAppContainer2, originator2, serverApp, groupId, callType, Seconds (18), Seconds (34));
+  callHelper.AddCall (clientAppContainer2, serverApp, groupId, callType, Seconds (18), Seconds (34));
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
   McpttTraceHelper traceHelper;
@@ -270,7 +263,7 @@ main (int argc, char *argv[])
   traceHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
 
   // Uncomment to enable PCAP tracing
-  // p2ph.EnablePcap("example-mcptt-on-network-floor-control-lte.ims.pcap", imsHelper->GetImsGmDevice (), true, true);
+  // p2ph.EnablePcap("example-mcptt-on-network-two-calls.ims.pcap", imsHelper->GetImsGmDevice (), true, true);
 
   Simulator::Stop (simTime);
   Simulator::Run ();

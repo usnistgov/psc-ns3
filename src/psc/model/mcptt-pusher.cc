@@ -92,12 +92,8 @@ void
 McpttPusher::CancelEvents (void)
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = m_pushReleaseEvents.begin(); it != m_pushReleaseEvents.end(); it++)
-    {
-      NS_LOG_LOGIC ("Pusher canceling an event.");
-      Simulator::Cancel (*it);
-    }
-  m_pushReleaseEvents.clear ();
+  m_pushEvent.Cancel ();
+  m_releaseEvent.Cancel ();
 }
 
 void
@@ -118,10 +114,13 @@ void
 McpttPusher::NotifyPushed (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPushing (true);
-  if (m_automatic == true)
+  if (!IsPushing ())
     {
-      ScheduleRelease ();
+      SetPushing (true);
+      if (m_automatic == true)
+        {
+          ScheduleRelease ();
+        }
     }
 }
 
@@ -130,9 +129,9 @@ McpttPusher::Release (void)
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
-  m_pushable->TakeReleaseNotification ();
   NS_LOG_LOGIC ("Pusher about to release pushable.");
   SetPushing (false);
+  m_pushable->TakeReleaseNotification ();
   if (m_automatic == true)
     {
       SchedulePush ();
@@ -143,14 +142,17 @@ void
 McpttPusher::NotifyReleased (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPushing (false);
-  if (m_automatic == true)
+  if (IsPushing ())
     {
-      SchedulePush ();
+      SetPushing (false);
+      if (m_automatic == true)
+        {
+          SchedulePush ();
+        }
     }
 }
 
-void
+bool
 McpttPusher::SchedulePush (void)
 {
   NS_LOG_FUNCTION (this);
@@ -160,19 +162,44 @@ McpttPusher::SchedulePush (void)
       rv = 0;
     }
   Time offInterval = Seconds (rv);
-  SchedulePush (offInterval);
+  return SchedulePush (offInterval);
 }
 
-void
+bool
 McpttPusher::SchedulePush (const Time& delay)
 {
   NS_LOG_FUNCTION (this << delay);
-  NS_LOG_LOGIC ("Pusher scheduling to push button in " << delay.GetSeconds () << "s.");
-  EventId eventId = Simulator::Schedule (delay, &McpttPusher::Push, this);
-  m_pushReleaseEvents.insert (eventId);
+  if (!m_pushEvent.IsRunning ())
+    {
+      NS_LOG_LOGIC ("Pusher scheduling to push button in " << delay.GetSeconds () << "s.");
+      m_pushEvent = Simulator::Schedule (delay, &McpttPusher::Push, this);
+      return true;
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Suppressing new push event (already running)");
+      return false;
+    }
 }
 
-void
+bool
+McpttPusher::CancelPush (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_pushEvent.IsRunning ())
+    {
+      NS_LOG_LOGIC ("No push event to cancel");
+      return false;
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Cancelling scheduled push event");
+      m_pushEvent.Cancel ();
+      return true;
+    }
+}
+
+bool
 McpttPusher::ScheduleRelease (void)
 {
   NS_LOG_FUNCTION (this);
@@ -182,16 +209,41 @@ McpttPusher::ScheduleRelease (void)
       rv = 0;
     }
   Time onInterval = Seconds (rv);
-  ScheduleRelease (onInterval);
+  return ScheduleRelease (onInterval);
 }
 
-void
+bool
 McpttPusher::ScheduleRelease (const Time& delay)
 {
   NS_LOG_FUNCTION (this << delay);
-  NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds() << "s.");
-  EventId eventId = Simulator::Schedule (delay, &McpttPusher::Release, this);
-  m_pushReleaseEvents.insert (eventId);
+  if (!m_releaseEvent.IsRunning ())
+    {
+      NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds() << "s.");
+      m_releaseEvent = Simulator::Schedule (delay, &McpttPusher::Release, this);
+      return true;
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Suppressing new release event (already running)");
+      return false;
+    }
+}
+
+bool
+McpttPusher::CancelRelease (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_releaseEvent.IsRunning ())
+    {
+      NS_LOG_LOGIC ("No release event to cancel");
+      return false;
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Cancelling scheduled release event");
+      m_releaseEvent.Cancel ();
+      return true;
+    }
 }
 
 void
@@ -213,12 +265,15 @@ void
 McpttPusher::Stop (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("Pusher stopping pushes and releases.");
-  if (IsPushing ())
+  if (m_releaseEvent.IsRunning () || m_pushEvent.IsRunning ())
     {
-      SetPushing (false);
+      NS_LOG_LOGIC ("Pusher stopping pushes and releases.");
+      if (IsPushing ())
+        {
+          SetPushing (false);
+        }
+      CancelEvents ();
     }
-  CancelEvents ();
 }
 
 void

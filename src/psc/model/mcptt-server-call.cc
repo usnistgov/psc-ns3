@@ -219,13 +219,6 @@ McpttServerCall::Receive (const McpttMediaMsg& msg)
       m_rxCb (this, msg);
     }
   NS_FATAL_ERROR ("Unreachable?");
-
-#ifdef NOTYET
-  Ptr<McpttServerCallMachine> callMachine = GetCallMachine ();
-  callMachine->Receive (msg);
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = GetArbitrator ();
-  arbitrator->Receive (msg);
-#endif
 }
 
 void

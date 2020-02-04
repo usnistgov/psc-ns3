@@ -380,7 +380,7 @@ private:
  Callback<void, uint16_t> m_mergeCb; //!< The merge callback.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  McpttCallMsgFieldUserId m_origId; //!< The ID of MCPTT user that the call originated from.
- Ptr<McpttCall> m_owner; //!< The call under which this MCPTT call control machine is under.
+ Ptr<McpttCall> m_owner {nullptr}; //!< The call under which this MCPTT call control machine is under.
  bool m_probeRespVal; //!< The probe response value flag.
  McpttCallMsgFieldRefreshInterval m_refInt; //!< The minimum time interval of periodic announcements.
  Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation. 

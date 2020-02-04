@@ -91,23 +91,43 @@ public:
   */
  virtual void NotifyReleased (void);
  /**
-  * Schedules when the pusher will perform a push.
+  * Schedules when the pusher will perform a push, based on random variable.
+  * This method will return false if there is already a scheduled push event.
+  * \return true if schedule was successful, false if not
   */
- virtual void SchedulePush (void);
+ virtual bool SchedulePush (void);
  /**
-  * Schedules when the pusher will perform a push.
+  * Schedules a specific delay after which the pusher will perform a push.
+  * This method will return false if there is already a scheduled push event.
   * \param delay The amount of time from now that the pusher will perform the push.
+  * \return true if schedule was successful, false if not
   */
- virtual void SchedulePush (const Time& delay);
+ virtual bool SchedulePush (const Time& delay);
+ /**
+  * Cancels any pending push event
+  * This method will return false if there was not a scheduled push event.
+  * \return true if cancel was successful, false if not
+  */
+ virtual bool CancelPush (void);
  /**
   * Schedules when the pusher will perform a release.
+  * This method will return false if there is already a scheduled release event.
+  * \return true if schedule was successful, false if not
   */
- virtual void ScheduleRelease (void);
+ virtual bool ScheduleRelease (void);
  /**
-  * Scheuldes when the pusher will perform a release.
+  * Schedules a specific delay after which the pusher will perform a release.
+  * This method will return false if there is already a scheduled release event.
   * \param delay The amount of time from now that the pusher will perform the release.
+  * \return true if schedule was successful, false if not
   */
- virtual void ScheduleRelease (const Time& delay);
+ virtual bool ScheduleRelease (const Time& delay);
+ /**
+  * Cancels any pending release event
+  * This method will return false if there was not a scheduled release event.
+  * \return true if cancel was successful, false if not
+  */
+ virtual bool CancelRelease (void);
  /**
   * \brief Starts pushing and releasing the pushables button.
   */
@@ -140,7 +160,8 @@ private:
   */
  McpttPushable* m_pushable; //!< A pointer to the pushable.
  TracedValue <bool> m_pushing; //!< A flag used to indicate if the pusher is in the "pushing" state.
- std::set<EventId> m_pushReleaseEvents;   //!< EventIds of push/release events
+ EventId m_pushEvent; //!< EventId of most recently scheduled push event
+ EventId m_releaseEvent; //!< EventId of most recently scheduled release event
 public:
  /**
   * \brief Gets the object with the button to push.

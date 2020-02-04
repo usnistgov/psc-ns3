@@ -86,9 +86,10 @@ public:
  virtual void CallInitiated (void);
  /**
   * Notifies the floor machine that the call has been established
-  * (terminating MCPTT user).
+  * \param hasFloor whether floor is granted
+  * \param priority priority value from server
   */
- virtual void CallEstablished (void);
+ virtual void CallEstablished (bool hasFloor, uint8_t priority);
  /**
   * Notifies the floor machine that the call has been released (part I).
   */
@@ -147,10 +148,15 @@ public:
   */
  virtual bool IsDualFloor (void) const;
  /**
+  * Indicates if the SIP INVITE SDP offer should include an implicit floor request.
+  * \returns True, if the implicit floor request is included; otherwise, false.
+  */
+ virtual bool IsImplicitRequest (void) const;
+ /**
   * Indicates if the SIP response included an implicit floor request.
   * \returns True, if the implicit floor request was included; otherwise, false.
   */
- virtual bool IsMcImplicitRequest (void) const;
+ virtual bool IsGranted (void) const;
  /**
   * Indicates whether or not this participant is the origninator.
   * \returns True, if this participant is the orignator, or false otherwise.
@@ -333,7 +339,8 @@ private:
  bool m_dualFloor; //!< A flag that to indicate dual floor indication.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  bool m_genMedia;  //!< The flag that indicates if media should be generated.
- bool m_mcImplicitRequest; //!< The flag that indicates if SIP contains implicit floor request.
+ bool m_implicitRequest; //!< The flag that indicates if INVITE contains implicit floor request.
+ bool m_granted; //!< The flag that indicates if implicit request was granted.
  bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
  bool m_overridden; //!< A flag that indicates whether the user is overridden without revoke.
  bool m_overriding; //!< A flag that indicates whether the user is overriding without revoke.

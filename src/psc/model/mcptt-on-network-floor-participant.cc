@@ -80,9 +80,9 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_genMedia),
                    MakeBooleanChecker ())
-     .AddAttribute ("McImplicitRequest", "The flag that indicates if the SIP INVITE includes an implicit Floor Request.",
+     .AddAttribute ("ImplicitRequest", "The flag that indicates if the SIP INVITE includes an implicit Floor Request.",
                    BooleanValue (true),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_mcImplicitRequest),
+                   MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_implicitRequest),
                    MakeBooleanChecker ())
     .AddAttribute ("Priority", "The priority of the floor participant.",
                    UintegerValue (1),
@@ -184,13 +184,15 @@ McpttOnNetworkFloorParticipant::CallInitiated (void)
 }
 
 void
-McpttOnNetworkFloorParticipant::CallEstablished (void)
+McpttOnNetworkFloorParticipant::CallEstablished (bool hasFloor, uint8_t priority)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << hasFloor << +priority);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call established.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call established; floor: " << hasFloor << "; priority: " << +priority);
 
-  m_state->CallEstablished (*this);
+  SetPriority (priority);
+  m_granted = hasFloor;
+  m_state->CallEstablished (*this, hasFloor);
 }
 
 void
@@ -214,21 +216,17 @@ McpttOnNetworkFloorParticipant::CallRelease2 (void)
 void
 McpttOnNetworkFloorParticipant::ChangeState (Ptr<McpttOnNetworkFloorParticipantState>  state)
 {
-  NS_LOG_FUNCTION (this << state);
-
-  McpttEntityId stateId = state->GetInstanceStateId ();
-
-  McpttEntityId currStateId = GetStateId ();
+  NS_LOG_FUNCTION (this << state->GetInstanceStateId ());
 
   uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
-  NS_LOG_LOGIC ("UserId " << userId << " moving from state " << *m_state << " to state " << *state << ".");
-  if (currStateId != stateId)
+  NS_LOG_LOGIC ("UserId " << userId << " moving from state " << m_state->GetName () << " to state " << state->GetName () << ".");
+  if (GetStateId () != state->GetInstanceStateId ())
     {
+      McpttEntityId previousStateId = GetStateId ();
       m_state->Unselected (*this);
       SetState (state);
       state->Selected (*this);
-
-      m_stateChangeTrace (GetOwner ()->GetOwner ()->GetUserId (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetOwner ()->GetUserId (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), previousStateId.GetName (), state->GetName ());
     }
 }
 
@@ -336,9 +334,15 @@ McpttOnNetworkFloorParticipant::IsDualFloor (void) const
 }
 
 bool
-McpttOnNetworkFloorParticipant::IsMcImplicitRequest (void) const
+McpttOnNetworkFloorParticipant::IsImplicitRequest (void) const
 {
-  return m_mcImplicitRequest;
+  return m_implicitRequest;
+}
+
+bool
+McpttOnNetworkFloorParticipant::IsGranted (void) const
+{
+  return m_granted;
 }
 
 bool
@@ -653,7 +657,7 @@ McpttOnNetworkFloorParticipant::PttPush (void)
 
       if (pttApp->IsPushed ())
         {
-          pttApp->PttRelease ();
+          pttApp->NotifyReleased ();
         }
     }
   else
@@ -817,8 +821,6 @@ McpttOnNetworkFloorParticipant::GetC104 (void) const
 Ptr<McpttCall>
 McpttOnNetworkFloorParticipant::GetOwner (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_owner;
 }
 
@@ -945,7 +947,7 @@ McpttOnNetworkFloorParticipant::SetRxCb (const Callback<void, const McpttFloorMs
 void
 McpttOnNetworkFloorParticipant::SetState (Ptr<McpttOnNetworkFloorParticipantState>  state)
 {
-  NS_LOG_FUNCTION (this << state);
+  NS_LOG_FUNCTION (this << state->GetInstanceStateId ());
 
   m_state = state;
 }

@@ -92,6 +92,16 @@ public:
   */
  uint16_t GetCallId (void) const;
  /**
+  * Sets the push on select flag.
+  * \param pushOnSelect true if call should start pusher upon select.
+  */
+ void SetPushOnSelect (bool pushOnSelect);
+ /**
+  * Gets the push on select flag.
+  * \returns true if call should start pusher upon select.
+  */
+ bool GetPushOnSelect (void) const;
+ /**
   * Indicates if the floor channel is open.
   * \returns True, if the channel is open.
   */
@@ -164,6 +174,9 @@ protected:
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
  Ptr<McpttPttApp> m_owner; //!< The owner of this call.
+ bool m_pushOnSelect; //!< Whether to start pusher upon call select
+ Time m_startTime; //!< The call start time.
+ Time m_stopTime; //!< The call stop time.
  Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
  Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
 public:
@@ -192,6 +205,16 @@ public:
   * \returns The owner.
   */
  Ptr<McpttPttApp> GetOwner (void) const;
+ /**
+  * Gets the call start time
+  * \return The call start time.
+  */
+ Time GetStartTime (void) const;
+ /**
+  * Gets the call stop time
+  * \return The call stop time.
+  */
+ Time GetStopTime (void) const;
  /**
   * Sets the call control state machine.
   * \param callMachine The call control state machine.
@@ -227,6 +250,16 @@ public:
   * \param txCb The callback.
   */
  void SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb);
+ /**
+  * Sets the call start time
+  * \param startTime The start time.
+  */
+ void SetStartTime (Time startTime);
+ /**
+  * Sets the call stop time
+  * \param stopTime The stop time.
+  */
+ void SetStopTime (Time stopTime);
 };
 
 } // namespace ns3

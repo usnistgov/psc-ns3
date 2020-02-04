@@ -148,7 +148,7 @@ McpttOffNetworkFloorParticipantState::ReceiveCallRelease (McpttOffNetworkFloorPa
 
   if (appOwner->IsPushed ())
     {
-      appOwner->PttRelease ();
+      appOwner->NotifyReleased ();
     }
 
   floorMachine.StopTimers ();
@@ -598,7 +598,7 @@ McpttOffNetworkFloorParticipantStateNoPerm::Selected (McpttOffNetworkFloorPartic
 
   if (appOwner->IsPushed ())
     {
-      appOwner->PttRelease ();
+      appOwner->NotifyReleased ();
     }
 }
 
@@ -978,7 +978,7 @@ McpttOffNetworkFloorParticipantStateHasPerm::Selected (McpttOffNetworkFloorParti
 
   if (!appOwner->IsPushed ())
     {
-      appOwner->PttPush ();
+      appOwner->NotifyPushed ();
     }
 
   if (floorMachine.ShouldGenMedia ()
@@ -1062,7 +1062,7 @@ McpttOffNetworkFloorParticipantStateHasPerm::Unselected (McpttOffNetworkFloorPar
 
   if (appOwner->IsPushed ())
     {
-      appOwner->PttRelease ();
+      appOwner->NotifyReleased ();
     }
 
   if (mediaSrc->IsMakingReq ())
@@ -2246,7 +2246,7 @@ McpttOffNetworkFloorParticipantStateSilence::Selected (McpttOffNetworkFloorParti
 
   if (appOwner->IsPushed ())
     {
-      appOwner->PttRelease ();
+      appOwner->NotifyReleased ();
     }
 }
 

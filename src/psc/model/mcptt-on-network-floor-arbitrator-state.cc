@@ -60,8 +60,22 @@ McpttOnNetworkFloorArbitratorState::~McpttOnNetworkFloorArbitratorState (void)
 void
 McpttOnNetworkFloorArbitratorState::CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const
 {
-  NS_LOG_FUNCTION (this << machine);
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call initiation."); 
+  NS_LOG_FUNCTION (this << machine << participant);
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " CallInitialized()");
+  if (participant->IsImplicitRequest ())
+    { 
+      NS_LOG_DEBUG ("IsImplicitRequest is true");
+      McpttFloorMsgRequest msg;
+      msg.SetSsrc (participant->GetStoredSsrc ());
+      msg.SetIndicator (machine->GetIndicator ());
+      msg.SetPriority (McpttFloorMsgFieldPriority (participant->GetStoredPriority ()));
+     
+      machine->ReceiveFloorRequest (msg);
+    }
+  else
+    { 
+      NS_LOG_DEBUG ("IsImplicitRequest is false; no action");
+    }
 }
 
 void
@@ -262,31 +276,18 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (Ptr<McpttOnNetwork
     }
   else
     {
-      if (!machine->IsMcGranted ())
+      if (participant->IsImplicitRequest ())
         {
-          NS_LOG_DEBUG ("machine IsMcGranted () is false");
-          if (participant->IsMcImplicitRequest ())
-            {
-              NS_LOG_DEBUG ("IsMcImplicitRequest is true");
-              McpttFloorMsgRequest msg;
-              msg.SetSsrc (participant->GetStoredSsrc ());
-              msg.SetPriority (McpttFloorMsgFieldPriority (participant->GetStoredPriority ()));
-              McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->ReceiveFloorRequest (machine, msg);
-            }
-          else
-            {
-              NS_LOG_DEBUG ("IsMcImplicitRequest is false");
-              McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
-            }
+          NS_LOG_DEBUG ("IsImplicitRequest is true");
+          McpttFloorMsgRequest msg;
+          msg.SetSsrc (participant->GetStoredSsrc ());
+          msg.SetPriority (McpttFloorMsgFieldPriority (participant->GetStoredPriority ()));
+          McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->ReceiveFloorRequest (machine, msg);
         }
       else
         {
-          //TODO: Not in standard - set needed attributes (SSRC, Priority, and Track Info)
-          NS_LOG_DEBUG ("machine IsMcGranted () is true");
-          machine->SetStoredSsrc (participant->GetStoredSsrc ());
-          machine->SetStoredPriority (participant->GetStoredPriority ());
-          machine->SetTrackInfo (participant->GetTrackInfo ());
-          McpttOnNetworkFloorArbitratorStateTaken::GetInstance ()->Enter (machine);
+          NS_LOG_DEBUG ("IsImplicitRequest is false");
+          McpttOnNetworkFloorArbitratorStateIdle::GetInstance ()->Enter (machine);
         }
     }
 }

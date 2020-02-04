@@ -99,9 +99,9 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&McpttOnNetworkFloorArbitrator::m_participants),
                    MakeObjectVectorChecker<McpttOnNetworkFloorTowardsParticipant> ())
-     .AddAttribute ("McGranted", "The flag that indicates if the \"mc_granted\" fmtp attribute was included",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_mcGranted),
+   .AddAttribute ("QueueingSupported", "Whether queueing of floor requests is supported.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_queueingSupported),
                    MakeBooleanChecker ())
    .AddAttribute ("QueueCapacity", "The capacity of the queue.",
                    UintegerValue (0),
@@ -150,6 +150,7 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_c20 (CreateObject<McpttCounter> (McpttEntityId (20, "C20"))),
     m_dualFloorSupported (false),
     m_owner (0),
+    m_queueingSupported (false),
     m_queue (CreateObject<McpttFloorQueue> ()),
     m_rejectCause (0),
     m_rxCb (MakeNullCallback<void, const McpttMsg&> ()),
@@ -197,9 +198,22 @@ void
 McpttOnNetworkFloorArbitrator::CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> participant, bool implicitRequest)
 {
   NS_LOG_FUNCTION (this << participant << implicitRequest);
-  NS_LOG_LOGIC ("Call initialized");
-  participant->CallInitialized (implicitRequest);
-  m_state->CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> (this), participant);
+  if (m_state->GetInstanceStateId () == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ())
+    {
+      NS_LOG_LOGIC ("Call initialized");
+      participant->SetOriginator (true);
+      participant->CallInitialized (implicitRequest);
+      m_state->CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> (this), participant);
+    }
+  else
+    {
+      // If the state machine has already left StartStop state, such as when
+      // a second INVITE is received, still respond to the implicit request.
+      NS_LOG_LOGIC ("Attempt to initialize call but call already in " << m_state->GetInstanceStateId ().GetName ());
+      participant->SetOriginator (false);
+      participant->CallInitialized (implicitRequest);
+      m_state->CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> (this), participant);
+    }
 }
 
 void
@@ -401,9 +415,9 @@ McpttOnNetworkFloorArbitrator::IsFloorOccupied (void) const
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsMcGranted (void) const
+McpttOnNetworkFloorArbitrator::IsQueueingSupported (void) const
 {
-  return m_mcGranted;
+  return m_queueingSupported;
 }
 
 bool

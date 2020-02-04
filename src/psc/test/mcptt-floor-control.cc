@@ -981,7 +981,7 @@ McpttFloorRequestIdle::StateChangeCb (const TestFloorMachine& machine, Ptr<Mcptt
     }
    else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 }
 
@@ -3650,8 +3650,13 @@ McpttFloorReleaseAfterReq::Configure (void)
   ueBMachineQueue->Enqueue (userInfo);
 
   ueAPttAppPusher->NotifyPushed ();
-  ueAPttAppPusher->ScheduleRelease (Seconds (2.041));
-
+  bool success = ueAPttAppPusher->ScheduleRelease (Seconds (2.041));
+  if (!success)
+    {
+      NS_LOG_DEBUG ("release event must first be cancelled");
+      ueAPttAppPusher->CancelRelease ();
+      ueAPttAppPusher->ScheduleRelease (Seconds (2.041));
+    }
   ueBPttAppPusher->NotifyPushed ();
 
   Simulator::Schedule (Seconds (1.9), &McpttTimer::Start, ueAT201);
@@ -4067,7 +4072,12 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
   Simulator::Schedule (Seconds (2.037), &McpttFloorParticipant::ReleaseRequest, ueAMachine);
 
   ueBPttAppPusher->NotifyPushed ();
-  ueBPttAppPusher->ScheduleRelease (Seconds (2.036));
+  bool success = ueBPttAppPusher->ScheduleRelease (Seconds (2.036));
+  if (!success)
+    {
+      ueBPttAppPusher->CancelRelease ();
+      ueBPttAppPusher->ScheduleRelease (Seconds (2.036));
+    }
   ueBPttAppPusher->SetAttribute ("Automatic", BooleanValue (false));
 
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueAT203);
@@ -5124,7 +5134,7 @@ McpttFloorRequestIdleBis::UeAStateChangeCb (const TestFloorMachine& machine, Ptr
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 }
 
@@ -5268,7 +5278,7 @@ McpttFloorRequestIdleBis::UeCStateChangeCb (const TestFloorMachine& machine, Ptr
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C made unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C made unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 }
 
@@ -5667,7 +5677,7 @@ McpttFloorReleasePreemptedFloorArbitrator::UeAStateChangeCb (const TestFloorMach
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A made unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 }
 
@@ -5804,7 +5814,7 @@ McpttFloorReleasePreemptedFloorArbitrator::UeCStateChangeCb (const TestFloorMach
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C made unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C made unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 }
 

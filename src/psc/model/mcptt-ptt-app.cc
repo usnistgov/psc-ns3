@@ -241,6 +241,8 @@ McpttPttApp::AddCall (Ptr<McpttCall> call)
   call->SetOwner (this);
   call->SetRxCb (MakeCallback (&McpttPttApp::RxCb, this));
   call->SetTxCb (MakeCallback (&McpttPttApp::TxCb, this));
+  NS_ABORT_MSG_UNLESS (call->GetStartTime () >= Simulator::Now (), "Call start time in the past");
+  Simulator::Schedule (call->GetStartTime () - Simulator::Now (), &McpttPttApp::SelectCall, this, call->GetCallId (), call->GetPushOnSelect ());
   m_calls.insert (std::pair<uint16_t, Ptr<McpttCall> > (call->GetCallId (), call));
 }
 
@@ -314,8 +316,8 @@ McpttPttApp::InitiateCall (void)
   
   if (call != 0)
     {
-      callMachine = call->GetCallMachine ();
-      callMachine->InitiateCall ();
+      call->GetFloorMachine ()->SetOriginator (true);
+      call->GetCallMachine ()->InitiateCall ();
     }
 }
 
@@ -327,7 +329,11 @@ McpttPttApp::SessionInitiateRequest (void)
   if (call)
     {
       NS_LOG_DEBUG ("Starting pusher on call ID " << call->GetCallId ());
-      m_pusher->Start ();
+      call->GetFloorMachine ()->SetOriginator (false);
+      if (!m_pusher->IsPushing ())
+        {
+          m_pusher->Start ();
+        }
     }
   else
     {
@@ -343,10 +349,14 @@ McpttPttApp::IsPushed (void) const
 }
 
 void
-McpttPttApp::PttPush (void)
+McpttPttApp::NotifyPushed (void)
 {
   NS_LOG_FUNCTION (this);
-  m_pusher->NotifyPushed ();
+  if (!m_pusher->IsPushing ())
+    {
+      NS_LOG_LOGIC ("PttApp button pushed.");
+      m_pusher->NotifyPushed ();
+    }
 }
 
 void
@@ -419,7 +429,7 @@ McpttPttApp::ReleaseRequest (void)
 }
 
 void
-McpttPttApp::PttRelease (void)
+McpttPttApp::NotifyReleased (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_pusher->IsPushing ())
@@ -443,7 +453,7 @@ McpttPttApp::Receive (const McpttCallMsg& msg)
 void
 McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
 {
-  NS_LOG_FUNCTION (this << callId);
+  NS_LOG_FUNCTION (this << callId << pushOnSelect);
 
   uint16_t oldCallId = 0;
   uint16_t newCallId = 0;
@@ -453,6 +463,12 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
   Ptr<McpttCallMachine> newCallMachine = 0;
   Ptr<McpttFloorParticipant> newFloorMachine = 0;
   Ptr<McpttCall> oldCall = GetSelectedCall ();
+
+  if (oldCall && (callId == oldCall->GetCallId ()))
+    {
+      NS_LOG_DEBUG ("Trying to select existing selected call; take no action");
+      return;
+    }
 
   if (oldCall != 0)
     {
@@ -551,12 +567,6 @@ McpttPttApp::TakePushNotification (void)
     {
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
-
-      if (!m_pusher->IsPushing ())
-        {
-          NS_LOG_LOGIC ("PttApp button pushed.");
-          m_pusher->NotifyPushed ();
-        }
       if (callMachine->IsCallOngoing ())
         {
           // Request for floor if needed
@@ -588,11 +598,6 @@ McpttPttApp::TakeReleaseNotification (void)
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
 
-      if (m_pusher->IsPushing ())
-        {
-          NS_LOG_LOGIC ("PttApp button released.");
-          m_pusher->NotifyReleased ();
-        }
       floorMachine->PttRelease ();
 
       //Broadcast calls should be released when the originator is done talking.
@@ -918,6 +923,7 @@ McpttPttApp::StopApplication (void)
 
   callChan->SetRxPktCb (MakeNullCallback<void, Ptr<Packet> > ());
   m_isRunning = false;
+  m_selectedCall = 0;
 }
 
 void

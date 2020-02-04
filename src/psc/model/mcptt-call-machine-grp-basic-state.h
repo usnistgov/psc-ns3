@@ -72,7 +72,7 @@ class McpttCallMachineGrpBasic;
  *    waiting for a response and is expcted to send confirm notification
  *
  * S6: ignoring incoming call announcements
- *  - This state exists for UE, when the gropu call was rejected or released,
+ *  - This state exists for UE, when the group call was rejected or released,
  *    "GROUP CALL ANNOUNCEMENT" message was sent or received and "GROUP CALL
  *    ANNOUNCEMENT" messages continue being received
  *

@@ -69,14 +69,6 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
                    MakeUintegerAccessor (&McpttOnNetworkFloorTowardsParticipant::GetFloorPort,
                                          &McpttOnNetworkFloorTowardsParticipant::SetFloorPort),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("McImplicitRequest", "Indicates if the SDP offer included the \"mc_implicit_request\" fmtp attribute",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_mcImplicitRequest),
-                   MakeBooleanChecker ())
-    .AddAttribute ("McQueuing", "Indicates if the SDP offer included the \"mc_queuing\" fmtp attribute",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttOnNetworkFloorTowardsParticipant::m_mcQueuing),
-                   MakeBooleanChecker ())
     .AddAttribute ("MediaPort", "The port to use for media messages.",
                    UintegerValue (49151),
                    MakeUintegerAccessor (&McpttOnNetworkFloorTowardsParticipant::GetMediaPort,
@@ -113,8 +105,7 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
   : Object (),
     m_dualFloor (false),
     m_floorChan (CreateObject<McpttChan> ()),
-    m_mcImplicitRequest (false),
-    m_mcQueuing (false),
+    m_implicitRequest (false),
     m_mediaChan (CreateObject<McpttChan> ()),
     m_originator (false),
     m_overridden (false),
@@ -145,7 +136,7 @@ McpttOnNetworkFloorTowardsParticipant::CallInitialized (bool implicitRequest)
 {
   NS_LOG_FUNCTION (this << implicitRequest);
   NS_LOG_LOGIC ("Taking call initiated notification towards participant " << GetPeerUserId ());
-  m_mcImplicitRequest = implicitRequest;
+  m_implicitRequest = implicitRequest;
   m_state->CallInitialized (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
 
@@ -238,15 +229,15 @@ McpttOnNetworkFloorTowardsParticipant::IsDualFloor (void) const
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsMcImplicitRequest (void) const
+McpttOnNetworkFloorTowardsParticipant::IsImplicitRequest (void) const
 {
-  return m_mcImplicitRequest;
+  return m_implicitRequest;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsMcQueuing (void) const
+McpttOnNetworkFloorTowardsParticipant::IsQueueing (void) const
 {
-  return m_mcQueuing;
+  return m_owner->IsQueueingSupported ();
 }
 
 bool

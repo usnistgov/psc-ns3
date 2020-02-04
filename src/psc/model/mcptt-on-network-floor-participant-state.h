@@ -106,8 +106,9 @@ public:
  /**
   * Notifies the floor machine state that the call was established.
   * \param machine The FSM.
+  * \param hasFloor whether the floor machine has the floor
   */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const;
  /**
   * Notifies the floor machine state that the call was released (part I).
   * \param machine The FSM.
@@ -219,7 +220,7 @@ public:
   */
  virtual void ReleaseRequest (McpttOnNetworkFloorParticipant& machine) const;
  /**
-  * Notifies the machine state that it has been selected.
+  * Take actions (if any) to enter the new state, upon a state transition.
   * \param machine The FSM.
   */
  virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
@@ -234,10 +235,16 @@ public:
   */
  virtual void PttRelease (McpttOnNetworkFloorParticipant& machine) const;
  /**
-  * Notifies the machine state that it has been unselected.
+  * Take actions (if any) to leave the current state, upon a state transition.
   * \param machine The FSM.
   */
  virtual void Unselected (McpttOnNetworkFloorParticipant& machine) const;
+ /**
+  * Syntactic sugar for printing the name (equivalent to
+  * GetInstanceStateId ().GetName ())
+  * \returns The name of the state.
+  */
+ virtual std::string GetName (void) const;
 protected:
  /**
   * Creates an instance of the McpttOnNetworkFloorParticipantState class.
@@ -294,8 +301,9 @@ public:
  /**
   * Notifies the floor machine state that the call was established.
   * \param machine The FSM.
+  * \param hasFloor whether the floor machine has the floor
   */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const;
  /**
   * Receives a floor ack message.
   * \param machine The FSM.
@@ -452,8 +460,9 @@ public:
  /**
   * Notifies the floor machine state that the call was established.
   * \param machine The FSM.
+  * \param hasFloor whether the floor machine has the floor
   */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const;
  /**
   * Receives a floor granted message.
   * \param machine The FSM.

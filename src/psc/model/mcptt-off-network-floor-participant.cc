@@ -878,7 +878,7 @@ McpttOffNetworkFloorParticipant::PttPush (void)
 
       if (pttApp->IsPushed ())
         {
-          pttApp->PttRelease ();
+          pttApp->NotifyReleased ();
         }
     }
   else

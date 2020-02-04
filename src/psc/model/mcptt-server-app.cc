@@ -120,7 +120,8 @@ void
 McpttServerApp::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-
+  m_calls.clear ();
+  m_callChan = 0;
   Object::DoDispose ();
 }
 

@@ -77,6 +77,9 @@ McpttCall::McpttCall (void)
     m_floorChan (0),
     m_mediaChan (0),
     m_owner (0),
+    m_pushOnSelect (false),
+    m_startTime (Seconds (0)),
+    m_stopTime (Seconds (0)),
     m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ()),
     m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ())
 {
@@ -131,6 +134,18 @@ McpttCall::GetCallId (void) const
     {
       return 0;
     }
+}
+
+bool
+McpttCall::GetPushOnSelect (void) const
+{
+  return m_pushOnSelect;
+}
+
+void
+McpttCall::SetPushOnSelect (bool pushOnSelect)
+{
+  m_pushOnSelect = pushOnSelect;
 }
 
 bool
@@ -415,6 +430,18 @@ McpttCall::GetOwner (void) const
   return m_owner;
 }
 
+Time
+McpttCall::GetStartTime (void) const
+{
+  return m_startTime;
+}
+
+Time
+McpttCall::GetStopTime (void) const
+{
+  return m_stopTime;
+}
+
 void
 McpttCall::SetCallMachine (Ptr<McpttCallMachine>  callMachine)
 {
@@ -489,6 +516,20 @@ McpttCall::SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&> 
   NS_LOG_FUNCTION (this << &txCb);
 
   m_txCb = txCb;
+}
+
+void
+McpttCall::SetStartTime (Time startTime)
+{
+  NS_LOG_FUNCTION (this << startTime);
+  m_startTime = startTime;
+}
+
+void
+McpttCall::SetStopTime (Time stopTime)
+{
+  NS_LOG_FUNCTION (this << stopTime);
+  m_stopTime = stopTime;
 }
 
 } // namespace ns3

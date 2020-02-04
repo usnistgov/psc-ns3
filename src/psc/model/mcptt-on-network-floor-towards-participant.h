@@ -116,15 +116,17 @@ public:
   */
  virtual bool IsDualFloor (void) const;
  /**
-  * Indicates if the SDP response included the "mc_implicit_request" fmtp attribute .
+  * Indicates if the SDP offer included the "mc_implicit_request" fmtp attribute.
   * \returns True, if the attribute was included; otherwise, false.
   */
- virtual bool IsMcImplicitRequest (void) const;
+ virtual bool IsImplicitRequest (void) const;
  /**
-  * Indicates if the SDP response included the "mc_queuing" fmtp attribute .
-  * \returns True, if the attribute was included; otherwise, false.
+  * Indicates if the floor arbitrator supports queueing of floor control requests.
+  * Whether the SDP offer included the "mc_queueing" fmtp attribute is not considered
+  * by the current model; it is assumed to be supported by participants.
+  * \returns True, if the queueing is supported; otherwise, false.
   */
- virtual bool IsMcQueuing (void) const;
+ virtual bool IsQueueing (void) const;
  /**
   * Indicates whether or not the associated floor participant is the originator.
   * \returns True, if the associated participant is the originator.
@@ -255,8 +257,8 @@ private:
  bool m_dualFloor; //!< The flag that indicates if the associated participant is listenting to two sources.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
  uint16_t m_floorPort; //!< The port to use for the floor control channel.
- bool m_mcImplicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
- bool m_mcQueuing; //!< The flag that indicates if SDP offer contains the "mc_queueing" fmtp attribute.
+ bool m_implicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
+ bool m_queueing; //!< The flag that indicates if SDP offer contains the "mc_queueing" fmtp attribute.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
  uint16_t m_mediaPort; //!< The port to use for media messages.
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.

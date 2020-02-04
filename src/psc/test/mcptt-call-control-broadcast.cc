@@ -584,7 +584,7 @@ BroadcastCallScenario1::UeAStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), true, "UE A TFB1 is not running.");
@@ -682,7 +682,7 @@ BroadcastCallScenario1::UeBStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb2->IsRunning (), false, "UE B TFB2 is not running.");
@@ -741,7 +741,7 @@ BroadcastCallScenario1::UeCStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), true, "UE C TFB1 is not running.");
@@ -845,7 +845,7 @@ BroadcastCallScenario2::UeAStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), true, "UE A TFB1 is not running.");
@@ -952,7 +952,7 @@ BroadcastCallScenario2::UeBStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb2->IsRunning (), false, "UE B TFB2 is not running.");
@@ -1011,7 +1011,7 @@ BroadcastCallScenario2::UeCStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), true, "UE C TFB1 is not running.");
@@ -1168,7 +1168,7 @@ BroadcastCallScenario3::UeAStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), false, "UE A TFB1 is running.");
@@ -1257,7 +1257,7 @@ BroadcastCallScenario3::UeBStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), false, "UE B TFB1 is running.");
@@ -1321,7 +1321,7 @@ BroadcastCallScenario3::UeCStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), false, "UE C TFB1 is running.");
@@ -1525,7 +1525,7 @@ BroadcastCallScenario4::UeAStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), false, "UE A TFB1 is running.");
@@ -1648,7 +1648,7 @@ BroadcastCallScenario4::UeBStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb2->IsRunning (), false, "UE B TFB2 is running.");
@@ -1729,7 +1729,7 @@ BroadcastCallScenario4::UeCStateChangeCb (const BroadcastTestCallMachine& machin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfb1->IsRunning (), false, "UE C TFB1 is running.");

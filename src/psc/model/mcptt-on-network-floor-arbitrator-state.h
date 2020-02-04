@@ -54,7 +54,7 @@ class McpttOnNetworkFloorTowardsParticipant;
  *
  * 'Start-stop'
  *  - The floor control server is in this state when a new instance of the
- *    'general floor control operation' state machine has been intitated, or
+ *    'general floor control operation' state machine has been initiated, or
  *    when a call has been released.
  *
  * 'G: Floor Idle'

@@ -752,7 +752,7 @@ PrivateCallSetupAuto1::UeAStateChangeCb (const PrivateTestCallMachine& machine, 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp2->IsRunning (), false, "UE A timer " << *tfp2 << " is running.");
@@ -978,7 +978,7 @@ PrivateCallSetupAuto1::UeBStateChangeCb (const PrivateTestCallMachine& machine, 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -1158,7 +1158,7 @@ PrivateCallSetupAuto3::UeAStateChangeCb (const PrivateTestCallMachine& machine, 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), true, "UE A timer " << *tfp1 << " is not running.");
@@ -1402,7 +1402,7 @@ PrivateCallSetupAuto3::UeBStateChangeCb (const PrivateTestCallMachine& machine, 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -1599,7 +1599,7 @@ PrivateCallSetupManual1::UeAStateChangeCb (const PrivateTestCallMachine& machine
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp2->IsRunning (), false, "UE A timer " << *tfp2 << " is running.");
@@ -1843,7 +1843,7 @@ PrivateCallSetupManual1::UeBStateChangeCb (const PrivateTestCallMachine& machine
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -2041,7 +2041,7 @@ PrivateCallSetupManual3::UeAStateChangeCb (const PrivateTestCallMachine& machine
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), true, "UE A timer " << *tfp1 << " is not running.");
@@ -2307,7 +2307,7 @@ PrivateCallSetupManual3::UeBStateChangeCb (const PrivateTestCallMachine& machine
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -2478,7 +2478,7 @@ PrivateCallSetupFailure::UeAStateChangeCb (const PrivateTestCallMachine& machine
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp2->IsRunning (), false, "UE A timer " << *tfp2 << " is running.");
@@ -2659,7 +2659,7 @@ PrivateCallSetupFailure::UeBStateChangeCb (const PrivateTestCallMachine& machine
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -2893,7 +2893,7 @@ PrivateCallCancel1::UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -3074,7 +3074,7 @@ PrivateCallCancel1::UeBStateChangeCb (const PrivateTestCallMachine& machine, Ptr
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -3268,7 +3268,7 @@ PrivateCallCancel2::UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE A timer " << *tfp1 << " is running.");
@@ -3356,7 +3356,7 @@ PrivateCallCancel2::UeBTxCb (const PrivateTestCallMachine& machine, const McpttC
 void
 PrivateCallCancel2::UeBStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
 }
 
 PrivateCallExpiration::PrivateCallExpiration (const std::string& name, Ptr<McpttTestCaseConfig>  config)
@@ -3635,7 +3635,7 @@ PrivateCallExpiration::UeAStateChangeCb (const PrivateTestCallMachine& machine, 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp2->IsRunning (), false, "UE A timer " << *tfp2 << " is running.");
@@ -3878,7 +3878,7 @@ PrivateCallExpiration::UeBStateChangeCb (const PrivateTestCallMachine& machine, 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state tranition from " << *oldState << " to " << *newState << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected state transition from " << *oldState << " to " << *newState << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfp1->IsRunning (), false, "UE B timer " << *tfp1 << " is running.");

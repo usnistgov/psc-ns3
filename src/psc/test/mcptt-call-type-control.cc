@@ -893,7 +893,7 @@ McpttCallTypeInitEstabNewCall::UeAStateChangeCb (const TestCallTypeMachine& mach
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -1174,7 +1174,7 @@ McpttCallTypeInitJoinEmergCall::UeAStateChangeCb (const TestCallTypeMachine& mac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -1462,7 +1462,7 @@ McpttCallTypeInitJoinImmPerilCall::UeAStateChangeCb (const TestCallTypeMachine& 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -1743,7 +1743,7 @@ McpttCallTypeInitJoinBasicCall::UeAStateChangeCb (const TestCallTypeMachine& mac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -2029,7 +2029,7 @@ McpttCallTypeInitJoinEmergCallUserAck::UeAStateChangeCb (const TestCallTypeMachi
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -2322,7 +2322,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::UeAStateChangeCb (const TestCallTypeMac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -2606,7 +2606,7 @@ McpttCallTypeUpgradeFromBasicCall::UeAStateChangeCb (const TestCallTypeMachine& 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -2711,7 +2711,7 @@ McpttCallTypeUpgradeFromBasicCall::UeBStateChangeCb (const TestCallTypeMachine& 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE B timer " << tfg11->GetId () << " is running.");
@@ -2786,7 +2786,7 @@ McpttCallTypeUpgradeFromBasicCall::UeCStateChangeCb (const TestCallTypeMachine& 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE C timer " << tfg11->GetId () << " is running.");
@@ -3019,7 +3019,7 @@ McpttCallTypeUpgradeFromImmPerilCall::UeAStateChangeCb (const TestCallTypeMachin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -3128,7 +3128,7 @@ McpttCallTypeUpgradeFromImmPerilCall::UeBStateChangeCb (const TestCallTypeMachin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE B timer " << tfg11->GetId () << " is running.");
@@ -3206,7 +3206,7 @@ McpttCallTypeUpgradeFromImmPerilCall::UeCStateChangeCb (const TestCallTypeMachin
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE C timer " << tfg11->GetId () << " is running.");
@@ -3439,7 +3439,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::UeAStateChangeCb (const TestCallTypeMac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), true, "UE A timer " << tfg11->GetId () << " is not running.");
@@ -3548,7 +3548,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::UeBStateChangeCb (const TestCallTypeMac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE B timer " << tfg11->GetId () << " is running.");
@@ -3626,7 +3626,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::UeCStateChangeCb (const TestCallTypeMac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE C timer " << tfg11->GetId () << " is running.");
@@ -3859,7 +3859,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::UeAStateChangeCb (const TestCallType
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -3968,7 +3968,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::UeBStateChangeCb (const TestCallType
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE B timer " << tfg11->GetId () << " is running.");
@@ -4046,7 +4046,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::UeCStateChangeCb (const TestCallType
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE C timer " << tfg11->GetId () << " is running.");
@@ -4295,7 +4295,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::UeAStateChangeCb (const TestCallTypeMac
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -4333,7 +4333,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::UeBTxCb (const TestCallTypeMachine& mac
 void
 McpttCallTypeImplicitDowngradeFromEmerg::UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 void
@@ -4357,7 +4357,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::UeCTxCb (const TestCallTypeMachine& mac
 void
 McpttCallTypeImplicitDowngradeFromEmerg::UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 McpttCallTypeImplicitDowngradeFromImmPeril::McpttCallTypeImplicitDowngradeFromImmPeril (const std::string& name, Ptr<McpttTestCaseConfig>  config)
@@ -4599,7 +4599,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::UeAStateChangeCb (const TestCallType
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -4637,7 +4637,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::UeBTxCb (const TestCallTypeMachine& 
 void
 McpttCallTypeImplicitDowngradeFromImmPeril::UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 void
@@ -4661,7 +4661,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::UeCTxCb (const TestCallTypeMachine& 
 void
 McpttCallTypeImplicitDowngradeFromImmPeril::UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 McpttCallTypeReleaseAfterCallEstab::McpttCallTypeReleaseAfterCallEstab (const std::string& name, Ptr<McpttTestCaseConfig>  config)
@@ -4869,7 +4869,7 @@ McpttCallTypeReleaseAfterCallEstab::UeAStateChangeCb (const TestCallTypeMachine&
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -4907,7 +4907,7 @@ McpttCallTypeReleaseAfterCallEstab::UeBTxCb (const TestCallTypeMachine& machine,
 void
 McpttCallTypeReleaseAfterCallEstab::UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 void
@@ -4931,7 +4931,7 @@ McpttCallTypeReleaseAfterCallEstab::UeCTxCb (const TestCallTypeMachine& machine,
 void
 McpttCallTypeReleaseAfterCallEstab::UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 McpttCallTypeMerge::McpttCallTypeMerge (const std::string& name, Ptr<McpttTestCaseConfig>  config)
@@ -5169,7 +5169,7 @@ McpttCallTypeMerge::UeAStateChangeCb (const TestCallTypeMachine& machine, const 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE A state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -5252,7 +5252,7 @@ McpttCallTypeMerge::UeBStateChangeCb (const TestCallTypeMachine& machine, const 
     }
   else
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg11->IsRunning (), false, "UE A timer " << tfg11->GetId () << " is running.");
@@ -5284,7 +5284,7 @@ McpttCallTypeMerge::UeCTxCb (const TestCallTypeMachine& machine, const McpttCall
 void
 McpttCallTypeMerge::UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId)
 {
-  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state tranition from " << oldStateId << " to " << newStateId << ".");
+  NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
 
