@@ -43,6 +43,7 @@
 
 namespace ns3 {
 
+class McpttServerApp;
 /**
  * \ingroup psc
  * \brief A helper for creating, configuring, and installing MCPTT apps.
