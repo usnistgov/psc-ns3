@@ -74,6 +74,7 @@ McpttTraceHelper::EnableMsgTraces (void)
 void
 McpttTraceHelper::EnableStateMachineTraces (void)
 {
+  NS_LOG_FUNCTION (this);
   if (m_stateMachineTracer == 0)
     {
       m_stateMachineTracer = CreateObject<McpttStateMachineStats> ();
@@ -91,6 +92,7 @@ McpttTraceHelper::EnableStateMachineTraces (void)
 void
 McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg)
 {
+  NS_LOG_FUNCTION (this << app << callId << msg);
   if (msg.IsA (McpttMediaMsg::GetTypeId ()))
     {
       std::pair<uint32_t, uint16_t> key = std::make_pair (app->GetNode ()->GetId (), callId);
@@ -121,6 +123,7 @@ McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callI
 void
 McpttTraceHelper::EnableMouthToEarLatencyTrace (std::string filename)
 {
+  NS_LOG_FUNCTION (this << filename);
   m_mouthToEarLatencyTraceFile.open (filename.c_str ());
   m_mouthToEarLatencyTraceFile << "time(ms) nodeid\tcallid\tlatency(ms)" << std::endl;
   Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/RxTrace", MakeCallback (&McpttTraceHelper::TraceMcpttMediaMsg, this));
