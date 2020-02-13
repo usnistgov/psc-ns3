@@ -592,7 +592,7 @@ McpttCallMsgFieldSdp::Deserialize (Buffer::Iterator& buff)
       bytesRead += 1;
     }
 
-  std::string strRep = std::string (characters);
+  std::string strRep = std::string (characters, length);
 
   FromStr (strRep);
 
