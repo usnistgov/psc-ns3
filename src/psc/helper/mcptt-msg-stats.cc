@@ -53,8 +53,6 @@ NS_OBJECT_ENSURE_REGISTERED (McpttMsgStats);
 TypeId
 McpttMsgStats::GetTypeId (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   static TypeId tid = TypeId ("ns3::McpttMsgStats")
     .SetParent<Object> ()
     .AddConstructor<McpttMsgStats> ()
@@ -84,13 +82,11 @@ McpttMsgStats::GetTypeId (void)
                    MakeStringAccessor (&McpttMsgStats::m_outputFileName),
                    MakeStringChecker ())
     ;
-
   return tid;
 }
 
 McpttMsgStats::McpttMsgStats (void)
-  : Object (),
-    m_firstMsg (true)
+  : m_firstMsg (true)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -98,14 +94,10 @@ McpttMsgStats::McpttMsgStats (void)
 McpttMsgStats::~McpttMsgStats (void)
 {
   NS_LOG_FUNCTION (this);
-}
-
-TypeId
-McpttMsgStats::GetInstanceTypeId (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  return McpttMsgStats::GetTypeId ();
+  if (m_outputFile.is_open ())
+    {
+      m_outputFile.close ();
+    }
 }
 
 void
@@ -134,52 +126,46 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const McpttMs
       || (msg.IsA (McpttMediaMsg::GetTypeId ()) && m_media == true))
     {
 
-      std::ofstream outFile;
       if (m_firstMsg == true)
         {
           m_firstMsg = false;
-          outFile.open (m_outputFileName.c_str ());
-          outFile << "time(ms) nodeid\tcallid\tssrc\trx/tx\tbytes\tmessage";
-          outFile << std::endl;
-        }
-      else
-        {
-          outFile.open (m_outputFileName.c_str (),  std::ios_base::app);
+          m_outputFile.open (m_outputFileName.c_str ());
+          m_outputFile << "time(ms) nodeid\tcallid\tssrc\trx/tx\tbytes\tmessage";
+          m_outputFile << std::endl;
         }
 
-      outFile << Simulator::Now ().GetMilliSeconds ();
-      outFile << "\t" << app->GetNode ()->GetId ();
-      outFile << "\t" << callId;
+      m_outputFile << Simulator::Now ().GetMilliSeconds ();
+      m_outputFile << "\t" << app->GetNode ()->GetId ();
+      m_outputFile << "\t" << callId;
 
       if (msg.IsA (McpttMediaMsg::GetTypeId ()))
         {
-          outFile << "\t" << static_cast<const McpttMediaMsg&> (msg).GetSsrc ();
+          m_outputFile << "\t" << static_cast<const McpttMediaMsg&> (msg).GetSsrc ();
         }
       else if (msg.IsA (McpttFloorMsg::GetTypeId ()))
         {
-          outFile << "\t" << static_cast<const McpttFloorMsg&> (msg).GetSsrc ();
+          m_outputFile << "\t" << static_cast<const McpttFloorMsg&> (msg).GetSsrc ();
         }
       else
         {
-          outFile << "\t" << "N/A";  // not applicable
+          m_outputFile << "\t" << "N/A";  // not applicable
         }
 
-      outFile << "\t" << (rx ? "RX" : "TX");
-      outFile << "\t" << msg.GetSerializedSize ();
+      m_outputFile << "\t" << (rx ? "RX" : "TX");
+      m_outputFile << "\t" << msg.GetSerializedSize ();
 
       if (m_includeMsgContent)
         {
-          outFile << "\t";
-          msg.Print (outFile);
+          m_outputFile << "\t";
+          msg.Print (m_outputFile);
         }
       else
         {
-          outFile << "\t" << msg.GetInstanceTypeId ();
+          m_outputFile << "\t" << msg.GetInstanceTypeId ();
         }
 
-      outFile << std::endl;
+      m_outputFile << std::endl;
 
-      outFile.close ();
     }
 }
 

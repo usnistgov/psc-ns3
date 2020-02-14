@@ -78,6 +78,10 @@ McpttStateMachineStats::McpttStateMachineStats (void)
 McpttStateMachineStats::~McpttStateMachineStats (void)
 {
   NS_LOG_FUNCTION (this);
+  if (m_outputFile.is_open ())
+    {
+      m_outputFile.close ();
+    }
 }
 
 TypeId
@@ -92,32 +96,26 @@ void
 McpttStateMachineStats::StateChangeCb (uint32_t userId, uint32_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
 {
   NS_LOG_FUNCTION (this << userId << callId << typeId << oldStateName << newStateName);
-  std::ofstream outFile;
   if (m_firstCb == true)
     {
       m_firstCb = false;
-      outFile.open (m_outputFileName.c_str ());
-      outFile << "#";
-      outFile << std::setw (9) << "time(s)";
-      outFile << std::setw (7) << "userid";
-      outFile << std::setw (7) << "callid";
-      outFile << std::setw (38) << "typeid";
-      outFile << std::setw (36) << "oldstate";
-      outFile << std::setw (36) << "newstate";
-      outFile << std::endl;
+      m_outputFile.open (m_outputFileName.c_str ());
+      m_outputFile << "#";
+      m_outputFile << std::setw (9) << "time(s)";
+      m_outputFile << std::setw (7) << "userid";
+      m_outputFile << std::setw (7) << "callid";
+      m_outputFile << std::setw (38) << "typeid";
+      m_outputFile << std::setw (36) << "oldstate";
+      m_outputFile << std::setw (36) << "newstate";
+      m_outputFile << std::endl;
     }
-  else
-    {
-      outFile.open (m_outputFileName.c_str (), std::ios_base::app);
-    }
-  outFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-  outFile << std::setw (6) << userId;
-  outFile << std::setw (6) << callId;
-  outFile << std::setw (40) << typeId.substr (5); // trim leading 'ns3::'
-  outFile << std::setw (36) << oldStateName;
-  outFile << std::setw (36)  << newStateName;
-  outFile << std::endl;
-  outFile.close ();
+  m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+  m_outputFile << std::setw (6) << userId;
+  m_outputFile << std::setw (6) << callId;
+  m_outputFile << std::setw (40) << typeId.substr (5); // trim leading 'ns3::'
+  m_outputFile << std::setw (36) << oldStateName;
+  m_outputFile << std::setw (36)  << newStateName;
+  m_outputFile << std::endl;
 }
 
 } // namespace ns3

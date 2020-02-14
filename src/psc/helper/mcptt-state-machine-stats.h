@@ -32,6 +32,7 @@
 #ifndef MCPTT_STATE_MACHINE_STATS_H
 #define MCPTT_STATE_MACHINE_STATS_H
 
+#include <fstream>
 #include <ns3/object.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
@@ -77,6 +78,7 @@ public:
 private:
  bool m_firstCb; //!< Flag that indicates if the callback has been fired yet.
  std::string m_outputFileName; //!< The file name of the trace file.
+ std::ofstream m_outputFile;  //!< The file stream object of trace file
 };
 
 } // namespace ns3

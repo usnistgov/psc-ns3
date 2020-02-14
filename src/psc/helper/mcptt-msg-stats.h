@@ -32,6 +32,7 @@
 #ifndef MCPTT_MSG_STATS_H
 #define MCPTT_MSG_STATS_H
 
+#include <fstream>
 #include <ns3/object.h>
 #include <ns3/mcptt-msg.h>
 #include <ns3/mcptt-ptt-app.h>
@@ -60,11 +61,6 @@ public:
   * \brief The destructor of the McpttMsgStats class.
   */
  virtual ~McpttMsgStats (void);
- /**
-  * Gets the type ID of this  instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
  /**
   * The sink function for tracing the received messages.
   * \param app The app.
@@ -95,6 +91,7 @@ private:
  bool m_includeMsgContent; //!< The flag that indicates if the message contents should be included.
  bool m_media; //!< The flag that indicates if media messages should be included.
  std::string m_outputFileName; //!< The file name of the trace file.
+ std::ofstream m_outputFile;  //!< The file stream object of trace file
 };
 
 } // namespace ns3
