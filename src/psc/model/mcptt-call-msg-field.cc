@@ -1697,6 +1697,8 @@ McpttCallMsgFieldStartTime::Deserialize (Buffer::Iterator& buff)
 
   uint32_t seconds = buff.ReadNtohU32 ();
   bytesRead += 4;
+  buff.ReadU8 (); // dummy byte
+  bytesRead ++;
 
   SetTime (MilliSeconds (seconds));
 
@@ -1738,6 +1740,7 @@ McpttCallMsgFieldStartTime::Serialize (Buffer::Iterator& buff) const
   uint32_t seconds = (uint32_t)t.GetMilliSeconds ();
 
   buff.WriteHtonU32 (seconds);
+  buff.WriteU8 (0); // Extra dummy byte
 }
 
 Time
@@ -1794,6 +1797,8 @@ McpttCallMsgFieldLastChgTime::Deserialize (Buffer::Iterator& buff)
 
   uint32_t seconds = buff.ReadNtohU32 ();
   bytesRead += 4;
+  buff.ReadU8 (); // dummy byte
+  bytesRead ++;
 
   SetTime (MilliSeconds (seconds));
 
@@ -1835,6 +1840,7 @@ McpttCallMsgFieldLastChgTime::Serialize (Buffer::Iterator& buff) const
   uint32_t seconds = (uint32_t)t.GetMilliSeconds ();
 
   buff.WriteHtonU32 (seconds);
+  buff.WriteU8 (0); // Extra dummy byte
 }
 
 Time
