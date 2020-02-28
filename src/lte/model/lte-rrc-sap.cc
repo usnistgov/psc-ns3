@@ -47,4 +47,575 @@ LteRrcSap::ReportConfigEutra::ReportConfigEutra ()
 }
 
 
+uint32_t
+LteRrcSap::GetScSpacingValue (const LteRrcSap::SubcarrierSpacing &scspacingAsEnum)
+{
+  uint32_t spsInt = 0;
+  switch (scspacingAsEnum.spacing)
+  {
+    case SubcarrierSpacing::kHZ15:
+      spsInt = 15000;
+      break;
+    case SubcarrierSpacing::kHZ30:
+      spsInt = 30000;
+      break;
+    case SubcarrierSpacing::kHZ60:
+      spsInt = 60000;
+      break;
+    case SubcarrierSpacing::kHZ120:
+      spsInt = 120000;
+      break;
+    case SubcarrierSpacing::kHZ240:
+      spsInt = 240000;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << scspacingAsEnum.spacing << " used for Subcarrier spacing");
+  }
+
+  return spsInt;
+}
+
+LteRrcSap::SubcarrierSpacing
+LteRrcSap::GetScSpacingEnum (uint32_t scspacingAsInt)
+{
+  SubcarrierSpacing spsEnum;
+  switch (scspacingAsInt)
+  {
+    case 15000:
+      spsEnum.spacing = SubcarrierSpacing::kHZ15;
+      break;
+    case 30000:
+      spsEnum.spacing = SubcarrierSpacing::kHZ30;
+      break;
+    case 60000:
+      spsEnum.spacing = SubcarrierSpacing::kHZ60;
+      break;
+    case 120000:
+      spsEnum.spacing = SubcarrierSpacing::kHZ120;
+      break;
+    case 240000:
+      spsEnum.spacing = SubcarrierSpacing::kHZ240;
+      break;
+    default:
+      NS_FATAL_ERROR ("Subcarrier spacing not supported " << scspacingAsInt);
+  }
+
+  return spsEnum;
+}
+
+uint16_t
+LteRrcSap::GetSlLengthSymbolsValue (const LteRrcSap::SlLengthSymbols &slLengthSymsAsEnum)
+{
+  uint16_t slLenInt = 0;
+  switch (slLengthSymsAsEnum.symbols)
+  {
+    case SlLengthSymbols::SYM7:
+      slLenInt = 7;
+      break;
+    case SlLengthSymbols::SYM8:
+      slLenInt = 8;
+      break;
+    case SlLengthSymbols::SYM9:
+      slLenInt = 9;
+      break;
+    case SlLengthSymbols::SYM10:
+      slLenInt = 10;
+      break;
+    case SlLengthSymbols::SYM11:
+      slLenInt = 11;
+      break;
+    case SlLengthSymbols::SYM12:
+      slLenInt = 12;
+      break;
+    case SlLengthSymbols::SYM13:
+      slLenInt = 13;
+      break;
+    case SlLengthSymbols::SYM14:
+      slLenInt = 14;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slLengthSymsAsEnum.symbols << " used for SL Symbol allocation");
+  }
+
+  return slLenInt;
+}
+
+LteRrcSap::SlLengthSymbols
+LteRrcSap::GetSlLengthSymbolsEnum (uint16_t slLengthSymsAsInt)
+{
+  SlLengthSymbols slLenSymEnum;
+  switch (slLengthSymsAsInt)
+  {
+    case 7:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM7;
+      break;
+    case 8:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM8;
+      break;
+    case 9:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM9;
+      break;
+    case 10:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM10;
+      break;
+    case 11:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM11;
+      break;
+    case 12:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM12;
+      break;
+    case 13:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM13;
+      break;
+    case 14:
+      slLenSymEnum.symbols = SlLengthSymbols::SYM14;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid symbol allocation for SL " << slLengthSymsAsInt);
+  }
+
+  return slLenSymEnum;
+}
+
+
+uint16_t
+LteRrcSap::GetSlStartSymbolValue (const LteRrcSap::SlStartSymbol &slStartSym)
+{
+  uint16_t slStartSymInt = 0;
+  switch (slStartSym.symbol)
+  {
+    case SlStartSymbol::SYM0:
+      slStartSymInt = 0;
+      break;
+    case SlStartSymbol::SYM1:
+      slStartSymInt = 2;
+      break;
+    case SlStartSymbol::SYM2:
+      slStartSymInt = 2;
+      break;
+    case SlStartSymbol::SYM3:
+      slStartSymInt = 3;
+      break;
+    case SlStartSymbol::SYM4:
+      slStartSymInt = 4;
+      break;
+    case SlStartSymbol::SYM5:
+      slStartSymInt = 5;
+      break;
+    case SlStartSymbol::SYM6:
+      slStartSymInt = 6;
+      break;
+    case SlStartSymbol::SYM7:
+      slStartSymInt = 7;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slStartSym.symbol << " used for SL start Symbol");
+  }
+
+  return slStartSymInt;
+}
+
+uint16_t
+LteRrcSap::GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPscch)
+{
+  uint16_t slTResoPscchInt = 0;
+  switch (slTResoPscch.slTResoPscch)
+  {
+    case SlTimeResourcePscch::N2:
+      slTResoPscchInt = 2;
+      break;
+    case SlTimeResourcePscch::N3:
+      slTResoPscchInt = 3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slTResoPscch.slTResoPscch << " used for LteRrcSap::SlTimeResourcePscch");
+  }
+
+  return slTResoPscchInt;
+}
+
+LteRrcSap::SlTimeResourcePscch
+LteRrcSap::GetSlTResoPscchEnum (uint16_t slTResoPscch)
+{
+  SlTimeResourcePscch slTResoPscchEnum;
+  switch (slTResoPscch)
+  {
+    case 2:
+      slTResoPscchEnum.slTResoPscch = SlTimeResourcePscch::N2;
+      break;
+    case 3:
+      slTResoPscchEnum.slTResoPscch = SlTimeResourcePscch::N3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid number of symbols : " << slTResoPscch << " used for PSCCH");
+  }
+
+  return slTResoPscchEnum;
+}
+
+
+
+uint16_t
+LteRrcSap::GetSlFResoPscchValue (const LteRrcSap::SlFreqResourcePscch &slFResoPscch)
+{
+  uint16_t slFResoPscchInt = 0;
+  switch (slFResoPscch.slFResoPscch)
+  {
+    case SlFreqResourcePscch::N10:
+      slFResoPscchInt = 10;
+      break;
+    case SlFreqResourcePscch::N12:
+      slFResoPscchInt = 12;
+      break;
+    case SlFreqResourcePscch::N15:
+      slFResoPscchInt = 15;
+      break;
+    case SlFreqResourcePscch::N20:
+      slFResoPscchInt = 20;
+      break;
+    case SlFreqResourcePscch::N25:
+      slFResoPscchInt = 25;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slFResoPscch.slFResoPscch << " used for LteRrcSap::SlFreqResourcePscch");
+  }
+
+  return slFResoPscchInt;
+}
+
+LteRrcSap::SlFreqResourcePscch
+LteRrcSap::GetSlFResoPscchEnum (uint16_t slFResoPscch)
+{
+  SlFreqResourcePscch slFResoPscchEnum;
+  switch (slFResoPscch)
+  {
+    case 10:
+      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N10;
+      break;
+    case 12:
+      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N12;
+      break;
+    case 15:
+      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N15;
+      break;
+    case 20:
+      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N20;
+      break;
+    case 25:
+      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N25;
+      break;
+
+    default:
+      NS_FATAL_ERROR ("Invalid number of PRBs : " << slFResoPscch << " used for PSCCH");
+  }
+
+  return slFResoPscchEnum;
+}
+
+float
+LteRrcSap::GetSlScalingValue (const LteRrcSap::SlScaling &slScaling)
+{
+  float slScalingInt = 0;
+  switch (slScaling.scaling)
+  {
+    case SlScaling::F0P5:
+      slScalingInt = 0.5;
+      break;
+    case SlScaling::F0P65:
+      slScalingInt = 0.65;
+      break;
+    case SlScaling::F0P8:
+      slScalingInt = 0.8;
+      break;
+    case SlScaling::F1:
+      slScalingInt = 1;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slScaling.scaling << " used for LteRrcSap::SlScaling");
+  }
+
+  return slScalingInt;
+}
+
+LteRrcSap::SlScaling
+LteRrcSap::GetSlScalingEnum (float slScaling)
+{
+  SlScaling slScalingEnum;
+  //I need to mask the float value of the scaling factor
+  //to have an integral type for the switch statement to work.
+  uint32_t slScalingMask = static_cast <uint32_t> (100 * slScaling);
+  switch (slScalingMask)
+  {
+    case 50:
+      slScalingEnum.scaling = SlScaling::F0P5;
+      break;
+    case 65:
+      slScalingEnum.scaling = SlScaling::F0P65;
+      break;
+    case 80:
+      slScalingEnum.scaling = SlScaling::F0P8;
+      break;
+    case 100:
+      slScalingEnum.scaling = SlScaling::F1;
+      break;
+
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink scaling factor value : " << slScaling);
+  }
+
+  return slScalingEnum;
+}
+
+uint16_t
+LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
+{
+  uint16_t subChSizeInt = 0;
+  switch (subChSize.subchannelSize)
+  {
+    case SlSubchannelSize::N10:
+      subChSizeInt = 10;
+      break;
+    case SlSubchannelSize::N15:
+      subChSizeInt = 15;
+      break;
+    case SlSubchannelSize::N20:
+      subChSizeInt = 20;
+      break;
+    case SlSubchannelSize::N25:
+      subChSizeInt = 25;
+      break;
+    case SlSubchannelSize::N50:
+      subChSizeInt = 50;
+      break;
+    case SlSubchannelSize::N75:
+      subChSizeInt = 75;
+      break;
+    case SlSubchannelSize::N100:
+      subChSizeInt = 100;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << subChSize.subchannelSize << " LteRrcSap::SlSubchannelSize");
+  }
+
+  return subChSizeInt;
+}
+
+LteRrcSap::SlSubchannelSize
+LteRrcSap::GetSlSubChSizeEnum (uint16_t subChSize)
+{
+  SlSubchannelSize slSubchannelSizeEnum;
+  switch (subChSize)
+  {
+    case 10:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N10;
+      break;
+    case 15:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N15;
+      break;
+    case 20:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N20;
+      break;
+    case 25:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N25;
+      break;
+    case 50:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N50;
+      break;
+    case 75:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N75;
+      break;
+    case 100:
+      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N100;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid Subchannel size : " << subChSize << " used");
+  }
+
+  return slSubchannelSizeEnum;
+}
+
+uint16_t
+LteRrcSap::GetSlSensWindowValue (const LteRrcSap::SlSensingWindow &windowSize)
+{
+  uint16_t sizeInt = 0;
+  switch (windowSize.windSize)
+  {
+    case SlSensingWindow::MS100:
+      sizeInt = 100;
+      break;
+    case SlSensingWindow::MS1100:
+      sizeInt = 1100;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << windowSize.windSize << " LteRrcSap::SlSensingWindow");
+  }
+
+  return sizeInt;
+}
+
+LteRrcSap::SlSensingWindow
+LteRrcSap::GetSlSensWindowEnum (uint16_t windowSize)
+{
+  SlSensingWindow sizeEnum;
+  switch (windowSize)
+  {
+    case 100:
+      sizeEnum.windSize = SlSensingWindow::MS100;
+      break;
+    case 1100:
+      sizeEnum.windSize = SlSensingWindow::MS1100;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink sensing window size : " << windowSize << " used");
+  }
+
+  return sizeEnum;
+}
+
+
+uint16_t
+LteRrcSap::GetSlSelWindowValue (const LteRrcSap::SlSelectionWindow &windowSize)
+{
+  uint16_t sizeInt = 0;
+  switch (windowSize.windSize)
+  {
+    case SlSelectionWindow::N1:
+      sizeInt = 1;
+      break;
+    case SlSelectionWindow::N5:
+      sizeInt = 5;
+      break;
+    case SlSelectionWindow::N10:
+      sizeInt = 10;
+      break;
+    case SlSelectionWindow::N20:
+      sizeInt = 20;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << windowSize.windSize << " LteRrcSap::SlSelectionWindow");
+  }
+
+  return sizeInt;
+}
+
+LteRrcSap::SlSelectionWindow
+LteRrcSap::GetSlSelWindowEnum (uint16_t windowSize)
+{
+  SlSelectionWindow sizeEnum;
+  switch (windowSize)
+  {
+    case 1:
+      sizeEnum.windSize = SlSelectionWindow::N1;
+      break;
+    case 5:
+      sizeEnum.windSize = SlSelectionWindow::N5;
+      break;
+    case 10:
+      sizeEnum.windSize = SlSelectionWindow::N10;
+      break;
+    case 20:
+      sizeEnum.windSize = SlSelectionWindow::N20;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink selection window size : " << windowSize << " used");
+  }
+
+  return sizeEnum;
+}
+
+
+uint16_t
+LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &period)
+{
+  uint16_t perodInt = 0;
+  switch (period.period)
+  {
+    case SlResourceReservePeriod::S0:
+      perodInt = 0;
+      break;
+    case SlResourceReservePeriod::S100:
+      perodInt = 100;
+      break;
+    case SlResourceReservePeriod::S200:
+      perodInt = 200;
+      break;
+    case SlResourceReservePeriod::S300:
+      perodInt = 300;
+      break;
+    case SlResourceReservePeriod::S400:
+      perodInt = 400;
+      break;
+    case SlResourceReservePeriod::S500:
+      perodInt = 500;
+      break;
+    case SlResourceReservePeriod::S600:
+      perodInt = 600;
+      break;
+    case SlResourceReservePeriod::S700:
+      perodInt = 700;
+      break;
+    case SlResourceReservePeriod::S800:
+      perodInt = 800;
+      break;
+    case SlResourceReservePeriod::S900:
+      perodInt = 900;
+      break;
+    case SlResourceReservePeriod::S1000:
+      perodInt = 1000;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << period.period << " LteRrcSap::SlResourceReservePeriod");
+  }
+
+  return perodInt;
+}
+
+LteRrcSap::SlResourceReservePeriod
+LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
+{
+  SlResourceReservePeriod periodEnum;
+  switch (period)
+  {
+    case 0:
+      periodEnum.period = SlResourceReservePeriod::S0;
+      break;
+    case 100:
+      periodEnum.period = SlResourceReservePeriod::S100;
+      break;
+    case 200:
+      periodEnum.period = SlResourceReservePeriod::S200;
+      break;
+    case 300:
+      periodEnum.period = SlResourceReservePeriod::S300;
+      break;
+    case 400:
+      periodEnum.period = SlResourceReservePeriod::S400;
+      break;
+    case 500:
+      periodEnum.period = SlResourceReservePeriod::S500;
+      break;
+    case 600:
+      periodEnum.period = SlResourceReservePeriod::S600;
+      break;
+    case 700:
+      periodEnum.period = SlResourceReservePeriod::S700;
+      break;
+    case 800:
+      periodEnum.period = SlResourceReservePeriod::S800;
+      break;
+    case 900:
+      periodEnum.period = SlResourceReservePeriod::S900;
+      break;
+    case 1000:
+      periodEnum.period = SlResourceReservePeriod::S1000;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink reservation period : " << period << " used");
+  }
+
+  return periodEnum;
+}
+
+
+
 } // namespace ns3

@@ -25,6 +25,8 @@
 
 #include <stdint.h>
 #include <list>
+#include <array>
+
 
 #include <ns3/ptr.h>
 #include <ns3/simulator.h>
@@ -36,6 +38,7 @@ class LtePdcpSapUser;
 class LteRlcSapProvider;
 class LtePdcpSapProvider;
 class Packet;
+
 
 /**
  * \ingroup lte
@@ -903,8 +906,679 @@ public:
     MeasResults measResults; ///< measure results
   };
 
-};
 
+
+  // NR Sidelink IE TS 38.331
+
+
+  /// Sidelink Constraint values (from 6.4 RRC multiplicity and type constraint values 3GPP TS 38.331)
+#define MAX_NUM_OF_FREQ_SL 16 //!< Maximum number of carrier frequency for NR sidelink communication
+#define MAX_SCSs 5 //!< Maximum number of subcarrier spacing specifications. Equal to the number of numerlogies supported (guessed) //TODO
+#define MAX_NUM_OF_RX_POOL 16 //!< Maximum number of Rx resource poolfor NR sidelink communication
+#define MAX_NUM_OF_TX_POOL 8 //!< Maximum number of Tx resource poolfor NR sidelink communication
+#define MAX_NUM_OF_POOL_ID 16 //!< Maximum index of resource pool for NR sidelink communication
+#define MAX_NUM_OF_SL_BWPs 4 //!< Maximum number of BWP for for NR sidelink communication
+
+  /**
+   * \brief Available TDD pattern.
+   */
+  struct TddPattern
+  {
+    //slot types. Ordering is important.
+    enum : uint8_t
+    {
+      DL = 0,  //!< DL CTRL + DL DATA
+      S  = 1,  //!< DL CTRL + DL DATA + UL CTRL
+      F  = 2,  //!< DL CTRL + DL DATA + UL DATA + UL CTRL
+      UL = 3,  //!< UL DATA + UL CTRL
+    } slotType {F};
+  };
+
+  /**
+   * \brief Struct for SubcarrierSpacing enumeration
+   */
+  struct SubcarrierSpacing
+  {
+    enum
+    {
+      kHZ15,
+      kHZ30,
+      kHZ60,
+      kHZ120,
+      kHZ240,
+      INVALID
+    } spacing {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-LengthSymbols enumeration
+   */
+  struct SlLengthSymbols
+  {
+    enum
+    {
+      SYM7,
+      SYM8,
+      SYM9,
+      SYM10,
+      SYM11,
+      SYM12,
+      SYM13,
+      SYM14,
+      INVALID
+    } symbols {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-StartSymbol enumeration
+   */
+  struct SlStartSymbol
+  {
+    enum
+    {
+      SYM0,
+      SYM1,
+      SYM2,
+      SYM3,
+      SYM4,
+      SYM5,
+      SYM6,
+      SYM7,
+      INVALID
+    } symbol {INVALID};
+  };
+
+  /**
+   * \brief Struct for CyclicPrefix enumeration
+   */
+  struct CyclicPrefix
+  {
+    enum
+    {
+      NORMAL,
+      EXTENDED,
+      INVALID
+    } cp {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-TimeResourcePSCCH enumeration
+   */
+  struct SlTimeResourcePscch
+  {
+    enum
+    {
+      N2, //!< 2 symbols
+      N3, //!< 3 symbols
+      INVALID
+    } slTResoPscch {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-FreqResourcePSCCH enumeration
+   */
+  struct SlFreqResourcePscch
+  {
+    enum
+    {
+      N10, //!< 10 PRBS
+      N12,
+      N15,
+      N20,
+      N25,
+      INVALID
+    } slFResoPscch {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-Scaling-r16 enumeration
+   */
+  struct SlScaling
+  {
+    enum
+    {
+      F0P5,
+      F0P65,
+      F0P8,
+      F1,
+      INVALID
+    } scaling {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-SubchannelSize enumeration
+   */
+  struct SlSubchannelSize
+  {
+    enum
+    {
+      N10,
+      N15,
+      N20,
+      N25,
+      N50,
+      N75,
+      N100,
+      INVALID
+    } subchannelSize;
+  };
+
+  /*
+   * \brief Struct for sl-MCS-Table enumeration
+   */
+  struct SlMcsTable
+  {
+    enum
+    {
+      QAM64,
+      QAM256,
+      QAM64LOWSE,
+      INVALID
+    } mcsTable {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-SensingWindow enumeration
+   */
+  struct SlSensingWindow
+  {
+    enum
+    {
+      MS100,
+      MS1100,
+      INVALID
+    } windSize {INVALID};
+  };
+
+  /**
+   * \brief Struct for sl-SelectionWindow
+   */
+  struct SlSelectionWindow
+  {
+    enum
+    {
+      N1,
+      N5,
+      N10,
+      N20,
+      INVALID
+    } windSize {INVALID};
+  };
+
+  /**
+   * \brief Struct for SL-ResourceReservePeriod enumeration
+   */
+  struct SlResourceReservePeriod
+  {
+    enum
+    {
+      S0, //!< Seconds
+      S100,
+      S200,
+      S300,
+      S400,
+      S500,
+      S600,
+      S700,
+      S800,
+      S900,
+      S1000,
+      INVALID
+    } period {INVALID};
+  };
+
+
+  /**
+   * \brief Get subcarrier spacing value
+   *
+   * This method converts the enum of type LteRrcSap::SubcarrierSpacing
+   * to its unsigned integer representation.
+   *
+   * \param scs The object of type LteRrcSap::SubcarrierSpacing
+   * \returns The unsigned integer representation of subcarrier spacing value in Hz
+   */
+  static uint32_t GetScSpacingValue (const LteRrcSap::SubcarrierSpacing &scs);
+
+  /**
+   * \brief Get Subcarrier spacing enum
+   *
+   * This method converts the subcarrier spacing unsigned value to
+   * an enum of type LteRrcSap::SubcarrierSpacing
+   *
+   * \param scs The subcarrier spacing in Hz
+   * \returns The object of type LteRrcSap::SubcarrierSpacing
+   */
+  static LteRrcSap::SubcarrierSpacing GetScSpacingEnum (uint32_t scs);
+
+
+  /**
+   * \brief Get sidelink length symbols value
+   *
+   * This method converts the enum of type LteRrcSap::SlLengthSymbols
+   * to its unsigned integer representation.
+   *
+   * \param slLengthSyms The object of type LteRrcSap::SlLengthSymbols
+   * \returns The unsigned integer representation of LteRrcSap::SlLengthSymbols
+   */
+  static uint16_t GetSlLengthSymbolsValue (const LteRrcSap::SlLengthSymbols &slLengthSyms);
+
+  /**
+   * \brief Get sidelink length symbols enum
+   *
+   * This method converts the sidelink length in symbols to
+   * an enum of type LteRrcSap::SlLengthSymbols.
+   *
+   * \param slLengthSyms The total number of symbols allocated to SL in a slot
+   * \returns The object of type LteRrcSap::SlLengthSymbols
+   */
+  static LteRrcSap::SlLengthSymbols GetSlLengthSymbolsEnum (uint16_t slLengthSyms);
+
+  /**
+   * \brief Get sidelink start symbol value
+   *
+   * This method converts the enum of type LteRrcSap::SlStartSymbol
+   * to its unsigned integer representation.
+   *
+   * \param slStartSym The object of type LteRrcSap::SlStartSymbol
+   * \returns The unsigned integer representation of LteRrcSap::SlStartSymbol
+   */
+  static uint16_t GetSlStartSymbolValue (const LteRrcSap::SlStartSymbol &slStartSym);
+
+  /**
+   * \brief Get sidelink start symbol enum
+   *
+   * This method converts the sidelink start symbol to
+   * an enum of type LteRrcSap::SlStartSymbol.
+   *
+   * \param slStartSym The starting symbol of SL allocation in a slot
+   * \returns The object of type LteRrcSap::SlStartSymbol
+   */
+  static LteRrcSap::SlStartSymbol GetSlStartSymbolEnum (uint16_t slStartSym);
+
+  /**
+   * \brief Get sidelink time resource PSCCH value
+   *
+   * This method converts the enum of type LteRrcSap::SlTimeResourcePscch
+   * to its unsigned integer representation.
+   *
+   * \param slTResoPscch The object of type LteRrcSap::SlTimeResourcePscch
+   * \returns The unsigned integer representation of LteRrcSap::SlTimeResourcePscch
+   */
+  static uint16_t GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPscch);
+
+  /**
+   * \brief Get sidelink time resource PSCCH enum
+   *
+   * This method converts the sidelink time resources for PSCCH length (in
+   * symbols) to an enum of type LteRrcSap::SlTimeResourcePscch.
+   *
+   * \param slTResoPscch The number of symbols assigned for PSCCH transmission in a slot
+   * \returns The object of type LteRrcSap::SlTimeResourcePscch
+   */
+  static LteRrcSap::SlTimeResourcePscch GetSlTResoPscchEnum (uint16_t slTResoPscch);
+
+  /**
+   * \brief Get sidelink frequency resource PSCCH value
+   *
+   * This method converts the enum of type LteRrcSap::SlFreqResourcePscch
+   * to its unsigned integer representation.
+   *
+   * \param slFResoPscch The object of type LteRrcSap::SlFreqResourcePscch
+   * \returns The unsigned integer representation of LteRrcSap::SlFreqResourcePscch
+   */
+  static uint16_t GetSlFResoPscchValue (const LteRrcSap::SlFreqResourcePscch &slFResoPscch);
+
+  /**
+   * \brief Get sidelink frequency resource PSCCH enum
+   *
+   * This method converts the sidelink frequency resources for PSCCH length (in
+   * PRBs) to an enum of type LteRrcSap::SlFreqResourcePscch.
+   *
+   * \param slFResoPscch The number of symbols assigned for PSCCH transmission in a slot
+   * \returns The object of type LteRrcSap::SlFreqResourcePscch
+   */
+  static LteRrcSap::SlFreqResourcePscch GetSlFResoPscchEnum (uint16_t slFResoPscch);
+
+  /**
+   * \brief Get sidelink scaling value
+   *
+   * This method converts the enum of type LteRrcSap::SlScaling
+   * to its float representation.
+   *
+   * \param slScaling The object of type LteRrcSap::SlScaling
+   * \returns The float representation of LteRrcSap::SlScaling
+   */
+  static float GetSlScalingValue (const LteRrcSap::SlScaling &slScaling);
+
+  /**
+   * \brief Get sidelink scaling enum.
+   *
+   * This method converts the sidelink scaling value to an enum of type
+   * LteRrcSap::SlScaling.
+   *
+   *  <b>Only the first digit after decimal is considered</b>
+   *
+   *
+   * \param slScaling The sidelink scaling factor
+   * \returns The object of type LteRrcSap::SlScaling
+   */
+  static LteRrcSap::SlScaling GetSlScalingEnum (float slScaling);
+
+  /**
+   * \brief Get sidelink subchannel size value
+   *
+   * This method converts the enum of type LteRrcSap::SlSubchannelSize
+   * to its unsigned integer representation.
+   *
+   * \param subChSize The object of type LteRrcSap::SlSubchannelSize
+   * \returns The unsigned integer representation of LteRrcSap::SlSubchannelSize
+   */
+  static uint16_t GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize);
+
+  /**
+   * \brief Get sidelink subchannel size enum.
+   *
+   * This method converts the sidelink subchannel size value to an enum of type
+   * LteRrcSap::SlSubchannelSize.
+   *
+   * \param subChSize The sidelink subchannel size in PRBs
+   * \returns The object of type LteRrcSap::SlSubchannelSize
+   */
+  static LteRrcSap::SlSubchannelSize GetSlSubChSizeEnum (uint16_t subChSize);
+
+  /**
+   * \brief Get sidelink sensing window value
+   *
+   * This method converts the enum of type LteRrcSap::SlSensingWindow
+   * to its unsigned integer representation, such that, 100 is 100 ms,
+   * 1100 is 1100 ms, and so on.
+   *
+   * \param windowSize The object of type LteRrcSap::SlSensingWindow
+   * \returns The unsigned integer representation of LteRrcSap::SlSensingWindow
+   */
+  static uint16_t GetSlSensWindowValue (const LteRrcSap::SlSensingWindow &windowSize);
+
+  /**
+   * \brief Get sidelink sensing window enum.
+   *
+   * This method converts the sidelink sensing window size value to an enum of type
+   * LteRrcSap::SlSensingWindow.
+   *
+   * \param windowSize The sidelink sensing window size in millisecond
+   * \returns The object of type LteRrcSap::SlSensingWindow
+   */
+  static LteRrcSap::SlSensingWindow GetSlSensWindowEnum (uint16_t windowSize);
+
+
+  /**
+   * \brief Get sidelink selection window value
+   *
+   * This method converts the enum of type LteRrcSap::SlSelectionWindow
+   * to its unsigned integer representation.
+   *
+   * \param windowSize The object of type LteRrcSap::SlSelectionWindow
+   * \returns The unsigned integer representation of LteRrcSap::SlSelectionWindow
+   */
+  static uint16_t GetSlSelWindowValue (const LteRrcSap::SlSelectionWindow &windowSize);
+
+  /**
+   * \brief Get sidelink selection window enum.
+   *
+   * This method converts the sidelink selection window size value to an enum
+   * of type LteRrcSap::SlSelectionWindow.
+   *
+   * \param windowSize The sidelink sensing window size in number of slots
+   * \returns The object of type LteRrcSap::SlSelectionWindow
+   */
+  static LteRrcSap::SlSelectionWindow GetSlSelWindowEnum (uint16_t windowSize);
+
+
+  /**
+   * \brief Get sidelink resource reserve period value
+   *
+   * This method converts the enum of type LteRrcSap::SlResourceReservePeriod
+   * to its unsigned integer representation, such that, 0 is 0 seconds,
+   * 100 is 100 seconds, and so on.
+   *
+   * \param period The object of type LteRrcSap::SlResourceReservePeriod
+   * \returns The unsigned integer representation of LteRrcSap::SlResourceReservePeriod
+   */
+  static uint16_t GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &period);
+
+  /**
+   * \brief Get sidelink resource reserve period enum.
+   *
+   * This method converts the sidelink resource reserve period value to an enum
+   * of type LteRrcSap::SlResourceReservePeriod.
+   *
+   * \param period The sidelink resource reserve period in seconds
+   * \returns The object of type LteRrcSap::SlResourceReservePeriod
+   */
+  static LteRrcSap::SlResourceReservePeriod GetSlResoResvPrdEnum (uint16_t period);
+
+
+  /**
+   * \brief SCS-SpecificCarrier information element
+   */
+  struct ScsSpecificCarrier
+  {
+    uint16_t offsetToCarrier {3000}; //!< Offset in frequency domain between Point A and the lowest usable subcarrier on this carrier in number of PRBs (0..275*8-1).
+    SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
+    uint16_t carrierBandwidth {3000}; //!< carrier bandwidth in number of PRBs. Valid range is [1, 275]
+  };
+
+  /**
+   * \brief ARFCN-ValueNR information element
+   */
+  struct ArfcnValueNR
+  {
+    uint32_t arfcn {4000000}; //!< ARFCN valid range is [0, 3279165] 38.331 sec 6.4
+  };
+
+  /**
+   * \brief BWP information element
+   */
+  struct Bwp
+  {
+    uint32_t locationAndBandwidth {3000}; //!< Resource Indicator value (RIV). 38.214 sec 5.1.2.2.2
+    SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
+    CyclicPrefix cyclicPrefix; //!< Cyclic prefix  //optional filed
+  };
+
+  /**
+   * \brief Sl-Bwp-Generic information element
+   */
+  struct SlBwpGeneric
+  {
+    Bwp bwp;
+    SlLengthSymbols slLengthSymbols; //!< This field indicates the number of symbols used for sidelink in a slot without SL-SSB
+    SlStartSymbol slStartSymbol; //!< This field indicates the starting symbol used for sidelink in a slot without SL-SSB
+    //slFilterCoefficient; //!< Filter coefficient used for L3 filtering [not supported]
+  };
+
+  /**
+   * \brief SL-PSCCH-Config information element
+   */
+  struct SlPscchConfig
+  {
+    //setuprelease enumeration
+    enum
+    {
+      RELEASE,
+      SETUP,
+      INVALID
+    } setupRelease {INVALID}; ///< Indicates if it is allocating or releasing resources
+    SlTimeResourcePscch slTimeResourcePSCCH; //!< Indicates the number of symbols of PSCCH in a resource pool.
+    SlFreqResourcePscch slFreqResourcePSCCH; //!< Indicates the number of PRBs for PSCCH in a resource pool where it is not greater than the number PRBs of the subchannel.
+    uint32_t slDmrsScreambleId {70000}; //!< Indicates the initialization value for PSCCH DMRS scrambling. Valid range [0, 65535]
+    uint16_t slNumReservedBits {0}; //!< Indicates the number of reserved bits in first stage SCI. Valid range [2, 4]
+  };
+
+  /**
+   * \brief SL-BetaOffset information element
+   */
+  struct SlBetaOffsets
+  {
+    uint16_t offset {32}; //!< Beta-offset.
+  };
+
+  /**
+   * \brief SL-PSSCH-Config information element
+   */
+  struct SlPSSCHConfig
+  {
+    //sl-PSSCH-DMRS-TimePattern-r16 //TODO //!< Indicates the set of PSSCH DMRS time domain patterns that can be used in the resource pool.
+    std::array <SlBetaOffsets, 4> slBetaOffsets2ndSci; //!< Configure beta-offset values for the second stage SCI mapping
+    SlScaling slScaling; //!< Indicates a scaling factor to limit the number of resource elements assigned to the second stage SCI on PSSCH
+  };
+
+  /**
+   * \brief SL-UE-SelectedConfigRP information element
+   */
+  struct SlUeSelectedConfigRp
+  {
+    SlSensingWindow slSensingWindow; //!< Parameter that indicates the start of the sensing window.
+    SlSelectionWindow slSelectionWindow; //!< Parameter that determines the end of the selection window in the resource selection for a TB with respect to priority indicated in SCI.
+    bool slMultiReserveResource; //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
+    std::array <SlResourceReservePeriod, 16> slResourceReservePeriodList; //!< Set of possible resource reservation period allowed in the resource pool.
+
+    //sl-CBR-Priority-TxConfigList-r16 //TODO
+    //We probably going to simplify the RSRP threshold
+    //by introducing an attribute directly in UE PHY class.
+    //sl-ThresPSSCH-RSRP-List-r16 //TODO //!< Indicates a threshold used for sensing based UE autonomous resource selection.
+
+    //sl-MultiReserveResource-r16 //TODO //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
+    //sl-MaxNumPerReserve-r16 //TODO //!< Indicates the maximum number of reserved PSCCH/PSSCH resources that can be indicated by an SCI.
+    //sl-ResourceReservePeriodList-r16 //TODO //!< Set of possible resource reservation period allowed in the resource pool.
+
+     //since we do not support DMRS signals
+     //we will rely on the PSCCH RSRP and SCI message
+     //decodefication.
+    //sl-RS-ForSensing-r16 //TODO //!< Flag to enable the use of DMRS of PSCCH or PSSCH for L1 RSRP measurement in the sensing operation.
+  };
+
+  /**
+   * \brief SL-ResourcePool information element
+   */
+  struct SlResourcePool
+  {
+    SlPscchConfig slPscchConfig; //!< SL-PSCCH field
+    SlPSSCHConfig slPSSCHConfig; //!< SL-PSSCH field
+    SlSubchannelSize slSubchannelSize; //!< Sidelink subchannel size in PRBs
+    uint16_t slStartRbSubchannel {3000}; //!< First RB of a sidelink subchannel. Valid range [0,  265]
+    uint16_t slNumSubchannel {3000}; //!< Number of subchannels. Valid range [1, 27]
+    SlMcsTable slMcsTable; //!< Indicates the MCS table used for the resource pool.
+    SlUeSelectedConfigRp slUeSelectedConfigRp; //!< SL-UE-SelectedConfigRP
+    //sl-PSFCH-Config-r16 //TODO
+    //sl-SyncAllowed-r16 //TODO
+    //sl-Period-r16 [FFS]
+    //sl-TimeResource-r16 [FFS]
+    //sl-ThreshS-RSSI-CBR-r16 //TODO
+    //sl-TimeWindowSizeCBR-r16 //TODO
+    //sl-TimeWindowSizeCR-r16 //TODO
+    //SL-PTRS-Config //TODO
+    //SL-ConfiguredGrantConfigList //TODO
+    //sl-RxParametersNcell-r16 //TODO
+  };
+
+  /**
+   * \brief SL-ResourcePoolID information element
+   */
+  struct SlResourcePoolId
+  {
+    uint16_t id {333}; //!< Sidelink pool id. Valid range [1, 16]
+  };
+
+  /**
+   * \brief SL-ResourcePoolConfig information element
+   */
+  struct SlResourcePoolConfig
+  {
+    SlResourcePoolId slResourcePoolId;
+    SlResourcePool slResourcePool;
+  };
+
+  /**
+   * \brief SL-BWP-PoolConfigCommon information element
+   */
+  struct SlBwpPoolConfigCommon
+  {
+    std::array <SlResourcePool, MAX_NUM_OF_RX_POOL> slRxPool; //!< List of sidelink resource pools for RX
+    std::array <SlResourcePoolConfig, MAX_NUM_OF_TX_POOL> slTxPoolSelectedNormal; //!< List of sidelink resource pools for TX
+    //sl-TxPoolExceptional-r16 //TODO //!< Indicates the resources by which the UE is allowed to transmit NR sidelink communication in exceptional conditions on the configured BWP.
+  };
+
+  /**
+   * \brief SL-BWP-ConfigCommon information element
+   */
+  struct SlBwpConfigCommon
+  {
+    SlBwpGeneric slBwpGeneric; //!< This field indicates the generic parameters on the configured sidelink BWP
+    SlBwpPoolConfigCommon slBwpPoolConfigCommon; //!< This field indicates the resource pool configurations on the configured sidelink BWP
+  };
+
+  /**
+   * \brief SL-FreqConfigCommon information element
+   */
+  struct SlFreqConfigCommon
+  {
+    std::array <ScsSpecificCarrier, MAX_SCSs> slScsSpecificCarrierList; //!< A list per numerology for UE specific channel bandwidth and location configurations
+    ArfcnValueNR slAbsoluteFrequencyPointA; //!< Absolute frequency of the reference resource block (Common RB 0).
+    ArfcnValueNR slAbsoluteFrequencySSB; //!< Frequency location of sidelink Synchronization Signal/PBCH block (SSB)
+    bool frequencyShift7p5khzSL {false}; //!< Enable the NR SL transmission with a 7.5 kHz shift to the LTE raster [we don't use this]
+    int valueN {2}; //!< Indicate the NR SL transmission with a valueN * 5kHz shift to the LTE raster. Valid range : [-1,1]
+    std::array <SlBwpConfigCommon, MAX_NUM_OF_SL_BWPs> slBwpList; //!< List of sidelink BWP(s) for NR sidelink communication
+    //sl-SyncPriority-r16 //TODO //!< This field indicates synchronization priority order, as specified in sub-clause TS 38.331 5.X.6
+    //bool sl-NbAsSync-r16 //TODO //!< If True, an out of coverage / mode 2 enabled UE is allowed to use an available network as sync source. Only present in SL-PreconfigurationNR
+    //sl-SyncConfigList //TODO //!< List of configurations for Tx/RX synch information for NR SL communication.
+    //sl-PowerControl //TODO //!< Sidelink power control related configuration
+  };
+
+  /**
+   * \brief SL-PreconfigGeneral
+   *
+   * This IE is not implemented as per the 3GPP standard
+   * since in the simulator we support our own customized
+   * TDD patter.
+   */
+  struct SlPreconfigGeneral
+  {
+    TddPattern slTddConfig; //!< TDD pattern.
+
+    //TDD-UL-DL-ConfigCommon sl-TDD-Config-r16
+    // BIT STRING (SIZE (2)) reservedBits-r16
+  };
+
+  /**
+   * \brief SL-PreconfigNR information element
+   */
+  struct SidelinkPreconfigNr
+  {
+    std::array <SlFreqConfigCommon, MAX_NUM_OF_FREQ_SL> slPreconfigFreqInfoList; //!< List containing per carrier configuration for NR sidelink communication
+    SlPreconfigGeneral slPreconfigGeneral;
+    /*
+    sl-PreconfigNR-AnchorCarrierFreqList-r16
+    sl-PreconfigEUTRA-AnchorCarrierFreqList-r16
+    sl-RadioBearerPreConfigList-r16
+    sl-RLC-BearerPreConfigList-r16
+    sl-MeasPreConfig-r16
+    sl-OffsetDFN-r16
+    t400-r16
+    sl-SSB-PriorityNR-r16
+    sl-UE-SelectedPreConfig-r16
+    */
+  };
+
+  /**
+   * \brief SL-PreconfigurationNR information element
+   */
+  struct SlPreconfigurationNr
+  {
+    SidelinkPreconfigNr sidelinkPreconfigNr;
+  };
+
+
+};
 
 
 /**
