@@ -49,6 +49,7 @@ class TcpTxBuffer;
 class TcpOption;
 class Ipv4Interface;
 class Ipv6Interface;
+class TcpRateOps;
 
 /**
  * \ingroup tcp
@@ -481,15 +482,6 @@ public:
     }
 
   /**
-   * \brief ECN Modes
-   */
-  typedef enum
-    {
-      NoEcn = 0,   //!< ECN is not enabled.
-      ClassicEcn   //!< ECN functionality as described in RFC 3168.
-    } EcnMode_t;
-
-  /**
    * \brief Checks if TOS has no ECN bits
    *
    * \return true if TOS does not have any ECN bits set; otherwise false
@@ -530,11 +522,21 @@ public:
     }
 
   /**
-   * \brief Set ECN mode to use on the socket
+   * \brief mark ECN code point
    *
-   * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
+   * \return TOS with specified ECN code point
    */
-  void SetEcn (EcnMode_t ecnMode);
+  inline uint8_t MarkEcnCodePoint (const uint8_t tos, const TcpSocketState::EcnCodePoint_t codePoint) const
+    {
+      return ((tos & 0xfc) | codePoint);
+    }
+
+  /**
+   * \brief Set use of ECN on the socket
+   *
+   * \param useEcn Use of ECN. Currently Off and On are supported.
+   */
+  void SetUseEcn (TcpSocketState::UseEcn_t useEcn);
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -965,9 +967,11 @@ protected:
    * \param scoreboardUpdated if true indicates that the scoreboard has been
    * \param oldHeadSequence value of HeadSequence before ack
    * updated with SACK information
+   * \param currentDelivered The number of bytes (S)ACKed
+   * \return the number of bytes (newly) acked, or 0 if it was a dupack
    */
   virtual void ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpdated,
-                           const SequenceNumber32 &oldHeadSequence);
+                           uint32_t currentDelivered, const SequenceNumber32 &oldHeadSequence);
 
   /**
    * \brief Recv of a data, put into buffer, call L7 to get it if necessary
@@ -1002,13 +1006,17 @@ protected:
 
   /**
    * \brief Dupack management
+   *
+   * \param currentDelivered Current (S)ACKed bytes
    */
-  void DupAck ();
+  void DupAck (uint32_t currentDelivered);
 
   /**
    * \brief Enter the CA_RECOVERY, and retransmit the head
+   *
+   * \param currentDelivered Currently (S)ACKed bytes
    */
-  void EnterRecovery ();
+  void EnterRecovery (uint32_t currentDelivered);
 
   /**
    * \brief An RTO event happened
@@ -1051,10 +1059,9 @@ protected:
    * Timestamp and Window scale are managed in other pieces of code.
    *
    * \param tcpHeader Header of the segment
-   * \param scoreboardUpdated indicates if the scoreboard was updated due to a
-   * SACK option
+   * \param [out] bytesSacked Number of bytes SACKed, or 0
    */
-  void ReadOptions (const TcpHeader &tcpHeader, bool &scoreboardUpdated);
+  void ReadOptions (const TcpHeader &tcpHeader, uint32_t *bytesSacked);
 
   /**
    * \brief Return true if the specified option is enabled
@@ -1106,9 +1113,9 @@ protected:
    * \brief Read the SACK option
    *
    * \param option SACK option from the header
-   * \returns true in case of an update to the SACKed blocks
+   * \returns the number of bytes sacked by this option
    */
-  bool ProcessOptionSack (const Ptr<const TcpOption> option);
+  uint32_t ProcessOptionSack(const Ptr<const TcpOption> option);
 
   /**
    * \brief Add the SACK PERMITTED option to the header
@@ -1211,8 +1218,7 @@ protected:
 
   Ptr<RttEstimator> m_rtt; //!< Round trip time estimator
 
-  // Rx and Tx buffer management
-  Ptr<TcpRxBuffer> m_rxBuffer; //!< Rx buffer (reordering buffer)
+  // Tx buffer management
   Ptr<TcpTxBuffer> m_txBuffer; //!< Tx buffer
 
   // State-related attributes
@@ -1253,6 +1259,7 @@ protected:
   Ptr<TcpSocketState>    m_tcb;               //!< Congestion control information
   Ptr<TcpCongestionOps>  m_congestionControl; //!< Congestion control
   Ptr<TcpRecoveryOps>    m_recoveryOps;       //!< Recovery Algorithm
+  Ptr<TcpRateOps>        m_rateOps;           //!< Rate operations
 
   // Guesses over the other connection end
   bool m_isFirstPartialAck {true}; //!< First partial ACK during RECOVERY
@@ -1268,7 +1275,6 @@ protected:
   Timer m_pacingTimer {Timer::REMOVE_ON_DESTROY}; //!< Pacing Event
 
   // Parameters related to Explicit Congestion Notification
-  EcnMode_t                     m_ecnMode    {EcnMode_t::NoEcn};      //!< Socket ECN capability
   TracedValue<SequenceNumber32> m_ecnEchoSeq {0};      //!< Sequence number of the last received ECN Echo
   TracedValue<SequenceNumber32> m_ecnCESeq   {0};      //!< Sequence number of the last received Congestion Experienced
   TracedValue<SequenceNumber32> m_ecnCWRSeq  {0};      //!< Sequence number of the last sent CWR

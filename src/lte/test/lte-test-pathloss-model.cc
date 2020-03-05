@@ -272,9 +272,6 @@ LtePathlossModelSystemTestCase::DoRun (void)
 //                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
                    
   Simulator::Stop (Seconds (0.035));
-
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
   Simulator::Run ();
   
   double calculatedSinrDb = 10.0 * std::log10 (sinrCatcher.GetValue ()->operator[] (0));

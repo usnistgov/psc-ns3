@@ -466,6 +466,11 @@ public:
 
 private:
   void DoRun (void);
+  /**
+   * Run test for a given buffer size
+   *
+   * \param bufferSize the buffer size
+   */
   void DoRunSubTest (uint16_t bufferSize);
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
@@ -614,7 +619,7 @@ public:
 };
 
 WifiAggregationTestSuite::WifiAggregationTestSuite ()
-  : TestSuite ("aggregation-wifi", UNIT)
+  : TestSuite ("wifi-aggregation", UNIT)
 {
   AddTestCase (new AmpduAggregationTest, TestCase::QUICK);
   AddTestCase (new TwoLevelAggregationTest, TestCase::QUICK);

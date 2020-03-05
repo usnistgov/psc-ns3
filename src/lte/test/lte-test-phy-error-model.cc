@@ -246,8 +246,6 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   rlcStats->SetAttribute ("StartTime", TimeValue (m_statsStartTime));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (statsDuration));
 
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
   Simulator::Run ();
 
   NS_LOG_INFO ("\tTest downlink data shared channels (PDSCH)");
@@ -326,6 +324,9 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
   Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
 
+  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
+  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
+
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
@@ -403,8 +404,6 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats ();
   rlcStats->SetAttribute ("StartTime", TimeValue (m_statsStartTime));
   rlcStats->SetAttribute ("EpochDuration", TimeValue (statsDuration));
-
-  BuildingsHelper::MakeMobilityModelConsistent ();
 
   Simulator::Run ();
   

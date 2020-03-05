@@ -44,6 +44,7 @@
 #include "ipv6-option.h"
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
+#include "ipv6-raw-socket-factory-impl.h"
 
 /// Minimum IPv6 MTU, as defined by \RFC{2460}
 #define IPV6_MIN_MTU 1280
@@ -127,6 +128,9 @@ Ipv6L3Protocol::Ipv6L3Protocol ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_pmtuCache = CreateObject<Ipv6PmtuCache> ();
+  
+  Ptr<Ipv6RawSocketFactoryImpl> rawFactoryImpl = CreateObject<Ipv6RawSocketFactoryImpl> ();
+  AggregateObject (rawFactoryImpl);
 }
 
 Ipv6L3Protocol::~Ipv6L3Protocol ()
@@ -702,6 +706,7 @@ void Ipv6L3Protocol::NotifyNewAggregate ()
           this->SetNode (node);
         }
     }
+  
   Ipv6::NotifyNewAggregate ();
 }
 
@@ -1059,7 +1064,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
             {
               Ipv6InterfaceAddress iaddr = GetAddress (j, i);
               Ipv6Address addr = iaddr.GetAddress ();
-              if (addr.IsEqual (hdr.GetDestinationAddress ()))
+              if (addr == hdr.GetDestinationAddress ())
                 {
                   if (j == interface)
                     {
@@ -1159,7 +1164,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       ipv6Fragment->GetFragments (packet, ipHeader, targetMtu, fragments);
     }
 
-  if (!route->GetGateway ().IsEqual (Ipv6Address::GetAny ()))
+  if (route->GetGateway () != Ipv6Address::GetAny ())
     {
       if (outInterface->IsUp ())
         {

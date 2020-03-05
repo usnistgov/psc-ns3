@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 #include "wifi-mode.h"
 #include "qos-utils.h"
+#include <map>
 
 namespace ns3 {
 
@@ -58,17 +59,6 @@ public:
   virtual ~MsduAggregator ();
 
   /**
-   * Aggregate an MSDU to an A-MSDU.
-   *
-   * \param msdu the MSDU.
-   * \param amsdu the A-MSDU.
-   * \param src the source address.
-   * \param dest the destination address
-   */
-  void Aggregate (Ptr<const Packet> msdu, Ptr<Packet> amsdu,
-                  Mac48Address src, Mac48Address dest) const;
-
-  /**
    * Compute the size of the A-MSDU resulting from the aggregation of an MSDU of
    * size <i>msduSize</i> and an A-MSDU of size <i>amsduSize</i>.
    * Note that only the basic A-MSDU subframe format (section 9.3.2.2.2 of IEEE
@@ -95,7 +85,8 @@ public:
    *
    * - the time to transmit the resulting PPDU, according to the given TxVector,
    * does not exceed both the maximum PPDU duration allowed by the corresponding
-   * modulation class (if any) and the given PPDU duration limit (if non null)
+   * modulation class (if any) and the given PPDU duration limit (if distinct from
+   * Time::Min ())
    *
    * If it is not possible to aggregate at least two MSDUs, no MSDU is dequeued
    * from the EDCA queue and a null pointer is returned.
@@ -109,7 +100,7 @@ public:
    */
   Ptr<WifiMacQueueItem> GetNextAmsdu (Mac48Address recipient, uint8_t tid,
                                       WifiTxVector txVector, uint32_t ampduSize = 0,
-                                      Time ppduDurationLimit = Seconds (0)) const;
+                                      Time ppduDurationLimit = Time::Min ()) const;
 
   /**
    * Determine the maximum size for an A-MSDU of the given TID that can be sent
@@ -137,7 +128,6 @@ public:
    */
   void SetEdcaQueues (EdcaQueues map);
 
-private:
   /**
    * Calculate how much padding must be added to the end of an A-MSDU of the
    * given size if a new MSDU is added.
@@ -149,6 +139,7 @@ private:
    */
   static uint8_t CalculatePadding (uint16_t amsduSize);
 
+private:
   EdcaQueues m_edca;   //!< the map of EDCA queues
 };
 

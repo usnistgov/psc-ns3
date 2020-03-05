@@ -669,11 +669,6 @@ int main (int argc, char *argv[])
       ueDevs = topoHelper->DropUEsIndoorOutdoor (ueNodes, 120, 50, 6);
       BuildingsHelper::Install (threeSectorNodes);
       BuildingsHelper::Install (ueNodes);
-      // Make the given mobility model consistent, which will determine whether a node's position falls
-      // inside or outside any of the building. Hybrid3gppPropagationLossModel will call it only if
-      // the node is not static. For all static nodes, e.g., eNBs, BuildingsHelper::MakeMobilityModelConsistent()
-      // must be called at least once before simulation starts, so that pathloss model can calculate the loss correctly.
-      BuildingsHelper::MakeMobilityModelConsistent ();
       NS_LOG_DEBUG ("Installed BuildingsHelper");
     }
 

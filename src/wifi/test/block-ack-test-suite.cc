@@ -251,6 +251,300 @@ PacketBufferingCaseB::DoRun (void)
     }
 }
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test for the originator block ack window
+ */
+class OriginatorBlockAckWindowTest : public TestCase
+{
+public:
+  OriginatorBlockAckWindowTest ();
+private:
+  virtual void DoRun ();
+};
+
+OriginatorBlockAckWindowTest::OriginatorBlockAckWindowTest ()
+  : TestCase ("Check the correctness of the originator block ack window")
+{
+}
+
+void
+OriginatorBlockAckWindowTest::DoRun (void)
+{
+  uint16_t winSize = 16;
+  uint16_t startingSeq = 4090;
+
+  OriginatorBlockAckAgreement agreement (Mac48Address ("00:00:00:00:00:01"), 0);
+  agreement.SetBufferSize (winSize);
+  agreement.SetStartingSequence (startingSeq);
+  agreement.InitTxWindow ();
+
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.GetWinSize (), winSize, "Incorrect window size");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.GetWinStart (), startingSeq, "Incorrect winStart");
+  // check that all the elements in the window are cleared
+  for (uint16_t i = 0; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Not all flags are cleared after initialization");
+    }
+
+  // Notify the acknowledgment of 5 packets
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_QOSDATA);
+  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (Create<Packet> (), hdr);
+  uint16_t seqNumber = startingSeq;
+  mpdu->GetHeader ().SetSequenceNumber (seqNumber);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+  //            ^
+  //            |
+  //           HEAD
+
+  startingSeq = (seqNumber + 1) % SEQNO_SPACE_SIZE;
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq, "Incorrect starting sequence after 5 acknowledgments");
+  for (uint16_t i = 0; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Not all flags are cleared after 5 acknowledgments");
+    }
+
+  // the next MPDU is not acknowledged, hence the window is blocked while the
+  // subsequent 4 MPDUs are acknowledged
+  ++seqNumber %= SEQNO_SPACE_SIZE;
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |0|0|0|0|0|0|1|1|1|1|0|0|0|0|0|0|
+  //            ^
+  //            |
+  //           HEAD
+
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq, "Incorrect starting sequence after 1 unacknowledged MPDU");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (0), false, "Incorrect flag after 1 unacknowledged MPDU");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (1), true, "Incorrect flag after 1 unacknowledged MPDU");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (2), true, "Incorrect flag after 1 unacknowledged MPDU");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (3), true, "Incorrect flag after 1 unacknowledged MPDU");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (4), true, "Incorrect flag after 1 unacknowledged MPDU");
+  for (uint16_t i = 5; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Incorrect flag after 1 unacknowledged MPDU");
+    }
+
+  // the missing MPDU is now acknowledged; the window moves forward and the starting
+  // sequence number is the one of the first unacknowledged MPDU
+  mpdu->GetHeader ().SetSequenceNumber (startingSeq);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+  //                      ^
+  //                      |
+  //                     HEAD
+
+  startingSeq = (seqNumber + 1) % SEQNO_SPACE_SIZE;
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq, "Incorrect starting sequence after acknowledgment of missing MPDU");
+  for (uint16_t i = 0; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Not all flags are cleared after acknowledgment of missing MPDU");
+    }
+
+  // Now, create a hole of 3 MPDUs before 4 acknowledged MPDUs, another hole of 2 MPDUs before 3 acknowledged MPDUs
+  seqNumber = (seqNumber + 4) % SEQNO_SPACE_SIZE;
+  mpdu->GetHeader ().SetSequenceNumber (seqNumber);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  seqNumber = (seqNumber + 3) % SEQNO_SPACE_SIZE;
+  mpdu->GetHeader ().SetSequenceNumber (seqNumber);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  mpdu->GetHeader ().SetSequenceNumber (++seqNumber %= SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |1|0|0|1|1|1|0|0|0|0|0|0|0|1|1|1|
+  //                      ^
+  //                      |
+  //                     HEAD
+
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq, "Incorrect starting sequence after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (0), false, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (1), false, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (2), false, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (3), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (4), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (5), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (6), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (7), false, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (8), false, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (9), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (10), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (11), true, "Incorrect flag after 3 unacknowledged MPDUs");
+  for (uint16_t i = 12; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Incorrect flag after 3 unacknowledged MPDUs");
+    }
+
+  // the transmission of an MPDU beyond the current window (by 2 positions) is
+  // notified, hence the window moves forward 2 positions
+  seqNumber = (agreement.m_txWindow.GetWinEnd () + 2) % SEQNO_SPACE_SIZE;
+  mpdu->GetHeader ().SetSequenceNumber (seqNumber);
+  agreement.NotifyTransmittedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |1|0|0|1|1|1|0|0|0|0|0|0|0|1|1|1|
+  //                          ^
+  //                          |
+  //                         HEAD
+
+  startingSeq = (startingSeq + 2) % SEQNO_SPACE_SIZE;
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq,
+                         "Incorrect starting sequence after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (0), false, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (1), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (2), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (3), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (4), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (5), false, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (6), false, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (7), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (8), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (9), true, "Incorrect flag after transmitting an MPDU beyond the current window");
+  for (uint16_t i = 10; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Incorrect flag after transmitting an MPDU beyond the current window");
+    }
+
+  // another MPDU is transmitted beyond the current window. Now, the window advances
+  // until the first unacknowledged MPDU
+  seqNumber = (agreement.m_txWindow.GetWinEnd () + 1) % SEQNO_SPACE_SIZE;
+  mpdu->GetHeader ().SetSequenceNumber (seqNumber);
+  agreement.NotifyTransmittedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|
+  //    ^
+  //    |
+  //   HEAD
+
+  startingSeq = (startingSeq + 5) % SEQNO_SPACE_SIZE;
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq,
+                         "Incorrect starting sequence after transmitting another MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (0), false, "Incorrect flag after transmitting another MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (1), false, "Incorrect flag after transmitting another MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (2), true, "Incorrect flag after transmitting another MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (3), true, "Incorrect flag after transmitting another MPDU beyond the current window");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (4), true, "Incorrect flag after transmitting another MPDU beyond the current window");
+  for (uint16_t i = 5; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Incorrect flag after transmitting another MPDU beyond the current window");
+    }
+
+  // the MPDU next to winStart is discarded, hence the window advances to make it an old packet.
+  // Since the subsequent MPDUs have been acknowledged, the window advances further.
+  seqNumber = (startingSeq + 1) % SEQNO_SPACE_SIZE;
+  mpdu->GetHeader ().SetSequenceNumber (seqNumber);
+  agreement.NotifyDiscardedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+  //              ^
+  //              |
+  //             HEAD
+
+  startingSeq = (startingSeq + 5) % SEQNO_SPACE_SIZE;
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq,
+                         "Incorrect starting sequence after discarding an MPDU");
+  for (uint16_t i = 0; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Incorrect flag after discarding an MPDU");
+    }
+
+  // Finally, check that the window correctly advances when the MPDU with the starting sequence number
+  // is acknowledged after being the only unacknowledged MPDU
+  for (uint16_t i = 1; i < winSize; i++)
+    {
+      mpdu->GetHeader ().SetSequenceNumber ((startingSeq + i) % SEQNO_SPACE_SIZE);
+      agreement.NotifyAckedMpdu (mpdu);
+    }
+
+  // the current window must look like this:
+  //
+  // |1|1|1|1|1|1|0|1|1|1|1|1|1|1|1|1|
+  //              ^
+  //              |
+  //             HEAD
+
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq,
+                         "Incorrect starting sequence after acknowledging all but the first MPDU");
+  NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (0), false, "Incorrect flag after acknowledging all but the first MPDU");
+  for (uint16_t i = 1; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), true, "Incorrect flag after acknowledging all but the first MPDU");
+    }
+
+  // acknowledge the first MPDU
+  mpdu->GetHeader ().SetSequenceNumber (startingSeq % SEQNO_SPACE_SIZE);
+  agreement.NotifyAckedMpdu (mpdu);
+
+  // the current window must look like this:
+  //
+  // |0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+  //              ^
+  //              |
+  //             HEAD
+
+  startingSeq = (startingSeq + winSize) % SEQNO_SPACE_SIZE;
+  NS_TEST_EXPECT_MSG_EQ (agreement.GetStartingSequence (), startingSeq,
+                         "Incorrect starting sequence after acknowledging the first MPDU");
+  for (uint16_t i = 0; i < winSize; i++)
+    {
+      NS_TEST_EXPECT_MSG_EQ (agreement.m_txWindow.At (i), false, "Incorrect flag after acknowledging the first MPDU");
+    }
+}
+
 
 /**
  * \ingroup wifi-test
@@ -325,12 +619,43 @@ CtrlBAckResponseHeaderTest::DoRun (void)
  *
  * \brief Test for Block Ack Policy with aggregation disabled
  *
- * This test aims to check the Block Ack policy with "legacy" 802.11, i.e., prior
- * to aggregation (802.11n). The block ack threshold is set to 2, hence a block ack
- * agreement is established when there are at least two packets in the EDCA queue.
- * Consequently, the first packet is sent with Normal Ack policy (because a BA agreement
- * has not been established yet), while all other packets are sent with Block Ack
- * policy and followed by a Block Ack Request and then a Block Ack.
+ * This test aims to check the Block Ack policy when A-MPDU aggregation is disabled.
+ * In this case, a QoS station can transmit multiple QoS data frames before requesting
+ * a Block Ack through a Block Ack Request frame. If the AC is granted a non-null TXOP
+ * limit, MPDUs can be separated by a SIFS.
+ *
+ * In this test, an HT STA sends 14 packets to an HT AP. The ack policy selector is
+ * configured so that a Block Ack is requested once 8 (= 0.125 * 64) MPDUs are sent
+ * in addition to the MPDU having the starting sequence number. The block ack threshold
+ * is set to 2, hence a block ack agreement is established when there are at least two
+ * packets in the EDCA queue.
+ *
+ * When the TXOP limit is null:
+ * - the first packet is sent with Normal Ack policy because the BA agreement has not
+ *   been established yet (there are no queued packets when the first one arrives);
+ * - packets from the 2nd to the 10th are sent with Block Ack policy (and hence
+ *   are not immediately acknowledged);
+ * - after the 10th packet, a Block Ack Request is sent, followed by a Block Ack;
+ * - the remaining 4 packets are sent with Block Ack policy (and hence
+ *   are not immediately acknowledged);
+ * - the last packet is followed by a Block Ack Request because there are no more
+ *   packets in the EDCA queue and hence a response is needed independently of
+ *   the number of outstanding MPDUs.
+ *
+ * When the TXOP is not null (and long enough to include the transmission of all packets):
+ * - the first packet is sent with Normal Ack policy because the BA agreement has not
+ *   been established yet (there are no queued packets when the first one arrives);
+ * - the second packet is sent with Normal Ack Policy because the first packet sent in
+ *   a TXOP shall request an immediate response and no previous MPDUs have to be
+ *   acknowledged;
+ * - packets from the 3rd to the 11th are sent with Block Ack policy (and hence
+ *   are not immediately acknowledged);
+ * - after the 11th packet, a Block Ack Request is sent, followed by a Block Ack;
+ * - the remaining 3 packets are sent with Block Ack policy (and hence
+ *   are not immediately acknowledged);
+ * - the last packet is followed by a Block Ack Request because there are no more
+ *   packets in the EDCA queue and hence a response is needed independently of
+ *   the number of outstanding MPDUs.
  */
 class BlockAckAggregationDisabledTest : public TestCase
 {
@@ -339,20 +664,32 @@ class BlockAckAggregationDisabledTest : public TestCase
   */
   struct TxopDurationTracer
   {
+    /**
+     * Callback for the TxopTrace trace
+     * \param startTime TXOP start time
+     * \param duration TXOP duration
+     */
     void Trace (Time startTime, Time duration);
-    Time m_max {Seconds (0)};
+    Time m_max {Seconds (0)};  ///< max TXOP duration
   };
 
 public:
-  BlockAckAggregationDisabledTest ();
+  /**
+   * \brief Constructor
+   * \param txop true for non-null TXOP limit
+   */
+  BlockAckAggregationDisabledTest (bool txop);
   virtual ~BlockAckAggregationDisabledTest ();
 
   virtual void DoRun (void);
 
 
 private:
+  bool m_txop; ///< true for non-null TXOP limit
   uint32_t m_received; ///< received packets
   uint16_t m_txTotal; ///< transmitted data packets
+  uint16_t m_txSinceBar; ///< packets transmitted since the agreement was established
+                         ///< or the last block ack was received
   uint16_t m_nBar; ///< transmitted BlockAckReq frames
   uint16_t m_nBa; ///< received BlockAck frames
 
@@ -387,10 +724,12 @@ BlockAckAggregationDisabledTest::TxopDurationTracer::Trace (Time startTime, Time
     }
 }
 
-BlockAckAggregationDisabledTest::BlockAckAggregationDisabledTest ()
+BlockAckAggregationDisabledTest::BlockAckAggregationDisabledTest (bool txop)
   : TestCase ("Test case for Block Ack Policy with aggregation disabled"),
+    m_txop (txop),
     m_received (0),
     m_txTotal (0),
+    m_txSinceBar (0),
     m_nBar (0),
     m_nBa (0)
 {
@@ -415,13 +754,35 @@ BlockAckAggregationDisabledTest::Transmit (std::string context, Ptr<const Packet
   WifiMacHeader hdr;
   p->PeekHeader (hdr);
 
+  if (m_txSinceBar == 9 || m_txTotal == 14)
+    {
+      NS_TEST_ASSERT_MSG_EQ (hdr.IsBlockAckReq (), true, "Didn't get a BlockAckReq when expected");
+    }
+  else
+    {
+      NS_TEST_ASSERT_MSG_EQ (hdr.IsBlockAckReq (), false, "Got a BlockAckReq when not expected");
+    }
+
   if (hdr.IsQosData ())
     {
       m_txTotal++;
-      NS_TEST_EXPECT_MSG_EQ ((m_txTotal == 1 || hdr.IsQosBlockAck ()), true, "Unexpected QoS ack policy");
+      if (hdr.IsQosBlockAck ())
+        {
+          m_txSinceBar++;
+        }
+
+      if (!m_txop)
+        {
+          NS_TEST_EXPECT_MSG_EQ ((m_txTotal == 1 || hdr.IsQosBlockAck ()), true, "Unexpected QoS ack policy");
+        }
+      else
+        {
+          NS_TEST_EXPECT_MSG_EQ ((m_txTotal <= 2 || hdr.IsQosBlockAck ()), true, "Unexpected QoS ack policy");
+        }
     }
   else if (hdr.IsBlockAckReq ())
     {
+      m_txSinceBar = 0;
       m_nBar++;
     }
 }
@@ -453,6 +814,8 @@ BlockAckAggregationDisabledTest::DoRun (void)
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
+  wifi.SetAckPolicySelectorForAc (AC_BE, "ns3::ConstantWifiAckPolicySelector",
+                                  "BaThreshold", DoubleValue (0.125));
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
 
   WifiMacHelper mac;
@@ -493,6 +856,19 @@ BlockAckAggregationDisabledTest::DoRun (void)
   sta_device->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (0));
   TxopDurationTracer txopTracer;
 
+  if (m_txop)
+    {
+      PointerValue ptr;
+      sta_device->GetMac ()->GetAttribute ("BE_Txop", ptr);
+      ptr.Get<QosTxop> ()->TraceConnectWithoutContext ("TxopTrace", MakeCallback (&TxopDurationTracer::Trace, &txopTracer));
+
+      // set the TXOP limit on BE AC
+      Ptr<RegularWifiMac> ap_mac = DynamicCast<RegularWifiMac> (ap_device->GetMac ());
+      NS_ASSERT (ap_mac);
+      ap_mac->GetAttribute ("BE_Txop", ptr);
+      ptr.Get<QosTxop> ()->SetTxopLimit (MicroSeconds (4800));
+    }
+
   PacketSocketAddress socket;
   socket.SetSingleDevice (sta_device->GetIfIndex ());
   socket.SetPhysicalAddress (ap_device->GetAddress ());
@@ -503,14 +879,29 @@ BlockAckAggregationDisabledTest::DoRun (void)
   packetSocket.Install (wifiStaNode);
   packetSocket.Install (wifiApNode);
 
-  Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
-  client->SetAttribute ("PacketSize", UintegerValue (1400));
-  client->SetAttribute ("MaxPackets", UintegerValue (14));
-  client->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
-  client->SetRemote (socket);
-  wifiStaNode.Get (0)->AddApplication (client);
-  client->SetStartTime (Seconds (1));
-  client->SetStopTime (Seconds (3.0));
+  // the first client application generates a single packet, which is sent
+  // with the normal ack policy because there are no other packets queued
+  Ptr<PacketSocketClient> client1 = CreateObject<PacketSocketClient> ();
+  client1->SetAttribute ("PacketSize", UintegerValue (1400));
+  client1->SetAttribute ("MaxPackets", UintegerValue (1));
+  client1->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+  client1->SetRemote (socket);
+  wifiStaNode.Get (0)->AddApplication (client1);
+  client1->SetStartTime (Seconds (1));
+  client1->SetStopTime (Seconds (3.0));
+
+  // the second client application generates 13 packets. Even if when the first
+  // packet is queued the queue is empty, the first packet is not transmitted
+  // immediately, but the EDCAF waits for the next slot boundary. At that time,
+  // other packets have been queued, hence a BA agreement is established first.
+  Ptr<PacketSocketClient> client2 = CreateObject<PacketSocketClient> ();
+  client2->SetAttribute ("PacketSize", UintegerValue (1400));
+  client2->SetAttribute ("MaxPackets", UintegerValue (13));
+  client2->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+  client2->SetRemote (socket);
+  wifiStaNode.Get (0)->AddApplication (client2);
+  client2->SetStartTime (Seconds (1.5));
+  client2->SetStopTime (Seconds (3.0));
 
   Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
   server->SetLocal (socket);
@@ -527,14 +918,18 @@ BlockAckAggregationDisabledTest::DoRun (void)
 
   Simulator::Destroy ();
 
-  // The client application generates 14 packets, so we expect that the wifi PHY
+  // The client applications generate 14 packets, so we expect that the wifi PHY
   // layer transmits 14 MPDUs, the server application receives 14 packets, and
-  // a BAR is transmitted after each MPDU but the first one (because a BA agreement
-  // is established before transmitting the second MPDU).
+  // two BARs are transmitted.
   NS_TEST_EXPECT_MSG_EQ (m_txTotal, 14, "Unexpected number of transmitted packets");
   NS_TEST_EXPECT_MSG_EQ (m_received, 14, "Unexpected number of received packets");
-  NS_TEST_EXPECT_MSG_EQ (m_nBar, 13, "Unexpected number of Block Ack Requests");
-  NS_TEST_EXPECT_MSG_EQ (m_nBa, 13, "Unexpected number of Block Ack Responses");
+  NS_TEST_EXPECT_MSG_EQ (m_nBar, 2, "Unexpected number of Block Ack Requests");
+  NS_TEST_EXPECT_MSG_EQ (m_nBa, 2, "Unexpected number of Block Ack Responses");
+  if (m_txop)
+    {
+      NS_TEST_EXPECT_MSG_LT (txopTracer.m_max, MicroSeconds (4800), "TXOP duration exceeded!");
+      NS_TEST_EXPECT_MSG_GT (txopTracer.m_max, MicroSeconds (3008), "The maximum TXOP duration is too short!");
+    }
 }
 
 /**
@@ -554,8 +949,10 @@ BlockAckTestSuite::BlockAckTestSuite ()
 {
   AddTestCase (new PacketBufferingCaseA, TestCase::QUICK);
   AddTestCase (new PacketBufferingCaseB, TestCase::QUICK);
+  AddTestCase (new OriginatorBlockAckWindowTest, TestCase::QUICK);
   AddTestCase (new CtrlBAckResponseHeaderTest, TestCase::QUICK);
-  AddTestCase (new BlockAckAggregationDisabledTest, TestCase::QUICK);
+  AddTestCase (new BlockAckAggregationDisabledTest (false), TestCase::QUICK);
+  AddTestCase (new BlockAckAggregationDisabledTest (true), TestCase::QUICK);
 }
 
 static BlockAckTestSuite g_blockAckTestSuite; ///< the test suite

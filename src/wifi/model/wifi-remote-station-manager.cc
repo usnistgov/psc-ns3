@@ -162,7 +162,7 @@ WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
   m_wifiPhy = phy;
   m_defaultTxMode = phy->GetMode (0);
   NS_ASSERT (m_defaultTxMode.IsMandatory ());
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       m_defaultTxMcs = phy->GetMcs (0);
     }
@@ -567,7 +567,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       NS_ASSERT (found);
       return datatag.GetDataTxVector ();
     }
-  WifiTxVector txVector = DoGetDataTxVector (Lookup (address, header));
+  WifiTxVector txVector;
   if (header->IsMgt ())
     {
       //Use the lowest basic rate for management frames
@@ -582,8 +582,13 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
         }
       txVector.SetMode (mgtMode);
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
+      txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
+    }
+  else
+    {
+      txVector = DoGetDataTxVector (Lookup (address, header));
     }
   Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
   Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
@@ -1349,9 +1354,9 @@ void
 WifiRemoteStationManager::AddBasicMode (WifiMode mode)
 {
   NS_LOG_FUNCTION (this << mode);
-  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT || mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+  if (mode.GetModulationClass () >= WIFI_MOD_CLASS_HT)
     {
-      NS_FATAL_ERROR ("It is not allowed to add a HT, VHT or HE rate in the BSSBasicRateSet!");
+      NS_FATAL_ERROR ("It is not allowed to add a HT rate in the BSSBasicRateSet!");
     }
   for (uint8_t i = 0; i < GetNBasicModes (); i++)
     {

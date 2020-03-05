@@ -304,6 +304,14 @@ Txop::GetTxopLimit (void) const
   return m_txopLimit;
 }
 
+bool
+Txop::HasFramesToTransmit (void)
+{
+  bool ret = (m_currentPacket != 0 || !m_queue->IsEmpty ());
+  NS_LOG_FUNCTION (this << ret);
+  return ret;
+}
+
 void
 Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
@@ -313,6 +321,10 @@ Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   SocketPriorityTag priorityTag;
   packetCopy->RemovePacketTag (priorityTag);
   m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packetCopy);
+  if (m_channelAccessManager->NeedBackoffUponAccess (this))
+    {
+      GenerateBackoff ();
+    }
   m_queue->Enqueue (Create<WifiMacQueueItem> (packetCopy, hdr));
   StartAccessIfNeeded ();
 }
@@ -363,9 +375,7 @@ Txop::DoInitialize ()
   NS_LOG_FUNCTION (this);
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
 }
 
 bool
@@ -545,19 +555,19 @@ Txop::NotifyAccessGranted (void)
 }
 
 void
-Txop::NotifyInternalCollision (void)
-{
-  NS_LOG_FUNCTION (this);
-  NotifyCollision ();
-}
-
-void
-Txop::NotifyCollision (void)
+Txop::GenerateBackoff (void)
 {
   NS_LOG_FUNCTION (this);
   m_backoff = m_rng->GetInteger (0, GetCw ());
   m_backoffTrace (m_backoff);
   StartBackoffNow (m_backoff);
+}
+
+void
+Txop::NotifyInternalCollision (void)
+{
+  NS_LOG_FUNCTION (this);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -625,9 +635,7 @@ Txop::MissedCts (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -650,9 +658,7 @@ Txop::GotAck (void)
       m_currentPacket = 0;
       ResetCw ();
       m_cwTrace = GetCw ();
-      m_backoff = m_rng->GetInteger (0, GetCw ());
-      m_backoffTrace (m_backoff);
-      StartBackoffNow (m_backoff);
+      GenerateBackoff ();
       RestartAccessIfNeeded ();
     }
   else
@@ -689,9 +695,7 @@ Txop::MissedAck (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -772,9 +776,7 @@ Txop::EndTxNoAck (void)
   m_currentPacket = 0;
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   if (!m_txOkCallback.IsNull ())
     {
       m_txOkCallback (m_currentHdr);

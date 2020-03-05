@@ -191,17 +191,15 @@ Hybrid3gppPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel
               if (!isAStatic)
                 {
                   // To tackle a case, when there are buildings and nodes have mobility,
-                  // we pass each mobility model to BuildingsHelper::MakeConsistent(Ptr<MobilityModel> mm)
-                  // to update the info whether the node position falls inside or outside of any of the building.
-                  BuildingsHelper::MakeConsistent (a);
+                  // we update the info whether the node position falls inside or outside of any of the building.
+                  a1->MakeConsistent (a);
                 }
 
               if (!isBStatic)
                 {
                   // To tackle a case, when there are buildings and nodes have mobility,
-                  // we pass each mobility model to BuildingsHelper::MakeConsistent(Ptr<MobilityModel> mm)
-                  // to update the info whether the node position falls inside or outside of any of the building.
-                  BuildingsHelper::MakeConsistent (b);
+                  // we update the info whether the node position falls inside or outside of any of the building.
+                  b1->MakeConsistent (b);
                 }
 
               aIndoor = a1->IsIndoor ();
@@ -332,9 +330,9 @@ Hybrid3gppPropagationLossModel::EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<
   else
     {
       NS_LOG_DEBUG ("Evaluating shadowing for D2D scenario");
-      if (a->IsOutdoor ())
+      if (!a->IsIndoor ())
         {
-          if (b->IsOutdoor ())
+          if (!b->IsIndoor ())
             {
               // Outdoor to outdoor
               return 7;

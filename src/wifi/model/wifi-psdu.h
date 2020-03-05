@@ -23,12 +23,12 @@
 
 #include "ns3/nstime.h"
 #include "wifi-mac-header.h"
+#include "wifi-mac-queue-item.h"
 #include <vector>
 #include <set>
 
 namespace ns3 {
 
-class WifiMacQueueItem;
 class Packet;
 
 /**
@@ -97,27 +97,44 @@ public:
 
   /**
    * \brief Get the header of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the header of the i-th MPDU.
    */
   const WifiMacHeader & GetHeader (std::size_t i) const;
 
   /**
    * \brief Get the header of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the header of the i-th MPDU.
    */
   WifiMacHeader & GetHeader (std::size_t i);
 
   /**
    * \brief Get the payload of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the payload of the i-th MPDU.
    */
   Ptr<const Packet> GetPayload (std::size_t i) const;
 
   /**
    * \brief Get the timestamp of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the timestamp of the i-th MPDU.
    */
   Time GetTimeStamp (std::size_t i) const;
+
+  /**
+   * \brief Get a copy of the i-th A-MPDU subframe (includes subframe header, MPDU, and possibly padding)
+   * \return the i-th A-MPDU subframe.
+   */
+  Ptr<Packet> GetAmpduSubframe (std::size_t i) const;
+
+  /**
+   * \brief Return the size of the i-th A-MPDU subframe.
+   *
+   * \return the size of the i-th A-MPDU subframe.
+   */
+  std::size_t GetAmpduSubframeSize (std::size_t i) const;
 
   /**
    * Get the Receiver Address (RA), which is common to all the MPDUs
@@ -173,6 +190,18 @@ public:
   void SetAckPolicyForTid (uint8_t tid, WifiMacHeader::QosAckPolicy policy);
 
   /**
+   * Get the maximum distance between the sequence number of any QoS Data frame
+   * included in this PSDU that is not an old frame and the given starting
+   * sequence number. If this  PSDU does not contain any QoS Data frame that
+   * is not an old frame, an invalid distance (4096) is returned.
+   *
+   * \param startingSeq the given starting sequence number.
+   * \return the maximum distance between the sequence numbers included in the
+   *         PSDU and the given starting sequence number
+   */
+  uint16_t GetMaxDistFromStartingSeq (uint16_t startingSeq) const;
+
+  /**
    * \brief Return the size of the PSDU
    *
    * \return the size of the PSDU.
@@ -214,11 +243,26 @@ public:
    */
   std::vector<Ptr<WifiMacQueueItem>>::iterator end (void);
 
+  /**
+   * \brief Print the PSDU contents.
+   * \param os output stream in which the data should be printed.
+   */
+  void Print (std::ostream &os) const;
+
 private:
   bool m_isSingle;                                //!< true for an S-MPDU
   std::vector<Ptr<WifiMacQueueItem>> m_mpduList;  //!< list of constituent MPDUs
   uint32_t m_size;                                //!< the size of the PSDU
 };
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param psdu the PSDU
+ * \returns a reference to the stream
+ */
+std::ostream& operator<< (std::ostream& os, const WifiPsdu &psdu);
 
 
 } //namespace ns3

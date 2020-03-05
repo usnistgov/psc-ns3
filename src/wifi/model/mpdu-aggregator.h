@@ -42,14 +42,6 @@ class MpduAggregator : public Object
 {
 public:
   /**
-   * A list of deaggregated packets and their A-MPDU subframe headers.
-   */
-  typedef std::list<std::pair<Ptr<Packet>, AmpduSubframeHeader> > DeaggregatedMpdus;
-  /**
-   * A constant iterator for a list of deaggregated packets and their A-MPDU subframe headers.
-   */
-  typedef std::list<std::pair<Ptr<Packet>, AmpduSubframeHeader> >::const_iterator DeaggregatedMpdusCI;
-  /**
    * EDCA queues typedef
    */
   typedef std::map<AcIndex, Ptr<QosTxop> > EdcaQueues;
@@ -72,15 +64,6 @@ public:
    * \param isSingle whether it is a single MPDU.
    */
   static void Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, bool isSingle);
-
-  /**
-   * \param mpdu the MPDU we want to insert into an A-MPDU subframe.
-   * \param last true if it is the last MPDU.
-   * \param isSingleMpdu true if it is a single MPDU
-   *
-   * Adds A-MPDU subframe header and padding to each MPDU that is part of an A-MPDU before it is sent.
-   */
-  static void AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu);
 
   /**
    * Compute the size of the A-MPDU resulting from the aggregation of an MPDU of
@@ -113,7 +96,8 @@ public:
    *
    * - the time to transmit the resulting PPDU, according to the given TxVector,
    * does not exceed both the maximum PPDU duration allowed by the corresponding
-   * modulation class (if any) and the given PPDU duration limit (if non null)
+   * modulation class (if any) and the given PPDU duration limit (if distinct from
+   * Time::Min ())
    *
    * For now, only non-broadcast QoS Data frames can be aggregated (do not pass
    * other types of frames to this method). MPDUs to aggregate are looked for
@@ -133,39 +117,7 @@ public:
    */
   std::vector<Ptr<WifiMacQueueItem>> GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu,
                                                    WifiTxVector txVector,
-                                                   Time ppduDurationLimit = Seconds (0)) const;
-
-  /**
-   * Deaggregates an A-MPDU by removing the A-MPDU subframe header and padding.
-   *
-   * \param aggregatedPacket the aggregated packet
-   * \return list of deaggragted packets and their A-MPDU subframe headers
-   */
-  static DeaggregatedMpdus Deaggregate (Ptr<Packet> aggregatedPacket);
-
-  /**
-   * Peeks the A-MPDU subframes of the provided A-MPDU.
-   *
-   * \param aggregatedPacket the aggregated packet
-   * \return list of A-MPDU subframes (i.e. A-MPDU subframe header + MPDU + eventual padding)
-   */
-  static std::list<Ptr<const Packet>> PeekAmpduSubframes (Ptr<const Packet> aggregatedPacket);
-
-  /**
-   * Peeks the MPDUs of the provided A-MPDU.
-   *
-   * \param aggregatedPacket the aggregated packet
-   * \return list of MPDUs
-   */
-  static std::list<Ptr<const Packet>> PeekMpdus (Ptr<const Packet> aggregatedPacket);
-
-  /**
-   * Peeks the MPDU contained in the A-MPDU subframe.
-   *
-   * \param ampduSubframe the A-MPDU subframe
-   * \return the MPDU contained in the A-MPDU subframe
-   */
-  static Ptr<const Packet> PeekMpduInAmpduSubframe (Ptr<const Packet> ampduSubframe);
+                                                   Time ppduDurationLimit = Time::Min ()) const;
 
   /**
    * Set the map of EDCA queues.
@@ -174,7 +126,6 @@ public:
    */
   void SetEdcaQueues (EdcaQueues edcaQueues);
 
-private:
   /**
    * \param ampduSize the size of the A-MPDU that needs to be padded
    * \return the size of the padding that must be added to the end of an A-MPDU
@@ -185,6 +136,16 @@ private:
    */
   static uint8_t CalculatePadding (uint32_t ampduSize);
 
+  /**
+   * Get the A-MPDU subframe header corresponding to the MPDU size and
+   * whether the MPDU is a single MPDU.
+   *
+   * \param mpduSize size of the MPDU.
+   * \param isSingle true if S-MPDU.
+   */
+  static AmpduSubframeHeader GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle);
+
+private:
   EdcaQueues m_edca;   //!< the map of EDCA queues
 };
 

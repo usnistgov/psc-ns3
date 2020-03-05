@@ -39,6 +39,7 @@ class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
 class WifiTxVector;
+class WifiAckPolicySelector;
 
 /**
  * Enumeration for type of station
@@ -91,9 +92,11 @@ enum TypeOfStation
 class QosTxop : public Txop
 {
 public:
-  /// Allow test cases to access private members
+  /// allow AmpduAggregationTest class access
   friend class ::AmpduAggregationTest;
+  /// allow TwoLevelAggregationTest class access
   friend class ::TwoLevelAggregationTest;
+  /// allow HeAggregationTest class access
   friend class ::HeAggregationTest;
 
   std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
@@ -121,6 +124,18 @@ public:
    */
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
   /**
+   * Set the ack policy selector.
+   *
+   * \param ackSelector the ack policy selector.
+   */
+  void SetAckPolicySelector (Ptr<WifiAckPolicySelector> ackSelector);
+  /**
+   * Return the ack policy selector.
+   *
+   * \return the ack policy selector.
+   */
+  Ptr<WifiAckPolicySelector> GetAckPolicySelector (void) const;
+  /**
    * Set type of station with the given type.
    *
    * \param type the type of station.
@@ -132,6 +147,12 @@ public:
    * \return type of station.
    */
   TypeOfStation GetTypeOfStation (void) const;
+
+  /**
+   * Check if the EDCAF has frames to transmit.
+   * \return true if the EDCAF has frames to transmit.
+   */
+  virtual bool HasFramesToTransmit (void);
 
   /**
    * \param address recipient address of the peer station
@@ -164,6 +185,14 @@ public:
    * recipient for the given TID.
    */
   uint16_t GetBaStartingSequence (Mac48Address address, uint8_t tid) const;
+  /**
+   * \param address recipient address
+   * \param tid traffic ID
+   *
+   * Request the Block Ack manager to schedule the transmission of a
+   * block ack request for the established BA agreement (<i>address</i>,<i>tid</i>).
+   */
+  void ScheduleBlockAckReq (Mac48Address address, uint8_t tid);
 
   /* dcf notifications forwarded here */
   /**
@@ -174,10 +203,6 @@ public:
    * Notify the EDCAF that internal collision has occurred.
    */
   void NotifyInternalCollision (void);
-  /**
-   * Notify the EDCAF that collision has occurred.
-   */
-  void NotifyCollision (void);
 
   /* Event handlers */
   /**
@@ -240,6 +265,13 @@ public:
    * Request access from DCF manager if needed.
    */
   void StartAccessIfNeeded (void);
+
+  /**
+   * Return the remaining duration in the current TXOP.
+   *
+   * \return the remaining duration in the current TXOP.
+   */
+  Time GetTxopRemaining (void) const;
 
   /**
    * Check if Block ACK Request should be re-transmitted.
@@ -320,7 +352,6 @@ public:
   /**
    * Stores an MPDU (part of an A-MPDU) in blockackagreement (i.e. the sender is waiting
    * for a blockack containing the sequence number of this MPDU).
-   * It also calls NotifyMpdu transmission that updates the status of OriginatorBlockAckAgreement.
    *
    * \param mpdu received MPDU.
    */
@@ -396,25 +427,26 @@ public:
    */
   Ptr<const WifiMacQueueItem> PeekNextFrame (uint8_t tid = 8, Mac48Address recipient = Mac48Address::GetBroadcast ());
   /**
-   * Dequeue the frame that has been previously peeked by calling PeekNextFrame
-   * or PeekNextFrameByTidAndAddress. If the peeked frame is a QoS Data frame,
-   * it is actually dequeued if it meets the constraint on the maximum A-MPDU
-   * size (by assuming that the frame has to be aggregated to an existing A-MPDU
-   * of the given size) and its transmission time does not exceed the given
-   * PPDU duration limit (if strictly positive). If the peeked frame is a unicast
-   * QoS Data frame stored in the EDCA queue, attempt to perform A-MSDU aggregation
-   * (while meeting the constraints mentioned above) if <i>aggregate</i> is true
-   * and assign a sequence number to the dequeued frame.
+   * Dequeue the frame that has been previously peeked by calling PeekNextFrame.
+   * If the peeked frame is a QoS Data frame, it is actually dequeued if it meets
+   * the constraint on the maximum A-MPDU size (by assuming that the frame has to
+   * be aggregated to an existing A-MPDU of the given size) and its transmission
+   * time does not exceed the given PPDU duration limit (if distinct from Time::Min ()).
+   * If the peeked frame is a unicast QoS Data frame stored in the EDCA queue,
+   * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
+   * above) if <i>aggregate</i> is true and assign a sequence number to the
+   * dequeued frame.
    *
    * \param peekedItem the peeked frame.
    * \param txVector the TX vector used to transmit the peeked frame
+   * \param aggregate whether to attempt A-MSDU aggregation
    * \param ampduSize the size of the existing A-MPDU, if any
    * \param ppduDurationLimit the limit on the PPDU duration
    * \returns the dequeued frame.
    */
   Ptr<WifiMacQueueItem> DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVector txVector,
                                             bool aggregate = true, uint32_t ampduSize = 0,
-                                            Time ppduDurationLimit = Seconds (0));
+                                            Time ppduDurationLimit = Time::Min ());
   /**
    * Compute the MacLow transmission parameters for the given frame. Allowed frames
    * are those handled by a QosTxop (QoS data frames, BlockAckReq frames, ADDBA
@@ -425,6 +457,14 @@ public:
    */
   MacLowTransmissionParameters GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const;
 
+  /**
+   * Update the current packet this QosTxop is trying to transmit. This method
+   * is typically called by MacLow when it changes (i.e., by performing A-MSDU
+   * aggregation) the packet received from this QosTxop.
+   *
+   * \param mpdu the MPDU that MacLow is forwarding down to the PHY.
+   */
+  void UpdateCurrentPacket (Ptr<WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver.
    *
@@ -501,22 +541,6 @@ private:
    * \return true if the MPDU is to be considered old, false otherwise
    */
   bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
-  /**
-   * For now is typically invoked to complete transmission of a packets sent with ack policy
-   * Block Ack: the packet is buffered and dcf is reset.
-   */
-  void CompleteTx (void);
-  /**
-   * Verifies if dequeued packet has to be transmitted with ack policy Block Ack. This happens
-   * if an established block ack agreement exists with the receiver.
-   */
-  void VerifyBlockAck (void);
-  /**
-   * Return the remaining duration in the current TXOP.
-   *
-   * \return the remaining duration in the current TXOP.
-   */
-  Time GetTxopRemaining (void) const;
   /**
    * Update backoff and restart access if needed.
    */
@@ -601,6 +625,7 @@ private:
 
   AcIndex m_ac;                                         //!< the access category
   TypeOfStation m_typeOfStation;                        //!< the type of station
+  Ptr<WifiAckPolicySelector> m_ackPolicySelector;       //!< Ack policy selector
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< QOS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the Block ACK manager
   uint8_t m_blockAckThreshold;                          //!< the Block ACK threshold

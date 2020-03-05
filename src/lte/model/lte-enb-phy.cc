@@ -1186,7 +1186,7 @@ LteEnbPhy::SetHarqPhyModule (Ptr<LteHarqPhy> harq)
 
 
 void
-LteEnbPhy::ReceiveLteUlHarqFeedback (UlInfoListElement_s mes)
+LteEnbPhy::ReportUlHarqFeedback (UlInfoListElement_s mes)
 {
   NS_LOG_FUNCTION (this);
   // forward to scheduler

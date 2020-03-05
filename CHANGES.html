@@ -51,6 +51,54 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
+<h1>Changes from ns-3.30 to ns-3.31</h1>
+<h2>New API:</h2>
+<ul>
+<li> New attributes for <b> Ipv4L3Protocol</b> have been added to enable RFC 6621-based duplicate packet detection (DPD) (<b>EnableDuplicatePacketDetection</b>) and to control the cache expiration time (<b>DuplicateExpire</b>).</li>
+<li><b> MakeConsistent </b> method of <b> BuildingsHelper </b> class is 
+deprecated and moved to <b> MobilityBuildingInfo </b> class. <b> DoInitialize </b> 
+method of the <b> MobilityBuildingInfo </b> class would be responsible for making 
+the mobility model of a node consistent at the beginning of a simulation. 
+Therefore, there is no need for an explicit call to <b> MakeConsistent </b> in a simulation script.</li>
+<li> The <b> IsInside </b> method of <b> MobilityBuildingInfo </b> class is extended 
+to make the mobility model of a moving node consistent.</li>
+<li> The <b> IsOutside </b> method of <b> MobilityBuildingInfo </b> class is 
+deprecated. The <b> IsInside </b> method should be use to check the position of a node.</li>
+<li>A new abstract base class, WifiAckPolicySelector, is introduced to implement
+different techniques for selecting the acknowledgment policy for PSDUs containing
+QoS Data frames. Wifi, mesh and wave helpers provide a SetAckPolicySelectorForAc
+method to configure a specific ack policy selector for a given Access Category.</li>
+<li>The default ack policy selector is named ConstantWifiAckPolicySelector, which
+allows to choose between Block Ack policy and Implicit Block Ack Request policy and
+allows to request an acknowledgment after a configurable number of MPDUs have been
+transmitted.</li>
+<li>The MaxSize attribute is removed from the QueueBase base class and moved to subclasses. A new MaxSize attribute is therefore added to the DropTailQueue class, while the MaxQueueSize attribute of the WifiMacQueue class is renamed as MaxSize for API consistency.</li>
+</ul>
+<h2>Changes to existing API:</h2>
+<ul>
+<li>The internal TCP API for <b>TcpCongestionOps</b> has been extended to support the <b>CongControl</b> method to allow for delivery rate estimation feedback to the congestion control mechanism.</li>
+<li>Functions <b>LteEnbPhy::ReceiveUlHarqFeedback</b> and <b>LteUePhy::ReceiveLteDlHarqFeedback</b> are renamed to <b>LteEnbPhy::ReportUlHarqFeedback</b> and <b>LteUePhy::EnqueueDlHarqFeedback</b>, respectively to avoid confusion about their functionality. <b>LteHelper</b> is updated accordingly.</li>
+</ul>
+<h2>Changes to build system:</h2>
+<ul>
+<li>The <b>--lcov-report</b> option to Waf was fixed, and a new <b>--lcov-zerocounters</b> option was added to improve support for lcov.</li>
+</ul>
+<h2>Changed behavior:</h2>
+<ul>
+<li> As a result of the above API changes in <b> MobilityBuildingInfo </b> 
+and <b> BuildingsHelper </b> classes, a building aware pathloss models, e.g., 
+<b> HybridBuildingsPropagationLossModel </b> is now able to accurately compute 
+the pathloss for a node moving in and out of buildings in a simulation. See <a href=https://gitlab.com/nsnam/ns-3-dev/issues/80>issue 80</a> 
+for discussion.</li>
+<li> The implementation of the wifi channel access functions has been improved
+to make them more adherent to the IEEE 802.11-2016 standard. Concerning the DCF,
+the backoff procedure is no longer invoked when a packet is queued for transmission
+and the medium has not been idle for a DIFS, but it is invoked if the medium is busy
+or does not remain idle for a DIFS after the packet has been queued. Concerning the
+EDCAF, tranmissions are now correctly aligned at slot boundaries.</li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.29 to ns-3.30</h1>
 <h2>New API:</h2>
 <ul>

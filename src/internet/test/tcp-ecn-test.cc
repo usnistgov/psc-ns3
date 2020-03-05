@@ -161,7 +161,7 @@ TcpSocketCongestedRouter::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize
       isRetransmission = true;
     }
 
-  Ptr<Packet> p = m_txBuffer->CopyFromSequence (maxSize, seq);
+  Ptr<Packet> p = m_txBuffer->CopyFromSequence (maxSize, seq)->GetPacketCopy ();
   uint32_t sz = p->GetSize (); // Size of packet
   uint8_t flags = withAck ? TcpHeader::ACK : 0;
   uint32_t remainingData = m_txBuffer->SizeFromSequence (seq + SequenceNumber32 (sz));
@@ -326,7 +326,7 @@ TcpSocketCongestedRouter::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize
   TcpHeader header;
   header.SetFlags (flags);
   header.SetSequenceNumber (seq);
-  header.SetAckNumber (m_rxBuffer->NextRxSequence ());
+  header.SetAckNumber (m_tcb->m_rxBuffer->NextRxSequence ());
   if (m_endPoint)
     {
       header.SetSourcePort (m_endPoint->GetLocalPort ());
@@ -405,11 +405,11 @@ TcpEcnTest::ConfigureProperties ()
   TcpGeneralTest::ConfigureProperties ();
   if (m_testcase == 2 || m_testcase == 4 || m_testcase == 5 || m_testcase == 6)
     {
-      SetEcn (SENDER, TcpSocketBase::ClassicEcn);
+      SetUseEcn (SENDER, TcpSocketState::On);
     }
   if (m_testcase == 3 || m_testcase == 4 ||m_testcase == 5 || m_testcase == 6)
     {
-      SetEcn (RECEIVER, TcpSocketBase::ClassicEcn);
+      SetUseEcn (RECEIVER, TcpSocketState::On);
     }
 }
 

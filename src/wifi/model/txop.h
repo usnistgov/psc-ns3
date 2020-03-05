@@ -370,11 +370,16 @@ protected:
    * Notify the DCF that internal collision has occurred.
    */
   virtual void NotifyInternalCollision (void);
-  /**
-   * Notify the DCF that collision has occurred.
-   */
-  virtual void NotifyCollision (void);
 
+  /**
+   * Check if the DCF has frames to transmit.
+   * \return true if the DCF has frames to transmit.
+   */
+  virtual bool HasFramesToTransmit (void);
+  /**
+   * Generate a new backoff now.
+   */
+  virtual void GenerateBackoff (void);
   /**
    * Restart access request if needed.
    */

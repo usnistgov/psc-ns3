@@ -41,11 +41,11 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
-#include "ns3/wifi-phy-tag.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/ht-configuration.h"
-#include "ns3/wifi-phy-header.h"
+#include "ns3/wifi-ppdu.h"
+#include "ns3/wifi-psdu.h"
 
 using namespace ns3;
 
@@ -460,7 +460,6 @@ DcfImmediateAccessBroadcastTestCase::NotifyPhyTxBegin (Ptr<const Packet> p, doub
 {
   if (m_numSentPackets == 0)
     {
-      NS_ASSERT_MSG (Simulator::Now () == Time (Seconds (1)), "Packet 0 not transmitted at 1 second");
       m_numSentPackets++;
       m_firstTransmissionTime = Simulator::Now ();
     }
@@ -536,13 +535,17 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
+  // First packet is transmitted a DIFS after the packet is queued. A DIFS
+  // is 2 slots (2 * 9 = 18 us) plus a SIFS (16 us), i.e., 34 us
+  Time expectedFirstTransmissionTime = Seconds (1.0) + MicroSeconds (34);
+
   //First packet has 1408 us of transmit time.   Slot time is 9 us.
   //Backoff is 1 slots.  SIFS is 16 us.  DIFS is 2 slots = 18 us.
   //Should send next packet at 1408 us + (1 * 9 us) + 16 us + (2 * 9) us
   //1451 us after the first one.
   uint32_t expectedWait1 = 1408 + (1 * 9) + 16 + (2 * 9);
-  Time expectedSecondTransmissionTime = MicroSeconds (expectedWait1) + MilliSeconds (1000);
-  NS_TEST_ASSERT_MSG_EQ (m_firstTransmissionTime, MilliSeconds (1000), "The first transmission time not correct!");
+  Time expectedSecondTransmissionTime = expectedFirstTransmissionTime + MicroSeconds (expectedWait1);
+  NS_TEST_ASSERT_MSG_EQ (m_firstTransmissionTime, expectedFirstTransmissionTime, "The first transmission time not correct!");
 
   NS_TEST_ASSERT_MSG_EQ (m_secondTransmissionTime, expectedSecondTransmissionTime, "The second transmission time not correct!");
 }
@@ -1247,7 +1250,7 @@ Bug2222TestCase::DoRun (void)
   //Generate same backoff for AC_VI and AC_VO
   //The below combination will work
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (2);
+  RngSeedManager::SetRun (16);
   int64_t streamNumber = 100;
 
   NodeContainer wifiNodes;
@@ -1299,8 +1302,8 @@ Bug2222TestCase::DoRun (void)
   clientLowPriority->SetAttribute ("Priority", UintegerValue (4)); //AC_VI
   clientLowPriority->SetRemote (socket);
   wifiNodes.Get (0)->AddApplication (clientLowPriority);
-  clientLowPriority->SetStartTime (Seconds (1.0));
-  clientLowPriority->SetStopTime (Seconds (2.0));
+  clientLowPriority->SetStartTime (Seconds (0.0));
+  clientLowPriority->SetStopTime (Seconds (1.0));
 
   Ptr<PacketSocketClient> clientHighPriority = CreateObject<PacketSocketClient> ();
   clientHighPriority->SetAttribute ("PacketSize", UintegerValue (1460));
@@ -1308,18 +1311,18 @@ Bug2222TestCase::DoRun (void)
   clientHighPriority->SetAttribute ("Priority", UintegerValue (6)); //AC_VO
   clientHighPriority->SetRemote (socket);
   wifiNodes.Get (0)->AddApplication (clientHighPriority);
-  clientHighPriority->SetStartTime (Seconds (1.0));
-  clientHighPriority->SetStopTime (Seconds (2.0));
+  clientHighPriority->SetStartTime (Seconds (0.0));
+  clientHighPriority->SetStopTime (Seconds (1.0));
 
   Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
   server->SetLocal (socket);
   wifiNodes.Get (1)->AddApplication (server);
-  server->SetStartTime (Seconds (1.0));
-  server->SetStopTime (Seconds (2.0));
+  server->SetStartTime (Seconds (0.0));
+  server->SetStopTime (Seconds (1.0));
 
   Config::Connect ("/NodeList/*/DeviceList/*/RemoteStationManager/MacTxDataFailed", MakeCallback (&Bug2222TestCase::TxDataFailedTrace, this));
 
-  Simulator::Stop (Seconds (2.0));
+  Simulator::Stop (Seconds (1.0));
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -1368,7 +1371,7 @@ private:
    */
   void SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination) const;
 
-  uint16_t m_channelWidth;
+  uint16_t m_channelWidth; ///< channel width (in MHz)
 };
 
 Bug2843TestCase::Bug2843TestCase ()
@@ -1391,28 +1394,11 @@ Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
 
   // Get channel bandwidth and modulation class
   Ptr<const WifiSpectrumSignalParameters> wifiTxParams = DynamicCast<WifiSpectrumSignalParameters> (txParams);
-  Ptr<Packet> packet = wifiTxParams->packet->Copy ();
-  WifiPhyTag tag;
-  if (!packet->RemovePacketTag (tag))
-    {
-      NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
-      return;
-    }
 
-  WifiModulationClass modulationClass = tag.GetModulation ();
-  WifiPreamble preamble = tag.GetPreambleType ();
-  if ((modulationClass != WIFI_MOD_CLASS_HT) || (preamble != WIFI_PREAMBLE_HT_GF))
-    {
-      LSigHeader sig;
-      packet->RemoveHeader (sig);
-      m_channelWidth = 20;
-    }
-  if (modulationClass == WIFI_MOD_CLASS_VHT)
-    {
-      VhtSigHeader vhtSig;
-      packet->RemoveHeader (vhtSig);
-      m_channelWidth = vhtSig.GetChannelWidth ();
-    }
+  Ptr<WifiPpdu> ppdu = Copy (wifiTxParams->ppdu);
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  m_channelWidth = txVector.GetChannelWidth ();
+  WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();
 
   // Build a tuple and check if seen before (if so store it)
   FreqWidthSubbandModulationTuple tupleForCurrentTx = std::make_tuple (startingFreq, m_channelWidth, numBands, modulationClass);
@@ -1510,7 +1496,7 @@ Bug2843TestCase::DoRun (void)
   std::size_t numberTuples = m_distinctTuples.size ();
   NS_TEST_ASSERT_MSG_EQ (numberTuples, 2, "Only two distinct tuples expected");
   NS_TEST_ASSERT_MSG_EQ (std::get<0> (m_distinctTuples[0]) - 20e6, std::get<0> (m_distinctTuples[1]), "The starting frequency of the first tuple should be shifted 20 MHz to the right wrt second tuple");
-  // Note that the first tuple should the one initiated by the beacon, i.e. legacy OFDM (20 MHz)
+  // Note that the first tuple should the one initiated by the beacon, i.e. non-HT OFDM (20 MHz)
   NS_TEST_ASSERT_MSG_EQ (std::get<1> (m_distinctTuples[0]), 20, "First tuple's channel width should be 20 MHz");
   NS_TEST_ASSERT_MSG_EQ (std::get<2> (m_distinctTuples[0]), 193, "First tuple should have 193 subbands (64+DC, 20MHz+DC, inband and 64*2 out-of-band, 20MHz on each side)");
   NS_TEST_ASSERT_MSG_EQ (std::get<3> (m_distinctTuples[0]), WifiModulationClass::WIFI_MOD_CLASS_OFDM, "First tuple should be OFDM");
@@ -1954,14 +1940,14 @@ private:
    */
   void RunSubtest (PointerValue apErrorModel, PointerValue staErrorModel);
 
-  uint8_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
-  uint8_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
-  uint8_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
-  uint8_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
-  uint8_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
-  uint8_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
-  uint8_t m_addbaNoReplyCount;       ///< Count number of times ADDBA state machine is in no_reply state
-  uint8_t m_addbaResetCount;         ///< Count number of times ADDBA state machine is in reset state
+  uint16_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
+  uint16_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
+  uint16_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
+  uint16_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
+  uint16_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
+  uint16_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
+  uint16_t m_addbaNoReplyCount;       ///< Count number of times ADDBA state machine is in no_reply state
+  uint16_t m_addbaResetCount;         ///< Count number of times ADDBA state machine is in reset state
 };
 
 Bug2470TestCase::Bug2470TestCase ()
@@ -2096,8 +2082,10 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop", MakeCallback (&Bug2470TestCase::RxDropCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
 
-  Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
-  Simulator::Schedule (Seconds (0.8), &Bug2470TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.5) + MicroSeconds (5), &Bug2470TestCase::SendPacketBurst, this, 4, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.8), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.8) + MicroSeconds (5), &Bug2470TestCase::SendPacketBurst, this, 4, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
 
   Simulator::Stop (Seconds (1.0));
   Simulator::Run ();
@@ -2153,7 +2141,7 @@ Bug2470TestCase::DoRun (void)
   // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (4);
   blackList.push_back (5);
-  blackList.push_back (6);
+  blackList.push_back (8);
   apPem->SetList (blackList);
 
   {
@@ -2187,7 +2175,7 @@ public:
 };
 
 WifiTestSuite::WifiTestSuite ()
-  : TestSuite ("devices-wifi", UNIT)
+  : TestSuite ("wifi-devices", UNIT)
 {
   AddTestCase (new WifiTest, TestCase::QUICK);
   AddTestCase (new QosUtilsIsOldPacketTest, TestCase::QUICK);

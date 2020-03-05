@@ -57,14 +57,14 @@
 //
 // The user can select the distance between the stations and the APs, can enable/disable the RTS/CTS mechanism
 // and can modify the duration of a TXOP.
-// Example: ./waf --run "wifi-aggregation --distance=10 --enableRts=0 --simulationTime=20"
+// Example: ./waf --run "wifi-txop-aggregation --distance=10 --enableRts=0 --simulationTime=20"
 //
 // The output prints the throughput and the maximum TXOP duration measured for the 4 cases/networks
 // described above. When default aggregation parameters are enabled, the
-// maximum A-MPDU size is 65 kB and the throughput is maximal. When aggregation is disabled, the throughput is about the half of the
-// physical bitrate as in legacy wifi networks. When only A-MSDU is enabled, the throughput is increased but is not maximal, since the maximum
-// A-MSDU size is limited to 7935 bytes (whereas the maximum A-MPDU size is limited to 65535 bytes). When A-MSDU and A-MPDU are both enabled
-// (= two-level aggregation), the throughput is slightly smaller than the first scenario since we set a smaller maximum A-MPDU size.
+// maximum A-MPDU size is 65 kB and the throughput is maximal. When aggregation is disabled, the throughput is about the half of the physical
+// bitrate. When only A-MSDU is enabled, the throughput is increased but is not maximal, since the maximum A-MSDU size is limited to 7935 bytes
+// (whereas the maximum A-MPDU size is limited to 65535 bytes). When A-MSDU and A-MPDU are both enabled (= two-level aggregation),
+// the throughput is slightly smaller than the first scenario since we set a smaller maximum A-MPDU size.
 //
 // When the distance is increased, the frame error rate gets higher, and the output shows how it affects the throughput for the 4 networks.
 // Even through A-MSDU has less overheads than A-MPDU, A-MSDU is less robust against transmission errors than A-MPDU. When the distance is

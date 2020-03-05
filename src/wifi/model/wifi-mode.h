@@ -224,8 +224,6 @@ public:
 private:
   /// allow WifiModeFactory class access
   friend class WifiModeFactory;
-  /// allow WifiPhyTag class access
-  friend class WifiPhyTag; // access the UID-based constructor
   /**
    * Create a WifiMode from a given unique ID.
    *
@@ -278,7 +276,7 @@ public:
    *
    * \return WifiMode
    *
-   * Create a WifiMode (not used for HT or VHT).
+   * Create a non-HT WifiMode.
    */
   static WifiMode CreateWifiMode (std::string uniqueName,
                                   WifiModulationClass modClass,
@@ -294,7 +292,7 @@ public:
    *
    * \return WifiMode
    *
-   * Create a HT or VHT WifiMode.
+   * Create a HT WifiMode.
    */
   static WifiMode CreateWifiMcs (std::string uniqueName,
                                  uint8_t mcsValue,

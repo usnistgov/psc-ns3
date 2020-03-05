@@ -20,10 +20,10 @@
 
 #include "ns3/packet.h"
 #include "ns3/log.h"
-#include "wifi-mac-queue-item.h"
 #include "wifi-psdu.h"
 #include "wifi-mac-trailer.h"
 #include "mpdu-aggregator.h"
+#include "ampdu-subframe-header.h"
 #include "wifi-utils.h"
 
 namespace ns3 {
@@ -74,23 +74,19 @@ WifiPsdu::~WifiPsdu ()
 bool
 WifiPsdu::IsSingle (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_isSingle;
 }
 
 bool
 WifiPsdu::IsAggregate (void) const
 {
-  NS_LOG_FUNCTION (this);
   return (m_mpduList.size () > 1 || m_isSingle);
 }
 
 Ptr<const Packet>
 WifiPsdu::GetPacket (void) const
 {
-  NS_LOG_FUNCTION (this);
   Ptr<Packet> packet = Create<Packet> ();
-
   if (m_mpduList.size () == 1 && !m_isSingle)
     {
       packet = m_mpduList.at (0)->GetPacket ()->Copy ();
@@ -114,9 +110,7 @@ WifiPsdu::GetPacket (void) const
 Mac48Address
 WifiPsdu::GetAddr1 (void) const
 {
-  NS_LOG_FUNCTION (this);
   Mac48Address ra = m_mpduList.at (0)->GetHeader ().GetAddr1 ();
-
   // check that the other MPDUs have the same RA
   for (std::size_t i = 1; i < m_mpduList.size (); i++)
     {
@@ -131,9 +125,7 @@ WifiPsdu::GetAddr1 (void) const
 Mac48Address
 WifiPsdu::GetAddr2 (void) const
 {
-  NS_LOG_FUNCTION (this);
   Mac48Address ta = m_mpduList.at (0)->GetHeader ().GetAddr2 ();
-
   // check that the other MPDUs have the same TA
   for (std::size_t i = 1; i < m_mpduList.size (); i++)
     {
@@ -148,9 +140,7 @@ WifiPsdu::GetAddr2 (void) const
 Time
 WifiPsdu::GetDuration (void) const
 {
-  NS_LOG_FUNCTION (this);
   Time duration = m_mpduList.at (0)->GetHeader ().GetDuration ();
-
   // check that the other MPDUs have the same Duration/ID
   for (std::size_t i = 1; i < m_mpduList.size (); i++)
     {
@@ -166,7 +156,6 @@ void
 WifiPsdu::SetDuration (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-
   for (auto& mpdu : m_mpduList)
     {
       mpdu->GetHeader ().SetDuration (duration);
@@ -176,8 +165,6 @@ WifiPsdu::SetDuration (Time duration)
 std::set<uint8_t>
 WifiPsdu::GetTids (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   std::set<uint8_t> s;
   for (auto& mpdu : m_mpduList)
     {
@@ -227,7 +214,6 @@ void
 WifiPsdu::SetAckPolicyForTid (uint8_t tid, WifiMacHeader::QosAckPolicy policy)
 {
   NS_LOG_FUNCTION (this << +tid << policy);
-
   for (auto& mpdu : m_mpduList)
     {
       if (mpdu->GetHeader ().IsQosData () && mpdu->GetHeader ().GetQosTid () == tid)
@@ -237,74 +223,151 @@ WifiPsdu::SetAckPolicyForTid (uint8_t tid, WifiMacHeader::QosAckPolicy policy)
     }
 }
 
+uint16_t
+WifiPsdu::GetMaxDistFromStartingSeq (uint16_t startingSeq) const
+{
+  NS_LOG_FUNCTION (this << startingSeq);
+
+  uint16_t maxDistFromStartingSeq = 0;
+  bool foundFirst = false;
+
+  for (auto& mpdu : m_mpduList)
+    {
+      uint16_t currSeqNum = mpdu->GetHeader ().GetSequenceNumber ();
+
+      if (mpdu->GetHeader ().IsQosData () && !QosUtilsIsOldPacket (startingSeq, currSeqNum))
+        {
+          uint16_t currDistToStartingSeq = (currSeqNum - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
+
+          if (!foundFirst || currDistToStartingSeq > maxDistFromStartingSeq)
+            {
+              foundFirst = true;
+              maxDistFromStartingSeq = currDistToStartingSeq;
+            }
+        }
+    }
+
+  if (!foundFirst)
+    {
+      NS_LOG_DEBUG ("All QoS Data frames in this PSDU are old frames");
+      return SEQNO_SPACE_SIZE;
+    }
+  NS_LOG_DEBUG ("Returning " << maxDistFromStartingSeq);
+  return maxDistFromStartingSeq;
+}
+
 uint32_t
 WifiPsdu::GetSize (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_size;
 }
 
 const WifiMacHeader &
 WifiPsdu::GetHeader (std::size_t i) const
 {
-  NS_LOG_FUNCTION (this << i);
   return m_mpduList.at (i)->GetHeader ();
 }
 
 WifiMacHeader &
 WifiPsdu::GetHeader (std::size_t i)
 {
-  NS_LOG_FUNCTION (this << i);
   return m_mpduList.at (i)->GetHeader ();
 }
 
 Ptr<const Packet>
 WifiPsdu::GetPayload (std::size_t i) const
 {
-  NS_LOG_FUNCTION (this << i);
   return m_mpduList.at (i)->GetPacket ();
 }
 
 Time
 WifiPsdu::GetTimeStamp (std::size_t i) const
 {
-  NS_LOG_FUNCTION (this << i);
   return m_mpduList.at (i)->GetTimeStamp ();
+}
+
+Ptr<Packet>
+WifiPsdu::GetAmpduSubframe (std::size_t i) const
+{
+  NS_ASSERT (i < m_mpduList.size ());
+  Ptr<Packet> subframe = m_mpduList.at (i)->GetProtocolDataUnit ();
+  subframe->AddHeader (MpduAggregator::GetAmpduSubframeHeader (static_cast<uint16_t> (subframe->GetSize ()),
+                                                               m_isSingle));
+  size_t padding = GetAmpduSubframeSize (i) - subframe->GetSize ();
+  if (padding > 0)
+    {
+      Ptr<Packet> pad = Create<Packet> (padding);
+      subframe->AddAtEnd (pad);
+    }
+  return subframe;
+}
+
+std::size_t
+WifiPsdu::GetAmpduSubframeSize (std::size_t i) const
+{
+  NS_ASSERT (i < m_mpduList.size ());
+  size_t subframeSize = 4; //A-MPDU Subframe header size
+  subframeSize += m_mpduList.at (i)->GetSize ();
+  if (i != m_mpduList.size () - 1) //add padding if not last
+    {
+      subframeSize += MpduAggregator::CalculatePadding (subframeSize);
+    }
+  return subframeSize;
 }
 
 std::size_t
 WifiPsdu::GetNMpdus (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_mpduList.size ();
 }
 
 std::vector<Ptr<WifiMacQueueItem>>::const_iterator
 WifiPsdu::begin (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_mpduList.begin ();
 }
 
 std::vector<Ptr<WifiMacQueueItem>>::iterator
 WifiPsdu::begin (void)
 {
-  NS_LOG_FUNCTION (this);
   return m_mpduList.begin ();
 }
 
 std::vector<Ptr<WifiMacQueueItem>>::const_iterator
 WifiPsdu::end (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_mpduList.end ();
 }
 
 std::vector<Ptr<WifiMacQueueItem>>::iterator
 WifiPsdu::end (void)
 {
-  NS_LOG_FUNCTION (this);
   return m_mpduList.end ();
+}
+
+void
+WifiPsdu::Print (std::ostream& os) const
+{
+  os << "size=" << m_size;
+  if (IsAggregate ())
+    {
+      os << ", A-MPDU of " << GetNMpdus () << " MPDUs";
+      for (const auto& mpdu : m_mpduList)
+        {
+          os << " (" << *mpdu << ")";
+        }
+      }
+  else
+    {
+      os << ", " << ((m_isSingle) ? "S-MPDU" : "normal MPDU")
+         << " (" << *(m_mpduList.at (0)) << ")";
+    }
+}
+
+std::ostream & operator << (std::ostream &os, const WifiPsdu &psdu)
+{
+  psdu.Print (os);
+  return os;
 }
 
 } //namespace ns3

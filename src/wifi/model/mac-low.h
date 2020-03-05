@@ -341,10 +341,10 @@ public:
   /**
    * \param item packet to send (does not include the 802.11 MAC header and checksum)
    * \param params transmission parameters of packet.
+   * \return the transmission time that does not include the time required to transmit the frame
    *
-   * This transmission time does not include the time required to transmit the frame.
-   * It only includes the time for the RTS/CTS exchange (if any) and for the Ack
-   * frame (if any).
+   * This transmission time  only includes the time for the RTS/CTS exchange (if any)
+   * and for the Ack frame (if any).
    */
   Time CalculateOverheadTxTime (Ptr<const WifiMacQueueItem> item,
                                const MacLowTransmissionParameters& params) const;
@@ -362,22 +362,22 @@ public:
                                   Ptr<Txop> txop);
 
   /**
-   * \param packet packet received
-   * \param rxSnr snr of packet received
-   * \param txVector TXVECTOR of packet received
+   * \param mpdu MPDU received
+   * \param rxSnr snr of MPDU received
+   * \param txVector TXVECTOR of MPDU received
    * \param ampduSubframe true if this MPDU is part of an A-MPDU
    *
    * This method is typically invoked by the lower PHY layer to notify
-   * the MAC layer that a packet was successfully received.
+   * the MAC layer that an MPDU was successfully received.
    */
-  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
+  void ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
   /**
-   * \param packet packet received.
+   * \param psdu PSDU received.
    *
    * This method is typically invoked by the lower PHY layer to notify
-   * the MAC layer that a packet was unsuccessfully received.
+   * the MAC layer that a PSDU was unsuccessfully received.
    */
-  void ReceiveError (Ptr<Packet> packet);
+  void ReceiveError (Ptr<WifiPsdu> psdu);
   /**
    * \param duration switching delay duration.
    *
@@ -442,7 +442,7 @@ public:
    * This function de-aggregates an A-MPDU and decide if each MPDU is received correctly or not
    *
    */
-  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector,
+  void DeaggregateAmpduAndReceive (Ptr<WifiPsdu> aggregatedPacket, double rxSnr, WifiTxVector txVector,
                                    std::vector<bool> statusPerMpdu);
 
   /**
@@ -462,11 +462,17 @@ public:
    */
   bool DoNavStartNow (Time duration);
   /**
-   * This function indicates whether it is the CF period.
+   * This function indicates whether Simulator::Now is in the CF period.
+   *
+   * \return true if Simulator::Now is in CF period,
+   *         false otherwise
    */
   virtual bool IsCfPeriod (void) const;
   /**
    * This function decides if a CF frame can be transmitted in the current CFP.
+   *
+   * \return true if a CF frame can be transmitted in the current CFP,
+   *         false otherwise
    */
   bool CanTransmitNextCfFrame (void) const;
 
@@ -495,6 +501,7 @@ public:
    * \param aggr pointer to the MPDU aggregator.
    */
   void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
+
 
 private:
   /**
@@ -628,6 +635,26 @@ private:
    * \return the time required to transmit the Block ACK (including preamble and FCS)
    */
   Time GetBlockAckDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
+  /**
+   * Return the time required to transmit the Block Ack Request to the specified address
+   * given the TXVECTOR (including preamble and FCS).
+   *
+   * \param blockAckReqTxVector the TX vector used to transmit the BAR
+   * \param type the Block Ack Request type
+   * \return the time required to transmit the Block Ack Request (including preamble and FCS)
+   */
+  Time GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
+  /**
+   * Return the time required to transmit the response frames (ACK or BAR+BA
+   * following the policy configured in the transmit parameters).
+   *
+   * \param params the transmission parameters
+   * \param dataTxVector the TX vector used to transmit the data frame
+   * \param receiver the station from which a response is expected
+   * \return the time required to transmit the response (ACK or BAR+BA)
+   */
+  Time GetResponseDuration (const MacLowTransmissionParameters& params,
+                            WifiTxVector dataTxVector, Mac48Address receiver) const;
   /**
    * Check if CTS-to-self mechanism should be used for the current packet.
    *

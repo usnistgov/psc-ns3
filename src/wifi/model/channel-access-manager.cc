@@ -243,19 +243,54 @@ ChannelAccessManager::IsBusy (void) const
 }
 
 bool
-ChannelAccessManager::IsWithinAifs (Ptr<Txop> state) const
+ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
 {
-  NS_LOG_FUNCTION (this << state);
-  Time ifsEnd = GetAccessGrantStart () + (state->GetAifsn () * m_slot);
-  if (ifsEnd > Simulator::Now ())
+  NS_LOG_FUNCTION (this << txop);
+
+  // the Txop might have a stale value of remaining backoff slots
+  UpdateBackoff ();
+
+  /*
+   * From section 10.3.4.2 "Basic access" of IEEE 802.11-2016:
+   *
+   * A STA may transmit an MPDU when it is operating under the DCF access
+   * method, either in the absence of a PC, or in the CP of the PCF access
+   * method, when the STA determines that the medium is idle when a frame is
+   * queued for transmission, and remains idle for a period of a DIFS, or an
+   * EIFS (10.3.2.3.7) from the end of the immediately preceding medium-busy
+   * event, whichever is the greater, and the backoff timer is zero. Otherwise
+   * the random backoff procedure described in 10.3.4.3 shall be followed.
+   *
+   * From section 10.22.2.2 "EDCA backoff procedure" of IEEE 802.11-2016:
+   *
+   * The backoff procedure shall be invoked by an EDCAF when any of the following
+   * events occurs:
+   * a) An MA-UNITDATA.request primitive is received that causes a frame with that AC
+   *    to be queued for transmission such that one of the transmit queues associated
+   *    with that AC has now become non-empty and any other transmit queues
+   *    associated with that AC are empty; the medium is busy on the primary channel
+   */
+  if (!txop->HasFramesToTransmit () && !txop->GetLow ()->IsCfPeriod () && txop->GetBackoffSlots () == 0)
     {
-      NS_LOG_DEBUG ("IsWithinAifs () true; ifsEnd is at " << ifsEnd.GetSeconds ());
-      return true;
+      if (!IsBusy ())
+        {
+          // medium idle. If this is a DCF, use immediate access (we can transmit
+          // in a DIFS if the medium remains idle). If this is an EDCAF, update
+          // the backoff start time kept by the EDCAF to the current time in order
+          // to correctly align the backoff start time at the next slot boundary
+          // (performed by the next call to ChannelAccessManager::RequestAccess())
+          Time delay = (txop->IsQosTxop () ? Seconds (0)
+                                           : m_sifs + txop->GetAifsn () * m_slot);
+          txop->UpdateBackoffSlotsNow (0, Simulator::Now () + delay);
+        }
+      else
+        {
+          // medium busy, backoff is neeeded
+          return true;
+        }
     }
-  NS_LOG_DEBUG ("IsWithinAifs () false; ifsEnd was at " << ifsEnd.GetSeconds ());
   return false;
 }
-
 
 void
 ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
@@ -277,41 +312,24 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
       m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::DoGrantPcfAccess, this, state);
       return;
     }
+  /*
+   * EDCAF operations shall be performed at slot boundaries (Sec. 10.22.2.4 of 802.11-2016)
+   */
+  Time accessGrantStart = GetAccessGrantStart () + (state->GetAifsn () * m_slot);
+
+  if (state->IsQosTxop () && state->GetBackoffStart () > accessGrantStart)
+    {
+      // The backoff start time reported by the EDCAF is more recent than the last
+      // time the medium was busy plus an AIFS, hence we need to align it to the
+      // next slot boundary.
+      Time diff = state->GetBackoffStart () - accessGrantStart;
+      uint32_t nIntSlots = (diff / m_slot).GetHigh () + 1;
+      state->UpdateBackoffSlotsNow (0, accessGrantStart + (nIntSlots * m_slot));
+    }
+
   UpdateBackoff ();
   NS_ASSERT (!state->IsAccessRequested ());
   state->NotifyAccessRequested ();
-  // If currently transmitting; end of transmission (ACK or no ACK) will cause
-  // a later access request if needed from EndTxNoAck, GotAck, or MissedAck
-  Time lastTxEnd = m_lastTxStart + m_lastTxDuration;
-  if (lastTxEnd > Simulator::Now ())
-    {
-      NS_LOG_DEBUG ("Internal collision (currently transmitting)");
-      state->NotifyInternalCollision ();
-      DoRestartAccessTimeoutIfNeeded ();
-      return;
-    }
-  /**
-   * If there is a collision, generate a backoff
-   * by notifying the collision to the user.
-   */
-  if (state->GetBackoffSlots () == 0)
-    {
-      if (IsBusy ())
-        {
-          NS_LOG_DEBUG ("medium is busy: collision");
-          // someone else has accessed the medium; generate a backoff.
-          state->NotifyCollision ();
-          DoRestartAccessTimeoutIfNeeded ();
-          return;
-        }
-      else if (IsWithinAifs (state))
-        {
-          NS_LOG_DEBUG ("busy within AIFS");
-          state->NotifyCollision ();
-          DoRestartAccessTimeoutIfNeeded ();
-          return;
-        }
-    }
   DoGrantDcfAccess ();
   DoRestartAccessTimeoutIfNeeded ();
 }
@@ -445,6 +463,7 @@ ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> state)
   NS_LOG_FUNCTION (this << state);
   Time mostRecentEvent = MostRecent ({state->GetBackoffStart (),
                                      GetAccessGrantStart () + (state->GetAifsn () * m_slot)});
+  NS_LOG_DEBUG ("Backoff start: " << mostRecentEvent.As (Time::US));
 
   return mostRecentEvent;
 }
@@ -453,9 +472,10 @@ Time
 ChannelAccessManager::GetBackoffEndFor (Ptr<Txop> state)
 {
   NS_LOG_FUNCTION (this << state);
-  NS_LOG_DEBUG ("Backoff start: " << GetBackoffStartFor (state).As (Time::US) <<
-                " end: " << (GetBackoffStartFor (state) + state->GetBackoffSlots () * m_slot).As (Time::US));
-  return GetBackoffStartFor (state) + (state->GetBackoffSlots () * m_slot);
+  Time backoffEnd = GetBackoffStartFor (state) + (state->GetBackoffSlots () * m_slot);
+  NS_LOG_DEBUG ("Backoff end: " << backoffEnd.As (Time::US));
+
+  return backoffEnd;
 }
 
 void
@@ -561,6 +581,11 @@ ChannelAccessManager::NotifyRxEndErrorNow (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end error");
+  if (m_lastRxEnd > Simulator::Now ())
+    {
+      m_lastBusyStart = Simulator::Now ();
+      m_lastBusyDuration = m_lastRxEnd - m_lastBusyStart;
+    }
   m_lastRxEnd = Simulator::Now ();
   m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
   m_lastRxReceivedOk = false;

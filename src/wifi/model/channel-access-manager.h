@@ -113,6 +113,15 @@ public:
   void Add (Ptr<Txop> dcf);
 
   /**
+   * Determine if a new backoff needs to be generated when a packet is queued
+   * for transmission.
+   *
+   * \param txop the Txop requesting to generate a backoff
+   * \return true if backoff needs to be generated, false otherwise
+   */
+  bool NeedBackoffUponAccess (Ptr<Txop> txop);
+
+  /**
    * \param state a Txop
    * \param isCfPeriod flag whether it is called during the CF period
    *
@@ -279,15 +288,9 @@ private:
    */
   void DoGrantDcfAccess (void);
   /**
-   * Check if the device is between frames (in DIFS or AIFS interval)
-   *
-   * \param state the state to check
-   * \return true if the device is within AIFS,
-   *         false otherwise
-   */
-  bool IsWithinAifs (Ptr<Txop> state) const;
-  /**
    * Grant access to PCF
+   *
+   * \param state
    */
   void DoGrantPcfAccess (Ptr<Txop> state);
 

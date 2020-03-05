@@ -37,9 +37,7 @@ namespace ns3 {
 class Node;
 class NetDevice;
 class VirtualNetDevice;
-class EpcSgwPgwApplication;
 class EpcX2;
-class EpcMme;
 
 /**
  * \ingroup lte

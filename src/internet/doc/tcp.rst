@@ -44,7 +44,7 @@ connection setup and close logic.  Several congestion control algorithms
 are supported, with NewReno the default, and Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
-(LEDBAT) and TCP Low Priority (TCP-LP) also supported. The model also supports
+(LEDBAT), TCP Low Priority (TCP-LP) and and Data Center TCP (DCTCP) also supported. The model also supports
 Selective Acknowledgements (SACK), Proportional Rate Reduction (PRR) and
 Explicit Congestion Notification (ECN). Multipath-TCP is not yet supported in
 the |ns3| releases.
@@ -782,6 +782,118 @@ phase or not
 
 More information (paper): http://cs.northwestern.edu/~akuzma/rice/doc/TCP-LP.pdf
 
+Data Center TCP (DCTCP)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+DCTCP is an enhancement to the TCP congestion control algorithm for data center
+networks and leverages Explicit Congestion Notification (ECN) to provide more fine-grained congestion
+feedback to the end hosts. DCTCP extends the Explicit Congestion Notification
+to estimate the fraction of bytes that encounter congestion, rather than simply
+detecting that the congestion has occurred. DCTCP then scales the congestion
+window based on this estimate. This approach achieves high burst tolerance, low
+latency, and high throughput with shallow-buffered switches.
+
+* Receiver functionality: If CE is set in IP header of incoming packet, send
+congestion notification to the sender by setting ECE in TCP header. This processing
+is different from standard ECN processing which sets ECE bit for every ACK untill
+it observes CWR
+
+* Sender functionality: The sender makes use of the modified receiver ECE semantics
+to maintain an average of fraction of packets marked (α) by using the exponential
+ weighted moving average as shown below:
+
+::
+
+               α = (1 - g) x α + g x F
+
+where
+
+* g is the estimation gain (between 0 and 1)
+* F is the fraction of packets marked in current RTT.
+
+For windows in which at least one ACK was received with ECE set,
+the sender should respond by reducing the congestion
+window as follows, once for every window of data:
+
+::
+
+               cwnd = cwnd * (1 - α / 2)
+
+Following the recommendation of RFC 8257, the default values of the parameters are:
+
+::
+
+  g = 0.0625 (i.e., 1/16)
+
+  initial alpha (α) = 1
+
+
+
+To enable DCTCP on all TCP sockets, the following configuration can be used:
+
+::
+
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
+
+To enable DCTCP on a chosen TCP socket, the following configuration can be used:
+
+::
+
+  Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
+
+This will take effect only if socket has already instantiated.
+
+The ECN is enabled automatically when DCTCP is used, even if the user has not explicitly enabled it.
+
+DCTCP depends on a simple queue management algorithm in routers / switches to
+mark packets. The current implementation of DCTCP in ns-3 uses RED with a simple
+configuration to achieve the behavior of desired queue management algorithm.
+
+To configure RED router for DCTCP:
+
+::
+
+  Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));
+  Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (1.0));
+  Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (16));
+  Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (16));
+
+
+The following unit tests have been written to validate the implementation of DCTCP:
+
+* ECT flags should be set for SYN, SYN+ACK, ACK and data packets for DCTCP traffic
+* ECT flags should not be set for SYN, SYN+ACK and pure ACK packets, but should be set on data packets for ECN enabled traditional TCP flows
+* ECE should be set only when CE flags are received at receiver and even if sender doesn’t send CWR, receiver should not send ECE if it doesn’t receive packets with CE flags
+* DCTCP follows New Reno behavior for slow start
+* Test to validate cwnd decrement in DCTCP
+
+An example program based on an experimental topology found in the original
+DCTCP SIGCOMM paper is provided in ``examples/tcp/dctcp-example.cc``.
+This example uses a simple topology consisting of forty DCTCP senders
+and receivers and two ECN-enabled switches to examine throughput,
+fairness, and queue delay properties of the network.
+
+This implementation was tested extensively against a version of DCTCP in
+the Linux kernel version 4.4 using the ns-3 direct code execution (DCE)
+environment.  Some differences were noted:
+
+* Linux maintains its congestion window in segments and not bytes, and
+  the arithmetic is not floating point, so some differences in the
+  evolution of congestion window have been observed.
+* Linux uses pacing, while ns-3 currently does not provide a dynamically
+  adjusting pacing implementation; segments are sent out at the line rate
+  unless the user has enabled pacing and set the maximum pacing rate to
+  less than the line rate.
+* Linux implements a state called 'Congestion Window Reduced' (CWR) 
+  immediately following a cwnd reduction, and performs proportional rate
+  reduction similar to how a fast retransmit event is handled.  During
+  CWR, no cwnd additive increases are performed.  This implementation does
+  not implement CWR and performs additive increase during the round trip
+  time that immediately follows a cwnd reduction.
+
+More information about DCTCP is available in the RFC 8257:
+https://tools.ietf.org/html/rfc8257
+
 Support for Explicit Congestion Notification (ECN)
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -792,7 +904,7 @@ Window Reduced (CWR) and ECN Echo (ECE).
 
 More information is available in RFC 3168: https://tools.ietf.org/html/rfc3168
 
-The following ECN states are declared in ``src/internet/model/tcp-socket.h``
+The following ECN states are declared in ``src/internet/model/tcp-socket-state.h``
 
 ::
 
@@ -814,24 +926,37 @@ The following enum represents the mode of ECN:
 
   typedef enum
     {
-      NoEcn = 0,   //!< ECN is not enabled.
-      ClassicEcn   //!< ECN functionality as described in RFC 3168.
+      ClassicEcn,  //!< ECN functionality as described in RFC 3168.
+      DctcpEcn,    //!< ECN functionality as described in RFC 8257. Note: this mode is specific to DCTCP.
     } EcnMode_t;
 
 The following are some important ECN parameters
   // ECN parameters
-  EcnMode_t                     m_ecnMode;    //!< Socket ECN capability
-  TracedValue<SequenceNumber32> m_ecnEchoSeq; //!< Sequence number of the last received ECN Echo
+  EcnMode_t              m_ecnMode {ClassicEcn}; //!< ECN mode
+  UseEcn_t               m_useEcn {Off};         //!< Socket ECN capability
 
 Enabling ECN
 ^^^^^^^^^^^^
 
 By default, support for ECN is disabled in TCP sockets.  To enable, change
-the value of the attribute ``ns3::TcpSocketBase::EcnMode`` from NoEcn to ClassicEcn.
+the value of the attribute ``ns3::TcpSocketBase::UseEcn`` to ``On``.
+Following are supported value for the same, this functionality is aligned with
+Linux: https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
 
 ::
 
-  Config::SetDefault ("ns3::TcpSocketBase::EcnMode", StringValue ("ClassicEcn"))
+  typedef enum
+    {
+      Off        = 0,   //!< Disable
+      On         = 1,   //!< Enable
+      AcceptOnly = 2,   //!< Enable only when the peer endpoint is ECN capable
+    } UseEcn_t;
+
+For example:
+
+::
+
+  Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("On"))
 
 ECN negotiation
 ^^^^^^^^^^^^^^^
@@ -842,7 +967,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 
 ::
 
-    if (m_ecnMode == EcnMode_t::ClassicEcn)
+    if (m_useEcn == UseEcn_t::On)
       {
         SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
       }
@@ -856,7 +981,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 
 ::
 
-    if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+    if (m_useEcn != UseEcn_t::Off && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
       {
         SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK |TcpHeader::ECE);
         m_ecnState = ECN_IDLE;
@@ -871,7 +996,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 
 ::
 
-    if (m_ecnMode == EcnMode_t::ClassicEcn &&  (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
+    if (m_useEcn != UseEcn_t::Off &&  (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
       {
         m_ecnState = ECN_IDLE;
       }
@@ -1145,6 +1270,35 @@ performs the necessary congestion window changes as per the recovery algorithm.
 ExitRecovery is called just prior to exiting recovery phase in order to perform the
 required congestion window ajustments. UpdateBytesSent is used to keep track of
 bytes sent and is called whenever a data packet is sent during recovery phase.
+
+Delivery Rate Estimation
+++++++++++++++++++++++++
+Current TCP implementation measures the approximate value of the delivery rate of
+inflight data based on Delivery Rate Estimation.
+
+As high level idea, keep in mind that the algorithm keeps track of 2 variables:
+
+1. `delivered`: Total amount of data delivered so far.
+
+2. `deliveredStamp`: Last time `delivered` was updated.
+
+When a packet is transmitted, the value of `delivered (d0)` and `deliveredStamp (t0)`
+is stored in its respective TcpTxItem.
+
+When an acknowledgement comes for this packet, the value of `delivered` and `deliveredStamp`
+is updated to `d1` and `t1` in the same TcpTxItem.
+
+After processing the acknowledgement, the rate sample is calculated and then passed
+to a congestion avoidance algorithm:
+
+.. math:: delivery_rate = (d1 - d0)/(t1 - t0)
+
+
+The implementation to estimate delivery rate is a joint work between TcpTxBuffer and TcpRateOps.
+For more information, please take a look at their doxygen documentation.
+
+The implementation follows the Internet draft (Delivery Rate Estimation):
+https://tools.ietf.org/html/draft-cheng-iccrg-delivery-rate-estimation-00
 
 Current limitations
 +++++++++++++++++++

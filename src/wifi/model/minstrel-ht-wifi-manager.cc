@@ -188,8 +188,8 @@ MinstrelHtWifiManager::DoInitialize ()
    * Then, after all initializations are finished, we check actual support for each receiving station.
    */
 
-  // Check if the device supports HT or VHT
-  if (GetHtSupported () || GetVhtSupported ())
+  // Check if the device supports HT
+  if (GetHtSupported ())
     {
       m_numGroups = MAX_SUPPORTED_STREAMS * MAX_HT_STREAM_GROUPS;
       m_numRates = MAX_HT_GROUP_RATES;
@@ -319,7 +319,8 @@ MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t stream
   txvector.SetStbc (0);
   txvector.SetMode (mode);
   txvector.SetPreambleType (WIFI_PREAMBLE_HT_MF);
-  return phy->CalculateTxDuration (m_frameLength, txvector, phy->GetFrequency (), mpduType, 0);
+  return WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txvector)
+         + WifiPhy::GetPayloadDuration (m_frameLength, txvector, phy->GetFrequency (), mpduType);
 }
 
 Time
@@ -390,7 +391,7 @@ MinstrelHtWifiManager::DoCreateStation (void) const
   station->m_ampduPacketCount = 0;
 
   // If the device supports HT
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported ())
     {
       /**
        * Assume the station is HT.
@@ -422,9 +423,9 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
        *  the station will not support HT either.
        *  We save from using another check and variable.
        */
-      if (!GetHtSupported (station) && !GetVhtSupported (station))
+      if (!GetHtSupported (station))
         {
-          NS_LOG_INFO ("Non-HT station " << station);
+          NS_LOG_INFO ("non-HT station " << station);
           station->m_isHt = false;
           // We will use non-HT minstrel for this station. Initialize the manager.
           m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_updateStats));
@@ -444,9 +445,6 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
           station->m_sampleTable = SampleRate (m_numRates, std::vector<uint8_t> (m_nSampleCol));
           InitSampleTable (station);
           RateInit (station);
-          std::ostringstream tmp;
-          tmp << "minstrel-ht-stats-" << station->m_state->m_address << ".txt";
-          station->m_statsFile.open (tmp.str ().c_str (), std::ios::out);
           station->m_initialized = true;
         }
     }
@@ -1439,7 +1437,7 @@ MinstrelHtWifiManager::RateInit (MinstrelHtWifiRemoteStation *station)
           station->m_groupsTable[groupId].m_supported = false;
           if (!(!GetVhtSupported (station) && m_minstrelGroups[groupId].isVht)                    ///Is VHT supported by the receiver?
               && (m_minstrelGroups[groupId].isVht || !GetVhtSupported (station) || !m_useVhtOnly) ///If it is an HT MCS, check if VHT only is disabled
-              && !(!GetShortGuardIntervalSupported (station) && m_minstrelGroups[groupId].sgi)             ///Is SGI supported by the receiver?
+              && !(!GetShortGuardIntervalSupported (station) && m_minstrelGroups[groupId].sgi)    ///Is SGI supported by the receiver?
               && (GetChannelWidth (station) >= m_minstrelGroups[groupId].chWidth)                 ///Is channel width supported by the receiver?
               && (GetNumberOfSupportedStreams (station) >= m_minstrelGroups[groupId].streams))    ///Are streams supported by the receiver?
             {
@@ -1611,6 +1609,13 @@ MinstrelHtWifiManager::InitSampleTable (MinstrelHtWifiRemoteStation *station)
 void
 MinstrelHtWifiManager::PrintTable (MinstrelHtWifiRemoteStation *station)
 {
+  if (!station->m_statsFile.is_open ())
+    {
+      std::ostringstream tmp;
+      tmp << "minstrel-ht-stats-" << station->m_state->m_address << ".txt";
+      station->m_statsFile.open (tmp.str ().c_str (), std::ios::out);
+    }
+
   station->m_statsFile << "               best   ____________rate__________    ________statistics________    ________last_______    ______sum-of________\n" <<
     " mode guard #  rate  [name   idx airtime  max_tp]  [avg(tp) avg(prob) sd(prob)]  [prob.|retry|suc|att]  [#success | #attempts]\n";
   for (uint8_t i = 0; i < m_numGroups; i++)

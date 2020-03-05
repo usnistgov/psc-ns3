@@ -88,6 +88,7 @@ StaWifiMac::GetTypeId (void)
 
 StaWifiMac::StaWifiMac ()
   : m_state (UNASSOCIATED),
+    m_aid (0),
     m_waitBeaconEvent (),
     m_probeRequestEvent (),
     m_assocRequestEvent (),
@@ -110,6 +111,13 @@ StaWifiMac::DoInitialize (void)
 StaWifiMac::~StaWifiMac ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+uint16_t
+StaWifiMac::GetAssociationId (void) const
+{
+  NS_ASSERT_MSG (IsAssociated (), "This station is not associated to any AP");
+  return m_aid;
 }
 
 void
@@ -161,12 +169,12 @@ StaWifiMac::SendProbeRequest (void)
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities ());
     }
-  if (GetVhtSupported () || GetHeSupported ())
+  if (GetVhtSupported ())
     {
       probe.SetVhtCapabilities (GetVhtCapabilities ());
     }
@@ -202,12 +210,12 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       assoc.SetSupportedRates (GetSupportedRates ());
       assoc.SetCapabilities (GetCapabilities ());
       assoc.SetListenInterval (0);
-      if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+      if (GetHtSupported ())
         {
           assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
           assoc.SetHtCapabilities (GetHtCapabilities ());
         }
-      if (GetVhtSupported () || GetHeSupported ())
+      if (GetVhtSupported ())
         {
           assoc.SetVhtCapabilities (GetVhtCapabilities ());
         }
@@ -225,12 +233,12 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       reassoc.SetSupportedRates (GetSupportedRates ());
       reassoc.SetCapabilities (GetCapabilities ());
       reassoc.SetListenInterval (0);
-      if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+      if (GetHtSupported ())
         {
           reassoc.SetExtendedCapabilities (GetExtendedCapabilities ());
           reassoc.SetHtCapabilities (GetHtCapabilities ());
         }
-      if (GetVhtSupported () || GetHeSupported ())
+      if (GetVhtSupported ())
         {
           reassoc.SetVhtCapabilities (GetVhtCapabilities ());
         }
@@ -470,9 +478,9 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       hdr.SetType (WIFI_MAC_DATA);
     }
-  if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetQosSupported ())
     {
-      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT control field is not yet implemented (set it to 1 when implemented)
     }
 
   hdr.SetAddr1 (GetBssid ());
@@ -670,6 +678,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           if (assocResp.GetStatusCode ().IsSuccess ())
             {
               SetState (ASSOCIATED);
+              m_aid = assocResp.GetAssociationId ();
               if (hdr->IsReassocResp ())
                 {
                   NS_LOG_DEBUG ("reassociation done");
@@ -833,7 +842,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
             }
         }
     }
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported ())
     {
       ExtendedCapabilities extendedCapabilities = beacon.GetExtendedCapabilities ();
       //TODO: to be completed
@@ -841,15 +850,17 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
   if (GetHeSupported ())
     {
       HeCapabilities heCapabilities = beacon.GetHeCapabilities ();
-      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-      m_stationManager->AddStationHeCapabilities (apAddr, heCapabilities);
-      HeOperation heOperation = beacon.GetHeOperation ();
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      if (heCapabilities.GetSupportedMcsAndNss () != 0)
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+          m_stationManager->AddStationHeCapabilities (apAddr, heCapabilities);
+          HeOperation heOperation = beacon.GetHeOperation ();
+          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
             {
-              m_stationManager->AddSupportedMcs (apAddr, mcs);
+              WifiMode mcs = m_phy->GetMcs (i);
+              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+                {
+                  m_stationManager->AddSupportedMcs (apAddr, mcs);
+                }
             }
         }
     }
@@ -1027,10 +1038,12 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetHeSupported ())
     {
       HeCapabilities hecapabilities = assocResp.GetHeCapabilities ();
-      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-      m_stationManager->AddStationHeCapabilities (apAddr, hecapabilities);
-      HeOperation heOperation = assocResp.GetHeOperation ();
-      GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
+      if (hecapabilities.GetSupportedMcsAndNss () != 0)
+        {
+          m_stationManager->AddStationHeCapabilities (apAddr, hecapabilities);
+          HeOperation heOperation = assocResp.GetHeOperation ();
+          GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
+        }
     }
   for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
     {
@@ -1070,7 +1083,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
             }
         }
     }
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported ())
     {
       ExtendedCapabilities extendedCapabilities = assocResp.GetExtendedCapabilities ();
       //TODO: to be completed
@@ -1101,7 +1114,7 @@ StaWifiMac::GetSupportedRates (void) const
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
     }
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
