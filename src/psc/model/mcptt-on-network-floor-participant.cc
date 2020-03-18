@@ -41,6 +41,7 @@
 #include "mcptt-call-type-machine.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
+#include "mcptt-server-call.h"
 #include "mcptt-on-network-floor-participant-state.h"
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
@@ -130,7 +131,7 @@ McpttOnNetworkFloorParticipant::McpttOnNetworkFloorParticipant (void)
     m_overriding (false),
     m_owner (0),
     m_priority (1),
-    m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ()),
     m_state (McpttOnNetworkFloorParticipantStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
     m_storedMsgs (Create<Packet> ()),
@@ -412,7 +413,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorAck (const McpttFloorMsgAck& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -429,7 +430,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -446,7 +447,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorGranted (const McpttFloorMsgGranted&
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -463,7 +464,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -480,7 +481,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorQueuePositionInfo (const McpttFloorM
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -497,7 +498,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorRevoke (const McpttFloorMsgRevoke& m
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -514,7 +515,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorTaken (const McpttFloorMsgTaken& msg
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
@@ -937,7 +938,7 @@ McpttOnNetworkFloorParticipant::SetPriority (uint8_t priority)
 }
 
 void
-McpttOnNetworkFloorParticipant::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
+McpttOnNetworkFloorParticipant::SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 

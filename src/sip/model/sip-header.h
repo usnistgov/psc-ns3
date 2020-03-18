@@ -87,9 +87,11 @@ public:
   // These eight methods need doxygen
   void SetMessageType (SipMessageType messageType);
   SipMessageType GetMessageType (void) const;
+  std::string GetMessageTypeName (void) const;
 
   void SetMethod (SipMethod method);
   SipMethod GetMethod (void) const;
+  std::string GetMethodName (void) const;
 
   void SetStatusCode (uint16_t statusCode);
   uint16_t GetStatusCode (void) const;

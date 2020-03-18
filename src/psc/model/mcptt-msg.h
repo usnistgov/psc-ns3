@@ -44,7 +44,7 @@ namespace ns3 {
  * \ingroup mcptt
  *
  * This is the base class of all MCPTT messages. And provides a simple
- * function that wrapps around the ns3::TypeId::IsChildOf to determine if a
+ * function that wraps around the ns3::TypeId::IsChildOf to determine if a
  * message is of a particular type using the "IsA" function.
  */
 class McpttMsg : public Header

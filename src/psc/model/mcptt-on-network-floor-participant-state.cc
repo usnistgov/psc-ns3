@@ -144,7 +144,18 @@ McpttOnNetworkFloorParticipantState::CallEstablished (McpttOnNetworkFloorPartici
 void
 McpttOnNetworkFloorParticipantState::CallRelease1 (McpttOnNetworkFloorParticipant& machine) const
 {
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part I)."); 
+  // Section 6.2.4.7.2
+  if ((GetInstanceStateId() == McpttOnNetworkFloorParticipantStateStartStop::GetInstance ()->GetInstanceStateId ()) ||
+    (GetInstanceStateId() == McpttOnNetworkFloorParticipantStateReleasing::GetInstance ()->GetInstanceStateId ()))
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part I)."); 
+    }
+  else
+    {
+      // stop sending floor control and stop sending media should occur
+      // as part of state change (Unselected ())
+      machine.ChangeState (McpttOnNetworkFloorParticipantStateReleasing::GetInstance ());
+    }
 }
 
 void
@@ -1020,7 +1031,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorTaken (McpttOnNetw
 void
 McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorParticipant& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << " HasPermission::Selected " << &machine);
 
   Ptr<McpttCall> callOwner = machine.GetOwner ();
   Ptr<McpttPttApp> appOwner = callOwner->GetOwner (); 
@@ -1028,12 +1039,14 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
 
   if (!appOwner->IsPushed ())
     {
+      NS_LOG_DEBUG ("McpttPttApp is not pushed; notify that it is now pushed");
       appOwner->NotifyPushed ();
     }
 
   if (machine.ShouldGenMedia ()
       && !mediaSrc->IsMakingReq ())
     {
+      NS_LOG_DEBUG ("media src starting");
       mediaSrc->StartMakingReq ();
     }
 }
@@ -1041,18 +1054,20 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
 void
 McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloorParticipant& machine) const
 {
-  NS_LOG_FUNCTION (this << &machine);
+  NS_LOG_FUNCTION (this << " HasPermission::Unselected " << &machine);
 
   Ptr<McpttPttApp> appOwner = machine.GetOwner ()->GetOwner (); 
   Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
 
   if (appOwner->IsPushed ())
     {
+      NS_LOG_DEBUG ("IsPushed true; notifying McpttPttApp of release");
       appOwner->NotifyReleased ();
     }
 
   if (mediaSrc->IsMakingReq ())
     {
+      NS_LOG_DEBUG ("media src is making requests; stopping it");
       mediaSrc->StopMakingReq ();
     }
 }
@@ -1253,6 +1268,11 @@ McpttOnNetworkFloorParticipantStateReleasing::CallRelease2 (McpttOnNetworkFloorP
 {
   NS_LOG_FUNCTION (this);
 
+  // TODO:  check that all timers (not just T103) are all stopped (sec 6.2.4.8.2)
+  if (machine.GetT103 ()->IsRunning ())
+    {
+      machine.GetT103 ()->Stop ();
+    }
   machine.ChangeState (McpttOnNetworkFloorParticipantStateStartStop::GetInstance ());
 }
 /** McpttOnNetworkFloorParticipantStateReleasing - end **/

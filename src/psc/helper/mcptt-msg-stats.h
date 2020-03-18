@@ -67,14 +67,14 @@ public:
   * \param callId The callId.
   * \param msg The message.
   */
- virtual void ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
+ virtual void ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg);
  /**
   * The sink function for tracing the transmitted messages.
   * \param app The app.
   * \param callId The callId.
   * \param msg The message.
   */
-  virtual void ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
+  virtual void ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg);
 protected:
  /**
   * Writes to the trace.
@@ -83,7 +83,7 @@ protected:
   * \param msg The message.
   * \param rx The flag that indicates if an RX or TX should be traced.
   */
- virtual void Trace (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg, bool rx);
+ virtual void Trace (Ptr<const Application> app, uint16_t callId, const Header& msg, bool rx);
 private:
  bool m_callControl; //!< The flag that indicates if call control messages should be included.
  bool m_firstMsg; //!< Flag that indicates if no message has been traced yet.

@@ -47,6 +47,7 @@
 namespace ns3 {
 
 class McpttPttApp;
+class SipHeader;
 
 /**
  * \ingroup mcptt
@@ -125,6 +126,12 @@ public:
  void OpenMediaChan (const Address& peerAddr, const uint16_t port);
  /**
   * Receives a call message.
+  * \param pkt The packet (serialized with SIP header)
+  * \param hdr A reference to the SIP header that has been serialized
+  */
+ void Receive (Ptr<Packet> pkt, const SipHeader& hdr);
+ /**
+  * Receives a call message.
   * \param msg The message that was received.
   */
  void Receive (const McpttCallMsg& msg);
@@ -138,6 +145,12 @@ public:
   * \param msg The message that was received.
   */
  void Receive (const McpttMediaMsg& msg);
+ /**
+  * Sends a call message.
+  * \param pkt The packet (already serialized with SIP header)
+  * \param hdr A reference to the SIP header that has been serialized
+  */
+ void Send (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Sends a call message.
   * \param msg The message to send.
@@ -177,8 +190,8 @@ protected:
  bool m_pushOnSelect; //!< Whether to start pusher upon call select
  Time m_startTime; //!< The call start time.
  Time m_stopTime; //!< The call stop time.
- Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
- Callback<void, Ptr<const McpttCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
+ Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The received message callback.
+ Callback<void, Ptr<const McpttCall>, const Header&> m_txCb; //!< The transmitted message callback.
 public:
  /**
   * Gets the call control state machine.
@@ -244,12 +257,12 @@ public:
   * Sets the received message callback.
   * \param rxCb The callback.
   */
- void SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  rxCb);
+ void SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb);
  /**
   * Sets the transmitted message callback.
   * \param txCb The callback.
   */
- void SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb);
+ void SetTxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  txCb);
  /**
   * Sets the call start time
   * \param startTime The start time.

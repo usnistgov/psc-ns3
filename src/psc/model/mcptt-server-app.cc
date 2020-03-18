@@ -110,7 +110,9 @@ McpttServerApp::AddCall (Ptr<McpttServerCall> call)
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (call->GetCallId () > s_callId, "CallID out of range");
   call->GetArbitrator ()->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
+  call->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
   call->GetArbitrator ()->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
+  call->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
   NS_LOG_DEBUG ("Inserting call with callId " << call->GetCallId () << " to list");
   call->SetOwner (this);
   m_calls.insert ({call->GetCallId (), call});
@@ -126,12 +128,10 @@ McpttServerApp::DoDispose (void)
 }
 
 void
-McpttServerApp::RxCb (const McpttMsg& msg)
+McpttServerApp::RxCb (Ptr<const McpttServerCall> call, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
-
-  // No notion of separate calls at the server yet, so use 0 as placeholder
-  m_rxTrace (this, 0, msg);
+  NS_LOG_FUNCTION (this << call << &msg);
+  m_rxTrace (this, call->GetCallId (), msg);
 }
 
 void
@@ -168,25 +168,17 @@ McpttServerApp::ReceiveCallPacket (Ptr<Packet> pkt)
 
   NS_LOG_LOGIC ("ServerApp received " << pkt->GetSize () << " byte(s).");
   SipHeader sipHeader;
-  pkt->PeekHeader (sipHeader);
-  NS_LOG_DEBUG ("SIP header: " << sipHeader);
+  pkt->RemoveHeader (sipHeader);
   auto it = m_calls.find (sipHeader.GetCallId ());
   if (it != m_calls.end ())
     {
       NS_LOG_DEBUG ("Received packet for call ID " << it->first);
-      it->second->ReceiveCallPacket (pkt);
+      it->second->ReceiveCallPacket (pkt, sipHeader);
     }
   else
     {
       NS_LOG_DEBUG ("No call found with call ID " << sipHeader.GetCallId ());
     }
-}
-
-void
-McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt)
-{
-  NS_LOG_FUNCTION (this << pkt);
-  m_callChan->Send (pkt);
 }
 
 void
@@ -206,12 +198,10 @@ McpttServerApp::Send (const McpttCallMsg& msg)
 }
 
 void
-McpttServerApp::TxCb (const McpttMsg& msg)
+McpttServerApp::TxCb (Ptr<const McpttServerCall> call, const Header& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
-
-  // No notion of separate calls at the server yet, so use 0 as placeholder
-  m_txTrace (this, 0, msg);
+  m_txTrace (this, call->GetCallId (), msg);
 }
 
 Address

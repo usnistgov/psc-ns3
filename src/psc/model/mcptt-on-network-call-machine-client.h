@@ -154,8 +154,9 @@ public:
  /**
   * Receives a call control packet
   * \param pkt The packet received.
+  * \param hdr The SIP header received.
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Receives a media message.
   * \param msg The message to receive.
@@ -176,14 +177,15 @@ public:
  virtual void RejectCall (void);
  /**
   * Sends a call control packet.
-  * \param msg The message to send.
+  * \param pkt The packet (already serialized with SIP header)
+  * \param hdr A reference to the SIP header that has been serialized
   */
- virtual void SendCallControlPacket (Ptr<Packet> pkt);
+ virtual void Send (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
-  * Sends a call control message.
-  * \param msg The message to send.
+  * Sends a call control packet.
+  * \param hdr The McpttCallMsg header to send.
   */
- virtual void Send (const McpttCallMsg& msg);
+ virtual void Send (const McpttCallMsg& hdr);
  /**
   * Sets the ID of the MCPTT call.
   * \param callId The ID of the MCPTT call.

@@ -39,7 +39,7 @@
 #include <ns3/type-id.h>
 #include <ns3/uinteger.h>
 
-#include "mcptt-call.h"
+#include "mcptt-server-call.h"
 #include "mcptt-chan.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
@@ -112,11 +112,11 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
     m_overriding (false),
     m_owner (0),
     m_revokeMsg (McpttFloorMsgRevoke ()),
-    m_rxCb (MakeNullCallback<void, const McpttMsg&> ()),
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
     m_state (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
     m_t8 (CreateObject<McpttTimer> (McpttEntityId (8, "T8"))),
-    m_txCb (MakeNullCallback<void, const McpttMsg&> ())
+    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
 {
   NS_LOG_FUNCTION (this);
 
@@ -193,7 +193,7 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 
   if (!m_txCb.IsNull ())
     {
-      m_txCb (msg);
+      m_txCb (GetOwner ()->GetOwner (), msg);
     }
 
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
@@ -277,7 +277,7 @@ McpttOnNetworkFloorTowardsParticipant::Receive (const McpttFloorMsg& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner ()->GetOwner (), msg);
     }
 
   msg.Visit (*this);
@@ -290,7 +290,7 @@ McpttOnNetworkFloorTowardsParticipant::Receive (const McpttMediaMsg& msg)
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner ()->GetOwner (), msg);
     }
 
   msg.Visit (*this);
@@ -738,7 +738,7 @@ McpttOnNetworkFloorTowardsParticipant::SetRevokeMsg (const McpttFloorMsgRevoke& 
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetRxCb (const Callback<void, const McpttMsg&>  rxCb)
+McpttOnNetworkFloorTowardsParticipant::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -786,7 +786,7 @@ McpttOnNetworkFloorTowardsParticipant::SetTrackInfo (const McpttFloorMsgFieldTra
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetTxCb (const Callback<void, const McpttMsg&>  txCb)
+McpttOnNetworkFloorTowardsParticipant::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb)
 {
   NS_LOG_FUNCTION (this);
 

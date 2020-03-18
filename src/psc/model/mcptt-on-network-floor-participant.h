@@ -346,7 +346,7 @@ private:
  bool m_overriding; //!< A flag that indicates whether the user is overriding without revoke.
  Ptr<McpttCall> m_owner; //!< The client application that owns this floor machine.
  uint8_t m_priority; //!< The priority of this floor machine.
- Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
+ Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
@@ -452,7 +452,7 @@ public:
   * Sets the received message call back.
   * \param rxCb The received message call back.
   */
- virtual void SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb);
+ virtual void SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb);
  /**
   * Sets the state of the floor machine.
   * \param state The state.

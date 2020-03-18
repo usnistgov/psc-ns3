@@ -47,7 +47,7 @@
 
 namespace ns3 {
 
-class McpttCall;
+class McpttServerCall;
 class McpttOnNetworkFloorTowardsParticipantState;
 class McpttOnNetworkFloorArbitrator;
 
@@ -269,7 +269,7 @@ private:
  uint32_t m_peerUserId; //!< The MCPTT user ID of the node that the peer application is on.
  bool m_receiveOnly; //!< Flag that indicates if the associated participant is "receive only".
  McpttFloorMsgRevoke m_revokeMsg; //!< The Floor Revoke message to retransmit when T8 expires.
- Callback<void, const McpttMsg&> m_rxCb; //!< The message received call back.
+ Callback<void, Ptr<const McpttServerCall>, const Header&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorTowardsParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
@@ -277,7 +277,7 @@ private:
  uint8_t m_storedPriority; //!< The stored priority the floor machine.
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
  Ptr<McpttTimer> m_t8; //!< The timer T8.
- Callback<void, const McpttMsg&> m_txCb; //!< The message tranmission call back.
+ Callback<void, Ptr<const McpttServerCall>, const Header&> m_txCb; //!< The message tranmission call back.
 public:
  /**
   * Gets the channel to use for floor control messages.
@@ -403,7 +403,7 @@ public:
   * Sets the received message call back.
   * \param rxCb The received message call back.
   */
- virtual void SetRxCb (const Callback<void, const McpttMsg&>  rxCb);
+ virtual void SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb);
  /**
   * Sets the state of the floor machine.
   * \param state The state.
@@ -433,7 +433,7 @@ public:
   * Sets the transmission call back.
   * \param txCb The transmission call back.
   */
- virtual void SetTxCb (const Callback<void, const McpttMsg&>  txCb);
+ virtual void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb);
 };
 
 } // namespace ns3

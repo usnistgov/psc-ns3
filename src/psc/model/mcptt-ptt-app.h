@@ -52,6 +52,8 @@
 
 namespace ns3 {
 
+class SipHeader;
+
 /**
  * \defgroup psc  
  *
@@ -214,10 +216,11 @@ public:
   */
  virtual void SelectCall (uint32_t callId, bool pushOnSelect = false);
  /**
-  * Sends a call control packet.
-  * \param pkt The packet to send.
+  * Sends an on-network call control message.
+  * \param pkt The packet (already serialized with SIP header)
+  * \param hdr A reference to the SIP header that has been serialized
   */
- virtual void SendCallControlPacket (Ptr<Packet> pkt);
+ virtual void Send (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Sends a call control message.
   * \param msg The message to send.
@@ -266,7 +269,7 @@ protected:
   * \param call The call that the message is for.
   * \param msg The message that was received.
   */
- virtual void RxCb (Ptr<const McpttCall> call, const McpttMsg& msg);
+ virtual void RxCb (Ptr<const McpttCall> call, const Header& msg);
  /**
   * Starts the McpttPttApp application.
   */
@@ -280,14 +283,14 @@ protected:
   * \param call The call that the message is for.
   * \param msg The message that was sent.
   */
- virtual void TxCb (Ptr<const McpttCall> call, const McpttMsg& msg);
+ virtual void TxCb (Ptr<const McpttCall> call, const Header& msg);
  /**
   * TracedCallback signature for McpttMsg transmission or reception events
   * \param [in] app Ptr<Application>
   * \param [in] callId Call ID
-  * \param [in] msg McpttMsg
+  * \param [in] msg The SIP header or specialized McpttMsg header sent or received
   */ 
- typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
+ typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
 private:
  static uint16_t s_portNumber; //!< A port number.
  bool m_isRunning; //!< Whether application is running or not
@@ -302,11 +305,11 @@ private:
  Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
  Ptr<McpttPusher> m_pusher; //!< The object that calls the Pushed() function.
- TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
  Ptr<McpttCall> m_selectedCall; //!< The currently selected call.
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
- TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
 public:
  /**
   * Gets the channel used for call control messages.

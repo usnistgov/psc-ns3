@@ -50,6 +50,7 @@
 #include "mcptt-media-msg.h"
 #include "mcptt-on-network-floor-arbitrator-state.h"
 #include "mcptt-server-app.h"
+#include "mcptt-server-call.h"
 #include "mcptt-server-call-machine.h"
 #include "mcptt-on-network-floor-towards-participant.h"
 #include "mcptt-ptt-app.h"
@@ -153,7 +154,7 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_queueingSupported (false),
     m_queue (CreateObject<McpttFloorQueue> ()),
     m_rejectCause (0),
-    m_rxCb (MakeNullCallback<void, const McpttMsg&> ()),
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
     m_seqNum (0),
     m_state (McpttOnNetworkFloorArbitratorStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
@@ -166,7 +167,7 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_t4 (CreateObject<McpttTimer> (McpttEntityId (4, "T4"))),
     m_t7 (CreateObject<McpttTimer> (McpttEntityId (7, "T7"))),
     m_t20 (CreateObject<McpttTimer> (McpttEntityId (20, "T20"))),
-    m_txCb (MakeNullCallback<void, const McpttMsg&> ())
+    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
 {
   NS_LOG_FUNCTION (this);
 
@@ -800,24 +801,24 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::RxCb (const McpttMsg& msg)
+McpttOnNetworkFloorArbitrator::RxCb (Ptr<const McpttServerCall> call, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
+  NS_LOG_FUNCTION (this << call << &msg);
 
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (msg);
+      m_rxCb (GetOwner (), msg);
     }
 }
 
 void
-McpttOnNetworkFloorArbitrator::TxCb (const McpttMsg& msg)
+McpttOnNetworkFloorArbitrator::TxCb (Ptr<const McpttServerCall> call, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
+  NS_LOG_FUNCTION (this << call << &msg);
 
   if (!m_txCb.IsNull ())
     {
-      m_txCb (msg);
+      m_txCb (GetOwner (), msg);
     }
 }
 
@@ -947,7 +948,7 @@ McpttOnNetworkFloorArbitrator::SetRejectCause (const uint16_t rejectCause)
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetRxCb (const Callback<void, const McpttMsg&> rxCb)
+McpttOnNetworkFloorArbitrator::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&> rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -995,7 +996,7 @@ McpttOnNetworkFloorArbitrator::SetTrackInfo (const McpttFloorMsgFieldTrackInfo& 
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetTxCb (const Callback<void, const McpttMsg&> txCb)
+McpttOnNetworkFloorArbitrator::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&> txCb)
 {
   NS_LOG_FUNCTION (this);
 

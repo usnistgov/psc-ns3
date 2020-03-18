@@ -48,6 +48,7 @@ namespace ns3 {
 class McpttServerApp;
 class McpttOnNetworkFloorArbitrator;
 class McpttServerCallMachine;
+class SipHeader;
 
 /**
  * \ingroup mcptt
@@ -122,9 +123,10 @@ public:
  void OpenMediaChan (const Address& peerAddr, const uint16_t port);
  /**
   * Receives a call control packet.
-  * \param pkt The packet that was received.
+  * \param pkt The packet (without SIP header) that was received.
+  * \param hdr The (deserialized) SIP header.
   */
- void ReceiveCallPacket (Ptr<Packet> pkt);
+ void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Receives a call message.
   * \param msg The message that was received.
@@ -141,11 +143,6 @@ public:
   */
  void Receive (const McpttMediaMsg& msg);
  /**
-  * Sends a call message.
-  * \param msg The message to send.
-  */
- void Send (const McpttCallMsg& msg);
- /**
   * Sends a floor message.
   * \param msg The message to send.
   */
@@ -155,6 +152,13 @@ public:
   * \param msg The media message.
   */
  void Send (const McpttMediaMsg& msg);
+ /**
+  * Sends a call control packet.
+  * \param pkt The packet (already serialized with SIP header)
+  * \param toAddr The address to send to
+  * \param hdr A reference to the SIP header that has been serialized
+  */
+ virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const SipHeader &hdr);
 protected:
  /**
   * Disposes of the McpttServerCall instance.
@@ -181,8 +185,8 @@ protected:
  Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The floor control machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
  Ptr<McpttServerApp> m_owner; //!< The owner of this call.
- Callback<void, Ptr<const McpttServerCall>, const McpttMsg&> m_rxCb; //!< The received message callback.
- Callback<void, Ptr<const McpttServerCall>, const McpttMsg&> m_txCb; //!< The transmitted message callback.
+ Callback<void, Ptr<const McpttServerCall>, const Header&> m_rxCb; //!< The received message callback.
+ Callback<void, Ptr<const McpttServerCall>, const Header&> m_txCb; //!< The transmitted message callback.
 public:
  /**
   * Gets the call control state machine.
@@ -258,12 +262,12 @@ public:
   * Sets the received message callback.
   * \param rxCb The callback.
   */
- void SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  rxCb);
+ void SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb);
  /**
   * Sets the transmitted message callback.
   * \param txCb The callback.
   */
- void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  txCb);
+ void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb);
 };
 
 } // namespace ns3

@@ -39,6 +39,7 @@
 #include <ns3/type-id.h>
 #include <ns3/fatal-error.h>
 #include <ns3/boolean.h>
+#include <ns3/sip-header.h>
 
 #include "mcptt-call-msg.h"
 #include "mcptt-chan.h"
@@ -90,8 +91,8 @@ McpttServerCall::McpttServerCall (void)
     m_floorChan (0),
     m_mediaChan (0),
     m_owner (0),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const McpttMsg&> ()),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const McpttMsg&> ())
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
+    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -117,16 +118,12 @@ McpttServerCall::GetCallId (void) const
 bool
 McpttServerCall::IsAmbientListening (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_ambientListening;
 }
 
 bool
 McpttServerCall::IsTemporaryGroup (void) const
 {
-  NS_LOG_FUNCTION (this);
-
   return m_temporaryGroup;
 }
 
@@ -175,26 +172,15 @@ McpttServerCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
 }
 
 void
-McpttServerCall::ReceiveCallPacket (Ptr<Packet> pkt)
+McpttServerCall::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << pkt);
-  Ptr<McpttServerCallMachine> callMachine = GetCallMachine ();
-  callMachine->ReceiveCallPacket (pkt);
-}
-
-void
-McpttServerCall::Receive (const McpttCallMsg& msg)
-{
-  NS_LOG_FUNCTION (this << & msg);
-  NS_FATAL_ERROR ("Unreachable?");
-
+  NS_LOG_FUNCTION (this << pkt << hdr);
+  NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
   if (!m_rxCb.IsNull ())
     {
-      m_rxCb (this, msg);
+      m_rxCb (this, hdr);
     }
-
-  Ptr<McpttServerCallMachine> callMachine = GetCallMachine ();
-  callMachine->Receive (msg);
+  GetCallMachine ()->ReceiveCallPacket (pkt, hdr);
 }
 
 void
@@ -219,21 +205,6 @@ McpttServerCall::Receive (const McpttMediaMsg& msg)
       m_rxCb (this, msg);
     }
   NS_FATAL_ERROR ("Unreachable?");
-}
-
-void
-McpttServerCall::Send (const McpttCallMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  NS_FATAL_ERROR ("Unreachable?");
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (this, msg);
-    }
-
-  Ptr<McpttServerApp> owner = GetOwner ();
-  owner->Send (msg);
 }
 
 void
@@ -275,6 +246,17 @@ McpttServerCall::Send (const McpttMediaMsg& msg)
   pkt->AddHeader (txMsg);
 
   mediaChan->Send (pkt);
+}
+
+void
+McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const SipHeader &hdr)
+{
+  NS_LOG_FUNCTION (this << pkt << toAddr << hdr);
+  if (!m_txCb.IsNull ())
+    {
+      m_txCb (this, hdr);
+    }
+  m_owner->SendCallControlPacket (pkt, toAddr);
 }
 
 void
@@ -501,7 +483,7 @@ McpttServerCall::GetOriginator (void) const
 }
 
 void
-McpttServerCall::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  rxCb)
+McpttServerCall::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -509,7 +491,7 @@ McpttServerCall::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const
 }
 
 void
-McpttServerCall::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const McpttMsg&>  txCb)
+McpttServerCall::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb)
 {
   NS_LOG_FUNCTION (this << &txCb);
 

@@ -131,9 +131,9 @@ McpttServerCallMachineGroupPrearranged::SetStateChangeCb (const Callback<void, c
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << to << pkt);
+  NS_LOG_FUNCTION (this << to << pkt << hdr);
   // TODO: Create a new SIP transaction to manage the sending
   // of the request to user ID 'to'
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (to);
@@ -148,7 +148,7 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
       GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
       uint16_t callPort = portValue.Get ();
       InetSocketAddress inetAddr (ipv4Addr, callPort); 
-      GetServerCall ()->GetOwner ()->SendCallControlPacket (pkt, inetAddr);
+      GetServerCall ()->SendCallControlPacket (pkt, inetAddr, hdr);
     }
   else
     {
@@ -157,9 +157,9 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << to << pkt);
+  NS_LOG_FUNCTION (this << to << pkt << hdr);
   // TODO: Create a new SIP transaction to manage the sending
   // of the request to user ID 'to'
   bool found = false;
@@ -176,7 +176,7 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet
               GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
               uint16_t callPort = portValue.Get ();
               InetSocketAddress inetAddr (ipv4Addr, callPort); 
-              GetServerCall ()->GetOwner ()->SendCallControlPacket (pkt, inetAddr);
+              GetServerCall ()->SendCallControlPacket (pkt, inetAddr, hdr);
               found = true;
             }
           else
@@ -281,11 +281,9 @@ McpttServerCallMachineGroupPrearranged::IsPrivateCall (uint32_t userId) const
 }
 
 void
-McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << pkt);
-  SipHeader sipHeader;
-  pkt->PeekHeader (sipHeader);
+  NS_LOG_FUNCTION (this << pkt << sipHeader);
   uint16_t callId = sipHeader.GetCallId ();
   NS_ASSERT_MSG (callId == m_serverCall->GetCallId (), "mismatch of call ID");
   uint32_t from = sipHeader.GetFrom ();
@@ -293,16 +291,16 @@ McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt)
     {
       if (sipHeader.GetMethod () == SipHeader::INVITE)
         {
-          m_state->ReceiveInvite (*this, from, pkt);
+          m_state->ReceiveInvite (*this, from, pkt, sipHeader);
         }
       else if (sipHeader.GetMethod () == SipHeader::BYE)
         {
-          m_state->ReceiveBye (*this, from, pkt);
+          m_state->ReceiveBye (*this, from, pkt, sipHeader);
         }
     }
   else if (sipHeader.GetMessageType () == SipHeader::SIP_RESPONSE)
     {
-      m_state->ReceiveResponse (*this, from, pkt);
+      m_state->ReceiveResponse (*this, from, pkt, sipHeader);
     }
 }
 
@@ -313,29 +311,9 @@ McpttServerCallMachineGroupPrearranged::Receive (const McpttMediaMsg& msg)
 }
 
 void
-McpttServerCallMachineGroupPrearranged::Receive (const McpttCallMsg& msg) 
-{
-  NS_LOG_FUNCTION (this << &msg);
-}
-
-void
 McpttServerCallMachineGroupPrearranged::RejectCall (void)
 {
   NS_LOG_FUNCTION (this);
-}
-
-void
-McpttServerCallMachineGroupPrearranged::SendCallControlPacket (Ptr<Packet> pkt)
-{
-  NS_LOG_FUNCTION (this << pkt);
-  GetServerCall ()->GetOwner ()->SendCallControlPacket (pkt);
-}
-
-void
-McpttServerCallMachineGroupPrearranged::Send (const McpttCallMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-  GetServerCall ()->Send (msg);
 }
 
 void

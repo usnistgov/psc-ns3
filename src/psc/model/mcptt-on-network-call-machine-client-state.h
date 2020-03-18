@@ -88,23 +88,26 @@ public:
   * Reception of a SIP INVITE
   * \param machine The state machine that the action is for.
   * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the SIP BYE
+  * \param pkt The packet containing the body of the SIP INVITE
+  * \param hdr The SIP header
   */
- virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Reception of a SIP BYE 
   * \param machine The state machine that the action is for.
   * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the SIP BYE
+  * \param pkt The packet containing the body of the SIP BYE
+  * \param hdr The SIP header
   */
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Reception of a SIP response message 
   * \param machine The state machine that the action is for.
   * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the SIP response
+  * \param pkt The packet containing the body of the SIP response
+  * \param hdr The SIP header
   */
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Indicates that the call should be initiated
   * \param machine The state machine that the action is for.
@@ -154,7 +157,7 @@ public:
  virtual ~McpttOnNetworkCallMachineClientStateS1 (void);
  virtual McpttEntityId GetInstanceStateId (void) const;
  virtual void InitiateCall (McpttOnNetworkCallMachineClient& machine);
- virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 };
 /**
  * \ingroup mcptt
@@ -182,9 +185,9 @@ public:
  // Documented in base class
  virtual ~McpttOnNetworkCallMachineClientStateS2 (void);
  virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
 };
 /**
@@ -217,8 +220,8 @@ public:
  // Documented in base class
  virtual McpttEntityId GetInstanceStateId (void) const;
  virtual bool IsCallOngoing (const McpttOnNetworkCallMachineClient& machine) const;
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
 };
 /**
@@ -250,8 +253,8 @@ public:
  virtual ~McpttOnNetworkCallMachineClientStateS4 (void);
  // Documented in base class
  virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 };
 } // namespace ns3
 

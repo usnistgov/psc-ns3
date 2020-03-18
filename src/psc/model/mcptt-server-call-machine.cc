@@ -33,6 +33,7 @@
 #include <ns3/object.h>
 #include <ns3/type-id.h>
 #include <ns3/uinteger.h>
+#include <ns3/sip-header.h>
 
 #include "mcptt-server-app.h"
 #include "mcptt-server-call.h"
@@ -271,15 +272,9 @@ McpttServerCallMachineNull::IsPrivateCall (uint32_t userId) const
 }
 
 void
-McpttServerCallMachineNull::ReceiveCallPacket (Ptr<Packet> pkt)
+McpttServerCallMachineNull::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << pkt);
-}
-
-void
-McpttServerCallMachineNull::Receive (const McpttCallMsg& msg) 
-{
-  NS_LOG_FUNCTION (this << &msg);
+  NS_LOG_FUNCTION (this << pkt << hdr);
 }
 
 void
@@ -292,12 +287,6 @@ void
 McpttServerCallMachineNull::RejectCall (void)
 {
   NS_LOG_FUNCTION (this);
-}
-
-void
-McpttServerCallMachineNull::Send (const McpttCallMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
 }
 
 void

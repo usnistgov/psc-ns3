@@ -95,7 +95,7 @@ private:
  std::map<std::pair<uint32_t, uint16_t>, Time> m_mouthToEarLatencyMap;
  std::ofstream m_mouthToEarLatencyTraceFile; //!< file stream for latency trace
 
-  void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
+  void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const Header& msg);
 };
 
 } // namespace ns3

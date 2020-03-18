@@ -87,15 +87,17 @@ public:
  /**
   * Forward the SIP request packet to an MCPTT user
   * \param to the MCPTT UserId to send it to
-  * \param pkt the packet to send
+  * \param pkt The packet (already serialized with SIP header)
+  * \param hdr A reference to the SIP header that has been serialized
   */
- virtual void SendSipRequest (uint32_t to, Ptr<Packet> pkt);
+ virtual void SendSipRequest (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Forward the SIP response packet to an MCPTT user
   * \param to the MCPTT UserId to send it to
-  * \param pkt the packet to send
+  * \param pkt The packet (already serialized with SIP header)
+  * \param hdr A reference to the SIP header that has been serialized
   */
- virtual void SendSipResponse (uint32_t to, Ptr<Packet> pkt);
+ virtual void SendSipResponse (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Accepts the call.
   */
@@ -162,32 +164,18 @@ public:
  /**
   * Receives a call control packet
   * \param msg The packet to receive.
+  * \param hdr The (deserialized) SIP header.
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Receives a media message.
   * \param msg The message to receive.
   */
  virtual void Receive (const McpttMediaMsg& msg);
  /**
-  * Receives a call message.
-  * \param msg The message to receive.
-  */
- virtual void Receive (const McpttCallMsg& msg);
- /**
   * Rejects the call.
   */
  virtual void RejectCall (void);
- /**
-  * Sends a call control packet.
-  * \param msg The message to send.
-  */
- virtual void SendCallControlPacket (Ptr<Packet> pkt);
- /**
-  * Sends a call control message.
-  * \param msg The message to send.
-  */
- virtual void Send (const McpttCallMsg& msg);
  /**
   * Sets the ID of the MCPTT call.
   * \param callId The ID of the MCPTT call.

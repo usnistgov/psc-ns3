@@ -107,23 +107,26 @@ public:
   * Reception of a SIP INVITE
   * \param machine The state machine that the action is for.
   * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the SIP INVITE 
+  * \param pkt The packet containing SDP information
+  * \param hdr The deserialized SIP header
   */
- virtual void ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Reception of a SIP BYE 
   * \param machine The state machine that the action is for.
   * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the SIP BYE 
+  * \param pkt The packet containing SDP information
+  * \param hdr The deserialized SIP header
   */
- virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Reception of a SIP response message 
   * \param machine The state machine that the action is for.
   * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the SIP response
+  * \param pkt The packet containing SDP information
+  * \param hdr The deserialized SIP header
   */
- virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 protected:
  /**
   * Creates an instance of the McpttServerCallMachineGroupPrearrangedState class.
@@ -162,7 +165,7 @@ public:
  // Documented in base class
  virtual ~McpttServerCallMachineGroupPrearrangedStateS1 (void);
  virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 };
 /**
  * \ingroup mcptt
@@ -190,9 +193,9 @@ public:
  // Documented in base class
  virtual ~McpttServerCallMachineGroupPrearrangedStateS2 (void);
  virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 };
 /**
  * \ingroup mcptt
@@ -224,8 +227,8 @@ public:
  // Documented in base class
  virtual McpttEntityId GetInstanceStateId (void) const;
  virtual bool IsCallOngoing (const McpttServerCallMachineGroupPrearranged& machine) const;
- virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 };
 /**
  * \ingroup mcptt
@@ -256,8 +259,8 @@ public:
  virtual ~McpttServerCallMachineGroupPrearrangedStateS4 (void);
  // Documented in base class
  virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
- virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt);
+ virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr);
 };
 } // namespace ns3
 

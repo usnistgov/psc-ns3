@@ -36,6 +36,7 @@
 #include <ns3/pointer.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
+#include <ns3/sip-header.h>
 
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
@@ -43,6 +44,7 @@
 #include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
+#include "mcptt-on-network-call-machine-client.h"
 #include "mcptt-ptt-app.h"
 
 #include "mcptt-call.h"
@@ -80,8 +82,8 @@ McpttCall::McpttCall (void)
     m_pushOnSelect (false),
     m_startTime (Seconds (0)),
     m_stopTime (Seconds (0)),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ()),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const McpttMsg&> ())
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ()),
+    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -207,6 +209,19 @@ McpttCall::Receive (const McpttCallMsg& msg)
 }
 
 void
+McpttCall::Receive (Ptr<Packet> pkt, const SipHeader& hdr)
+{
+  NS_LOG_FUNCTION (this << pkt);
+  NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
+  NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
+  if (!m_rxCb.IsNull ())
+    {
+      m_rxCb (this, hdr);
+    }
+  GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
+}
+
+void
 McpttCall::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
@@ -235,6 +250,19 @@ McpttCall::Receive (const McpttMediaMsg& msg)
 
   callMachine->Receive (msg);
   floorMachine->Receive (msg);
+}
+
+void
+McpttCall::Send (Ptr<Packet> pkt, const SipHeader& hdr)
+{
+  NS_LOG_FUNCTION (this << hdr);
+
+  if (!m_txCb.IsNull ())
+    {
+      m_txCb (this, hdr);
+    }
+
+  GetOwner ()->Send (pkt, hdr);
 }
 
 void
@@ -503,7 +531,7 @@ McpttCall::SetOwner (Ptr<McpttPttApp> owner)
 }
 
 void
-McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  rxCb)
+McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb)
 {
   NS_LOG_FUNCTION (this);
 
@@ -511,7 +539,7 @@ McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&> 
 }
 
 void
-McpttCall::SetTxCb (const Callback<void, Ptr<const McpttCall>, const McpttMsg&>  txCb)
+McpttCall::SetTxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  txCb)
 {
   NS_LOG_FUNCTION (this << &txCb);
 

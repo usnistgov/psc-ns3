@@ -102,6 +102,12 @@ SipHeader::GetMessageType (void) const
   return SipHeader::SipMessageType (m_messageType);
 }
 
+std::string
+SipHeader::GetMessageTypeName (void) const
+{
+  return SipMessageTypeToString (SipMessageType (m_messageType));
+}
+
 void
 SipHeader::SetMethod (SipMethod method)
 {
@@ -112,6 +118,12 @@ SipHeader::SipMethod
 SipHeader::GetMethod (void) const
 {
   return SipHeader::SipMethod (m_method);
+}
+
+std::string
+SipHeader::GetMethodName (void) const
+{
+  return SipMethodToString (SipMethod (m_method));
 }
 
 void

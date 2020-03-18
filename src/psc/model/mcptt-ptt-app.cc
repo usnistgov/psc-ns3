@@ -46,6 +46,7 @@
 #include <ns3/udp-socket-factory.h>
 #include <ns3/uinteger.h>
 #include <ns3/vector.h>
+#include <ns3/sip-header.h>
 
 #include "mcptt-call-msg.h"
 #include "mcptt-call-machine-grp-basic.h"
@@ -533,13 +534,17 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
     }
 }
 
+// on-network sends SIP-based messages
 void
-McpttPttApp::SendCallControlPacket (Ptr<Packet> pkt)
+McpttPttApp::Send (Ptr<Packet> pkt, const SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt);
-  GetCallChan ()->Send (pkt);
+  Ptr<McpttChan> callChan = GetCallChan ();
+  NS_LOG_LOGIC ("PttApp sending " << hdr << ".");
+  callChan->Send (pkt);
 }
 
+// off-network directly sends McpttCallMsg
 void
 McpttPttApp::Send (const McpttCallMsg& msg)
 {
@@ -698,7 +703,7 @@ McpttPttApp::NewCallCb (uint16_t callId)
 }
 
 void
-McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
+McpttPttApp::ReceiveCallPkt (Ptr<Packet> pkt)
 {
   NS_LOG_FUNCTION (this << pkt);
 
@@ -712,12 +717,22 @@ McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
 
   Ptr<McpttCallMachine> machine = m_selectedCall->GetCallMachine ();
   NS_ASSERT_MSG (machine, "No call machine found");
-  // Check if packet is an on-network (SIP-based) message
-  Ptr<McpttOnNetworkCallMachineClient> onNetworkMachine = machine->GetObject<McpttOnNetworkCallMachineClient> ();
-  if (onNetworkMachine)
+  // Check if packet is for an on-network (SIP-based) message
+  if (machine->GetObject<McpttOnNetworkCallMachineClient> ())
     {
       NS_LOG_LOGIC ("Handling on-network call control packet");
-      onNetworkMachine->ReceiveCallPacket (pkt);
+      SipHeader sipHeader;
+      pkt->RemoveHeader (sipHeader);
+      auto it = m_calls.find (sipHeader.GetCallId ());
+      if (it != m_calls.end ())
+        {
+          NS_LOG_DEBUG ("Received packet for call ID " << it->first);
+          it->second->Receive (pkt, sipHeader);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("No call found with call ID " << sipHeader.GetCallId ());
+        }
       return;
     }
 
@@ -855,7 +870,7 @@ McpttPttApp::ReceiveCallPkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttPttApp::RxCb (Ptr<const McpttCall> call, const McpttMsg& msg)
+McpttPttApp::RxCb (Ptr<const McpttCall> call, const Header& msg)
 {
   NS_LOG_FUNCTION (this << call << &msg);
 
@@ -927,7 +942,7 @@ McpttPttApp::StopApplication (void)
 }
 
 void
-McpttPttApp::TxCb (Ptr<const McpttCall> call, const McpttMsg& msg)
+McpttPttApp::TxCb (Ptr<const McpttCall> call, const Header& msg)
 {
   NS_LOG_FUNCTION (this << call << &msg);
 

@@ -46,7 +46,6 @@ namespace ns3 {
 
 class McpttServerCall;
 class McpttCallMsg;
-class McpttMsg;
 class McpttChan;
 
 /**
@@ -84,11 +83,6 @@ public:
  /**
   * Sends a call control packet.
   * \param pkt The packet to send.
-  */
- virtual void SendCallControlPacket (Ptr<Packet> pkt);
- /**
-  * Sends a call control packet.
-  * \param pkt The packet to send.
   * \param toAddr The address to send to
   */
  virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr);
@@ -110,9 +104,10 @@ public:
 protected:
  /**
   * The callback to fire when a message is received.
+  * \param call The call associated with the message.
   * \param msg The message that was received.
   */
- virtual void RxCb (const McpttMsg& msg);
+ virtual void RxCb (Ptr<const McpttServerCall> call, const Header& msg);
  /**
   * Disposes of the McpttServerApp instance.
   */
@@ -132,16 +127,17 @@ protected:
  virtual void ReceiveCallPacket (Ptr<Packet> pkt);
  /**
   * The callback to fire when a message is sent.
+  * \param call The call associated with the message.
   * \param msg The message that was sent.
   */
- virtual void TxCb (const McpttMsg& msg);
+ virtual void TxCb (Ptr<const McpttServerCall> call, const Header& msg);
  /**
   * TracedCallback signature for McpttMsg transmission or reception events
   * \param [in] app Ptr<Application>
   * \param [in] callId Call ID
-  * \param [in] msg McpttMsg
+  * \param [in] msg Header
   */
- typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const McpttMsg& msg);
+ typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
 private:
  static uint16_t s_callId; //!< Call ID counter
  std::map<uint16_t, Ptr<McpttServerCall> > m_calls; //!< Call container keyed by callId
@@ -149,8 +145,8 @@ private:
  Address m_peerAddress; //!< The peer IP address.
  uint16_t m_callPort; //!< The port on which call control messages will flow.
  Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
- TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_rxTrace; //!< The Rx trace.
- TracedCallback<Ptr<const Application>, uint16_t, const McpttMsg&> m_txTrace; //!< The Tx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
+ TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
 };
 
 } // namespace ns3

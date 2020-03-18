@@ -74,23 +74,23 @@ McpttServerCallMachineGroupPrearrangedState::IsCallOngoing (const McpttServerCal
 }
 
 void
-McpttServerCallMachineGroupPrearrangedState::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedState::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
   NS_LOG_LOGIC ("Ignoring INVITE");
 }
 
 void
-McpttServerCallMachineGroupPrearrangedState::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedState::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
   NS_LOG_LOGIC ("Ignoring BYE"); 
 }
 
 void
-McpttServerCallMachineGroupPrearrangedState::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedState::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   NS_LOG_LOGIC ("Ignoring response"); 
 }
 
@@ -140,14 +140,12 @@ McpttServerCallMachineGroupPrearrangedStateS1::GetInstanceStateId (void) const
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
   std::vector<uint32_t> pending;
   NS_ASSERT_MSG (machine.GetServerCall ()->GetOriginator () == std::numeric_limits<uint32_t>::max (), "Originator set in state S1");
   machine.GetServerCall ()->SetOriginator (from);
-  SipHeader sipHeader;
-  pkt->RemoveHeader (sipHeader);
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
   machine.SetState (McpttServerCallMachineGroupPrearrangedStateS2::GetInstance ());
@@ -165,7 +163,7 @@ McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMac
           Ptr<Packet> p = Create<Packet> ();
           p->AddHeader (sdpHeader);
           p->AddHeader (sipHeader);
-          machine.SendSipRequest (userId, p);
+          machine.SendSipRequest (userId, p, sipHeader);
           pending.push_back (userId);
         }
     }
@@ -206,10 +204,10 @@ McpttServerCallMachineGroupPrearrangedStateS2::GetInstanceStateId (void) const
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
   // Collision between INVITEs; this is the later arriving one
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
   if (machine.GetServerCall ()->GetOriginator () == from)
     {
       NS_LOG_LOGIC ("Possible retransmission of INVITE from same originator");
@@ -233,7 +231,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
-      machine.SendSipResponse (from, response);
+      machine.SendSipResponse (from, response, sipHeader);
     }
   else
     {
@@ -269,15 +267,15 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
-      machine.SendSipResponse (from, response);
+      machine.SendSipResponse (from, response, sipHeader);
     }
   // No change of state
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
 
   // For each response 'from', set 'towards participant floor machine' state.
   // If originator had implicit floor request, then set not permitted/taken,
@@ -311,7 +309,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
-      machine.SendSipResponse (machine.GetServerCall ()->GetOriginator (), response);
+      machine.SendSipResponse (machine.GetServerCall ()->GetOriginator (), response, sipHeader);
       // If originator had implicit floor request, it should transition to
       // permitted, else not permitted and floor idle (TODO)
       participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
@@ -322,9 +320,9 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS2::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS2::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
   machine.SetState (McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ());
 }
 
@@ -371,16 +369,16 @@ McpttServerCallMachineGroupPrearrangedStateS3::IsCallOngoing (const McpttServerC
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS3::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS3::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   machine.SetState (McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ());
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
 
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant;
   std::vector<uint32_t> pending;
@@ -391,13 +389,14 @@ McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachin
   /// TODO:  allow non-originator to release
   if (machine.GetServerCall ()->GetOriginator () == from)
     {
+      pkt->AddHeader (sipHeader);
       for (uint32_t i = 0; i < machine.GetServerCall ()->GetClientUserIds ().size (); i++)
         {
           uint32_t userId = machine.GetServerCall ()->GetClientUserIds ().at (i);
           if (userId != from)
             {
               NS_LOG_DEBUG ("Forwarding BYE to user ID: " << userId);
-              machine.SendSipRequest (userId, pkt);
+              machine.SendSipRequest (userId, pkt, sipHeader);
               pending.push_back (userId);
             }
         }
@@ -447,17 +446,17 @@ McpttServerCallMachineGroupPrearrangedStateS4::GetInstanceStateId (void) const
   return McpttServerCallMachineGroupPrearrangedStateS4::GetStateId ();
 }
 void
-McpttServerCallMachineGroupPrearrangedStateS4::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS4::ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& sipHeader)
 {
   // colliding BYEs
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << sipHeader);
   machine.SetState (McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ());
 }
 
 void
-McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt)
+McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << &machine << from << pkt);
+  NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
 
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant;
   participant = machine.GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (from);
@@ -490,7 +489,7 @@ McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallM
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
-      machine.SendSipResponse (machine.GetServerCall ()->GetOriginator (), response);
+      machine.SendSipResponse (machine.GetServerCall ()->GetOriginator (), response, sipHeader);
     
       machine.GetServerCall ()->GetArbitrator ()->CallRelease2 ();
       machine.SetState (McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ());

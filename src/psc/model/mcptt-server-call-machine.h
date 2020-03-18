@@ -44,6 +44,7 @@
 namespace ns3 {
 
 class McpttServerCall;
+class SipHeader;
 
 /**
  * \ingroup mcptt
@@ -132,14 +133,10 @@ public:
  virtual bool IsPrivateCall (uint32_t userId = 0) const = 0;
  /**
   * Receives a call control packet
-  * \param pkt The packet received.
+  * \param pkt The packet received (without SIP header).
+  * \param hdr The (deserialized) SIP header
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt) = 0;
- /**
-  * Receives a call control message.
-  * \param msg The message to receive.
-  */
- virtual void Receive (const McpttCallMsg& msg) = 0;
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr) = 0;
  /**
   * Receives a media message.
   * \param msg The message to receive.
@@ -149,11 +146,6 @@ public:
   * Rejects the call.
   */
  virtual void RejectCall (void) = 0;
- /**
-  * Sends a call control message.
-  * \param msg The message to send.
-  */
- virtual void Send (const McpttCallMsg& msg) = 0;
  /**
   * Sets the callback used to indicate that a new call exists.
   * \param newCallCb The callback.
@@ -318,14 +310,10 @@ public:
  virtual bool IsPrivateCall (uint32_t userId = 0) const;
  /**
   * Receives a call control packet
-  * \param pkt The packet received.
+  * \param pkt The packet received (without SIP header).
+  * \param hdr The (deserialized) SIP header
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt);
- /**
-  * Receives a call control message.
-  * \param msg The message to receive.
-  */
- virtual void Receive (const McpttCallMsg& msg);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Receives a media message.
   * \param msg The message to receive.
@@ -335,11 +323,6 @@ public:
   * Rejects the call.
   */
  virtual void RejectCall (void);
- /**
-  * Sends a call control message.
-  * \param msg The message to send.
-  */
- virtual void Send (const McpttCallMsg& msg);
  /**
   * Sets the callback used to indicate that a new call exists.
   * \param newCallCb The callback.
