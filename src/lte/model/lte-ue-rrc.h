@@ -37,6 +37,7 @@
 #include <ns3/traced-callback.h>
 #include "ns3/component-carrier-ue.h"
 #include <ns3/lte-ue-ccm-rrc-sap.h>
+#include <ns3/nr-sl-rrc-sap.h>
 #include <vector>
 
 #include <map>
@@ -95,6 +96,9 @@ class LteUeRrc : public Object
   friend class MemberLteUeRrcSapProvider<LteUeRrc>;
   /// allow MemberLteUeCcmRrcSapUser<LteUeRrc> class friend access
   friend class MemberLteUeCcmRrcSapUser<LteUeRrc>;
+  // NR sidelink
+  /// allow MemberNrSlUeRrcSapProvider<LteUeRrc> class friend access
+  friend class MemberNrSlUeRrcSapProvider<LteUeRrc>;
 
 public:
 
@@ -252,6 +256,21 @@ public:
    *           carrier component selection algorithm by this RRC
    */
   LteUeCcmRrcSapUser* GetLteCcmRrcSapUser ();
+
+  /**
+   * \brief Get the pointer for the NR sidelink UE RRC SAP Provider interface
+   *        offered to NR sidelink UE RRC by this class
+   *
+   * \return the pointer of type NrSlUeRrcSapProvider
+   */
+  NrSlUeRrcSapProvider* GetNrSlUeRrcSapProvider ();
+  /**
+   * \brief Set the pointer for the NR sidelink UE RRC SAP User interface
+   *        offered to this class by NR sidelink UE RRC class
+   *
+   * \param s the pointer of type NrSlUeRrcSapUser
+   */
+   void SetNrSlUeRrcSapUser (NrSlUeRrcSapUser* s);
 
   /** 
    * 
@@ -778,6 +797,10 @@ private:
   /// Interface to the LteUeComponentCarrierManage instance.
   LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; ///< CCM RRC SAP provider
   LteUeCcmRrcSapUser* m_ccmRrcSapUser; ///< CCM RRC SAP user
+
+  // NR sidelink SAP
+  NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; ///< NR SL UE RRC SAP provider
+  NrSlUeRrcSapUser* m_nrSlRrcSapUser; ///< NR SL UE RRC SAP user
 
   /// The current UE RRC state.
   State m_state;

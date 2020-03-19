@@ -164,6 +164,7 @@ LteUeRrc::LteUeRrc ()
   m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
   m_asSapProvider = new MemberLteAsSapProvider<LteUeRrc> (this);
   m_ccmRrcSapUser = new MemberLteUeCcmRrcSapUser<LteUeRrc> (this);
+  m_nrSlRrcSapProvider = new MemberNrSlUeRrcSapProvider<LteUeRrc> (this);
 }
 
 LteUeRrc::~LteUeRrc ()
@@ -3336,6 +3337,21 @@ LteUeRrc::DoResetSyncIndicationCounter ()
 
   NS_LOG_DEBUG ("The number of sync indication received by RRC from PHY: " << (uint16_t) m_noOfSyncIndications);
   m_noOfSyncIndications = 0;
+}
+
+//Nr sidelink
+NrSlUeRrcSapProvider*
+LteUeRrc::GetNrSlUeRrcSapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlRrcSapProvider;
+}
+
+void
+LteUeRrc::SetNrSlUeRrcSapUser (NrSlUeRrcSapUser* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlRrcSapUser = s;
 }
 
 
