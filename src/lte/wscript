@@ -133,7 +133,8 @@ def build(bld):
         'model/component-carrier.cc',
         'helper/cc-helper.cc',
         'model/component-carrier-ue.cc',
-        'model/component-carrier-enb.cc'
+        'model/component-carrier-enb.cc',
+        'model/nr-sl-rrc-sap.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -327,7 +328,8 @@ def build(bld):
         'helper/cc-helper.h',
         'model/component-carrier.h',
         'model/component-carrier-ue.h',
-        'model/component-carrier-enb.h'
+        'model/component-carrier-enb.h',
+        'model/nr-sl-rrc-sap.h'
         ]
 
     if (bld.env['ENABLE_EMU']):
