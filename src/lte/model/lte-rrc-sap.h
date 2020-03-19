@@ -1578,11 +1578,16 @@ public:
 
   /**
    * \brief SL-PreconfigurationNR information element
+   *
+   * Even though the NR 38.331 specify the following
+   * structure, we do not see the use of it. We
+   * should use directly the SidelinkPreconfigNr
+   * structure.
    */
-  struct SlPreconfigurationNr
-  {
-    SidelinkPreconfigNr sidelinkPreconfigNr;
-  };
+ // struct SlPreconfigurationNr
+ // {
+ //   SidelinkPreconfigNr sidelinkPreconfigNr;
+ // };
 
 
 };
