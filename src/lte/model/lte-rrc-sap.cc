@@ -215,6 +215,40 @@ LteRrcSap::GetSlStartSymbolValue (const LteRrcSap::SlStartSymbol &slStartSym)
   return slStartSymInt;
 }
 
+LteRrcSap::SlStartSymbol
+LteRrcSap::GetSlStartSymbolEnum (uint16_t slStartSym)
+{
+  SlStartSymbol slStartSymEnum;
+  switch (slStartSym)
+  {
+    case 0:
+      slStartSymEnum.symbol = SlStartSymbol::SYM0;
+      break;
+    case 1:
+      slStartSymEnum.symbol = SlStartSymbol::SYM1;
+      break;
+    case 2:
+      slStartSymEnum.symbol = SlStartSymbol::SYM2;
+      break;
+    case 3:
+      slStartSymEnum.symbol = SlStartSymbol::SYM3;
+      break;
+    case 4:
+      slStartSymEnum.symbol = SlStartSymbol::SYM4;
+      break;
+    case 5:
+      slStartSymEnum.symbol = SlStartSymbol::SYM6;
+      break;
+    case 7:
+      slStartSymEnum.symbol = SlStartSymbol::SYM7;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink symbol start value " << slStartSym);
+  }
+
+  return slStartSymEnum;
+}
+
 uint16_t
 LteRrcSap::GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPscch)
 {

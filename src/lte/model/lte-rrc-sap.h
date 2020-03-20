@@ -1377,9 +1377,11 @@ public:
    */
   struct Bwp
   {
-    uint32_t locationAndBandwidth {3000}; //!< Resource Indicator value (RIV). 38.214 sec 5.1.2.2.2
-    SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
-    CyclicPrefix cyclicPrefix; //!< Cyclic prefix  //optional filed
+    //uint32_t locationAndBandwidth {3000}; //!< Resource Indicator value (RIV). 38.214 sec 5.1.2.2.2
+   // SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
+    uint16_t numerology {99};
+    uint16_t symbolsPerSlots {0};
+    //CyclicPrefix cyclicPrefix; //!< Cyclic prefix  //optional filed
   };
 
   /**
@@ -1511,7 +1513,7 @@ public:
   struct SlBwpConfigCommonNr
   {
     SlBwpGeneric slBwpGeneric; //!< This field indicates the generic parameters on the configured sidelink BWP
-    SlBwpPoolConfigCommonNr slBwpPoolConfigCommon; //!< This field indicates the resource pool configurations on the configured sidelink BWP
+    SlBwpPoolConfigCommonNr slBwpPoolConfigCommonNr; //!< This field indicates the resource pool configurations on the configured sidelink BWP
   };
 
   /**
@@ -1519,7 +1521,7 @@ public:
    */
   struct SlFreqConfigCommonNr
   {
-    std::array <ScsSpecificCarrier, MAX_SCSs> slScsSpecificCarrierList; //!< A list per numerology for UE specific channel bandwidth and location configurations
+    //std::array <ScsSpecificCarrier, MAX_SCSs> slScsSpecificCarrierList; //!< A list per numerology for UE specific channel bandwidth and location configurations
     std::array <SlBwpConfigCommonNr, MAX_NUM_OF_SL_BWPs> slBwpList; //!< List of sidelink BWP(s) for NR sidelink communication
     //ArfcnValueNR slAbsoluteFrequencyPointA; //!< Absolute frequency of the reference resource block (Common RB 0).
     //ArfcnValueNR slAbsoluteFrequencySSB; //!< Frequency location of sidelink Synchronization Signal/PBCH block (SSB)
