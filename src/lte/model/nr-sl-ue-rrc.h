@@ -46,6 +46,18 @@ protected:
   virtual void DoDispose ();
 public:
   /**
+   * \brief Available TDD slot types. Ordering is important.
+   */
+  enum LteNrTddSlotType : uint8_t
+  {
+    DL = 0,  //!< DL CTRL + DL DATA
+    S  = 1,  //!< DL CTRL + DL DATA + UL CTRL
+    F  = 2,  //!< DL CTRL + DL DATA + UL DATA + UL CTRL
+    UL = 3,  //!< UL DATA + UL CTRL
+  };
+
+  friend std::ostream & operator<< (std::ostream & os, LteNrTddSlotType const & item);
+  /**
    *  Register this type.
    *  \return The object TypeId.
    */
@@ -84,7 +96,30 @@ public:
    * \return The NR LteRrcSap::SidelinkPreconfigNr struct
    */
   const LteRrcSap::SidelinkPreconfigNr DoGetNrSlPreconfiguration () const;
+  /**
+   * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
+   *
+   * \param slBitMap The sidelink bitmap
+   * \return A vector representing the physical sidelink pool
+   */
+  const std::vector <std::bitset<1>>
+  GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
 private:
+  /**
+   * \brief Set the TDD pattern that the this UE RRC will utilize to compute
+   *        physical SL pool.
+   *
+   * For example, a valid pattern would be "DL|DL|UL|UL|DL|DL|UL|UL|". The slot
+   * types allowed are:
+   *
+   * - "DL" for downlink only
+   * - "UL" for uplink only
+   * - "F" for flexible (dl and ul)
+   * - "S" for special slot (LTE-compatibility)
+   *
+   * This function is copied from mmwave-enb-phy class
+   */
+  void SetTddPattern ();
   // NR sidelink UE RRC SAP
   NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
   NrSlUeRrcSapProvider* m_nrSlUeRrcSapProvider {nullptr}; ///< NR SL UE RRC SAP provider
@@ -96,6 +131,7 @@ private:
    * The preconfiguration for out of coverage scenarios
    */
   LteRrcSap::SidelinkPreconfigNr m_preconfiguration;
+  std::vector<NrSlUeRrc::LteNrTddSlotType> m_tddPattern; //!< TDD pattern
 };     //end of NrSlUeRrc'class
 
 } // namespace ns3
