@@ -1546,7 +1546,7 @@ public:
    */
   struct TddUlDlConfigCommon
   {
-    std::string TddPattern {"F|F|F|F|F|F|F|F|F|F|"}; //!< TDD pattern
+    std::string tddPattern {"F|F|F|F|F|F|F|F|F|F|"}; //!< TDD pattern
 
     //SubcarrierSpacing referenceSubcarrierSpacing //TODO
     //TDD-UL-DL-Pattern pattern1 //TODO
