@@ -219,7 +219,7 @@ uint16_t
 LteRrcSap::GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPscch)
 {
   uint16_t slTResoPscchInt = 0;
-  switch (slTResoPscch.slTResoPscch)
+  switch (slTResoPscch.resources)
   {
     case SlTimeResourcePscch::N2:
       slTResoPscchInt = 2;
@@ -228,7 +228,7 @@ LteRrcSap::GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPs
       slTResoPscchInt = 3;
       break;
     default:
-      NS_FATAL_ERROR ("Invalid enumeration value " << slTResoPscch.slTResoPscch << " used for LteRrcSap::SlTimeResourcePscch");
+      NS_FATAL_ERROR ("Invalid enumeration value " << slTResoPscch.resources << " used for LteRrcSap::SlTimeResourcePscch");
   }
 
   return slTResoPscchInt;
@@ -241,10 +241,10 @@ LteRrcSap::GetSlTResoPscchEnum (uint16_t slTResoPscch)
   switch (slTResoPscch)
   {
     case 2:
-      slTResoPscchEnum.slTResoPscch = SlTimeResourcePscch::N2;
+      slTResoPscchEnum.resources = SlTimeResourcePscch::N2;
       break;
     case 3:
-      slTResoPscchEnum.slTResoPscch = SlTimeResourcePscch::N3;
+      slTResoPscchEnum.resources = SlTimeResourcePscch::N3;
       break;
     default:
       NS_FATAL_ERROR ("Invalid number of symbols : " << slTResoPscch << " used for PSCCH");
@@ -259,7 +259,7 @@ uint16_t
 LteRrcSap::GetSlFResoPscchValue (const LteRrcSap::SlFreqResourcePscch &slFResoPscch)
 {
   uint16_t slFResoPscchInt = 0;
-  switch (slFResoPscch.slFResoPscch)
+  switch (slFResoPscch.resources)
   {
     case SlFreqResourcePscch::N10:
       slFResoPscchInt = 10;
@@ -277,7 +277,7 @@ LteRrcSap::GetSlFResoPscchValue (const LteRrcSap::SlFreqResourcePscch &slFResoPs
       slFResoPscchInt = 25;
       break;
     default:
-      NS_FATAL_ERROR ("Invalid enumeration value " << slFResoPscch.slFResoPscch << " used for LteRrcSap::SlFreqResourcePscch");
+      NS_FATAL_ERROR ("Invalid enumeration value " << slFResoPscch.resources << " used for LteRrcSap::SlFreqResourcePscch");
   }
 
   return slFResoPscchInt;
@@ -290,19 +290,19 @@ LteRrcSap::GetSlFResoPscchEnum (uint16_t slFResoPscch)
   switch (slFResoPscch)
   {
     case 10:
-      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N10;
+      slFResoPscchEnum.resources = SlFreqResourcePscch::N10;
       break;
     case 12:
-      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N12;
+      slFResoPscchEnum.resources = SlFreqResourcePscch::N12;
       break;
     case 15:
-      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N15;
+      slFResoPscchEnum.resources = SlFreqResourcePscch::N15;
       break;
     case 20:
-      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N20;
+      slFResoPscchEnum.resources = SlFreqResourcePscch::N20;
       break;
     case 25:
-      slFResoPscchEnum.slFResoPscch = SlFreqResourcePscch::N25;
+      slFResoPscchEnum.resources = SlFreqResourcePscch::N25;
       break;
 
     default:
@@ -370,7 +370,7 @@ uint16_t
 LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
 {
   uint16_t subChSizeInt = 0;
-  switch (subChSize.subchannelSize)
+  switch (subChSize.numPrbs)
   {
     case SlSubchannelSize::N10:
       subChSizeInt = 10;
@@ -394,7 +394,7 @@ LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
       subChSizeInt = 100;
       break;
     default:
-      NS_FATAL_ERROR ("Invalid enumeration value " << subChSize.subchannelSize << " LteRrcSap::SlSubchannelSize");
+      NS_FATAL_ERROR ("Invalid enumeration value " << subChSize.numPrbs << " LteRrcSap::SlSubchannelSize");
   }
 
   return subChSizeInt;
@@ -407,25 +407,25 @@ LteRrcSap::GetSlSubChSizeEnum (uint16_t subChSize)
   switch (subChSize)
   {
     case 10:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N10;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N10;
       break;
     case 15:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N15;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N15;
       break;
     case 20:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N20;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N20;
       break;
     case 25:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N25;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N25;
       break;
     case 50:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N50;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N50;
       break;
     case 75:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N75;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N75;
       break;
     case 100:
-      slSubchannelSizeEnum.subchannelSize = SlSubchannelSize::N100;
+      slSubchannelSizeEnum.numPrbs = SlSubchannelSize::N100;
       break;
     default:
       NS_FATAL_ERROR ("Invalid Subchannel size : " << subChSize << " used");
@@ -530,37 +530,49 @@ LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &peri
   uint16_t perodInt = 0;
   switch (period.period)
   {
-    case SlResourceReservePeriod::S0:
-      perodInt = 0;
+    case SlResourceReservePeriod::MS10:
+      perodInt = 10;
       break;
-    case SlResourceReservePeriod::S100:
+    case SlResourceReservePeriod::MS50:
+      perodInt = 50;
+      break;
+    case SlResourceReservePeriod::MS100:
       perodInt = 100;
       break;
-    case SlResourceReservePeriod::S200:
+    case SlResourceReservePeriod::MS150:
+      perodInt = 150;
+      break;
+    case SlResourceReservePeriod::MS200:
       perodInt = 200;
       break;
-    case SlResourceReservePeriod::S300:
+    case SlResourceReservePeriod::MS300:
       perodInt = 300;
       break;
-    case SlResourceReservePeriod::S400:
+    case SlResourceReservePeriod::MS350:
+      perodInt = 350;
+      break;
+    case SlResourceReservePeriod::MS400:
       perodInt = 400;
       break;
-    case SlResourceReservePeriod::S500:
+    case SlResourceReservePeriod::MS450:
+      perodInt = 450;
+      break;
+    case SlResourceReservePeriod::MS500:
       perodInt = 500;
       break;
-    case SlResourceReservePeriod::S600:
+    case SlResourceReservePeriod::MS550:
+      perodInt = 550;
+      break;
+    case SlResourceReservePeriod::MS600:
       perodInt = 600;
       break;
-    case SlResourceReservePeriod::S700:
+    case SlResourceReservePeriod::MS650:
+      perodInt = 650;
+      break;
+    case SlResourceReservePeriod::MS750:
       perodInt = 700;
       break;
-    case SlResourceReservePeriod::S800:
-      perodInt = 800;
-      break;
-    case SlResourceReservePeriod::S900:
-      perodInt = 900;
-      break;
-    case SlResourceReservePeriod::S1000:
+    case SlResourceReservePeriod::MS1000:
       perodInt = 1000;
       break;
     default:
@@ -576,38 +588,53 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
   SlResourceReservePeriod periodEnum;
   switch (period)
   {
-    case 0:
-      periodEnum.period = SlResourceReservePeriod::S0;
+    case 10:
+      periodEnum.period = SlResourceReservePeriod::MS10;
+      break;
+    case 50:
+      periodEnum.period = SlResourceReservePeriod::MS50;
       break;
     case 100:
-      periodEnum.period = SlResourceReservePeriod::S100;
+      periodEnum.period = SlResourceReservePeriod::MS100;
+      break;
+    case 150:
+      periodEnum.period = SlResourceReservePeriod::MS150;
       break;
     case 200:
-      periodEnum.period = SlResourceReservePeriod::S200;
+      periodEnum.period = SlResourceReservePeriod::MS200;
+      break;
+    case 250:
+      periodEnum.period = SlResourceReservePeriod::MS250;
       break;
     case 300:
-      periodEnum.period = SlResourceReservePeriod::S300;
+      periodEnum.period = SlResourceReservePeriod::MS300;
+      break;
+    case 350:
+      periodEnum.period = SlResourceReservePeriod::MS350;
       break;
     case 400:
-      periodEnum.period = SlResourceReservePeriod::S400;
+      periodEnum.period = SlResourceReservePeriod::MS400;
+      break;
+    case 450:
+      periodEnum.period = SlResourceReservePeriod::MS450;
       break;
     case 500:
-      periodEnum.period = SlResourceReservePeriod::S500;
+      periodEnum.period = SlResourceReservePeriod::MS500;
+      break;
+    case 550:
+      periodEnum.period = SlResourceReservePeriod::MS550;
       break;
     case 600:
-      periodEnum.period = SlResourceReservePeriod::S600;
+      periodEnum.period = SlResourceReservePeriod::MS600;
       break;
-    case 700:
-      periodEnum.period = SlResourceReservePeriod::S700;
+    case 650:
+      periodEnum.period = SlResourceReservePeriod::MS650;
       break;
-    case 800:
-      periodEnum.period = SlResourceReservePeriod::S800;
-      break;
-    case 900:
-      periodEnum.period = SlResourceReservePeriod::S900;
+    case 750:
+      periodEnum.period = SlResourceReservePeriod::MS750;
       break;
     case 1000:
-      periodEnum.period = SlResourceReservePeriod::S1000;
+      periodEnum.period = SlResourceReservePeriod::MS1000;
       break;
     default:
       NS_FATAL_ERROR ("Invalid sidelink reservation period : " << period << " used");

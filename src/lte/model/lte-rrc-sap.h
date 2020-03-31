@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <list>
 #include <array>
+#include <bitset>
 
 
 #include <ns3/ptr.h>
@@ -920,21 +921,6 @@ public:
 #define MAX_NUM_OF_SL_BWPs 4 //!< Maximum number of BWP for for NR sidelink communication
 
   /**
-   * \brief Available TDD pattern.
-   */
-  struct TddPattern
-  {
-    //slot types. Ordering is important.
-    enum : uint8_t
-    {
-      DL = 0,  //!< DL CTRL + DL DATA
-      S  = 1,  //!< DL CTRL + DL DATA + UL CTRL
-      F  = 2,  //!< DL CTRL + DL DATA + UL DATA + UL CTRL
-      UL = 3,  //!< UL DATA + UL CTRL
-    } slotType {F};
-  };
-
-  /**
    * \brief Struct for SubcarrierSpacing enumeration
    */
   struct SubcarrierSpacing
@@ -1011,7 +997,7 @@ public:
       N2, //!< 2 symbols
       N3, //!< 3 symbols
       INVALID
-    } slTResoPscch {INVALID};
+    } resources {INVALID};
   };
 
   /**
@@ -1027,7 +1013,7 @@ public:
       N20,
       N25,
       INVALID
-    } slFResoPscch {INVALID};
+    } resources {INVALID};
   };
 
   /**
@@ -1060,7 +1046,7 @@ public:
       N75,
       N100,
       INVALID
-    } subchannelSize;
+    } numPrbs;
   };
 
   /*
@@ -1072,7 +1058,7 @@ public:
     {
       QAM64,
       QAM256,
-      QAM64LOWSE,
+      //QAM64LOWSE, //TODO not supported by NR module
       INVALID
     } mcsTable {INVALID};
   };
@@ -1107,22 +1093,33 @@ public:
 
   /**
    * \brief Struct for SL-ResourceReservePeriod enumeration
+   *
+   * At the time of implementing this IE, 38.331 standard
+   * seems confused. However, 38.214 (8.1.4) says the following:
+   * The resource reservation interval, if provided, is converted
+   * from units of ms to units of logical slots. So, the following
+   * is ms
    */
   struct SlResourceReservePeriod
   {
     enum
     {
-      S0, //!< Seconds
-      S100,
-      S200,
-      S300,
-      S400,
-      S500,
-      S600,
-      S700,
-      S800,
-      S900,
-      S1000,
+      MS10, //!< Milliseconds
+      MS50,
+      MS100,
+      MS150,
+      MS200,
+      MS250,
+      MS300,
+      MS350,
+      MS400,
+      MS450,
+      MS500,
+      MS550,
+      MS600,
+      MS650,
+      MS750,
+      MS1000,
       INVALID
     } period {INVALID};
   };
@@ -1362,7 +1359,7 @@ public:
    */
   struct ScsSpecificCarrier
   {
-    uint16_t offsetToCarrier {3000}; //!< Offset in frequency domain between Point A and the lowest usable subcarrier on this carrier in number of PRBs (0..275*8-1).
+    //uint16_t offsetToCarrier {3000}; //!< Offset in frequency domain between Point A and the lowest usable subcarrier on this carrier in number of PRBs (0..275*8-1).
     SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
     uint16_t carrierBandwidth {3000}; //!< carrier bandwidth in number of PRBs. Valid range is [1, 275]
   };
@@ -1408,10 +1405,10 @@ public:
       SETUP,
       INVALID
     } setupRelease {INVALID}; ///< Indicates if it is allocating or releasing resources
-    SlTimeResourcePscch slTimeResourcePSCCH; //!< Indicates the number of symbols of PSCCH in a resource pool.
-    SlFreqResourcePscch slFreqResourcePSCCH; //!< Indicates the number of PRBs for PSCCH in a resource pool where it is not greater than the number PRBs of the subchannel.
-    uint32_t slDmrsScreambleId {70000}; //!< Indicates the initialization value for PSCCH DMRS scrambling. Valid range [0, 65535]
-    uint16_t slNumReservedBits {0}; //!< Indicates the number of reserved bits in first stage SCI. Valid range [2, 4]
+    SlTimeResourcePscch slTimeResourcePscch; //!< Indicates the number of symbols of PSCCH in a resource pool.
+    SlFreqResourcePscch slFreqResourcePscch; //!< Indicates the number of PRBs for PSCCH in a resource pool where it is not greater than the number PRBs of the subchannel.
+    //uint32_t slDmrsScreambleId {70000}; //TODO //!< Indicates the initialization value for PSCCH DMRS scrambling. Valid range [0, 65535]
+    //uint16_t slNumReservedBits {0}; //TODO //!< Indicates the number of reserved bits in first stage SCI. Valid range [2, 4]
   };
 
   /**
@@ -1425,10 +1422,10 @@ public:
   /**
    * \brief SL-PSSCH-Config information element
    */
-  struct SlPSSCHConfig
+  struct SlPsschConfig
   {
-    //sl-PSSCH-DMRS-TimePattern-r16 //TODO //!< Indicates the set of PSSCH DMRS time domain patterns that can be used in the resource pool.
-    std::array <SlBetaOffsets, 4> slBetaOffsets2ndSci; //!< Configure beta-offset values for the second stage SCI mapping
+    //sl-PSSCH-DMRS-TimePattern-r16 //!< Indicates the set of PSSCH DMRS time domain patterns that can be used in the resource pool.
+    std::array <SlBetaOffsets, 4> slBetaOffsets2ndSci; //!< Indicates candidates of beta-offset values to determine the number of coded modulation symbols for second stage SCI.
     SlScaling slScaling; //!< Indicates a scaling factor to limit the number of resource elements assigned to the second stage SCI on PSSCH
   };
 
@@ -1460,19 +1457,19 @@ public:
   /**
    * \brief SL-ResourcePool information element
    */
-  struct SlResourcePool
+  struct SlResourcePoolNr
   {
     SlPscchConfig slPscchConfig; //!< SL-PSCCH field
-    SlPSSCHConfig slPSSCHConfig; //!< SL-PSSCH field
     SlSubchannelSize slSubchannelSize; //!< Sidelink subchannel size in PRBs
-    uint16_t slStartRbSubchannel {3000}; //!< First RB of a sidelink subchannel. Valid range [0,  265]
-    uint16_t slNumSubchannel {3000}; //!< Number of subchannels. Valid range [1, 27]
-    SlMcsTable slMcsTable; //!< Indicates the MCS table used for the resource pool.
     SlUeSelectedConfigRp slUeSelectedConfigRp; //!< SL-UE-SelectedConfigRP
+    std::vector <std::bitset<1>> slTimeResource;
+    //uint16_t slStartRbSubchannel {3000}; //!< First RB of a sidelink subchannel. Valid range [0, 265]
+    //uint16_t slNumSubchannel {3000}; //!< Number of subchannels. Valid range [1, 27]
+    //SlMcsTable slMcsTable; //It is configurable via error model attribute //!< Indicates the MCS table used for the resource pool.
+    //SlPsschConfig slPsschHConfig; //!< SL-PSSCH field
     //sl-PSFCH-Config-r16 //TODO
     //sl-SyncAllowed-r16 //TODO
     //sl-Period-r16 [FFS]
-    //sl-TimeResource-r16 [FFS]
     //sl-ThreshS-RSSI-CBR-r16 //TODO
     //sl-TimeWindowSizeCBR-r16 //TODO
     //sl-TimeWindowSizeCR-r16 //TODO
@@ -1484,7 +1481,7 @@ public:
   /**
    * \brief SL-ResourcePoolID information element
    */
-  struct SlResourcePoolId
+  struct SlResourcePoolIdNr
   {
     uint16_t id {333}; //!< Sidelink pool id. Valid range [1, 16]
   };
@@ -1492,42 +1489,42 @@ public:
   /**
    * \brief SL-ResourcePoolConfig information element
    */
-  struct SlResourcePoolConfig
+  struct SlResourcePoolConfigNr
   {
-    SlResourcePoolId slResourcePoolId;
-    SlResourcePool slResourcePool;
+    SlResourcePoolIdNr slResourcePoolId;
+    SlResourcePoolNr slResourcePool;
   };
 
   /**
    * \brief SL-BWP-PoolConfigCommon information element
    */
-  struct SlBwpPoolConfigCommon
+  struct SlBwpPoolConfigCommonNr
   {
-    std::array <SlResourcePool, MAX_NUM_OF_RX_POOL> slRxPool; //!< List of sidelink resource pools for RX
-    std::array <SlResourcePoolConfig, MAX_NUM_OF_TX_POOL> slTxPoolSelectedNormal; //!< List of sidelink resource pools for TX
+    //std::array <SlResourcePoolNr, MAX_NUM_OF_RX_POOL> slRxPool; //!< List of sidelink resource pools for RX
+    std::array <SlResourcePoolConfigNr, MAX_NUM_OF_TX_POOL> slTxPoolSelectedNormal; //!< List of sidelink resource pools for TX
     //sl-TxPoolExceptional-r16 //TODO //!< Indicates the resources by which the UE is allowed to transmit NR sidelink communication in exceptional conditions on the configured BWP.
   };
 
   /**
    * \brief SL-BWP-ConfigCommon information element
    */
-  struct SlBwpConfigCommon
+  struct SlBwpConfigCommonNr
   {
     SlBwpGeneric slBwpGeneric; //!< This field indicates the generic parameters on the configured sidelink BWP
-    SlBwpPoolConfigCommon slBwpPoolConfigCommon; //!< This field indicates the resource pool configurations on the configured sidelink BWP
+    SlBwpPoolConfigCommonNr slBwpPoolConfigCommon; //!< This field indicates the resource pool configurations on the configured sidelink BWP
   };
 
   /**
    * \brief SL-FreqConfigCommon information element
    */
-  struct SlFreqConfigCommon
+  struct SlFreqConfigCommonNr
   {
     std::array <ScsSpecificCarrier, MAX_SCSs> slScsSpecificCarrierList; //!< A list per numerology for UE specific channel bandwidth and location configurations
-    ArfcnValueNR slAbsoluteFrequencyPointA; //!< Absolute frequency of the reference resource block (Common RB 0).
-    ArfcnValueNR slAbsoluteFrequencySSB; //!< Frequency location of sidelink Synchronization Signal/PBCH block (SSB)
-    bool frequencyShift7p5khzSL {false}; //!< Enable the NR SL transmission with a 7.5 kHz shift to the LTE raster [we don't use this]
-    int valueN {2}; //!< Indicate the NR SL transmission with a valueN * 5kHz shift to the LTE raster. Valid range : [-1,1]
-    std::array <SlBwpConfigCommon, MAX_NUM_OF_SL_BWPs> slBwpList; //!< List of sidelink BWP(s) for NR sidelink communication
+    std::array <SlBwpConfigCommonNr, MAX_NUM_OF_SL_BWPs> slBwpList; //!< List of sidelink BWP(s) for NR sidelink communication
+    //ArfcnValueNR slAbsoluteFrequencyPointA; //!< Absolute frequency of the reference resource block (Common RB 0).
+    //ArfcnValueNR slAbsoluteFrequencySSB; //!< Frequency location of sidelink Synchronization Signal/PBCH block (SSB)
+    //bool frequencyShift7p5khzSL {false}; //!< Enable the NR SL transmission with a 7.5 kHz shift to the LTE raster [we don't use this]
+    //int valueN {2}; //!< Indicate the NR SL transmission with a valueN * 5kHz shift to the LTE raster. Valid range : [-1,1]
     //sl-SyncPriority-r16 //TODO //!< This field indicates synchronization priority order, as specified in sub-clause TS 38.331 5.X.6
     //bool sl-NbAsSync-r16 //TODO //!< If True, an out of coverage / mode 2 enabled UE is allowed to use an available network as sync source. Only present in SL-PreconfigurationNR
     //sl-SyncConfigList //TODO //!< List of configurations for Tx/RX synch information for NR SL communication.
@@ -1535,18 +1532,28 @@ public:
   };
 
   /**
-   * \brief SL-PreconfigGeneral
+   * \brief TDD-UL-DL-ConfigCommon
    *
    * This IE is not implemented as per the 3GPP standard
    * since in the simulator we support our own customized
-   * TDD patter.
+   * TDD pattern.
+   *
    */
-  struct SlPreconfigGeneral
+  struct TddUlDlConfigCommon
   {
-    TddPattern slTddConfig; //!< TDD pattern.
+    std::string TddPattern {"F|F|F|F|F|F|F|F|F|F|"}; //!< TDD pattern
 
-    //TDD-UL-DL-ConfigCommon sl-TDD-Config-r16
-    // BIT STRING (SIZE (2)) reservedBits-r16
+    //SubcarrierSpacing referenceSubcarrierSpacing //TODO
+    //TDD-UL-DL-Pattern pattern1 //TODO
+  };
+
+  /**
+   * \brief SL-PreconfigGeneral information element
+   */
+  struct SlPreconfigGeneralNr
+  {
+    TddUlDlConfigCommon slTddConfig;
+    //BIT STRING (SIZE (2)) reservedBits-r16 //TODO
   };
 
   /**
@@ -1554,8 +1561,8 @@ public:
    */
   struct SidelinkPreconfigNr
   {
-    std::array <SlFreqConfigCommon, MAX_NUM_OF_FREQ_SL> slPreconfigFreqInfoList; //!< List containing per carrier configuration for NR sidelink communication
-    SlPreconfigGeneral slPreconfigGeneral;
+    std::array <SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> slPreconfigFreqInfoList; //!< List containing per carrier configuration for NR sidelink communication
+    SlPreconfigGeneralNr slPreconfigGeneral;
     /*
     sl-PreconfigNR-AnchorCarrierFreqList-r16
     sl-PreconfigEUTRA-AnchorCarrierFreqList-r16
