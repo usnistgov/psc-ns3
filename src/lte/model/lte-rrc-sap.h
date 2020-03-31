@@ -1493,6 +1493,7 @@ public:
    */
   struct SlResourcePoolConfigNr
   {
+    bool haveSlResourcePoolConfigNr {false};
     SlResourcePoolIdNr slResourcePoolId;
     SlResourcePoolNr slResourcePool;
   };
@@ -1512,7 +1513,9 @@ public:
    */
   struct SlBwpConfigCommonNr
   {
+    bool haveSlBwpGeneric {false};
     SlBwpGeneric slBwpGeneric; //!< This field indicates the generic parameters on the configured sidelink BWP
+    bool haveSlBwpPoolConfigCommonNr {false};
     SlBwpPoolConfigCommonNr slBwpPoolConfigCommonNr; //!< This field indicates the resource pool configurations on the configured sidelink BWP
   };
 
