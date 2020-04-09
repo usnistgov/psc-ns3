@@ -187,6 +187,7 @@ LteUeRrc::DoDispose ()
   delete m_drbPdcpSapUser;
   delete m_asSapProvider;
   delete m_ccmRrcSapUser;
+  delete m_nrSlRrcSapProvider;
   m_cphySapProvider.erase(m_cphySapProvider.begin(), m_cphySapProvider.end());
   m_cphySapProvider.clear();
   m_cmacSapProvider.erase(m_cmacSapProvider.begin(), m_cmacSapProvider.end());

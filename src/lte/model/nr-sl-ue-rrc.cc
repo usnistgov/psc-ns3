@@ -61,6 +61,7 @@ void
 NrSlUeRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  delete m_nrSlRrcSapUser;
 }
 
 void
@@ -104,6 +105,7 @@ NrSlUeRrc::SetTddPattern ()
 {
   NS_LOG_FUNCTION (this);
   std::string tddPattern = m_preconfiguration.slPreconfigGeneral.slTddConfig.tddPattern;
+  NS_LOG_INFO (this << " Setting TDD pattern " << tddPattern);
   static std::unordered_map<std::string, NrSlUeRrc::LteNrTddSlotType> lookupTable =
   {
     { "DL", NrSlUeRrc::LteNrTddSlotType::DL },
