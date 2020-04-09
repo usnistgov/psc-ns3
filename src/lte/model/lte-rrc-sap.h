@@ -913,7 +913,9 @@ public:
 
 
   /// Sidelink Constraint values (from 6.4 RRC multiplicity and type constraint values 3GPP TS 38.331)
-#define MAX_NUM_OF_FREQ_SL 16 //!< Maximum number of carrier frequency for NR sidelink communication
+//Since NR code emulate multiple carriers using BWP, we fixed the size of
+//this list to 1 instead of 16.
+#define MAX_NUM_OF_FREQ_SL 1 //!< Maximum number of carrier frequency for NR sidelink communication
 #define MAX_SCSs 5 //!< Maximum number of subcarrier spacing specifications. Equal to the number of numerlogies supported (guessed) //TODO
 #define MAX_NUM_OF_RX_POOL 16 //!< Maximum number of Rx resource poolfor NR sidelink communication
 #define MAX_NUM_OF_TX_POOL 8 //!< Maximum number of Tx resource poolfor NR sidelink communication
@@ -1378,10 +1380,15 @@ public:
   struct Bwp
   {
     //uint32_t locationAndBandwidth {3000}; //!< Resource Indicator value (RIV). 38.214 sec 5.1.2.2.2
-   // SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
-    uint16_t numerology {99};
-    uint16_t symbolsPerSlots {0};
+    //SubcarrierSpacing subcarrierSpacing; //!< Subcarrier spacing
     //CyclicPrefix cyclicPrefix; //!< Cyclic prefix  //optional filed
+    //Following parameters are not standard compliant. We use them to configure
+    //UE in out-of-coverage scenarios
+    uint16_t numerology {99}; //!< The numerology
+    uint16_t symbolsPerSlots {0}; //!< Total number of symbols per slot
+    uint32_t rbPerRbg {0}; //!< Resource block per resource blok group
+    uint16_t bandwidth {0};
+
   };
 
   /**
