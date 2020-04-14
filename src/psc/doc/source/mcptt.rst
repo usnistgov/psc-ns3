@@ -218,8 +218,8 @@ Several MCPTT identifiers are used throughout the code, as follows.
     assigned to the server (included in server-originated floor control
     messages).  The on-network arbitrator,
     ``ns3::McpttOnNetworkFloorArbitrator``, contains an attribute 
-    ``TxSsrc`` that defaults to the maximum 32-bit unsigned integer.
-    For simplicity, the clients use the MCPTT User ID for this value; 
+    ``TxSsrc`` that defaults to the value 0.
+    For simplicity, the clients reuse the MCPTT User ID value for SSRC; 
     i.e. all media streams are identified as being from the same source,
     in the current version of this model.
 

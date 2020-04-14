@@ -109,7 +109,7 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::SetQueueCapacity),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("TxSsrc", "The SSRC to use when transmitting a message.",
-                   UintegerValue (std::numeric_limits<uint32_t> ().max ()),
+                   UintegerValue (0),
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::m_txSsrc),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("T1", "The delay to use for end-of-media timer T1 (Time value)",
