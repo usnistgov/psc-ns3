@@ -30,6 +30,7 @@
  */
 
 #include <fstream>
+#include <iomanip>
 
 #include <ns3/abort.h>
 #include <ns3/boolean.h>
@@ -125,18 +126,25 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
     {
       m_firstMsg = false;
       m_outputFile.open (m_outputFileName.c_str ());
-      m_outputFile << "time(ms) nodeid\tcallid\tssrc\trx/tx\tbytes\tmessage";
+      m_outputFile << "#";
+      m_outputFile << std::setw (9) << "time(s)";
+      m_outputFile << std::setw (7) << "nodeid";
+      m_outputFile << std::setw (7) << "callid";
+      m_outputFile << std::setw (5) << "ssrc";
+      m_outputFile << std::setw (7) << "rx/tx";
+      m_outputFile << std::setw (6) << "bytes";
+      m_outputFile << "  message";
       m_outputFile << std::endl;
     }
   if (msg.GetInstanceTypeId () == SipHeader::GetTypeId ())
     {
-      m_outputFile << Simulator::Now ().GetMilliSeconds ();
-      m_outputFile << "\t" << app->GetNode ()->GetId ();
-      m_outputFile << "\t" << callId;
-      m_outputFile << "\t" << "N/A";  // ssrc not applicable
-      m_outputFile << "\t" << (rx ? "RX" : "TX");
-      m_outputFile << "\t" << msg.GetSerializedSize ();
-      m_outputFile << "\t" << "SIP " << static_cast<const SipHeader&> (msg).GetMessageTypeName ();
+      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
+      m_outputFile << std::setw (6) << callId;
+      m_outputFile << std::setw (6) << "N/A";  // ssrc not applicable
+      m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
+      m_outputFile << std::setw (6) << msg.GetSerializedSize ();
+      m_outputFile << "    SIP " << static_cast<const SipHeader&> (msg).GetMessageTypeName ();
       if (static_cast<const SipHeader&> (msg).GetMessageType () == SipHeader::SIP_REQUEST)
         {
           m_outputFile << "  " << static_cast<const SipHeader&> (msg).GetMethodName ();
@@ -147,7 +155,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
         }
       else
         {
-          m_outputFile << "\tUNKNOWN";
+          m_outputFile << " UNKNOWN";
         }
       m_outputFile << std::endl;
     }
@@ -155,42 +163,45 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
       || (msg.GetInstanceTypeId ().IsChildOf (McpttFloorMsg::GetTypeId ()) && m_floorControl == true)
       || (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId () && m_media == true))
     {
-      m_outputFile << Simulator::Now ().GetMilliSeconds ();
-      m_outputFile << "\t" << app->GetNode ()->GetId ();
-      m_outputFile << "\t" << callId;
+      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
+      m_outputFile << std::setw (6) << callId;
 
       if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
         {
-          m_outputFile << "\t" << static_cast<const McpttMediaMsg&> (msg).GetSsrc ();
+          m_outputFile << std::setw (6) << static_cast<const McpttMediaMsg&> (msg).GetSsrc ();
         }
       else if (msg.GetInstanceTypeId ().IsChildOf (McpttFloorMsg::GetTypeId ()))
         {
-          m_outputFile << "\t" << static_cast<const McpttFloorMsg&> (msg).GetSsrc ();
+          m_outputFile << std::setw (6) << static_cast<const McpttFloorMsg&> (msg).GetSsrc ();
         }
       else
         {
-          m_outputFile << "\t" << "N/A";  // not applicable
+          m_outputFile << "  N/A";  // not applicable
         }
 
-      m_outputFile << "\t" << (rx ? "RX" : "TX");
-      m_outputFile << "\t" << msg.GetSerializedSize ();
+      m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
+      m_outputFile << std::setw (6) << msg.GetSerializedSize ();
 
       if (m_includeMsgContent)
         {
-          m_outputFile << "\t";
+          m_outputFile << "  ";
           msg.Print (m_outputFile);
         }
       else
         {
-          m_outputFile << "\t" << msg.GetInstanceTypeId ();
+          // substr (5):  trims leading 'ns3::'
+          m_outputFile << std::left << "    " << msg.GetInstanceTypeId ().GetName ().substr (5) << std::right;
         }
       m_outputFile << std::endl;
     }
   else
     {
-      m_outputFile << Simulator::Now ().GetMilliSeconds ();
-      m_outputFile << "\t" << app->GetNode ()->GetId ();
-      m_outputFile << "\t" << "Unknown header type: " << msg.GetInstanceTypeId ().GetName ();
+      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
+      m_outputFile << std::setw (18) << (rx ? "RX" : "TX");
+      m_outputFile << std::setw (6) << msg.GetSerializedSize ();
+      m_outputFile << "    Unknown header type: " << msg.GetInstanceTypeId ().GetName ().substr (5);
       m_outputFile << std::endl;
     }
 }
