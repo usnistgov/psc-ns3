@@ -110,9 +110,7 @@ McpttServerCallMachineGroupPrearranged::SetState (Ptr<McpttServerCallMachineGrou
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      //XXX UserId for server?
-      uint16_t userIdForServer = 100;
-      m_stateChangeTrace (userIdForServer, m_serverCall->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetUserId (), m_serverCall->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 
@@ -387,11 +385,25 @@ McpttServerCallMachineGroupPrearranged::SetGrpId (uint32_t grpId)
   m_grpId = grpIdField;
 }
 
+void
+McpttServerCallMachineGroupPrearranged::SetUserId (uint32_t userId)
+{
+  NS_LOG_FUNCTION (this << userId);
+  m_userId = userId;
+}
+
 McpttCallMsgFieldGrpId
 McpttServerCallMachineGroupPrearranged::GetGrpId (void) const
 {
   return m_grpId;
 }
+
+uint32_t
+McpttServerCallMachineGroupPrearranged::GetUserId (void) const
+{
+  return m_userId;
+}
+
 
 void
 McpttServerCallMachineGroupPrearranged::SetPendingTransactionList (std::vector<uint32_t> pending)

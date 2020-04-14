@@ -174,7 +174,8 @@ McpttServerCallMachineNull::GetTypeId (void)
 
 McpttServerCallMachineNull::McpttServerCallMachineNull (void)
   : McpttServerCallMachine (),
-    m_serverCall (0)
+    m_serverCall (0),
+    m_userId (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -227,6 +228,18 @@ McpttServerCallMachineNull::GetCallType (void) const
   callTypeField.SetType (m_callType);
 
   return callTypeField;
+}
+
+void
+McpttServerCallMachineNull::SetUserId (uint32_t userId)
+{
+  m_userId = userId;
+}
+
+uint32_t
+McpttServerCallMachineNull::GetUserId (void) const
+{
+  return m_userId;
 }
 
 TypeId

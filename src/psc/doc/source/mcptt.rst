@@ -187,6 +187,41 @@ push the PTT button.
         }
     }
 
+Identifiers
+~~~~~~~~~~~
+
+Several MCPTT identifiers are used throughout the code, as follows.
+
+  * ``MCPTT User ID`` The MCPTT User ID is, in practice, a SIP URI (i.e.
+    a string value).  In this ns-3 model, for simplicity, it is stored as a
+    32-bit unsigned integer.  Clients for which the ``ns3::McpttHelper``
+    installs an instance of the ``ns3::McpttPttApp`` will be assigned a
+    unique user ID value, starting from the initial value of 1.  In addition,
+    the MCPTT server is separately assigned a user ID, stored in the
+    ``ns3::McpttServerCallMachine`` instance.  This is initialized by default
+    to 0, and typically left at the default value.
+ 
+  * ``MCPTT Group ID`` The MCPTT Group ID pertains to group calls; it is also,
+    in practice, a SIP URI (i.e. a string value).  In this ns-3 model, for
+    simplicity, it is stored as a 32-bit unsigned integer.  On clients,
+    the value is stored in the base class ``ns3::McpttCallMachineGrp`` as an
+    attribute, and similarly, on the server, it is stored in an attribute
+    in the base class ``ns3::McpttServerCallMachineGrp``.  The group ID
+    is usually assigned explicitly by the simulation user as part of
+    call definition.
+
+   * ``SSRC (synchronization source)`` This 32-bit identifier is defined
+    for RTP (see RFC 3550) and is, in practice, supposed to be assigned
+    randomly so as to avoid collisions.  The SSRC is associated with a
+    media stream component, and the identifier is carried in RTP and
+    floor control messages.  In on-network operation, an SSRC is also
+    assigned to the server (included in server-originated floor control
+    messages).  The on-network arbitrator,
+    ``ns3::McpttOnNetworkFloorArbitrator``, contains an attribute 
+    ``TxSsrc`` that defaults to the maximum 32-bit unsigned integer.
+    For simplicity, the clients use the MCPTT User ID for this value; 
+    i.e. all media streams are identified as being from the same source,
+    in the current version of this model.
 
 MCPTT Application
 ~~~~~~~~~~~~~~~~~

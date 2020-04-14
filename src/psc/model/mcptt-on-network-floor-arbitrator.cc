@@ -109,7 +109,7 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::SetQueueCapacity),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("TxSsrc", "The SSRC to use when transmitting a message.",
-                   UintegerValue (0),
+                   UintegerValue (std::numeric_limits<uint32_t> ().max ()),
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::m_txSsrc),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("T1", "The delay to use for end-of-media timer T1 (Time value)",
@@ -259,7 +259,7 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
           m_stateChangeCb (currStateId, stateId);
         }
 
-      m_stateChangeTrace (GetTxSsrc (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetCallMachine ()->GetUserId (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

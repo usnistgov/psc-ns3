@@ -100,6 +100,11 @@ public:
   */
  virtual McpttCallMsgFieldCallType GetCallType (void) const = 0;
  /**
+  * Gets the server's user ID.
+  * \returns The user ID.
+  */
+ virtual uint32_t GetUserId (void) const = 0;
+ /**
   * Gets the type ID of this McpttServerCallMachine instance.
   * \returns The type ID.
   */
@@ -157,6 +162,13 @@ public:
   */
  virtual void SetServerCall (Ptr<McpttServerCall> call) = 0;
  /**
+  * Sets the userId to use for the server.
+  * Normally, a SIP URI (string) but the model presently
+  * uses integers in place of URIs
+  * \param userId The user ID.
+  */
+ virtual void SetUserId (uint32_t userId) = 0;
+ /**
   * Starts the state machine.
   */
  virtual void Start (void) = 0;
@@ -192,6 +204,11 @@ public:
   */
  virtual ~McpttServerCallMachineGrp (void);
  /**
+  * Sets the group ID.
+  * \param grpId The group ID.
+  */
+ virtual void SetGrpId (uint32_t grpId) = 0;
+ /**
   * Gets the group ID.
   * \returns The group ID.
   */
@@ -213,11 +230,6 @@ public:
   * \returns True, if this is a private call; otherwise, false.
   */
  virtual bool IsPrivateCall (uint32_t userId = 0) const;
- /**
-  * Sets the group ID.
-  * \param grpId The group ID.
-  */
- virtual void SetGrpId (uint32_t grpId) = 0;
 };
 /**
  * \ingroup mcptt
@@ -277,6 +289,11 @@ public:
   */
  virtual McpttCallMsgFieldCallType GetCallType (void) const;
  /**
+  * Gets the user ID.
+  * \returns The user ID.
+  */
+ virtual uint32_t GetUserId (void) const;
+ /**
   * Gets the type ID of this McpttServerCallMachineNull instance.
   * \returns The type ID.
   */
@@ -334,6 +351,13 @@ public:
   */
  virtual void SetServerCall (Ptr<McpttServerCall> call);
  /**
+  * Sets the userId to use for the server.
+  * Normally, a SIP URI (string) but the model presently
+  * uses integers in place of URIs
+  * \param userId The user ID.
+  */
+ virtual void SetUserId (uint32_t userId);
+ /**
   * Starts the state machine.
   */
  virtual void Start (void);
@@ -356,6 +380,7 @@ private:
  uint16_t m_floorPort; //!< The port number to use for floor control.
  uint16_t m_mediaPort; //!< The port number to use for media.
  uint8_t m_callType; //!< The call type.
+ uint32_t m_userId; //!< The user ID.
 };
 
 } // namespace ns3

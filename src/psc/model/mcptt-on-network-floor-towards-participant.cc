@@ -40,6 +40,7 @@
 #include <ns3/uinteger.h>
 
 #include "mcptt-server-call.h"
+#include "mcptt-server-call-machine.h"
 #include "mcptt-chan.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
@@ -180,7 +181,7 @@ McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowar
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      m_stateChangeTrace (GetOwner ()->GetTxSsrc (), GetOwner ()->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetOwner ()->GetCallMachine ()->GetUserId (), GetOwner ()->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

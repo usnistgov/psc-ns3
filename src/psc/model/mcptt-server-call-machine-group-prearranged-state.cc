@@ -225,9 +225,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
       SipHeader sipHeader;
       sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
       sipHeader.SetStatusCode (100);
-      //XXX UserId for server?
-      uint16_t userIdForServer = 100;
-      sipHeader.SetFrom (userIdForServer);
+      sipHeader.SetFrom (machine.GetUserId ());
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
@@ -261,9 +259,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
       // Other outstanding (pending) INVITE will take precedence
       sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
       sipHeader.SetStatusCode (200);
-      //XXX UserId for server?
-      uint16_t userIdForServer = 100;
-      sipHeader.SetFrom (userIdForServer);
+      sipHeader.SetFrom (machine.GetUserId ());
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
@@ -303,9 +299,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
       SipHeader sipHeader;
       sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
       sipHeader.SetStatusCode (200);
-      //XXX UserId for server?
-      uint16_t userIdForServer = 100;
-      sipHeader.SetFrom (userIdForServer);
+      sipHeader.SetFrom (machine.GetUserId ());
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);
@@ -483,9 +477,7 @@ McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallM
       SipHeader sipHeader;
       sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
       sipHeader.SetStatusCode (200);
-      //XXX UserId for server?
-      uint16_t userIdForServer = 100;
-      sipHeader.SetFrom (userIdForServer);
+      sipHeader.SetFrom (machine.GetUserId ());
       sipHeader.SetTo (machine.GetServerCall ()->GetOriginator ());
       sipHeader.SetCallId (machine.GetServerCall ()->GetCallId ());
       response->AddHeader (sipHeader);

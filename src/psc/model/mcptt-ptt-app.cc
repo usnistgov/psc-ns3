@@ -667,7 +667,6 @@ McpttPttApp::DoDispose (void)
   SetLocalAddress (Address ());
   SetPusher (0);
   m_selectedCall = 0;
-  SetUserId (0);
 
   Object::DoDispose ();
 }

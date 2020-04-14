@@ -202,6 +202,16 @@ public:
   */
  virtual McpttCallMsgFieldGrpId GetGrpId (void) const;
  /**
+  * Sets the user ID
+  * \param userId The user ID
+  */
+ virtual void SetUserId (uint32_t userId);
+ /**
+  * Gets the user ID
+  * \return The user ID
+  */
+ virtual uint32_t GetUserId (void) const;
+ /**
   * Set list of pending SIP transactions
   * (note:  will be replaced by SipTransaction class)
   * probably a std::map<uint32_t, SipTransaction>
@@ -247,6 +257,7 @@ private:
  std::vector<uint32_t> m_pending; //!< pending transactions
  Ptr<McpttServerCallMachineGroupPrearrangedState> m_state; //!< The current state of the machine.
  McpttCallMsgFieldGrpId m_grpId; //!< The ID of the MCPTT group.
+ uint32_t m_userId; //!< The user ID for the server.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
 };
