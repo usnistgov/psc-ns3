@@ -122,7 +122,6 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
   start.Next (bytesRead);
 
   uint16_t payloadSize = start.ReadNtohU16 ();
-  NS_ASSERT_MSG (payloadSize >=2, "Payload size must be at least two bytes");
   bytesRead += 2;
   index += 2;
 
@@ -215,7 +214,7 @@ McpttMediaMsg::Serialize (Buffer::Iterator start) const
 
   start.Next (headSize);
 
-  NS_ASSERT_MSG (payloadSize >=2, "Payload size must be at least two bytes");
+  NS_ABORT_MSG_UNLESS (payloadSize >=2, "Payload size must be at least two bytes");
   start.WriteHtonU16 (payloadSize);
 
   uint16_t index = 0;
@@ -227,7 +226,7 @@ McpttMediaMsg::Serialize (Buffer::Iterator start) const
     }
   else
     {
-       NS_ASSERT_MSG (true, "If this assert is hit, it is a sign that the "
+       NS_ABORT_MSG ("If this assert is hit, it is a sign that the "
                       "simulation is using small McpttMediaMsg payload sizes, " 
                       "and this class should be changed to encode the "
                       "talkspurt in a Packet Tag.");
