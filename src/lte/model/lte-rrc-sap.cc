@@ -188,7 +188,7 @@ LteRrcSap::GetSlStartSymbolValue (const LteRrcSap::SlStartSymbol &slStartSym)
       slStartSymInt = 0;
       break;
     case SlStartSymbol::SYM1:
-      slStartSymInt = 2;
+      slStartSymInt = 1;
       break;
     case SlStartSymbol::SYM2:
       slStartSymInt = 2;
