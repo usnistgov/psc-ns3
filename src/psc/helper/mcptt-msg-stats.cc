@@ -80,7 +80,7 @@ McpttMsgStats::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("OutputFileName",
                    "The name to use for the trace file.",
-                   StringValue ("mcptt_msg_stats.txt"),
+                   StringValue ("mcptt-msg-stats.txt"),
                    MakeStringAccessor (&McpttMsgStats::m_outputFileName),
                    MakeStringChecker ())
     ;

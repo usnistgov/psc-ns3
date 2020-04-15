@@ -59,7 +59,7 @@ McpttStateMachineStats::GetTypeId (void)
     .AddConstructor<McpttStateMachineStats> ()
     .AddAttribute ("OutputFileName",
                    "The name to use for the trace file.",
-                   StringValue ("mcptt_state_machine_stats.txt"),
+                   StringValue ("mcptt-state-machine-stats.txt"),
                    MakeStringAccessor (&McpttStateMachineStats::m_outputFileName),
                    MakeStringChecker ())
     ;
