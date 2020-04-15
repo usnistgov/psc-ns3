@@ -289,6 +289,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
   if (machine.GetNPendingTransactions () == 0)
     {
       NS_LOG_DEBUG ("Processed last pending response; send response to originator");
+      participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
       Ptr<Packet> response = Create<Packet> ();
       McpttSdpFmtpHeader sdpHeader;
       sdpHeader.SetMcQueueing (machine.GetServerCall ()->GetArbitrator ()->IsQueueingSupported ());
@@ -306,7 +307,6 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
       machine.SendSipResponse (machine.GetServerCall ()->GetOriginator (), response, sipHeader);
       // If originator had implicit floor request, it should transition to
       // permitted, else not permitted and floor idle (TODO)
-      participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
       participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ());
     
       machine.SetState (McpttServerCallMachineGroupPrearrangedStateS3::GetInstance ());
