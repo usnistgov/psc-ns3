@@ -245,8 +245,6 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
         {
           NS_LOG_DEBUG ("Received response from " << from << " but not found in pending list");
         }
-      SipHeader sipHeader;
-      pkt->RemoveHeader (sipHeader);
       McpttSdpFmtpHeader sdpHeader;
       pkt->RemoveHeader (sdpHeader);
       machine.GetServerCall ()->GetArbitrator ()->CallInitialized (participant, sdpHeader.GetMcImplicitRequest ());
@@ -257,6 +255,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
       sdpHeader.SetMcImplicitRequest (participant->IsImplicitRequest ());
       response->AddHeader (sdpHeader);
       // Other outstanding (pending) INVITE will take precedence
+      SipHeader sipHeader;
       sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
       sipHeader.SetStatusCode (200);
       sipHeader.SetFrom (machine.GetUserId ());
