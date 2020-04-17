@@ -148,6 +148,16 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
       InetSocketAddress inetAddr (ipv4Addr, callPort); 
       GetServerCall ()->SendCallControlPacket (pkt, inetAddr, hdr);
     }
+  else if (Ipv6Address::IsMatchingType (addr))
+    {
+      Ipv6Address ipv6Addr = Ipv6Address::ConvertFrom (addr);
+      NS_LOG_DEBUG ("IPv6 address for SIP request: " << ipv6Addr);
+      UintegerValue portValue;
+      GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
+      uint16_t callPort = portValue.Get ();
+      Inet6SocketAddress inet6Addr (ipv6Addr, callPort); 
+      GetServerCall ()->SendCallControlPacket (pkt, inet6Addr, hdr);
+    }
   else
     {
       NS_FATAL_ERROR ("Address support not implemented");
@@ -175,6 +185,16 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet
               uint16_t callPort = portValue.Get ();
               InetSocketAddress inetAddr (ipv4Addr, callPort); 
               GetServerCall ()->SendCallControlPacket (pkt, inetAddr, hdr);
+              found = true;
+            }
+          else if (Ipv6Address::IsMatchingType (addr))
+            {
+              Ipv6Address ipv6Addr = Ipv6Address::ConvertFrom (addr);
+              UintegerValue portValue;
+              GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
+              uint16_t callPort = portValue.Get ();
+              Inet6SocketAddress inet6Addr (ipv6Addr, callPort); 
+              GetServerCall ()->SendCallControlPacket (pkt, inet6Addr, hdr);
               found = true;
             }
           else
