@@ -104,6 +104,18 @@ public:
    */
   const std::vector <std::bitset<1>>
   GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
+  /**
+   * \brief Set Sidelink source layer 2 id
+   *
+   * \param srcL2Id The Sidelink layer 2 id of the source
+   */
+  void SetSourceL2Id (uint32_t srcL2Id);
+  /**
+   * \brief Get Sidelink source layer 2 id
+   *
+   * \return The Sidelink layer 2 id of the source
+   */
+  uint32_t GetSourceL2Id () const;
 private:
   /**
    * \brief Set the TDD pattern that the this UE RRC will utilize to compute
@@ -132,6 +144,7 @@ private:
    */
   LteRrcSap::SidelinkPreconfigNr m_preconfiguration;
   std::vector<NrSlUeRrc::LteNrTddSlotType> m_tddPattern; //!< TDD pattern
+  uint32_t m_srcL2Id {0};
 };     //end of NrSlUeRrc'class
 
 } // namespace ns3

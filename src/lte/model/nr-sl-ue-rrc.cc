@@ -93,6 +93,20 @@ NrSlUeRrc::IsNrSlEnabled ()
 }
 
 void
+NrSlUeRrc::SetSourceL2Id (uint32_t srcL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  m_srcL2Id = srcL2Id;
+}
+
+uint32_t
+NrSlUeRrc::GetSourceL2Id () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_srcL2Id;
+}
+
+void
 NrSlUeRrc::SetNrSlPreconfiguration (const LteRrcSap::SidelinkPreconfigNr &preconfiguration)
 {
   NS_LOG_FUNCTION (this);
