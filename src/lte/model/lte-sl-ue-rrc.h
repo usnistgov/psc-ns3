@@ -637,14 +637,6 @@ protected:
   /**
    * Gets the context for processing the packet received from a peer node
    * \param peerUeId The remote peer that sent the packet
-   * \param pdcpSdu The packet received
-   * \return the context if known
-   */
-  std::map< LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams> >::iterator GetO2OContext (uint32_t peerUeId, Ptr<Packet> pdcpSdu);
-
-  /**
-   * Gets the context for processing the packet received from a peer node
-   * \param peerUeId The remote peer that sent the packet
    * \param contextId The context ID
    * \return the context if known
    */

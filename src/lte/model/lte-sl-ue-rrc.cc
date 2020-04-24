@@ -1979,15 +1979,6 @@ LteSlUeRrc::ReleaseO2OConnection (Ptr<LteSlO2oCommParams> context, LteSlO2oCommP
 }
 
 std::map< LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams> >::iterator
-LteSlUeRrc::GetO2OContext (uint32_t peerUeId, Ptr<Packet> pdcpSdu)
-{
-  LteSlO2oCommParams::LteSlPc5ContextId cId;
-  cId.peerL2Id = peerUeId;
-
-  return m_o2oCommContexts.find (cId);
-}
-
-std::map< LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams> >::iterator
 LteSlUeRrc::GetO2OContext (uint32_t peerUeId, uint32_t contextId)
 {
   LteSlO2oCommParams::LteSlPc5ContextId cId;
