@@ -48,14 +48,15 @@ public:
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
     uint32_t    srcL2Id;  /**< Source L2 ID (24 bits) */
     uint32_t    dstL2Id;  /**< Destination L2 ID (24 bits) */
+    uint8_t     sduType;     /**< SDU type for SLRB (3 bits) */
   };
 
   /**
    * Send an RRC PDU to the PDCP for transmission
    * This method is to be called
-   * when the upper RRC entity has an RRC PDU ready to send   
-   * 
-   * \param params 
+   * when the upper RRC entity has an RRC PDU ready to send
+   *
+   * \param params
    */
   virtual void TransmitPdcpSdu (TransmitPdcpSduParameters params) = 0;
 };
@@ -74,6 +75,17 @@ public:
   virtual ~LtePdcpSapUser ();
 
   /**
+   * PDCP SDU types (section 6.3.14)
+   */
+  typedef enum
+  {
+    IP_SDU   = 0,
+    ARP_SDU  = 1,
+    PC5_SIGNALING_SDU = 2,
+    NON_IP_SDU = 3
+  } SduType_t;
+
+  /**
    * Parameters for LtePdcpSapUser::ReceivePdcpSdu
    */
   struct ReceivePdcpSduParameters
@@ -82,7 +94,8 @@ public:
     uint16_t    rnti; /**< the C-RNTI identifying the UE */
     uint8_t     lcid; /**< the logical channel id corresponding to the sending RLC instance */
     uint32_t    srcL2Id;  /**< Source L2 ID (24 bits) */
-    uint32_t    dstL2Id;  /**< Destination L2 ID (24 bits) */    
+    uint32_t    dstL2Id;  /**< Destination L2 ID (24 bits) */
+    uint8_t     sduType;      /**< SDU type for SLRB (3 bits) */
   };
 
   /**
@@ -101,7 +114,7 @@ class LtePdcpSpecificLtePdcpSapProvider : public LtePdcpSapProvider
 public:
   /**
    * Constructor
-   * 
+   *
    * \param pdcp PDCP
    */
   LtePdcpSpecificLtePdcpSapProvider (C* pdcp);
@@ -128,7 +141,7 @@ LtePdcpSpecificLtePdcpSapProvider<C>::LtePdcpSpecificLtePdcpSapProvider ()
 template <class C>
 void LtePdcpSpecificLtePdcpSapProvider<C>::TransmitPdcpSdu (TransmitPdcpSduParameters params)
 {
-  m_pdcp->DoTransmitPdcpSdu (params.pdcpSdu);
+  m_pdcp->DoTransmitPdcpSdu (params);
 }
 
 

@@ -258,6 +258,23 @@ public:
    * \param imsi the IMSI of the UE
    */
   virtual void SetImsi (uint64_t imsi) = 0;
+  /**
+   * \brief Tell the PHY entity to measure the SD-RSRP of the sidelink
+   *        relay discovery messages.
+   *
+   * This function will instruct this PHY instance to start reporting
+   * SD-RSRP measurements from the relay discovery messages in the sidelink.
+   * It will schedule the first report and after this it will periodically
+   * return measurement reports to RRC via
+   * LteUeCphySapUser::ReportUeSdRsrpMeasurements function.
+   */
+  virtual void EnableUeSdRsrpMeasurements () = 0;
+
+  /**
+   * \brief Tell the PHY entity to stop measuring the SD-RSRP of the sidelink
+   *        relay discovery messages if enabled.
+   */
+  virtual void DisableUeSdRsrpMeasurements () = 0;
 
 };
 
@@ -311,6 +328,24 @@ public:
   struct UeSlssMeasurementsParameters
   {
     std::vector <struct UeSlssMeasurementsElement> m_ueSlssMeasurementsList; ///< List of SLSS measurements to be reported to the RRC by the PHY
+  };
+
+  /**
+   * Parameters used by the PHY to report SD-RSRP measurements to the RRC
+   */
+  struct UeSdRsrpMeasurementsElement
+  {
+    uint64_t m_relayId; ///< Id of the measured Relay UE
+    uint32_t m_serviceCode; ///< Service code offered by the Relay UE
+    double m_sdRsrp;  ///< Measured SD-RSRP [dBm]
+  };
+
+  /**
+   * Structure to store SD-RSRP measurements to be reported to the RRC by the PHY
+   */
+  struct UeSdRsrpMeasurementsParameters
+  {
+    std::vector <struct UeSdRsrpMeasurementsElement> m_ueSdRsrpMeasurementsList; ///< List of SD-RSRP measurements to be reported to the RRC by the PHY
   };
 
   /**
@@ -399,6 +434,15 @@ public:
    * \param params The resynchronization information
    */
   virtual void ReportChangeOfSyncRef (LteSlSyncParams params) = 0;
+
+  /**
+   * Report the SD-RSRP measurements of the Relay UEs in proximity made by the PHY
+   * entity (after applying layer-1 filtering) to the RRC layer.
+   *
+   * \param params The structure containing a list of SD-RSRP measurement elements
+   *               (SD-RSRP values and corresponding Relay UE Id and Service Code).
+   */
+  virtual void ReportUeSdRsrpMeasurements (LteUeCphySapUser::UeSdRsrpMeasurementsParameters params) = 0;
 };
 
 
@@ -448,6 +492,8 @@ public:
   virtual void ResetRlfParams ();
   virtual void StartInSnycDetection ();
   virtual void SetImsi (uint64_t imsi);
+  virtual void EnableUeSdRsrpMeasurements ();
+  virtual void DisableUeSdRsrpMeasurements ();
 
 private:
   MemberLteUeCphySapProvider ();
@@ -583,6 +629,20 @@ void MemberLteUeCphySapProvider<C>::SetSlDiscRxPools (std::list<Ptr<SidelinkRxDi
   m_owner->DoSetSlDiscRxPools (pools);
 }
 
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::EnableUeSdRsrpMeasurements ()
+{
+  m_owner->DoEnableUeSdRsrpMeasurements ();
+}
+
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::DisableUeSdRsrpMeasurements ()
+{
+  m_owner->DoDisableUeSdRsrpMeasurements ();
+}
+
 //Sidelink communication
 template <class C>
 void
@@ -661,6 +721,8 @@ public:
   virtual void ReportSubframeIndication (uint16_t frameNo, uint16_t subFrameNo);
   virtual void ReceiveMibSL (Ptr<Packet> p, uint16_t slssid);
   virtual void ReportChangeOfSyncRef (LteSlSyncParams params);
+
+  virtual void ReportUeSdRsrpMeasurements (LteUeCphySapUser::UeSdRsrpMeasurementsParameters params);
 
 private:
   MemberLteUeCphySapUser ();
@@ -750,6 +812,12 @@ MemberLteUeCphySapUser<C>::ReportChangeOfSyncRef (LteSlSyncParams params)
   m_owner->DoReportChangeOfSyncRef (params);
 }
 
+template <class C>
+void
+MemberLteUeCphySapUser<C>::ReportUeSdRsrpMeasurements (LteUeCphySapUser::UeSdRsrpMeasurementsParameters params)
+{
+  m_owner->DoReportUeSdRsrpMeasurements (params);
+}
 
 
 } // namespace ns3

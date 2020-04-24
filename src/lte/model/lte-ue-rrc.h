@@ -426,6 +426,7 @@ public:
    * \return slssid
    */
   uint64_t GetSlssid ();
+  
   /**
   * Starts discovery process for given applications depending on the interest (monitoring or announcing)
   * \param appCodes app code payloads to be removed
@@ -491,13 +492,30 @@ public:
    * \param discHeader The discovery message
    */
   void TransmitDiscoveryMessage (LteSlDiscHeader discHeader);
+  
+  /**
+   * Sends a PC5 signaling message
+   * \param packet The packet to send
+   * \param destination The layer 2 ID
+   */ 
+  void SendPc5Signaling (Ptr<Packet> packet, uint32_t destination);
 
   /**
    * Method called to activate a sidelink radio bearer for one to one communication
    * \param destination The layer 2 ID
+   * \param tx True if the bearer is for transmission
+   * \param rx True if the bearer is for reception
    */
-  void ActivateSidelinkRadioBearer (uint32_t destination);
+  void ActivateSidelinkRadioBearer (uint32_t destination, bool tx, bool rx);
 
+  /**
+   * TracedCallback signature for RSRP report
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rsrp
+   */
+  typedef void (* RsrpMeasurementTracedCallback)(uint64_t imsi, uint16_t cellId, double rsrp);
 
 private:
   // PDCP SAP methods
@@ -674,6 +692,15 @@ private:
    */
   void DoReportSubframeIndication (uint16_t frameNo, uint16_t subFrameNo);
 
+  /**
+   * Report relay discovery signal measurements function
+   *
+   * \param params The SD-RSRP measurements for each detected Relay UE and service code
+   *
+   * Process the SD-RSRP measurements reported by the PHY and report the valid ones
+   * to the LteSlUeRrc for evaluation of Relay UE (re)selection
+   */
+  void DoReportUeSdRsrpMeasurements (LteUeCphySapUser::UeSdRsrpMeasurementsParameters params);
 
   // RRC SAP methods
 
@@ -1727,6 +1754,43 @@ private:
    * \return true if the UE is in the inner part of the SyncRef cell, or false otherwise
    */
   bool IsInTheInnerPartOfTheSyncRefCell (uint16_t slssid, uint16_t offset);
+
+  /**
+   * Structure to represent the value of SD-RSRP to be used in the RRC layer
+   */
+  struct SdRsrpMeasValue
+  {
+    double sdRsrp;   ///< Measured SD-RSRP in dBm.
+    Time timestamp;   ///< The time stamp when the SD-RSRP was measured
+  };
+
+  /**
+   * Internal storage of each Relay SD-RSRP measurement indexed by the Relay UE ID
+   * and the code of the service it is offering
+   */
+  std::map <std::pair<uint64_t,uint32_t>, SdRsrpMeasValue> m_storedSdRsrpMeasValues;
+
+  /**
+   * The minimum value of SD-RSRP to consider a Relay UE detected
+   */
+  double m_minSdRsrp;
+
+  /**
+   * Store the SD-RSRP values to be used in the RRC layer.
+   * If the L3 filtering is active, the values are processed before being stored.
+   *
+   * \param relayId the ID of the Relay UE
+   * \param sdRsrp the value of the SD-RSRP
+   * \param serviceCode the code of the service offered by the Relay UE
+   * \param layer3FilterCoefficient L3 filter coefficient to be used. Zero if no L3 filtering is required
+   */
+  void SaveSdRsrpMeasurements (uint64_t relayId, uint32_t serviceCode, double sdRsrp, uint16_t layer3FilterCoefficient);
+
+  /**
+   *  RSRP measurement trace source. Called right after storing the L3 RSRP
+   *  measurements of the primary carrier in the 'SaveUeMeasurements' function
+   */
+  TracedCallback<uint64_t, uint16_t, double> m_rsrpTrace;
 
 public:
   /**

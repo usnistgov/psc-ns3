@@ -552,6 +552,33 @@ SidelinkCommResourcePool::GetDataHoppingConfig ()
   return m_dataHoppingConfig;
 }
 
+uint32_t
+SidelinkCommResourcePool::GetPsschBandwidth ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_rbpssch;
+}
+
+std::vector<uint32_t>
+SidelinkCommResourcePool::GetTbPerSlPeriod ()
+{
+  NS_LOG_FUNCTION (this);
+  std::vector<uint32_t> tbPerKtrpVector (4, 0);
+  
+  for (uint8_t i = 0; i < m_trptSubset.subset.size(); i++)
+  {
+      if(m_trptSubset.subset[i])
+      {
+          tbPerKtrpVector[i] = (uint32_t) std::pow(2,double(i)) * m_lpssch / 32;// Ntrp=8;HARQ=4;Ntrp*HARQ = 32
+      }
+  }
+  if(m_trptSubset.subset.size() == 3 && m_trptSubset.subset.to_ulong() == 0)
+  {
+      tbPerKtrpVector[3] = (uint32_t) std::pow(2,double(3)) * m_lpssch / 32;//  Ntrp=8;HARQ=4;Ntrp*HARQ = 32
+  }
+  return tbPerKtrpVector;
+}
+
 std::vector<uint8_t>
 SidelinkCommResourcePool::GetValidRBstart (uint8_t rbLen)
 {
@@ -1261,6 +1288,25 @@ SidelinkTxCommResourcePool::GetPoolIdentity ()
 {
   NS_LOG_FUNCTION (this);
   return m_poolIdentity;
+}
+
+bool 
+SidelinkTxCommResourcePool::operator == (const SidelinkTxCommResourcePool& rhs)
+{
+  bool equal = m_scTxParameters == rhs.m_scTxParameters
+  && m_dataTxParameters == rhs.m_dataTxParameters
+  && m_poolIdentity == rhs.m_poolIdentity
+  && m_slrnti == rhs.m_slrnti
+  && m_macMainConfig == rhs.m_macMainConfig
+  && m_commTxConfig == rhs.m_commTxConfig
+  && m_index == rhs.m_index
+  && m_haveMcs == rhs.m_haveMcs;
+  if (equal && m_haveMcs)
+    {
+      equal = equal && m_mcs == rhs.m_mcs;
+    }
+  
+  return equal;
 }
 
 ///// SidelinkDiscResourcePool //////

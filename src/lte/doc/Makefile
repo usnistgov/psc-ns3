@@ -71,18 +71,27 @@ IMAGES_DIA = \
 	$(FIGURES)/ca-rrc-reconf.dia \
 	$(FIGURES)/ca-lte-enb-net-device-changes.dia \
 	$(FIGURES)/ca-lte-ue-net-device-changes.dia \
-	$(FIGURES)/sidelink-pssch-bitmap.dia \
+	$(FIGURES)/lte-sl-pssch-bitmap.dia \
 	$(FIGURES)/prose-non-roaming-arch.dia \
 	$(FIGURES)/sidelink-scenarios-1c.dia \
 	$(FIGURES)/lte-test-rlf-one-enb.dia \
+	$(FIGURES)/lte-test-rlf-two-enb.dia \
 	$(FIGURES)/lena-radio-link-failure-one-enb.dia \
 	$(FIGURES)/lena-radio-link-failure-two-enb.dia \
 	$(FIGURES)/sidelink-scenarios-1a.dia \
+	$(FIGURES)/sidelink-scenarios-1b.dia \
 	$(FIGURES)/lte-sl-ue-phy.dia \
 	$(FIGURES)/lte-sl-simple-scenario.dia \
 	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.dia \
 	$(FIGURES)/lte-sl-synch-test-topology1.dia \
 	$(FIGURES)/lte-sl-synch-test-topology2.dia \
+        $(FIGURES)/lte-sl-o2o-comm-state-machine-relay.dia \
+        $(FIGURES)/lte-sl-o2o-comm-state-machine-remote.dia \
+        $(FIGURES)/lte-sl-ue-arch-ctrl-plane.dia \
+        $(FIGURES)/lte-sl-ue-arch-data-plane.dia \
+        $(FIGURES)/lte-sl-o2o-comm-message-exchange.dia \
+        $(FIGURES)/sidelink-scenarios-1d.dia \
+
 
 # specify eps figures from which .png and .pdf figures need to be built
 
@@ -122,6 +131,13 @@ $(FIGURES)/lte-subframe-structure.pdf_width = 2in
 $(FIGURES)/mac-random-access-contention.pdf_width = 10cm
 $(FIGURES)/mac-random-access-noncontention.pdf_width = 15cm
 $(FIGURES)/helpers.pdf_width = 8cm
+$(FIGURES)/prose-non-roaming-arch.pdf_width = 10in
+$(FIGURES)/sidelink-scenarios-1d.pdf_width = 10cm
+$(FIGURES)/sidelink-scenarios-1c.pdf_width = 10cm
+$(FIGURES)/sidelink-scenarios-1b.pdf_width = 10cm
+$(FIGURES)/sidelink-scenarios-1a.pdf_width = 10cm
+$(FIGURES)/lte-sl-simple-scenario.pdf_width = 4in
+$(FIGURES)/lte-sl-simple-OofCovrg-scenario.pdf_width = 3in
 
 IMAGES_SEQDIAG = \
 	$(FIGURES)/lte-phy-interference.seqdiag \
@@ -210,6 +226,7 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/lte-sl-bler-pssch-harq2.png \
 	$(FIGURES)/lte-sl-bler-pssch-harq3.png \
 	$(FIGURES)/lte-sl-bler-pssch-harq4.png \
+	$(FIGURES)/lte-sl-relay-selection.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
 	${IMAGES_DOT:.dot=.png} \

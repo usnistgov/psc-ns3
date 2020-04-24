@@ -193,22 +193,22 @@ main (int argc, char *argv[])
   std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorPayloads; 
 
   for (uint32_t i = 1; i <= nbUes; ++i)
-  {
-    announcePayloads[ueDevs.Get(i-1)].push_back(i);
-	
-	for (uint32_t j = 1; j<=nbUes; ++j)
-          {
-            if (i != j)
-              {
-		monitorPayloads[ueDevs.Get (i-1)].push_back(j);
-              }
-          } 
-  }
-
-  for (uint32_t i = 0; i <nbUes; i++)
     {
-      Simulator::Schedule (Seconds(2.0), &LteSidelinkHelper::StartDiscoveryApps, sidelinkHelper, ueDevs.Get(i), announcePayloads[ueDevs.Get(i)], LteSlUeRrc::Discovered); 
-      Simulator::Schedule (Seconds(2.0),&LteSidelinkHelper::StartDiscoveryApps, sidelinkHelper, ueDevs.Get(i), monitorPayloads[ueDevs.Get(i)], LteSlUeRrc::Discoveree); 
+      announcePayloads[ueDevs.Get (i - 1)].push_back (i);
+
+      for (uint32_t j = 1; j <= nbUes; ++j)
+        {
+          if (i != j)
+            {
+              monitorPayloads[ueDevs.Get (i - 1)].push_back (j);
+            }
+        }
+    }
+
+  for (uint32_t i = 0; i < nbUes; i++)
+    {
+      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, sidelinkHelper, ueDevs.Get (i), announcePayloads[ueDevs.Get (i)], LteSlUeRrc::Announcing);
+      Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, sidelinkHelper, ueDevs.Get (i), monitorPayloads[ueDevs.Get (i)], LteSlUeRrc::Monitoring);
     }
 
   ///*** End of application configuration ***///

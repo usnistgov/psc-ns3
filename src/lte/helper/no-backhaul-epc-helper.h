@@ -73,6 +73,8 @@ public:
   virtual uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
   virtual void ActivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft);
   virtual void DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteSlTft> tft);
+  virtual void RemoteUeContextConnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
+  virtual void RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
   virtual Ptr<Node> GetSgwNode () const;
   virtual Ptr<Node> GetPgwNode () const;
   virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);

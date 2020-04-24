@@ -317,6 +317,36 @@ LteAmc::GetUlTbSizeFromMcs (int mcs, int nprb)
   return (TransportBlockSizeTable[nprb - 1][itbs]);
 }
 
+std::vector<LteAmc::McsPrbInfo>
+LteAmc::GetUlMcsNprbInfoFromTbs (int tbs, int max_nprb, int max_mcs)
+{
+    NS_LOG_FUNCTION (this);
+    NS_ASSERT_MSG (max_nprb <= 110, "BW_PRB=" << max_nprb);
+    NS_ASSERT_MSG (max_mcs < 29, "MCS=" << max_mcs);
+        
+    std::vector<LteAmc::McsPrbInfo> McsPrbVector;
+    int itbs = 0;
+    int grantTbs = 0; //The TBS obtained from MCS and PRB combination
+    //Find tbs >= in TransportBlockSizeTable
+    for (int inprb = 0; inprb < max_nprb; inprb++)
+    {
+        for (int mcs = 0; mcs <= max_mcs; mcs++)
+        {
+            itbs = McsToItbsUl[mcs];
+            grantTbs = TransportBlockSizeTable[inprb][itbs];
+            if (grantTbs >= tbs)
+            {
+              LteAmc::McsPrbInfo grantInfo;
+              grantInfo.mcs = mcs;
+              grantInfo.nbRb = inprb + 1;
+              grantInfo.tbs = grantTbs;
+              McsPrbVector.push_back(grantInfo);
+              break;
+            }
+        }
+    }
+    return McsPrbVector;
+}
 
 double
 LteAmc::GetSpectralEfficiencyFromCqi (int cqi)

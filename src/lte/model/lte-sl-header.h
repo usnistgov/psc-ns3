@@ -57,8 +57,8 @@ public:
   enum DiscoveryMsgType : uint8_t
   {
     DISC_OPEN_ANNOUNCEMENT = 65, /* Open discovery announce model A */
-    DISC_RESTRICTED_ANNOUNCEMENT = 129, /* Restricted discovery announce model A */
     DISC_RESTRICTED_RESPONSE = 130, /* Restricted discovery response model B */
+    DISC_RESTRICTED_QUERY = 134, /* Restricted discovery request model B */
     DISC_RELAY_ANNOUNCEMENT = 145, /* Relay Discovery Announcement in model A */
     DISC_RELAY_SOLICITATION = 150, /* Relay Discovery Announcement in model B */
     DISC_RELAY_RESPONSE = 146, /* UE-to-Network Relay Discovery Response in model B */
@@ -199,11 +199,18 @@ public:
   void SetOpenDiscoveryAnnounceParameters (uint32_t appCode);
 
   /**
-   * \brief Set the parameters for the restricted discovery announcement
+   * \brief Set the parameters for the restricted discovery request
    *
    * \param appCode The application code
    */
-  void SetRestrictedDiscoveryAnnounceParameters (uint32_t appCode);
+  void SetRestrictedDiscoveryQueryParameters (uint32_t appCode);
+
+  /**
+   * \brief Set the parameters for the restricted discovery response
+   *
+   * \param appCode The application code
+   */
+  void SetRestrictedDiscoveryResponseParameters (uint32_t appCode);
 
   /**
    * \brief Set the parameters for the UE-to-Network relay announcement

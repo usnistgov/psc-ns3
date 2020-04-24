@@ -18,6 +18,7 @@
  * Author: Jaume Nin <jnin@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
  *         Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef EMU_EPC_HELPER_H
@@ -30,13 +31,13 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * \brief Create an EPC network using EmuFdNetDevice 
+ * \brief Create an EPC network using EmuFdNetDevice
  *
  * This Helper will create an EPC network topology comprising of a
  * single node that implements both the SGW and PGW functionality, and
  * an MME node. The S1-U, X2-U and X2-C interfaces are realized using
  * EmuFdNetDevice; in particular, one device is used to send all the
- * traffic related to these interfaces. 
+ * traffic related to these interfaces.
  */
 class EmuEpcHelper : public NoBackhaulEpcHelper
 {
@@ -74,7 +75,7 @@ private:
   /**
    * Container for Ipv4Interfaces of the SGW
    */
-  Ipv4InterfaceContainer m_sgwIpIfaces; 
+  Ipv4InterfaceContainer m_sgwIpIfaces;
 
   /**
    * The name of the device used for the S1-U interface of the SGW

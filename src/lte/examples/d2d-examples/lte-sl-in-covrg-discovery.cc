@@ -71,10 +71,12 @@ int main (int argc, char *argv[])
 {
   Time simTime = Seconds (6);
   bool enableNsLogs = false;
+  bool useModelB = false;
 
   CommandLine cmd;
   cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("enableNsLogs", "Enable ns-3 logging (debug builds)", enableNsLogs);
+  cmd.AddValue ("useModelB", "Use discovery model B instead of model A", useModelB);
   cmd.Parse (argc, argv);
 
   //Set the frequency
@@ -254,7 +256,14 @@ int main (int argc, char *argv[])
           std::cout << "Announcing App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discovered);
+      if (!useModelB)
+        {
+          Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Announcing);
+        }
+      else
+        {
+          Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discoveree);
+        }
     }
 
   for (auto itMonitorApps : monitorApps)
@@ -268,7 +277,14 @@ int main (int argc, char *argv[])
           std::cout << "Monitoring App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds(2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discoveree);
+      if (!useModelB)
+        {
+          Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Monitoring);
+        }
+      else
+        {
+          Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discoverer);
+        }
     }
 
   ///*** End of application configuration ***///

@@ -292,6 +292,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 
           if (m_retxBuffer.at (seqNumberValue).m_pdu != 0)
             {
+
               Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
 
               if (( packet->GetSize () <= txOpParams.bytes )

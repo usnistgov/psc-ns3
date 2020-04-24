@@ -7,9 +7,26 @@
 .. [TR36814] 3GPP TR 36.814 "E-UTRA Further advancements for E-UTRA physical layer aspects"
 
 .. [TR36843] 3GPP TR 36.843 "Study on LTE Device to Device Proximity Services; Radio Aspects"
+
+.. [TS36331] 3GPP TS 36.331 "Evolved Universal Terrestrial Radio Access (E-UTRA); Radio Resource Control (RRC); Protocol specification"
+
+.. [TS36300] 3GPP TS 36.300 "Evolved Universal Terrestrial Radio Access (E-UTRA) and Evolved Universal Terrestrial Radio Access Network (E-UTRAN); Overall description; Stage 2"
+
+.. [TS36323] 3GPP TS 36.323 "Evolved Universal Terrestrial Radio Access (E-UTRA); Packet Data Convergence Protocol (PDCP) specification"
+
+.. [TS36212] 3GPP TS 36.212 "Evolved Universal Terrestrial Radio Access (E-UTRA); Multiplexing and channel coding"
+
+.. [TS36213] 3GPP TS 36.213 "Evolved Universal Terrestrial Radio Access (E-UTRA); Physical layer procedures"
+
+.. [TS36322] 3GPP TS 36.322 "Evolved Universal Terrestrial Radio Access (E-UTRA); Radio Link Control (RLC) protocol specification"
+
+.. [TS36214] 3GPP TS 36.214 "Evolved Universal Terrestrial Radio Access (E-UTRA); Physical layer; Measurements" 
+
+.. [TS25814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access (UTRA)"
+
  
 .. [NIST2016] Rouil, R., Cintrón, F.J., Ben Mosbah, A. and Gamboa, S., 
-   `"An LTE Device-to-Device module for ns-3 "
+   `"An LTE Device-to-Device module for ns-3"
    <https://www.nist.gov/publications/lte-device-device-module-ns-3/>`_, 
    in Proceedings of the Workshop on ns-3, 15-16 June 2016, Seattle
    (Washington).
@@ -27,3 +44,10 @@
 .. [NISTFREQHOPP] Cintrón, F.J., `"Performance Evaluation of LTE Device-to-Device Out-of-Coverage Communication
    with Frequency Hopping Resource Scheduling"
    <https://nvlpubs.nist.gov/nistpubs/ir/2018/NIST.IR.8220.pdf>`_,.
+
+.. [NIST2019] Gamboa, S., Thanigaivel, R. and Rouil, R.,
+   `"System Level Evaluation of UE-to-Network Relays in D2D-enabled LTE Networks"
+   <https://www.nist.gov/publications/system-level-evaluation-ue-network-relays-d2d-enabled-lte-networks/>`_,
+   in Proceedings of the 2019 IEEE 24th International Workshop on Computer 
+   Aided Modeling and Design of Communication Links and Networks,
+   11-13 September 2019, Limassol (Cyprus).

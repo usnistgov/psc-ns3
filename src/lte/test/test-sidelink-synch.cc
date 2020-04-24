@@ -70,6 +70,10 @@ public:
   /**
    * \brief Constructor
    *
+   * \param topologyIndex Index of the topology
+   * \param onoff True if traffic in onoff
+   * \param bidirectionalTft True if TFT if bidirectional
+   * \param stream Stream to write output
    * \param description additional description of the test case
    */
   SidelinkSynchTestCase (uint32_t topologyIndex, bool onoff,
@@ -81,6 +85,11 @@ private:
   /**
    * \brief Build name string function
    *
+   * \param topologyIndex Index of the topology
+   * \param onoff True if traffic in onoff
+   * \param bidirectionalTft True if TFT if bidirectional
+   * \param stream Stream to write output
+   * \param description additional description of the test case
    * \returns the name string
    */
   static std::string BuildNameString (uint32_t topologyIndex, bool onoff,

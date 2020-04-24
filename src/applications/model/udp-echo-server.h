@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Modified by: NIST // Contributions may not be subject to US copyright. 
  */
 
 #ifndef UDP_ECHO_SERVER_H
@@ -31,7 +33,7 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup applications 
+ * \ingroup applications
  * \defgroup udpecho UdpEcho
  */
 
@@ -41,7 +43,7 @@ class Packet;
  *
  * Every packet received is sent back.
  */
-class UdpEchoServer : public Application 
+class UdpEchoServer : public Application
 {
 public:
   /**
@@ -56,7 +58,6 @@ protected:
   virtual void DoDispose (void);
 
 private:
-
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
@@ -76,6 +77,9 @@ private:
 
   /// Callbacks for tracing the packet Rx events
   TracedCallback<Ptr<const Packet> > m_rxTrace;
+
+  /// Callbacks for tracing the packet Tx events, includes source and destination addresses
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_txTraceWithAddresses;
 
   /// Callbacks for tracing the packet Rx events, includes source and destination addresses
   TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_rxTraceWithAddresses;

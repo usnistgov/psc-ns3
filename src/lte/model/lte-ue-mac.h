@@ -55,6 +55,16 @@ class LteUeMac :   public Object
   friend class UeMemberLteUePhySapUser;
 
 public:
+ 
+ /// Scheduling grant metric used for UE_SELECTED scheduling
+  enum SlSchedulingGrantMetric
+  {
+      FIXED = 0, //Default; Use values provided to UE MAC
+      RANDOM, //Random selection among valid <MCS,PRB> pairs
+      MIN_PRB, //Minimum number of PRBs
+      MAX_COVERAGE //Maximum coverage, based on BLER curves
+  };
+
   /**
    * \brief Get the type ID.
    * \return The object TypeId
@@ -389,7 +399,68 @@ private:
 
   /// component carrier Id --> used to address sap
   uint8_t m_componentCarrierId;
+  
+  /// Sidelink grant related variables
+  struct SidelinkGrant
+  {
+    //fields common with SL_DCI
+    uint16_t m_resPscch; ///< Resource for PSCCH
+    uint8_t m_tpc; ///< TPC
+    uint8_t m_hopping; ///< hopping flag
+    uint8_t m_rbStart; ///< models RB assignment
+    uint8_t m_rbLen; ///< models RB assignment
+    uint8_t m_hoppingInfo; ///< models RB assignment when hopping is enabled
+    uint8_t m_iTrp; ///< Index of Time recourse pattern (TRP)
 
+    //other fields
+    uint8_t m_mcs; ///< Modulation and Coding Scheme
+    uint32_t m_tbSize; ///< Transport Block Size
+    
+    //the destination of the grant
+    uint32_t m_dst; ///< Current destination L2 ID 
+  };
+
+  /// Sidelink communication pool information
+  struct PoolInfo
+  {
+    Ptr<SidelinkTxCommResourcePool> m_pool; ///< The Sidelink communication resource pool
+    std::set<uint32_t> m_destinations; ///< list of destinations that use this pool
+    SidelinkCommResourcePool::SubframeInfo m_currentScPeriod; ///< Start of the current Sidelink Control (SC) period
+    SidelinkGrant m_currentGrant; ///< Grant for the next SC period
+    SidelinkCommResourcePool::SubframeInfo m_nextScPeriod; ///< Start of next SC period
+
+    uint32_t m_npscch; ///< Number of PSCCH available in the pool
+
+    bool m_grantReceived; ///< True if we receive the grant
+    SidelinkGrant m_nextGrant; ///< Grant received for the next SC period
+
+    std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_pscchTx; ///< List of PSCCH transmissions within the pool
+    std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_psschTx; ///< List of PSSCH transmissions within the pool
+
+    Ptr<PacketBurst> m_miSlHarqProcessPacket; ///< Packets under transmission of the SL HARQ process
+  };
+
+  /**
+   * Compute the next grant for the given pool
+   * \param poolIt The iterator to the pool to schedule
+   * \return The grant for the next SC period of the pool
+   */
+  SidelinkGrant GetSlUeSelectedGrant (std::list<PoolInfo>::iterator poolIt);
+
+  /**
+   * Get the amount of data in the queue for the given destination
+   * \param dstL2Id The destination L2 ID
+   * \return The amount of data in the queue
+   */
+  uint32_t GetQueueSize (uint32_t dstL2Id);
+  
+  /**
+   * Get an iterator to the pool that must be used for a given destination
+   * \param dstL2Id
+   * \return an iterator to the pool that must be used for a given destination
+   */
+  std::list <PoolInfo>::iterator GetPoolForDestination (uint32_t dstL2Id);
+  
 private:
   /// LcInfo structure
   struct LcInfo
@@ -462,49 +533,13 @@ private:
     return l.lcId < r.lcId || (l.lcId == r.lcId && l.srcL2Id < r.srcL2Id) || (l.lcId == r.lcId && l.srcL2Id == r.srcL2Id && l.dstL2Id < r.dstL2Id);
   }
 
-  /// Sidelink grant related variables
-  struct SidelinkGrant
-  {
-    //fields common with SL_DCI
-    uint16_t m_resPscch; ///< Resource for PSCCH
-    uint8_t m_tpc; ///< TPC
-    uint8_t m_hopping; ///< hopping flag
-    uint8_t m_rbStart; ///< models RB assignment
-    uint8_t m_rbLen; ///< models RB assignment
-    uint8_t m_hoppingInfo; ///< models RB assignment when hopping is enabled
-    uint8_t m_iTrp; ///< Index of Time recourse pattern (TRP)
-
-    //other fields
-    uint8_t m_mcs; ///< Modulation and Coding Scheme
-    uint32_t m_tbSize; ///< Transport Block Size
-  };
-
-  /// Sidelink communication pool information
-  struct PoolInfo
-  {
-    Ptr<SidelinkCommResourcePool> m_pool; ///< The Sidelink communication resource pool
-    SidelinkCommResourcePool::SubframeInfo m_currentScPeriod; ///< Start of the current Sidelink Control (SC) period
-    SidelinkGrant m_currentGrant; ///< Grant for the next SC period
-    SidelinkCommResourcePool::SubframeInfo m_nextScPeriod; ///< Start of next SC period
-
-    uint32_t m_npscch; ///< Number of PSCCH available in the pool
-
-    bool m_grantReceived; ///< True if we receive the grant
-    SidelinkGrant m_nextGrant; ///< Grant received for the next SC period
-
-    std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_pscchTx; ///< List of PSCCH transmissions within the pool
-    std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> m_psschTx; ///< List of PSSCH transmissions within the pool
-
-    Ptr<PacketBurst> m_miSlHarqProcessPacket; ///< Packets under transmission of the SL HARQ process
-  };
-
   std::map <SidelinkLcIdentifier, LcInfo> m_slLcInfoMap; ///< Sidelink logical channel info map
   Time m_slBsrPeriodicity; ///< Sidelink buffer status report periodicity
   Time m_slBsrLast; ///< Time of last transmitted Sidelink buffer status report
   bool m_freshSlBsr; ///< true when a BSR has been received in the last TTI
   std::map <SidelinkLcIdentifier, LteMacSapProvider::ReportBufferStatusParameters> m_slBsrReceived; ///< Sidelink BSR received from RLC (the last one)
 
-  std::map <uint32_t, PoolInfo > m_sidelinkTxPoolsMap; ///< Map of Sidelink Tx pools with destination L2 ID as its key
+  std::list <PoolInfo> m_sidelinkTxPools; ///< List of Sidelink communication reception pools
   std::list <Ptr<SidelinkRxCommResourcePool> > m_sidelinkRxPools; ///< List of Sidelink communication reception pools
   std::list <uint32_t> m_sidelinkDestinations; ///< List of Sidelink communication destinations
   std::set <SidelinkCommResourcePool::SubframeInfo> m_psschRxSet; ///< List of reception opportunities on PSSCH
@@ -546,7 +581,7 @@ private:
   std::list< Ptr<Packet> > m_discPendingTxMsgs; ///< List of discovery messages to send
 
   Ptr<UniformRandomVariable> m_p1UniformVariable; ///< A uniform random variable to compare with the Tx probability of UE selected pool
-  Ptr<UniformRandomVariable> m_resUniformVariable;///< A uniform random variable to randomly choose the resource index from the PSDCH resource pool
+  Ptr<UniformRandomVariable> m_resUniformVariable; ///< A uniform random variable to randomly choose the resource index from the PSDCH resource pool
 
   Ptr<Packet> m_slSynchPendingTxMsg; ///< MIB-SL message to send
 
@@ -582,6 +617,8 @@ private:
   bool m_hasSlCommToRx; ///< True if sidelink communication is expected in the current TTI/subframe
 
   SidelinkCommResourcePool::SubframeInfo m_slSchedTime; ///< Current time regarding sidelink scheduling
+  
+  SlSchedulingGrantMetric m_schedulingGrantMetric; ///< Metrics to allocate resource in sidelink
 };
 
 } // namespace ns3

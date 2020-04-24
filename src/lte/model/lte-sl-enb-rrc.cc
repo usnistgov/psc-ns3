@@ -1,7 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * NIST-developed software is provided by NIST as a public
- * service. You may use, copy and distribute copies of the software in 
+ * service. You may use, copy and distribute copies of the software in
  * any medium, provided that you keep intact this entire notice. You
  * may improve, modify and create derivative works of the software or
  * any portion of the software, and you may copy and distribute such
@@ -63,9 +63,10 @@ TypeId LteSlEnbRrc::GetTypeId (void)
 
 LteSlEnbRrc::LteSlEnbRrc ()
   : m_slEnabled (false),
-    m_discEnabled (false)
+  m_discEnabled (false)
 {
   m_preconfigCommTxPoolExceptional.nbPools = 0;
+  m_defaultPoolInfo.m_isSet = false;
 }
 
 void
@@ -103,6 +104,8 @@ LteSlEnbRrc::Copy ()
   copy->m_discEnabled = m_discEnabled;
   copy->m_discPoolList = m_discPoolList;
   copy->m_preconfigDiscPool = m_preconfigDiscPool;
+  copy->m_defaultPoolInfo = m_defaultPoolInfo;
+  copy->m_discConfigRelay = m_discConfigRelay;
 
   return copy;
 }
@@ -163,9 +166,22 @@ LteSlEnbRrc::GetSystemInformationType18 ()
       else
         {
           NS_FATAL_ERROR ("Unable to find resource allocation type while building SIB 18."
-              " Please make sure to properly configure the resource allocation type while configuring the pool");
+                          " Please make sure to properly configure the resource allocation type while configuring the pool");
         }
     }
+  //Adding the default pool (if set) to the SIB18
+  if(m_defaultPoolInfo.m_isSet){
+	  if (m_defaultPoolInfo.m_poolSetup.setup == LteRrcSap::SlCommTxResourcesSetup::SCHEDULED)
+	  {
+		  sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools] = m_defaultPoolInfo.m_poolSetup.scheduled.commTxConfig;
+		  sib18.commConfig.commRxPool.nbPools++;
+	  }
+	  else if (m_defaultPoolInfo.m_poolSetup.setup == LteRrcSap::SlCommTxResourcesSetup::UE_SELECTED)
+	  {
+		  sib18.commConfig.commRxPool.pools[sib18.commConfig.commRxPool.nbPools] = m_defaultPoolInfo.m_poolSetup.ueSelected.poolToAddModList.pools[0].pool;
+		  sib18.commConfig.commRxPool.nbPools++;
+	  }
+  }
 
   sib18.commConfig.commTxPoolExceptional = m_preconfigCommTxPoolExceptional;
 
@@ -283,6 +299,9 @@ LteSlEnbRrc::GetSystemInformationType19 ()
                       " Please make sure to properly configure the resource allocation type while configuring the pool");
     }
 
+  //Configure UE-to-Network Relay Discovery
+  sib19.discConfigRelay = m_discConfigRelay;
+
   return sib19;
 }
 
@@ -295,6 +314,20 @@ LteSlEnbRrc::IsPoolInList (LteRrcSap::SlDiscResourcePool pool, LteRrcSap::SlDisc
       found =  pool == pools[i];
     }
   return found;
+}
+
+void LteSlEnbRrc::SetDefaultPool (LteRrcSap::SlCommTxResourcesSetup pool)
+{
+	NS_LOG_FUNCTION (this);
+	m_defaultPoolInfo.m_poolSetup = pool;
+	m_defaultPoolInfo.m_isSet = true;
+}
+
+void
+LteSlEnbRrc::SetDiscConfigRelay (LteRrcSap::Sib19DiscConfigRelay config)
+{
+  NS_LOG_FUNCTION (this);
+  m_discConfigRelay = config;
 }
 
 } // namespace ns3

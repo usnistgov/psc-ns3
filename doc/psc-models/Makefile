@@ -43,7 +43,9 @@ SOURCES = \
 SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-sl-pssch-bitmap.dia \
 	$(SRC)/lte/doc/source/figures/prose-non-roaming-arch.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1d.dia \
 	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1c.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1b.dia \
 	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1a.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-ue-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-enb-rrc.png \
@@ -64,16 +66,25 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-sl-simple-OofCovrg-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology1.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-synch-test-topology2.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-o2o-comm-state-machine-relay.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-o2o-comm-state-machine-remote.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-ue-arch-ctrl-plane.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-ue-arch-data-plane.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-o2o-comm-message-exchange.dia \
         $(SRC)/lte/doc/source/figures/helpers.pdf \
         $(SRC)/lte/doc/source/figures/helpers.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-relay-selection.png \
 	$(SRC)/psc/doc/source/figures/intel-http.png \
+
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)
 IMAGES_EPS = \
 	$(FIGURES)/lte-sl-pssch-bitmap.eps \
 	$(FIGURES)/prose-non-roaming-arch.eps \
+	$(FIGURES)/sidelink-scenarios-1d.eps \
 	$(FIGURES)/sidelink-scenarios-1c.eps \
+	$(FIGURES)/sidelink-scenarios-1b.eps \
 	$(FIGURES)/sidelink-scenarios-1a.eps \
 	$(FIGURES)/lte-sl-ue-phy.eps \
 	$(FIGURES)/lte-sl-in-coverage-tx.png \
@@ -91,6 +102,11 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-sl-simple-OofCovrg-scenario.eps \
 	$(FIGURES)/lte-sl-synch-test-topology1.eps \
 	$(FIGURES)/lte-sl-synch-test-topology2.eps \
+	$(FIGURES)/lte-sl-o2o-comm-state-machine-relay.eps \
+	$(FIGURES)/lte-sl-o2o-comm-state-machine-remote.eps \
+	$(FIGURES)/lte-sl-ue-arch-ctrl-plane.eps \
+	$(FIGURES)/lte-sl-ue-arch-data-plane.eps \
+	$(FIGURES)/lte-sl-o2o-comm-message-exchange.eps \
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
@@ -118,7 +134,9 @@ RESCALE = ../../utils/rescale-pdf.sh
 
 # rescale pdf figures as necessary
 $(FIGURES)/prose-non-roaming-arch.pdf_width = 10in
+$(FIGURES)/sidelink-scenarios-1d.pdf_width = 10cm
 $(FIGURES)/sidelink-scenarios-1c.pdf_width = 10cm
+$(FIGURES)/sidelink-scenarios-1b.pdf_width = 10cm
 $(FIGURES)/sidelink-scenarios-1a.pdf_width = 10cm
 $(FIGURES)/lte-sl-simple-scenario.pdf_width = 4in
 $(FIGURES)/lte-sl-simple-OofCovrg-scenario.pdf_width = 3in

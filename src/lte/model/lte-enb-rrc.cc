@@ -155,21 +155,21 @@ UeManager::UeManager ()
 
 UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId)
   : m_lastAllocatedDrbid (0),
-    m_rnti (rnti),
-    m_imsi (0),
-    m_componentCarrierId (componentCarrierId),
-    m_lastRrcTransactionIdentifier (0),
-    m_rrc (rrc),
-    m_state (s),
-    m_pendingRrcConnectionReconfiguration (false),
-    m_sourceX2apId (0),
-    m_sourceCellId (0),
-    m_needPhyMacConfiguration (false),
-    m_caSupportConfigured (false),
-    m_pendingStartDataRadioBearers (false),
-    m_slPoolChanged (false),
-    m_discPoolChanged (false)
-{ 
+  m_rnti (rnti),
+  m_imsi (0),
+  m_componentCarrierId (componentCarrierId),
+  m_lastRrcTransactionIdentifier (0),
+  m_rrc (rrc),
+  m_state (s),
+  m_pendingRrcConnectionReconfiguration (false),
+  m_sourceX2apId (0),
+  m_sourceCellId (0),
+  m_needPhyMacConfiguration (false),
+  m_caSupportConfigured (false),
+  m_pendingStartDataRadioBearers (false),
+  m_slPoolChanged (false),
+  m_discPoolChanged (false)
+{
   NS_LOG_FUNCTION (this);
 }
 
@@ -188,7 +188,7 @@ UeManager::DoInitialize ()
   m_physicalConfigDedicated.havePdschConfigDedicated = true;
   m_physicalConfigDedicated.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
 
-  
+
   for (uint8_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
     {
       m_rrc->m_cmacSapProvider.at (i)->AddUe (m_rnti);
@@ -223,7 +223,7 @@ UeManager::DoInitialize ()
     lcinfo.gbrDl = 0;
 
     // MacSapUserForRlc in the ComponentCarrierManager MacSapUser
-    LteMacSapUser* lteMacSapUser = m_rrc->m_ccmRrcSapProvider->ConfigureSignalBearer(lcinfo, rlc->GetLteMacSapUser ()); 
+    LteMacSapUser* lteMacSapUser = m_rrc->m_ccmRrcSapProvider->ConfigureSignalBearer (lcinfo, rlc->GetLteMacSapUser ());
     // Signal Channel are only on Primary Carrier
     m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->AddLc (lcinfo, lteMacSapUser);
     m_rrc->m_ccmRrcSapProvider->AddLc (lcinfo, lteMacSapUser);
@@ -265,7 +265,7 @@ UeManager::DoInitialize ()
     lcinfo.gbrUl = 1e4;
     lcinfo.gbrDl = 1e4;
     // MacSapUserForRlc in the ComponentCarrierManager MacSapUser
-    LteMacSapUser* MacSapUserForRlc = m_rrc->m_ccmRrcSapProvider->ConfigureSignalBearer(lcinfo, rlc->GetLteMacSapUser ()); 
+    LteMacSapUser* MacSapUserForRlc = m_rrc->m_ccmRrcSapProvider->ConfigureSignalBearer (lcinfo, rlc->GetLteMacSapUser ());
     // Signal Channel are only on Primary Carrier
     m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->AddLc (lcinfo, MacSapUserForRlc);
     m_rrc->m_ccmRrcSapProvider->AddLc (lcinfo, MacSapUserForRlc);
@@ -366,14 +366,14 @@ TypeId UeManager::GetTypeId (void)
   return tid;
 }
 
-void 
+void
 UeManager::SetSource (uint16_t sourceCellId, uint16_t sourceX2apId)
 {
   m_sourceX2apId = sourceX2apId;
   m_sourceCellId = sourceCellId;
 }
 
-void 
+void
 UeManager::SetImsi (uint64_t imsi)
 {
   m_imsi = imsi;
@@ -401,7 +401,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
 
   Ptr<LteDataRadioBearerInfo> drbInfo = CreateObject<LteDataRadioBearerInfo> ();
   uint8_t drbid = AddDataRadioBearerInfo (drbInfo);
-  uint8_t lcid = Drbid2Lcid (drbid); 
+  uint8_t lcid = Drbid2Lcid (drbid);
   uint8_t bid = Drbid2Bid (drbid);
   NS_ASSERT_MSG ( bearerId == 0 || bid == bearerId, "bearer ID mismatch (" << (uint32_t) bid << " != " << (uint32_t) bearerId << ", the assumption that ID are allocated in the same way by MME and RRC is not valid any more");
   drbInfo->m_epsBearer = bearer;
@@ -413,7 +413,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
 
   if (m_state == HANDOVER_JOINING)
     {
-      // setup TEIDs for receiving data eventually forwarded over X2-U 
+      // setup TEIDs for receiving data eventually forwarded over X2-U
       LteEnbRrc::X2uTeidInfo x2uTeidInfo;
       x2uTeidInfo.rnti = m_rnti;
       x2uTeidInfo.drbid = drbid;
@@ -556,7 +556,7 @@ UeManager::ReleaseDataRadioBearer (uint8_t drbid)
   //populating RadioResourceConfigDedicated information element as per 3GPP TS 36.331 version 9.2.0
   rrcd.havePhysicalConfigDedicated = true;
   rrcd.physicalConfigDedicated = m_physicalConfigDedicated;
- 
+
   //populating RRCConnectionReconfiguration message as per 3GPP TS 36.331 version 9.2.0 Release 9
   LteRrcSap::RrcConnectionReconfiguration msg;
   msg.haveMeasConfig = false;
@@ -636,7 +636,7 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
     }
 }
 
-void 
+void
 UeManager::PrepareHandover (uint16_t cellId)
 {
   NS_LOG_FUNCTION (this << cellId);
@@ -693,7 +693,7 @@ UeManager::PrepareHandover (uint16_t cellId)
 
 }
 
-void 
+void
 UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params)
 {
   NS_LOG_FUNCTION (this);
@@ -705,25 +705,25 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
   // is expected to be sent transparently to the UE; however, here we
   // decode the message and eventually re-encode it. This way we can
   // support both a real RRC protocol implementation and an ideal one
-  // without actual RRC protocol encoding. 
+  // without actual RRC protocol encoding.
 
   Ptr<Packet> encodedHandoverCommand = params.rrcContext;
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = m_rrc->m_rrcSapUser->DecodeHandoverCommand (encodedHandoverCommand);
   if (handoverCommand.haveNonCriticalExtension)
     {
       //Total number of component carriers = handoverCommand.nonCriticalExtension.sCellsToAddModList.size() + 1 (Primary carrier)
-      if (handoverCommand.nonCriticalExtension.sCellsToAddModList.size() + 1 != m_rrc->m_numberOfComponentCarriers)
+      if (handoverCommand.nonCriticalExtension.sCellsToAddModList.size () + 1 != m_rrc->m_numberOfComponentCarriers)
         {
           //Currently handover is only possible if source and target eNBs have equal number of component carriers
           NS_FATAL_ERROR ("The source and target eNBs have unequal number of component carriers. Target eNB CCs = "
-                           << handoverCommand.nonCriticalExtension.sCellsToAddModList.size() + 1
-                           << " Source eNB CCs = " << m_rrc->m_numberOfComponentCarriers);
+                          << handoverCommand.nonCriticalExtension.sCellsToAddModList.size () + 1
+                          << " Source eNB CCs = " << m_rrc->m_numberOfComponentCarriers);
         }
     }
   m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, handoverCommand);
   SwitchToState (HANDOVER_LEAVING);
-  m_handoverLeavingTimeout = Simulator::Schedule (m_rrc->m_handoverLeavingTimeoutDuration, 
-                                                  &LteEnbRrc::HandoverLeavingTimeout, 
+  m_handoverLeavingTimeout = Simulator::Schedule (m_rrc->m_handoverLeavingTimeoutDuration,
+                                                  &LteEnbRrc::HandoverLeavingTimeout,
                                                   m_rrc, m_rnti);
   NS_ASSERT (handoverCommand.haveMobilityControlInfo);
   m_rrc->m_handoverStartTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
@@ -762,7 +762,7 @@ UeManager::GetRadioResourceConfigForHandoverPreparationInfo ()
   return BuildRadioResourceConfigDedicated ();
 }
 
-LteRrcSap::RrcConnectionReconfiguration 
+LteRrcSap::RrcConnectionReconfiguration
 UeManager::GetRrcConnectionReconfigurationForHandover ()
 {
   NS_LOG_FUNCTION (this);
@@ -779,6 +779,7 @@ UeManager::SendPacket (uint8_t bid, Ptr<Packet> p)
   params.lcid = Bid2Lcid (bid);
   params.dstL2Id = 0; //Only used for Sidelink
   params.srcL2Id = 0; //Only used for Sidelink
+  params.sduType =  LtePdcpSapUser::IP_SDU;
   uint8_t drbid = Bid2Drbid (bid);
   // Transmit PDCP sdu only if DRB ID found in drbMap
   std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.find (drbid);
@@ -887,7 +888,7 @@ UeManager::SendUeContextRelease ()
     }
 }
 
-void 
+void
 UeManager::RecvHandoverPreparationFailure (uint16_t cellId)
 {
   NS_LOG_FUNCTION (this << cellId);
@@ -905,11 +906,11 @@ UeManager::RecvHandoverPreparationFailure (uint16_t cellId)
     }
 }
 
-void 
+void
 UeManager::RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
 {
   NS_LOG_FUNCTION (this);
-  for (std::vector<EpcX2Sap::ErabsSubjectToStatusTransferItem>::iterator erabIt 
+  for (std::vector<EpcX2Sap::ErabsSubjectToStatusTransferItem>::iterator erabIt
          = params.erabsSubjectToStatusTransferList.begin ();
        erabIt != params.erabsSubjectToStatusTransferList.end ();
        ++erabIt)
@@ -924,7 +925,7 @@ UeManager::RecvSnStatusTransfer (EpcX2SapUser::SnStatusTransferParams params)
     }
 }
 
-void 
+void
 UeManager::RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
 {
   NS_LOG_FUNCTION (this);
@@ -935,7 +936,7 @@ UeManager::RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
 
 // methods forwarded from RRC SAP
 
-void 
+void
 UeManager::CompleteSetupUe (LteEnbRrcSapProvider::CompleteSetupUeParameters params)
 {
   NS_LOG_FUNCTION (this);
@@ -965,8 +966,8 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
 
             RecordDataRadioBearersToBeStarted ();
             m_connectionSetupTimeout = Simulator::Schedule (
-                m_rrc->m_connectionSetupTimeoutDuration,
-                &LteEnbRrc::ConnectionSetupTimeout, m_rrc, m_rnti);
+              m_rrc->m_connectionSetupTimeoutDuration,
+              &LteEnbRrc::ConnectionSetupTimeout, m_rrc, m_rnti);
             SwitchToState (CONNECTION_SETUP);
           }
         else
@@ -979,8 +980,8 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
             m_rrc->m_rrcSapUser->SendRrcConnectionReject (m_rnti, rejectMsg);
 
             m_connectionRejectedTimeout = Simulator::Schedule (
-                m_rrc->m_connectionRejectedTimeoutDuration,
-                &LteEnbRrc::ConnectionRejectedTimeout, m_rrc, m_rnti);
+              m_rrc->m_connectionRejectedTimeoutDuration,
+              &LteEnbRrc::ConnectionRejectedTimeout, m_rrc, m_rnti);
             SwitchToState (CONNECTION_REJECTED);
           }
       }
@@ -1124,7 +1125,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
     }
 }
 
-void 
+void
 UeManager::RecvRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg)
 {
   NS_LOG_FUNCTION (this);
@@ -1149,14 +1150,14 @@ UeManager::RecvRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionRees
   SwitchToState (CONNECTION_REESTABLISHMENT);
 }
 
-void 
+void
 UeManager::RecvRrcConnectionReestablishmentComplete (LteRrcSap::RrcConnectionReestablishmentComplete msg)
 {
   NS_LOG_FUNCTION (this);
   SwitchToState (CONNECTED_NORMALLY);
 }
 
-void 
+void
 UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
 {
   uint8_t measId = msg.measResults.measId;
@@ -1232,117 +1233,117 @@ void
 UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
 {
   NS_LOG_FUNCTION (this);
+
+  //Prepare default message with no information included
+  LteRrcSap::RrcConnectionReconfiguration msg2;
+  msg2.haveMeasConfig = false;
+  msg2.haveMobilityControlInfo = false;
+  msg2.haveRadioResourceConfigDedicated = false;
+  msg2.haveNonCriticalExtension = false;
+  msg2.haveSlCommConfig = false;
+  msg2.haveSlDiscConfig = false;
+
   //Parse message and decide on allocation
   //for now we only handle one group per UE
   if (msg.haveCommTxResourceReq)
     {
-      NS_ASSERT_MSG (msg.slCommTxResourceReq.slDestinationInfoList.nbDestinations=1, "Current implementation does not support more than 1 group per UE");
-
-      //store destination list in the UE
-      m_slDestinations.clear ();
-      for (int i = 0 ; i < msg.slCommTxResourceReq.slDestinationInfoList.nbDestinations; i++)
+      if (msg.slCommTxResourceReq.slDestinationInfoList.nbDestinations >= 1)
         {
-          m_slDestinations.push_back (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[i]);
-        }
-
-      //populate dedicated resources
-      LteRrcSap::SlCommConfig dedicatedResource;
-      dedicatedResource.commTxResources = LteRrcSap::SlCommConfig::SETUP;
-
-      //check if pool already in use
-      std::map <uint32_t, LteSlEnbRrc::ActivePoolInfo>::iterator it2 = m_rrc->m_sidelinkConfiguration->m_activePoolMap.find (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
-
-      if (it2 == m_rrc->m_sidelinkConfiguration->m_activePoolMap.end())
-        {
-          //no active pool for this group, let's check if we have a preconfigured one
-          //or later, how to create one dynamically
-          std::map <uint32_t, LteRrcSap::SlCommTxResourcesSetup>::iterator it = m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.find (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
-
-          if (it != m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.end())
+          //store destination list in the UE
+          m_slDestinations.clear ();
+          for (int i = 0; i < msg.slCommTxResourceReq.slDestinationInfoList.nbDestinations; i++)
             {
-              dedicatedResource.setup = it->second;
-            }
-          else
-            {
-              NS_LOG_INFO ("No pre-provisioned pool found for group " << msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
+              m_slDestinations.push_back (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[i]);
             }
 
-          Ptr<SidelinkTxCommResourcePool> m_slPool = CreateObject<SidelinkTxCommResourcePool> ();
-          if (dedicatedResource.setup.setup == LteRrcSap::SlCommTxResourcesSetup::SCHEDULED)
+          //populate dedicated resources
+          LteRrcSap::SlCommConfig dedicatedResource;
+          dedicatedResource.commTxResources = LteRrcSap::SlCommConfig::SETUP;
+
+          //check if pool already in use
+          std::map <uint32_t, LteSlEnbRrc::ActivePoolInfo>::iterator it2 = m_rrc->m_sidelinkConfiguration->m_activePoolMap.find (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
+
+          if (it2 == m_rrc->m_sidelinkConfiguration->m_activePoolMap.end ())
             {
-              m_slPool->SetPool (dedicatedResource.setup.scheduled.commTxConfig);
-              if (dedicatedResource.setup.scheduled.haveMcs)
+              //no active pool for this group, let's check if we have a preconfigured, a default one
+              //or later, how to create one dynamically
+              std::map <uint32_t, LteRrcSap::SlCommTxResourcesSetup>::iterator it = m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.find (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
+
+              if (it != m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.end ())
                 {
-                  m_slPool->SetScheduledTxParameters (m_rnti, dedicatedResource.setup.scheduled.macMainConfig, dedicatedResource.setup.scheduled.commTxConfig, 0, dedicatedResource.setup.scheduled.mcs);
+                  dedicatedResource.setup = it->second;
                 }
               else
                 {
-                  m_slPool->SetScheduledTxParameters (m_rnti, dedicatedResource.setup.scheduled.macMainConfig, dedicatedResource.setup.scheduled.commTxConfig, 0);
+        	  if(m_rrc->m_sidelinkConfiguration->m_defaultPoolInfo.m_isSet)
+        	    {
+        	      dedicatedResource.setup = m_rrc->m_sidelinkConfiguration->m_defaultPoolInfo.m_poolSetup;
+        	    }
+        	  else
+        	    {
+                      NS_LOG_ERROR ("No pre-provisioned or default pool found for group " << msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
+        	    }
                 }
+
+              Ptr<SidelinkTxCommResourcePool> m_slPool = CreateObject<SidelinkTxCommResourcePool> ();
+              if (dedicatedResource.setup.setup == LteRrcSap::SlCommTxResourcesSetup::SCHEDULED)
+                {
+                  m_slPool->SetPool (dedicatedResource.setup.scheduled.commTxConfig);
+                  if (dedicatedResource.setup.scheduled.haveMcs)
+                    {
+                      m_slPool->SetScheduledTxParameters (m_rnti, dedicatedResource.setup.scheduled.macMainConfig, dedicatedResource.setup.scheduled.commTxConfig, 0, dedicatedResource.setup.scheduled.mcs);
+                    }
+                  else
+                    {
+                      m_slPool->SetScheduledTxParameters (m_rnti, dedicatedResource.setup.scheduled.macMainConfig, dedicatedResource.setup.scheduled.commTxConfig, 0);
+                    }
+                }
+              else
+                {
+                  //right now, only use the first pool
+                  NS_ASSERT (dedicatedResource.setup.ueSelected.havePoolToAdd && dedicatedResource.setup.ueSelected.poolToAddModList.nbPools > 0);
+                  m_slPool->SetPool (dedicatedResource.setup.ueSelected.poolToAddModList.pools[0].pool);
+                }
+
+              LteSlEnbRrc::ActivePoolInfo newPoolInfo;
+              newPoolInfo.m_pool = m_slPool;
+              newPoolInfo.m_poolSetup = dedicatedResource.setup;
+              newPoolInfo.m_rntiSet.insert (m_rnti);
+
+              //tell the MAC that there is a new pool
+              m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->AddPool (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0], m_slPool);
+
+              m_rrc->m_sidelinkConfiguration->m_activePoolMap.insert (std::pair<uint32_t, LteSlEnbRrc::ActivePoolInfo> (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0], newPoolInfo));
+              m_slPoolChanged = true;
+
             }
           else
             {
-              //right now, only use the first pool
-              NS_ASSERT (dedicatedResource.setup.ueSelected.havePoolToAdd && dedicatedResource.setup.ueSelected.poolToAddModList.nbPools > 0);
-              m_slPool->SetPool (dedicatedResource.setup.ueSelected.poolToAddModList.pools[0].pool);
-            }
+              dedicatedResource.setup = it2->second.m_poolSetup;
+              if (it2->second.m_rntiSet.find (m_rnti) == it2->second.m_rntiSet.end ())
+                {
+                  //the pool is active but the UE was not on the list
+                  it2->second.m_rntiSet.insert (m_rnti);
+                  m_slPoolChanged = true;
+                }
+            } //else we already know this UE is using this pool
 
-          LteSlEnbRrc::ActivePoolInfo newPoolInfo;
-          newPoolInfo.m_pool = m_slPool;
-          newPoolInfo.m_poolSetup = it->second;
-          newPoolInfo.m_rntiSet.insert (m_rnti);
-
-          //tell the MAC that there is a new pool
-          m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->AddPool (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0], m_slPool);
-
-          m_rrc->m_sidelinkConfiguration->m_activePoolMap.insert (std::pair<uint32_t, LteSlEnbRrc::ActivePoolInfo> (msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0], newPoolInfo));
-          m_slPoolChanged = true;
-
+          //populating RRCConnectionReconfiguration message
+          msg2.haveSlCommConfig = true;
+          msg2.slCommConfig = dedicatedResource;
         }
       else
         {
-          dedicatedResource.setup = it2->second.m_poolSetup;
-          if (it2->second.m_rntiSet.find (m_rnti) == it2->second.m_rntiSet.end()) {
-            //the pool is active but the UE was not on the list
-            it2->second.m_rntiSet.insert (m_rnti);
-            m_slPoolChanged = true;
-          }
-        } //else we already know this UE is using this pool
+          //must release resources
 
-      //populating RRCConnectionReconfiguration message
-      LteRrcSap::RrcConnectionReconfiguration msg2;
-      msg2.haveMeasConfig = false;
-      msg2.haveMobilityControlInfo = false;
-      msg2.haveRadioResourceConfigDedicated = false;
-      msg2.haveNonCriticalExtension = false;
-      msg2.haveSlDiscConfig = false;
-      msg2.haveSlCommConfig = true;
-      msg2.slCommConfig = dedicatedResource;
-      //RRC Connection Reconfiguration towards UE
-      m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg2);
-
-
-    }
-  else
-    {
-      //must release resources
-      
-      LteRrcSap::SlCommConfig dedicatedResource;
-      dedicatedResource.commTxResources = LteRrcSap::SlCommConfig::RELEASE;
-      //populating RRCConnectionReconfiguration message
-      LteRrcSap::RrcConnectionReconfiguration msg2;
-      msg2.haveMeasConfig = false;
-      msg2.haveMobilityControlInfo = false;
-      msg2.haveRadioResourceConfigDedicated = false;
-      msg2.haveNonCriticalExtension = false;
-      msg2.haveSlDiscConfig = false;
-      msg2.haveSlCommConfig = true;
-      msg2.slCommConfig = dedicatedResource;
-      //RRC Connection Reconfiguration towards UE
-      m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg2);
-
-      m_slDestinations.clear();
-      m_slPoolChanged = true;
+          LteRrcSap::SlCommConfig dedicatedResource;
+          dedicatedResource.commTxResources = LteRrcSap::SlCommConfig::RELEASE;
+          //populating RRCConnectionReconfiguration message
+          msg2.haveSlCommConfig = true;
+          msg2.slCommConfig = dedicatedResource;
+          m_slDestinations.clear ();
+          m_slPoolChanged = true;
+        }
     }
 
   if (msg.haveCommRxInterestedFreq)
@@ -1375,103 +1376,82 @@ UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
 
           //m_discPoolList.setup -> scheduled or UE selected
 
-          if (m_rrc->m_sidelinkConfiguration->m_discPoolList.setup)
-            {
-              if (m_rrc->m_sidelinkConfiguration->m_discPoolList.setup == LteRrcSap::SlDiscTxResourcesSetup::SCHEDULED)
-                {//add fields to discPool
-                  discPool->SetPool (m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discTxConfig);
-                  LteRrcSap::SlDiscResourcePool scheDiscResPool = m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discTxConfig;
-                  LteRrcSap::SlTfIndexPairList scheDiscResources = m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discTfIndexList;
-                  LteRrcSap::SlHoppingConfigDisc scheDiscHopping = m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discHoppingConfigDisc;
-                  discPool->SetScheduledTxParameters (scheDiscResPool, scheDiscResources, scheDiscHopping);
-                }
-              else
-                {
-                  //when we have ue-selected, we can have multiple pools with same criteria of selection
-                  //either random , or rsrpBased
-                  // ue-selected pool
-                  NS_ASSERT (m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.havePoolToAdd &&
-                             m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.nbPools > 0);
-                  //select one pool
-
-                  //random selection: choose randomly using uniform distribution an entry of m_discPoolList.ueSelected.poolToAddModList
-                  if (m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[0].pool.txParameters.ueSelectedResourceConfig.poolSelection.selection ==
-                      LteRrcSap::PoolSelection::RANDOM)
-                    {
-                      uint32_t randPoolIndex = m_rand->GetInteger (0, m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.nbPools - 1);
-                      LteRrcSap::SlDiscResourcePool randomPool = m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[randPoolIndex].pool;
-                      //add fields to discPool
-                      discPool->SetPool (randomPool);
-                    }
-                  else
-                    {
-                      //rsrp-based selection: choose a pool where rsrp is between;
-                      //m_discPoolList.ueSelected.poolToAddModList.pools[i].pool.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow and
-                      //m_discPoolList.ueSelected.poolToAddModList.pools[i].pool.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh
-
-                      uint32_t i = 0;
-                      bool poolFound = false;
-                      LteRrcSap::SlDiscResourcePool ueSelectedDiscResPool;
-
-                      while ((i < m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.nbPools) && (!poolFound))
-                        {
-                          ueSelectedDiscResPool = m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[i].pool;
-                          uint32_t lowRsrp = ueSelectedDiscResPool.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow;
-                          uint32_t highRsrp = ueSelectedDiscResPool.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh;
-                          // check the rsrp values : Value 0 corresponds to -infinity, value 1 to -110dBm,
-                          // value 2 to -100dBm, and so on (i.e. in steps of 10dBm) until value 6,
-                          // which corresponds to -60dBm, while value 7 corresponds to +infinity.
-                          NS_ASSERT_MSG (lowRsrp <= highRsrp, "Invalid Rsrp limits : lower bound is greater than upper bound");
-                          NS_ASSERT_MSG ((lowRsrp != 7) && (highRsrp != 0), "invalid RSRP limits values");
-                          //choose the first one and assume it is ok
-                          //TODO : needs to be evaluated
-                          //check how to use rsrp
-                          poolFound =true;
-                          i++;
-                        }
-                      //finally, set the chosen pool
-                      //add fields to discPool
-                      NS_ASSERT_MSG (poolFound, "No pool match the RSRP-based selection");
-                      discPool->SetPool (m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[i-1].pool);
-                    }
-                }
-              //add fields to discResource
-              discResource.setup = m_rrc->m_sidelinkConfiguration->m_discPoolList;
+          if (m_rrc->m_sidelinkConfiguration->m_discPoolList.setup == LteRrcSap::SlDiscTxResourcesSetup::SCHEDULED)
+            {    //add fields to discPool
+              discPool->SetPool (m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discTxConfig);
+              LteRrcSap::SlDiscResourcePool scheDiscResPool = m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discTxConfig;
+              LteRrcSap::SlTfIndexPairList scheDiscResources = m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discTfIndexList;
+              LteRrcSap::SlHoppingConfigDisc scheDiscHopping = m_rrc->m_sidelinkConfiguration->m_discPoolList.scheduled.discHoppingConfigDisc;
+              discPool->SetScheduledTxParameters (scheDiscResPool, scheDiscResources, scheDiscHopping);
             }
           else
             {
-              discPool->SetPool(m_rrc->m_sidelinkConfiguration->m_preconfigDiscPool);
+              //when we have ue-selected, we can have multiple pools with same criteria of selection
+              //either random , or rsrpBased
+              // ue-selected pool
+              NS_ASSERT (m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.havePoolToAdd
+                         && m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.nbPools > 0);
+              //select one pool
+
+              //random selection: choose randomly using uniform distribution an entry of m_discPoolList.ueSelected.poolToAddModList
+              if (m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[0].pool.txParameters.ueSelectedResourceConfig.poolSelection.selection ==
+                  LteRrcSap::PoolSelection::RANDOM)
+                {
+                  uint32_t randPoolIndex = m_rand->GetInteger (0, m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.nbPools - 1);
+                  LteRrcSap::SlDiscResourcePool randomPool = m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[randPoolIndex].pool;
+                  //add fields to discPool
+                  discPool->SetPool (randomPool);
+                }
+              else
+                {
+                  //rsrp-based selection: choose a pool where rsrp is between;
+                  //m_discPoolList.ueSelected.poolToAddModList.pools[i].pool.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow and
+                  //m_discPoolList.ueSelected.poolToAddModList.pools[i].pool.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh
+
+                  uint32_t i = 0;
+                  bool poolFound = false;
+                  LteRrcSap::SlDiscResourcePool ueSelectedDiscResPool;
+
+                  while ((i < m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.nbPools) && (!poolFound))
+                    {
+                      ueSelectedDiscResPool = m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[i].pool;
+                      uint32_t lowRsrp = ueSelectedDiscResPool.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshLow;
+                      uint32_t highRsrp = ueSelectedDiscResPool.txParameters.ueSelectedResourceConfig.poolSelectionRsrpBased.threshHigh;
+                      // check the rsrp values : Value 0 corresponds to -infinity, value 1 to -110dBm,
+                      // value 2 to -100dBm, and so on (i.e. in steps of 10dBm) until value 6,
+                      // which corresponds to -60dBm, while value 7 corresponds to +infinity.
+                      NS_ASSERT_MSG (lowRsrp <= highRsrp, "Invalid Rsrp limits : lower bound is greater than upper bound");
+                      NS_ASSERT_MSG ((lowRsrp != 7) && (highRsrp != 0), "invalid RSRP limits values");
+                      //choose the first one and assume it is ok
+                      //TODO : needs to be evaluated
+                      //check how to use rsrp
+                      poolFound = true;
+                      i++;
+                    }
+                  //finally, set the chosen pool
+                  //add fields to discPool
+                  NS_ASSERT_MSG (poolFound, "No pool match the RSRP-based selection");
+                  discPool->SetPool (m_rrc->m_sidelinkConfiguration->m_discPoolList.ueSelected.poolToAddModList.pools[i - 1].pool);
+                }
             }
+          //add fields to discResource
+          discResource.setup = m_rrc->m_sidelinkConfiguration->m_discPoolList;
+
           // send pool info to the MAC of Primary Carrier
-          m_rrc->m_cmacSapProvider.at(0)->AddPool (msg.discTxResourceReq, discPool);
+          m_rrc->m_cmacSapProvider.at (0)->AddPool (msg.discTxResourceReq, discPool);
           m_discPoolChanged = true;
 
           // populate RRCConnectionReconfiguration message
-          LteRrcSap::RrcConnectionReconfiguration msg;
-          msg.haveMeasConfig = false;
-          msg.haveMobilityControlInfo = false;
-          msg.haveRadioResourceConfigDedicated = false;
-          msg.haveNonCriticalExtension = false;
-          msg.haveSlCommConfig = false;
-          msg.haveSlDiscConfig = true;
-          msg.slDiscConfig = discResource;
-          // send pool info to the mac
-          m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg);
+          msg2.haveSlDiscConfig = true;
+          msg2.slDiscConfig = discResource;
         } //end of if (msg.discTxResourceReq > 0)
       else
         {
           // release Resources
           LteRrcSap::SlDiscConfig discResource;
           discResource.discTxResources = LteRrcSap::SlDiscConfig::RELEASE;
-          LteRrcSap::RrcConnectionReconfiguration msg;
-          msg.haveMeasConfig = false;
-          msg.haveMobilityControlInfo = false;
-          msg.haveRadioResourceConfigDedicated = false;
-          msg.haveNonCriticalExtension = false;
-          msg.haveSlCommConfig = false;
-          msg.haveSlDiscConfig = true;
-          msg.slDiscConfig = discResource;
-          m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg);
+          msg2.haveSlDiscConfig = true;
+          msg2.slDiscConfig = discResource;
           m_discPoolChanged = true;
           m_discTxResourceReq = 0;
         }
@@ -1486,6 +1466,13 @@ UeManager::RecvSidelinkUeInformation (LteRrcSap::SidelinkUeInformation msg)
     {
       //no more interest from the UE
     }
+
+  //Check if the message needs to be sent
+  if (msg2.haveSlDiscConfig || msg2.haveSlCommConfig)
+    {
+      m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, msg2);
+    }
+
 }// end of UeManager::RecvSidelinkUeInformation
 
 
@@ -1604,8 +1591,8 @@ UeManager::AddDataRadioBearerInfo (Ptr<LteDataRadioBearerInfo> drbInfo)
 {
   NS_LOG_FUNCTION (this);
   const uint8_t MAX_DRB_ID = 32;
-  for (int drbid = (m_lastAllocatedDrbid + 1) % MAX_DRB_ID; 
-       drbid != m_lastAllocatedDrbid; 
+  for (int drbid = (m_lastAllocatedDrbid + 1) % MAX_DRB_ID;
+       drbid != m_lastAllocatedDrbid;
        drbid = (drbid + 1) % MAX_DRB_ID)
     {
       if (drbid != 0) // 0 is not allowed
@@ -1705,7 +1692,7 @@ UeManager::BuildRadioResourceConfigDedicated ()
   return rrcd;
 }
 
-uint8_t 
+uint8_t
 UeManager::GetNewRrcTransactionIdentifier ()
 {
   NS_LOG_FUNCTION (this);
@@ -1714,45 +1701,45 @@ UeManager::GetNewRrcTransactionIdentifier ()
   return m_lastRrcTransactionIdentifier;
 }
 
-uint8_t 
+uint8_t
 UeManager::Lcid2Drbid (uint8_t lcid)
 {
   NS_ASSERT (lcid > 2);
   return lcid - 2;
 }
 
-uint8_t 
+uint8_t
 UeManager::Drbid2Lcid (uint8_t drbid)
 {
   return drbid + 2;
 }
-uint8_t 
+uint8_t
 UeManager::Lcid2Bid (uint8_t lcid)
 {
   NS_ASSERT (lcid > 2);
   return lcid - 2;
 }
 
-uint8_t 
+uint8_t
 UeManager::Bid2Lcid (uint8_t bid)
 {
   return bid + 2;
 }
 
-uint8_t 
+uint8_t
 UeManager::Drbid2Bid (uint8_t drbid)
 {
   return drbid;
 }
 
-uint8_t 
+uint8_t
 UeManager::Bid2Drbid (uint8_t bid)
 {
   return bid;
 }
 
 
-void 
+void
 UeManager::SwitchToState (State newState)
 {
   NS_LOG_FUNCTION (this << ToString (newState));
@@ -1807,7 +1794,7 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
 {
   NS_LOG_FUNCTION ( this );
   LteRrcSap::NonCriticalExtensionConfiguration ncec;
-  
+
   //  LteRrcSap::SCellToAddMod scell;
   std::list<LteRrcSap::SCellToAddMod> SccCon;
 
@@ -1846,7 +1833,7 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
       component.radioResourceConfigCommonSCell.ulConfiguration.soundingRsUlConfigCommon.srsBandwidthConfig = 0;
       component.radioResourceConfigCommonSCell.ulConfiguration.soundingRsUlConfigCommon.srsSubframeConfig = 0;
       component.radioResourceConfigCommonSCell.ulConfiguration.prachConfigSCell.index = 0;
-    
+
       if (true)
         {
           component.haveRadioResourceConfigDedicatedSCell = true;
@@ -1862,11 +1849,11 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
           component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.pushConfigDedicatedSCell.nPuschIdentity = 0;
           component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.ulPowerControlDedicatedSCell.pSrsOffset = 0;
           component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.haveSoundingRsUlConfigDedicated = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex = GetSrsConfigurationIndex();
+          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex = GetSrsConfigurationIndex ();
           component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.type = LteRrcSap::SoundingRsUlConfigDedicated::SETUP;
           component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsBandwidth = 0;
         }
-      else 
+      else
         {
           component.haveRadioResourceConfigDedicatedSCell = false;
         }
@@ -1886,23 +1873,23 @@ NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
 
 LteEnbRrc::LteEnbRrc ()
   : m_x2SapProvider (0),
-    m_cmacSapProvider (0),
-    m_handoverManagementSapProvider (0),
-    m_ccmRrcSapProvider (0),
-    m_anrSapProvider (0),
-    m_ffrRrcSapProvider (0),
-    m_rrcSapUser (0),
-    m_macSapProvider (0),
-    m_s1SapProvider (0),
-    m_cphySapProvider (0),
-    m_configured (false),
-    m_lastAllocatedRnti (0),
-    m_srsCurrentPeriodicityId (0),
-    m_lastAllocatedConfigurationIndex (0),
-    m_reconfigureUes (false),
-    m_sidelinkConfiguration (0),
-    m_numberOfComponentCarriers (0),
-    m_carriersConfigured (false)
+  m_cmacSapProvider (0),
+  m_handoverManagementSapProvider (0),
+  m_ccmRrcSapProvider (0),
+  m_anrSapProvider (0),
+  m_ffrRrcSapProvider (0),
+  m_rrcSapUser (0),
+  m_macSapProvider (0),
+  m_s1SapProvider (0),
+  m_cphySapProvider (0),
+  m_configured (false),
+  m_lastAllocatedRnti (0),
+  m_srsCurrentPeriodicityId (0),
+  m_lastAllocatedConfigurationIndex (0),
+  m_reconfigureUes (false),
+  m_sidelinkConfiguration (0),
+  m_numberOfComponentCarriers (0),
+  m_carriersConfigured (false)
 {
   NS_LOG_FUNCTION (this);
   m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this, 0));
@@ -1922,7 +1909,7 @@ LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>
   NS_ASSERT_MSG (!m_carriersConfigured, "Secondary carriers can be configured only once.");
   m_componentCarrierPhyConf = ccPhyConf;
   NS_ABORT_MSG_IF (m_numberOfComponentCarriers != m_componentCarrierPhyConf.size (), " Number of component carriers "
-                                                  "are not equal to the number of he component carrier configuration provided");
+                   "are not equal to the number of he component carrier configuration provided");
 
   for (uint8_t i = 1; i < m_numberOfComponentCarriers; i++)
     {
@@ -1944,22 +1931,22 @@ void
 LteEnbRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  for ( uint8_t i = 0; i < m_numberOfComponentCarriers ; i++)
+  for ( uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       delete m_cphySapUser[i];
       delete m_cmacSapUser[i];
       delete m_ffrRrcSapUser[i];
     }
-  //delete m_cphySapUser;        
+  //delete m_cphySapUser;
   m_cphySapUser.erase (m_cphySapUser.begin (),m_cphySapUser.end ());
-  m_cphySapUser.clear ();  
+  m_cphySapUser.clear ();
   //delete m_cmacSapUser;
   m_cmacSapUser.erase (m_cmacSapUser.begin (),m_cmacSapUser.end ());
-  m_cmacSapUser.clear ();  
+  m_cmacSapUser.clear ();
   //delete m_ffrRrcSapUser;
   m_ffrRrcSapUser.erase (m_ffrRrcSapUser.begin (),m_ffrRrcSapUser.end ());
   m_ffrRrcSapUser.clear ();
-  m_ueMap.clear ();  
+  m_ueMap.clear ();
   delete m_handoverManagementSapUser;
   delete m_ccmRrcSapUser;
   delete m_anrSapUser;
@@ -1975,7 +1962,7 @@ LteEnbRrc::GetTypeId (void)
   NS_LOG_FUNCTION ("LteEnbRrc::GetTypeId");
   static TypeId tid = TypeId ("ns3::LteEnbRrc")
     .SetParent<Object> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteEnbRrc> ()
     .AddAttribute ("UeMap", "List of UeManager by C-RNTI.",
                    ObjectMapValue (),
@@ -1986,7 +1973,7 @@ LteEnbRrc::GetTypeId (void)
                    UintegerValue (0),  // default tx-mode
                    MakeUintegerAccessor (&LteEnbRrc::m_defaultTransmissionMode),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("EpsBearerToRlcMapping", 
+    .AddAttribute ("EpsBearerToRlcMapping",
                    "Specify which type of RLC will be used for each type of EPS bearer. ",
                    EnumValue (RLC_SM_ALWAYS),
                    MakeEnumAccessor (&LteEnbRrc::m_epsBearerToRlcMapping),
@@ -2004,7 +1991,7 @@ LteEnbRrc::GetTypeId (void)
     .AddAttribute ("SrsPeriodicity",
                    "The SRS periodicity in milliseconds",
                    UintegerValue (40),
-                   MakeUintegerAccessor (&LteEnbRrc::SetSrsPeriodicity, 
+                   MakeUintegerAccessor (&LteEnbRrc::SetSrsPeriodicity,
                                          &LteEnbRrc::GetSrsPeriodicity),
                    MakeUintegerChecker<uint32_t> ())
 
@@ -2099,7 +2086,7 @@ LteEnbRrc::GetTypeId (void)
                    UintegerValue (4),
                    MakeUintegerAccessor (&LteEnbRrc::m_rsrqFilterCoefficient),
                    MakeUintegerChecker<uint8_t> (0))
-   //Add accessor to sidelink configuration
+    //Add accessor to sidelink configuration
     .AddAttribute ("SidelinkConfiguration",
                    "The sidelink configuration associated to this LtePhy",
                    PointerValue (),
@@ -2279,7 +2266,7 @@ LteFfrRrcSapUser*
 LteEnbRrc::GetLteFfrRrcSapUser (uint8_t index)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (index < m_numberOfComponentCarriers, "Invalid component carrier index:"<<index<<" provided in order to obtain FfrRrcSapUser.");
+  NS_ASSERT_MSG (index < m_numberOfComponentCarriers, "Invalid component carrier index:" << index << " provided in order to obtain FfrRrcSapUser.");
   return m_ffrRrcSapUser.at (index);
 }
 
@@ -2304,14 +2291,14 @@ LteEnbRrc::SetLteMacSapProvider (LteMacSapProvider * s)
   m_macSapProvider = s;
 }
 
-void 
+void
 LteEnbRrc::SetS1SapProvider (EpcEnbS1SapProvider * s)
 {
   m_s1SapProvider = s;
 }
 
 
-EpcEnbS1SapUser* 
+EpcEnbS1SapUser*
 LteEnbRrc::GetS1SapUser ()
 {
   return m_s1SapUser;
@@ -2335,7 +2322,7 @@ LteEnbCphySapUser*
 LteEnbRrc::GetLteEnbCphySapUser ()
 {
   NS_LOG_FUNCTION (this);
-  return m_cphySapUser.at(0);
+  return m_cphySapUser.at (0);
 }
 
 void
@@ -2357,7 +2344,7 @@ LteEnbCphySapUser*
 LteEnbRrc::GetLteEnbCphySapUser (uint8_t pos)
 {
   NS_LOG_FUNCTION (this);
-  return m_cphySapUser.at(pos);
+  return m_cphySapUser.at (pos);
 }
 
 bool
@@ -2605,7 +2592,7 @@ LteEnbRrc::SendData (Ptr<Packet> packet)
   return true;
 }
 
-void 
+void
 LteEnbRrc::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 {
   m_forwardUpCallback = cb;
@@ -2675,10 +2662,10 @@ LteEnbRrc::SendHandoverRequest (uint16_t rnti, uint16_t cellId)
 
   Ptr<UeManager> ueManager = GetUeManager (rnti);
   ueManager->PrepareHandover (cellId);
- 
+
 }
 
-void 
+void
 LteEnbRrc::DoCompleteSetupUe (uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params)
 {
   NS_LOG_FUNCTION (this << rnti);
@@ -2706,21 +2693,21 @@ LteEnbRrc::DoRecvRrcConnectionReconfigurationCompleted (uint16_t rnti, LteRrcSap
   GetUeManager (rnti)->RecvRrcConnectionReconfigurationCompleted (msg);
 }
 
-void 
+void
 LteEnbRrc::DoRecvRrcConnectionReestablishmentRequest (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentRequest msg)
 {
   NS_LOG_FUNCTION (this << rnti);
   GetUeManager (rnti)->RecvRrcConnectionReestablishmentRequest (msg);
 }
 
-void 
+void
 LteEnbRrc::DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentComplete msg)
 {
   NS_LOG_FUNCTION (this << rnti);
   GetUeManager (rnti)->RecvRrcConnectionReestablishmentComplete (msg);
 }
 
-void 
+void
 LteEnbRrc::DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg)
 {
   NS_LOG_FUNCTION (this << rnti);
@@ -2759,7 +2746,7 @@ LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupR
   ueManager->SetupDataRadioBearer (request.bearer, request.bearerId, request.gtpTeid, request.transportLayerAddress);
 }
 
-void 
+void
 LteEnbRrc::DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params)
 {
   NS_LOG_FUNCTION (this);
@@ -2959,7 +2946,7 @@ LteEnbRrc::DoRecvUeData (EpcX2SapUser::UeDataParams params)
   NS_LOG_LOGIC ("ueData = " << params.ueData);
   NS_LOG_LOGIC ("ueData size = " << params.ueData->GetSize ());
 
-  std::map<uint32_t, X2uTeidInfo>::iterator 
+  std::map<uint32_t, X2uTeidInfo>::iterator
     teidInfoIt = m_x2uTeidInfoMap.find (params.gtpTeid);
   if (teidInfoIt != m_x2uTeidInfoMap.end ())
     {
@@ -2972,7 +2959,7 @@ LteEnbRrc::DoRecvUeData (EpcX2SapUser::UeDataParams params)
 }
 
 
-uint16_t 
+uint16_t
 LteEnbRrc::DoAllocateTemporaryCellRnti (uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this << +componentCarrierId);
@@ -3091,7 +3078,7 @@ LteEnbRrc::DoSendLoadInformation (EpcX2Sap::LoadInformationParams params)
 {
   NS_LOG_FUNCTION (this);
 
-  m_x2SapProvider->SendLoadInformation(params);
+  m_x2SapProvider->SendLoadInformation (params);
 }
 
 uint16_t
@@ -3100,7 +3087,7 @@ LteEnbRrc::AddUe (UeManager::State state, uint8_t componentCarrierId)
   NS_LOG_FUNCTION (this);
   bool found = false;
   uint16_t rnti;
-  for (rnti = m_lastAllocatedRnti + 1; 
+  for (rnti = m_lastAllocatedRnti + 1;
        (rnti != m_lastAllocatedRnti - 1) && (!found);
        ++rnti)
     {
@@ -3114,7 +3101,7 @@ LteEnbRrc::AddUe (UeManager::State state, uint8_t componentCarrierId)
   NS_ASSERT_MSG (found, "no more RNTIs available (do you have more than 65535 UEs in a cell?)");
   m_lastAllocatedRnti = rnti;
   Ptr<UeManager> ueManager = CreateObject<UeManager> (this, rnti, state, componentCarrierId);
-  m_ccmRrcSapProvider-> AddUe (rnti, (uint8_t)state);
+  m_ccmRrcSapProvider->AddUe (rnti, (uint8_t)state);
   m_ueMap.insert (std::pair<uint16_t, Ptr<UeManager> > (rnti, ueManager));
   ueManager->Initialize ();
   const uint16_t cellId = ComponentCarrierToCellId (componentCarrierId);
@@ -3145,7 +3132,7 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
     {
       m_s1SapProvider->UeContextRelease (rnti);
     }
-  m_ccmRrcSapProvider-> RemoveUe (rnti);
+  m_ccmRrcSapProvider->RemoveUe (rnti);
   // need to do this after UeManager has been deleted
   if (srsCi != 0)
     {
@@ -3233,7 +3220,7 @@ static const uint16_t g_srsCiLow[SRS_ENTRIES] =       {0, 0, 2,  7, 17, 37,  77,
  */
 static const uint16_t g_srsCiHigh[SRS_ENTRIES] =      {0, 1, 6, 16, 36, 76, 156, 316, 636};
 
-void 
+void
 LteEnbRrc::SetSrsPeriodicity (uint32_t p)
 {
   NS_LOG_FUNCTION (this << p);
@@ -3254,7 +3241,7 @@ LteEnbRrc::SetSrsPeriodicity (uint32_t p)
   NS_FATAL_ERROR ("illecit SRS periodicity value " << p << ". Allowed values: " << allowedValues.str ());
 }
 
-uint32_t 
+uint32_t
 LteEnbRrc::GetSrsPeriodicity () const
 {
   NS_LOG_FUNCTION (this);
@@ -3274,7 +3261,7 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
   NS_LOG_DEBUG (this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set " << m_ueSrsConfigurationIndexSet.size ());
   if (m_ueSrsConfigurationIndexSet.size () >= g_srsPeriodicity[m_srsCurrentPeriodicityId])
     {
-      NS_FATAL_ERROR ("too many UEs (" << m_ueSrsConfigurationIndexSet.size () + 1 
+      NS_FATAL_ERROR ("too many UEs (" << m_ueSrsConfigurationIndexSet.size () + 1
                                        << ") for current SRS periodicity "
                                        <<  g_srsPeriodicity[m_srsCurrentPeriodicityId]
                                        << ", consider increasing the value of ns3::LteEnbRrc::SrsPeriodicity");
@@ -3301,7 +3288,7 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
       else
         {
           // look for released ones
-          for (uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId]; srcCi < g_srsCiHigh[m_srsCurrentPeriodicityId]; srcCi++) 
+          for (uint16_t srcCi = g_srsCiLow[m_srsCurrentPeriodicityId]; srcCi < g_srsCiHigh[m_srsCurrentPeriodicityId]; srcCi++)
             {
               std::set<uint16_t>::iterator it = m_ueSrsConfigurationIndexSet.find (srcCi);
               if (it == m_ueSrsConfigurationIndexSet.end ())
@@ -3311,7 +3298,7 @@ LteEnbRrc::GetNewSrsConfigurationIndex ()
                   break;
                 }
             }
-        } 
+        }
     }
   return m_lastAllocatedConfigurationIndex;
 
@@ -3327,7 +3314,7 @@ LteEnbRrc::RemoveSrsConfigurationIndex (uint16_t srcCi)
   m_ueSrsConfigurationIndexSet.erase (it);
 }
 
-uint8_t 
+uint8_t
 LteEnbRrc::GetLogicalChannelGroup (EpsBearer bearer)
 {
   if (bearer.IsGbr ())
@@ -3340,7 +3327,7 @@ LteEnbRrc::GetLogicalChannelGroup (EpsBearer bearer)
     }
 }
 
-uint8_t 
+uint8_t
 LteEnbRrc::GetLogicalChannelPriority (EpsBearer bearer)
 {
   return bearer.qci;
@@ -3370,27 +3357,27 @@ LteEnbRrc::SendSystemInformation ()
       rachConfigCommon.txFailParam.connEstFailCount = rc.connEstFailCount;
       si.sib2.radioResourceConfigCommon.rachConfigCommon = rachConfigCommon;
 
-  /* 
-   * Send information for SIB 18/19
-   */
-  if (m_sidelinkConfiguration && m_sidelinkConfiguration->IsSlEnabled()) 
-    {
-      si.haveSib18 = true;
-      si.sib18 = m_sidelinkConfiguration->GetSystemInformationType18();
-    }
-  else
-    {
-      si.haveSib18 = false;
-    }
-  if (m_sidelinkConfiguration && m_sidelinkConfiguration->IsDiscEnabled())
-    {
-      si.haveSib19 = true;
-      si.sib19 = m_sidelinkConfiguration->GetSystemInformationType19();
-    }
-  else
-    {
-      si.haveSib19 = false;
-    }
+      /*
+       * Send information for SIB 18/19
+       */
+      if (m_sidelinkConfiguration && m_sidelinkConfiguration->IsSlEnabled ())
+        {
+          si.haveSib18 = true;
+          si.sib18 = m_sidelinkConfiguration->GetSystemInformationType18 ();
+        }
+      else
+        {
+          si.haveSib18 = false;
+        }
+      if (m_sidelinkConfiguration && m_sidelinkConfiguration->IsDiscEnabled ())
+        {
+          si.haveSib19 = true;
+          si.sib19 = m_sidelinkConfiguration->GetSystemInformationType19 ();
+        }
+      else
+        {
+          si.haveSib19 = false;
+        }
 
       m_rrcSapUser->SendSystemInformation (it.second->GetCellId (), si);
     }

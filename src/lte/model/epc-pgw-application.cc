@@ -17,6 +17,7 @@
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
  *         (based on epc-sgw-pgw-application.cc)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #include "ns3/log.h"
@@ -84,7 +85,7 @@ EpcPgwApplication::UeInfo::SetSgwAddr (Ipv4Address sgwAddr)
   m_sgwAddr = sgwAddr;
 }
 
-Ipv4Address 
+Ipv4Address
 EpcPgwApplication::UeInfo::GetUeAddr ()
 {
   return m_ueAddr;
@@ -96,7 +97,7 @@ EpcPgwApplication::UeInfo::SetUeAddr (Ipv4Address ueAddr)
   m_ueAddr = ueAddr;
 }
 
-Ipv6Address 
+Ipv6Address
 EpcPgwApplication::UeInfo::GetUeAddr6 ()
 {
   return m_ueAddr6;
@@ -126,7 +127,7 @@ EpcPgwApplication::GetTypeId (void)
                      "Receive data packets from S5 Socket",
                      MakeTraceSourceAccessor (&EpcPgwApplication::m_rxS5PktTrace),
                      "ns3::EpcPgwApplication::RxTracedCallback")
-    ;
+  ;
   return tid;
 }
 
@@ -143,11 +144,12 @@ EpcPgwApplication::DoDispose ()
 EpcPgwApplication::EpcPgwApplication (const Ptr<VirtualNetDevice> tunDevice, Ipv4Address s5Addr,
                                       const Ptr<Socket> s5uSocket, const Ptr<Socket> s5cSocket)
   : m_pgwS5Addr (s5Addr),
-    m_s5uSocket (s5uSocket),
-    m_s5cSocket (s5cSocket),
-    m_tunDevice (tunDevice),
-    m_gtpuUdpPort (2152), // fixed by the standard
-    m_gtpcUdpPort (2123)  // fixed by the standard
+  m_s5uSocket (s5uSocket),
+  m_s5cSocket (s5cSocket),
+  m_tunDevice (tunDevice),
+  m_gtpuUdpPort (2152),   // fixed by the standard
+  m_gtpcUdpPort (2123),   // fixed by the standard
+  m_ueToNetworkPrefix (64)
 {
   NS_LOG_FUNCTION (this << tunDevice << s5Addr << s5uSocket << s5cSocket);
   m_s5uSocket->SetRecvCallback (MakeCallback (&EpcPgwApplication::RecvFromS5uSocket, this));
@@ -202,7 +204,21 @@ EpcPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& source,
 
       // find corresponding UeInfo address
       std::map<Ipv6Address, Ptr<UeInfo> >::iterator it = m_ueInfoByAddrMap6.find (ueAddr);
-      if (it == m_ueInfoByAddrMap6.end ())
+      bool foundUe = (it != m_ueInfoByAddrMap6.end ());
+      if (!foundUe)
+        {
+          //check if it is for a remote UE connected to a relay UE
+          NS_LOG_WARN ("Not a network assigned UE address " << ueAddr);
+          Ipv6Address uePrefix = ueAddr.CombinePrefix (m_ueToNetworkPrefix);
+          NS_LOG_DEBUG ("prefix " << m_ueToNetworkPrefix);
+          it = m_ueInfoByRemotePrefixMap.find (uePrefix);
+          foundUe = (it != m_ueInfoByRemotePrefixMap.end ());
+          if (foundUe)
+            {
+              NS_LOG_DEBUG ("Remote UE found with prefix " << uePrefix);
+            }
+        }
+      if (!foundUe)
         {
           NS_LOG_WARN ("unknown UE address " << ueAddr);
         }
@@ -311,7 +327,7 @@ EpcPgwApplication::DoRecvCreateSessionRequest (Ptr<Packet> packet)
   msgOut.SetSenderCpFteid (pgwS5cFteid);
 
   std::list<GtpcCreateSessionRequestMessage::BearerContextToBeCreated> bearerContexts =
-      msg.GetBearerContextsToBeCreated ();
+    msg.GetBearerContextsToBeCreated ();
   NS_LOG_DEBUG ("BearerContextsToBeCreated size = " << bearerContexts.size ());
 
   std::list<GtpcCreateSessionResponseMessage::BearerContextCreated> bearerContextsCreated;
@@ -356,11 +372,11 @@ EpcPgwApplication::DoRecvModifyBearerRequest (Ptr<Packet> packet)
   NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
-  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
   ueit->second->SetSgwAddr (m_sgwS5Addr);
 
   std::list<GtpcModifyBearerRequestMessage::BearerContextToBeModified> bearerContexts =
-      msg.GetBearerContextsToBeModified ();
+    msg.GetBearerContextsToBeModified ();
   NS_LOG_DEBUG ("BearerContextsToBeModified size = " << bearerContexts.size ());
 
   for (auto &bearerContext : bearerContexts)
@@ -437,7 +453,7 @@ EpcPgwApplication::SendToTunDevice (Ptr<Packet> packet, uint32_t teid)
 
   uint8_t ipType;
   packet->CopyData (&ipType, 1);
-  ipType = (ipType>>4) & 0x0f;
+  ipType = (ipType >> 4) & 0x0f;
 
   uint16_t protocol = 0;
   if (ipType == 0x04)
@@ -475,8 +491,8 @@ EpcPgwApplication::SendToS5uSocket (Ptr<Packet> packet, Ipv4Address sgwAddr, uin
 void
 EpcPgwApplication::AddSgw (Ipv4Address sgwS5Addr)
 {
-    NS_LOG_FUNCTION (this << sgwS5Addr);
-    m_sgwS5Addr = sgwS5Addr;
+  NS_LOG_FUNCTION (this << sgwS5Addr);
+  m_sgwS5Addr = sgwS5Addr;
 }
 
 void
@@ -492,7 +508,7 @@ EpcPgwApplication::SetUeAddress (uint64_t imsi, Ipv4Address ueAddr)
 {
   NS_LOG_FUNCTION (this << imsi << ueAddr);
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
-  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI" << imsi); 
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI" << imsi);
   ueit->second->SetUeAddr (ueAddr);
   m_ueInfoByAddrMap[ueAddr] = ueit->second;
 }
@@ -502,9 +518,47 @@ EpcPgwApplication::SetUeAddress6 (uint64_t imsi, Ipv6Address ueAddr)
 {
   NS_LOG_FUNCTION (this << imsi << ueAddr);
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
-  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
   m_ueInfoByAddrMap6[ueAddr] = ueit->second;
   ueit->second->SetUeAddr6 (ueAddr);
 }
+
+void
+EpcPgwApplication::RemoteUeContextConnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8])
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueImsi);
+  // the relay UE must be known to the network
+  // the remote UE connected to the relay may or may not be known to the SGW depending where it is located
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (relayImsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << relayImsi);
+  //m_ueInfoByAddrMap6[ueAddr] = ueit->second;
+  uint8_t address[16];
+  std::fill_n (std::begin (address), 16, 0);
+  std::memmove (address, ipv6Prefix, 8);
+  Ipv6Address remotePrefix (address);
+  m_ueInfoByRemotePrefixMap[remotePrefix] = ueit->second;
+}
+
+void
+EpcPgwApplication::RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8])
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueImsi);
+  // the relay UE must be known to the network
+  // the remote UE connected to the relay may or may not be known to the SGW depending where it is located
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (relayImsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << relayImsi);
+
+  //m_ueInfoByAddrMap6[ueAddr] = ueit->second;
+  uint8_t address[16];
+  std::fill_n (std::begin (address), 16, 0);
+  std::memmove (address, ipv6Prefix, 8);
+  Ipv6Address remotePrefix (address);
+  std::map<Ipv6Address, Ptr<UeInfo> >::iterator prefixit = m_ueInfoByRemotePrefixMap.find (remotePrefix);
+  if (prefixit != m_ueInfoByRemotePrefixMap.end ())
+    {
+      m_ueInfoByRemotePrefixMap.erase (remotePrefix);
+    }
+}
+
 
 }  // namespace ns3

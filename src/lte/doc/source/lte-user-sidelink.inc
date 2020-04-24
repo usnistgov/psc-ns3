@@ -4,17 +4,45 @@
 
 A new directory "d2d-examples" in the LTE module examples directory holds the
 examples for simulating ProSe services, i.e., direct communication, direct
-discovery, and synchronization. These examples can be divided into the following
-two categories:
+discovery, synchronization, and UE-to-Network Relay. 
+These examples can be divided into the following two categories:
 
 1. Simple examples 
 
-These examples covers in-coverage and out-of-coverage ProSe communication using
-a simple scenario. The examples included in this category are the following:
+These examples cover the different ProSe services using  
+simple scenarios. The examples included in this category are the following:
 
-* lte-sl-in-covrg-comm-mode1
-* lte-sl-in-covrg-comm-mode2
-* lte-sl-out-of-covrg-comm
+* *Direct communication:*
+
+  * lte-sl-in-covrg-comm-mode1
+  * lte-sl-in-covrg-comm-mode2
+  * lte-sl-out-of-covrg-comm
+
+* *Direct discovery:*
+
+  * lte-sl-in-covrg-discovery
+  * lte-sl-in-covrg-discovery-multi
+  * lte-sl-in-covrg-discovery-collision
+  * lte-sl-out-of-covrg-discovery-collision
+
+* *Synchronization:*
+
+  * lte-sl-out-of-covrg-synch
+  * lte-sl-out-of-covrg-synch-twotx
+
+* *UE-to-Network Relay:*
+
+  * lte-sl-in-covrg-relay
+  * lte-sl-in-covrg-relay-building
+  * lte-sl-relay-cluster
+  * lte-sl-relay-cluster-selection
+
+* *Multicell scenarios:*
+
+  * lte-sl-in-covrg-comm-mode1-multicell
+  * lte-sl-in-covrg-comm-mode2-multicell
+  * lte-sl-in-covrg-discovery-multicell
+  * lte-sl-in-covrg-relay-mode2-multicell
 
 2. Detailed examples 
 
@@ -37,13 +65,13 @@ Sidelink. Following are some rules of thumb for writing Sidelink scripts;
 * Sidelink simulations require EPC.
 * eNB should be disabled to simulate out-of-coverage scenarios.
 * Sidelink pools should be configured before the start of the simulation.
-* ``Lte3gppHexGridEnbTopologyHelper`` can not be use without initializing eNB
+* ``Lte3gppHexGridEnbTopologyHelper`` cannot be use without initializing eNB
   nodes and appropriate antenna model. * It is possible to avoid the
   initialization of eNB nodes in out-of-coverage scenarios, if hexagonal ring
   topology is not used.
 
 In general, all the D2D examples are highly parameterizable and could be divided
-in three parts:
+in the following parts:
 
  #. Configuration of LTE and Sidelink default parameters, e.g., the ones
     configured by calling ``Config::SetDefault`` function
@@ -51,9 +79,19 @@ in three parts:
  #. Topology configuration
 
  #. Sidelink pool configuration
+ 
+ #. IP configuration (if any)
+ 
+ #. Application configuration (if any)
 
-In the following, we will discuss all the examples from the "Simple examples"
-category and the two examples from "Detailed examples" category, which are
+ #. Sidelink bearer configuration (if any)
+ 
+ #. Service configuration (if any)
+ 
+In the following, we will discuss four examples from the "Simple examples"
+category (i.e., lte-sl-in-covrg-comm-mode1, lte-sl-in-covrg-comm-mode2, 
+lte-sl-out-of-covrg-comm, and lte-sl-in-covrg-relay) and
+two examples from the "Detailed examples" category, which are
 wns3-2017-synch and wns3-2017-discovery. We choose wns3-2017-synch, since it
 also simulates the PSCCH and PSSCH.
 
@@ -261,6 +299,9 @@ and :ref:`fig-lte-sl-in-coverage-rx`::
   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
 
+IP configuration
+----------------
+
 * Installing the IP stack on the UEs and assigning IP address : ::
 
    //Install the IP stack on the UEs and assign IP address
@@ -276,8 +317,9 @@ and :ref:`fig-lte-sl-in-coverage-rx`::
        Ptr<Node> ueNode = ueNodes.Get (u);
        // Set the default gateway for the UE
        Ptr<Ipv4StaticRouting> ueStaticRouting = 
-                      ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
-       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+                ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
+       ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (),
+								1);
      }
 
 The above configuration is similar to any usual LTE example with EPC. 
@@ -285,6 +327,9 @@ The above configuration is similar to any usual LTE example with EPC.
 * Attaching the UEs to the eNB : ::
 
    lteHelper->Attach (ueDevs);
+
+Application configuration
+-------------------------
 
 * Installing applications and activating Sidelink radio bearers. Note that
   two configuration options (IPv4 and IPv6) are supported; we only document
@@ -723,13 +768,16 @@ transmission occurs on the filtered subframes after applying TRP bitmap on this
 "DataBitmap". Users interested to learn about how it is applied are referred to
 :ref:`SidelinkCommPoolPsschTestCase`.
 
+IP configuration
+----------------
+
 * Installing the IP stack on the UEs and assigning IP addresses (IPv4
   code statements shown below) : ::
 
    InternetStackHelper internet;
    internet.Install (ueNodes);
    uint32_t groupL2Address = 255;
-   Ipv4Address groupAddress4 ("225.0.0.0");     //use multicast address as destination
+   Ipv4Address groupAddress4 ("225.0.0.0");//use multicast address as destination
    remoteAddress = InetSocketAddress (groupAddress4, 8000);
    localAddress = InetSocketAddress (Ipv4Address::GetAny (), 8000);
    ...
@@ -746,6 +794,8 @@ transmission occurs on the filtered subframes after applying TRP bitmap on this
                                   (epcHelper->GetUeDefaultGatewayAddress (), 1);
      }
   
+Application configuration
+-------------------------
 
 * Installing applications and activating Sidelink radio bearers : ::
 
@@ -854,6 +904,615 @@ client's application data rate and ON time, i.e., 16 kb/s and 2 seconds,
 respectively, a total of 20 packets are sent and received by the transmitting
 and the receiving UE.
 
+
+lte-sl-in-covrg-relay
++++++++++++++++++++++
+This example simulates an in-coverage UE-to-Network Relay scenario, which
+uses both, direct discovery and direct communication. The topology of the 
+access network is the one depicted in :ref:`fig-lte-sl-simple-scenario` 
+in which two UEs are in-coverage of a single eNB. 
+In this scenario, UE 1 has the role of *Relay UE* and UE 2 has the role of
+*Remote UE*. Additionally, there is a Remote Host in the network with which the
+Remote UE communicates, using the connection to the eNB at the beginning of the
+simulation, and using the Relay UE once connected to it.
+
+When the relay service starts in the simulation, both are UEs are configured 
+to perform UE-to-Network Relay discovery for their respective roles. Thus, 
+the Remote UE will be able to detect the Relay UE, select it, and hence 
+establish a one-to-one communication connection with it (See section 
+:ref:`sec-lte-sl-rrc` for more information about the protocols). Then, all the
+packets the Remote UE application sends to the Remote Host are transmitted on
+the Sidelink to the Relay UE which then forward them to the network via the 
+eNB, to finally be routed in the network to the Remote Host. 
+Packets from the Remote Host towards the Remote UE follow the reverse path 
+(i.e., Remote Host -> Network -> eNB -> Relay UE -> Remote UE).    
+
+The scenario uses MODE 2 (UE_SELECTED) for both, direct discovery and
+direct communication.
+
+The user can configure the simulation time (in seconds) and to output the
+configured NS logs by using the corresponding command line variables in the
+simulation script. 
+For example, a user can run the simulation as follows::
+
+./waf --run "lte-sl-in-covrg-relay --simTime=10 --enableNsLogs=false"
+
+.. highlight:: none
+
+Configuration of LTE and Sidelink default parameters
+----------------------------------------------------
+
+* Configuring parameters for PSSCH resource selection : ::
+  
+   // Fixed MCS and the number of RBs
+   Config::SetDefault ("ns3::LteUeMac::SlGrantMcs", UintegerValue (16));
+   Config::SetDefault ("ns3::LteUeMac::SlGrantSize", UintegerValue (5));
+
+   // For selecting subframe indicator bitmap
+   Config::SetDefault ("ns3::LteUeMac::Ktrp", UintegerValue (1));
+   //use default Trp index of 0 
+   Config::SetDefault ("ns3::LteUeMac::UseSetTrp", BooleanValue (false));
+
+The scenario uses MODE 2 for the Sidelink communication, where the UEs 
+select the resources autonomously from a pool specified by the eNB through
+``RrcConnectionReconfiguration`` message. The configuration
+here is similar to the one in the lte-sl-in-covrg-comm-mode2 scenario. 
+
+* Configure the frequency and the bandwidth : ::
+
+   Config::SetDefault ("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue (100));
+   Config::SetDefault ("ns3::LteUeNetDevice::DlEarfcn", UintegerValue (100));
+   Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue (18100));
+   Config::SetDefault ("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue (50));
+   Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue (50));
+
+We use the LTE Band 1 for both LTE and Sidelink communication.
+
+* Reduce frequency of Downlink CQI report to allow for sidelink transmissions : ::
+
+   Config::SetDefault ("ns3::LteUePhy::DownlinkCqiPeriodicity", 
+			TimeValue (MilliSeconds (79)));
+
+The Downlink CQI report is sent in the Uplink. In this implementation, the 
+Sidelink uses the same spectrum as the Uplink and Uplink transmissions have
+higher priority than Sidelink transmissions. Thus, we need to space out in time
+the Downlink CQI report to avoid too frequent Sidelink transmission drops. 
+Setting the attribute value to 79 ms in the scenario script results in a 
+periodicity of 80 ms in simulation time.   
+
+* Configure the transmission power of the Radio Access Network nodes : ::
+
+   // Set the UEs power in dBm
+   Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
+   // Set the eNBs power in dBm
+   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (30.0));
+
+
+Topology configuration
+----------------------
+
+* Instantiating LTE, EPC and Sidelink helpers and connecting them: ::
+
+   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+   Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
+   lteHelper->SetEpcHelper (epcHelper);
+   Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper> ();
+   proseHelper->SetLteHelper (lteHelper);
+
+* Configuring the Sidelink UE Controller : ::
+
+   Config::SetDefault ("ns3::LteSlBasicUeController::ProseHelper", 
+				   PointerValue (proseHelper));
+
+As described in the :ref:`sec-lte-sl-rrc` section, the Sidelink UE controller 
+was created to provide a framework for the implementation of custom 
+UE-to-Network Relay configurations and algorithms. The default controller in 
+the model is the ``LteSlBasicUeController``, which uses the instance of 
+``LteSidelinkHelper`` in the scenario to perform some of its tasks and must be 
+connected to it using the attribute system as shown above. 
+
+* Configuring the pathloss model : ::
+
+   lteHelper->SetAttribute ("PathlossModel", 
+				StringValue ("ns3::Hybrid3gppPropagationLossModel"));
+
+* Enabling the Sidelink : ::
+   
+   lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
+
+* Creating the Remote Host and the Internet : ::
+
+   Ptr<Node> pgw = epcHelper->GetPgwNode ();
+   // Create a single RemoteHost
+   NodeContainer remoteHostContainer;
+   remoteHostContainer.Create (1);
+   Ptr<Node> remoteHost = remoteHostContainer.Get (0);
+   InternetStackHelper internet;
+   internet.Install (remoteHostContainer);
+   // Create the Internet
+   PointToPointHelper p2ph;
+   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
+   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
+   p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));
+   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
+
+
+* Creating the eNB and UE nodes and setting their possition and mobility : ::
+
+   NodeContainer enbNode;
+   enbNode.Create (1);
+   NodeContainer ueNodes;
+   ueNodes.Create (2);
+   Ptr<ListPositionAllocator> positionAllocEnb = 
+					CreateObject<ListPositionAllocator> ();
+   positionAllocEnb->Add (Vector (0.0, 0.0, 30.0));
+   Ptr<ListPositionAllocator> positionAllocUe1 = 
+					CreateObject<ListPositionAllocator> ();
+   positionAllocUe1->Add (Vector (10.0, 0.0, 1.5));
+   Ptr<ListPositionAllocator> positionAllocUe2 = 
+					CreateObject<ListPositionAllocator> ();
+   positionAllocUe2->Add (Vector (-10.0, 0.0, 1.5));
+   //Install mobility
+   MobilityHelper mobilityeNodeB;
+   mobilityeNodeB.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+   mobilityeNodeB.SetPositionAllocator (positionAllocEnb);
+   mobilityeNodeB.Install (enbNode);
+   MobilityHelper mobilityUe1;
+   mobilityUe1.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+   mobilityUe1.SetPositionAllocator (positionAllocUe1);
+   mobilityUe1.Install (ueNodes.Get (0));
+   MobilityHelper mobilityUe2;
+   mobilityUe2.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+   mobilityUe2.SetPositionAllocator (positionAllocUe2);
+   mobilityUe2.Install (ueNodes.Get (1));
+
+* Installing LTE devices to the nodes : ::
+
+   NetDeviceContainer enbDevs = lteHelper->InstallEnbDevice (enbNode);
+   NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+
+
+Sidelink pool configuration
+---------------------------
+
+In this example, the eNB will be configured with the Sidelink communication 
+and discovery pools to be used, which are hold by the ``LteSlEnbRrc`` class
+as mentioned in :ref:`sec-lte-sl-rrc`. The pool configuration starts by 
+setting a flag in ``LteSlEnbRrc`` as an indication that the Sidelink is 
+enabled and it is configured as follows::
+
+   Ptr<LteSlEnbRrc> enbSidelinkConfiguration = CreateObject<LteSlEnbRrc> ();
+   enbSidelinkConfiguration->SetSlEnabled (true);
+
+* Configure Sidelink communication pool : ::
+
+   enbSidelinkConfiguration->SetDefaultPool (
+			proseHelper->GetDefaultSlCommTxResourcesSetupUeSelected ());
+
+The above code uses the Sidelink helper to obtain a Mode 2 (UE_SELECTED) 
+Sidelink communication pool configured with default values, which is set
+as the default pool to be used by all the UEs attached to the eNB. 
+
+* Enable Sidelink discovery : ::
+
+   enbSidelinkConfiguration->SetDiscEnabled (true);
+
+* Configure Sidelink discovery pool : ::
+
+   enbSidelinkConfiguration->AddDiscPool (
+			proseHelper->GetDefaultSlDiscTxResourcesSetupUeSelected ());
+
+Similarly to the communication pool, the Sidelink helper is used to obtain a 
+Sidelink discovery pool configured with default values, which is then installed
+as the discovery pool to be used by all the UEs attached to the eNB. 
+
+* Configure UE-to-Network Relay selection parameters : ::
+
+   enbSidelinkConfiguration->SetDiscConfigRelay (
+			proseHelper->GetDefaultSib19DiscConfigRelay ());
+
+The parameters for UE-to-Network Relay (re)selection are broadcasted in the 
+SIB19 to the UEs attached to the eNB. These parameters must be configured in the 
+scenario when using UE-to-Network Relay, as they are required by the 
+``LteUeRrc`` for SD-RSRP measurement and Relay Selection. In this case, the 
+Sidelink helper is used to obtain a default configuration for those parameters,
+which are then installed in the eNB Sidelink configuration. 
+
+* Install Sidelink configuration on the eNB : ::
+
+   lteHelper->InstallSidelinkConfiguration (enbDevs, enbSidelinkConfiguration);
+
+* Configure and install Sidelink preconfiguration on the UEs : ::
+
+   Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
+   ueSidelinkConfiguration->SetSlEnabled (true);
+   LteRrcSap::SlPreconfiguration preconfiguration;
+   ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
+   ueSidelinkConfiguration->SetDiscEnabled (true);
+   uint8_t nTxResources = 3;
+   ueSidelinkConfiguration->SetDiscTxResources (nTxResources);
+   ueSidelinkConfiguration->SetDiscInterFreq (enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetUlEarfcn ());
+   lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+ 
+IP configuration
+----------------
+
+* Installing the IP stack on the UEs and assigning IP address (**Please note 
+  that the UE-to-Network Relay functionality only supports IPv6 
+  configuration**) : ::
+
+   //Install the IP stack on the UEs and assign network IP addresses
+   internet.Install (ueNodes);
+   Ipv6InterfaceContainer ueIpIface;
+   ueIpIface = epcHelper->AssignUeIpv6Address (NetDeviceContainer (ueDevs));
+
+   //Set the default gateway for the UEs
+   Ipv6StaticRoutingHelper Ipv6RoutingHelper;
+   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    {
+      Ptr<Node> ueNode = ueNodes.Get (u);
+      // Set the default gateway for the UE
+      Ptr<Ipv6StaticRouting> ueStaticRouting = 
+	  	Ipv6RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv6> ());
+      ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress6 (),
+					  1);
+    }
+
+   //Configure IP for the nodes in the Internet (PGW and RemoteHost)
+   Ipv6AddressHelper ipv6h;
+   ipv6h.SetBase (Ipv6Address ("6001:db80::"), Ipv6Prefix (64));
+   Ipv6InterfaceContainer internetIpIfaces = ipv6h.Assign (internetDevices);
+   internetIpIfaces.SetForwarding (0, true);
+   internetIpIfaces.SetDefaultRouteInAllNodes (0);
+
+   //Set route for the Remote Host to join the LTE network nodes
+   Ipv6StaticRoutingHelper ipv6RoutingHelper;
+   Ptr<Ipv6StaticRouting> remoteHostStaticRouting = 
+   	ipv6RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv6> ());
+   remoteHostStaticRouting->AddNetworkRouteTo ("7777:f000::", Ipv6Prefix (60),
+   				internetIpIfaces.GetAddress (0, 1), 1, 0);
+											   
+
+   //Configure UE-to-Network Relay network
+   proseHelper->SetIpv6BaseForRelayCommunication ("7777:f00e::", Ipv6Prefix (60));
+
+   //Configure route between PGW and UE-to-Network Relay network
+   proseHelper->ConfigurePgwToUeToNetworkRelayRoute (pgw);
+
+
+The above configuration is similar to any usual LTE example with EPC and IPv6, 
+except the two last commands, which are used to configure the UE-to-Network 
+Relay subnetwork and to add a route in the PGW for the packets directed to it. 
+In this example, this route will be used for the packets from the Remote Host
+towards the Remote UE once connected to the Relay UE. 
+  
+
+* Attaching the UEs to the eNB : ::
+
+   lteHelper->Attach (ueDevs);
+ 
+Application configuration
+-------------------------
+
+* Installing applications : :: 
+
+   // interface 0 is localhost, 1 is the p2p device
+   Ipv6Address remoteHostAddr = internetIpIfaces.GetAddress (1, 1);
+   uint16_t echoPort = 8000;
+
+   //Set echo server in the remote host
+   UdpEchoServerHelper echoServer (echoPort);
+   ApplicationContainer serverApps = echoServer.Install (remoteHost);
+   serverApps.Start (Seconds (1.0));
+   serverApps.Stop (Seconds (10.0));
+
+   //Set echo client in the remote UEs
+   UdpEchoClientHelper echoClient (remoteHostAddr, echoPort);
+   echoClient.SetAttribute ("MaxPackets", UintegerValue (20));
+   echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
+   echoClient.SetAttribute ("PacketSize", UintegerValue (200));
+   ApplicationContainer clientApps = echoClient.Install (ueNodes.Get (1));
+   clientApps.Start (Seconds (2.0));
+   clientApps.Stop (Seconds (10.0));
+
+In this example, an ``UdpEchoClient`` application is installed on UE 2, i.e.,
+the Remote UE, and an ``UdpEchoServer`` application is installed on the Remote
+Host. The Remote UE application will send packets every 0.5 seconds to the 
+Remote Host, whose application then echoes back the packet to the Remote UE 
+upon reception.  
+
+ 
+Service configuration
+---------------------
+
+* Configure network bearer for UE-to-Network Relay packet routing : ::
+
+   //Setup dedicated bearer for the Relay UE
+   Ptr<EpcTft> tft = Create<EpcTft> ();
+   EpcTft::PacketFilter dlpf;
+   dlpf.localIpv6Address = proseHelper->GetIpv6NetworkForRelayCommunication ();
+   dlpf.localIpv6Prefix = proseHelper->GetIpv6PrefixForRelayCommunication ();
+   tft->Add (dlpf);
+   EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
+   lteHelper->ActivateDedicatedEpsBearer (ueDevs.Get (0), bearer, tft);
+
+In the above code, we configure an EPS bearer for the Relay UE with a packet
+filter corresponding to the UE-to-Network Relay subnetwork. This will be used
+to support the routing of packet directed to the Remote UE towards the Relay 
+UE.  
+
+* Configure start of UE-to-Network Relay services : ::
+
+   uint32_t serviceCode = 33;
+   Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartRelayService, 
+                            proseHelper, ueDevs.Get (0), serviceCode, 
+                            LteSlUeRrc::ModelA, LteSlUeRrc::RelayUE);
+
+   Simulator::Schedule (Seconds (4.0), &LteSidelinkHelper::StartRelayService, 
+                            proseHelper, ueDevs.Get (1), serviceCode, 
+                            LteSlUeRrc::ModelA, LteSlUeRrc::RemoteUE);
+
+
+The function ``LteSidelinkHelper::StartRelayService`` is the one used from the
+scenario to start the UE-to-Network Relay functionality on a given UE. In this
+example, both UEs are configured with the same service code and to use direct 
+discovery Model A. We observe the role differentiation in the last parameter of 
+the respective function calls. As described before, UE 1 will have the role of
+Relay UE and UE 2 will have the role of Remote UE. 
+The Relay UE service will start first, at 2 seconds of simulation time. Then, 
+the Relay UE will start to advertise the service code on its UE-to-Network 
+Relay Discovery Announcements. At 4 seconds of simulation time, the Remote UE
+starts its service and proceeds to monitor the announcements and to measure the 
+their SD-RSRP. Eventually (4 discovery periods), the Relay Selection procedure
+will be executed, the Remote UE will select UE 1 as its Relay UE (as it is the 
+only one in the system) and then it will start the one-to-one connection 
+procedure to connect to it. Please note that even though the Remote UE service 
+starts at 4 s, the Remote UE will start sending its traffic using the Relay UE
+(instead of the network) only after the one-to-one connection is established.
+
+Upon the completion of the simulation, the following trace files contain the 
+generated output:
+
+* AppPacketTrace.txt
+
+  The information in this file is obtained by using the traces 
+  ``TxWithAddresses`` and ``RxWithAddresses`` of  ``UdpEchoClient``
+  and  ``UdpEchoServer`` applications.
+  The following table shows a snippet of the data from this file.
+  Please note that the IPv6 address used by the Remote UE changes in simulation 
+  time. An IPv6 address belonging to the UE-to-Network Relay subnet is assigned to it
+  when it connects to the Relay UE. This last is unknown during the
+  scenario configuration when the trace sinks are connected. 
+  Thus, for simplicity and legibility, the IPv6 address of the Remote UE is 
+  set to Zero when the trace sinks of the UEs are connected, and thus appear
+  as Zero on the traces. This has no impact on the behavior of the scenario 
+  whatsoever, and the actual IPv6 address the Remote UE is using can be 
+  observed in the traces by looking to the source address of the packets 
+  received by the Remote Host.  
+  
+  .. tabularcolumns:: |p{1.3cm}|l|p{0.8cm}|p{0.7cm}|p{1cm}|l|l|
+  .. list-table:: AppPacketTrace.txt
+   :header-rows: 1
+
+   * - time (s)
+     - tx/rx
+     - Node ID
+     - IMSI
+     - PktSize (bytes)
+     - IP[src]
+     - IP[dst]
+   * - 3
+     - tx-UE
+     - 6
+     - 2
+     - 200
+     - :::49153
+     - 6001:db80::200:ff:fe00:7:8000
+   * - 3.02193 
+     - rx-RH
+     - 3 
+     - nan
+     - 200
+     - 7777:f00d::2:49153
+     - 6001:db80::200:ff:fe00:7:8000
+   * - 3.02193 
+     - tx-RH
+     - 3 
+     - nan 
+     - 200
+     - 6001:db80::200:ff:fe00:7:8000
+     - 7777:f00d::2:49153
+   * - 3.035
+     - rx-UE
+     - 6
+     - 2
+     - 200
+     - 6001:db80::200:ff:fe00:7:8000
+     - :::49153
+   * - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+   * - 7
+     - tx-UE
+     - 6
+     - 2
+     - 200
+     - :::49153
+     - 6001:db80::200:ff:fe00:7:8000
+   * - 7.11293 
+     - rx-RH
+     - 3
+     - nan
+     - 200
+     - 7777:f00e::4:49153
+     - 6001:db80::200:ff:fe00:7:8000
+   * - 7.11293
+     - tx-RH
+     - 3
+     - nan
+     - 200
+     - 6001:db80::200:ff:fe00:7:8000
+     - 7777:f00e::4:49153
+   * - 7.21093 
+     - rx-UE
+     - 6
+     - 2
+     - 200
+     - 6001:db80::200:ff:fe00:7:8000
+     - :::49153
+
+  We observe that the packet received by the Remote Host before the relay service
+  starts for the Remote UE, i.e., with t < 4.0 s, comes from (and it is 
+  transmitted back to) the address ``7777:f00d::2`` which belongs to the network. 
+  However, the packet received at 7.11593 s comes from (and it is transmitted 
+  back to) the address ``7777:f00e::4`` which belongs to the UE-to-Network Relay
+  network.    
+  In both cases, the packet is successfully received back by the Remote UE, which
+  means that the bidirectional communication with the Remote Host is possible before
+  and after connecting to the Relay UE.  
+
+* DlPdcpStats.txt
+* UlPdcpStats.txt
+
+  These two traces are standard to the ns-3 LTE simulations, but in this example 
+  they allow us to verify which UE is using the Downlink and the Uplink for 
+  communicating with the network. Tables :ref:`tab-UlPdcpStats` and 
+  :ref:`tab-DlPdcpStats` show snippets of the data on the corresponding files. 
+  In this example, the Relay UE IMSI is 1 and the Remote UE IMSI is 2. We see 
+  that before the relay service is activated for the Remote UE (t < 4.0 s), 
+  this last is using the Uplink to send its packet towards the Remote Host and 
+  the Downlink to receive the corresponding echoed packet. Once the Remote UE 
+  connects to the Relay UE, we see in the traces that it is the Relay UE who is
+  communicating with the network using Uplink and Downlink, i.e., the Relay
+  UE is forwarding the packets received from the Remote UE in the Sidelink to 
+  the network using the Uplink and receiving packets in the Downlink and 
+  forwarding them to the Remote UE on the Sidelink.
+
+  .. tabularcolumns:: |l|l|l|l|l|l|l|l|l|
+  .. _tab-UlPdcpStats:
+  .. list-table:: UlPdcpStats.txt
+   :header-rows: 1
+
+   * - start (s)
+     - end (s)
+     - CellId	
+     - IMSI
+     - RNTI
+     - LCID
+     - nTxPDUs
+     - TxBytes
+     - ...	 
+   * - 2.75
+     - 3
+     - 1
+     - 2
+     - 2
+     - 3
+     - 1
+     - 250
+     - ...
+   * - 3.25
+     - 3.5
+     - 1
+     - 2
+     - 2
+     - 3
+     - 1
+     - 250
+     - ...
+   * - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+   * - 7
+     - 7.25
+     - 1
+     - 1
+     - 1
+     - 4
+     - 1
+     - 250
+     - ...	 
+   * - 7.5
+     - 7.75
+     - 1
+     - 1
+     - 1
+     - 4
+     - 1
+     - 250
+     - ...
+
+  .. tabularcolumns:: |l|l|l|l|l|l|l|l|l|
+  .. _tab-DlPdcpStats:
+  .. list-table:: DlPdcpStats.txt
+   :header-rows: 1
+
+   * - start (s)
+     - end (s)
+     - CellId	
+     - IMSI
+     - RNTI
+     - LCID
+     - nTxPDUs
+     - TxBytes
+     - ...	 
+   * - 3.5
+     - 3.75
+     - 1
+     - 2
+     - 2
+     - 3
+     - 1
+     - 250
+     - ...
+   * - 4
+     - 4.25
+     - 1
+     - 2
+     - 2
+     - 3
+     - 1
+     - 250
+     - ...
+   * - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+     - ...
+   * - 7
+     - 7.25
+     - 1
+     - 1
+     - 1
+     - 4
+     - 1
+     - 250
+     - ...	 
+   * - 7.5
+     - 7.75
+     - 1
+     - 1
+     - 1
+     - 4
+     - 1
+     - 250
+     - ...
+	 
+	 
 
 In the following we will discuss the detailed examples mentioned above, however,
 we will mainly discuss about the topology and the Sidelink configuration, since
@@ -1002,6 +1661,9 @@ All the UEs in a group are stored in a ``NetDeviceContainer``, such that the
 first UE in this container is the transmitter of the group. Finally, this
 ``NetDeviceContainer`` is stored in a vector (createdgroups), which is used to
 install appropriate application in UE devices.
+
+Application configuration
+-------------------------
 
 * Installing applications and activating Sidelink radio bearers : ::
 
@@ -1475,7 +2137,7 @@ The first Sidelink related configuration in this example is to enable the Sideli
    (1)
 
      lteHelper->SetAttribute ("PathlossModel", 
-                                      StringValue ("ns3::FriisPropagationLossModel"));
+                            StringValue ("ns3::FriisPropagationLossModel"));
 
    (2)
 
@@ -1487,10 +2149,10 @@ The first Sidelink related configuration in this example is to enable the Sideli
      NS_LOG_LOGIC ("UL freq: " << ulFreq);
      Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
      Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->
-                                                   GetObject<PropagationLossModel> ();
+                                    GetObject<PropagationLossModel> ();
      NS_ABORT_MSG_IF (lossModel == NULL, "No PathLossModel");
      bool ulFreqOk = uplinkPathlossModel->
-                             SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+            SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
 
      if (!ulFreqOk)
        {
@@ -1513,7 +2175,7 @@ pathloss model used, which is normally done in ``InstallSingleEnb`` method of
 
    //Position of the nodes
    Ptr<ListPositionAllocator> positionAllocUe = 
-                                               CreateObject<ListPositionAllocator> ();
+                            CreateObject<ListPositionAllocator> ();
 
    for (uint32_t u = 0; u < ues.GetN (); ++u)
      {
@@ -1537,6 +2199,9 @@ The above commands will simply create 10 UEs and position each UE at a random
 location in an area of 100 m x 100 m. The UE devices are installed in a usual
 way by calling ``InstallUeDevice`` of ``LteHelper`` class.
 
+Service configuration
+---------------------
+
 * Configuring discovery applications and starting the discovery process : ::
 
    std::map<Ptr<NetDevice>, std::list<uint32_t> > announceApps;
@@ -1559,13 +2224,13 @@ way by calling ``InstallUeDevice`` of ``LteHelper`` class.
      {
        // true for announce
        Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, 
-                                    lteHelper, ueDevs.Get (i),
-                                    announceApps.find (ueDevs.Get (i))->second, true);
+                            lteHelper, ueDevs.Get (i),
+                            announceApps.find (ueDevs.Get (i))->second, true);
 
        // false for monitor
        Simulator::Schedule (Seconds (2.0), &SlStartDiscovery, 
-                                    lteHelper, ueDevs.Get (i),
-                                    monitorApps.find (ueDevs.Get (i))->second, false);
+                            lteHelper, ueDevs.Get (i),
+                            monitorApps.find (ueDevs.Get (i))->second, false);
      }
 
 Given the broadcast nature of the discovery process, the applications are

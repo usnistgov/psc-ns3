@@ -17,6 +17,7 @@
  *
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  * modified by Tom Henderson for ns-3.14 release
+ * Modified by: NIST // Contributions may not be subject to US copyright. 
  */
 
 #ifndef IPV6_ADDRESS_HELPER_H
@@ -166,6 +167,14 @@ public:
    * \return newly created Ipv6InterfaceContainer
    */
   Ipv6InterfaceContainer AssignWithoutAddress (const NetDeviceContainer &c);
+  
+  /**
+   * \brief Allocate an Ipv6InterfaceContainer with manually assigned addresses.
+   * \param c netdevice container
+   * \param addresses a vector of Ipv6Address values which is manually assigned to the respective netdevices
+   * \return newly created Ipv6InterfaceContainer
+   */
+  Ipv6InterfaceContainer AssignManualAddress (const NetDeviceContainer &c, std::vector<Ipv6Address> addresses);
 
 private:
   Ipv6Address m_network; //!< network address

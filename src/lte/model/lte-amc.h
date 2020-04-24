@@ -72,6 +72,14 @@ public:
       NistErrorModel
     };
   
+  /// Indicates the MCS and number of PRB configuration for transmission
+  struct McsPrbInfo
+    {
+      uint8_t mcs;  ///< Modulation and Coding Scheme
+      uint8_t nbRb; ///< The number of PRBs
+      int32_t tbs;  ///< The resulting transport block size
+    };
+  
   /**
    * \brief Get the Modulation and Coding Scheme for
    * a CQI value
@@ -95,6 +103,16 @@ public:
    * \return the Transport Block Size in bits
    */
   int GetUlTbSizeFromMcs (int mcs, int nprb);
+
+  
+  /**
+   * \brief Get vector of McsPrbInfo that can accommodate a transport block size.
+   * \param tbs the transport block size
+   * \param max_prb maximum number of PRBs allowed
+   * \param max_mcs maximum MCS value allowed
+   * @return a vector with all the resulting McsPrbInfo
+   */
+  std::vector<LteAmc::McsPrbInfo> GetUlMcsNprbInfoFromTbs (int tbs, int max_prb = 110, int max_mcs = 28);
 
   /**
    * \brief Get the spectral efficiency value associated

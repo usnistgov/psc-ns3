@@ -17,6 +17,7 @@
  *
  * Authors: George F. Riley<riley@ece.gatech.edu>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 #ifndef NODE_H
 #define NODE_H
@@ -102,6 +103,12 @@ public:
    *          NetDevice.
    */
   uint32_t AddDevice (Ptr<NetDevice> device);
+  /**
+   * \brief Disassociate a NetDevice from this node.
+   *
+   * \param device NetDevice to disassociate from this node.
+   */
+  void RemoveDevice (Ptr<NetDevice> device);
   /**
    * \brief Retrieve the index-th NetDevice associated to this node.
    *

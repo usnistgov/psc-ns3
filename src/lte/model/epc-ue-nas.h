@@ -39,13 +39,12 @@ class EpcUeNas : public Object
   /// allow MemberLteAsSapUser<EpcUeNas> class friend access
   friend class MemberLteAsSapUser<EpcUeNas>;
 public:
-
-  /** 
+  /**
    * Constructor
    */
   EpcUeNas ();
 
-  /** 
+  /**
    * Destructor
    */
   virtual ~EpcUeNas ();
@@ -59,15 +58,15 @@ public:
   static TypeId GetTypeId (void);
 
 
-  /** 
-   * 
+  /**
+   *
    * \param dev the UE NetDevice
    */
   void SetDevice (Ptr<NetDevice> dev);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param imsi the unique UE identifier
    */
   void SetImsi (uint64_t imsi);
@@ -106,6 +105,22 @@ public:
   void SetForwardUpCallback (Callback <void, Ptr<Packet> > cb);
 
   /**
+   * set the callback used to forward data packets up the stack (for UE relay functionality)
+   *
+   * \param tft The TFT used to match packets
+   * \param cb the callback
+   */
+  void SetForwardUpCallback (Ptr<LteSlTft> tft, Callback <void, Ptr<Packet> > cb);
+  
+  /**
+   * set the callback used to forward data packets up the stack
+   *
+   * \param tft the TFT associated with the callback to remove
+   */
+
+  void RemoveForwardUpCallback (Ptr<LteSlTft> tft);
+
+  /**
    * \brief Causes NAS to tell AS to find a suitable cell and camp to it.
    *
    * \param dlEarfcn the DL frequency of the eNB
@@ -114,7 +129,7 @@ public:
 
   /**
    * \brief Causes NAS to tell AS to go to ACTIVE state.
-   * 
+   *
    * The end result is equivalent with EMM Registered + ECM Connected states.
    */
   void Connect ();
@@ -130,28 +145,28 @@ public:
    * RRC to be camped on a specific eNB.
    */
   void Connect (uint16_t cellId, uint32_t dlEarfcn);
- 
-  /** 
+
+  /**
    * instruct the NAS to disconnect
-   * 
+   *
    */
   void Disconnect ();
 
 
-  /** 
+  /**
    * Activate an EPS bearer
-   * 
+   *
    * \param bearer the characteristics of the bearer to be created
    * \param tft the TFT identifying the traffic that will go on this bearer
    */
   void ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft);
 
-  /** 
+  /**
    * Enqueue an IP packet on the proper bearer for uplink transmission
-   * 
+   *
    * \param p the packet
    * \param protocolNumber the protocol number of the packet
-   * 
+   *
    * \return true if successful, false if an error occurred
    */
   bool Send (Ptr<Packet> p, uint16_t protocolNumber);
@@ -160,9 +175,9 @@ public:
   /**
    * Definition of NAS states as per "LTE - From theory to practice",
    * Section 3.2.3.2 "Connection Establishment and Release"
-   * 
+   *
    */
-  enum State 
+  enum State
   {
     OFF = 0,
     ATTACHING,
@@ -183,8 +198,7 @@ public:
    * \param [in] oldState The old State.
    * \param [in] newState the new State.
    */
-  typedef void (* StateTracedCallback)
-    (const State oldState, const State newState);
+  typedef void (* StateTracedCallback)(const State oldState, const State newState);
 
 
   /**
@@ -200,7 +214,6 @@ public:
   void DeactivateSidelinkBearer (Ptr<LteSlTft> tft);
   
 private:
-
   // LTE AS SAP methods
   /// Notify successful connection
   void DoNotifyConnectionSuccessful ();
@@ -280,6 +293,14 @@ private:
    *
    */
   std::list<BearerToBeActivated> m_bearersToBeActivatedListForReconnection;
+  /// Structure associated a TFT to a callback function for filtering received packets
+  struct SlCallbackInfo
+  {
+    Ptr<LteSlTft> tft; ///< TFT used to match received packets
+    Callback <void, Ptr<Packet> > cb; ///< callback function to use for packets matching TFT
+  };
+
+  std::list<SlCallbackInfo> m_slForwardUpCallbackList; ///< upward callback for sidelink
 
 };
 

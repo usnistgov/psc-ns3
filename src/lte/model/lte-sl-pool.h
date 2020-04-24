@@ -225,6 +225,15 @@ public:
    */
   uint32_t GetNPscch ();
 
+  
+  /**
+   * Returns the number of transport blocks for each enabled K_TRP
+   * in trpt-Subset [TS36.213, 14.1.1.3]. For values of i in 0<=i<4, 
+   * v[i] = (TB for k_i), where k_i = [1, 2, 4, 8].
+   * \return A vector of number of transport blocks (TB) for each enabled trpt.
+   */
+  std::vector<uint32_t> GetTbPerSlPeriod ();
+
   /**
    * Returns the subframes and RBs associated with the transmission on PSSCH
    * \param periodStart The first subframe in the Sidelink period
@@ -259,6 +268,13 @@ public:
    * \return A vector of vectors which contains valid rbStart indexes for corresponding Lcrb value
    */
   std::vector< std::vector<uint8_t> > GetValidAllocations ();
+
+    
+  /**
+   * Returns the PSSCH bandwidth in the pool.
+   * \return Total number of PRBs in PSSCH.
+   */
+  uint32_t GetPsschBandwidth ();
 
 protected:
   /**
@@ -456,6 +472,14 @@ public:
    */
   uint8_t GetPoolIdentity ();
 
+  /**
+    * Comparison operator
+    *
+    * \param rhs second pool
+    * \returns true if the pools are equal
+    */
+    bool operator == (const SidelinkTxCommResourcePool& rhs);
+    
 protected:
   //Fields for UE selected pools
   LteRrcSap::SlTxParameters m_scTxParameters; ///< configuration of the control channel

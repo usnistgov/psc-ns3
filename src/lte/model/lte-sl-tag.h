@@ -103,6 +103,48 @@ private:
 
 };
 
+/**
+ * Tag used to identify the secure PC5 link
+ */
+class LteSlPc5ContextTag : public Tag
+{
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+
+  /**
+   * Create an empty LteSlPc5Tag
+   */
+  LteSlPc5ContextTag ();
+
+  /**
+   * Create a LteSlSciTag with the given resource number and transport block size
+   * \param context The context associated with the packet
+   */
+  LteSlPc5ContextTag (uint32_t context);
+
+
+  virtual void Serialize (TagBuffer i) const;
+  virtual void Deserialize (TagBuffer i);
+  virtual uint32_t GetSerializedSize () const;
+  virtual void Print (std::ostream &os) const;
+
+  /**
+   * Get context value
+   *
+   * \returns layer
+   */
+  uint32_t GetContext (void) const;
+
+private:
+  uint16_t m_context; ///< The tag value
+  
+};
+
 } // namespace ns3
 
 #endif /* LTE_SL_TAG_H */

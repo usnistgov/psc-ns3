@@ -125,12 +125,18 @@ RrcStatsCalculator::RrcDiscoveryMonitoring (uint64_t imsi, uint16_t cellId, uint
     case LteSlDiscHeader::DISC_RELAY_RESPONSE://UE-to-Network Relay Discovery Response in model B
       {
         //write fields, include spare (0) as the last field
-        outFile << discMsg.GetRelayServiceCode() << ";" << discMsg.GetInfo() << ";" << discMsg.GetRelayUeId()
-                                                           << ";" << discMsg.GetStatusIndicator() << ";0" << std::endl;
+        outFile << discMsg.GetRelayServiceCode () << ";" << discMsg.GetInfo () << ";" << discMsg.GetRelayUeId () << ";" << (uint16_t) discMsg.GetStatusIndicator () << ";0" << std::endl;
+      }
+      break;
+    case LteSlDiscHeader::DISC_RELAY_SOLICITATION:
+      {
+        //write fields, include spare (0) as the last field
+        outFile << discMsg.GetRelayServiceCode () << ";" << discMsg.GetInfo () << ";" << (uint16_t) discMsg.GetURDSComposition () << ";" << discMsg.GetRelayUeId () << ";0" << std::endl;
       }
       break;
     case LteSlDiscHeader::DISC_OPEN_ANNOUNCEMENT:
-    case LteSlDiscHeader::DISC_RESTRICTED_ANNOUNCEMENT:
+    case LteSlDiscHeader::DISC_RESTRICTED_QUERY:
+    case LteSlDiscHeader::DISC_RESTRICTED_RESPONSE:
       { //open or restricted announcement
         outFile << discMsg.GetApplicationCode () << std::endl;
       }

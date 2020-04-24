@@ -623,6 +623,12 @@ LteSpectrumPhy::SetLtePhyRxSlssCallback (LtePhyRxSlssCallback c)
   m_ltePhyRxSlssCallback = c;
 }
 
+void
+LteSpectrumPhy::SetLtePhyRxPsdchSdRsrpCallback (LtePhyRxPsdchSdRsrpCallback c)
+{
+  NS_LOG_FUNCTION (this);
+  m_ltePhyRxPsdchSdRsrpCallback = c;
+}
 
 Ptr<AntennaModel>
 LteSpectrumPhy::GetRxAntenna ()
@@ -1867,8 +1873,6 @@ LteSpectrumPhy::EndRxData ()
   m_expectedTbs.clear ();
 }
 
-
-
 void
 LteSpectrumPhy::EndRxSlFrame ()
 {
@@ -2513,6 +2517,10 @@ LteSpectrumPhy::RxSlPsdch (std::vector<uint32_t> pktIndexes)
                             m_slHarqPhyModule->IsDiscTbPrevDecoded ((*itTbDisc).first.m_rnti, (*itTbDisc).first.m_resPsdch));
               m_slHarqPhyModule->IndicateDiscTbPrevDecoded ((*itTbDisc).first.m_rnti, (*itTbDisc).first.m_resPsdch);
               rxDiscMessageOkList.push_back (rxCtrlMsg);
+              if (!m_ltePhyRxPsdchSdRsrpCallback.IsNull ())
+                {
+                  m_ltePhyRxPsdchSdRsrpCallback (rxCtrlMsg, params->psd,(*itTbDisc).second.rbBitmap);
+                }
               //Store the indices of the decoded RBs
               rbDecodedBitmap.insert ((*itTbDisc).second.rbBitmap.begin (), (*itTbDisc).second.rbBitmap.end ());
             }
@@ -2557,6 +2565,10 @@ LteSpectrumPhy::RxSlPsdch (std::vector<uint32_t> pktIndexes)
                             m_slHarqPhyModule->IsDiscTbPrevDecoded ((*itTbDisc).first.m_rnti, (*itTbDisc).first.m_resPsdch));
               m_slHarqPhyModule->IndicateDiscTbPrevDecoded ((*itTbDisc).first.m_rnti, (*itTbDisc).first.m_resPsdch);
               rxDiscMessageOkList.push_back (rxCtrlMsg);
+              if (!m_ltePhyRxPsdchSdRsrpCallback.IsNull ())
+                {
+                  m_ltePhyRxPsdchSdRsrpCallback (rxCtrlMsg, params->psd,(*itTbDisc).second.rbBitmap);
+                }
             }
         }
 

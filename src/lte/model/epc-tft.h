@@ -194,7 +194,11 @@ public:
 		  uint16_t localPort,
 		  uint8_t typeOfService);
 
-
+  /**
+   * Get the list of packet filters
+   * 
+   * \return the list of packet filters 
+   */
   std::list<PacketFilter> GetPacketFilters () const;
 
 private:

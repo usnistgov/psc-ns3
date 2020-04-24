@@ -158,9 +158,9 @@ protected:
   /**
    * Interface provided to upper RRC entity
    *
-   * \param p packet
+   * \param params the TransmitPdcpSduParameters
    */
-  virtual void DoTransmitPdcpSdu (Ptr<Packet> p);
+  virtual void DoTransmitPdcpSdu (LtePdcpSapProvider::TransmitPdcpSduParameters params);
 
   LtePdcpSapUser* m_pdcpSapUser; ///< PDCP SAP user
   LtePdcpSapProvider* m_pdcpSapProvider; ///< PDCP SAP provider
@@ -171,6 +171,13 @@ protected:
    * \param p packet
    */
   virtual void DoReceivePdu (Ptr<Packet> p);
+  
+  /**
+   * Indicates if this PDCP is for a sidelink radio bearer
+   * 
+   * \return true if the PDCP instance is for a sidelink radio bearer
+   */
+  bool IsSlrb ();
 
   LteRlcSapUser* m_rlcSapUser; ///< RLC SAP user 
   LteRlcSapProvider* m_rlcSapProvider; ///< RLC SAP provider
@@ -205,6 +212,11 @@ private:
    * Constants. See section 7.2 in TS 36.323
    */
   static const uint16_t m_maxPdcpSn = 4095;
+  
+  /**
+   * Constants. See section 7.2 in TS 36.323
+   */
+  static const uint16_t m_maxPdcpSlSn = 65535;
 
 };
 

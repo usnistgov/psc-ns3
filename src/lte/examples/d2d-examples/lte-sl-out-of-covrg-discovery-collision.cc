@@ -257,15 +257,15 @@ int main (int argc, char *argv[])
       std::cout << "Scheduling " << apps.size () << " announce apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
       std::list<uint32_t>::iterator itAppList;
       for (auto itAppList : apps)
-      {
-         std::cout << "Announcing App code = " << itAppList << std::endl;
-      }
-      
-      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discovered);
-   }
-   
-   for (auto itMonitorApps : monitorApps)
-   {
+        {
+          std::cout << "Announcing App code = " << itAppList << std::endl;
+        }
+
+      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Announcing);
+    }
+
+  for (auto itMonitorApps : monitorApps)
+    {
       Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itMonitorApps.first);
       std::list<uint32_t> apps = itMonitorApps.second;
       std::cout << "Scheduling " << apps.size () << " monitor apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
@@ -274,9 +274,9 @@ int main (int argc, char *argv[])
       {
          std::cout << "Monitoring App code = " << itAppList << std::endl;
       }
-      
-      Simulator::Schedule (Seconds(2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discoveree);
-   }
+
+      Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Monitoring);
+    }
 
   ///*** End of application configuration ***///
 

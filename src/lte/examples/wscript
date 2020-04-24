@@ -109,10 +109,33 @@ def build(bld):
     obj = bld.create_ns3_program('lte-sl-out-of-covrg-synch-twotx',
                                  ['lte'])
     obj.source = 'd2d-examples/lte-sl-out-of-covrg-synch-twotx.cc'
-
+    obj = bld.create_ns3_program('lte-sl-in-covrg-relay',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-relay.cc'
+    obj = bld.create_ns3_program('lte-sl-relay-cluster',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-relay-cluster.cc'
+    obj = bld.create_ns3_program('lte-sl-relay-cluster-selection',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-relay-cluster-selection.cc'
+    obj = bld.create_ns3_program('lte-sl-in-covrg-relay-building',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-relay-building.cc'
     obj = bld.create_ns3_program('lena-radio-link-failure',
                                  ['lte'])
     obj.source = 'lena-radio-link-failure.cc'
+    obj = bld.create_ns3_program('lte-sl-in-covrg-comm-mode1-multicell',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-comm-mode1-multicell.cc'
+    obj = bld.create_ns3_program('lte-sl-in-covrg-comm-mode2-multicell',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-comm-mode2-multicell.cc'
+    obj = bld.create_ns3_program('lte-sl-in-covrg-discovery-multicell',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-discovery-multicell.cc'    
+    obj = bld.create_ns3_program('lte-sl-in-covrg-relay-mode2-multicell',
+                                 ['lte'])
+    obj.source = 'd2d-examples/lte-sl-in-covrg-relay-mode2-multicell.cc'    
     
     if bld.env['ENABLE_EMU']:
         obj = bld.create_ns3_program('lena-simple-epc-emu',

@@ -40,7 +40,7 @@ LteTestRrc::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteTestRrc")
     .SetParent<Object> ()
     .AddConstructor<LteTestRrc> ()
-    ;
+  ;
 
   return tid;
 }
@@ -207,6 +207,7 @@ LteTestRrc::Start ()
   p.pdcpSdu = Create<Packet> (m_pduSize);
   p.srcL2Id = 0;
   p.dstL2Id = 0;
+  p.sduType = 0;
   
   bool haveContext = false;
   Ptr<Node> node;
@@ -214,7 +215,7 @@ LteTestRrc::Start ()
     {
       node = m_device->GetNode ();
       if (node != 0)
-        {                    
+        {
           haveContext = true;
         }
     }
@@ -252,6 +253,7 @@ LteTestRrc::SendData (Time at, std::string dataToSend)
   p.lcid = 222;
   p.srcL2Id = 0;
   p.dstL2Id = 0;
+  p.sduType = 0;
 
   NS_LOG_LOGIC ("Data(" << dataToSend.length () << ") = " << dataToSend.data ());
   p.pdcpSdu = Create<Packet> ((uint8_t *) dataToSend.data (), dataToSend.length ());
@@ -268,7 +270,7 @@ LteTestPdcp::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteTestPdcp")
     .SetParent<Object> ()
     .AddConstructor<LteTestPdcp> ()
-    ;
+  ;
 
   return tid;
 }
@@ -370,7 +372,7 @@ LteTestMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteTestMac")
     .SetParent<Object> ()
     .AddConstructor<LteTestMac> ()
-    ;
+  ;
 
   return tid;
 }
@@ -488,7 +490,7 @@ LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
     {
       node = m_device->GetNode ();
       if (node != 0)
-        {                    
+        {
           haveContext = true;
         }
     }
@@ -510,14 +512,14 @@ LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
     {
       Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, txOpParams);
     }
-    
+
   if (m_txOpportunityMode == RANDOM_MODE)
-  {
-    if (m_txOppTime != Seconds (0))
     {
-      Simulator::Schedule (m_txOppTime, &LteTestMac::SendTxOpportunity, this, m_txOppTime, m_txOppSize);
+      if (m_txOppTime != Seconds (0))
+        {
+          Simulator::Schedule (m_txOppTime, &LteTestMac::SendTxOpportunity, this, m_txOppTime, m_txOppSize);
+        }
     }
-  }
 }
 
 void
@@ -640,7 +642,7 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
       for (std::list<EventId>::iterator it = m_nextTxOppList.begin ();
            it != m_nextTxOppList.end ();
            ++it)
-        {          
+        {
           it->Cancel ();
         }
       m_nextTxOppList.clear ();
@@ -658,7 +660,7 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
       txOpParams.dstL2Id = 0;
       while (size > 0)
         {
-          EventId e = Simulator::Schedule (time, 
+          EventId e = Simulator::Schedule (time,
                                            &LteMacSapUser::NotifyTxOpportunity,
                                            m_macSapUser, txOpParams);
           m_nextTxOppList.push_back (e);
@@ -728,14 +730,14 @@ EpcTestRrc::GetTypeId (void)
   ;
   return tid;
 }
-void 
+void
 EpcTestRrc::SetS1SapProvider (EpcEnbS1SapProvider * s)
 {
   m_s1SapProvider = s;
 }
 
-  
-EpcEnbS1SapUser* 
+
+EpcEnbS1SapUser*
 EpcTestRrc::GetS1SapUser ()
 {
   return m_s1SapUser;
@@ -747,13 +749,13 @@ EpcTestRrc::DoInitialContextSetupRequest (EpcEnbS1SapUser::InitialContextSetupRe
 
 }
 
-void 
+void
 EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
 
 }
-  
-void 
+
+void
 EpcTestRrc::DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params)
 {
 

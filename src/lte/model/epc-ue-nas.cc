@@ -152,6 +152,34 @@ EpcUeNas::SetForwardUpCallback (Callback <void, Ptr<Packet> > cb)
 }
 
 void
+EpcUeNas::SetForwardUpCallback (Ptr<LteSlTft> tft, Callback <void, Ptr<Packet> > cb)
+{
+  NS_LOG_FUNCTION (this);
+  SlCallbackInfo info;
+  info.tft = tft;
+  info.cb = cb;
+  m_slForwardUpCallbackList.push_back (info);
+}
+
+void
+EpcUeNas::RemoveForwardUpCallback (Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  
+  for (std::list<SlCallbackInfo>::iterator it = m_slForwardUpCallbackList.begin ();
+       it != m_slForwardUpCallbackList.end ();
+       it++)
+    {
+      if ((*it).tft->Equals(tft)) 
+        { 
+          m_slForwardUpCallbackList.erase(it); return; 
+        }
+    }
+  
+  NS_ABORT_MSG ("TFT and associated callback not present in list!");
+}
+
+void
 EpcUeNas::StartCellSelection (uint32_t dlEarfcn)
 {
   NS_LOG_FUNCTION (this << dlEarfcn);
@@ -229,10 +257,10 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                if ((*it)->Matches (ipv4Header.GetSource (), ipv4Header.GetDestination ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetRemoteL2Address ());
                     return true;
                   }
               }
@@ -241,7 +269,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_pendingSlBearersList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                if ((*it)->Matches (ipv4Header.GetSource (), ipv4Header.GetDestination ()))
                   {
                     NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
                     return false;
@@ -256,10 +284,10 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetSourceAddress (), ipv6Header.GetDestinationAddress ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetRemoteL2Address ());
                     return true;
                   }
               }
@@ -268,7 +296,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_pendingSlBearersList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetSourceAddress (), ipv6Header.GetDestinationAddress ()))
                   {
                     NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
                     return false;
@@ -276,6 +304,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
               }
           }
         //No sidelink found
+        NS_LOG_DEBUG ("No sidelink bearer found. Use uplink");
         uint32_t id = m_tftClassifier.Classify (packet, EpcTft::UPLINK, protocolNumber);
         NS_ASSERT ((id & 0xFFFFFF00) == 0);
         uint8_t bid = (uint8_t) (id & 0x000000FF);
@@ -302,10 +331,10 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                if ((*it)->Matches (ipv4Header.GetSource (), ipv4Header.GetDestination ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetRemoteL2Address ());
                     return true;
                   }
               }
@@ -318,10 +347,10 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetSourceAddress (), ipv6Header.GetDestinationAddress ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetGroupL2Address ());
+                    m_asSapProvider->SendDataToGroup (packet, (*it)->GetRemoteL2Address ());
                     return true;
                   }
               }
@@ -355,6 +384,26 @@ void
 EpcUeNas::DoRecvData (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
+
+  //Check maps for sidelink
+  Ptr<Packet> pCopy = packet->Copy ();
+  Ipv6Header ipv6Header;
+  pCopy->RemoveHeader (ipv6Header);
+
+  for (std::list<SlCallbackInfo>::iterator it = m_slForwardUpCallbackList.begin ();
+       it != m_slForwardUpCallbackList.end ();
+       it++)
+    {
+      if ((*it).tft->Matches (ipv6Header.GetDestinationAddress (), ipv6Header.GetSourceAddress ()))
+        {
+          //Found sidelink
+          NS_LOG_INFO ("Forwarding packet from " << ipv6Header.GetSourceAddress () << " to " << ipv6Header.GetDestinationAddress () << " on sidelink NetDevice");
+          (*it).cb (packet);
+          return;
+        }
+    }
+
+
   m_forwardUpCallback (packet);
 }
 
@@ -425,7 +474,7 @@ EpcUeNas::ActivateSidelinkBearer (Ptr<LteSlTft> tft)
   //for in coverage case, it will trigger communication with the eNodeb
   //for out of coverage, it will trigger the use of preconfiguration
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateSidelinkRadioBearer (tft->GetGroupL2Address (), tft->isTransmit (), tft->isReceive ());
+  m_asSapProvider->ActivateSidelinkRadioBearer (tft->GetRemoteL2Address (), tft->isTransmit (), tft->isReceive ());
 }
 
 void
@@ -438,9 +487,9 @@ EpcUeNas::DeactivateSidelinkBearer (Ptr<LteSlTft> tft)
     {
       if (*it == tft)
         {
-          NS_LOG_LOGIC ("Found tft to remove for group " << tft->GetGroupL2Address ());
+          NS_LOG_LOGIC ("Found tft to remove for group " << tft->GetRemoteL2Address ());
           //found the sidelink to remove
-          m_asSapProvider->DeactivateSidelinkRadioBearer (tft->GetGroupL2Address ());
+          m_asSapProvider->DeactivateSidelinkRadioBearer (tft->GetRemoteL2Address ());
           m_slBearersActivatedList.erase (it);
           break;
         }
@@ -455,7 +504,7 @@ EpcUeNas::DoNotifySidelinkRadioBearerActivated (uint32_t group)
   std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
   while (it != m_pendingSlBearersList.end ())
     {
-      if ((*it)->GetGroupL2Address () == group)
+      if ((*it)->GetRemoteL2Address () == group)
         {
           //Found sidelink
           m_slBearersActivatedList.push_back (*it);

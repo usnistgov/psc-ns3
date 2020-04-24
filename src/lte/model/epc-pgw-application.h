@@ -17,6 +17,7 @@
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
  *         (based on epc-sgw-pgw-application.h)
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef EPC_PGW_APPLICATION_H
@@ -51,7 +52,6 @@ namespace ns3 {
 class EpcPgwApplication : public Application
 {
 public:
-
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -146,24 +146,40 @@ public:
    */
   void SetUeAddress (uint64_t imsi, Ipv4Address ueAddr);
 
-  /** 
+  /**
    * set the address of a previously added UE
-   * 
+   *
    * \param imsi the unique identifier of the UE
    * \param ueAddr the IPv6 address of the UE
    */
   void SetUeAddress6 (uint64_t imsi, Ipv6Address ueAddr);
 
   /**
+   * register the newly connected remote UE
+   *
+   * \param relayImsi IMSI of the relay UE
+   * \param ueImsi IMSI of the remote UE
+   * \param ipv6Prefix The /64 prefix assigned to the remote UE
+   */
+  void RemoteUeContextConnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
+
+  /**
+   * Deregister the newly connected remote UE
+   *
+   * \param relayImsi IMSI of the relay UE
+   * \param ueImsi IMSI of the remote UE
+   * \param ipv6Prefix The /64 prefix assigned to the remote UE
+   */
+  void RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
+
+  /**
    * TracedCallback signature for data Packet reception event.
    *
    * \param [in] packet The data packet sent from the internet.
    */
-  typedef void (* RxTracedCallback)
-    (Ptr<Packet> packet);
+  typedef void (* RxTracedCallback)(Ptr<Packet> packet);
 
 private:
-
   /**
    * Process Create Session Request message
    * \param packet GTPv2-C Create Session Request message
@@ -194,7 +210,7 @@ private:
    */
   class UeInfo : public SimpleRefCount<UeInfo>
   {
-  public:
+public:
     UeInfo ();
 
     /**
@@ -235,7 +251,7 @@ private:
 
     /**
      * Set the address of the eNB to which the UE is connected
-     * 
+     *
      * \param addr the address of the SGW
      */
     void SetSgwAddr (Ipv4Address addr);
@@ -268,7 +284,7 @@ private:
      */
     void SetUeAddr6 (Ipv6Address addr);
 
-  private:
+private:
     Ipv4Address m_ueAddr; ///< UE IPv4 address
     Ipv6Address m_ueAddr6; ///< UE IPv6 address
     Ipv4Address m_sgwAddr; ///< SGW IPv4 address
@@ -313,6 +329,11 @@ private:
   std::map<uint64_t, Ptr<UeInfo> > m_ueInfoByImsiMap;
 
   /**
+   * Map telling for each remote UE prefix the corresponding relay UE info
+   */
+  std::map<Ipv6Address, Ptr<UeInfo> > m_ueInfoByRemotePrefixMap;
+
+  /**
    * UDP port to be used for GTP-U
    */
   uint16_t m_gtpuUdpPort;
@@ -336,6 +357,11 @@ private:
    * \brief Callback to trace received data packets from S5 socket.
    */
   TracedCallback<Ptr<Packet> > m_rxS5PktTrace;
+
+  /**
+   * /64 prefix for matching UE-to-Network relay remote addresses
+   */
+  Ipv6Prefix m_ueToNetworkPrefix;
 };
 
 } // namespace ns3

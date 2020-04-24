@@ -309,6 +309,12 @@ typedef Callback< void, UlInfoListElement_s > LtePhyUlHarqFeedbackCallback;
 typedef Callback< void, uint16_t, Ptr<SpectrumValue> > LtePhyRxSlssCallback;
 
 /**
+* This method is used by the LteSpectrumPhy to notify the UE PHY that a
+* PSDCH has been received and measure the SD-RSRP using the corresponding RBs
+*/
+typedef Callback< void, Ptr<Packet>, Ptr<SpectrumValue>, const std::vector<int>& > LtePhyRxPsdchSdRsrpCallback;
+
+/**
  * \ingroup lte
  * \class LteSpectrumPhy
  *
@@ -411,7 +417,7 @@ public:
    *
    */
   void ClearExpectedDiscTb ();
- 
+
   /**
    * set the AntennaModel to be used
    *
@@ -807,6 +813,14 @@ public:
    */
   void SetLtePhyRxSlssCallback (LtePhyRxSlssCallback c);
 
+  /**
+   * Sets the callback for the measurement of the SD-RSRP as part
+   * of the interconnections between the LteSpectrumPhy and the UE PHY
+   *
+   * \param c The callback
+   */
+  void SetLtePhyRxPsdchSdRsrpCallback (LtePhyRxPsdchSdRsrpCallback c);
+
 
   /// allow LteUePhy class friend access
   friend class LteUePhy;
@@ -1012,10 +1026,11 @@ private:
 
   double m_slRxGain; ///< Sidelink Rx gain (Linear units)
   std::map <uint16_t, uint16_t> m_slDiscTxCount; ///< Map to store the count of discovery transmissions
-                                                 ///< by a UE. The RNTI of a UE is used as the key of this map
+  ///< by a UE. The RNTI of a UE is used as the key of this map
 
   LtePhyRxSlssCallback  m_ltePhyRxSlssCallback; ///< Callback used to notify the PHY about the reception of a SLSS
 
+  LtePhyRxPsdchSdRsrpCallback m_ltePhyRxPsdchSdRsrpCallback; ///< Callback used to notify the PHY about the reception of PSDCH and SD-RSRP measurement
 
   /**
    * Trace information regarding PHY stats from DL Rx perspective

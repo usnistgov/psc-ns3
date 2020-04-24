@@ -1025,6 +1025,21 @@ public:
     SlPreconfigCommPool pools [MAXSL_TXPOOL]; ///< An array holding the Sidelink communication preconfigured Tx pool configuration
   };
 
+  /// SlReselectionInfoRelay structure
+  struct SlReselectionInfoRelay
+  {
+    int16_t qRxLevMin;   ///< Threshold indicating the required minimum received SD-RSRP level for Relay UE selection. Unit [dBm]. Valid values: -70 .. -22
+    uint16_t filterCoefficient;   ///< Filter coefficient for L3 filtering. Valid values (k): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17, 19
+    uint16_t minHyst;   ///< Threshold representing how higher than qRxLevMin the SD-RSRP should be to consider it for Relay UE selection. Unit [dB] Valid values: 0, 3, 6, 9, 12 (+inf not represented)
+  };
+
+  /// SlPreconfigRelay structure, representing the UE-to-Network Relay preconfigured parameters to be used in the out-of-coverage case
+  struct SlPreconfigRelay
+  {
+    bool haveReselectionInfoOoc {false}; ///< Have reselection info for out-of-coverage Remote UEs ?
+    SlReselectionInfoRelay reselectionInfoOoc; ///< Reselection info for out-of-coverage Remote UEs
+  };
+
   /// Discovery period duration
   struct SlPeriodDisc
   {
@@ -1140,6 +1155,7 @@ public:
     SlPreconfigSync preconfigSync; ///< Synchronization configuration
     SlPreconfigCommPoolList preconfigComm; ///< List of preconfigured Sidelink communication pools
     SlPreconfigDiscPoolList preconfigDisc; ///< List of preconfigured Sidelink discovery pools
+    SlPreconfigRelay preconfigRelay; ///< UE-to-Network Relay configuration
   };
 
   /// PeriodicBsrTimer structure
@@ -1187,6 +1203,18 @@ public:
     PeriodicBsrTimer periodicBsrTimer; ///< Timer for BSR reporting
     RetxBsrTimer retxBsrTimer; ///< Timer for retransmitting BSR
   };
+  
+  /**
+    * Comparison operator
+    *
+    * \param lhs first configuration
+    * \param rhs second configuration
+    * \returns true if the pools are equal"
+    */
+    friend bool operator==(const SlMacMainConfigSl& lhs, const SlMacMainConfigSl& rhs)
+    {
+      return lhs.periodicBsrTimer.period == rhs.periodicBsrTimer.period && lhs.retxBsrTimer.period == rhs.retxBsrTimer.period;
+    }
 
   /// SlCommTxPoolToAddMod structure
   struct SlCommTxPoolToAddMod
@@ -1487,11 +1515,39 @@ public:
     PlmnIdentityList plmnIdentityList; ///< PLMN identity list
   };
 
+  /// SlDiscConfigRelayUe structure
+  struct SlDiscConfigRelayUe
+  {
+    uint16_t threshHigh; ///< Specifies the upper PCell RSRP threshold to consider Relay UE operation when in-coverage. Range = 0..49 (RSRP-RangeSL4)
+    uint16_t threshLow; ///< Specifies the lower PCell RSRP threshold to consider Relay UE operation when in-coverage. Range = 0..49 (RSRP-RangeSL4)
+    uint16_t hystMax;   ///< Threshold representing how below from threshHigh the RSRP of the PCell should be to consider Relay UE operation when in-coverage. Unit [dB] Valid values: 0, 3, 6, 9, 12 (+inf not represented)
+    uint16_t hystMin;   ///< Threshold representing how above from threshLow the RSRP of the PCell should be to consider Relay UE operation when in-coverage. Unit [dB] Valid values: 0, 3, 6, 9, 12
+  };
+
+  /// SlDiscConfigRemoteUe structure
+  struct SlDiscConfigRemoteUe
+  {
+    uint16_t threshHigh; ///< Specifies the upper PCell RSRP threshold to consider Remote UE operation when in-coverage. Range = 0..49 (RSRP-RangeSL4)
+    uint16_t hystMax;   ///< Threshold representing how below from threshHigh the RSRP of the PCell should be to consider Remote UE operation when in-coverage. Unit [dB] Valid values: 0, 3, 6, 9, 12
+    bool haveReselectionInfoIc {false};  ///< Have reselection info for in-coverage Remote UEs?
+    SlReselectionInfoRelay reselectionInfoIc; ///< Parameters for (re)selection of UE-to-Network Relay UE
+  };
+
+  /// Sib19DiscConfigRelay structure representing the UE-to-Network Relay configuration in the in-coverage case
+  struct Sib19DiscConfigRelay
+  {
+    bool haveRelayUeConfig {false}; ///< Have Relay UE configuration?
+    SlDiscConfigRelayUe relayUeConfig; ///< Sidelink relay discovery configuration for Relay UEs
+    bool haveRemoteUeConfig {false}; ///< Have Remote UE configuration?
+    SlDiscConfigRemoteUe remoteUeConfig; ///< Sidelink relay discovery configuration for Remote UEs
+  };
+
   /// SystemInformationBlockType19 structure
   struct SystemInformationBlockType19
   {
     Sib19DiscConfig discConfig; ///< Sidelink discovery configuration
     SlCarrierFreqInfoList discInterFreqList; ///< Sidelink carrier frequency information list
+    Sib19DiscConfigRelay discConfigRelay; ///< Sidelink relay discovery configuration
   };
   
   /// SlDiscTxPoolToAddMod structure

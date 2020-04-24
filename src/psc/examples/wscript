@@ -23,3 +23,24 @@ def build(bld):
     obj = bld.create_ns3_program('example-intel-http',
                                  ['psc'])
     obj.source = 'example-intel-http.cc'
+    
+    obj = bld.create_ns3_program('camad-2019-communication',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = [
+        'camad-2019/camad-2019-communication.cc',
+        'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]
+    
+    obj = bld.create_ns3_program('camad-2019-connection',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = [
+        'camad-2019/camad-2019-connection.cc',
+        'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]
+    
+    obj = bld.create_ns3_program('camad-2019-discovery',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = [
+        'camad-2019/camad-2019-discovery.cc',
+        'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]

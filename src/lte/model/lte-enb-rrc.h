@@ -144,7 +144,7 @@ public:
    */
   void InitialContextSetupRequest ();
 
-  /** 
+  /**
    * Setup a new data radio bearer, including both the configuration
    * within the eNB and the necessary RRC signaling with the UE
    *

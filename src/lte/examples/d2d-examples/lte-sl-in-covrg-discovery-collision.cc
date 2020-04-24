@@ -269,7 +269,7 @@ int main (int argc, char *argv[])
           std::cout << "Announcing App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discovered);
+      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Announcing);
     }
 
   for (auto itMonitorApps : monitorApps)
@@ -283,7 +283,7 @@ int main (int argc, char *argv[])
           std::cout << "Monitoring App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Discoveree);
+      Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Monitoring);
     }
 
   ///*** End of application configuration ***///

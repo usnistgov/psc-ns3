@@ -46,22 +46,21 @@ class EpcX2;
  *
  * This class provides the API for the implementation of helpers that
  * allow to create EPC entities and the nodes and interfaces that host
- * and connect them. 
+ * and connect them.
  */
 class EpcHelper : public Object
 {
 public:
-  
-  /** 
+  /**
    * Constructor
    */
   EpcHelper ();
 
-  /** 
+  /**
    * Destructor
-   */  
+   */
   virtual ~EpcHelper ();
-  
+
   // inherited from Object
   /**
    *  Register this type.
@@ -70,10 +69,10 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
-  
-  /** 
+
+  /**
    * Add an eNB to the EPC
-   * 
+   *
    * \param enbNode the previously created eNB node which is to be
    * added to the EPC
    * \param lteEnbNetDevice the LteEnbNetDevice of the eNB node
@@ -81,17 +80,17 @@ public:
    */
   virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId) = 0;
 
-  /** 
+  /**
    * Notify the EPC of the existence of a new UE which might attach at a later time
-   * 
+   *
    * \param ueLteDevice the UE device to be attached
    * \param imsi the unique identifier of the UE
    */
   virtual void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi) = 0;
 
-  /** 
+  /**
    * Add an X2 interface between two eNB
-   * 
+   *
    * \param enbNode1 one eNB peer of the X2 interface
    * \param enbNode2 the other eNB peer of the X2 interface
    */
@@ -110,9 +109,9 @@ public:
 
   /** 
    * Activate an EPS bearer, setting up the corresponding S1-U tunnel.
-   * 
-   * 
-   * 
+   *
+   *
+   *
    * \param ueLteDevice the Ipv4-enabled device of the UE, normally
    * connected via the LTE radio interface
    * \param imsi the unique identifier of the UE
@@ -121,7 +120,7 @@ public:
    * \return bearer ID
    */
   virtual uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer) = 0;
-  
+
   /**
    * Activate a sidelink bearer
    *
@@ -155,11 +154,11 @@ public:
    */
   virtual Ptr<Node> GetPgwNode () const = 0;
 
-  /** 
+  /**
    * Assign IPv4 addresses to UE devices
-   * 
+   *
    * \param ueDevices the set of UE devices
-   * 
+   *
    * \return the interface container, \see Ipv4AddressHelper::Assign() which has similar semantics
    */
   virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices) = 0;
@@ -174,8 +173,8 @@ public:
   virtual Ipv6InterfaceContainer AssignUeIpv6Address (NetDeviceContainer ueDevices) = 0;
 
 
-  /** 
-   * 
+  /**
+   *
    * \return the IPv4 address of the Default Gateway to be used by UEs to reach the internet
    */
   virtual Ipv4Address GetUeDefaultGatewayAddress () = 0;
@@ -186,7 +185,23 @@ public:
    */
   virtual Ipv6Address GetUeDefaultGatewayAddress6 () = 0;
 
+  /**
+   * Informs the PGW/SGW of a new Remote UE connected to a relay UE
+   *
+   * \param relayImsi The IMSI of the relay node
+   * \param ueImsi The IMSI of the remote UE
+   * \param ipv6Prefix The /64 prefix assigned to the remote UE
+   */
+  virtual void RemoteUeContextConnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]) = 0;
 
+  /**
+   * Informs the PGW/SGW of a Remote UE that disconnected from a relay UE
+   *
+   * \param relayImsi The IMSI of the relay node
+   * \param ueImsi The IMSI of the remote UE
+   * \param ipv6Prefix The /64 prefix assigned to the remote UE
+   */
+  virtual void RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]) = 0;
 };
 
 

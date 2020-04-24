@@ -551,6 +551,44 @@ LteNistErrorModel::GetPsschBler (LteFadingModel fadingChannel, LteTxMode txmode,
   return tbStat;
 }
 
+double
+LteNistErrorModel::GetPsschSinrFromBler (LteFadingModel fadingChannel, LteTxMode txmode, uint16_t mcs, uint8_t harq, double bler)
+{
+  //Check mcs values
+  if (mcs > 20)
+    {
+      NS_FATAL_ERROR ("PSSCH modulation cannot exceed 20");
+    }
+
+  //Find the table to use
+  const double (*xtable)[XTABLE_SIZE];
+  const double *ytable;
+  double ysize = 0;
+
+  switch (fadingChannel)
+    {
+    case AWGN:
+      switch (txmode)
+        {
+        case SISO:
+          xtable = PuschAwgnSisoBlerCurveXaxis;
+          ytable = PuschAwgnSisoBlerCurveYaxis;
+          ysize = PUSCH_AWGN_SIZE;
+          break;
+        default:
+          NS_FATAL_ERROR ("Transmit mode " << txmode << " not supported in AWGN channel");
+        }
+      break;
+    default:
+      NS_FATAL_ERROR ("Fading channel " << fadingChannel << " not supported");
+    }
+
+  double sinr = 0;
+  sinr = GetSinrValue (xtable, ytable, ysize, mcs, harq, bler);
+
+  return sinr;
+}
+
 TbErrorStats_t
 LteNistErrorModel::GetPsdchBler (LteFadingModel fadingChannel, LteTxMode txmode, double sinr, HarqProcessInfoList_t harqHistory)
 {

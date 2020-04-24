@@ -341,6 +341,29 @@ public:
   void SetUeComponentCarrierManagerAttribute (std::string n, const AttributeValue &v);
 
   /**
+   * Set the type of sidelink controller to be used by Ue devices.
+   *
+   * \param type The type of sidelink controller
+   *
+   */
+  void SetSlUeControllerType (std::string type);
+
+
+  /**
+   *
+   * \return The sidelink controller type
+   */
+  std::string GetSlUeControllerType () const;
+
+  /**
+   * Set an attribute for the sidelink controller to be created.
+   *
+   * \param n The name of the attribute
+   * \param v The value of the attribute
+   */
+  void SetSlUeControllerAttribute (std::string n, const AttributeValue &v);
+
+  /**
    *
    * \return the upkink pathloss model
    */
@@ -801,6 +824,23 @@ public:
    */
   void InstallSidelinkConfiguration (Ptr<NetDevice> ueDevice, Ptr<LteSlUeRrc> slConfiguration);
 
+  /**
+   * Informs the PGW/SGW of a new Remote UE connected to a relay UE
+   *
+   * \param relayImsi The IMSI of the relay node
+   * \param ueImsi The IMSI of the remote UE
+   * \param ipv6Prefix The /64 prefix assigned to the remote UE
+   */
+  void RemoteUeContextConnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
+
+  /**
+   * Informs the PGW/SGW of a Remote UE that disconnected from a relay UE
+   *
+   * \param relayImsi The IMSI of the relay node
+   * \param ueImsi The IMSI of the remote UE
+   * \param ipv6Prefix The /64 prefix assigned to the remote UE
+   */
+  void RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
 
 protected:
   // inherited from Object
@@ -884,6 +924,8 @@ private:
   ObjectFactory m_enbComponentCarrierManagerFactory;
   /// Factory of ue component carrier manager object.
   ObjectFactory m_ueComponentCarrierManagerFactory;
+  /// Factory of ue sidelink controller object.
+  ObjectFactory m_slUeControllerFactory;
   /// Factory of LteEnbNetDevice objects.
   ObjectFactory m_enbNetDeviceFactory;
   /// Factory of antenna object for eNodeB.

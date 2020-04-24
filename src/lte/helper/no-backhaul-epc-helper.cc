@@ -587,4 +587,18 @@ NoBackhaulEpcHelper::DeactivateSidelinkBearer (Ptr<NetDevice> ueDevice, Ptr<LteS
   ueLteDevice->GetNas ()->DeactivateSidelinkBearer (tft);
 }
 
+void
+NoBackhaulEpcHelper::RemoteUeContextConnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8])
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueImsi << ipv6Prefix);
+  m_pgwApp->RemoteUeContextConnected (relayImsi, ueImsi, ipv6Prefix);
+}
+
+void
+NoBackhaulEpcHelper::RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8])
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueImsi << ipv6Prefix);
+  m_pgwApp->RemoteUeContextDisconnected (relayImsi, ueImsi, ipv6Prefix);
+}
+
 } // namespace ns3

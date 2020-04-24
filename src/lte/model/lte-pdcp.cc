@@ -24,6 +24,7 @@
 
 #include "ns3/lte-pdcp.h"
 #include "ns3/lte-pdcp-header.h"
+#include "ns3/lte-sl-pdcp-header.h"
 #include "ns3/lte-pdcp-sap.h"
 #include "ns3/lte-pdcp-tag.h"
 
@@ -191,38 +192,60 @@ LtePdcp::SetStatus (Status s)
 ////////////////////////////////////////
 
 void
-LtePdcp::DoTransmitPdcpSdu (Ptr<Packet> p)
+LtePdcp::DoTransmitPdcpSdu (LtePdcpSapProvider::TransmitPdcpSduParameters params)
 {
-  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << params.pdcpSdu->GetSize ());
 
+  Ptr<Packet> p = params.pdcpSdu;
+  
   // Sender timestamp
   PdcpTag pdcpTag (Simulator::Now ());
-
-  LtePdcpHeader pdcpHeader;
-  pdcpHeader.SetSequenceNumber (m_txSequenceNumber);
-
-  m_txSequenceNumber++;
-  if (m_txSequenceNumber > m_maxPdcpSn)
+  
+  if (IsSlrb()) /* SLRB has different PDCP headers than DRB */
     {
-      m_txSequenceNumber = 0;
+      LteSlPdcpHeader pdcpHeader;
+      pdcpHeader.SetSequenceNumber (m_txSequenceNumber);
+      
+      m_txSequenceNumber++;
+      if (m_txSequenceNumber > m_maxPdcpSlSn)
+        {
+          m_txSequenceNumber = 0;
+        }
+      
+      pdcpHeader.SetSduType (params.sduType);
+      
+      NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+      p->AddHeader (pdcpHeader);
+      p->AddByteTag (pdcpTag, 1, pdcpHeader.GetSerializedSize ());
     }
-
-  pdcpHeader.SetDcBit (LtePdcpHeader::DATA_PDU);
-
-  NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
-  p->AddHeader (pdcpHeader);
-  p->AddByteTag (pdcpTag, 1, pdcpHeader.GetSerializedSize ());
-
+  else
+    {
+      LtePdcpHeader pdcpHeader;
+      pdcpHeader.SetSequenceNumber (m_txSequenceNumber);
+      
+      m_txSequenceNumber++;
+      if (m_txSequenceNumber > m_maxPdcpSn)
+        {
+          m_txSequenceNumber = 0;
+        }
+      
+      pdcpHeader.SetDcBit (LtePdcpHeader::DATA_PDU);
+      
+      NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+      p->AddHeader (pdcpHeader);
+      p->AddByteTag (pdcpTag, 1, pdcpHeader.GetSerializedSize ());
+    }
+  
   m_txPdu (m_rnti, m_lcid, p->GetSize ());
 
-  LteRlcSapProvider::TransmitPdcpPduParameters params;
-  params.rnti = m_rnti;
-  params.lcid = m_lcid;
-  params.srcL2Id = m_srcL2Id;
-  params.dstL2Id = m_dstL2Id;
-  params.pdcpPdu = p;
+  LteRlcSapProvider::TransmitPdcpPduParameters txparams;
+  txparams.rnti = m_rnti;
+  txparams.lcid = m_lcid;
+  txparams.srcL2Id = m_srcL2Id;
+  txparams.dstL2Id = m_dstL2Id;
+  txparams.pdcpPdu = p;
 
-  m_rlcSapProvider->TransmitPdcpPdu (params);
+  m_rlcSapProvider->TransmitPdcpPdu (txparams);
 }
 
 void
@@ -230,6 +253,7 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
+  uint8_t sduType = 0;
   // Receiver timestamp
   PdcpTag pdcpTag;
   Time delay;
@@ -237,14 +261,31 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
   delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
   m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
 
-  LtePdcpHeader pdcpHeader;
-  p->RemoveHeader (pdcpHeader);
-  NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
-
-  m_rxSequenceNumber = pdcpHeader.GetSequenceNumber () + 1;
-  if (m_rxSequenceNumber > m_maxPdcpSn)
+  if (IsSlrb ())
     {
-      m_rxSequenceNumber = 0;
+      LteSlPdcpHeader pdcpHeader;
+      p->RemoveHeader (pdcpHeader);
+      NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+      
+      m_rxSequenceNumber = pdcpHeader.GetSequenceNumber () + 1;
+      if (m_rxSequenceNumber > m_maxPdcpSlSn)
+        {
+          m_rxSequenceNumber = 0;
+        }
+
+      sduType = pdcpHeader.GetSduType ();
+    } 
+  else
+    {
+      LtePdcpHeader pdcpHeader;
+      p->RemoveHeader (pdcpHeader);
+      NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+      
+      m_rxSequenceNumber = pdcpHeader.GetSequenceNumber () + 1;
+      if (m_rxSequenceNumber > m_maxPdcpSn)
+        {
+          m_rxSequenceNumber = 0;
+        }
     }
 
   LtePdcpSapUser::ReceivePdcpSduParameters params;
@@ -253,8 +294,15 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
   params.lcid = m_lcid;
   params.srcL2Id = m_srcL2Id;
   params.dstL2Id = m_dstL2Id;
+  params.sduType = sduType;
   m_pdcpSapUser->ReceivePdcpSdu (params);
 }
 
+bool
+LtePdcp::IsSlrb ()
+{
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) (m_srcL2Id != 0 || m_dstL2Id !=0));
+  return (m_srcL2Id != 0 || m_dstL2Id !=0);
+}
 
 } // namespace ns3

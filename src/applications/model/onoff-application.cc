@@ -21,6 +21,8 @@
 // ns3 - On/Off Data Source Application class
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
+// Modified by:
+//    NIST // Contributions may not be subject to US copyright.
 
 #include "ns3/log.h"
 #include "ns3/address.h"
@@ -41,6 +43,7 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "ns3/seq-ts-header.h"
 
 namespace ns3 {
 
@@ -53,7 +56,7 @@ OnOffApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OnOffApplication")
     .SetParent<Application> ()
-    .SetGroupName("Applications")
+    .SetGroupName ("Applications")
     .AddConstructor<OnOffApplication> ()
     .AddAttribute ("DataRate", "The data rate in on state.",
                    DataRateValue (DataRate ("500kb/s")),
@@ -75,7 +78,7 @@ OnOffApplication::GetTypeId (void)
                    StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
                    MakePointerAccessor (&OnOffApplication::m_offTime),
                    MakePointerChecker <RandomVariableStream>())
-    .AddAttribute ("MaxBytes", 
+    .AddAttribute ("MaxBytes",
                    "The total number of bytes to send. Once these bytes are sent, "
                    "no packet is sent again, even in on state. The value zero means "
                    "that there is no limit.",
@@ -101,20 +104,21 @@ OnOffApplication::GetTypeId (void)
 
 OnOffApplication::OnOffApplication ()
   : m_socket (0),
-    m_connected (false),
-    m_residualBits (0),
-    m_lastStartTime (Seconds (0)),
-    m_totBytes (0)
+  m_connected (false),
+  m_residualBits (0),
+  m_lastStartTime (Seconds (0)),
+  m_totBytes (0),
+  m_sent (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-OnOffApplication::~OnOffApplication()
+OnOffApplication::~OnOffApplication ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-void 
+void
 OnOffApplication::SetMaxBytes (uint64_t maxBytes)
 {
   NS_LOG_FUNCTION (this << maxBytes);
@@ -128,7 +132,7 @@ OnOffApplication::GetSocket (void) const
   return m_socket;
 }
 
-int64_t 
+int64_t
 OnOffApplication::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
@@ -164,8 +168,8 @@ void OnOffApplication::StartApplication () // Called at time specified by Start
               NS_FATAL_ERROR ("Failed to bind socket");
             }
         }
-      else if (InetSocketAddress::IsMatchingType (m_peer) ||
-               PacketSocketAddress::IsMatchingType (m_peer))
+      else if (InetSocketAddress::IsMatchingType (m_peer)
+               || PacketSocketAddress::IsMatchingType (m_peer))
         {
           if (m_socket->Bind () == -1)
             {
@@ -195,7 +199,7 @@ void OnOffApplication::StopApplication () // Called at time specified by Stop
   NS_LOG_FUNCTION (this);
 
   CancelEvents ();
-  if(m_socket != 0)
+  if (m_socket != 0)
     {
       m_socket->Close ();
     }
@@ -248,7 +252,7 @@ void OnOffApplication::ScheduleNextTx ()
       uint32_t bits = m_pktSize * 8 - m_residualBits;
       NS_LOG_LOGIC ("bits = " << bits);
       Time nextTime (Seconds (bits /
-                              static_cast<double>(m_cbrRate.GetBitRate ()))); // Time till next packet
+                              static_cast<double> (m_cbrRate.GetBitRate ()))); // Time till next packet
       NS_LOG_LOGIC ("nextTime = " << nextTime);
       m_sendEvent = Simulator::Schedule (nextTime,
                                          &OnOffApplication::SendPacket, this);
@@ -283,31 +287,35 @@ void OnOffApplication::SendPacket ()
   NS_LOG_FUNCTION (this);
 
   NS_ASSERT (m_sendEvent.IsExpired ());
-  Ptr<Packet> packet = Create<Packet> (m_pktSize);
+  SeqTsHeader seqTs;
+  seqTs.SetSeq (m_sent);
+  Ptr<Packet> packet = Create<Packet> (m_pktSize - (8 + 4)); // 8+4 : the size of the seqTs header
+  packet->AddHeader (seqTs);
   m_txTrace (packet);
   m_socket->Send (packet);
+  ++m_sent;
   m_totBytes += m_pktSize;
   Address localAddress;
   m_socket->GetSockName (localAddress);
   if (InetSocketAddress::IsMatchingType (m_peer))
     {
       NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
-                   << "s on-off application sent "
-                   <<  packet->GetSize () << " bytes to "
-                   << InetSocketAddress::ConvertFrom(m_peer).GetIpv4 ()
-                   << " port " << InetSocketAddress::ConvertFrom (m_peer).GetPort ()
-                   << " total Tx " << m_totBytes << " bytes");
+                              << "s on-off application sent "
+                              <<  packet->GetSize () << " bytes to "
+                              << InetSocketAddress::ConvertFrom (m_peer).GetIpv4 ()
+                              << " port " << InetSocketAddress::ConvertFrom (m_peer).GetPort ()
+                              << " total Tx " << m_totBytes << " bytes");
       m_txTraceWithAddresses (packet, localAddress, InetSocketAddress::ConvertFrom (m_peer));
     }
   else if (Inet6SocketAddress::IsMatchingType (m_peer))
     {
       NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
-                   << "s on-off application sent "
-                   <<  packet->GetSize () << " bytes to "
-                   << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6 ()
-                   << " port " << Inet6SocketAddress::ConvertFrom (m_peer).GetPort ()
-                   << " total Tx " << m_totBytes << " bytes");
-      m_txTraceWithAddresses (packet, localAddress, Inet6SocketAddress::ConvertFrom(m_peer));
+                              << "s on-off application sent "
+                              <<  packet->GetSize () << " bytes to "
+                              << Inet6SocketAddress::ConvertFrom (m_peer).GetIpv6 ()
+                              << " port " << Inet6SocketAddress::ConvertFrom (m_peer).GetPort ()
+                              << " total Tx " << m_totBytes << " bytes");
+      m_txTraceWithAddresses (packet, localAddress, Inet6SocketAddress::ConvertFrom (m_peer));
     }
   m_lastStartTime = Simulator::Now ();
   m_residualBits = 0;

@@ -129,4 +129,65 @@ LteSlSciTag::Print (std::ostream &os) const
   os << "rnti=" << m_rnti << ", resNo=" << (uint16_t) m_resNo << ", tbSize=" << m_tbSize;
 }
 
+TypeId
+LteSlPc5ContextTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::LteSlSciTag")
+    .SetParent<Tag> ()
+    .SetGroupName ("Lte")
+    .AddConstructor<LteSlSciTag> ()
+    .AddAttribute ("context", "The context value",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&LteSlPc5ContextTag::GetContext),
+                   MakeUintegerChecker<uint32_t> ())
+  ;
+  return tid;
+}
+
+TypeId
+LteSlPc5ContextTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+LteSlPc5ContextTag::LteSlPc5ContextTag ()
+  : m_context (0)
+{
+}
+LteSlPc5ContextTag::LteSlPc5ContextTag (uint32_t tag)
+  : m_context (tag)
+{
+}
+
+uint32_t
+LteSlPc5ContextTag::GetSerializedSize (void) const
+{
+  return 4;
+}
+
+void
+LteSlPc5ContextTag::Serialize (TagBuffer i) const
+{
+  i.WriteU32 (m_context);
+}
+
+void
+LteSlPc5ContextTag::Deserialize (TagBuffer i)
+{
+  m_context = (uint8_t) i.ReadU32 ();
+}
+
+uint32_t
+LteSlPc5ContextTag::GetContext () const
+{
+  return m_context;
+}
+
+void
+LteSlPc5ContextTag::Print (std::ostream &os) const
+{
+  os << "context=" << m_context;
+}
+
+
 } // namespace ns3

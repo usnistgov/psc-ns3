@@ -88,8 +88,7 @@ Similarly, the file containing the PSDCH MAC KPIs have the following content:
   15. Discovery message type
   16. Discovery content type
   17. Discovery model
-  18. Content. The information in this field vary depending on the type of UE,
-      i.e., a normal UE, and a relay UE
+  18. Content. The information in this field vary depending on the type of UE:
 
       * ``Normal UE:`` Application code
       * ``Relay UE:`` Relay Service Code; Announcer info; Relay UE Id;
@@ -157,8 +156,7 @@ file is the following:
   5. Discovery message type
   6. Discovery content type
   7. Discovery model
-  8. Content. The information in this field vary depending on the type of UE,
-     i.e., a normal UE, and a relay UE
+  8. Content. The information in this field vary depending on the type of UE:
 
      * ``Normal UE:`` Application code
      * ``Relay UE:`` Relay Service Code; Announcer info; Relay UE Id;

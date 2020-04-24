@@ -383,14 +383,17 @@ MacStatsCalculator::SlUeDchScheduling (SlUeMacStatParameters params, LteSlDiscHe
     case LteSlDiscHeader::DISC_RELAY_ANNOUNCEMENT://UE-to-Network Relay Discovery Announcement in model A
     case LteSlDiscHeader::DISC_RELAY_RESPONSE://UE-to-Network Relay Discovery Response in model B
       {
-        outFile << discMsg.GetRelayServiceCode () << ";" << discMsg.GetInfo ()
-                   << ";" << discMsg.GetRelayUeId () << ";" << discMsg.GetStatusIndicator () << ";" << 0 << "\t";
+        outFile << discMsg.GetRelayServiceCode () << ";" << discMsg.GetInfo () << ";" << discMsg.GetRelayUeId () << ";" << (uint16_t) discMsg.GetStatusIndicator () << ";" << 0 << std::endl;
       }
       break;
+  case LteSlDiscHeader::DISC_RELAY_SOLICITATION:
+    outFile << discMsg.GetRelayServiceCode () << ";" << discMsg.GetInfo () << ";" << (uint16_t) discMsg.GetURDSComposition () << ";" << discMsg.GetRelayUeId () << ";" << 0 << std::endl;
+    break;
     case LteSlDiscHeader::DISC_OPEN_ANNOUNCEMENT:
-    case LteSlDiscHeader::DISC_RESTRICTED_ANNOUNCEMENT:
+      case LteSlDiscHeader::DISC_RESTRICTED_QUERY:
+    case LteSlDiscHeader::DISC_RESTRICTED_RESPONSE:
       { //open or restricted announcement
-        outFile << discMsg.GetApplicationCode () << "\t";
+        outFile << discMsg.GetApplicationCode () << std::endl;
       }
       break;
     default:

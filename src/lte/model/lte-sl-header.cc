@@ -35,7 +35,6 @@
 
 #include "ns3/log.h"
 
-#include "ns3/lte-sl-header.h"
 #include "lte-sl-header.h"
 
 namespace ns3 {
@@ -79,12 +78,23 @@ LteSlDiscHeader::SetOpenDiscoveryAnnounceParameters (uint32_t appCode)
   m_appCode = appCode;
 }
 void
-LteSlDiscHeader::SetRestrictedDiscoveryAnnounceParameters (uint32_t appCode)
+LteSlDiscHeader::SetRestrictedDiscoveryQueryParameters (uint32_t appCode)
 {
-  //DISC_RESTRICTED_ANNOUNCEMENT;
+  //DISC_RESTRICTED_REQUEST;
+  m_discoveryType = 2;
+  m_discoveryContentType = 1;
+  m_discoveryModel = 2;
+  m_discoveryMsgType = BuildDiscoveryMsgType ();
+  m_appCode = appCode;
+}
+
+void
+LteSlDiscHeader::SetRestrictedDiscoveryResponseParameters (uint32_t appCode)
+{
+  //DISC_RESTRICTED_RESPONSE;
   m_discoveryType = 2;
   m_discoveryContentType = 0;
-  m_discoveryModel = 1;
+  m_discoveryModel = 2;
   m_discoveryMsgType = BuildDiscoveryMsgType ();
   m_appCode = appCode;
 }
@@ -133,9 +143,9 @@ LteSlDiscHeader::BuildDiscoveryMsgType ()
 {
   uint8_t msgType = ((m_discoveryType & 0x03) << 6) | ((m_discoveryContentType & 0x0F) << 2) | (m_discoveryModel & 0x03);
 
-  NS_ABORT_MSG_IF (msgType != DISC_OPEN_ANNOUNCEMENT && msgType != DISC_RESTRICTED_ANNOUNCEMENT
-                   && msgType != DISC_RESTRICTED_RESPONSE && msgType != DISC_RELAY_ANNOUNCEMENT
-                   && msgType != DISC_RELAY_SOLICITATION && msgType != DISC_RELAY_RESPONSE,
+  NS_ABORT_MSG_IF (msgType != DISC_OPEN_ANNOUNCEMENT && msgType != DISC_RESTRICTED_QUERY &&
+                   msgType != DISC_RESTRICTED_RESPONSE && msgType != DISC_RELAY_ANNOUNCEMENT &&
+                   msgType != DISC_RELAY_SOLICITATION && msgType != DISC_RELAY_RESPONSE,
                    "unknown discovery message type " << (uint16_t) msgType);
   return msgType;
 }
@@ -280,11 +290,10 @@ LteSlDiscHeader::Serialize (Buffer::Iterator start) const
   switch (m_discoveryMsgType)
     {
     case DISC_OPEN_ANNOUNCEMENT:
-    case DISC_RESTRICTED_ANNOUNCEMENT:
+    case DISC_RESTRICTED_QUERY:
+    case DISC_RESTRICTED_RESPONSE:  
       i.WriteU32 (m_appCode);
       i.WriteU8 (padding, 19);
-      break;
-    case DISC_RESTRICTED_RESPONSE:
       break;
     case DISC_RELAY_ANNOUNCEMENT:
     case DISC_RELAY_RESPONSE:
@@ -339,11 +348,10 @@ LteSlDiscHeader::Deserialize (Buffer::Iterator start)
   switch (m_discoveryMsgType)
     {
     case DISC_OPEN_ANNOUNCEMENT:
-    case DISC_RESTRICTED_ANNOUNCEMENT:
+    case DISC_RESTRICTED_QUERY:
+    case DISC_RESTRICTED_RESPONSE:
       m_appCode = i.ReadU32 ();
       i.Read (padding, 19);
-      break;
-    case DISC_RESTRICTED_RESPONSE:
       break;
     case DISC_RELAY_ANNOUNCEMENT:
     case DISC_RELAY_RESPONSE:

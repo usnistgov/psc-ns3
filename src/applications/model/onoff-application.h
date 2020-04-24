@@ -21,6 +21,9 @@
 // ns3 - On/Off Data Source Application class
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
+// Modified by:
+//    NIST // Contributions may not be subject to US copyright. (Add sequence number)
+
 
 #ifndef ONOFF_APPLICATION_H
 #define ONOFF_APPLICATION_H
@@ -163,6 +166,7 @@ private:
   EventId         m_startStopEvent;     //!< Event id for next start or stop event
   EventId         m_sendEvent;    //!< Event id of pending "send packet" event
   TypeId          m_tid;          //!< Type of the socket used
+  uint32_t        m_sent; 	  //!< Counter for sent packets
 
   /// Traced Callback: transmitted packets.
   TracedCallback<Ptr<const Packet> > m_txTrace;

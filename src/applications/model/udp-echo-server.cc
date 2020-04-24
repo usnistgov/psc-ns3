@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Modified by: NIST // Contributions may not be subject to US copyright. 
  */
 
 #include "ns3/log.h"
@@ -43,7 +45,7 @@ UdpEchoServer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpEchoServer")
     .SetParent<Application> ()
-    .SetGroupName("Applications")
+    .SetGroupName ("Applications")
     .AddConstructor<UdpEchoServer> ()
     .AddAttribute ("Port", "Port on which we listen for incoming packets.",
                    UintegerValue (9),
@@ -52,6 +54,9 @@ UdpEchoServer::GetTypeId (void)
     .AddTraceSource ("Rx", "A packet has been received",
                      MakeTraceSourceAccessor (&UdpEchoServer::m_rxTrace),
                      "ns3::Packet::TracedCallback")
+    .AddTraceSource ("TxWithAddresses", "A new packet is created and is sent",
+                     MakeTraceSourceAccessor (&UdpEchoServer::m_txTraceWithAddresses),
+                     "ns3::Packet::TwoAddressTracedCallback")
     .AddTraceSource ("RxWithAddresses", "A packet has been received",
                      MakeTraceSourceAccessor (&UdpEchoServer::m_rxTraceWithAddresses),
                      "ns3::Packet::TwoAddressTracedCallback")
@@ -64,7 +69,7 @@ UdpEchoServer::UdpEchoServer ()
   NS_LOG_FUNCTION (this);
 }
 
-UdpEchoServer::~UdpEchoServer()
+UdpEchoServer::~UdpEchoServer ()
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
@@ -78,7 +83,7 @@ UdpEchoServer::DoDispose (void)
   Application::DoDispose ();
 }
 
-void 
+void
 UdpEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
@@ -135,24 +140,24 @@ UdpEchoServer::StartApplication (void)
   m_socket6->SetRecvCallback (MakeCallback (&UdpEchoServer::HandleRead, this));
 }
 
-void 
+void
 UdpEchoServer::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket != 0) 
+  if (m_socket != 0)
     {
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
-  if (m_socket6 != 0) 
+  if (m_socket6 != 0)
     {
       m_socket6->Close ();
       m_socket6->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
 
-void 
+void
 UdpEchoServer::HandleRead (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -182,6 +187,7 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
       packet->RemoveAllByteTags ();
 
       NS_LOG_LOGIC ("Echoing packet");
+      m_txTraceWithAddresses (packet, localAddress, from);
       socket->SendTo (packet, 0, from);
 
       if (InetSocketAddress::IsMatchingType (from))

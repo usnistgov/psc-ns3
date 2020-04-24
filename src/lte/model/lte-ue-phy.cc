@@ -187,7 +187,8 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   m_currFrameNo (0),
   m_currSubframeNo (0),
   m_resyncRequested (false),
-  m_waitingNextScPeriod (false)
+  m_waitingNextScPeriod (false),
+  m_ueSdRsrpMeasurementsEnabled (false)
 {
   m_amc = CreateObject <LteAmc> ();
   m_powerControl = CreateObject <LteUePowerControl> ();
@@ -438,6 +439,10 @@ LteUePhy::GetTypeId (void)
                    DoubleValue (-125),
                    MakeDoubleAccessor (&LteUePhy::m_minSrsrp),
                    MakeDoubleChecker<double> ())
+    .AddTraceSource ("ReportUeSdRsrpMeasurements",
+                     "Report Relay UE SD-RSRP measurements (dBm).",
+                     MakeTraceSourceAccessor (&LteUePhy::m_reportUeSdRsrpMeasurements),
+                     "ns3::LteUePhy::SdRsrpTracedCallback")
   ;
   return tid;
 }
@@ -1205,6 +1210,7 @@ LteUePhy::ReportUeMeasurements ()
   NS_LOG_DEBUG (this << " Report UE Measurements ");
 
   LteUeCphySapUser::UeMeasurementsParameters ret;
+  ret.m_componentCarrierId = m_componentCarrierId;
 
   std::map <uint16_t, UeMeasurementsElement>::iterator it;
   for (it = m_ueMeasurementsMap.begin (); it != m_ueMeasurementsMap.end (); it++)
@@ -1230,7 +1236,6 @@ LteUePhy::ReportUeMeasurements ()
           newEl.m_rsrp = avg_rsrp;
           newEl.m_rsrq = avg_rsrq;
           ret.m_ueMeasurementsList.push_back (newEl);
-          ret.m_componentCarrierId = m_componentCarrierId;
         }
       // report to UE measurements trace
       m_reportUeMeasurements (m_rnti, (*it).first, avg_rsrp, avg_rsrq, ((*it).first == m_cellId ? 1 : 0), m_componentCarrierId);
@@ -1933,6 +1938,7 @@ LteUePhy::DoReset ()
   m_packetBurstQueue.clear ();
   m_controlMessagesQueue.clear ();
   m_subChannelsForTransmissionQueue.clear ();
+  m_packetParamsQueue.clear();
   for (int i = 0; i < m_macChTtiDelay; i++)
     {
       Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
@@ -2321,7 +2327,8 @@ LteUePhy::EnqueueDlHarqFeedback (DlInfoListElement_s m)
   // get the feedback from LteSpectrumPhy and send it through ideal PUCCH to eNB
   Ptr<DlHarqFeedbackLteControlMessage> msg = Create<DlHarqFeedbackLteControlMessage> ();
   msg->SetDlHarqFeedback (m);
-  SetControlMessages (msg);
+  SetControlMessages (msg);  
+  //we do not notify MAC here because it was done when we processed the DL_DCI
 }
 
 void
@@ -3095,5 +3102,148 @@ LteUePhy::AssignStreams (int64_t stream)
   m_nextScanRdm->SetStream (stream + 1);
   return 2;
 }
+
+void
+LteUePhy::ReceivePsdchSdRsrp (Ptr<Packet> p, Ptr<SpectrumValue> psd, const std::vector<int> &rbs )
+{
+  NS_LOG_FUNCTION (this << m_rnti);
+
+  LteSlDiscHeader discHeader;
+  p->PeekHeader (discHeader);
+  uint8_t msgType = discHeader.GetDiscoveryMsgType ();
+
+  //We only monitor SD-RSRP for Relay Announcements (Discovery Model A)
+  //or Relay Responses (Discovery Model B)
+  if (msgType == LteSlDiscHeader::DISC_RELAY_ANNOUNCEMENT
+      || msgType == LteSlDiscHeader::DISC_RELAY_RESPONSE)
+    {
+      //Get indexes
+      uint64_t relayUeId = discHeader.GetRelayUeId ();
+      uint32_t serviceCode = discHeader.GetRelayServiceCode ();
+
+      //Measure SD-RSRP
+      double sum = 0.0;
+      uint16_t nRB = 0;
+      for (uint16_t i = 0; i < rbs.size (); i++)
+        {
+          int rb = rbs[i];
+          // convert PSD [W/Hz] to linear power [W] for the single RE
+          double powerTxW = (psd->ValuesAt (rb) * 180000.0) / 12.0;
+          sum += powerTxW;
+          nRB++;
+        }
+      double sd_rsrp_W = (sum / static_cast<double> (nRB));
+      double sd_rsrp_dBm = 10 * log10 (1000 * (sd_rsrp_W));
+
+      NS_LOG_INFO (this << " UE RNTI " << m_rnti << " Rx relay discovery message from Relay UE Id " << relayUeId
+                        << " Service Code " << serviceCode << " SD-RSRP (dBm) " << sd_rsrp_dBm << " nRB " << nRB);
+
+      //Store SD-RSRP
+      std::map <std::pair<uint64_t, uint32_t>, UeSdRsrpMeasurementsElement>::iterator
+        itMeasMap = m_ueSdRsrpMeasurementsMap.find (std::pair<uint64_t, uint32_t> (relayUeId,serviceCode));
+      if (itMeasMap == m_ueSdRsrpMeasurementsMap.end ())
+        {
+          NS_LOG_LOGIC (this << "First SD-RSRP measurement entry");
+          UeSdRsrpMeasurementsElement newEl;
+          newEl.sdRsrpSum = sd_rsrp_W;
+          newEl.sdRsrpNum = 1;
+          m_ueSdRsrpMeasurementsMap.insert (std::pair< std::pair<uint64_t, uint32_t>,
+                                                       UeSdRsrpMeasurementsElement> (std::pair<uint64_t, uint32_t> (relayUeId,serviceCode), newEl));
+        }
+      else
+        {
+          NS_LOG_LOGIC (this << "SD-RSRP Measurement entry found... Adding values");
+          (*itMeasMap).second.sdRsrpSum += sd_rsrp_W;
+          (*itMeasMap).second.sdRsrpNum++;
+        }
+    }
+}
+
+Time
+LteUePhy::GetUeSdRsrpMeasurementsFilterPeriod ()
+{
+  Time filterPeriod;
+  int32_t discPeriod;
+
+  // TODO: How to choose the pool to use if multiple are present?.
+  // For the moment use the first one.
+  if (m_discRxPools.size () > 0)
+    {
+      discPeriod = m_discRxPools.begin ()->m_pool->GetDiscPeriod ();
+    }
+  // Use the minimum discovery period lenght if no discovery rx pool is configured yet
+  // This can happen when in-coverage due to the delay between the start of the
+  // relay service and the provisioning of the discovery rx pool by the eNodeB.
+  else
+    {
+      discPeriod = 320;
+    }
+  filterPeriod = MilliSeconds (4.0 * discPeriod);
+
+  return filterPeriod;
+}
+
+void
+LteUePhy::DoEnableUeSdRsrpMeasurements ()
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_ueSdRsrpMeasurementsEnabled)
+    {
+      Simulator::Schedule (GetUeSdRsrpMeasurementsFilterPeriod (), &LteUePhy::ReportUeSdRsrpMeasurements, this);
+      m_ueSdRsrpMeasurementsEnabled = true;
+    }
+}
+
+void
+LteUePhy::DoDisableUeSdRsrpMeasurements ()
+{
+  NS_LOG_FUNCTION (this);
+  if (m_ueSdRsrpMeasurementsEnabled)
+    {
+      m_ueSdRsrpMeasurementsEnabled = false;
+    }
+}
+
+void
+LteUePhy::ReportUeSdRsrpMeasurements ()
+{
+  NS_LOG_FUNCTION (this << m_rnti);
+  if (m_ueSdRsrpMeasurementsEnabled)
+    {
+      //Perform the L1 filtering of all measured Relay UEs and service codes
+      LteUeCphySapUser::UeSdRsrpMeasurementsParameters ret;
+      std::map <std::pair<uint64_t, uint32_t>, UeSdRsrpMeasurementsElement>::iterator itMeasMap;
+      for (itMeasMap = m_ueSdRsrpMeasurementsMap.begin (); itMeasMap != m_ueSdRsrpMeasurementsMap.end (); itMeasMap++)
+        {
+          //L1 filtering: linear average
+          double avg_sd_rsrp_W = (*itMeasMap).second.sdRsrpSum / static_cast<double> ((*itMeasMap).second.sdRsrpNum);
+          //The stored values are in W, the report to the RRC should be in dBm
+          double avg_sd_rsrp_dBm = 10 * log10 (1000 * (avg_sd_rsrp_W));
+
+          NS_LOG_INFO (this << " Relay UE Id " << (*itMeasMap).first.first
+                            << "Service Code " << (*itMeasMap).first.second
+                            << " averaged SD-RSRP (dBm) " << avg_sd_rsrp_dBm
+                            << " number of measurements " << (*itMeasMap).second.sdRsrpNum );
+
+          LteUeCphySapUser::UeSdRsrpMeasurementsElement newEl;
+          newEl.m_relayId = (*itMeasMap).first.first;
+          newEl.m_serviceCode = (*itMeasMap).first.second;
+          newEl.m_sdRsrp = avg_sd_rsrp_dBm;
+          ret.m_ueSdRsrpMeasurementsList.push_back (newEl);
+
+          m_reportUeSdRsrpMeasurements (m_rnti, (*itMeasMap).first.first,
+                                        (*itMeasMap).first.second, avg_sd_rsrp_dBm);
+        }
+      //Report to RRC
+      m_ueCphySapUser->ReportUeSdRsrpMeasurements (ret);
+
+      //Schedule next L1 filtering
+      Simulator::Schedule (GetUeSdRsrpMeasurementsFilterPeriod (), &LteUePhy::ReportUeSdRsrpMeasurements, this);
+
+      m_ueSdRsrpMeasurementsMap.clear ();
+    }
+}
+
+
 
 } // namespace ns3

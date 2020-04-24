@@ -127,6 +127,17 @@ public:
    * \return A Struct of type TbErrorStats_t containing the TB error rate and the SINR
    */
   static TbErrorStats_t GetPscchBler (LteFadingModel fadingChannel, LteTxMode txmode, double sinr);
+  
+  /**
+   * \brief Get SINR from BLER value function
+   * \param fadingChannel The channel to use
+   * \param txmode The Transmission mode used
+   * \param mcs The MCS
+   * \param harq The HARQ index
+   * \param bler The BLER
+   * \return The SINR value
+   */
+  static double GetPsschSinrFromBler (LteFadingModel fadingChannel, LteTxMode txmode, uint16_t mcs, uint8_t harq, double bler);
 
   /**
    * \brief Lookup the BLER for the given SINR
@@ -183,7 +194,7 @@ private:
   static double GetBlerValue (const double (*xtable)[XTABLE_SIZE], const double *ytable, const uint16_t ysize, uint16_t mcs, uint8_t harq, double sinr);
 
   /**
-   * \brief Get BLER value function
+   * \brief Get SINR value function
    * \param *xtable Pointer to the x-axis table
    * \param *ytable Pointer to the y-axis table
    * \param ysize The number of columns of the table containing y-axis values (BLER)
