@@ -188,13 +188,13 @@ LteSlPc5SignallingMessageType::GetMessageType ()
   return m_msgType;
 }
 
-const std::string&
+std::string
 LteSlPc5SignallingMessageType::GetMessageAcronym (void) const
 {
   return s_acronyms[m_msgType];
 }
 
-const std::string&
+std::string
 LteSlPc5SignallingMessageType::GetMessageName (void) const
 {
   return s_names[m_msgType];

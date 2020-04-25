@@ -124,14 +124,14 @@ public:
    *
    * \return the Message Acronym
   */
-  const std::string& GetMessageAcronym (void) const;
+  std::string GetMessageAcronym (void) const;
 
   /**
    * Get the Message Name
    *
    * \return the Message Name
   */
-  const std::string& GetMessageName (void) const;
+  std::string GetMessageName (void) const;
 
   /**
    * The different types of PC5 signaling messages
