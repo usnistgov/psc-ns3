@@ -124,19 +124,13 @@ McpttOnNetworkFloorParticipantState::MediaReady (McpttOnNetworkFloorParticipant&
 }
 
 void
-McpttOnNetworkFloorParticipantState::CallInitialized (McpttOnNetworkFloorParticipant& machine) const
-{
-  NS_ABORT_MSG (GetInstanceStateId ().GetName () << "(" << this << ")" << " should not be initializing call.");
-}
-
-void
 McpttOnNetworkFloorParticipantState::CallInitiated (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_ABORT_MSG (GetInstanceStateId ().GetName () << "(" << this << ")" << " should not be initiating call.");
 }
 
 void
-McpttOnNetworkFloorParticipantState::CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const
+McpttOnNetworkFloorParticipantState::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_ABORT_MSG (GetInstanceStateId ().GetName () << "(" << this << ")" << " should not be establishing call.");
 }
@@ -325,31 +319,35 @@ McpttOnNetworkFloorParticipantStateStartStop::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorParticipantStateStartStop::CallInitialized (McpttOnNetworkFloorParticipant& machine) const
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("Call initialized-- staying in start-stop state until call is established or initiated");
-}
-
-void
 McpttOnNetworkFloorParticipantStateStartStop::CallInitiated (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ABORT_MSG_UNLESS (machine.IsOriginator (), "Originator should initiate call");
-  // Do not start T101 (floor request timeout) because call control exchange
-  // is driving the floor state machine
-  machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " staying in " << McpttOnNetworkFloorParticipantStateStartStop::GetStateId ().GetName () << " since call is being initiated."); 
 }
 
 void
-McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const
+McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
 {
-  NS_LOG_FUNCTION (this << hasFloor);
+  NS_LOG_FUNCTION (this);
 
-  NS_ABORT_MSG_UNLESS (!machine.IsOriginator (), "This transition is for terminating MCPTT user");
-  NS_ABORT_MSG_IF (hasFloor, "Terminating MCPTT user shouldn't be granted floor");
-  machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
+  if (machine.IsOriginator ())
+    {
+      if (!machine.IsImplicitRequest ())
+        {
+          machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
+        }
+      else
+        {
+          machine.GetC101 ()->Reset ();
+          machine.GetT101 ()->Start ();
+          machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
+        }
+    }
+  else
+    {
+      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
+    }
 }
 
 void
@@ -606,7 +604,86 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
   NS_LOG_FUNCTION (this << &machine);
 
   McpttFloorMsg temp;
-  Ptr<Packet> storedMsgs = machine.GetStoredMsgs ();
+  Ptr<Packet> storedMsgs = Create<Packet>(); 
+  Ptr<Packet> reversedStoredMsgs = machine.GetStoredMsgs ();
+
+  while (reversedStoredMsgs->GetSize () > 0)
+    {
+      reversedStoredMsgs->PeekHeader (temp);
+      uint8_t subtype = temp.GetSubtype ();
+
+      if (subtype == McpttFloorMsgRequest::SUBTYPE)
+        {
+          McpttFloorMsgRequest reqMsg;
+          reversedStoredMsgs->RemoveHeader (reqMsg);
+          storedMsgs->AddHeader (reqMsg);
+        }
+      else if (subtype == McpttFloorMsgGranted::SUBTYPE
+          || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
+        {
+          McpttFloorMsgGranted grantedMsg;
+          reversedStoredMsgs->RemoveHeader (grantedMsg);
+          storedMsgs->AddHeader (grantedMsg);
+        }
+      else if (subtype == McpttFloorMsgDeny::SUBTYPE
+          || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
+        {
+          McpttFloorMsgDeny denyMsg;
+          reversedStoredMsgs->RemoveHeader (denyMsg);
+          storedMsgs->AddHeader (denyMsg);
+        }
+      else if (subtype == McpttFloorMsgRelease::SUBTYPE
+          || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
+        {
+          McpttFloorMsgRelease releaseMsg;
+          reversedStoredMsgs->RemoveHeader (releaseMsg);
+          storedMsgs->AddHeader (releaseMsg);
+        }
+      else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
+        {
+          McpttFloorMsgRevoke revokeMsg;
+          reversedStoredMsgs->RemoveHeader (revokeMsg);
+          storedMsgs->AddHeader (revokeMsg);
+        }
+      else if (subtype == McpttFloorMsgIdle::SUBTYPE
+          || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
+        {
+          McpttFloorMsgIdle takenMsg;
+          reversedStoredMsgs->RemoveHeader (takenMsg);
+          storedMsgs->AddHeader (takenMsg);
+        }
+      else if (subtype == McpttFloorMsgTaken::SUBTYPE
+          || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
+        {
+          McpttFloorMsgTaken takenMsg;
+          reversedStoredMsgs->RemoveHeader (takenMsg);
+          storedMsgs->AddHeader (takenMsg);
+        }
+      else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
+        {
+          McpttFloorMsgQueuePositionRequest queuePosReqMsg;
+          reversedStoredMsgs->RemoveHeader (queuePosReqMsg);
+          storedMsgs->AddHeader (queuePosReqMsg);
+        }
+      else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
+          || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+        {
+          McpttFloorMsgQueuePositionInfo queueInfoMsg;
+          reversedStoredMsgs->RemoveHeader (queueInfoMsg);
+          storedMsgs->AddHeader (queueInfoMsg);
+        }
+      else if (subtype == McpttFloorMsgAck::SUBTYPE)
+        {
+          McpttFloorMsgAck queueInfoMsg;
+          reversedStoredMsgs->RemoveHeader (queueInfoMsg);
+          storedMsgs->AddHeader (queueInfoMsg);
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
+        }
+
+    }
 
   while (storedMsgs->GetSize () > 0)
     {
@@ -683,34 +760,6 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
         {
           NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
         }
-    }
-}
-
-void
-McpttOnNetworkFloorParticipantStatePendingRequest::CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-
-  // TODO:  Handle Dual Floor conditions, if any
-  if (machine.GetT103 ()->IsRunning ())
-    {
-      NS_LOG_ERROR ("Stopping a running timer T103 in PendingRequest state");
-      machine.GetT103 ()->Stop ();
-    }
-  if (machine.GetT101 ()->IsRunning ())
-    {
-      NS_LOG_ERROR ("Stopping a running timer T101 in PendingRequest state");
-      machine.GetT101 ()->Stop ();
-    }
-  if (hasFloor)
-    {
-      NS_LOG_DEBUG ("Implicit floor control granted; change to HasPermission");
-      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasPermission::GetInstance ());
-    }
-  else
-    {
-      NS_LOG_DEBUG ("No implicit floor control granted; change to HasNoPermission");
-      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
     }
 }
 
@@ -986,7 +1035,6 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorIdle (McpttOnNetwo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-
   //Check if duall floor bit is set.
 
   if (machine.IsOverriding ())
@@ -1211,8 +1259,8 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorRevoke (McpttOnNe
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  //TODO: may give informatio to the user that permission to send RTP media is being revoked.
-  //TODO: may inform the user of the reason contained in the Floor Revoke message.
+  //TODO: May give information to the user that permission to send RTP media is being revoked.
+  //TODO: May inform the user of the reason contained in the Floor Revoke message.
 }
 
 void

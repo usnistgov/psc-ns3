@@ -41,6 +41,7 @@
 #include "mcptt-call-type-machine.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
+#include "mcptt-sdp-fmtp-header.h"
 #include "mcptt-server-call.h"
 #include "mcptt-on-network-floor-participant-state.h"
 #include "mcptt-ptt-app.h"
@@ -167,14 +168,6 @@ McpttOnNetworkFloorParticipant::AcceptGrant (void)
 }
 
 void
-McpttOnNetworkFloorParticipant::CallInitialized (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call initialized.");
-}
-
-void
 McpttOnNetworkFloorParticipant::CallInitiated (void)
 {
   NS_LOG_FUNCTION (this);
@@ -185,15 +178,16 @@ McpttOnNetworkFloorParticipant::CallInitiated (void)
 }
 
 void
-McpttOnNetworkFloorParticipant::CallEstablished (bool hasFloor, uint8_t priority)
+McpttOnNetworkFloorParticipant::CallEstablished (const McpttSdpFmtpHeader& sdpHeader)
 {
-  NS_LOG_FUNCTION (this << hasFloor << +priority);
+  NS_LOG_FUNCTION (this << sdpHeader);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call established; floor: " << hasFloor << "; priority: " << +priority);
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << "'s call established.");
 
-  SetPriority (priority);
-  m_granted = hasFloor;
-  m_state->CallEstablished (*this, hasFloor);
+  SetPriority (sdpHeader.GetMcPriority ());
+  m_granted = sdpHeader.GetMcGranted ();
+  m_implicitRequest = sdpHeader.GetMcImplicitRequest ();
+  m_state->CallEstablished (*this);
 }
 
 void
@@ -388,6 +382,8 @@ void
 McpttOnNetworkFloorParticipant::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
+
+  std::cout << "receiving " << msg << std::endl;
 
   msg.Visit (*this);
 }
@@ -684,7 +680,7 @@ McpttOnNetworkFloorParticipant::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  CallInitialized ();
+  CallInitiated ();
 }
 
 void

@@ -156,7 +156,9 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorDeny (Ptr<McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+
+  machine->DoSend (msg);
 }
 
 void
@@ -164,7 +166,9 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorGranted (Ptr<McpttOnNetwork
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+
+  machine->DoSend (msg);
 }
 
 void
@@ -172,7 +176,9 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorIdle (Ptr<McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+
+  machine->DoSend (msg);
 }
 
 void
@@ -180,7 +186,9 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorRevoke (Ptr<McpttOnNetworkF
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+
+  machine->DoSend (msg);
 }
 
 void
@@ -188,7 +196,9 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorTaken (Ptr<McpttOnNetworkFl
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+
+  machine->DoSend (msg);
 }
 
 void
@@ -197,6 +207,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendMedia (Ptr<McpttOnNetworkFloorTo
   NS_LOG_FUNCTION (this << &machine << msg);
 
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+
   machine->DoSend (msg);
 }
 

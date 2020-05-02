@@ -147,6 +147,7 @@ FloorMsgRequestTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 FloorMsgGrantedTest::FloorMsgGrantedTest (void)
@@ -209,6 +210,7 @@ FloorMsgGrantedTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 FloorMsgDenyTest::FloorMsgDenyTest (void)
@@ -248,6 +250,7 @@ FloorMsgDenyTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 FloorMsgReleaseTest::FloorMsgReleaseTest (void)
@@ -288,6 +291,7 @@ FloorMsgReleaseTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 FloorMsgTakenTest::FloorMsgTakenTest (void)
@@ -339,6 +343,7 @@ FloorMsgTakenTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest (void)
@@ -375,6 +380,7 @@ FloorMsgQueuePositionRequestTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest (void)
@@ -422,6 +428,7 @@ FloorMsgQueuePositionInfoTest::DoRun (void)
   NS_LOG_LOGIC ("Deserialized: " << dstStr.str ());
 
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
+  NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
 McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite (void)

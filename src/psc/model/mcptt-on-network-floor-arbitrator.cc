@@ -326,6 +326,7 @@ McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
 {
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
+
   while (participant == 0 && it != m_participants.end ())
     {
       if ((*it)->GetPeerUserId () == userId)
@@ -335,7 +336,10 @@ McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
 
       it++;
     }
-  NS_LOG_WARN ("Participant not found by user ID");
+  if (participant == 0)
+    {
+      NS_LOG_WARN ("Participant not found by user ID");
+    }
   return participant;
 }
 
@@ -349,12 +353,14 @@ McpttOnNetworkFloorArbitrator::GetParticipantBySsrc (const uint32_t ssrc) const
       if ((*it)->GetStoredSsrc () == ssrc)
         {
           participant = *it;
-          break;
         }
 
       it++;
     }
-  NS_LOG_WARN ("Participant not found by SSRC");
+  if (participant == 0)
+    {
+      NS_LOG_WARN ("Participant not found by SSRC");
+    }
   return participant;
 }
 Ptr<McpttOnNetworkFloorTowardsParticipant>
@@ -367,12 +373,14 @@ McpttOnNetworkFloorArbitrator::GetOriginatingParticipant (void) const
       if ((*it)->IsOriginator ())
         {
           participant = *it;
-          break;
         }
 
       it++;
     }
-  NS_LOG_WARN ("Originating participant not found");
+  if (participant == 0)
+    {
+      NS_LOG_WARN ("Originating participant not found");
+    }
   return participant;
 }
 

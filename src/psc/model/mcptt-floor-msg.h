@@ -498,7 +498,7 @@ public:
  virtual void Visit (McpttFloorMsgSink& floorMsgSink) const;
 private:
  McpttFloorMsgFieldDuration m_duration; //!< The duration field.
- uint32_t m_grantedSsrc; //!< The SSRC of the granted floor participant.
+ McpttFloorMsgFieldSsrc m_grantedSsrc; //!< The SSRC of the granted floor participant.
  McpttFloorMsgFieldIndic m_indicator; //!< The floor indicator field.
  McpttFloorMsgFieldPriority m_priority; //!< The floor priority field.
  McpttFloorMsgFieldQueueSize m_queueSize; //!< The queue size field.
@@ -515,7 +515,7 @@ public:
   * Gets the SSRC of the granted floor particpant.
   * \returns The SSRC.
   */
- virtual uint32_t GetGrantedSsrc (void) const;
+ virtual McpttFloorMsgFieldSsrc GetGrantedSsrc (void) const;
  /**
   * Gets the floor indicator field.
   * \returns The floor indicator field.
@@ -555,7 +555,7 @@ public:
   * Sets the SSRC of the granted floor particpant.
   * \param grantedSsrc The SSRC of the granted floor particpant.
   */
- virtual void SetGrantedSsrc (uint32_t grantedSsrc);
+ virtual void SetGrantedSsrc (McpttFloorMsgFieldSsrc grantedSsrc);
  /**
   * Sets the floor indicator field.
   * \param indicator The floor indicator field.

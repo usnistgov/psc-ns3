@@ -42,6 +42,7 @@
 #include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
+#include "mcptt-sdp-fmtp-header.h"
 #include "mcptt-timer.h"
 
 namespace ns3 {
@@ -76,20 +77,15 @@ public:
   */
  virtual void AcceptGrant (void);
  /**
-  * Notifies the floor machine that the call has been initialized.
-  */
- virtual void CallInitialized (void);
- /**
   * Notifies the floor machine that the call has been initiated
   * (originating MCPTT user).
   */
  virtual void CallInitiated (void);
  /**
   * Notifies the floor machine that the call has been established
-  * \param hasFloor whether floor is granted
-  * \param priority priority value from server
+  * \param sdpHeader The SDP header.
   */
- virtual void CallEstablished (bool hasFloor, uint8_t priority);
+ virtual void CallEstablished (const McpttSdpFmtpHeader& sdpHeader);
  /**
   * Notifies the floor machine that the call has been released (part I).
   */

@@ -156,6 +156,7 @@ McpttOnNetworkCallMachineClientStateS1::InitiateCall (McpttOnNetworkCallMachineC
   NS_LOG_FUNCTION (this << &machine);
 
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  floorMachine->SetOriginator (true);
   floorMachine->CallInitiated ();
 
   Ptr<Packet> pkt = Create<Packet> ();
@@ -187,7 +188,8 @@ McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachine
   pkt->RemoveHeader (sdpHeader);
 
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
-  floorMachine->CallEstablished (sdpHeader.GetMcGranted (), sdpHeader.GetMcPriority ());
+  floorMachine->SetOriginator (false);
+  floorMachine->CallEstablished (sdpHeader);
 
   // Notify McpttPttApp of session initiation
   machine.GetOwner ()->GetOwner ()->SessionInitiateRequest ();
@@ -249,7 +251,8 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachine
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
-  floorMachine->CallEstablished (sdpHeader.GetMcGranted (), sdpHeader.GetMcPriority ());
+  floorMachine->SetOriginator (false);
+  floorMachine->CallEstablished (sdpHeader);
 
   // Notify McpttPttApp of session initiation
   machine.GetOwner ()->GetOwner ()->SessionInitiateRequest ();
@@ -275,7 +278,7 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachi
   pkt->RemoveHeader (sdpHeader);
 
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
-  floorMachine->CallEstablished (sdpHeader.GetMcGranted (), sdpHeader.GetMcPriority ());
+  floorMachine->CallEstablished (sdpHeader);
 
   // Originating client is responsible for scheduling the release of the call
   NS_ABORT_MSG_UNLESS (machine.GetOwner ()->GetStopTime () >= Simulator::Now (), "Stop time in the past");

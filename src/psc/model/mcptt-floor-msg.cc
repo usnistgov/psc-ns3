@@ -60,7 +60,7 @@ McpttFloorMsg::GetTypeId (void)
 
 McpttFloorMsg::McpttFloorMsg (void)
   : McpttMsg (),
-    m_length (10),
+    m_length (16),
     m_name ("MCPT"),
     m_padding (0),
     m_payloadType (204),
@@ -73,7 +73,7 @@ McpttFloorMsg::McpttFloorMsg (void)
 
 McpttFloorMsg::McpttFloorMsg (uint8_t subtype, uint32_t ssrc)
   : McpttMsg (),
-    m_length (10),
+    m_length (16),
     m_name ("MCPT"),
     m_padding (0),
     m_payloadType (204),
@@ -86,7 +86,7 @@ McpttFloorMsg::McpttFloorMsg (uint8_t subtype, uint32_t ssrc)
 
 McpttFloorMsg::McpttFloorMsg(const std::string& name, uint8_t payloadType, uint8_t subtype, uint32_t ssrc)
   : McpttMsg (),
-    m_length (10),
+    m_length (16),
     m_name (name),
     m_padding (0),
     m_payloadType (payloadType),
@@ -108,7 +108,6 @@ McpttFloorMsg::Deserialize (Buffer::Iterator start)
   NS_LOG_FUNCTION (this);
 
   uint32_t bytesRead = 0;
-  McpttFloorMsgFieldSsrc ssrcField;
 
   uint8_t firstByte = start.ReadU8 ();
   bytesRead += 1;
@@ -128,9 +127,9 @@ McpttFloorMsg::Deserialize (Buffer::Iterator start)
   uint16_t length = start.ReadNtohU16 ();
   bytesRead += 2;
 
-  // The next six bytes contain the synchronization source.
-  bytesRead += ssrcField.Deserialize (start);
-  uint32_t ssrc = ssrcField.GetSsrc ();
+  // The next four bytes contain the synchronization source.
+  uint32_t ssrc = start.ReadNtohU32 ();
+  bytesRead += 4;
 
   // The next four bytes consist of four ascii characters which make up the
   // name.
@@ -180,7 +179,6 @@ McpttFloorMsg::GetSerializedSize (void) const
   NS_LOG_FUNCTION (this);
 
   uint32_t size = 4; // 4 bytes for the first 4 bytes in the header.
-  size += 8; // 8 more bytes for security fields in last part of the header.
   uint8_t length = GetLength ();
 
   size += length;
@@ -229,14 +227,12 @@ McpttFloorMsg::Serialize (Buffer::Iterator start) const
   uint32_t ssrc = GetSsrc ();
   std::string name = GetName ();
   
-  McpttFloorMsgFieldSsrc ssrcField (ssrc);
-
   uint8_t firstByte = (version << 6) + (padding << 5) + subtype;
 
   start.WriteU8 (firstByte);
   start.WriteU8 (payloadType);
   start.WriteHtonU16 (length);
-  ssrcField.Serialize (start);
+  start.WriteHtonU32 (ssrc);
 
   for (uint16_t index = 0; index < name.size (); index++)
     {
@@ -245,7 +241,7 @@ McpttFloorMsg::Serialize (Buffer::Iterator start) const
       start.WriteU8 (nameChar);
     }
 
-  NS_LOG_LOGIC ("McpttFloorMsg wrote twelve bytes (length=" << (uint32_t)length << ";name=" << name << ";padding=" << (uint32_t)padding << ";payloadType=" << (uint32_t)payloadType << ";ssrc=" << ssrc << ";subtype=" << (uint32_t)subtype << ";version=" << (uint32_t)version << ";).");
+  NS_LOG_LOGIC ("McpttFloorMsg wrote fourteen bytes (length=" << (uint32_t)length << ";name=" << name << ";padding=" << (uint32_t)padding << ";payloadType=" << (uint32_t)payloadType << ";ssrc=" << ssrc << ";subtype=" << (uint32_t)subtype << ";version=" << (uint32_t)version << ";).");
 
   WriteData (start);
 
@@ -655,17 +651,16 @@ McpttFloorMsgGranted::McpttFloorMsgGranted (uint32_t ssrc)
   uint8_t length = GetLength ();
 
   McpttFloorMsgFieldDuration duration;
-  uint32_t grantedSsrc = 0;
+  McpttFloorMsgFieldSsrc grantedSsrc = 0;
   McpttFloorMsgFieldIndic indicator;
   McpttFloorMsgFieldPriority priority;
   McpttFloorMsgFieldQueueSize queueSize;
   McpttFloorMsgFieldTrackInfo trackInfo;
   McpttFloorMsgFieldUserId userId;
-  McpttFloorMsgFieldSsrc ssrcField;
   std::list<McpttQueuedUserInfo> users;
 
   length += duration.GetSerializedSize ();
-  length += ssrcField.GetSerializedSize ();
+  length += grantedSsrc.GetSerializedSize ();
   length += indicator.GetSerializedSize ();
   length += priority.GetSerializedSize ();
   length += queueSize.GetSerializedSize ();
@@ -740,7 +735,7 @@ McpttFloorMsgGranted::ReadData (Buffer::Iterator& buff)
 
   uint32_t bytesRead = 0;
   McpttFloorMsgFieldDuration duration;
-  uint32_t grantedSsrc = 0;
+  McpttFloorMsgFieldSsrc grantedSsrc = 0;
   McpttFloorMsgFieldIndic indicator;
   McpttFloorMsgFieldPriority priority;
   McpttFloorMsgFieldQueueSize queueSize;
@@ -749,12 +744,7 @@ McpttFloorMsgGranted::ReadData (Buffer::Iterator& buff)
   std::list<McpttQueuedUserInfo> users;
 
   bytesRead += duration.Deserialize (buff);
-
-  grantedSsrc = buff.ReadNtohU32 ();
-  bytesRead += 4;
-
-  NS_LOG_LOGIC ("McpttFloorMsgGranted read four bytes (grantedSsrc=" << grantedSsrc << ").");
-
+  bytesRead += grantedSsrc.Deserialize (buff);
   bytesRead += priority.Deserialize (buff);
   bytesRead += userId.Deserialize (buff);
   bytesRead += queueSize.Deserialize (buff);
@@ -769,6 +759,7 @@ McpttFloorMsgGranted::ReadData (Buffer::Iterator& buff)
     }
 
   bytesRead += trackInfo.Deserialize (buff);
+  bytesRead += indicator.Deserialize (buff);
 
   SetDuration (duration);
   SetGrantedSsrc (grantedSsrc);
@@ -777,6 +768,7 @@ McpttFloorMsgGranted::ReadData (Buffer::Iterator& buff)
   SetQueueSize (queueSize);
   SetUsers (users);
   SetTrackInfo (trackInfo);
+  SetIndicator (indicator);
 
   return bytesRead;
 }
@@ -799,12 +791,13 @@ McpttFloorMsgGranted::Print (std::ostream& os) const
   McpttFloorMsg::Print (os);
 
   McpttFloorMsgFieldDuration duration = GetDuration ();
-  uint32_t grantedSsrc = GetGrantedSsrc ();
+  McpttFloorMsgFieldSsrc grantedSsrc = GetGrantedSsrc ();
   McpttFloorMsgFieldPriority priority = GetPriority ();
   McpttFloorMsgFieldUserId userId = GetUserId ();
   McpttFloorMsgFieldQueueSize queueSize = GetQueueSize ();
   std::list<McpttQueuedUserInfo> users = GetUsers ();
   McpttFloorMsgFieldTrackInfo trackInfo = GetTrackInfo ();
+  McpttFloorMsgFieldIndic indicator = GetIndicator ();
 
   duration.Print (os);
   os << ";";
@@ -825,6 +818,8 @@ McpttFloorMsgGranted::Print (std::ostream& os) const
   os << ")";
   os << ";";
   trackInfo.Print (os);
+  os << ";";
+  indicator.Print (os);
   os << ")";
 }
 
@@ -838,19 +833,16 @@ McpttFloorMsgGranted::WriteData (Buffer::Iterator& buff) const
   McpttFloorMsg::WriteData (buff);
 
   McpttFloorMsgFieldDuration duration = GetDuration ();
-  uint32_t grantedSsrc = GetGrantedSsrc ();
+  McpttFloorMsgFieldSsrc grantedSsrc = GetGrantedSsrc ();
   McpttFloorMsgFieldPriority priority = GetPriority ();
   McpttFloorMsgFieldUserId userId = GetUserId ();
   McpttFloorMsgFieldQueueSize queueSize = GetQueueSize ();
   std::list<McpttQueuedUserInfo> users = GetUsers ();
   McpttFloorMsgFieldTrackInfo trackInfo = GetTrackInfo ();
+  McpttFloorMsgFieldIndic indicator = GetIndicator ();
 
   duration.Serialize (buff);
-
-  buff.WriteHtonU32 (grantedSsrc);
-
-  NS_LOG_LOGIC ("McpttFloorMsgGranted wrote four bytes (grantedSsrc=" << grantedSsrc << ").");
-
+  grantedSsrc.Serialize (buff);
   priority.Serialize (buff);
   userId.Serialize (buff);
   queueSize.Serialize (buff);
@@ -861,6 +853,8 @@ McpttFloorMsgGranted::WriteData (Buffer::Iterator& buff) const
     }
 
   trackInfo.Serialize (buff);
+
+  indicator.Serialize (buff);
 }
  
 void
@@ -904,7 +898,7 @@ McpttFloorMsgGranted::GetDuration (void) const
   return m_duration;
 }
 
-uint32_t
+McpttFloorMsgFieldSsrc
 McpttFloorMsgGranted::GetGrantedSsrc (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -969,7 +963,7 @@ McpttFloorMsgGranted::SetDuration (const McpttFloorMsgFieldDuration& duration)
 }
 
 void
-McpttFloorMsgGranted::SetGrantedSsrc (uint32_t grantedSsrc)
+McpttFloorMsgGranted::SetGrantedSsrc (McpttFloorMsgFieldSsrc grantedSsrc)
 {
   NS_LOG_FUNCTION (this << grantedSsrc);
 

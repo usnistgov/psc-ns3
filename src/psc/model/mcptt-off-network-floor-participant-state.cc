@@ -338,7 +338,7 @@ McpttOffNetworkFloorParticipantStateStartStop::ReceiveFloorGranted (McpttOffNetw
   NS_LOG_FUNCTION (this << &floorMachine << msg);
   
   //Provide floor taken notification.
-  uint32_t grantedSsrc = msg.GetGrantedSsrc ();
+  uint32_t grantedSsrc = msg.GetGrantedSsrc ().GetSsrc ();
   Ptr<McpttTimer> t203 = floorMachine.GetT203 ();
 
   floorMachine.SetCurrentSsrc (grantedSsrc);
@@ -512,7 +512,7 @@ McpttOffNetworkFloorParticipantStateNoPerm::ReceiveFloorGranted (McpttOffNetwork
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
   uint32_t rxSsrc = msg.GetSsrc ();
-  uint32_t grantedSsrc = msg.GetGrantedSsrc ();
+  uint32_t grantedSsrc = msg.GetGrantedSsrc ().GetSsrc ();
   McpttFloorMsgFieldIndic rxIndicator = msg.GetIndicator ();
 
   uint32_t myUserId = floorMachine.GetOwner ()->GetOwner ()->GetUserId ();
@@ -1412,7 +1412,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorGranted (McpttOffNetwor
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
   uint32_t rxSsrc = msg.GetSsrc ();
-  uint32_t grantedSsrc = msg.GetGrantedSsrc ();
+  uint32_t grantedSsrc = msg.GetGrantedSsrc ().GetSsrc ();
   McpttFloorMsgFieldUserId userIdField = msg.GetUserId ();
 
   uint32_t txSsrc = floorMachine.GetTxSsrc ();
@@ -1898,7 +1898,7 @@ McpttOffNetworkFloorParticipantStateQueued::ReceiveFloorGranted (McpttOffNetwork
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
   uint32_t rxSsrc = msg.GetSsrc ();
-  uint32_t grantedSsrc = msg.GetGrantedSsrc ();
+  uint32_t grantedSsrc = msg.GetGrantedSsrc ().GetSsrc ();
   McpttFloorMsgFieldUserId rxIdField = msg.GetUserId ();
   uint32_t rxUserId = rxIdField.GetUserId ();
   McpttFloorMsgFieldIndic rxIndicator = msg.GetIndicator ();

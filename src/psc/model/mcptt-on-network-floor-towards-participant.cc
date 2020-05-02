@@ -334,6 +334,8 @@ McpttOnNetworkFloorTowardsParticipant::Send (McpttMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
+  std::cout << "sending " << msg << std::endl;
+
   NS_LOG_LOGIC ("Send " << msg.GetInstanceTypeId () << ".");
   if (msg.IsA (McpttFloorMsgDeny::GetTypeId ()))
     {

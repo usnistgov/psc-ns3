@@ -94,11 +94,6 @@ public:
   */
  virtual void AcceptGrant (McpttOnNetworkFloorParticipant& machine) const;
  /**
-  * Notifies the floor machine state that the call was initialized.
-  * \param machine The FSM.
-  */
- virtual void CallInitialized (McpttOnNetworkFloorParticipant& machine) const;
- /**
   * Notifies the floor machine state that the call was initiated.
   * \param machine The FSM.
   */
@@ -106,9 +101,8 @@ public:
  /**
   * Notifies the floor machine state that the call was established.
   * \param machine The FSM.
-  * \param hasFloor whether the floor machine has the floor
   */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const;
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
  /**
   * Notifies the floor machine state that the call was released (part I).
   * \param machine The FSM.
@@ -289,11 +283,6 @@ public:
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
-  * Notifies the floor machine state that the call was initialized.
-  * \param machine The FSM.
-  */
- virtual void CallInitialized (McpttOnNetworkFloorParticipant& machine) const;
- /**
   * Notifies the floor machine state that the call was initiated.
   * \param machine The FSM.
   */
@@ -303,7 +292,7 @@ public:
   * \param machine The FSM.
   * \param hasFloor whether the floor machine has the floor
   */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const;
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
  /**
   * Receives a floor ack message.
   * \param machine The FSM.
@@ -457,12 +446,6 @@ public:
   * \param machine The FSM.
   */
  virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
- /**
-  * Notifies the floor machine state that the call was established.
-  * \param machine The FSM.
-  * \param hasFloor whether the floor machine has the floor
-  */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine, bool hasFloor) const;
  /**
   * Receives a floor granted message.
   * \param machine The FSM.

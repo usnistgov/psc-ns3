@@ -61,21 +61,8 @@ void
 McpttOnNetworkFloorArbitratorState::CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const
 {
   NS_LOG_FUNCTION (this << machine << participant);
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " CallInitialized()");
-  if (participant->IsImplicitRequest ())
-    { 
-      NS_LOG_DEBUG ("IsImplicitRequest is true");
-      McpttFloorMsgRequest msg;
-      msg.SetSsrc (participant->GetStoredSsrc ());
-      msg.SetIndicator (machine->GetIndicator ());
-      msg.SetPriority (McpttFloorMsgFieldPriority (participant->GetStoredPriority ()));
-     
-      machine->ReceiveFloorRequest (msg);
-    }
-  else
-    { 
-      NS_LOG_DEBUG ("IsImplicitRequest is false; no action");
-    }
+
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call initialization.");
 }
 
 void
@@ -151,7 +138,7 @@ McpttOnNetworkFloorArbitratorState::ReceiveFloorRelease (Ptr<McpttOnNetworkFloor
 {
   NS_LOG_FUNCTION (this << machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
 }
 
 void
@@ -159,7 +146,7 @@ McpttOnNetworkFloorArbitratorState::ReceiveFloorRequest (Ptr<McpttOnNetworkFloor
 {
   NS_LOG_FUNCTION (this << machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
 }
 
 void
@@ -167,7 +154,7 @@ McpttOnNetworkFloorArbitratorState::ReceiveMedia (Ptr<McpttOnNetworkFloorArbitra
 {
   NS_LOG_FUNCTION (this << machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
 }
 
 void
@@ -329,18 +316,11 @@ McpttOnNetworkFloorArbitratorStateIdle::GetInstanceStateId (void) const
 void
 McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " Enter from " << machine->GetStateId ());
+  NS_LOG_FUNCTION (this);
 
-  if (machine->GetStateId () == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ())
-    {
-      // TODO:  24.380 section 6.3.4.2.2
-      machine->ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
-      machine->GetC7 ()->Reset ();
-      machine->GetT7 ()->Start ();
-      machine->GetT4 ()->Start ();
-    }
-  // Remainder of method covers 24.380 section 6.3.4.3.2  
-  else if (!machine->GetQueue ()->IsEnabled () || !machine->IsDualFloor ())
+  if ((machine->GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
+        && !machine->GetQueue ()->IsEnabled ())
+      || !machine->IsDualFloor ())
     {
       machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
       if (machine->GetQueue ()->HasNext ())
@@ -363,9 +343,11 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator
           machine->ChangeState (McpttOnNetworkFloorArbitratorStateIdle::GetInstance ());
         }
     }
-  else if (machine->IsDualFloor ())
+  else if (machine->GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
+      && machine->IsDualFloor ())
     {
       machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
+
       McpttFloorMsgIdle idleMsg;
       idleMsg.SetSsrc (machine->GetTxSsrc ());
       idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
@@ -424,7 +406,6 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (Ptr<McpttOnNetworkF
     }
 }
 
-// Section 6.3.4.3.4
 void
 McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const
 {
@@ -432,17 +413,13 @@ McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbit
 
   if (machine->GetC7 ()->IsLimitReached ())
     {
-      // Continue to schedule timer T7 but keep count at same high value
-      NS_LOG_DEBUG ("Reschedule timer T7");
-      machine->GetT7 ()->Start ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Send Idle and reschedule timer T7");
       McpttFloorMsgIdle idleMsg;
       idleMsg.SetSsrc (machine->GetTxSsrc ());
       idleMsg.SetSeqNum (McpttFloorMsgFieldSeqNum (machine->NextSeqNum ()));
       machine->SendToAll (idleMsg);
+    }
+  else
+    {
       machine->GetT7 ()->Start ();
       machine->GetC7 ()->Increment ();
     }

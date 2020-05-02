@@ -2075,6 +2075,9 @@ McpttFloorMsgFieldSsrc::Deserialize (Buffer::Iterator& buff)
   uint32_t ssrc = buff.ReadNtohU32 ();
   bytesRead += 4;
 
+  buff.ReadNtohU16 (); // Read two spare bytes.
+  bytesRead += 2;
+
   SetSsrc (ssrc);
 
   NS_LOG_LOGIC ("McpttFloorMsgFieldSsrc read six bytes (ssrc=" << ssrc << ";spare=0).");
@@ -2118,6 +2121,7 @@ McpttFloorMsgFieldSsrc::Serialize (Buffer::Iterator& buff) const
   uint32_t ssrc = GetSsrc ();
 
   buff.WriteHtonU32 (ssrc);
+  buff.WriteHtonU16 (0); // Write two spare bytes.
 
   NS_LOG_LOGIC ("McpttFloorMsgFieldSsrc wrote six bytes (ssrc=" << ssrc << ";).");
 }
