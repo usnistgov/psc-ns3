@@ -54,8 +54,8 @@ McpttMediaSrc::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::McpttMediaSrc")
     .SetParent<Object> ()
     .AddConstructor<McpttMediaSrc> ()
-    .AddAttribute ("Bytes", "The number of data bytes to send.",
-                   UintegerValue (1),
+    .AddAttribute ("Bytes", "The number of data bytes to send per packet.",
+                   UintegerValue (8),
                    MakeUintegerAccessor (&McpttMediaSrc::m_bytes),
                    MakeUintegerChecker <uint16_t> ())
     .AddAttribute ("DataRate", "The data rate at which data should be sent.",

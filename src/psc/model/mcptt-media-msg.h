@@ -53,11 +53,11 @@ class McpttCallMachinePrivate;
  * the usual way.  It starts with an instance of McpttRtpHeader, followed
  * by a notional payload (of size GetPayloadSize ()).  The actual bytes
  * encoded in the buffer following the McpttRtpHeader are the size of the
- * payload field (encoded as a 16-bit unsigned integer), and, if room permits,
- * a 64-bit timestamp encoding the start of talk spurt time.  Any further
+ * payload field (encoded as a 16-bit unsigned integer), and a 32-bit
+ * timestamp encoding the start of talk spurt time.  Any further
  * notional payload bytes are encoded as zero.
  *
- * The payload size of the media message must be >= 2 bytes;
+ * The payload size of the media message must be >= 6 bytes;
  */
 class McpttMediaMsg : public McpttMsg
 {

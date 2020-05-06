@@ -60,7 +60,6 @@ McpttMediaMsg::GetTypeId (void)
 
 McpttMediaMsg::McpttMediaMsg (void)
   : McpttMsg (),
-    m_header (McpttRtpHeader ()),
     m_payloadSize (0),
     m_talkSpurtStart (Seconds (0))
 {
@@ -78,7 +77,6 @@ McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& header)
 
 McpttMediaMsg::McpttMediaMsg (uint16_t payloadSize)
   : McpttMsg (),
-    m_header (McpttRtpHeader ()),
     m_payloadSize (payloadSize),
     m_talkSpurtStart (Seconds (0))
 {
@@ -115,8 +113,7 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
 
   NS_LOG_LOGIC ("McpttMediaMsg deserializing...");
 
-  McpttRtpHeader header = GetHeader ();
-  uint32_t bytesRead = header.Deserialize (start);
+  uint32_t bytesRead = m_header.Deserialize (start);
 
   uint16_t index = 0;
   start.Next (bytesRead);
@@ -124,21 +121,17 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
   uint16_t payloadSize = start.ReadNtohU16 ();
   bytesRead += 2;
   index += 2;
-
-  if (payloadSize >= 10)
-    {
-      m_talkSpurtStart = Time (static_cast<int64_t> (start.ReadU64 ()));
-      bytesRead += 8;
-      index += 8;
-    }
+  NS_ABORT_MSG_UNLESS (payloadSize >=6, "Payload size must be at least six bytes");
+  m_talkSpurtStart = MicroSeconds (10 * start.ReadNtohU32 ());
+  bytesRead += 4;
+  index += 4;
   for (; index < payloadSize; index++)
     {
-      start.ReadU8 ();
+      start.ReadU8 (); // null bytes
       bytesRead += 1;
     }
 
-  SetHeader (header);
-  SetPayloadSize (payloadSize);
+  m_payloadSize = payloadSize;
 
   NS_LOG_LOGIC ("McpttMediaMsg read " << payloadSize << " payload bytes.");
 
@@ -157,10 +150,7 @@ uint32_t
 McpttMediaMsg::GetSsrc (void) const
 {
   NS_LOG_FUNCTION (this);
-
-  McpttRtpHeader header = GetHeader ();
-  uint32_t ssrc = header.GetSsrc ();
-
+  uint32_t ssrc = m_header.GetSsrc ();
   return ssrc;
 }
 
@@ -169,12 +159,9 @@ McpttMediaMsg::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  McpttRtpHeader header = GetHeader ();
-  uint32_t payloadSize = GetPayloadSize ();
-
   uint32_t size = 0;
-  size += header.GetSerializedSize ();
-  size += payloadSize; // (payloadSize) dummy bytes after the header.
+  size += m_header.GetSerializedSize ();
+  size += m_payloadSize; // (payloadSize) dummy bytes after the header.
 
   return size;
 }
@@ -184,12 +171,9 @@ McpttMediaMsg::Print (std::ostream& os) const
 {
   NS_LOG_FUNCTION (this << &os);
 
-  McpttRtpHeader header = GetHeader ();
-  uint32_t payloadSize = GetPayloadSize ();
-
   os << "McpttMediaMsg (";
-  os << "header=" << header;
-  os << ";payloadSize=" << payloadSize;
+  os << "header=" << m_header;
+  os << ";payloadSize=" << m_payloadSize;
   os << ")";
 }
 
@@ -204,41 +188,29 @@ McpttMediaMsg::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this);
 
-  McpttRtpHeader header = GetHeader ();
-  uint16_t payloadSize = GetPayloadSize ();
-
   NS_LOG_LOGIC ("McpttMediaMsg serializing...");
-
-  header.Serialize (start);
-  uint32_t headerSize = header.GetSerializedSize ();
+  m_header.Serialize (start);
+  uint32_t headerSize = m_header.GetSerializedSize ();
 
   start.Next (headerSize);
 
-  NS_ABORT_MSG_UNLESS (payloadSize >=2, "Payload size must be at least two bytes");
-  start.WriteHtonU16 (payloadSize);
-
+  NS_ABORT_MSG_UNLESS (m_payloadSize >=6, "Payload size must be at least six bytes");
   uint16_t index = 0;
-  if (payloadSize >= 10)
-    {
-      // There is space to encode the talkspurt timestamp
-      start.WriteU64 (static_cast<uint64_t> (m_talkSpurtStart.GetTimeStep ()));
-      index += 8;
-    }
-  else
-    {
-       NS_ABORT_MSG ("If this assert is hit, it is a sign that the "
-                      "simulation is using small McpttMediaMsg payload sizes, " 
-                      "and this class should be changed to encode the "
-                      "talkspurt in a Packet Tag.");
-    }
+  start.WriteHtonU16 (m_payloadSize);
+  index += 2;
+
+  // Similar to RTP timestamp, we try to make best use of 32 bits. If units
+  // are in tens of microseconds,  we can run for 12 hours without rolling over.
+  start.WriteHtonU32 (static_cast<uint32_t> (m_talkSpurtStart.GetMicroSeconds ()/10));
+  index += 4;
 
   // Zero-fill the remaining payload
-  for ( ; index < (payloadSize - 2); index++)
+  for ( ; index < m_payloadSize; index++)
     {
       start.WriteU8 (0);
     }
 
-  NS_LOG_LOGIC ("McpttMediaMsg wrote " << payloadSize << " payload bytes.");
+  NS_LOG_LOGIC ("McpttMediaMsg wrote " << m_payloadSize << " payload bytes.");
 }
 
 void
@@ -304,6 +276,5 @@ McpttMediaMsg::SetTalkSpurtStart (Time talkSpurtStart)
 
   m_talkSpurtStart = talkSpurtStart;
 }
-
 
 } // namespace ns3
