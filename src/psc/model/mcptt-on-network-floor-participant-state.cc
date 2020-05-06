@@ -338,6 +338,8 @@ McpttOnNetworkFloorParticipantStateStartStop::CallInitiated (McpttOnNetworkFloor
     {
       if (!machine.IsImplicitRequest ())
         {
+          Ptr<Packet> storedMsgs = machine.GetStoredMsgs ();
+          storedMsgs->RemoveAtStart (storedMsgs->GetSize ());
           machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
         }
       else
@@ -354,9 +356,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorAck (McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -364,9 +369,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorDeny (McpttOnNetworkFl
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -374,9 +382,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorGranted (McpttOnNetwor
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -384,9 +395,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorIdle (McpttOnNetworkFl
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -394,9 +408,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorQueuePositionInfo (Mcp
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -404,9 +421,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorRevoke (McpttOnNetwork
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -414,9 +434,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorTaken (McpttOnNetworkF
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 
 void
@@ -424,17 +447,12 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveMedia (McpttOnNetworkFloorP
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  if (machine.IsOriginator ())
+    {
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
 
-  machine.GetStoredMsgs ()->AddHeader (msg);
-}
-
-void
-McpttOnNetworkFloorParticipantStateStartStop::Selected (McpttOnNetworkFloorParticipant& machine) const
-{
-  NS_LOG_FUNCTION (this << &machine);
-  Ptr<Packet> storedMsgs = machine.GetStoredMsgs ();
-  storedMsgs->RemoveAtStart (storedMsgs->GetSize ());
+      machine.GetStoredMsgs ()->AddHeader (msg);
+    }
 }
 /** McpttOnNetworkFloorParticipantStateStartStop - end **/
 

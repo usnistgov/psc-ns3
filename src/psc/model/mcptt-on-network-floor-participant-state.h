@@ -340,11 +340,6 @@ public:
   * \param msg The received message.
   */
  virtual void ReceiveMedia (McpttOnNetworkFloorParticipant& machine, const McpttMediaMsg& msg) const;
- /**
-  * Notifies the machine state that it has been selected.
-  * \param machine The FSM.
-  */
- virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
 };
 /**
  * \ingroup mcptt
