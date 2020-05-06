@@ -283,16 +283,15 @@ public:
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
+  * Notifies the floor machine state that the call was established.
+  * \param machine The FSM.
+  */
+ virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
+ /**
   * Notifies the floor machine state that the call was initiated.
   * \param machine The FSM.
   */
  virtual void CallInitiated (McpttOnNetworkFloorParticipant& machine) const;
- /**
-  * Notifies the floor machine state that the call was established.
-  * \param machine The FSM.
-  * \param hasFloor whether the floor machine has the floor
-  */
- virtual void CallEstablished (McpttOnNetworkFloorParticipant& machine) const;
  /**
   * Receives a floor ack message.
   * \param machine The FSM.

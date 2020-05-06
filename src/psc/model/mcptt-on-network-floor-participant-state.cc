@@ -319,15 +319,18 @@ McpttOnNetworkFloorParticipantStateStartStop::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkFloorParticipantStateStartStop::CallInitiated (McpttOnNetworkFloorParticipant& machine) const
+McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " staying in " << McpttOnNetworkFloorParticipantStateStartStop::GetStateId ().GetName () << " since call is being initiated."); 
+  if (!machine.IsOriginator ())
+    {
+      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
+    }
 }
 
 void
-McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
+McpttOnNetworkFloorParticipantStateStartStop::CallInitiated (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -343,10 +346,6 @@ McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFlo
           machine.GetT101 ()->Start ();
           machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
         }
-    }
-  else
-    {
-      machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
     }
 }
 

@@ -383,8 +383,6 @@ McpttOnNetworkFloorParticipant::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  std::cout << "receiving " << msg << std::endl;
-
   msg.Visit (*this);
 }
 

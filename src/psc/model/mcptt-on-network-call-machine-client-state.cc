@@ -252,7 +252,7 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachine
   pkt->RemoveHeader (sdpHeader);
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->SetOriginator (false);
-  floorMachine->CallEstablished (sdpHeader);
+  //floorMachine->CallEstablished (sdpHeader);
 
   // Notify McpttPttApp of session initiation
   machine.GetOwner ()->GetOwner ()->SessionInitiateRequest ();
@@ -277,8 +277,8 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachi
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
 
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
-  floorMachine->CallEstablished (sdpHeader);
+  //Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  //floorMachine->CallEstablished (sdpHeader);
 
   // Originating client is responsible for scheduling the release of the call
   NS_ABORT_MSG_UNLESS (machine.GetOwner ()->GetStopTime () >= Simulator::Now (), "Stop time in the past");
