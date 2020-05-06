@@ -369,7 +369,7 @@ McpttOffNetworkFloorParticipantStateStartStop::ReceiveMedia (McpttOffNetworkFloo
 
   //Provide floor taken notification to user.
   //Request MCPTT client to start rendering received RTP packets.
-  uint32_t rxSsrc = msg.GetHead ().GetSsrc ();
+  uint32_t rxSsrc = msg.GetHeader ().GetSsrc ();
   Ptr<McpttTimer> t203 = floorMachine.GetT203 ();
 
   floorMachine.SetCurrentSsrc (rxSsrc);
@@ -564,7 +564,7 @@ McpttOffNetworkFloorParticipantStateNoPerm::ReceiveMedia (McpttOffNetworkFloorPa
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
-  uint32_t rxSsrc = msg.GetHead ().GetSsrc ();
+  uint32_t rxSsrc = msg.GetHeader ().GetSsrc ();
   Ptr<McpttTimer> t203 = floorMachine.GetT203 ();
   
   if (!floorMachine.HasCurrentSsrc ())
@@ -962,9 +962,9 @@ McpttOffNetworkFloorParticipantStateHasPerm::MediaReady (McpttOffNetworkFloorPar
       t206->Start ();
     }
 
-    McpttRtpHeader head = msg.GetHead ();
-    head.SetSsrc (txSsrc);
-    msg.SetHead (head);
+    McpttRtpHeader header = msg.GetHeader ();
+    header.SetSsrc (txSsrc);
+    msg.SetHeader (header);
 }
 
 void
@@ -1641,7 +1641,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveMedia (McpttOffNetworkFloorP
 {
   NS_LOG_FUNCTION (this << &floorMachine << msg);
 
-  uint32_t rxSsrc = msg.GetHead ().GetSsrc ();
+  uint32_t rxSsrc = msg.GetHeader ().GetSsrc ();
 
   Ptr<McpttTimer> t203 = floorMachine.GetT203 ();
   Ptr<McpttCounter> c201 = floorMachine.GetC201 ();
@@ -2209,7 +2209,7 @@ McpttOffNetworkFloorParticipantStateSilence::ReceiveMedia (McpttOffNetworkFloorP
 
   //Provide floor taken notification.
   //Request client to start rendering received RTP media packets.
-  uint32_t rxSsrc = msg.GetHead ().GetSsrc ();
+  uint32_t rxSsrc = msg.GetHeader ().GetSsrc ();
 
   Ptr<McpttTimer> t230 = floorMachine.GetT230 ();
   Ptr<McpttTimer> t203 = floorMachine.GetT203 ();

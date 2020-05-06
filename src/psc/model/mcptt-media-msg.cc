@@ -60,16 +60,16 @@ McpttMediaMsg::GetTypeId (void)
 
 McpttMediaMsg::McpttMediaMsg (void)
   : McpttMsg (),
-    m_head (McpttRtpHeader ()),
+    m_header (McpttRtpHeader ()),
     m_payloadSize (0),
     m_talkSpurtStart (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& head)
+McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& header)
   : McpttMsg (),
-    m_head (head),
+    m_header (header),
     m_payloadSize (0),
     m_talkSpurtStart (Seconds (0))
 {
@@ -78,29 +78,29 @@ McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& head)
 
 McpttMediaMsg::McpttMediaMsg (uint16_t payloadSize)
   : McpttMsg (),
-    m_head (McpttRtpHeader ()),
+    m_header (McpttRtpHeader ()),
     m_payloadSize (payloadSize),
     m_talkSpurtStart (Seconds (0))
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << payloadSize);
 }
 
-McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& head, uint16_t payloadSize)
+McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize)
   : McpttMsg (),
-    m_head (head),
+    m_header (header),
     m_payloadSize (payloadSize),
     m_talkSpurtStart (Seconds (0))
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << payloadSize);
 }
 
-McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& head, uint16_t payloadSize, Time talkSpurtStart)
+McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize, Time talkSpurtStart)
   : McpttMsg (),
-    m_head (head),
+    m_header (header),
     m_payloadSize (payloadSize),
     m_talkSpurtStart (talkSpurtStart)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << payloadSize);
 }
 
 McpttMediaMsg::~McpttMediaMsg (void)
@@ -115,8 +115,8 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
 
   NS_LOG_LOGIC ("McpttMediaMsg deserializing...");
 
-  McpttRtpHeader head = GetHead ();
-  uint32_t bytesRead = head.Deserialize (start);
+  McpttRtpHeader header = GetHeader ();
+  uint32_t bytesRead = header.Deserialize (start);
 
   uint16_t index = 0;
   start.Next (bytesRead);
@@ -137,7 +137,7 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
       bytesRead += 1;
     }
 
-  SetHead (head);
+  SetHeader (header);
   SetPayloadSize (payloadSize);
 
   NS_LOG_LOGIC ("McpttMediaMsg read " << payloadSize << " payload bytes.");
@@ -158,7 +158,7 @@ McpttMediaMsg::GetSsrc (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  McpttRtpHeader header = GetHead ();
+  McpttRtpHeader header = GetHeader ();
   uint32_t ssrc = header.GetSsrc ();
 
   return ssrc;
@@ -169,11 +169,11 @@ McpttMediaMsg::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  McpttRtpHeader head = GetHead ();
+  McpttRtpHeader header = GetHeader ();
   uint32_t payloadSize = GetPayloadSize ();
 
   uint32_t size = 0;
-  size += head.GetSerializedSize ();
+  size += header.GetSerializedSize ();
   size += payloadSize; // (payloadSize) dummy bytes after the header.
 
   return size;
@@ -184,11 +184,11 @@ McpttMediaMsg::Print (std::ostream& os) const
 {
   NS_LOG_FUNCTION (this << &os);
 
-  McpttRtpHeader head = GetHead ();
+  McpttRtpHeader header = GetHeader ();
   uint32_t payloadSize = GetPayloadSize ();
 
   os << "McpttMediaMsg (";
-  os << "head=" << head;
+  os << "header=" << header;
   os << ";payloadSize=" << payloadSize;
   os << ")";
 }
@@ -196,7 +196,7 @@ McpttMediaMsg::Print (std::ostream& os) const
 void
 McpttMediaMsg::SetSsrc (const uint32_t ssrc)
 {
-  m_head.SetSsrc (ssrc);
+  m_header.SetSsrc (ssrc);
 }
 
 void
@@ -204,15 +204,15 @@ McpttMediaMsg::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this);
 
-  McpttRtpHeader head = GetHead ();
+  McpttRtpHeader header = GetHeader ();
   uint16_t payloadSize = GetPayloadSize ();
 
   NS_LOG_LOGIC ("McpttMediaMsg serializing...");
 
-  head.Serialize (start);
-  uint32_t headSize = head.GetSerializedSize ();
+  header.Serialize (start);
+  uint32_t headerSize = header.GetSerializedSize ();
 
-  start.Next (headSize);
+  start.Next (headerSize);
 
   NS_ABORT_MSG_UNLESS (payloadSize >=2, "Payload size must be at least two bytes");
   start.WriteHtonU16 (payloadSize);
@@ -258,11 +258,11 @@ McpttMediaMsg::Visit (McpttFloorMsgSink& floorMachine) const
 }
 
 McpttRtpHeader
-McpttMediaMsg::GetHead (void) const
+McpttMediaMsg::GetHeader (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return m_head;
+  return m_header;
 }
 
 uint16_t
@@ -282,11 +282,11 @@ McpttMediaMsg::GetTalkSpurtStart (void) const
 }
 
 void
-McpttMediaMsg::SetHead (const McpttRtpHeader& head)
+McpttMediaMsg::SetHeader (const McpttRtpHeader& header)
 {
-  NS_LOG_FUNCTION (this << head);
+  NS_LOG_FUNCTION (this << header);
 
-  m_head = head;
+  m_header = header;
 }
 
 void

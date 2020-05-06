@@ -73,9 +73,9 @@ public:
  McpttMediaMsg (void);
  /**
   * Creates an instance of the McpttMediaMsg class.
-  * \param head The head of the message.
+  * \param header The header of the message.
   */
- McpttMediaMsg (const McpttRtpHeader& head);
+ McpttMediaMsg (const McpttRtpHeader& header);
  /**
   * Creates an instance of the McpttMediaMsg class.
   * \param payloadSize The number of bytes to include in the payload.
@@ -83,17 +83,17 @@ public:
  McpttMediaMsg (uint16_t payloadSize);
  /**
   * Creates an instance of the McpttMediaMsg class.
-  * \param head The head of the message.
+  * \param header The header of the message.
   * \param payloadSize The number of bytes to include in the payload.
   */
- McpttMediaMsg (const McpttRtpHeader& head, uint16_t payloadSize);
+ McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize);
  /**
   * Creates an instance of the McpttMediaMsg class.
-  * \param head The head of the message.
+  * \param header The header of the message.
   * \param payloadSize The number of bytes to include in the payload.
   * \param talkSpurtStart Talk spurt start time
   */
- McpttMediaMsg (const McpttRtpHeader& head, uint16_t payloadSize, Time talkSpurtStart);
+ McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize, Time talkSpurtStart);
  /**
   * The destructor of the McpttMediaMsg class.
   */
@@ -145,15 +145,15 @@ public:
   */
  virtual void Visit (McpttFloorMsgSink& floorMachine) const;
 private:
- McpttRtpHeader m_head; //!< The head of the message.
+ McpttRtpHeader m_header; //!< The header of the message.
  uint16_t m_payloadSize; //!< The size (in bytes) of the payload of the message.
  Time m_talkSpurtStart; //!< Start of talk spurt
 public:
  /**
-  * Gets the head of the message.
-  * \returns The head of the message.
+  * Gets the header of the message.
+  * \returns The header of the message.
   */
- virtual McpttRtpHeader GetHead (void) const;
+ virtual McpttRtpHeader GetHeader (void) const;
  /**
   * Gets the size (in bytes) of the payload.
   * \returns The size (in bytes).
@@ -165,10 +165,10 @@ public:
   */
  virtual Time GetTalkSpurtStart (void) const;
  /**
-  * Sets the head of the message.
-  * \param head The head of the message.
+  * Sets the header of the message.
+  * \param header The header of the message.
   */
- virtual void SetHead (const McpttRtpHeader& head);
+ virtual void SetHeader (const McpttRtpHeader& header);
  /**
   * Sets the size (in bytes) of the payload.
   * \param payloadSize The size (in bytes).
