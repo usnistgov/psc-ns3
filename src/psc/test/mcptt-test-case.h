@@ -41,6 +41,9 @@
 
 namespace ns3 {
 
+/**
+ * Test case framework for off-network MCPTT tests
+ */
 class McpttTestCase : public TestCase
 {
 public:

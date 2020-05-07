@@ -43,6 +43,9 @@
 
 namespace ns3 {
 
+/**
+ * Test case configuration framework for off-network MCPTT tests
+ */
 class McpttTestCaseConfig : public SimpleRefCount<McpttTestCaseConfig>
 {
 public:
