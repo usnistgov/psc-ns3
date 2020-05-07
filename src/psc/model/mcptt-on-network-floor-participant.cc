@@ -92,11 +92,11 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                                          &McpttOnNetworkFloorParticipant::SetPriority),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("T100", "Timeout value to wait for response to Floor Release",
-                   TimeValue (MilliSeconds (40)),
+                   TimeValue (Seconds (1)),
                    MakeTimeAccessor (&McpttOnNetworkFloorParticipant::SetDelayT100),
                    MakeTimeChecker ())
     .AddAttribute ("T101", "Timeout value to wait for response to Floor Request",
-                   TimeValue (MilliSeconds (40)),
+                   TimeValue (Seconds (1)),
                    MakeTimeAccessor (&McpttOnNetworkFloorParticipant::SetDelayT101),
                    MakeTimeChecker ())
     .AddAttribute ("T103", "Timeout value to wait for Floor Idle",
@@ -104,7 +104,7 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    MakeTimeAccessor (&McpttOnNetworkFloorParticipant::SetDelayT103),
                    MakeTimeChecker ())
     .AddAttribute ("T104", "Timeout value to wait for response to Floor Queue Position Request",
-                   TimeValue (MilliSeconds (80)),
+                   TimeValue (MilliSeconds (1)),
                    MakeTimeAccessor (&McpttOnNetworkFloorParticipant::SetDelayT104),
                    MakeTimeChecker ())
     .AddAttribute ("T132", "Timeout to wait for user action to a Floor Granted message",
