@@ -300,6 +300,12 @@ McpttOnNetworkFloorParticipant::GetStateId (void) const
   return stateId;
 }
 
+Ptr<McpttOnNetworkFloorParticipantState>
+McpttOnNetworkFloorParticipant::GetState (void) const
+{
+  return m_state;
+}
+
 uint32_t
 McpttOnNetworkFloorParticipant::GetTxSsrc () const
 {

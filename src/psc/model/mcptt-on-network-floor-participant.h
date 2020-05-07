@@ -100,7 +100,7 @@ public:
   */
  virtual void ChangeState (Ptr<McpttOnNetworkFloorParticipantState>  state);
  /**
-  * Notifes the floor machine that it has been granted the floor.
+  * Notifies the floor machine that it has been granted the floor.
   */
  virtual void FloorGranted (void);
  /**
@@ -123,6 +123,11 @@ public:
   * \returns The state ID.
   */
  virtual McpttEntityId GetStateId (void) const;
+ /**
+  * Gets the state of the floor machine.
+  * \returns The state.
+  */
+ virtual Ptr<McpttOnNetworkFloorParticipantState> GetState (void) const;
  /**
   * Gets the SSRC to use when sending a message.
   * \returns The SSRC to use when sending a message.
@@ -154,8 +159,8 @@ public:
   */
  virtual bool IsGranted (void) const;
  /**
-  * Indicates whether or not this participant is the origninator.
-  * \returns True, if this participant is the orignator, or false otherwise.
+  * Indicates whether or not this participant is the originator.
+  * \returns True, if this participant is the originator, or false otherwise.
   */
  virtual bool IsOriginator (void) const;
  /**
@@ -304,7 +309,7 @@ public:
  virtual void Stop (void);
 protected:
  /**
-  * \brief Disposes of the McpttLfloorMachine.
+  * \brief Disposes of the McpttFloorMachine.
   */
  virtual void DoDispose (void);
  /**
@@ -320,18 +325,18 @@ protected:
   */
  virtual void ExpiryOfT103 (void);
  /**
-  * Notifies the floor machine that timer T103 has expired.
+  * Notifies the floor machine that timer T104 has expired.
   */
  virtual void ExpiryOfT104 (void);
  /**
-  * Notifies the floor machine that timer T103 has expired.
+  * Notifies the floor machine that timer T132 has expired.
   */
  virtual void ExpiryOfT132 (void);
 private:
  bool m_ackRequired; //!< A flag that indicates if acknowledgement is required.
  Ptr<McpttCounter> m_c100; //!< The counter associated with T100.
  Ptr<McpttCounter> m_c101; //!< The counter associated with T101.
- Ptr<McpttCounter> m_c104; //!< The counter associated with T101.
+ Ptr<McpttCounter> m_c104; //!< The counter associated with T104.
  bool m_dualFloor; //!< A flag that to indicate dual floor indication.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  bool m_genMedia;  //!< The flag that indicates if media should be generated.
@@ -346,13 +351,13 @@ private:
  Ptr<McpttOnNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
- Ptr<Packet> m_storedMsgs; //!< The collecton of stored messages.
- Ptr<McpttTimer> m_t100; //!< The timer T101.
- Ptr<McpttTimer> m_t101; //!< The timer T103.
- Ptr<McpttTimer> m_t103; //!< The timer T104.
+ Ptr<Packet> m_storedMsgs; //!< The collection of stored messages.
+ Ptr<McpttTimer> m_t100; //!< The timer T100.
+ Ptr<McpttTimer> m_t101; //!< The timer T101.
+ Ptr<McpttTimer> m_t103; //!< The timer T103.
  Ptr<McpttTimer> m_t104; //!< The timer T104.
- Ptr<McpttTimer> m_t132; //!< The timer T104.
- Callback<void, const McpttFloorMsg&> m_txCb; //!< The message tranmission call back.
+ Ptr<McpttTimer> m_t132; //!< The timer T132.
+ Callback<void, const McpttFloorMsg&> m_txCb; //!< The message transmission call back.
 public:
  /**
   * Gets the counter C100
@@ -426,7 +431,7 @@ public:
  virtual void SetOriginator (const bool& originator);
  /**
   * Sets the flag that indicates if the participant is overridden without revoke.
-  * \param overidden The flag.
+  * \param overridden The flag.
   */
  virtual void SetOverridden (const bool& overridden);
  /**
