@@ -24,9 +24,19 @@
 
 namespace ns3 {
 
+class NrSlDataRadioBearerInfo;
+
 /**
+ * \ingroup lte
+ *
  * \brief User part of the Service Access Point (SAP) between UE RRC and NR
  *        sidelink UE RRC.
+ *
+ * This class implements the service Access Point (SAP) for NR sidelink
+ * UE RRC, i.e., the interface between the LteUeRrc and the NrSlUeRrc. In
+ * particular, this class implements the User part of the
+ * SAP, i.e., the sidelink related methods exported by the
+ * NrSlUeRrc and called by the LteUeRrc.
  */
 class NrSlUeRrcSapUser
 {
@@ -35,14 +45,71 @@ public:
    * \brief Destructor
    */
   virtual ~NrSlUeRrcSapUser ();
-
+  /**
+   * \brief Get NR sidelink preconfiguration
+   *
+   * \return The sidelink preconfiguration
+   */
   virtual const LteRrcSap::SidelinkPreconfigNr GetNrSlPreconfiguration () = 0;
+  /**
+   * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
+   *
+   * \param slBitMap The sidelink bitmap
+   * \return A vector representing the physical sidelink pool
+   */
+  virtual const std::vector <std::bitset<1>>
+  GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap) = 0;
+  /**
+   * \brief Get Bwp Id Container
+   *
+   * \return The container of SL BWP ids
+   */
+  virtual const std::set<uint8_t> GetBwpIdContainer () = 0;
+  /**
+   * \brief Add NR sidelink data radio bearer
+   *
+   * Attempts to add a sidelink radio bearer
+   *
+   * \param slDrb LteSidelinkRadioBearerInfo pointer
+   */
+  virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb) = 0;
+  /**
+   * \brief Get NR Sidelink data radio bearer
+   *
+   * \param remoteL2Id The remote/destination layer 2 id
+   * \return The NrSlDataRadioBearerInfo
+   */
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t remoteL2Id) = 0;
+  /**
+   * \brief Get Sidelink source layer 2 id
+   *
+   * \return The Sidelink layer 2 id of the source
+   */
+  virtual uint32_t GetSourceL2Id () = 0 ;
+  /**
+   * \brief Get next LCID for setting up NR SL DRB towards the given destination
+   *
+   * As per, table 6.2.4-1 of 38.321 LCID for SL-SCH range from 4-19, i.e.,
+   * total 16 LCIDs
+   *
+   * \param dstL2Id The destination layer 2 ID
+   * \return the next available NR SL DRB LCID
+   */
+  virtual uint8_t GetNextLcid (uint32_t dstL2Id) = 0;
+
 
 };
 
 /**
  * \brief Provider part of the Service Access Point (SAP) between UE RRC and NR
  *        sidelink UE RRC.
+ *
+ * This class implements the service Access Point (SAP) for NR sidelink
+ * UE RRC, i.e., the interface between the LteUeRrc and the NrSlUeRrc. In
+ * particular, this class implements the Provider part of the
+ * SAP, i.e., the sidelink related methods exported by the
+ * LteUeRrc and called by the NrSlUeRrc.
+ *
  */
 class NrSlUeRrcSapProvider
 {
@@ -78,6 +145,13 @@ public:
 
   // inherited from NRSlUeRrcSapUser
   virtual const LteRrcSap::SidelinkPreconfigNr GetNrSlPreconfiguration ();
+  virtual const std::vector <std::bitset<1>>
+  GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
+  virtual const std::set<uint8_t> GetBwpIdContainer ();
+  virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t remoteL2Id);
+  virtual uint32_t GetSourceL2Id ();
+  virtual uint8_t GetNextLcid (uint32_t dstL2Id);
 
 
 private:
@@ -104,6 +178,48 @@ MemberNrSlUeRrcSapUser<C>::GetNrSlPreconfiguration ()
   return m_owner->DoGetNrSlPreconfiguration ();
 }
 
+template <class C>
+const std::vector <std::bitset<1>>
+MemberNrSlUeRrcSapUser<C>::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
+{
+  return m_owner->DoGetPhysicalSlPool (slBitMap);
+}
+
+template <class C>
+const std::set<uint8_t>
+MemberNrSlUeRrcSapUser<C>::GetBwpIdContainer ()
+{
+  return m_owner->DoGetBwpIdContainer ();
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
+{
+  return m_owner->DoAddNrSlDataRadioBearer (slDrb);
+}
+
+
+template <class C>
+Ptr<NrSlDataRadioBearerInfo>
+MemberNrSlUeRrcSapUser<C>::GetSidelinkRadioBearer (uint32_t remoteL2Id)
+{
+  return m_owner->DoGetSidelinkRadioBearer (remoteL2Id);
+}
+
+template <class C>
+uint32_t
+MemberNrSlUeRrcSapUser<C>::GetSourceL2Id ()
+{
+  return m_owner->DoGetSourceL2Id ();
+}
+
+template <class C>
+uint8_t
+MemberNrSlUeRrcSapUser<C>::GetNextLcid (uint32_t dstL2Id)
+{
+  return m_owner->DoGetNextLcid (dstL2Id);
+}
 
 
 /**
