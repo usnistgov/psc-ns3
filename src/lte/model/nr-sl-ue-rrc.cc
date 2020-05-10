@@ -21,6 +21,7 @@
 
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-rrc-sap.h>
+#include <ns3/lte-radio-bearer-info.h>
 
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
@@ -100,7 +101,7 @@ NrSlUeRrc::SetSourceL2Id (uint32_t srcL2Id)
 }
 
 uint32_t
-NrSlUeRrc::GetSourceL2Id () const
+NrSlUeRrc::DoGetSourceL2Id ()
 {
   NS_LOG_FUNCTION (this);
   return m_srcL2Id;
@@ -151,14 +152,14 @@ NrSlUeRrc::SetTddPattern ()
 }
 
 const LteRrcSap::SidelinkPreconfigNr
-NrSlUeRrc::DoGetNrSlPreconfiguration () const
+NrSlUeRrc::DoGetNrSlPreconfiguration ()
 {
   NS_LOG_FUNCTION (this);
   return m_preconfiguration;
 }
 
 const std::vector <std::bitset<1>>
-NrSlUeRrc::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
+NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
 {
   NS_LOG_FUNCTION (this);
   std::vector <std::bitset<1>> finalSlPool;
@@ -222,6 +223,123 @@ NrSlUeRrc::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
   while (patternIt != m_tddPattern.end ());
 
   return finalSlPool;
+}
+
+void
+NrSlUeRrc::StoreSlBwpId (uint8_t bwpId)
+{
+  NS_LOG_FUNCTION (this << +bwpId);
+  std::pair<std::set<uint8_t>::iterator,bool> ret;
+  ret = m_slBwpIds.insert (bwpId);
+  NS_ABORT_MSG_IF (ret.second == false, "BWP id " << +bwpId << " already exists");
+}
+
+const std::set <uint8_t>
+NrSlUeRrc::DoGetBwpIdContainer ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_slBwpIds;
+}
+
+void
+NrSlUeRrc::DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlDrbMapPerDestination::iterator destIt = m_slDrbMap.find (slDrb->m_destinationL2Id);
+  if (destIt == m_slDrbMap.end ())
+    {
+      NS_LOG_LOGIC ("First SL DRB for destination " << slDrb->m_destinationL2Id);
+      NrSlDrbMapPerLcId mapPerLcId;
+      mapPerLcId.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slDrb->m_logicalChannelIdentity, slDrb));
+      m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slDrb->m_destinationL2Id, mapPerLcId));
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Currently supporting only one SL DRB per pair of source/destination");
+      // once we support multiple SL DRB per pair of source/destination
+      // above assert can be removed, and following code will be used
+      NrSlDrbMapPerLcId::iterator lcIt;
+      lcIt = destIt->second.find (slDrb->m_logicalChannelIdentity);
+      if (lcIt == destIt->second.end ())
+        {
+          //New bearer for the destination
+          destIt->second.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slDrb->m_logicalChannelIdentity, slDrb));
+        }
+      else
+        {
+          NS_FATAL_ERROR ("SL DRB with LC id = " << +slDrb->m_logicalChannelIdentity << " already exists");
+        }
+
+    }
+}
+
+Ptr<NrSlDataRadioBearerInfo>
+NrSlUeRrc::GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<NrSlDataRadioBearerInfo> slrb = nullptr;
+  NrSlDrbMapPerDestination::iterator destIt = m_slDrbMap.find (remoteL2Id);
+  NS_ASSERT_MSG (destIt != m_slDrbMap.end (), "Unable to find DRB for destination L2 Id " << remoteL2Id);
+  NS_LOG_LOGIC ("Searching SL DRB " << srcL2Id << " -> " << remoteL2Id);
+  // Since we do not support multiple bearers for a single destination,
+  // the size of the LC map should be equal to 1, thus, we can just return
+  // the NrSlDataRadioBearerInfo of the LC for the destination.
+  // In future, when we overcome this limitation this method would have an
+  // extra parameter of LC id.
+  NS_ASSERT_MSG (destIt->second.size () == 1, "There should be only one LC per destination");
+  return destIt->second.begin ()->second;
+}
+
+Ptr<NrSlDataRadioBearerInfo>
+NrSlUeRrc::DoGetSidelinkRadioBearer (uint32_t remoteL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  return GetSidelinkRadioBearer (m_srcL2Id, remoteL2Id);
+}
+
+uint8_t
+NrSlUeRrc::DoGetNextLcid (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  //Note: This function supports the fact that multiple bearers can exist between
+  //a source and destination. However, the rest of the code currently work
+  //with only one LC per destination.
+
+  //find unused the LCID
+  uint8_t lcid = 0; //initialize with invalid value
+
+  NrSlDrbMapPerDestination::iterator destIt = m_slDrbMap.find (dstL2Id);
+  if (destIt == m_slDrbMap.end ())
+    {
+      //first time creating a LC for this destination
+      lcid = 4;
+    }
+  else
+    {
+      // if the size of the LC id per DRB map is equal to
+      // the maximum allowed LCIDs, we halt!
+      if (destIt->second.size () == 16)
+        {
+          NS_FATAL_ERROR ("All the 16 LC ids are allocated");
+        }
+      // find an id not being used
+      for (uint8_t lcidTmp = 4; lcidTmp < 20; lcidTmp++)
+        {
+          NrSlDrbMapPerLcId::iterator lcIt;
+          lcIt = destIt->second.find (lcidTmp);
+          if (lcIt != destIt->second.end ())
+            {
+              continue;
+            }
+          else
+            {
+              lcid = lcidTmp;
+              break; //avoid increasing lcid
+            }
+        }
+    }
+  NS_ASSERT (lcid != 0);
+  return lcid;
 }
 
 std::ostream &

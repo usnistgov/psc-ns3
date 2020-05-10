@@ -24,12 +24,17 @@
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/nr-sl-rrc-sap.h>
 
+#include <unordered_map>
+#include <vector>
+
 
 namespace ns3 {
 
+class NrSlDataRadioBearerInfo;
+
 /**
  * \ingroup lte
- * Manages Sidelink information for this UE
+ * Manages NR Sidelink information for this UE
  */
 class NrSlUeRrc : public Object
 {
@@ -63,6 +68,14 @@ public:
    */
   static TypeId GetTypeId (void);
   /**
+   * Map between logical channel id and data radio bearer for transmissions
+   */
+  typedef std::unordered_map <uint8_t, Ptr<NrSlDataRadioBearerInfo> > NrSlDrbMapPerLcId;
+  /**
+   * Map between destination, logical channel id and data radio bearer for transmissions
+   */
+  typedef std::unordered_map <uint32_t, NrSlDrbMapPerLcId> NrSlDrbMapPerDestination;
+  /**
    * \brief Get the pointer for the NR sidelink UE RRC SAP User interface
    *        offered to UE RRC by this class
    *
@@ -92,31 +105,31 @@ public:
    */
   void SetNrSlPreconfiguration (const LteRrcSap::SidelinkPreconfigNr &preconfiguration);
   /**
-   * \brief Set Sidelink pre-configuration function
-   * \return The NR LteRrcSap::SidelinkPreconfigNr struct
-   */
-  const LteRrcSap::SidelinkPreconfigNr DoGetNrSlPreconfiguration () const;
-  /**
-   * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
-   *
-   * \param slBitMap The sidelink bitmap
-   * \return A vector representing the physical sidelink pool
-   */
-  const std::vector <std::bitset<1>>
-  GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
-  /**
    * \brief Set Sidelink source layer 2 id
    *
    * \param srcL2Id The Sidelink layer 2 id of the source
    */
   void SetSourceL2Id (uint32_t srcL2Id);
   /**
-   * \brief Get Sidelink source layer 2 id
+   * \brief Store Sidelink BWP id
    *
-   * \return The Sidelink layer 2 id of the source
+   * \param bwpId The active sidelink BWP id
    */
-  uint32_t GetSourceL2Id () const;
+  void StoreSlBwpId (uint8_t bwpId);
+
 private:
+  //NrSlUeRrcSapUser methods
+  const LteRrcSap::SidelinkPreconfigNr DoGetNrSlPreconfiguration ();
+  const std::vector <std::bitset<1>>
+  DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
+  const std::set <uint8_t> DoGetBwpIdContainer ();
+  void DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkRadioBearer (uint32_t remoteL2Id);
+  uint32_t DoGetSourceL2Id ();
+  uint8_t DoGetNextLcid (uint32_t dstL2Id);
+
+  //Class internal private methods and member variables
+
   /**
    * \brief Set the TDD pattern that the this UE RRC will utilize to compute
    *        physical SL pool.
@@ -132,6 +145,15 @@ private:
    * This function is copied from mmwave-enb-phy class
    */
   void SetTddPattern ();
+  /**
+   * \brief Get NR Sidelink data radio bearer
+   *
+   * \param srcL2Id The source layer 2 id
+   * \param remoteL2Id The remote/destination layer 2 id
+   *
+   * \return The NrSlDataRadioBearerInfo
+   */
+  Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id);
   // NR sidelink UE RRC SAP
   NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
   NrSlUeRrcSapProvider* m_nrSlUeRrcSapProvider {nullptr}; ///< NR SL UE RRC SAP provider
@@ -144,7 +166,12 @@ private:
    */
   LteRrcSap::SidelinkPreconfigNr m_preconfiguration;
   std::vector<NrSlUeRrc::LteNrTddSlotType> m_tddPattern; //!< TDD pattern
-  uint32_t m_srcL2Id {0};
+  uint32_t m_srcL2Id {0}; //!< source layer 2 id
+  //I am using std::set here instead of std::unordered_set for 2 reason:
+  //1. Python bindings does not support std::unordered_set
+  //2. I do not see this container to pass max 2 elements
+  std::set <uint8_t> m_slBwpIds; //!< A container to store SL BWP ids
+  NrSlDrbMapPerDestination m_slDrbMap; //!< NR sidelink data radio bearer map
 };     //end of NrSlUeRrc'class
 
 } // namespace ns3
