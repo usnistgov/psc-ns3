@@ -26,6 +26,12 @@
 #include "lte-enb-net-device.h"
 #include "epc-ue-nas.h"
 #include "lte-as-sap.h"
+#include "lte-sl-tft.h"
+
+#include <ns3/ipv4-header.h>
+#include <ns3/ipv6-header.h>
+#include <ns3/ipv4-l3-protocol.h>
+#include <ns3/ipv6-l3-protocol.h>
 
 namespace ns3 {
 
@@ -203,6 +209,7 @@ EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
     }
 }
 
+
 bool
 EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
 {
@@ -212,6 +219,65 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
     {
     case ACTIVE:
       {
+        //First Check if there is any sidelink bearer for the destination
+        //otherwise it may use the default bearer, if exists
+        Ptr<Packet> pCopy = packet->Copy ();
+        if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
+          {
+            Ipv4Header ipv4Header;
+            pCopy->RemoveHeader (ipv4Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetRemoteL2Id ());
+                    return true;
+                  }
+              }
+            //check if pending
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
+                 it != m_pendingSlBearersList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                  {
+                    NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
+                    return false;
+                  }
+              }
+          }
+        if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+          {
+            Ipv6Header ipv6Header;
+            pCopy->RemoveHeader (ipv6Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetRemoteL2Id ());
+                    return true;
+                  }
+              }
+            //check if pending
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
+                 it != m_pendingSlBearersList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                  {
+                    NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
+                    return false;
+                  }
+              }
+          }
+        //No sidelink found
+        NS_LOG_DEBUG ("No sidelink bearer found. Use uplink");
         uint32_t id = m_tftClassifier.Classify (packet, EpcTft::UPLINK, protocolNumber);
         NS_ASSERT ((id & 0xFFFFFF00) == 0);
         uint8_t bid = (uint8_t) (id & 0x000000FF);
@@ -221,14 +287,50 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
           }
         else
           {
-            m_asSapProvider->SendData (packet, bid); 
+            m_asSapProvider->SendData (packet, bid);
             return true;
           }
       }
       break;
-
+    case OFF:
+      {
+        //Check if there is any sidelink bearer for the destination
+        Ptr<Packet> pCopy = packet->Copy ();
+        if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
+          {
+            Ipv4Header ipv4Header;
+            pCopy->RemoveHeader (ipv4Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetRemoteL2Id ());
+                    return true;
+                  }
+              }
+          }
+        if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+          {
+            Ipv6Header ipv6Header;
+            pCopy->RemoveHeader (ipv6Header);
+            for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+                 it != m_slBearersActivatedList.end ();
+                 it++)
+              {
+                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                  {
+                    //Found sidelink
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetRemoteL2Id ());
+                    return true;
+                  }
+              }
+          }
+      }
     default:
-      NS_LOG_WARN (this << " NAS OFF, discarding packet");
+      NS_LOG_WARN (this << " NAS neither OFF nor ACTIVE, or Sidelink bearer not found, discarding packet");
       return false;
       break;
     }
@@ -316,6 +418,39 @@ EpcUeNas::SwitchToState (State newState)
     }
 
 }
+
+void
+EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  //regardless of the state we need to request RRC to setup the bearer
+  //for in coverage case, it will trigger communication with the gNodeb
+  //for out of coverage, it will trigger the use of preconfiguration
+  m_pendingSlBearersList.push_back (tft);
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetRemoteL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+}
+
+void
+EpcUeNas::DoNotifyNrSlRadioBearerActivated (uint32_t remoteL2Id)
+{
+  NS_LOG_FUNCTION (this);
+
+  std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
+  while (it != m_pendingSlBearersList.end ())
+    {
+      if ((*it)->GetRemoteL2Id () == remoteL2Id)
+        {
+          //Found sidelink
+          m_slBearersActivatedList.push_back (*it);
+          it = m_pendingSlBearersList.erase (it);
+        }
+      else
+        {
+          it++;
+        }
+    }
+}
+
 
 
 } // namespace ns3

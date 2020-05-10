@@ -30,6 +30,7 @@ namespace ns3 {
 
 
 class EpcHelper;
+class LteSlTft;
 
 class EpcUeNas : public Object
 {
@@ -153,7 +154,6 @@ public:
    */
   bool Send (Ptr<Packet> p, uint16_t protocolNumber);
 
-
   /**
    * Definition of NAS states as per "LTE - From theory to practice",
    * Section 3.2.3.2 "Connection Establishment and Release"
@@ -255,6 +255,30 @@ private:
    *
    */
   std::list<BearerToBeActivated> m_bearersToBeActivatedListForReconnection;
+
+  //NR SL
+
+public:
+
+  /**
+   * \brief Activate NR Sidelink bearer
+   *
+   * \param tft The bearer information
+   */
+  void ActivateNrSlBearer (Ptr<LteSlTft> tft);
+
+private:
+
+  /**
+   * \brief Notify Nr Sidelink radio bearer activated function
+   *
+   * \param remoteL2Id The remote L2 id
+   */
+  void DoNotifyNrSlRadioBearerActivated (uint32_t remoteL2Id);
+
+  std::list<Ptr<LteSlTft> > m_pendingSlBearersList; ///< pending NR Sidelink bearers list
+
+  std::list<Ptr<LteSlTft> > m_slBearersActivatedList; ///< Sidelink NR bearers activated list
 
 };
 
