@@ -91,6 +91,27 @@ public:
    */
   virtual void Disconnect () = 0;
 
+  //Nr Sidelink
+  /**
+   * \brief Activate NR sidelink radio bearer
+   *
+   * Tells the RRC to activate NR Sidelink Bearer
+   *
+   * \param remoteL2Id The remote layer 3 id
+   * \param isTransmit True if the bearer is for transmission
+   * \param isReceive True if the bearer is for reception
+   * \param isUnicast True if the bearer is for unicast communication
+   */
+  virtual void ActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast) = 0;
+
+  /**
+   * \brief Send sidelink data packet to RRC.
+   *
+   * \param packet The packet
+   * \param remoteL2Id The remote layer 2 id
+   */
+  virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id) = 0;
+
 };
 
 
@@ -133,6 +154,14 @@ public:
    */
   virtual void RecvData (Ptr<Packet> packet) = 0;
 
+  //NR Sidelink
+  /**
+   * \brief Notify the NAS that the NR sidelink has been setup
+   *
+   * \param remoteL2Id The remote layer 2 id
+   */
+  virtual void NotifyNrSlRadioBearerActivated (uint32_t remoteL2Id) = 0;
+
 };
 
 
@@ -161,6 +190,8 @@ public:
   virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
+  virtual void ActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id);
 
 private:
   MemberLteAsSapProvider ();
@@ -220,6 +251,20 @@ MemberLteAsSapProvider<C>::Disconnect ()
   m_owner->DoDisconnect ();
 }
 
+template <class C>
+void
+MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+{
+  m_owner->DoActivateNrSlRadioBearer (remoteL2Id, isTransmit, isReceive, isUnicast);
+}
+
+template <class C>
+void
+MemberLteAsSapProvider<C>::SendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id)
+{
+  m_owner->DoSendSidelinkData (packet, remoteL2Id);
+}
+
 
 /**
  * Template for the implementation of the LteAsSapUser as a member
@@ -242,6 +287,7 @@ public:
   virtual void NotifyConnectionFailed ();
   virtual void RecvData (Ptr<Packet> packet);
   virtual void NotifyConnectionReleased ();
+  virtual void NotifyNrSlRadioBearerActivated (uint32_t remoteL2Id);
 
 private:
   MemberLteAsSapUser ();
@@ -285,6 +331,13 @@ void
 MemberLteAsSapUser<C>::NotifyConnectionReleased ()
 {
   m_owner->DoNotifyConnectionReleased ();
+}
+
+template <class C>
+void
+MemberLteAsSapUser<C>::NotifyNrSlRadioBearerActivated (uint32_t remoteL2Id)
+{
+  m_owner->DoNotifyNrSlRadioBearerActivated (remoteL2Id);
 }
 
 
