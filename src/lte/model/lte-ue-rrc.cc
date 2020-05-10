@@ -38,6 +38,7 @@
 #include <ns3/lte-rlc-am.h>
 #include <ns3/lte-pdcp.h>
 #include <ns3/lte-radio-bearer-info.h>
+#include <ns3/nr-sl-mac-sap.h>
 
 #include <cmath>
 
@@ -164,7 +165,12 @@ LteUeRrc::LteUeRrc ()
   m_drbPdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteUeRrc> (this);
   m_asSapProvider = new MemberLteAsSapProvider<LteUeRrc> (this);
   m_ccmRrcSapUser = new MemberLteUeCcmRrcSapUser<LteUeRrc> (this);
+  //NR SL
   m_nrSlRrcSapProvider = new MemberNrSlUeRrcSapProvider<LteUeRrc> (this);
+  m_nrSlUeBwpmRrcSapUser = new MemberNrSlUeBwpmRrcSapUser<LteUeRrc> (this);
+  m_nrSlUeCmacSapUser = new MemberNrSlUeCmacSapUser<LteUeRrc> (this);
+  m_nrSlUeCphySapUser = new MemberNrSlUeCphySapUser<LteUeRrc> (this);
+  m_nrSlPdcpSapUser = new MemberNrSlPdcpSapUser<LteUeRrc> (this);
 }
 
 LteUeRrc::~LteUeRrc ()
@@ -187,12 +193,20 @@ LteUeRrc::DoDispose ()
   delete m_drbPdcpSapUser;
   delete m_asSapProvider;
   delete m_ccmRrcSapUser;
-  delete m_nrSlRrcSapProvider;
   m_cphySapProvider.erase(m_cphySapProvider.begin(), m_cphySapProvider.end());
   m_cphySapProvider.clear();
   m_cmacSapProvider.erase(m_cmacSapProvider.begin(), m_cmacSapProvider.end());
   m_cmacSapProvider.clear();
   m_drbMap.clear ();
+  delete m_nrSlRrcSapProvider;
+  delete m_nrSlUeBwpmRrcSapUser;
+  delete m_nrSlUeCmacSapUser;
+  delete m_nrSlUeCphySapUser;
+  delete m_nrSlPdcpSapUser;
+  m_nrSlUeCmacSapProvider.erase (m_nrSlUeCmacSapProvider.begin (), m_nrSlUeCmacSapProvider.end ());
+  m_nrSlUeCmacSapProvider.clear ();
+  m_nrSlUeCphySapProvider.erase (m_nrSlUeCphySapProvider.begin (), m_nrSlUeCphySapProvider.end ());
+  m_nrSlUeCphySapProvider.clear ();
 }
 
 TypeId
@@ -3341,6 +3355,21 @@ LteUeRrc::DoResetSyncIndicationCounter ()
 }
 
 //Nr sidelink
+
+const std::set <uint8_t>
+LteUeRrc::GetNrSlBwpIdContainer ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlRrcSapUser->GetBwpIdContainer ();
+}
+
+void
+LteUeRrc::SetNrSlBwpIdContainerInBwpm ()
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlUeBwpmRrcSapProvider->SetBwpIdContainer (m_nrSlRrcSapUser->GetBwpIdContainer ());
+}
+
 NrSlUeRrcSapProvider*
 LteUeRrc::GetNrSlUeRrcSapProvider ()
 {
@@ -3353,6 +3382,331 @@ LteUeRrc::SetNrSlUeRrcSapUser (NrSlUeRrcSapUser* s)
 {
   NS_LOG_FUNCTION (this);
   m_nrSlRrcSapUser = s;
+}
+void
+LteUeRrc::SetNrSlUeBwpmRrcSapProvider (NrSlUeBwpmRrcSapProvider * s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlUeBwpmRrcSapProvider = s;
+}
+
+NrSlUeBwpmRrcSapUser*
+LteUeRrc::GetNrSlUeBwpmRrcSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlUeBwpmRrcSapUser;
+}
+
+void
+LteUeRrc::SetNrSlUeCmacSapProvider (uint8_t bwpId, NrSlUeCmacSapProvider* s)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_nrSlUeCmacSapProvider.size () == 0)
+    {
+      for (uint16_t n = 0; n < m_numberOfComponentCarriers; n++)
+        {
+          m_nrSlUeCmacSapProvider.push_back (nullptr);
+        }
+    }
+  m_nrSlUeCmacSapProvider.at (bwpId) = s;
+}
+
+NrSlUeCmacSapUser*
+LteUeRrc::GetNrSlUeCmacSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlUeCmacSapUser;
+}
+
+void
+LteUeRrc::SetNrSlUeCphySapProvider (uint8_t bwpId, NrSlUeCphySapProvider* s)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_nrSlUeCphySapProvider.size () == 0)
+    {
+      for (uint16_t n = 0; n < m_numberOfComponentCarriers; n++)
+        {
+          m_nrSlUeCphySapProvider.push_back (nullptr);
+        }
+    }
+  m_nrSlUeCphySapProvider.at (bwpId) = s;
+}
+
+NrSlUeCphySapUser*
+LteUeRrc::GetNrSlUeCphySapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlUeCphySapUser;
+}
+
+void
+LteUeRrc::SetNrSlPdcpSapProvider (NrSlPdcpSapProvider* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlPdcpSapProvider = s;
+}
+
+NrSlPdcpSapUser*
+LteUeRrc::GetNrSlPdcpSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlPdcpSapUser;
+}
+
+void
+LteUeRrc::SetNrSlMacSapProvider (NrSlMacSapProvider* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlMacSapProvider = s;
+}
+
+
+void
+LteUeRrc::DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParameters &params)
+{
+  NS_LOG_FUNCTION (this);
+  m_asSapUser->RecvData (params.pdcpSdu);
+}
+
+void
+LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id)
+{
+  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. Remote layer 2 id " << remoteL2Id);
+  //Find the PDCP for NR Sidelink transmission
+  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkRadioBearer (remoteL2Id);
+
+  //If there are multiple bearers, hence, multiple LCs, for a destination the
+  //the NAS layer should be aware about this. That is, it should give RRC a
+  //bearer id, and RRC should map it to a right LC.
+  NS_ASSERT_MSG (slDrb, "could not find Sidelink data radio bearer for remote = " << remoteL2Id);
+
+  auto params = NrSlPdcpSapProvider::NrSlTransmitPdcpSduParameters (packet, m_rnti,
+                                                                    slDrb->m_logicalChannelIdentity,
+                                                                    NrSlPdcpSapUser::IP_SDU);
+
+  NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending packet " << packet
+                     << " on NR SL DRB for destination " << remoteL2Id
+                     << " (LCID " << (uint32_t) params.lcId << ")"
+                     << " (" << packet->GetSize () << " bytes)");
+
+  slDrb->m_pdcp->GetNrSlPdcpSapProvider ()->TransmitNrSlPdcpSdu (params);
+}
+
+void
+LteUeRrc::DoActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+{
+  NS_LOG_FUNCTION (this << remoteL2Id << isTransmit << isReceive << isUnicast);
+  if (!isUnicast)
+    {
+      ActivateNrSlDrb (remoteL2Id, isTransmit, isReceive);
+    }
+}
+
+void
+LteUeRrc::ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive)
+{
+  NS_LOG_FUNCTION (this << remoteL2Id << isTransmit << isReceive);
+
+  switch (m_state)
+  {
+    case IDLE_START:
+    case IDLE_CELL_SEARCH:
+    case IDLE_WAIT_MIB_SIB1:
+    case IDLE_WAIT_MIB:
+    case IDLE_WAIT_SIB1:
+    case IDLE_CAMPED_NORMALLY:
+
+      NS_LOG_INFO ("Considering IMSI " << m_imsi << " out of network");
+
+      if (m_rnti == 0)
+        {
+          SetOutofCovrgUeRnti ();
+        }
+
+      //Table 6.2.4-1 Values of LCID for SL-SCH of 38.321 and LCG from 36.331
+
+      if (isTransmit)
+        {
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), remoteL2Id, m_nrSlRrcSapUser->GetNextLcid (remoteL2Id));
+          NS_LOG_INFO ("Created new TX SLRB for remote id " << remoteL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
+        }
+      /*
+      if (rx)
+        {
+          //Add to the list of group to monitor for Sidelink
+          m_sidelinkConfiguration->m_rxGroup.push_back (group);
+          //tell the PHY and MAC of primary carrier to listen for the group
+          m_cphySapProvider.at (0)->AddSlDestination (group);
+          m_cmacSapProvider.at (0)->AddSlDestination (group);
+        }
+
+      NS_ASSERT (m_sidelinkConfiguration->GetSlPreconfiguration ().preconfigComm.nbPools > 0);
+      //Activate bearer using preconfiguration if available
+      if (tx)
+        {
+          NS_LOG_INFO ("Configuring Tx pool");
+          Ptr<SidelinkTxCommResourcePool> txPool = CreateObject<SidelinkTxCommResourcePool>();
+          txPool->SetPool (m_sidelinkConfiguration->GetSlPreconfiguration ().preconfigComm.pools[0]);
+          txPool->SetUeSelectedTxParameters (0);
+          std::list <uint32_t>::iterator it;
+          std::list <uint32_t> destinations = m_sidelinkConfiguration->GetTxDestinations ();
+
+          m_cmacSapProvider.at (0)->AddSlCommTxPool (group, txPool);
+          //if this is the first group setup, register pool with physical layer, otherwise it has already been done
+          if (destinations.size () == 1)
+            {
+              //inform PHY of primary carrier about the tx pool
+              m_cphySapProvider.at (0)->SetSlCommTxPool (txPool);
+            }
+        }
+      if ((tx && rx) || rx) // only populate Rx pool info if rx == true
+        {
+          NS_LOG_INFO ("Configuring Rx pool");
+          //Configure receiving pool
+          std::list< Ptr<SidelinkRxCommResourcePool> > pools;
+          Ptr<SidelinkRxCommResourcePool> pool = CreateObject <SidelinkRxCommResourcePool> ();
+          pool->SetPool (m_sidelinkConfiguration->GetSlPreconfiguration ().preconfigComm.pools[0]);
+          //must find ways to store Rx pool though it is in different format
+          //m_sidelinkConfiguration->rxPools.push_back (std::make_pair(msg.sib18.commConfig.commRxPool.pools[i], pool));
+          pools.push_back (pool);
+          m_cmacSapProvider.at (0)->SetSlCommRxPools (pools);
+          m_cphySapProvider.at (0)->SetSlCommRxPools (pools);
+        }
+      //for testing, just indicate it is ok
+      m_asSapUser->NotifySidelinkRadioBearerActivated (group);
+      m_sidelinkConfiguration->NotifySidelinkRadioBearerActivated (group);*/
+      break;
+/*
+    case IDLE_WAIT_SIB2:
+    case IDLE_CONNECTING:
+      NS_LOG_INFO ("Connecting, must wait to send message");
+      break;
+
+    case CONNECTED_NORMALLY:
+    case CONNECTED_HANDOVER:
+    case CONNECTED_PHY_PROBLEM:
+    case CONNECTED_REESTABLISHING:
+      NS_LOG_INFO ("Considering in coverage");
+      if (tx)
+        {
+          Ptr<LteSidelinkRadioBearerInfo> slDrbInfo = AddSlrb (m_sidelinkConfiguration->m_sourceL2Id, group, m_sidelinkConfiguration->GetNextLcid (group));
+          NS_LOG_INFO ("Created new TX SLRB for group " << group << " LCID=" << (slDrbInfo->m_logicalChannelIdentity & 0xF));
+        }
+      if (rx)
+        {
+          //Add to the list of group to monitor for Sidelink
+          m_sidelinkConfiguration->m_rxGroup.push_back (group);
+          //tell the phy to listen for the group
+          m_cphySapProvider.at (0)->AddSlDestination (group);
+          m_cmacSapProvider.at (0)->AddSlDestination (group);
+        }
+      //Try to send to eNodeB
+      SendSidelinkUeInformation (tx, rx, false, false);
+      break;*/
+
+    default: // i.e. IDLE_RANDOM_ACCESS
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+      break;
+
+  }
+
+}
+
+void
+LteUeRrc::SetOutofCovrgUeRnti ()
+{
+  NS_LOG_FUNCTION (this);
+  //preconfigure the RNTI to the IMSI's 16 LSB for uniqueness
+  uint16_t rnti = static_cast <uint16_t>(m_imsi & 0xFFFF);
+  NS_LOG_DEBUG ("Assigning RNTI to an out-of-coverage SL UE " << rnti);
+  std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
+  for (const auto &it:slBwpIds)
+    {
+      m_cphySapProvider.at(it)->SetRnti (rnti);
+      m_cmacSapProvider.at(it)->SetRnti (rnti);
+    }
+}
+
+Ptr<NrSlDataRadioBearerInfo>
+LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ABORT_MSG_IF ((srcL2Id == 0 || destL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
+
+  NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo lcInfo;
+  lcInfo.srcL2Id = srcL2Id;
+  lcInfo.dstL2Id = destL2Id;
+  lcInfo.lcId = lcid;
+  lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
+  //following parameters have no impact at the moment
+  //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
+  lcInfo.priority = 7;
+  lcInfo.pqi = 65;
+  lcInfo.isGbr = true;
+  lcInfo.gbr = 65535; //bits/s random value
+  lcInfo.mbr = lcInfo.gbr;
+
+
+  Ptr<NrSlDataRadioBearerInfo> slDrbInfo = CreateObject <NrSlDataRadioBearerInfo> ();
+  slDrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
+  slDrbInfo->m_destinationL2Id = lcInfo.dstL2Id;
+  slDrbInfo->m_logicalChannelIdentity = lcInfo.lcId;
+  slDrbInfo->m_logicalChannelConfig.logicalChannelGroup = lcInfo.lcGroup;
+  slDrbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
+  slDrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
+  slDrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
+  m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
+
+  //create PDCP/RLC stack
+  ObjectFactory rlcObjectFactory;
+  rlcObjectFactory.SetTypeId (LteRlcUm::GetTypeId ());
+  Ptr<LteRlc> rlc = rlcObjectFactory.Create ()->GetObject<LteRlc> ();
+  rlc->SetNrSlMacSapProvider (m_nrSlMacSapProvider);
+  rlc->SetRnti (m_rnti);
+  rlc->SetLcId (slDrbInfo->m_logicalChannelIdentity);
+  rlc->SetSourceL2Id (slDrbInfo->m_sourceL2Id);
+  rlc->SetDestinationL2Id (slDrbInfo->m_destinationL2Id);
+  rlc->SetRlcChannelType (LteRlc::STCH);
+
+  slDrbInfo->m_rlc = rlc;
+
+  Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
+  pdcp->SetRnti (m_rnti);
+  pdcp->SetLcId (slDrbInfo->m_logicalChannelIdentity);
+  pdcp->SetSourceL2Id (slDrbInfo->m_sourceL2Id);
+  pdcp->SetDestinationL2Id (slDrbInfo->m_destinationL2Id);
+  pdcp->SetNrSlPdcpSapUser (m_nrSlPdcpSapUser);
+  pdcp->SetNrSlRlcSapProvider (rlc->GetNrSlRlcSapProvider ());
+  rlc->SetNrSlRlcSapUser (pdcp->GetNrSlRlcSapUser ());
+
+  slDrbInfo->m_pdcp = pdcp;
+
+  //Call AddNrSlDrbLc of NR sidelink BWP manager
+  std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> slLcOnBwpMapping;
+  slLcOnBwpMapping = m_nrSlUeBwpmRrcSapProvider->AddNrSlDrbLc (lcInfo, rlc->GetNrSlMacSapUser ());
+
+  uint8_t numOfBwpsByBwpm = slLcOnBwpMapping.size ();
+
+  NS_ASSERT_MSG (numOfBwpsByBwpm != 0, "SL BWP manager failed to add SL LC for SL radio bearer");
+
+  uint8_t numOfSlBwps = m_nrSlRrcSapUser->GetBwpIdContainer ().size ();
+  NS_ASSERT_MSG (numOfSlBwps == numOfBwpsByBwpm, " Bwp manager configured SL LC for incorrect number of SL BWPs : " << numOfBwpsByBwpm);
+
+  NS_LOG_DEBUG ("Size of slLcOnBwpMapping vector " << slLcOnBwpMapping.size ());
+
+  std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm>::iterator itSlLcOnBwpMapping;
+
+  for (itSlLcOnBwpMapping = slLcOnBwpMapping.begin (); itSlLcOnBwpMapping != slLcOnBwpMapping.end (); ++itSlLcOnBwpMapping)
+    {
+      NS_LOG_DEBUG ("RNTI " << m_rnti
+                    << " LCG id " << +itSlLcOnBwpMapping->lcInfo.lcGroup
+                    << " BWP Id " << +itSlLcOnBwpMapping->bwpId);
+      uint8_t bwpId = itSlLcOnBwpMapping->bwpId;
+      m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlLc (itSlLcOnBwpMapping->lcInfo, itSlLcOnBwpMapping->msu);
+    }
+
+  return slDrbInfo;
 }
 
 

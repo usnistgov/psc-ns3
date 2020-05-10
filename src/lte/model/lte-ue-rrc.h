@@ -38,6 +38,10 @@
 #include "ns3/component-carrier-ue.h"
 #include <ns3/lte-ue-ccm-rrc-sap.h>
 #include <ns3/nr-sl-rrc-sap.h>
+#include <ns3/nr-sl-ue-bwpm-rrc-sap.h>
+#include <ns3/nr-sl-ue-cmac-sap.h>
+#include <ns3/nr-sl-ue-cphy-sap.h>
+#include <ns3/nr-sl-pdcp-sap.h>
 #include <vector>
 
 #include <map>
@@ -74,6 +78,8 @@ class LteUeCmacSapUser;
 class LteUeCmacSapProvider;
 class LteDataRadioBearerInfo;
 class LteSignalingRadioBearerInfo;
+class NrSlDataRadioBearerInfo;
+class NrSlMacSapProvider;
 
 /**
  *
@@ -99,6 +105,14 @@ class LteUeRrc : public Object
   // NR sidelink
   /// allow MemberNrSlUeRrcSapProvider<LteUeRrc> class friend access
   friend class MemberNrSlUeRrcSapProvider<LteUeRrc>;
+  /// allow MemberNrSlUeBwpmRrcSapUser<LteUeRrc> class friend access
+  friend class MemberNrSlUeBwpmRrcSapUser<LteUeRrc>;
+  /// allow MemberNrSlUeCmacSapUser<LteUeRrc> class friend access
+  friend class MemberNrSlUeCmacSapUser<LteUeRrc>;
+  /// allow MemberNrSlUeCphySapUser<LteUeRrc> class friend access
+  friend class MemberNrSlUeCphySapUser<LteUeRrc>;
+  /// allow MemberNrSlPdcpSapUser<LteUeRrc> class friend access
+  friend class MemberNrSlPdcpSapUser<LteUeRrc>;
 
 public:
 
@@ -798,10 +812,6 @@ private:
   LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; ///< CCM RRC SAP provider
   LteUeCcmRrcSapUser* m_ccmRrcSapUser; ///< CCM RRC SAP user
 
-  // NR sidelink SAP
-  NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; ///< NR SL UE RRC SAP provider
-  NrSlUeRrcSapUser* m_nrSlRrcSapUser; ///< NR SL UE RRC SAP user
-
   /// The current UE RRC state.
   State m_state;
 
@@ -1348,6 +1358,170 @@ public:
    * The number of component carriers.
    */
   uint16_t m_numberOfComponentCarriers;
+
+//NR Sidelink
+
+public:
+  /**
+   * \brief Get NR SL BWP Id Container
+   *
+   * \return The container of SL BWP ids
+   */
+  const std::set<uint8_t> GetNrSlBwpIdContainer ();
+
+  /**
+   * \brief Set NR SL BWP Id Container in NR SL UE BWP manager
+   */
+  void SetNrSlBwpIdContainerInBwpm ();
+
+  /**
+  * \brief Called by the PDCP entity to notify the RRC entity of the reception
+  * of a new NR SL RRC PDU
+  *
+  * \param params
+  */
+ void DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParameters &params);
+
+  /**
+   * \brief set the NR Sidelik BWP Manager SAP this RRC should use to
+   *        interact with the NR sidelink BWP manager
+   *
+   * \param s the NR Sidelik UE BWP Manager SAP Provider to be used by this RRC
+   */
+  void SetNrSlUeBwpmRrcSapProvider (NrSlUeBwpmRrcSapProvider * s);
+
+  /**
+   * \brief Get the NR Sidelik BWP Manager SAP offered by this RRC
+   *
+   * \return s the NR Sidelik BWP Manager SAP User interface offered to the
+   *           NR SL UE BWP manager by this RRC
+   */
+  NrSlUeBwpmRrcSapUser* GetNrSlUeBwpmRrcSapUser ();
+
+  /**
+   * \brief the NR Sidelik UE Control MAC SAP offered by MAC to RRC
+   *
+   * \param bwpId The BWP id of the MAC to which the SAP belongs
+   * \param s the NR Sidelik UE Control MAC SAP provider interface offered to the
+   *          RRC by MAC
+   */
+  void SetNrSlUeCmacSapProvider (uint8_t bwpId, NrSlUeCmacSapProvider* s);
+
+  /**
+   * \brief Get the NR Sidelik UE Control MAC SAP offered by RRC to MAC
+   *
+   * \return the NR Sidelik UE Control MAC SAP user interface offered by
+   *         by RRC to MAC
+   */
+  NrSlUeCmacSapUser* GetNrSlUeCmacSapUser ();
+
+  /**
+   * \brief the NR Sidelik UE Control PHY SAP offered by MAC to RRC
+   *
+   *\param bwpId The BWP id of the PHY to which the SAP belongs
+   * \param s the NR Sidelik UE Control PHY SAP provider interface offered to the
+   *          RRC by MAC
+   */
+  void SetNrSlUeCphySapProvider (uint8_t bwpId, NrSlUeCphySapProvider* s);
+
+  /**
+   * \brief Get the NR Sidelik UE Control PHY SAP offered by RRC to MAC
+   *
+   * \return the NR Sidelik UE Control PHY SAP user interface offered by
+   *         by RRC to MAC
+   */
+  NrSlUeCphySapUser* GetNrSlUeCphySapUser ();
+
+  /**
+   * \brief Get the NR Sidelik SAP offered by RRC to PDCP
+   *
+   * \return the NR Sidelik UE PHY SAP user interface offered by RRC to PDCP
+   */
+  NrSlPdcpSapUser* GetNrSlPdcpSapUser ();
+
+  /**
+   * \brief Set the NR Sidelik SAP offered by PDCP to RRC
+   *
+   * \param s the NR Sidelik PDCP SAP provider interface offered by PDCO to RLC
+   */
+  void SetNrSlPdcpSapProvider (NrSlPdcpSapProvider* s);
+
+  /**
+   * \brief set the NR SL MAC SAP provider. The UE RRC does not use this
+   * directly, but it needs to provide it to newly created RLC instances.
+   *
+   * \param s the NR SL MAC SAP provider that will be used by all
+   * newly created RLC instances
+   */
+  void SetNrSlMacSapProvider (NrSlMacSapProvider* s);
+
+private:
+
+  //NR Sidelink AS SAP Provider methods
+  /**
+   * \brief Activate NR sidelink radio bearer
+   *
+   * \param remoteL2Id The remote layer 3 id
+   * \param isTransmit True if the bearer is for transmission
+   * \param isReceive True if the bearer is for reception
+   * \param isUnicast True if the bearer is for unicast communication
+   */
+  void DoActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  /**
+   * \brief Send sidelink data packet to RRC.
+   *
+   * \param packet The packet
+   * \param remoteL2Id The remote layer 2 id
+   */
+  void DoSendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id);
+
+  /**
+   * \brief Activate NR sidelink data radio bearer
+   *
+   * \param remoteL2Id The remote layer 3 id
+   * \param isTransmit True if the bearer is for transmission
+   * \param isReceive True if the bearer is for reception
+   */
+  void ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive);
+
+  /**
+   * \brief set out-of-coverage UE RNTI
+   *
+   * Normally, RNTI is set by UE MAC, however, for SL
+   * out-of-coverage case we set it via UE RRC. For uniqueness,
+   * it is the lower 16 bits of the IMSI.
+   */
+  void SetOutofCovrgUeRnti ();
+
+  /**
+   * \brief Add Nr sidelink data radio bearer
+   *
+   * \param srcL2Id The sidelink source layer 2 id
+   * \param destL2Id The sidelink destinations layer 2 id
+   * \param lcid The logical channel id
+   * \return The Sidelink radio bearer information
+   */
+  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid);
+
+  // NR sidelink SAP
+  //LteUeRrc<->NrSlUeRrc
+  NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; //!< NR SL UE RRC SAP provider
+  NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
+  //LteUeRrc <-> NrSlUeBwpManager
+  NrSlUeBwpmRrcSapProvider* m_nrSlUeBwpmRrcSapProvider {nullptr}; //!< NR SL UE BWP manager RRC SAP provider
+  NrSlUeBwpmRrcSapUser* m_nrSlUeBwpmRrcSapUser; //!< NR SL UE BWP manager RRC SAP user
+
+  std::vector<NrSlUeCmacSapProvider*>  m_nrSlUeCmacSapProvider; //!< NR SL UE CMAC SAP provider
+  NrSlUeCmacSapUser* m_nrSlUeCmacSapUser; //!< NR SL UE CMAC SAP user
+  std::vector <NrSlUeCphySapProvider*> m_nrSlUeCphySapProvider; //!< NR SL UE CPHY SAP provider
+  NrSlUeCphySapUser* m_nrSlUeCphySapUser; //!< NR SL UE CPHY SAP user
+
+  NrSlPdcpSapProvider *m_nrSlPdcpSapProvider {nullptr}; //!< SAP interface to call methods of PDCP instance
+  NrSlPdcpSapUser *m_nrSlPdcpSapUser; //!< SAP interface to receive calls from PDCP instance
+  NrSlMacSapProvider *m_nrSlMacSapProvider; //!< SAP interface to be given to newly created RLC instance of RLC
+
+
+
 
 }; // end of class LteUeRrc
 
