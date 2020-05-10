@@ -135,7 +135,15 @@ def build(bld):
         'model/component-carrier-ue.cc',
         'model/component-carrier-enb.cc',
         'model/nr-sl-rrc-sap.cc',
-        'model/nr-sl-ue-rrc.cc'
+        'model/nr-sl-ue-rrc.cc',
+        'model/lte-sl-tft.cc',
+        'model/lte-sl-pdcp-header.cc',
+        'model/nr-sl-ue-bwpm-rrc-sap.cc',
+        'model/nr-sl-ue-cmac-sap.cc',
+        'model/nr-sl-mac-sap.cc',
+        'model/nr-sl-ue-cphy-sap.cc',
+        'model/nr-sl-pdcp-sap.cc',
+        'model/nr-sl-rlc-sap.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -331,7 +339,15 @@ def build(bld):
         'model/component-carrier-ue.h',
         'model/component-carrier-enb.h',
         'model/nr-sl-rrc-sap.h',
-        'model/nr-sl-ue-rrc.h'
+        'model/nr-sl-ue-rrc.h',
+        'model/lte-sl-tft.h',
+        'model/lte-sl-pdcp-header.h',
+        'model/nr-sl-ue-bwpm-rrc-sap.h',
+        'model/nr-sl-ue-cmac-sap.h',
+        'model/nr-sl-mac-sap.h',
+        'model/nr-sl-ue-cphy-sap.h',
+        'model/nr-sl-pdcp-sap.h',
+        'model/nr-sl-rlc-sap.h',
         ]
 
     if (bld.env['ENABLE_EMU']):
