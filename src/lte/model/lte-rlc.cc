@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Modified by: CTTC for NR Sidelink
  */
 
 
@@ -87,13 +88,14 @@ NS_OBJECT_ENSURE_REGISTERED (LteRlc);
 
 LteRlc::LteRlc ()
   : m_rlcSapUser (0),
-    m_macSapProvider (0),
-    m_rnti (0),
-    m_lcid (0)
+  m_macSapProvider (0),
+  m_rnti (0),
+  m_lcid (0)
 {
   NS_LOG_FUNCTION (this);
   m_rlcSapProvider = new LteRlcSpecificLteRlcSapProvider<LteRlc> (this);
   m_macSapUser = new LteRlcSpecificLteMacSapUser (this);
+  m_nrSlMacSapUser = new MemberNrSlMacSapUser <LteRlc> (this);
 }
 
 LteRlc::~LteRlc ()
@@ -105,7 +107,7 @@ TypeId LteRlc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlc")
     .SetParent<Object> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the MAC.",
                      MakeTraceSourceAccessor (&LteRlc::m_txPdu),
@@ -114,7 +116,7 @@ TypeId LteRlc::GetTypeId (void)
                      "PDU received.",
                      MakeTraceSourceAccessor (&LteRlc::m_rxPdu),
                      "ns3::LteRlc::ReceiveTracedCallback")
-    ;
+  ;
   return tid;
 }
 
@@ -124,6 +126,7 @@ LteRlc::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete (m_rlcSapProvider);
   delete (m_macSapUser);
+  delete (m_nrSlMacSapUser);
 }
 
 void
@@ -168,6 +171,71 @@ LteRlc::GetLteMacSapUser ()
   return m_macSapUser;
 }
 
+void
+LteRlc::SetNrSlMacSapProvider (NrSlMacSapProvider * s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlMacSapProvider = s;
+}
+
+NrSlMacSapUser*
+LteRlc::GetNrSlMacSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlMacSapUser;
+}
+
+NrSlRlcSapProvider*
+LteRlc::GetNrSlRlcSapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlRlcSapProvider;
+}
+
+void
+LteRlc::SetNrSlRlcSapUser (NrSlRlcSapUser* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlRlcSapUser = s;
+}
+
+/**
+ * \brief Set the NR Sidelik SAP offered by PDCP to RLC
+ *
+ * \param s the NR Sidelink SAP user interface offered by PDCP to RLC
+ */
+void SetNrSlRlcSapUser (NrSlRlcSapUser* s);
+
+void
+LteRlc::SetSourceL2Id (uint32_t src)
+{
+  NS_LOG_FUNCTION (this << src);
+  m_srcL2Id = src;
+}
+
+void
+LteRlc::SetDestinationL2Id (uint32_t dst)
+{
+  NS_LOG_FUNCTION (this << dst);
+  m_dstL2Id = dst;
+}
+
+void
+LteRlc::SetRlcChannelType (LteRlc::ChannelType channelType)
+{
+  NS_LOG_FUNCTION (this);
+
+  switch (channelType)
+  {
+    case STCH:
+      m_channelType = STCH;
+      break;
+    default:
+      m_channelType = DEFAULT;
+      break;
+  }
+}
+
 
 
 ////////////////////////////////////////
@@ -189,7 +257,7 @@ LteRlcSm::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<LteRlcSm> ()
     ;
   return tid;
@@ -224,12 +292,12 @@ LteRlcSm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   Time delay;
   bool ret = rxPduParams.p->FindFirstMatchingByteTag (rlcTag);
   NS_ASSERT_MSG (ret, "RlcTag is missing");
-  delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
-  NS_LOG_LOGIC (" RNTI=" << m_rnti 
-                << " LCID=" << (uint32_t) m_lcid 
+  delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
+  NS_LOG_LOGIC (" RNTI=" << m_rnti
+                << " LCID=" << (uint32_t) m_lcid
                 << " size=" << rxPduParams.p->GetSize ()
                 << " delay=" << delay.GetNanoSeconds ());
-  m_rxPdu(m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds () );
+  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds () );
 }
 
 void
@@ -257,7 +325,7 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   NS_LOG_LOGIC (" RNTI=" << m_rnti
                 << " LCID=" << (uint32_t) m_lcid
                 << " size=" << txOpParams.bytes);
-  m_txPdu(m_rnti, m_lcid, txOpParams.bytes);
+  m_txPdu (m_rnti, m_lcid, txOpParams.bytes);
 
   m_macSapProvider->TransmitPdu (params);
   ReportBufferStatus ();
@@ -284,6 +352,23 @@ LteRlcSm::ReportBufferStatus ()
   m_macSapProvider->ReportBufferStatus (p);
 }
 
+void
+LteRlcSm::DoTransmitNrSlPdcpPdu (const NrSlRlcSapProvider::NrSlTransmitPdcpPduParameters &params)
+{
+  NS_FATAL_ERROR ("RLC SM does not support NR Sidelink");
+}
+
+void
+LteRlcSm::DoNotifyNrSlTxOpportunity (const NrSlMacSapUser::NrSlTxOpportunityParameters &params)
+{
+  NS_FATAL_ERROR ("RLC SM does not support NR Sidelink");
+}
+
+void
+LteRlcSm::DoReceiveNrSlRlcPdu (NrSlMacSapUser::NrSlReceiveRlcPduParameters rxPduParams)
+{
+  NS_FATAL_ERROR ("RLC SM does not support NR Sidelink");
+}
 
 
 

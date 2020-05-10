@@ -214,4 +214,22 @@ LteRlcTm::ExpireRbsTimer (void)
     }
 }
 
+void
+LteRlcTm::DoTransmitNrSlPdcpPdu (const NrSlRlcSapProvider::NrSlTransmitPdcpPduParameters &params)
+{
+  NS_FATAL_ERROR ("RLC TM does not support NR Sidelink");
+}
+
+void
+LteRlcTm::DoNotifyNrSlTxOpportunity (const NrSlMacSapUser::NrSlTxOpportunityParameters &params)
+{
+  NS_FATAL_ERROR ("RLC TM does not support NR Sidelink");
+}
+
+void
+LteRlcTm::DoReceiveNrSlRlcPdu (NrSlMacSapUser::NrSlReceiveRlcPduParameters rxPduParams)
+{
+  NS_FATAL_ERROR ("RLC TM does not support NR Sidelink");
+}
+
 } // namespace ns3

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: CTTC for NR Sidelink
  */
 
 #ifndef LTE_RLC_UM_H
@@ -68,6 +69,8 @@ private:
 
   /**
    * Is inside reordering window function
+   *
+   * It is also used for NR SL
    *
    * \param seqNumber the sequence number
    * \returns true if inside the window
@@ -158,6 +161,66 @@ private:
    * Expected Sequence Number
    */
   SequenceNumber10 m_expectedSeqNumber;
+  bool m_firstPduRxed; ///< Indicates if the first PDU has already been received.
+
+  //NR Sidelink
+protected:
+  /**
+   * \brief Send a NR Sidelink PDCP PDU to the RLC for transmission
+   *
+   * This method is to be called when upper PDCP entity has a NR Sidelink PDCP
+   * PDU ready to send
+   *
+   * \param params the NrSlTransmitPdcpPduParameters
+   */
+  void DoTransmitNrSlPdcpPdu (const NrSlRlcSapProvider::NrSlTransmitPdcpPduParameters &params);
+  /**
+   * \brief Called by the MAC to notify the RLC that the scheduler granted a
+   * transmission opportunity to this RLC instance.
+   *
+   * \param txOpParams the NrSlTxOpportunityParameters
+   */
+  void DoNotifyNrSlTxOpportunity (const NrSlMacSapUser::NrSlTxOpportunityParameters &txOpParams);
+  /**
+   * \brief Called by the MAC to notify the RLC of the reception of a new PDU
+   *
+   * \param params the NrSlReceiveRlcPduParameters
+   */
+  void DoReceiveNrSlRlcPdu (NrSlMacSapUser::NrSlReceiveRlcPduParameters rxPduParams);
+
+private:
+  /**
+   * \brief Expire NR Sidelink reordering timer
+   */
+  void ExpireNrSlReorderingTimer (void);
+  /**
+   * \brief Expire NR SL RBS timer
+   */
+  void ExpireNrSlRbsTimer (void);
+  /**
+   * \brief Do Report NR SL buffer status
+   */
+  void DoReportNrSlBufferStatus ();
+
+  /**
+   * \brief NR Sidelink Reassemble outside window
+   */
+  void NrSlReassembleOutsideWindow (void);
+
+  /**
+   * \brief NR Sidelink Reassemble SN interval function
+   *
+   * \param lowSeqNumber the low sequence number
+   * \param highSeqNumber the high sequence number
+   */
+  void NrSlReassembleSnInterval (SequenceNumber10 lowSeqNumber, SequenceNumber10 highSeqNumber);
+
+  /**
+   * Reassemble and deliver function
+   *
+   * \param packet the packet
+   */
+  void NrSlReassembleAndDeliver (Ptr<Packet> packet);
 
 };
 

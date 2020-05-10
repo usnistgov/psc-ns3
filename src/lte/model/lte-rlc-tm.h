@@ -101,6 +101,31 @@ private:
   uint32_t m_txBufferSize; ///< transmit buffer size
 
   EventId m_rbsTimer; ///< RBS timer
+
+  //NR Sidelink
+protected:
+  /**
+   * \brief Send a NR Sidelink PDCP PDU to the RLC for transmission
+   *
+   * This method is to be called when upper PDCP entity has a NR Sidelink PDCP
+   * PDU ready to send
+   *
+   * \param params the NrSlTransmitPdcpPduParameters
+   */
+  void DoTransmitNrSlPdcpPdu (const NrSlRlcSapProvider::NrSlTransmitPdcpPduParameters &params);
+  /**
+   * \brief Called by the MAC to notify the RLC that the scheduler granted a
+   * transmission opportunity to this RLC instance.
+   *
+   * \param params the NrSlTxOpportunityParameters
+   */
+  void DoNotifyNrSlTxOpportunity (const NrSlMacSapUser::NrSlTxOpportunityParameters &params);
+  /**
+   * \brief Called by the MAC to notify the RLC of the reception of a new PDU
+   *
+   * \param params the NrSlReceiveRlcPduParameters
+   */
+  void DoReceiveNrSlRlcPdu (NrSlMacSapUser::NrSlReceiveRlcPduParameters rxPduParams);
 };
 
 
