@@ -96,6 +96,28 @@ public:
   Ipv4Address m_transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
 };
 
+/**
+ * \ingroup lte
+ *
+ * store information on active NR sidelink data radio bearer instance
+ *
+ */
+class NrSlDataRadioBearerInfo : public LteRadioBearerInfo
+{
+
+public:
+  /**
+   * \brief Get the type ID.
+   *
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+  uint8_t m_logicalChannelIdentity {0}; //!< The logical channel identity
+  LteRrcSap::LogicalChannelConfig m_logicalChannelConfig; //!< The logical channel configuration
+  uint32_t m_sourceL2Id {0}; //!< The Sidelink source L2 source id
+  uint32_t m_destinationL2Id {0}; //!< The Sidelink destination L2 id
+};
+
 
 
 
