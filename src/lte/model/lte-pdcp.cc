@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Modified by: CTTC for NR Sidelink
  */
 
 #include "ns3/log.h"
@@ -25,6 +26,7 @@
 #include "ns3/lte-pdcp-header.h"
 #include "ns3/lte-pdcp-sap.h"
 #include "ns3/lte-pdcp-tag.h"
+#include "ns3/lte-sl-pdcp-header.h"
 
 namespace ns3 {
 
@@ -79,6 +81,9 @@ LtePdcp::LtePdcp ()
   NS_LOG_FUNCTION (this);
   m_pdcpSapProvider = new LtePdcpSpecificLtePdcpSapProvider<LtePdcp> (this);
   m_rlcSapUser = new LtePdcpSpecificLteRlcSapUser (this);
+  //NR SL
+  m_nrSlPdcpSapProvider = new MemberNrSlPdcpSapProvider<LtePdcp> (this);
+  m_nrSlRlcSapUser = new MemberNrSlRlcSapUser<LtePdcp> (this);
 }
 
 LtePdcp::~LtePdcp ()
@@ -110,6 +115,8 @@ LtePdcp::DoDispose ()
   NS_LOG_FUNCTION (this);
   delete (m_pdcpSapProvider);
   delete (m_rlcSapUser);
+  delete (m_nrSlPdcpSapProvider);
+  delete (m_nrSlRlcSapUser);
 }
 
 
@@ -233,6 +240,125 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   m_pdcpSapUser->ReceivePdcpSdu (params);
+}
+
+//NR SL
+
+void
+LtePdcp::DoTransmitNrSlPdcpSdu (const NrSlPdcpSapProvider::NrSlTransmitPdcpSduParameters &params)
+{
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << params.pdcpSdu->GetSize ());
+
+  Ptr<Packet> p = params.pdcpSdu;
+  // Sender timestamp
+  PdcpTag pdcpTag (Simulator::Now ());
+
+  NS_ASSERT_MSG (IsSlRb(), "Did you forget to set source layer 2 or destination layer 2 id in PDCP?");
+
+  LteSlPdcpHeader pdcpHeader;
+  pdcpHeader.SetSequenceNumber (m_txSequenceNumber);
+
+  m_txSequenceNumber++;
+  if (m_txSequenceNumber > m_maxPdcpSlSn)
+    {
+      m_txSequenceNumber = 0;
+    }
+
+  pdcpHeader.SetSduType (params.sduType);
+
+  NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+  p->AddHeader (pdcpHeader);
+  p->AddByteTag (pdcpTag, 1, pdcpHeader.GetSerializedSize ());
+
+
+  m_txPdu (m_rnti, m_lcid, p->GetSize ());
+
+  auto txParams = NrSlRlcSapProvider::NrSlTransmitPdcpPduParameters (p, m_rnti, m_lcid, m_srcL2Id, m_dstL2Id);
+
+  m_nrSlRlcSapProvider->TransmitNrSlPdcpPdu (txParams);
+}
+
+void
+LtePdcp::DoReceiveNrSlPdcpPdu (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
+
+  // Receiver timestamp
+  PdcpTag pdcpTag;
+  Time delay;
+  p->FindFirstMatchingByteTag (pdcpTag);
+  delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
+  uint8_t sduType = 0;
+
+  NS_ASSERT_MSG (IsSlRb(), "Did you forget to set source layer 2 or destination layer 2 id in PDCP?");
+
+  LteSlPdcpHeader pdcpHeader;
+  p->RemoveHeader (pdcpHeader);
+  NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
+
+  m_rxSequenceNumber = pdcpHeader.GetSequenceNumber () + 1;
+  if (m_rxSequenceNumber > m_maxPdcpSlSn)
+    {
+      m_rxSequenceNumber = 0;
+    }
+
+  sduType = pdcpHeader.GetSduType ();
+
+  auto params = NrSlPdcpSapUser::NrSlReceivePdcpSduParameters (p, m_rnti, m_lcid,
+                                                               m_srcL2Id, m_dstL2Id,
+                                                               sduType);
+  m_nrSlPdcpSapUser->ReceiveNrSlPdcpSdu (params);
+}
+
+
+ NrSlPdcpSapProvider*
+ LtePdcp::GetNrSlPdcpSapProvider ()
+ {
+   NS_LOG_FUNCTION (this);
+   return m_nrSlPdcpSapProvider;
+ }
+
+ void
+ LtePdcp::SetNrSlPdcpSapUser (NrSlPdcpSapUser* s)
+ {
+   NS_LOG_FUNCTION (this);
+   m_nrSlPdcpSapUser = s;
+ }
+
+ void
+ LtePdcp::SetNrSlRlcSapProvider (NrSlRlcSapProvider * s)
+ {
+   NS_LOG_FUNCTION (this);
+   m_nrSlRlcSapProvider = s;
+ }
+
+NrSlRlcSapUser*
+LtePdcp::GetNrSlRlcSapUser ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlRlcSapUser;
+}
+
+void
+LtePdcp::SetSourceL2Id (uint32_t src)
+{
+  NS_LOG_FUNCTION (this << src);
+  m_srcL2Id = src;
+}
+
+void
+LtePdcp::SetDestinationL2Id (uint32_t dst)
+{
+  NS_LOG_FUNCTION (this << dst);
+  m_dstL2Id = dst;
+}
+
+bool
+LtePdcp::IsSlRb ()
+{
+  NS_LOG_FUNCTION (this << m_rnti << m_srcL2Id << m_dstL2Id);
+  return (m_srcL2Id != 0 || m_dstL2Id !=0);
 }
 
 
