@@ -90,6 +90,7 @@ ImsHelper::ConnectPgw (Ptr<Node> pgw)
   // Setup point-to-point link to P-GW
   PointToPointHelper p2ph;
   p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.001)));
+  p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("1Gbps")));
   NetDeviceContainer imsDevices = p2ph.Install (m_pgwNode, m_imsNode);
   m_imsDevice = imsDevices.Get (1)->GetObject<PointToPointNetDevice> ();
 
