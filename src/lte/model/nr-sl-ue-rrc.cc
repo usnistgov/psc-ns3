@@ -245,7 +245,7 @@ void
 NrSlUeRrc::DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
 {
   NS_LOG_FUNCTION (this);
-  NrSlDrbMapPerDestination::iterator destIt = m_slDrbMap.find (slDrb->m_destinationL2Id);
+  NrSlDrbMapPerL2Id::iterator destIt = m_slDrbMap.find (slDrb->m_destinationL2Id);
   if (destIt == m_slDrbMap.end ())
     {
       NS_LOG_LOGIC ("First SL DRB for destination " << slDrb->m_destinationL2Id);
@@ -273,12 +273,43 @@ NrSlUeRrc::DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
     }
 }
 
+void
+NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlDrbMapPerL2Id::iterator srcIt = m_slRxDrbMap.find (slRxDrb->m_sourceL2Id);
+  if (srcIt == m_slRxDrbMap.end ())
+    {
+      NS_LOG_LOGIC ("First SL RX DRB for remote UE with source L2 id " << slRxDrb->m_sourceL2Id);
+      NrSlDrbMapPerLcId mapPerRxLcId;
+      mapPerRxLcId.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slRxDrb->m_logicalChannelIdentity, slRxDrb));
+      m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Currently supporting only one SL RX DRB per pair of source/destination");
+      // once we support multiple SL DRB per pair of source/destination
+      // above assert can be removed, and following code will be used
+      NrSlDrbMapPerLcId::iterator rxLcIt;
+      rxLcIt = srcIt->second.find (slRxDrb->m_logicalChannelIdentity);
+      if (rxLcIt == srcIt->second.end ())
+        {
+          //New Rx bearer for the remote UE
+          srcIt->second.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slRxDrb->m_logicalChannelIdentity, slRxDrb));
+        }
+      else
+        {
+          NS_FATAL_ERROR ("SL RX DRB with LC id = " << +slRxDrb->m_logicalChannelIdentity << " already exists");
+        }
+    }
+}
+
 Ptr<NrSlDataRadioBearerInfo>
 NrSlUeRrc::GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
 {
   NS_LOG_FUNCTION (this);
   Ptr<NrSlDataRadioBearerInfo> slrb = nullptr;
-  NrSlDrbMapPerDestination::iterator destIt = m_slDrbMap.find (remoteL2Id);
+  NrSlDrbMapPerL2Id::iterator destIt = m_slDrbMap.find (remoteL2Id);
   NS_ASSERT_MSG (destIt != m_slDrbMap.end (), "Unable to find DRB for destination L2 Id " << remoteL2Id);
   NS_LOG_LOGIC ("Searching SL DRB " << srcL2Id << " -> " << remoteL2Id);
   // Since we do not support multiple bearers for a single destination,
@@ -308,7 +339,7 @@ NrSlUeRrc::DoGetNextLcid (uint32_t dstL2Id)
   //find unused the LCID
   uint8_t lcid = 0; //initialize with invalid value
 
-  NrSlDrbMapPerDestination::iterator destIt = m_slDrbMap.find (dstL2Id);
+  NrSlDrbMapPerL2Id::iterator destIt = m_slDrbMap.find (dstL2Id);
   if (destIt == m_slDrbMap.end ())
     {
       //first time creating a LC for this destination

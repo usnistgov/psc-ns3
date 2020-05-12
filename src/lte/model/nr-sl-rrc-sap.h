@@ -74,6 +74,14 @@ public:
    */
   virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb) = 0;
   /**
+   * \brief Add NR Reception sidelink data radio bearer
+   *
+   * Attempts to add a sidelink radio bearer for RX
+   *
+   * \param slRxDrb LteSidelinkRadioBearerInfo pointer
+   */
+  virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb) = 0;
+  /**
    * \brief Get NR Sidelink data radio bearer
    *
    * \param remoteL2Id The remote/destination layer 2 id
@@ -96,8 +104,6 @@ public:
    * \return the next available NR SL DRB LCID
    */
   virtual uint8_t GetNextLcid (uint32_t dstL2Id) = 0;
-
-
 };
 
 /**
@@ -149,6 +155,7 @@ public:
   GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
   virtual const std::set<uint8_t> GetBwpIdContainer ();
   virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
   virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t remoteL2Id);
   virtual uint32_t GetSourceL2Id ();
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
@@ -197,6 +204,13 @@ void
 MemberNrSlUeRrcSapUser<C>::AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
 {
   return m_owner->DoAddNrSlDataRadioBearer (slDrb);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
+{
+  return m_owner->DoAddNrSlRxDataRadioBearer (slRxDrb);
 }
 
 

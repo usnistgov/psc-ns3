@@ -72,9 +72,9 @@ public:
    */
   typedef std::unordered_map <uint8_t, Ptr<NrSlDataRadioBearerInfo> > NrSlDrbMapPerLcId;
   /**
-   * Map between destination, logical channel id and data radio bearer for transmissions
+   * Map between L2 id, logical channel id and data radio bearer for transmissions.
    */
-  typedef std::unordered_map <uint32_t, NrSlDrbMapPerLcId> NrSlDrbMapPerDestination;
+  typedef std::unordered_map <uint32_t, NrSlDrbMapPerLcId> NrSlDrbMapPerL2Id;
   /**
    * \brief Get the pointer for the NR sidelink UE RRC SAP User interface
    *        offered to UE RRC by this class
@@ -124,6 +124,7 @@ private:
   DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
   const std::set <uint8_t> DoGetBwpIdContainer ();
   void DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  void DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
   Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkRadioBearer (uint32_t remoteL2Id);
   uint32_t DoGetSourceL2Id ();
   uint8_t DoGetNextLcid (uint32_t dstL2Id);
@@ -171,7 +172,17 @@ private:
   //1. Python bindings does not support std::unordered_set
   //2. I do not see this container to pass max 2 elements
   std::set <uint8_t> m_slBwpIds; //!< A container to store SL BWP ids
-  NrSlDrbMapPerDestination m_slDrbMap; //!< NR sidelink data radio bearer map
+  NrSlDrbMapPerL2Id m_slDrbMap; /**< NR sidelink data radio bearer map per
+                                 * destination layer 2 id. For Group-Cast
+                                 * it will only hold the tx bearer info.
+                                 * We use another map to store rx bearer
+                                 * info.
+                                 */
+  NrSlDrbMapPerL2Id m_slRxDrbMap; /**< NR sidelink rx data radio bearer map
+                                   * per source layer 2 id of the sender
+                                   * for Group-Cast.
+                                   */
+
 };     //end of NrSlUeRrc'class
 
 } // namespace ns3
