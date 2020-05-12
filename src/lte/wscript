@@ -144,6 +144,7 @@ def build(bld):
         'model/nr-sl-ue-cphy-sap.cc',
         'model/nr-sl-pdcp-sap.cc',
         'model/nr-sl-rlc-sap.cc',
+        'model/nr-sl-comm-resource-pool.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -348,6 +349,7 @@ def build(bld):
         'model/nr-sl-ue-cphy-sap.h',
         'model/nr-sl-pdcp-sap.h',
         'model/nr-sl-rlc-sap.h',
+        'model/nr-sl-comm-resource-pool.h',
         ]
 
     if (bld.env['ENABLE_EMU']):
