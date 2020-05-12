@@ -1503,6 +1503,18 @@ private:
    */
   Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid);
 
+  /**
+   * \brief Populate NR SL Pool to lower layers
+   *
+   * This methods populates the NR SL pools
+   * specifically to MAC and PHY of the UE
+   *
+   * \param remoteL2Id the remote layer 2 id for which we are populating the pool
+   * \param isTransmit True if UE is interested in transmission, else, it is
+   *        interested in reception
+   */
+  void PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit);
+
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc
   NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; //!< NR SL UE RRC SAP provider

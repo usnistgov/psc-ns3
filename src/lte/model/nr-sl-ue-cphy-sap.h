@@ -26,6 +26,8 @@
 
 namespace ns3 {
 
+  class NrSlCommResourcePool;
+
 /**
  * \ingroup lte
  *
@@ -45,33 +47,31 @@ public:
 
   //Sidelink Communication
   /**
-   * set the current sidelink transmit pool
-   * \param pool The transmission pool
+   * \brief Add NR Sidelink communication transmission pool
+   *
+   * Adds transmission pool for NR Sidelink communication
+   *
+   * \param remoteL2Id The destination Layer 2 ID
+   * \param pool The pointer to the NrSlCommResourcePool
    */
- // virtual void SetSlCommTxPool (Ptr<SidelinkTxCommResourcePool> pool) = 0;
-
+  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
-   * set the sidelink receiving pools
-   * \param pools The sidelink receiving pools
+   * \brief Add NR Sidelink communication reception pool
+   *
+   * Adds reception pool for NR Sidelink communication
+   *
+   * \param remoteL2Id The destination Layer 2 ID
+   * \param pool The pointer to the NrSlCommResourcePool
    */
-  //virtual void SetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools) = 0;
-
+  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**
-   * Remove Sidelink Communication Tx Pool function
+   * \brief Add NR Sidelink remote Layer 2 Id
+   *
+   * Adds remote layer 2 id to list to destinations
+   *
+   * \param remoteL2Id The destination Layer 2 ID
    */
-  //virtual void RemoveSlCommTxPool () = 0;
-
-  /**
-   * add a new destination to listen for
-   * \param destination The destination (L2 ID) to listen for
-   */
-  //virtual void AddSlDestination (uint32_t destination) = 0;
-
-  /**
-   * remove a destination to listen for
-   * \param destination The destination that is no longer of interest
-   */
-  //virtual void RemoveSlDestination (uint32_t destination) = 0;
+  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id) = 0;
 
 };
 
@@ -121,11 +121,9 @@ public:
 
   // methods inherited from NrSlUeCphySapProvider go here
   //NR Sidelink communication
- // virtual void SetSlCommTxPool (Ptr<SidelinkTxCommResourcePool> pool);
- // virtual void SetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools);
- // virtual void RemoveSlCommTxPool ();
- // virtual void AddSlDestination (uint32_t destination);
- // virtual void RemoveSlDestination (uint32_t destination);
+  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool);
+  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool);
+  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id);
 
 private:
   MemberNrSlUeCphySapProvider ();
@@ -139,39 +137,26 @@ MemberNrSlUeCphySapProvider<C>::MemberNrSlUeCphySapProvider (C* owner)
 }
 
 //Sidelink communication
-/*
+
 template <class C>
 void
-MemberNrSlUeCphySapProvider<C>::SetSlCommTxPool (Ptr<SidelinkTxCommResourcePool> pool)
+MemberNrSlUeCphySapProvider<C>::AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool)
 {
-  m_owner->DoSetSlCommTxPool (pool);
+  m_owner->DoAddNrSlCommTxPool (remoteL2Id, txPool);
 }
 
 template <class C>
-void MemberNrSlUeCphySapProvider<C>::SetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools)
+void
+MemberNrSlUeCphySapProvider<C>::AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool)
 {
-  m_owner->DoSetSlCommRxPools (pools);
+  m_owner->DoAddNrSlCommRxPool (remoteL2Id, rxPool);
 }
 
 template <class C>
-void MemberNrSlUeCphySapProvider<C>::RemoveSlCommTxPool ()
+void MemberNrSlUeCphySapProvider<C>::AddNrSlRemoteL2Id (uint32_t remoteL2Id)
 {
-  m_owner->DoRemoveSlCommTxPool ();
+  m_owner->DoAddNrSlRemoteL2Id (remoteL2Id);
 }
-
-template <class C>
-void MemberNrSlUeCphySapProvider<C>::AddSlDestination (uint32_t destination)
-{
-  m_owner->DoAddSlDestination (destination);
-}
-
-template <class C>
-void MemberNrSlUeCphySapProvider<C>::RemoveSlDestination (uint32_t destination)
-{
-  m_owner->DoRemoveSlDestination (destination);
-}
-*/
-
 
 
 /**

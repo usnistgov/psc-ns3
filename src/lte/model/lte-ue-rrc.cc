@@ -39,8 +39,12 @@
 #include <ns3/lte-pdcp.h>
 #include <ns3/lte-radio-bearer-info.h>
 #include <ns3/nr-sl-mac-sap.h>
+#include <ns3/nr-sl-comm-resource-pool.h>
 
 #include <cmath>
+#include <array>
+#include <bitset>
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -3529,52 +3533,19 @@ LteUeRrc::ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive)
         {
           Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), remoteL2Id, m_nrSlRrcSapUser->GetNextLcid (remoteL2Id));
           NS_LOG_INFO ("Created new TX SLRB for remote id " << remoteL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
-        }
-      /*
-      if (rx)
-        {
-          //Add to the list of group to monitor for Sidelink
-          m_sidelinkConfiguration->m_rxGroup.push_back (group);
-          //tell the PHY and MAC of primary carrier to listen for the group
-          m_cphySapProvider.at (0)->AddSlDestination (group);
-          m_cmacSapProvider.at (0)->AddSlDestination (group);
+          NS_LOG_INFO ("Now Configuring Tx pool");
+          PopulateNrSlPools (remoteL2Id, isTransmit);
         }
 
-      NS_ASSERT (m_sidelinkConfiguration->GetSlPreconfiguration ().preconfigComm.nbPools > 0);
-      //Activate bearer using preconfiguration if available
-      if (tx)
-        {
-          NS_LOG_INFO ("Configuring Tx pool");
-          Ptr<SidelinkTxCommResourcePool> txPool = CreateObject<SidelinkTxCommResourcePool>();
-          txPool->SetPool (m_sidelinkConfiguration->GetSlPreconfiguration ().preconfigComm.pools[0]);
-          txPool->SetUeSelectedTxParameters (0);
-          std::list <uint32_t>::iterator it;
-          std::list <uint32_t> destinations = m_sidelinkConfiguration->GetTxDestinations ();
-
-          m_cmacSapProvider.at (0)->AddSlCommTxPool (group, txPool);
-          //if this is the first group setup, register pool with physical layer, otherwise it has already been done
-          if (destinations.size () == 1)
-            {
-              //inform PHY of primary carrier about the tx pool
-              m_cphySapProvider.at (0)->SetSlCommTxPool (txPool);
-            }
-        }
-      if ((tx && rx) || rx) // only populate Rx pool info if rx == true
+      if (isReceive) // only populate Rx pool info if rx == true
         {
           NS_LOG_INFO ("Configuring Rx pool");
-          //Configure receiving pool
-          std::list< Ptr<SidelinkRxCommResourcePool> > pools;
-          Ptr<SidelinkRxCommResourcePool> pool = CreateObject <SidelinkRxCommResourcePool> ();
-          pool->SetPool (m_sidelinkConfiguration->GetSlPreconfiguration ().preconfigComm.pools[0]);
-          //must find ways to store Rx pool though it is in different format
-          //m_sidelinkConfiguration->rxPools.push_back (std::make_pair(msg.sib18.commConfig.commRxPool.pools[i], pool));
-          pools.push_back (pool);
-          m_cmacSapProvider.at (0)->SetSlCommRxPools (pools);
-          m_cphySapProvider.at (0)->SetSlCommRxPools (pools);
+          //Configure receiving pool, we use the same tx pools for reception
+          PopulateNrSlPools (remoteL2Id, false); //false to indicate reception
         }
-      //for testing, just indicate it is ok
-      m_asSapUser->NotifySidelinkRadioBearerActivated (group);
-      m_sidelinkConfiguration->NotifySidelinkRadioBearerActivated (group);*/
+      //Notify NAS
+      m_asSapUser->NotifyNrSlRadioBearerActivated (remoteL2Id);
+      //m_nrSlRrcSapUser->NotifyNrSlRadioBearerActivated (remoteL2Id); I dont see the need of for now
       break;
 /*
     case IDLE_WAIT_SIB2:
@@ -3656,7 +3627,17 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
   slDrbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
   slDrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
   slDrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
-  m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
+
+  if (m_nrSlRrcSapUser->GetSourceL2Id () == srcL2Id)
+    {
+      //Bearer for transmissiom
+      m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
+    }
+  else
+    {
+      //Bearer for reception
+      m_nrSlRrcSapUser->AddNrSlRxDataRadioBearer (slDrbInfo);
+    }
 
   //create PDCP/RLC stack
   ObjectFactory rlcObjectFactory;
@@ -3709,7 +3690,78 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
   return slDrbInfo;
 }
 
+void
+LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
+{
+  NS_LOG_FUNCTION (this);
 
+  const LteRrcSap::SidelinkPreconfigNr preConfig = m_nrSlRrcSapUser->GetNrSlPreconfiguration ();
+
+  std::array <LteRrcSap::SlBwpConfigCommonNr, MAX_NUM_OF_SL_BWPs> slBwpList;
+  slBwpList = preConfig.slPreconfigFreqInfoList [0].slBwpList;
+
+  Ptr<NrSlCommResourcePool> slPool; // this pointer would be communicated to the MAC and PHY
+
+  //UE RRC will set these maps in NrSlCommResourcePool
+  std::unordered_map<uint16_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > mapPerBwp;
+  std::unordered_map <uint16_t, std::vector <std::bitset<1>>> mapPerPool;
+
+  //For sanity check
+  std::set <uint8_t> bwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
+
+  for (uint16_t index = 0; index < slBwpList.size (); ++index)
+    {
+      //index of slBwpList is used as BWP id
+      //send SL pool to only that BWP for which SlBwpGeneric and SlBwpPoolConfigCommonNr are configured.
+      if (slBwpList [index].haveSlBwpGeneric && slBwpList [index].haveSlBwpPoolConfigCommonNr)
+        {
+          auto it = bwpIds.find (index);
+          NS_ASSERT_MSG (it != bwpIds.end (), "UE is not prepared to use BWP id " << +index << " for SL");
+
+          std::array <LteRrcSap::SlResourcePoolConfigNr, MAX_NUM_OF_TX_POOL> txPoolList;
+          txPoolList = slBwpList [index].slBwpPoolConfigCommonNr.slTxPoolSelectedNormal;
+          for (const auto& it:txPoolList) // fill the map per pool
+            {
+              if (it.haveSlResourcePoolConfigNr) // if this true, it means pools are set
+                {
+                  std::vector <std::bitset<1>> physicalPool = m_nrSlRrcSapUser->GetPhysicalSlPool (it.slResourcePool.slTimeResource);
+                  mapPerPool.emplace (std::make_pair (it.slResourcePoolId.id, physicalPool));
+                }
+            }
+
+          NS_ASSERT_MSG (mapPerPool.size () > 0, "No SL pool set for BWP " << index);
+
+          mapPerBwp.emplace (std::make_pair (index, mapPerPool));
+        }
+
+      if (mapPerBwp.size () > 0) // we found SL BWP
+        {
+          slPool = CreateObject <NrSlCommResourcePool> ();
+          //set the slPreconfigFreqInfoList
+          slPool->SetSlPreConfigFreqInfoList (preConfig.slPreconfigFreqInfoList);
+          //set the PhysicalSlPoolMap
+          slPool->SetPhysicalSlPoolMap (mapPerBwp);
+          if (isTransmit)
+            {
+              NS_LOG_INFO ("Configuring TX pool for BWP " << index << " IMSI " << m_imsi);
+              m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommTxPool (remoteL2Id, slPool);
+              m_nrSlUeCphySapProvider.at (index)->AddNrSlCommTxPool (remoteL2Id, slPool);
+            }
+          else
+            {
+              NS_LOG_INFO("Configuring RX pool for BWP " << index << " IMSI " << m_imsi);
+              m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommRxPool (remoteL2Id, slPool);
+              m_nrSlUeCphySapProvider.at (index)->AddNrSlCommRxPool (remoteL2Id, slPool);
+            }
+
+          m_nrSlUeCmacSapProvider.at (index)->AddNrSlRemoteL2Id (remoteL2Id);
+          m_nrSlUeCphySapProvider.at (index)->AddNrSlRemoteL2Id (remoteL2Id);
+
+          mapPerPool.clear ();
+          mapPerBwp.clear ();
+        }
+    }
+}
 
 } // namespace ns3
 

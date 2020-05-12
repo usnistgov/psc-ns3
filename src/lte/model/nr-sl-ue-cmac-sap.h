@@ -30,6 +30,7 @@ namespace ns3 {
 
 
 class NrSlMacSapUser;
+class NrSlCommResourcePool;
 
 /**
  * \group lte
@@ -85,60 +86,31 @@ public:
   virtual void ResetNrSlLcMap () = 0;
 
   /**
-   * Adds a Sidelink transmission pool for the given destination
+   * \brief Add NR Sidelink communication transmission pool
    *
-   * \param dstL2Id The destination
-   * \param pool The transmission pool
-   */
- // virtual void AddSlCommTxPool (uint32_t dstL2Id, Ptr<SidelinkTxCommResourcePool> pool) = 0;
-
-  /**
-   * Removes the Sidelink communication transmission pool for the given destination
+   * Adds transmission pool for NR Sidelink communication
    *
-   * \param dstL2Id The destination
+   * \param remoteL2Id The destination Layer 2 ID
+   * \param pool The pointer to the NrSlCommResourcePool
    */
- // virtual void RemoveSlCommTxPool (uint32_t dstL2Id) = 0;
-
+  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
-   * Sets the Sidelink communication receiving pools
+   * \brief Add NR Sidelink communication reception pool
    *
-   * \param pools The list of Sidelink receiving pools
-   */
- // virtual void SetSlCommRxPools (std::list<Ptr<SidelinkRxCommResourcePool> > pools) = 0;
-
-  /**
-   * Adds a new destination to listen for
+   * Adds reception pool for NR Sidelink communication
    *
-   * \param destination A destination (L2 ID) to listen for
+   * \param remoteL2Id The destination Layer 2 ID
+   * \param pool The pointer to the NrSlCommResourcePool
    */
- // virtual void AddSlDestination (uint32_t destination) = 0;
-
+  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**
-   * Removes a destination to listen for
+   * \brief Add NR Sidelink remote Layer 2 Id
    *
-   * \param destination The destination (L2 ID) that is no longer of interest
-   */
-//  virtual void RemoveSlDestination (uint32_t destination) = 0;
-
-  /**
-   * Sets a Sidelink discovery pool
+   * Adds remote layer 2 id to list to destinations
    *
-   * \param pool The transmission pool
+   * \param remoteL2Id The destination Layer 2 ID
    */
- // virtual void SetSlDiscTxPool (Ptr<SidelinkTxDiscResourcePool> pool) = 0;
-
-  /**
-   * Removes the Sidelink discovery pool
-   */
- // virtual void RemoveSlDiscTxPool () = 0;
-
-  /**
-   * Sets the Sidelink discovery receiving pools
-   *
-   * \param pools The Sidelink discovery receiving pools
-   */
- // virtual void SetSlDiscRxPools (std::list<Ptr<SidelinkRxDiscResourcePool> > pools) = 0;
-
+  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id) = 0;
 };
 
 /**
@@ -166,6 +138,9 @@ public:
   virtual void AddNrSlLc (const SidelinkLogicalChannelInfo &slLcInfo, NrSlMacSapUser* msu);
   virtual void RemoveNrSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id);
   virtual void ResetNrSlLcMap ();
+  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool);
+  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool);
+  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id);
 
 private:
   C* m_mac; ///< the MAC class
@@ -194,6 +169,26 @@ template <class C>
 void MemberNrSlUeCmacSapProvider<C>::ResetNrSlLcMap ()
 {
   m_mac->DoResetNrSlLcMap ();
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool)
+{
+  m_mac->DoAddNrSlCommTxPool (remoteL2Id, txPool);
+}
+
+template <class C>
+void
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool)
+{
+  m_mac->DoAddNrSlCommRxPool (remoteL2Id, rxPool);
+}
+
+template <class C>
+void MemberNrSlUeCmacSapProvider<C>::AddNrSlRemoteL2Id (uint32_t remoteL2Id)
+{
+  m_mac->DoAddNrSlRemoteL2Id (remoteL2Id);
 }
 
 
