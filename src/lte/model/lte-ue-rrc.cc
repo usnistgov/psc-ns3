@@ -3630,7 +3630,7 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
 
   if (m_nrSlRrcSapUser->GetSourceL2Id () == srcL2Id)
     {
-      //Bearer for transmissiom
+      //Bearer for transmission
       m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
     }
   else

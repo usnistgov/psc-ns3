@@ -56,10 +56,10 @@ public:
     uint8_t  lcId {std::numeric_limits <uint8_t>::max ()};     //!< logical channel identifier
     uint8_t  lcGroup {std::numeric_limits <uint8_t>::max ()};  //!< logical channel group
     uint8_t  pqi {std::numeric_limits <uint8_t>::max ()};      //!< PC5 QoS Class Identifier
-    uint8_t priority {std::numeric_limits <uint8_t>::max ()};  //!< priority
+    uint8_t  priority {std::numeric_limits <uint8_t>::max ()};  //!< priority
     bool     isGbr {false};   //!< true if the bearer is GBR, false if the bearer is NON-GBR
-    uint64_t mbr {std::numeric_limits <uint64_t>::max ()};   //!< maximum bitrate
-    uint64_t gbr {std::numeric_limits <uint64_t>::max ()};   //!< guaranteed bitrate
+    uint64_t mbr {0};   //!< maximum bitrate
+    uint64_t gbr {0};   //!< guaranteed bitrate
   };
 
 
