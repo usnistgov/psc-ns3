@@ -96,6 +96,7 @@ LteRlc::LteRlc ()
   m_rlcSapProvider = new LteRlcSpecificLteRlcSapProvider<LteRlc> (this);
   m_macSapUser = new LteRlcSpecificLteMacSapUser (this);
   m_nrSlMacSapUser = new MemberNrSlMacSapUser <LteRlc> (this);
+  m_nrSlRlcSapProvider = new MemberNrSlRlcSapProvider <LteRlc> (this);
 }
 
 LteRlc::~LteRlc ()
@@ -127,6 +128,7 @@ LteRlc::DoDispose ()
   delete (m_rlcSapProvider);
   delete (m_macSapUser);
   delete (m_nrSlMacSapUser);
+  delete (m_nrSlRlcSapProvider);
 }
 
 void
