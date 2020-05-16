@@ -3589,12 +3589,13 @@ LteUeRrc::SetOutofCovrgUeRnti ()
   NS_LOG_FUNCTION (this);
   //preconfigure the RNTI to the IMSI's 16 LSB for uniqueness
   uint16_t rnti = static_cast <uint16_t>(m_imsi & 0xFFFF);
-  NS_LOG_DEBUG ("Assigning RNTI to an out-of-coverage SL UE " << rnti);
+  m_rnti = rnti;
+  NS_LOG_DEBUG ("Assigning RNTI to an out-of-coverage SL UE " << m_rnti);
   std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
   for (const auto &it:slBwpIds)
     {
-      m_cphySapProvider.at(it)->SetRnti (rnti);
-      m_cmacSapProvider.at(it)->SetRnti (rnti);
+      m_cphySapProvider.at(it)->SetRnti (m_rnti);
+      m_cmacSapProvider.at(it)->SetRnti (m_rnti);
     }
 }
 
