@@ -69,8 +69,7 @@ McpttStateMachineStats::GetTypeId (void)
 
 McpttStateMachineStats::McpttStateMachineStats (void)
   : Object (),
-    m_firstCb (true),
-    m_outputFileName ("mcptt_state_machine_stats.txt")
+    m_firstCb (true)
 {
   NS_LOG_FUNCTION (this);
 }
