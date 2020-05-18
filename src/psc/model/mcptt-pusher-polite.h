@@ -42,7 +42,13 @@ namespace ns3 {
  * \ingroup mcptt
  *
  * This class is used to simulate the action of pushing and releasing a
- * button. This instance will only push the button if no one is talking.
+ * button. An instance of this class behaves very similar to the ns3:McpttPusher
+ * base class in that it schedules events using a random number generator to
+ * simulate "pushing" and "releasing" the button of an ns3::McpttPushable.
+ * However, this pusher will only signal pushes to the ns3:McpttPushable if it
+ * can determine that the floor is idle. In automatic mode, this means that if
+ * the pusher finds that the floor is not idle, then it will again schedule
+ * another push event in the future using the random variable.
  */
 class McpttPusherPolite : public McpttPusher 
 {
