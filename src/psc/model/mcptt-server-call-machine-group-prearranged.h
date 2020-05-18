@@ -257,7 +257,7 @@ private:
  std::vector<uint32_t> m_pending; //!< pending transactions
  Ptr<McpttServerCallMachineGroupPrearrangedState> m_state; //!< The current state of the machine.
  McpttCallMsgFieldGrpId m_grpId; //!< The ID of the MCPTT group.
- uint32_t m_userId; //!< The user ID for the server.
+ uint32_t m_userId {0}; //!< The user ID for the server.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
  TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
 };
