@@ -195,7 +195,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
         }
       m_outputFile << std::endl;
     }
-  else
+  else if (msg.GetInstanceTypeId () != McpttMediaMsg::GetTypeId ())
     {
       m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
       m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
