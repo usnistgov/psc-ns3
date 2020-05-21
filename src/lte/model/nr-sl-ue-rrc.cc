@@ -305,7 +305,7 @@ NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-NrSlUeRrc::GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
+NrSlUeRrc::GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
 {
   NS_LOG_FUNCTION (this);
   Ptr<NrSlDataRadioBearerInfo> slrb = nullptr;
@@ -322,10 +322,10 @@ NrSlUeRrc::GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-NrSlUeRrc::DoGetSidelinkRadioBearer (uint32_t remoteL2Id)
+NrSlUeRrc::DoGetSidelinkDataRadioBearer (uint32_t remoteL2Id)
 {
   NS_LOG_FUNCTION (this);
-  return GetSidelinkRadioBearer (m_srcL2Id, remoteL2Id);
+  return GetSidelinkDataRadioBearer (m_srcL2Id, remoteL2Id);
 }
 
 uint8_t

@@ -3477,7 +3477,7 @@ LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id)
 {
   NS_LOG_FUNCTION (this << packet << " for NR Sidelink. Remote layer 2 id " << remoteL2Id);
   //Find the PDCP for NR Sidelink transmission
-  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkRadioBearer (remoteL2Id);
+  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (remoteL2Id);
 
   //If there are multiple bearers, hence, multiple LCs, for a destination the
   //the NAS layer should be aware about this. That is, it should give RRC a
@@ -3534,6 +3534,7 @@ LteUeRrc::ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive)
           Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), remoteL2Id, m_nrSlRrcSapUser->GetNextLcid (remoteL2Id));
           NS_LOG_INFO ("Created new TX SLRB for remote id " << remoteL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
           NS_LOG_INFO ("Now Configuring Tx pool");
+          NS_LOG_DEBUG ("Adding pool for IMSI " << m_imsi << " srcL2 Id " << m_nrSlRrcSapUser->GetSourceL2Id () <<" rmt l2 id " << remoteL2Id );
           PopulateNrSlPools (remoteL2Id, isTransmit);
         }
 
@@ -3704,13 +3705,13 @@ LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
   Ptr<NrSlCommResourcePool> slPool; // this pointer would be communicated to the MAC and PHY
 
   //UE RRC will set these maps in NrSlCommResourcePool
-  std::unordered_map<uint16_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > mapPerBwp;
+  std::unordered_map<uint8_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > mapPerBwp;
   std::unordered_map <uint16_t, std::vector <std::bitset<1>>> mapPerPool;
 
   //For sanity check
   std::set <uint8_t> bwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
 
-  for (uint16_t index = 0; index < slBwpList.size (); ++index)
+  for (uint8_t index = 0; index < slBwpList.size (); ++index)
     {
       //index of slBwpList is used as BWP id
       //send SL pool to only that BWP for which SlBwpGeneric and SlBwpPoolConfigCommonNr are configured.
@@ -3730,7 +3731,7 @@ LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
                 }
             }
 
-          NS_ASSERT_MSG (mapPerPool.size () > 0, "No SL pool set for BWP " << index);
+          NS_ASSERT_MSG (mapPerPool.size () > 0, "No SL pool set for BWP " << +index);
 
           mapPerBwp.emplace (std::make_pair (index, mapPerPool));
         }

@@ -125,7 +125,7 @@ private:
   const std::set <uint8_t> DoGetBwpIdContainer ();
   void DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
   void DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
-  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkRadioBearer (uint32_t remoteL2Id);
+  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t remoteL2Id);
   uint32_t DoGetSourceL2Id ();
   uint8_t DoGetNextLcid (uint32_t dstL2Id);
 
@@ -154,7 +154,7 @@ private:
    *
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id);
+  Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id);
   // NR sidelink UE RRC SAP
   NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
   NrSlUeRrcSapProvider* m_nrSlUeRrcSapProvider {nullptr}; ///< NR SL UE RRC SAP provider
