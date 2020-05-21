@@ -704,19 +704,6 @@ RegularWifiMac::GetAckTimeout (void) const
 }
 
 void
-RegularWifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  NS_LOG_FUNCTION (this << ctsTimeout);
-  m_low->SetCtsTimeout (ctsTimeout);
-}
-
-Time
-RegularWifiMac::GetCtsTimeout (void) const
-{
-  return m_low->GetCtsTimeout ();
-}
-
-void
 RegularWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
 {
   NS_LOG_FUNCTION (this << blockAckTimeout);
@@ -832,7 +819,7 @@ RegularWifiMac::GetRifsSupported (void) const
 }
 
 void
-RegularWifiMac::Enqueue (Ptr<const Packet> packet,
+RegularWifiMac::Enqueue (Ptr<Packet> packet,
                          Mac48Address to, Mac48Address from)
 {
   //We expect RegularWifiMac subclasses which do support forwarding (e.g.,
@@ -850,17 +837,19 @@ RegularWifiMac::SupportsSendFrom (void) const
 }
 
 void
-RegularWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
+RegularWifiMac::ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from << to);
   m_forwardUp (packet, from, to);
 }
 
 void
-RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+RegularWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
 
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   Mac48Address to = hdr->GetAddr1 ();
   Mac48Address from = hdr->GetAddr2 ();
 
@@ -955,15 +944,13 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 }
 
 void
-RegularWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
+RegularWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << aggregatedPacket << hdr);
-  MsduAggregator::DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
-  for (MsduAggregator::DeaggregatedMsdusCI i = packets.begin ();
-       i != packets.end (); ++i)
+  NS_LOG_FUNCTION (this << *mpdu);
+  for (auto& msduPair : *PeekPointer (mpdu))
     {
-      ForwardUp ((*i).first, (*i).second.GetSourceAddr (),
-                 (*i).second.GetDestinationAddr ());
+      ForwardUp (msduPair.first, msduPair.second.GetSourceAddr (),
+                 msduPair.second.GetDestinationAddr ());
     }
 }
 
@@ -1151,7 +1138,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetBkBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
     .AddAttribute ("VO_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_VO. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
@@ -1159,7 +1146,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetVoBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("VI_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_VI. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
@@ -1167,7 +1154,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetViBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("BE_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_BE. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
@@ -1175,7 +1162,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetBeBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("BK_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_BK. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",

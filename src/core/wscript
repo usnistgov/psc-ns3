@@ -94,10 +94,6 @@ def configure(conf):
     conf.check_nonfatal(header_name='sys/stat.h', define_name='HAVE_SYS_STAT_H')
     conf.check_nonfatal(header_name='dirent.h', define_name='HAVE_DIRENT_H')
 
-    if conf.check_nonfatal(header_name='stdlib.h'):
-        conf.define('HAVE_STDLIB_H', 1)
-        conf.define('HAVE_GETENV', 1)
-
     conf.check_nonfatal(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
     # Check for POSIX threads
@@ -165,6 +161,7 @@ def build(bld):
         'model/map-scheduler.cc',
         'model/heap-scheduler.cc',
         'model/calendar-scheduler.cc',
+        'model/priority-queue-scheduler.cc',
         'model/event-impl.cc',
         'model/simulator.cc',
         'model/simulator-impl.cc',
@@ -257,6 +254,7 @@ def build(bld):
         'model/map-scheduler.h',
         'model/heap-scheduler.h',
         'model/calendar-scheduler.h',
+        'model/priority-queue-scheduler.h',
         'model/simulation-singleton.h',
         'model/singleton.h',
         'model/timer.h',

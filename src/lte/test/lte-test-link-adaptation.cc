@@ -160,6 +160,10 @@ LteLinkAdaptationTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteAmc::Ber", DoubleValue (0.00005));
   Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (2));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
+  Config::SetDefault ("ns3::MacStatsCalculator::DlOutputFilename", StringValue (CreateTempDirFilename ("DlMacStats.txt")));
+  Config::SetDefault ("ns3::MacStatsCalculator::UlOutputFilename", StringValue (CreateTempDirFilename ("UlMacStats.txt")));
+  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
+  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
 
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
@@ -170,8 +174,6 @@ LteLinkAdaptationTestCase::DoRun (void)
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 //   lteHelper->EnableLogComponents ();
-  lteHelper->EnableMacTraces ();
-  lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
   NS_LOG_INFO ("SNR = " << m_snrDb << "  LOSS = " << m_loss);
   lteHelper->SetPathlossModelAttribute ("Loss", DoubleValue (m_loss));
@@ -213,6 +215,9 @@ LteLinkAdaptationTestCase::DoRun (void)
 
   Config::Connect ("/NodeList/0/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
+
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
 
   Simulator::Stop (Seconds (0.040));
   Simulator::Run ();

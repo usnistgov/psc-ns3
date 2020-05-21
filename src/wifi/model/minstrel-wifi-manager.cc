@@ -59,7 +59,7 @@ MinstrelWifiManager::GetTypeId (void)
                    MakeTimeAccessor (&MinstrelWifiManager::m_updateStats),
                    MakeTimeChecker ())
     .AddAttribute ("LookAroundRate",
-                   "the percentage to try other rates",
+                   "The percentage to try other rates",
                    UintegerValue (10),
                    MakeUintegerAccessor (&MinstrelWifiManager::m_lookAroundRate),
                    MakeUintegerChecker<uint8_t> ())
@@ -229,7 +229,7 @@ MinstrelWifiManager::CheckInit (MinstrelWifiRemoteStation *station)
  *  1  | Best throughput  | Random rate       | Best throughput
  *  2  | Random rate      | Best throughput   | Next best throughput
  *  3  | Best probability | Best probability  | Best probability
- *  4  | Lowest Baserate  | Lowest baserate   | Lowest baserate
+ *  4  | Lowest base rate | Lowest base rate  | Lowest base rate
  *
  * Note: For clarity, multiple blocks of if's and else's are used
  * After failing max retry times, DoReportFinalDataFailed will be called
@@ -479,7 +479,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
       station->m_sampleRate = idx;
 
       /* From Linux implementation:
-       * Decide if direct ( 1st mrr stage) or indirect (2nd mrr stage)
+       * Decide if direct ( 1st MRR stage) or indirect (2nd MRR stage)
        * rate sampling method should be used.
        * Respect such rates that are not sampled for 20 iterations.
        */
@@ -556,7 +556,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   for (uint8_t i = 0; i < station->m_nModes; i++)
     {
 
-      //calculate the perfect tx time for this rate
+      //calculate the perfect TX time for this rate
       txTime = station->m_minstrelTable[i].perfectTxTime;
 
       //just for initialization
@@ -588,7 +588,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
             }
           else
             {
-              //ewma probability (cast for gcc 3.4 compatibility)
+              //EWMA probability (cast for gcc 3.4 compatibility)
               tempProb = ((tempProb * (100 - m_ewmaLevel)) + (station->m_minstrelTable[i].ewmaProb * m_ewmaLevel) ) / 100;
 
               station->m_minstrelTable[i].ewmaProb = tempProb;
@@ -645,7 +645,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   uint32_t max_tp = 0;
   uint8_t index_max_tp = 0, index_max_tp2 = 0;
 
-  //go find max throughput, second maximum throughput, high probability succ
+  //go find max throughput, second maximum throughput, high probability of success
   NS_LOG_DEBUG ("Finding the maximum throughput, second maximum throughput, and highest probability");
   NS_LOG_DEBUG ("Index-Rate\t\tT-put\tEWMA");
   for (uint8_t i = 0; i < station->m_nModes; i++)
@@ -714,14 +714,14 @@ void
 MinstrelWifiManager::DoReportRxOk (WifiRemoteStation *st, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << st << rxSnr << txMode);
-  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << ((MinstrelWifiRemoteStation *)st)->m_txrate);
+  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << static_cast<MinstrelWifiRemoteStation*> (st)->m_txrate);
 }
 
 void
 MinstrelWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   NS_LOG_DEBUG ("DoReportRtsFailed m_txrate=" << station->m_txrate);
   station->m_shortRetry++;
 }
@@ -736,7 +736,7 @@ void
 MinstrelWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   UpdateRetry (station);
 }
 
@@ -744,7 +744,7 @@ void
 MinstrelWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   NS_LOG_DEBUG ("DoReportDataFailed " << station << "\t rate " << station->m_txrate << "\tlongRetry \t" << station->m_longRetry);
   CheckInit (station);
   if (!station->m_initialized)
@@ -760,7 +760,7 @@ MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                      double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -791,7 +791,7 @@ void
 MinstrelWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -855,7 +855,7 @@ WifiTxVector
 MinstrelWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   return GetDataTxVector (station);
 }
 
@@ -863,7 +863,7 @@ WifiTxVector
 MinstrelWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   return GetRtsTxVector (station);
 }
 
@@ -871,7 +871,7 @@ bool
 MinstrelWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally)
 {
   NS_LOG_FUNCTION (this << st << packet << normally);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -941,7 +941,7 @@ MinstrelWifiManager::RateInit (MinstrelWifiRemoteStation *station)
       station->m_minstrelTable[i].adjustedRetryCount = 1;
       //Emulating minstrel.c::ath_rate_ctl_reset
       //We only check from 2 to 10 retries. This guarantee that
-      //at least one retry is permitter.
+      //at least one retry is permitted.
       Time totalTxTimeWithGivenRetries = Seconds (0.0); //tx_time in minstrel.c
       NS_LOG_DEBUG (" Calculating the number of retries");
       for (uint32_t retries = 2; retries < 11; retries++)
@@ -967,14 +967,14 @@ MinstrelWifiManager::CalculateTimeUnicastPacket (Time dataTransmissionTime, uint
   NS_LOG_FUNCTION (this << dataTransmissionTime << shortRetries << longRetries);
   //See rc80211_minstrel.c
 
-  //First transmission (DATA + ACK timeout)
+  //First transmission (Data + Ack timeout)
   Time tt = dataTransmissionTime + GetMac ()->GetAckTimeout ();
 
   uint32_t cwMax = 1023;
   uint32_t cw = 31;
   for (uint32_t retry = 0; retry < longRetries; retry++)
     {
-      //Add one re-transmission (DATA + ACK timeout)
+      //Add one re-transmission (Data + Ack timeout)
       tt += dataTransmissionTime + GetMac ()->GetAckTimeout ();
 
       //Add average back off (half the current contention window)

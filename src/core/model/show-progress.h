@@ -31,8 +31,10 @@
 
 #include <iostream>
 
+#include "event-id.h"
 #include "nstime.h"
 #include "system-wall-clock-ms.h"
+#include "time-printer.h"
 
 namespace ns3 {
 
@@ -61,7 +63,7 @@ namespace ns3 {
  *       Simulator::Destroy ();
  *     }
  * \endcode
- * 
+ *
  * Based on a python version by Gustavo Carneiro <gjcarneiro@gmail.com>,
  * as released here:
  * http://mailman.isi.edu/pipermail/ns-developers/2009-January/005201.html
@@ -75,7 +77,7 @@ public:
    * \param [in] os The stream to print on.
    */
   ShowProgress (const Time interval = Seconds (1.0),
-		std::ostream & os = std::cout);
+                std::ostream & os = std::cout);
 
   /**
    * Set the target update interval, in wallclock time.
@@ -98,7 +100,7 @@ public:
    * \param [in] os The output stream; defaults to std::cerr.
    */
   void SetStream (std::ostream & os);
-  
+
   /** Start the progress timer. */
   void Start (void);
 
@@ -109,7 +111,6 @@ public:
    */
   void SetVerbose (bool verbose);
 
-   
 private:
   /** Show execution progress. */
   void Feedback (void);
@@ -124,7 +125,7 @@ private:
    * \see Feedback()
    */
   const int64x64_t MAXGAIN = 2.0;
-  
+
   SystemWallClockMs m_timer;  //!< Wallclock timer
   Time m_interval;            //!< The target update interval, in wallclock time
   Time m_vtime;               //!< The virtual time interval.
@@ -135,9 +136,9 @@ private:
   std::ostream *m_os;         //!< The output stream to use.
   bool m_verbose;             //!< Verbose mode flag
   uint64_t m_repCount;        //!< Count of progress lines printed
-  
+
 };  // class ShowProgress
-  
+
 }  // namespace ns3
 
 #endif  /* SHOW_PROGRESS_H */

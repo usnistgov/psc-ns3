@@ -1667,9 +1667,9 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
 
 
       uint16_t physCellId = scell.cellIdentification.physCellId;
-      uint8_t ulBand = scell.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulBandwidth;
+      uint16_t ulBand = scell.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulBandwidth;
       uint32_t ulEarfcn = scell.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulCarrierFreq;
-      uint8_t dlBand = scell.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth;
+      uint16_t dlBand = scell.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth;
       uint32_t dlEarfcn = scell.cellIdentification.dlCarrierFreq;
       uint8_t txMode = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode;
       uint8_t srsIndex = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex;
@@ -1838,7 +1838,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
 
           m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, drbInfo));
 
-          m_drbCreatedTrace (m_imsi, m_cellId, m_rnti, dtamIt->drbIdentity);
+          m_drbCreatedTrace (m_imsi, m_cellId, m_rnti, dtamIt->drbIdentity, rlcTypeId.GetName ());
 
 
           struct LteUeCmacSapProvider::LogicalChannelConfig lcConfig;

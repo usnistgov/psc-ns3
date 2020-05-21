@@ -54,6 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.30 to ns-3.31</h1>
 <h2>New API:</h2>
 <ul>
+<li> New <b>...FailSafe ()</b> variants of the <b> Config </b> and <b>Config::MatchContainer</b> functions which set Attributes or connect TraceSources.  These all return a boolean indicating if any attributes could be set (or trace sources connected).  These are useful if you are not sure that the requested objects exist, for example in AnimationInterface.</li>
 <li> New attributes for <b> Ipv4L3Protocol</b> have been added to enable RFC 6621-based duplicate packet detection (DPD) (<b>EnableDuplicatePacketDetection</b>) and to control the cache expiration time (<b>DuplicateExpire</b>).</li>
 <li><b> MakeConsistent </b> method of <b> BuildingsHelper </b> class is 
 deprecated and moved to <b> MobilityBuildingInfo </b> class. <b> DoInitialize </b> 
@@ -73,11 +74,16 @@ allows to choose between Block Ack policy and Implicit Block Ack Request policy 
 allows to request an acknowledgment after a configurable number of MPDUs have been
 transmitted.</li>
 <li>The MaxSize attribute is removed from the QueueBase base class and moved to subclasses. A new MaxSize attribute is therefore added to the DropTailQueue class, while the MaxQueueSize attribute of the WifiMacQueue class is renamed as MaxSize for API consistency.</li>
+<li>The applications have now a "EnableE2EStats" attribute.</li>
+<li>Added a new trace source <b>PhyRxPayloadBegin</b> in WifiPhy for tracing begin of PSDU reception.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+<li> Previously the <b>Config::Connect</b> and <b>Config::Set</b> families of functions would fail silently if the attribute or trace source didn't exist on the path given (typically due to spelling errors). Now those functions will throw a fatal error.  If you need the old behavior use the new  <b>...FailSafe ()</b> variants.</li>
 <li>The internal TCP API for <b>TcpCongestionOps</b> has been extended to support the <b>CongControl</b> method to allow for delivery rate estimation feedback to the congestion control mechanism.</li>
 <li>Functions <b>LteEnbPhy::ReceiveUlHarqFeedback</b> and <b>LteUePhy::ReceiveLteDlHarqFeedback</b> are renamed to <b>LteEnbPhy::ReportUlHarqFeedback</b> and <b>LteUePhy::EnqueueDlHarqFeedback</b>, respectively to avoid confusion about their functionality. <b>LteHelper</b> is updated accordingly.</li>
+<li>Now on, instead of <b>uint8_t</b>, <b>uint16_t</b> would be used to store a bandwidth value in LTE.</li>
+<li>The preferred way to declare instances of <b>CommandLine</b> is now through a macro: <b>COMMANDLINE (cmd)</b>.  This enables us to add the <b>CommandLine::Usage()</b> message to the Doxygen for the program.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -85,6 +91,7 @@ transmitted.</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
+<li> Attempting to deserialize an enum name which wasn't registered with MakeEnumChecker now causes a fatal error, rather failing silently. (This can be triggered by setting an enum Attribute from a StringValue.)</li>
 <li> As a result of the above API changes in <b> MobilityBuildingInfo </b> 
 and <b> BuildingsHelper </b> classes, a building aware pathloss models, e.g., 
 <b> HybridBuildingsPropagationLossModel </b> is now able to accurately compute 

@@ -2005,7 +2005,7 @@ LteUePhy::DoSynchronizeWithEnb (uint16_t cellId)
 }
 
 void
-LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
+LteUePhy::DoSetDlBandwidth (uint16_t dlBandwidth)
 {
   NS_LOG_FUNCTION (this << (uint32_t) dlBandwidth);
   if (m_dlBandwidth != dlBandwidth or !m_dlConfigured)
@@ -2035,8 +2035,8 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 }
 
 
-void
-LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth)
+void 
+LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth)
 {
   NS_LOG_FUNCTION (this << " Uplink : EARFCN = " << ulEarfcn
                         << " bandwidth = " << (uint32_t) ulBandwidth);

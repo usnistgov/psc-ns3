@@ -234,11 +234,11 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
     {
       return false;
     }
-  if (GetErpSupported () == true && GetShortSlotTimeSupported () == true)
+  if (GetErpSupported () && GetShortSlotTimeSupported ())
     {
       for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
         {
-          if (m_stationManager->GetShortSlotTimeSupported (i->second) == false)
+          if (!m_stationManager->GetShortSlotTimeSupported (i->second))
             {
               return false;
             }
@@ -251,11 +251,11 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
 bool
 ApWifiMac::GetShortPreambleEnabled (void) const
 {
-  if (GetErpSupported () || m_phy->GetShortPlcpPreambleSupported ())
+  if (GetErpSupported () && m_phy->GetShortPhyPreambleSupported ())
     {
       for (std::list<Mac48Address>::const_iterator i = m_nonErpStations.begin (); i != m_nonErpStations.end (); i++)
         {
-          if (m_stationManager->GetShortPreambleSupported (*i) == false)
+          if (!m_stationManager->GetShortPreambleSupported (*i))
             {
               return false;
             }
@@ -271,7 +271,7 @@ ApWifiMac::IsNonGfHtStasPresent (void) const
   bool isNonGfHtStasPresent = false;
   for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
     {
-      if (m_stationManager->GetGreenfieldSupported (i->second) == false)
+      if (!m_stationManager->GetGreenfieldSupported (i->second))
         {
           isNonGfHtStasPresent = true;
           break;
@@ -299,7 +299,7 @@ ApWifiMac::GetVhtOperationalChannelWidth (void) const
 }
 
 void
-ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
+ApWifiMac::ForwardDown (Ptr<Packet> packet, Mac48Address from,
                         Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from << to);
@@ -325,7 +325,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
 }
 
 void
-ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
+ApWifiMac::ForwardDown (Ptr<Packet> packet, Mac48Address from,
                         Mac48Address to, uint8_t tid)
 {
   NS_LOG_FUNCTION (this << packet << from << to << +tid);
@@ -375,7 +375,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
 }
 
 void
-ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
+ApWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from)
 {
   NS_LOG_FUNCTION (this << packet << to << from);
   if (to.IsBroadcast () || m_stationManager->IsAssociated (to))
@@ -389,7 +389,7 @@ ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from
 }
 
 void
-ApWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+ApWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
   //We're sending this packet with a from address that is our own. We
@@ -1018,9 +1018,11 @@ ApWifiMac::TxFailed (const WifiMacHeader &hdr)
 }
 
 void
-ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  Ptr<const Packet> packet = mpdu->GetPacket ();
   Mac48Address from = hdr->GetAddr2 ();
   if (hdr->IsData ())
     {
@@ -1039,7 +1041,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   if (hdr->IsQosAmsdu ())
                     {
                       NS_LOG_DEBUG ("Received A-MSDU from=" << from << ", size=" << packet->GetSize ());
-                      DeaggregateAmsduAndForward (packet, hdr);
+                      DeaggregateAmsduAndForward (mpdu);
                       packet = 0;
                     }
                   else
@@ -1063,13 +1065,13 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               //header...
               if (hdr->IsQosData ())
                 {
-                  ForwardDown (packet, from, to, hdr->GetQosTid ());
+                  ForwardDown (copy, from, to, hdr->GetQosTid ());
                 }
               else
                 {
-                  ForwardDown (packet, from, to);
+                  ForwardDown (copy, from, to);
                 }
-              ForwardUp (copy, from, to);
+              ForwardUp (packet, from, to);
             }
           else
             {
@@ -1097,7 +1099,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           NS_ASSERT (hdr->GetAddr1 ().IsBroadcast ());
           MgtProbeRequestHeader probeRequestHeader;
-          packet->RemoveHeader (probeRequestHeader);
+          packet->PeekHeader (probeRequestHeader);
           Ssid ssid = probeRequestHeader.GetSsid ();
           if (ssid == GetSsid () || ssid.IsBroadcast ())
             {
@@ -1114,9 +1116,9 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               //first, verify that the the station's supported
               //rate set is compatible with our Basic Rate set
               MgtAssocRequestHeader assocReq;
-              packet->RemoveHeader (assocReq);
+              packet->PeekHeader (assocReq);
               CapabilityInformation capabilities = assocReq.GetCapabilities ();
-              m_stationManager->AddSupportedPlcpPreamble (from, capabilities.IsShortPreamble ());
+              m_stationManager->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
               SupportedRates rates = assocReq.GetSupportedRates ();
               bool problem = false;
               bool isHtStation = false;
@@ -1310,9 +1312,9 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               //first, verify that the the station's supported
               //rate set is compatible with our Basic Rate set
               MgtReassocRequestHeader reassocReq;
-              packet->RemoveHeader (reassocReq);
+              packet->PeekHeader (reassocReq);
               CapabilityInformation capabilities = reassocReq.GetCapabilities ();
-              m_stationManager->AddSupportedPlcpPreamble (from, capabilities.IsShortPreamble ());
+              m_stationManager->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
               SupportedRates rates = reassocReq.GetSupportedRates ();
               bool problem = false;
               bool isHtStation = false;
@@ -1536,28 +1538,26 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   //Invoke the receive handler of our parent class to deal with any
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
-  RegularWifiMac::Receive (packet, hdr);
+  RegularWifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr));
 }
 
 void
-ApWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
+ApWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << aggregatedPacket << hdr);
-  MsduAggregator::DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
-  for (MsduAggregator::DeaggregatedMsdusCI i = packets.begin ();
-       i != packets.end (); ++i)
+  NS_LOG_FUNCTION (this << *mpdu);
+  for (auto& i : *PeekPointer (mpdu))
     {
-      if ((*i).second.GetDestinationAddr () == GetAddress ())
+      if (i.second.GetDestinationAddr () == GetAddress ())
         {
-          ForwardUp ((*i).first, (*i).second.GetSourceAddr (),
-                     (*i).second.GetDestinationAddr ());
+          ForwardUp (i.first, i.second.GetSourceAddr (),
+                     i.second.GetDestinationAddr ());
         }
       else
         {
-          Mac48Address from = (*i).second.GetSourceAddr ();
-          Mac48Address to = (*i).second.GetDestinationAddr ();
+          Mac48Address from = i.second.GetSourceAddr ();
+          Mac48Address to = i.second.GetDestinationAddr ();
           NS_LOG_DEBUG ("forwarding QoS frame from=" << from << ", to=" << to);
-          ForwardDown ((*i).first, from, to, hdr->GetQosTid ());
+          ForwardDown (i.first->Copy (), from, to, mpdu->GetHeader ().GetQosTid ());
         }
     }
 }

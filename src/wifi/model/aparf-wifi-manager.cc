@@ -201,7 +201,7 @@ void AparfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 void AparfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AparfWifiRemoteStation *station = (AparfWifiRemoteStation *) st;
+  AparfWifiRemoteStation *station = static_cast<AparfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nFailed++;
   station->m_nSuccess = 0;
@@ -259,7 +259,7 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
                                   WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  AparfWifiRemoteStation *station = (AparfWifiRemoteStation *) st;
+  AparfWifiRemoteStation *station = static_cast<AparfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nSuccess++;
   station->m_nFailed = 0;
@@ -339,7 +339,7 @@ WifiTxVector
 AparfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AparfWifiRemoteStation *station = (AparfWifiRemoteStation *) st;
+  AparfWifiRemoteStation *station = static_cast<AparfWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -368,9 +368,9 @@ WifiTxVector
 AparfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  /// \todo we could/should implement the Arf algorithm for
+  /// \todo we could/should implement the ARF algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  AparfWifiRemoteStation *station = (AparfWifiRemoteStation *) st;
+  AparfWifiRemoteStation *station = static_cast<AparfWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {

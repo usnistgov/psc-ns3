@@ -313,19 +313,18 @@ Txop::HasFramesToTransmit (void)
 }
 
 void
-Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
+Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
-  Ptr<Packet> packetCopy = packet->Copy ();
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
-  packetCopy->RemovePacketTag (priorityTag);
-  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packetCopy);
+  packet->RemovePacketTag (priorityTag);
+  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), packet);
   if (m_channelAccessManager->NeedBackoffUponAccess (this))
     {
       GenerateBackoff ();
     }
-  m_queue->Enqueue (Create<WifiMacQueueItem> (packetCopy, hdr));
+  m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
   StartAccessIfNeeded ();
 }
 
@@ -534,12 +533,7 @@ Txop::NotifyAccessGranted (void)
         }
       else
         {
-          WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
-                                                                         &m_currentHdr, m_currentPacket);
-
-          if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                         m_currentPacket, dataTxVector)
-              && !m_low->IsCfPeriod ())
+          if (m_stationManager->NeedRts (&m_currentHdr, m_currentPacket) && !m_low->IsCfPeriod ())
             {
               m_currentParams.EnableRts ();
             }
@@ -625,7 +619,7 @@ Txop::MissedCts (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      //to reset the dcf.
+      //to reset the Txop.
       m_currentPacket = 0;
       ResetCw ();
       m_cwTrace = GetCw ();
@@ -681,7 +675,7 @@ Txop::MissedAck (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      //to reset the dcf.
+      //to reset the Txop.
       m_currentPacket = 0;
       ResetCw ();
       m_cwTrace = GetCw ();

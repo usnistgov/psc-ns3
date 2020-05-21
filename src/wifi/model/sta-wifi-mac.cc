@@ -310,7 +310,7 @@ StaWifiMac::TryToEnsureAssociated (void)
     case REFUSED:
       /* we have sent an association request and received a negative
          association response. We wait until someone restarts an
-         association with a given ssid.
+         association with a given SSID.
        */
       break;
     }
@@ -432,7 +432,7 @@ StaWifiMac::IsWaitAssocResp (void) const
 }
 
 void
-StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
   if (!IsAssociated ())
@@ -502,9 +502,11 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 }
 
 void
-StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  Ptr<const Packet> packet = mpdu->GetPacket ();
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr3 () == GetAddress ())
     {
@@ -547,7 +549,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           if (hdr->IsQosAmsdu ())
             {
               NS_ASSERT (hdr->GetAddr3 () == GetBssid ());
-              DeaggregateAmsduAndForward (packet, hdr);
+              DeaggregateAmsduAndForward (mpdu);
               packet = 0;
             }
           else
@@ -573,7 +575,8 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     {
       NS_LOG_DEBUG ("Beacon received");
       MgtBeaconHeader beacon;
-      packet->RemoveHeader (beacon);
+      Ptr<Packet> copy = packet->Copy ();
+      copy->RemoveHeader (beacon);
       CapabilityInformation capabilities = beacon.GetCapabilities ();
       NS_ASSERT (capabilities.IsEss ());
       bool goodBeacon = false;
@@ -628,7 +631,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           NS_LOG_DEBUG ("Beacon received while scanning from " << hdr->GetAddr2 ());
           SnrTag snrTag;
-          bool removed = packet->RemovePacketTag (snrTag);
+          bool removed = copy->RemovePacketTag (snrTag);
           NS_ASSERT (removed);
           ApInfo apInfo;
           apInfo.m_apAddr = hdr->GetAddr2 ();
@@ -646,14 +649,15 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           NS_LOG_DEBUG ("Probe response received while scanning from " << hdr->GetAddr2 ());
           MgtProbeResponseHeader probeResp;
-          packet->RemoveHeader (probeResp);
+          Ptr<Packet> copy = packet->Copy ();
+          copy->RemoveHeader (probeResp);
           if (!probeResp.GetSsid ().IsEqual (GetSsid ()))
             {
               NS_LOG_DEBUG ("Probe response is not for our SSID");
               return;
             }
           SnrTag snrTag;
-          bool removed = packet->RemovePacketTag (snrTag);
+          bool removed = copy->RemovePacketTag (snrTag);
           NS_ASSERT (removed);
           ApInfo apInfo;
           apInfo.m_apAddr = hdr->GetAddr2 ();
@@ -670,7 +674,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       if (m_state == WAIT_ASSOC_RESP)
         {
           MgtAssocResponseHeader assocResp;
-          packet->RemoveHeader (assocResp);
+          packet->PeekHeader (assocResp);
           if (m_assocRequestEvent.IsRunning ())
             {
               m_assocRequestEvent.Cancel ();
@@ -712,7 +716,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   //Invoke the receive handler of our parent class to deal with any
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
-  RegularWifiMac::Receive (packet, hdr);
+  RegularWifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr));
 }
 
 void
@@ -1128,7 +1132,7 @@ CapabilityInformation
 StaWifiMac::GetCapabilities (void) const
 {
   CapabilityInformation capabilities;
-  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreambleSupported () || GetErpSupported ());
+  capabilities.SetShortPreamble (m_phy->GetShortPhyPreambleSupported () || GetErpSupported ());
   capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported ());
   if (GetPcfSupported ())
     {

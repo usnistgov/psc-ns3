@@ -447,7 +447,7 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
       drbInfo->m_pdcp = pdcp;
     }
 
-  m_drbCreatedTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, lcid);
+  m_drbCreatedTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, lcid, rlcTypeId.GetName ());
 
   std::vector<LteCcmRrcSapProvider::LcsConfig> lcOnCcMapping = m_rrc->m_ccmRrcSapProvider->SetupDataRadioBearer (bearer, bearerId, m_rnti, lcid, m_rrc->GetLogicalChannelGroup (bearer), rlc->GetLteMacSapUser ());
   // LteEnbCmacSapProvider::LcInfo lcinfo;
@@ -2458,11 +2458,11 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> cc
 {
   auto it = ccPhyConf.begin ();
   NS_ASSERT (it != ccPhyConf.end ());
-  uint8_t ulBandwidth = it->second->GetUlBandwidth ();
-  uint8_t dlBandwidth = it->second->GetDlBandwidth ();
+  uint16_t ulBandwidth = it->second->GetUlBandwidth ();
+  uint16_t dlBandwidth = it->second->GetDlBandwidth ();
   uint32_t ulEarfcn = it->second->GetUlEarfcn ();
   uint32_t dlEarfcn = it->second->GetDlEarfcn ();
-  NS_LOG_FUNCTION (this << (uint16_t) ulBandwidth << (uint16_t) dlBandwidth
+  NS_LOG_FUNCTION (this << ulBandwidth << dlBandwidth
                         << ulEarfcn << dlEarfcn);
   NS_ASSERT (!m_configured);
 

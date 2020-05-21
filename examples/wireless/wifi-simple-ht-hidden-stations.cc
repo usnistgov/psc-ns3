@@ -47,8 +47,7 @@
 //   |    |    |
 //   n1   n2   n3
 //
-// Packets in this simulation aren't marked with a QosTag so they are considered
-// belonging to BestEffort Access Class (AC_BE).
+//Packets in this simulation belong to BestEffort Access Class (AC_BE).
 
 using namespace ns3;
 
@@ -64,7 +63,7 @@ int main (int argc, char *argv[])
   double minExpectedThroughput = 0;
   double maxExpectedThroughput = 0;
 
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("nMpdus", "Number of aggregated MPDUs", nMpdus);
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("enableRts", "Enable RTS/CTS", enableRts);

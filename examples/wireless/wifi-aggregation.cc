@@ -53,8 +53,7 @@
 // - station C enables A-MSDU (with maximum size of 8 kB) but disables A-MPDU;
 // - station D uses two-level aggregation (A-MPDU with maximum size of 32 kB and A-MSDU with maximum size of 4 kB).
 //
-// Packets in this simulation aren't marked with a QosTag so they
-// are considered belonging to BestEffort Access Class (AC_BE).
+//Packets in this simulation belong to BestEffort Access Class (AC_BE).
 //
 // The user can select the distance between the stations and the APs and can enable/disable the RTS/CTS mechanism.
 // Example: ./waf --run "wifi-aggregation --distance=10 --enableRts=0 --simulationTime=20"
@@ -82,7 +81,7 @@ int main (int argc, char *argv[])
   bool enablePcap = 0;
   bool verifyResults = 0; //used for regression
 
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("enableRts", "Enable or disable RTS/CTS", enableRts);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);

@@ -36,7 +36,7 @@ namespace ns3 {
  * \defgroup geometry Geometry primitives
  * \brief Primitives for geometry, such as vectors and angles.
  */
-  
+
 /**
  * \ingroup geometry
  * \brief a 3d vector
@@ -55,7 +55,7 @@ public:
   Vector3D (double _x, double _y, double _z);
   /** Create vector (0.0, 0.0, 0.0) */
   Vector3D ();
-  
+
   double x;  //!< x coordinate of vector
   double y;  //!< y coordinate of vector
   double z;  //!< z coordinate of vector
@@ -65,15 +65,15 @@ public:
    * \returns the vector length.
    */
   double GetLength () const;
-  
+
   /**
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
    * \param [in] b Another point
-   * \returns The distance between \p a and \p b.
+   * \returns The distance between \pname{a} and \pname{b}.
    */
   friend double CalculateDistance (const Vector3D &a, const Vector3D &b);
-  
+
   /**
    * Output streamer.
    * Vectors are written as "x:y:z".
@@ -99,7 +99,7 @@ public:
    * Less than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than \p b
+   * \returns \c true if \pname{a} is less than \pname{b}
    */
   friend bool operator < (const Vector3D &a, const Vector3D &b);
 
@@ -107,7 +107,7 @@ public:
    * Less than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than or equal to \p b.
+   * \returns \c true if \pname{a} is less than or equal to \pname{b}.
    */
   friend bool operator <= (const Vector3D &a, const Vector3D &b);
 
@@ -115,7 +115,7 @@ public:
    * Greater than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than \p b.
+   * \returns \c true if \pname{a} is greater than \pname{b}.
    */
   friend bool operator > (const Vector3D &a, const Vector3D &b);
 
@@ -123,7 +123,7 @@ public:
    * Greater than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than or equal to \p b.
+   * \returns \c true if \pname{a} is greater than or equal to \pname{b}.
    */
   friend bool operator >= (const Vector3D &a, const Vector3D &b);
 
@@ -131,7 +131,7 @@ public:
    * Equality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is equal to \p b.
+   * \returns \c true if \pname{a} is equal to \pname{b}.
    */
   friend bool operator == (const Vector3D &a, const Vector3D &b);
 
@@ -139,7 +139,7 @@ public:
    * Inequality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is not equal to \p b.
+   * \returns \c true if \pname{a} is not equal to \pname{b}.
    */
   friend bool operator != (const Vector3D &a, const Vector3D &b);
 
@@ -147,7 +147,7 @@ public:
    * Addition operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector sum of \p a and \p b.
+   * \returns The vector sum of \pname{a} and \pname{b}.
    */
   friend Vector3D operator + (const Vector3D &a, const Vector3D &b);
 
@@ -155,7 +155,7 @@ public:
    * Subtraction operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector difference of \p a and \p b.
+   * \returns The vector difference of \pname{a} and \pname{b}.
    */
   friend Vector3D operator - (const Vector3D &a, const Vector3D &b);
 };
@@ -183,15 +183,15 @@ public:
   // works:  /** \copydoc ns3::Vector3D::GetLength() */
   /** \copydoc Vector3D::GetLength() */
   double GetLength () const;
-  
+
   /**
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
    * \param [in] b Another point
-   * \returns The distance between \p a and \p b.
+   * \returns The distance between \pname{a} and \pname{b}.
    */
   friend double CalculateDistance (const Vector2D &a, const Vector2D &b);
-  
+
   /**
    * Output streamer.
    * Vectors are written as "x:y".
@@ -217,7 +217,7 @@ public:
    * Less than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than \p b
+   * \returns \c true if \pname{a} is less than \pname{b}
    */
   friend bool operator < (const Vector2D &a, const Vector2D &b);
 
@@ -225,7 +225,7 @@ public:
    * Less than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than or equal to \p b.
+   * \returns \c true if \pname{a} is less than or equal to \pname{b}.
    */
   friend bool operator <= (const Vector2D &a, const Vector2D &b);
 
@@ -233,7 +233,7 @@ public:
    * Greater than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than \p b.
+   * \returns \c true if \pname{a} is greater than \pname{b}.
    */
   friend bool operator > (const Vector2D &a, const Vector2D &b);
 
@@ -241,7 +241,7 @@ public:
    * Greater than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than or equal to \p b.
+   * \returns \c true if \pname{a} is greater than or equal to \pname{b}.
    */
   friend bool operator >= (const Vector2D &a, const Vector2D &b);
 
@@ -249,7 +249,7 @@ public:
    * Equality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is equal to \p b.
+   * \returns \c true if \pname{a} is equal to \pname{b}.
    */
   friend bool operator == (const Vector2D &a, const Vector2D &b);
 
@@ -257,7 +257,7 @@ public:
    * Inequality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is not equal to \p b.
+   * \returns \c true if \pname{a} is not equal to \pname{b}.
    */
   friend bool operator != (const Vector2D &a, const Vector2D &b);
 
@@ -265,7 +265,7 @@ public:
    * Addition operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector sum of \p a and \p b.
+   * \returns The vector sum of \pname{a} and \pname{b}.
    */
   friend Vector2D operator + (const Vector2D &a, const Vector2D &b);
 
@@ -273,7 +273,7 @@ public:
    * Subtraction operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector difference of \p a and \p b.
+   * \returns The vector difference of \pname{a} and \pname{b}.
    */
   friend Vector2D operator - (const Vector2D &a, const Vector2D &b);
 };
@@ -284,9 +284,9 @@ std::ostream &operator << (std::ostream &os, const Vector3D &vector);
 std::ostream &operator << (std::ostream &os, const Vector2D &vector);
 std::istream &operator >> (std::istream &is, Vector3D &vector);
 std::istream &operator >> (std::istream &is, Vector2D &vector);
-bool operator < (const Vector3D &a, const Vector3D &b); 
+bool operator < (const Vector3D &a, const Vector3D &b);
 bool operator < (const Vector2D &a, const Vector2D &b);
-  
+
 ATTRIBUTE_HELPER_HEADER (Vector3D);
 ATTRIBUTE_HELPER_HEADER (Vector2D);
 
@@ -301,7 +301,7 @@ typedef Vector3D Vector;
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3DValue VectorValue;
-  
+
 /**
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
@@ -316,7 +316,7 @@ typedef Vector3DChecker VectorChecker;
  * \copydoc ns3::MakeAccessorHelper(T1)
  * \see AttributeAccessor
  */
-  
+
 /**
  * \relates Vector3D
  * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
@@ -332,8 +332,8 @@ ATTRIBUTE_ACCESSOR_DEFINE (Vector);
  * \see AttributeChecker
  */
 Ptr<const AttributeChecker> MakeVectorChecker (void);
-  
-  
+
+
 } // namespace ns3
 
 #endif /* NS3_VECTOR_H */

@@ -100,7 +100,7 @@ MinstrelHtWifiManager::GetTypeId (void)
                    MakeUintegerAccessor (&MinstrelHtWifiManager::m_nSampleCol),
                    MakeUintegerChecker <uint8_t> ())
     .AddAttribute ("PacketLength",
-                   "The packet length used for calculating mode TxTime",
+                   "The packet length used for calculating mode TxTime (bytes)",
                    UintegerValue (1200),
                    MakeUintegerAccessor (&MinstrelHtWifiManager::m_frameLength),
                    MakeUintegerChecker <uint32_t> ())
@@ -161,7 +161,7 @@ void
 MinstrelHtWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  // Setup phy for legacy manager.
+  // Setup PHY for legacy manager.
   m_legacyManager->SetupPhy (phy);
   WifiRemoteStationManager::SetupPhy (phy);
 }
@@ -207,7 +207,7 @@ MinstrelHtWifiManager::DoInitialize ()
        *  - A global continuous index, which identifies all rates within all groups, in [0, m_numGroups * m_numRates]
        *  - A groupId, which indexes a group in the array, in [0, m_numGroups]
        *  - A rateId, which identifies a rate within a group, in [0, m_numRates]
-       *  - A deviceIndex, which indexes a MCS in the phy MCS array.
+       *  - A deviceIndex, which indexes a MCS in the PHY MCS array.
        *  - A mcsIndex, which indexes a MCS in the wifi-remote-station-manager supported MCSs array.
        */
       NS_LOG_DEBUG ("Initialize MCS Groups:");
@@ -235,7 +235,7 @@ MinstrelHtWifiManager::DoInitialize ()
                     {
                       m_minstrelGroups[groupId].isSupported = true;
 
-                      // Calculate tx time for all rates of the group
+                      // Calculate TX time for all rates of the group
                       WifiModeList htMcsList = GetHtDeviceMcsList ();
                       for (uint8_t i = 0; i < MAX_HT_GROUP_RATES; i++)
                         {
@@ -274,7 +274,7 @@ MinstrelHtWifiManager::DoInitialize ()
                         {
                           m_minstrelGroups[groupId].isSupported = true;
 
-                          // Calculate tx time for all rates of the group
+                          // Calculate TX time for all rates of the group
                           WifiModeList vhtMcsList = GetVhtDeviceMcsList ();
                           for (uint8_t i = 0; i < MAX_VHT_GROUP_RATES; i++)
                             {
@@ -319,7 +319,7 @@ MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t stream
   txvector.SetStbc (0);
   txvector.SetMode (mode);
   txvector.SetPreambleType (WIFI_PREAMBLE_HT_MF);
-  return WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txvector)
+  return WifiPhy::CalculatePhyPreambleAndHeaderDuration (txvector)
          + WifiPhy::GetPayloadDuration (m_frameLength, txvector, phy->GetFrequency (), mpduType);
 }
 
@@ -454,14 +454,14 @@ void
 MinstrelHtWifiManager::DoReportRxOk (WifiRemoteStation *st, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << st);
-  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << ((MinstrelHtWifiRemoteStation *)st)->m_txrate);
+  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << static_cast<MinstrelHtWifiRemoteStation*> (st)->m_txrate);
 }
 
 void
 MinstrelHtWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
   CheckInit (station);
   if (!station->m_initialized)
     {
@@ -481,7 +481,7 @@ void
 MinstrelHtWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
   NS_LOG_DEBUG ("Final RTS failed");
   CheckInit (station);
   if (!station->m_initialized)
@@ -495,7 +495,7 @@ void
 MinstrelHtWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -522,7 +522,7 @@ void
 MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -582,7 +582,7 @@ void
 MinstrelHtWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -629,7 +629,7 @@ void
 MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -639,8 +639,8 @@ MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSu
 
   NS_ASSERT_MSG (station->m_isHt, "A-MPDU Tx Status called but no HT or VHT supported.");
 
-  NS_LOG_DEBUG ("DoReportAmpduTxStatus. TxRate=" << station->m_txrate << " SuccMpdus= " <<
-                +nSuccessfulMpdus << " FailedMpdus= " << +nFailedMpdus);
+  NS_LOG_DEBUG ("DoReportAmpduTxStatus. TxRate=" << station->m_txrate << " SuccMpdus=" <<
+                +nSuccessfulMpdus << " FailedMpdus=" << +nFailedMpdus);
 
   station->m_ampduPacketCount++;
   station->m_ampduLen += nSuccessfulMpdus + nFailedMpdus;
@@ -698,7 +698,7 @@ MinstrelHtWifiManager::UpdateRate (MinstrelHtWifiRemoteStation *station)
    *  3  |  Best probability       | Best probability
    *
    * Note: For clarity, multiple blocks of if's and else's are used
-   * Following implementation in Linux, in MinstrelHT Lowest baserate is not used.
+   * Following implementation in Linux, in MinstrelHT lowest base rate is not used.
    * Explanation can be found here: http://marc.info/?l=linux-wireless&m=144602778611966&w=2
    */
 
@@ -710,7 +710,7 @@ MinstrelHtWifiManager::UpdateRate (MinstrelHtWifiRemoteStation *station)
   station->m_longRetry++;
 
   /**
-   * Get the ids for all rates.
+   * Get the IDs for all rates.
    */
   uint8_t maxTpRateId = GetRateId (station->m_maxTpRate);
   uint8_t maxTpGroupId = GetGroupId (station->m_maxTpRate);
@@ -813,7 +813,7 @@ WifiTxVector
 MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   if (!station->m_initialized)
     {
@@ -866,7 +866,7 @@ WifiTxVector
 MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   if (!station->m_initialized)
     {
@@ -943,7 +943,7 @@ MinstrelHtWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Pa
 {
   NS_LOG_FUNCTION (this << st << packet << normally);
 
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
+  MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -1274,7 +1274,7 @@ MinstrelHtWifiManager::CalculateThroughput (MinstrelHtWifiRemoteStation *station
 {
   /**
   * Calculating throughput.
-  * Do not account throughput if success prob is below 10%
+  * Do not account throughput if probability of success is below 10%
   * (as done in minstrel_ht linux implementation).
   */
   if (ewmaProb < 10)

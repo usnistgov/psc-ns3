@@ -44,61 +44,87 @@ NS_LOG_COMPONENT_DEFINE ("SampleShowProgress");
 
 namespace {
 
+/**
+ * Utility class to record the difference between to wall-clock times.
+ */
 class Timestamp
 {
- public:
+public:
+  /** Constructor */
   Timestamp () :
-    last(0),
-    diff(0)
+    last (0),
+    diff (0)
   {
     stamp ();
   }
-  
-  void stamp () {
+
+  /** Record the current wall-clock time and delta since the last stamp(). */
+  void stamp ()
+  {
     time_t seconds  = time (NULL);
     diff = seconds - last;
     last  = seconds;
   }
 
-  std::string string () {
+  /**
+   * Get the last time stamp as a string.
+   * \return The last time stamp.
+   */
+  std::string string ()
+  {
     std::string now = ctime ( &last );
-    now.resize(now.length () - 1);  // trim trailing newline
+    now.resize (now.length () - 1);  // trim trailing newline
     return now;
   }
 
-  time_t last;
-  time_t diff;
+  time_t last;    /**< The last time stamp. */
+  time_t diff;    /**< Difference between the two previous time stamps. */
 
 };  // class Timestamp
 
-  
+
 /**
- * Execute a function periodically.
+ * Execute a function periodically,
+ * which takes more or less time to run.
+ *
+ * Inspired by PHOLD.
  */
 class Hold : public SimpleRefCount<Hold>
 {
 public:
-  
+
+  /**
+   * Create a Hold with mean inter-event time \pname{wait},
+   * changing workload every \pname{interval}.
+   * \param wait The mean inter-event time.
+   * \param interval How often to change work load.  This
+   *                 should be an order of magnitude larger than \pname{wait}.
+   */
   Hold (Time wait, Time interval)
   {
     m_wait = wait;
     m_interval = interval;
 
     m_rng = CreateObject<ExponentialRandomVariable> ();
-    m_rng->SetAttribute ("Mean", DoubleValue (wait.GetSeconds ()));
+    m_rng->SetAttribute ("Mean", DoubleValue (m_wait.GetSeconds ()));
   }
 
+  /**
+   * Create a hold with a specified random number generator for the
+   * \pname{wait} time.  The RNG value will be interpreted as seconds.
+   * \param rng The random variable generator to use for the inter-event time.
+   */
   Hold (Ptr<RandomVariableStream> rng)
     : m_rng (rng)
-  {
-  }
+  {}
 
+  /** The Hold event. */
   void Event (void)
   {
     double delta = m_rng->GetValue ();
     Time delay = Seconds (delta);
     NS_LOG_LOGIC ("event delay: " << delay);
-    
+
     Simulator::Schedule (delay, &Hold::Event, this);
 
     // Switch work load every 10 * m_interval of simulation time
@@ -106,13 +132,17 @@ public:
     bool even = (ratio.GetHigh () % 2);
     Time work = m_wait * (even ? 3 : 1);
     m_condition.TimedWait ( work.GetNanoSeconds () );
-    
+
   }
-  
+
 private:
+  /** The random number generator for the interval between events. */
   Ptr<RandomVariableStream> m_rng;
+  /** Timer to represent workload. */
   SystemCondition m_condition;
+  /** Mean inter-event time. */
   Time m_wait;
+  /** Time between switching workloads. */
   Time m_interval;
 
 };  // class HOLD
@@ -124,11 +154,11 @@ int
 main (int argc, char ** argv)
 {
   Time stop = Seconds (100);
-  Time interval = Seconds (1);
+  Time interval = Seconds (10);
   Time wait = MilliSeconds (10);
   bool verbose = false;
 
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("stop", "Simulation duration in virtual time.", stop);
   cmd.AddValue ("interval", "Approximate reporting interval, in wall clock time.", interval);
   cmd.AddValue ("wait", "Wallclock time to burn on each event.", wait);
@@ -143,7 +173,7 @@ main (int argc, char ** argv)
             << "average event sleep time:  " << wait.As (Time::MS)    << "\n"
             << "total simulation run time: " << stop.As (Time::S)
             << std::endl;
-  
+
   Ptr<Hold> h = Create<Hold> (wait, interval);
   h->Event ();
 
@@ -158,13 +188,13 @@ main (int argc, char ** argv)
   std::cout << "Start wall clock:   " << ts.string ()
             << " (" << ts.last << ")"
             << std::endl;
-  
+
   Simulator::Run ();
 
   ts.stamp ();
   std::cout << "Elapsed wall clock: " << ts.diff << "s" << std::endl;
 
-  
+
   Simulator::Destroy ();
 
 }

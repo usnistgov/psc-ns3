@@ -265,14 +265,14 @@ GetConnectionTrace (std::string context, uint64_t imsi, uint16_t cellId, uint16_
 
 void SchedulePathlossLogConnect ()
 {
-  Config::Connect ("/ChannelList/0/PropagationLossModel/Hybrid3gppPathlossValue", MakeBoundCallback (&GetPathlossTrace,true));
-  Config::Connect ("/ChannelList/1/PropagationLossModel/Hybrid3gppPathlossValue", MakeBoundCallback (&GetPathlossTrace,false));
+  Config::Connect ("/ChannelList/2/PropagationLossModel/Hybrid3gppPathlossValue", MakeBoundCallback (&GetPathlossTrace,true));
+  Config::Connect ("/ChannelList/3/PropagationLossModel/Hybrid3gppPathlossValue", MakeBoundCallback (&GetPathlossTrace,false));
 }
 
 void ScheduleGainLogConnect ()
 {
-  Config::Connect ("/ChannelList/0/Gain", MakeBoundCallback (&GetGainTrace, true));
-  Config::Connect ("/ChannelList/1/Gain", MakeBoundCallback (&GetGainTrace, false));
+  Config::Connect ("/ChannelList/2/Gain", MakeBoundCallback (&GetGainTrace, true));
+  Config::Connect ("/ChannelList/3/Gain", MakeBoundCallback (&GetGainTrace, false));
 }
 
 void ConnectConectionTrace ()

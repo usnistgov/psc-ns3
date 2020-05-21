@@ -36,6 +36,7 @@
 
 #include <sstream>
 #include "ns3/object.h"
+#include "ns3/config-store-module.h"
 #include "ns3/test.h"
 #include "ns3/lte-helper.h"
 #include "ns3/lte-sidelink-helper.h"
@@ -273,6 +274,14 @@ SidelinkOutOfCoverageCommTestCase::DoRun (void)
   Ptr<LteSlTft> tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, groupAddress, groupL2Address);
   proseHelper->ActivateSidelinkBearer (Seconds (2.0), ueDevs, tft);
   ///*** End of application configuration ***///
+
+  // Output config store to txt format
+  Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.txt"));
+  Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("RawText"));
+  Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+  ConfigStore outputConfig2;
+  outputConfig2.ConfigureDefaults ();
+  outputConfig2.ConfigureAttributes ();
 
   //Enable traces
   lteHelper->EnableTraces ();

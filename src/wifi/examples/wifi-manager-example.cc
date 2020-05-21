@@ -71,7 +71,6 @@ uint64_t g_intervalRate = 0;
 void
 PacketRx (Ptr<const Packet> pkt, const Address &addr)
 {
-  NS_LOG_DEBUG ("Received size " << pkt->GetSize ());
   g_intervalBytes += pkt->GetSize ();
 }
 
@@ -134,12 +133,12 @@ ChangeSignalAndReportRate (Ptr<FixedRssLossModel> rssModel, struct Step step, do
 {
   NS_LOG_FUNCTION (rssModel << step.stepSize << step.stepTime << rss);
   double snr = rss - noiseDbm;
-  rateDataset.Add (snr, g_intervalRate / 1000000.0);
+  rateDataset.Add (snr, g_intervalRate / 1e6);
   // Calculate received rate since last interval
   double currentRate = ((g_intervalBytes * 8) / step.stepTime) / 1e6; // Mb/s
   actualDataset.Add (snr, currentRate);
   rssModel->SetRss (rss - step.stepSize);
-  NS_LOG_INFO ("At time " << Simulator::Now ().As (Time::S) << "; observed rate " << currentRate << "; setting new power to " << rss - step.stepSize);
+  NS_LOG_INFO ("At time " << Simulator::Now ().As (Time::S) << "; selected rate " << (g_intervalRate / 1e6) << "; observed rate " << currentRate << "; setting new power to " << rss - step.stepSize);
   g_intervalBytes = 0;
   Simulator::Schedule (Seconds (step.stepTime), &ChangeSignalAndReportRate, rssModel, step, (rss - step.stepSize), rateDataset, actualDataset);
 }
@@ -173,9 +172,9 @@ int main (int argc, char *argv[])
   uint32_t maxSlrc = 7;
   uint32_t maxSsrc = 7;
 
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("maxSsrc", "The maximum number of retransmission attempts for a RTS packet", maxSsrc);
-  cmd.AddValue ("maxSlrc", "The maximum number of retransmission attempts for a DATA packet", maxSlrc);
+  cmd.AddValue ("maxSlrc", "The maximum number of retransmission attempts for a Data packet", maxSlrc);
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);
   cmd.AddValue ("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
   cmd.AddValue ("stepSize", "Power between steps (dBm)", stepSize);

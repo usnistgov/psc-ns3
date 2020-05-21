@@ -42,7 +42,7 @@ class WifiPsdu;
  * considering that the per-MPDU reception status is also provided).
  *
  * arg1: PSDU received successfully
- * arg2: SNR of PSDU
+ * arg2: SNR of PSDU in linear scale
  * arg3: TXVECTOR of PSDU
  * arg4: vector of per-MPDU status of reception.
  */
@@ -73,25 +73,25 @@ public:
   /**
    * Set a callback for a successful reception.
    *
-   * \param callback
+   * \param callback the RxOkCallback to set
    */
   void SetReceiveOkCallback (RxOkCallback callback);
   /**
    * Set a callback for a failed reception.
    *
-   * \param callback
+   * \param callback the RxErrorCallback to set
    */
   void SetReceiveErrorCallback (RxErrorCallback callback);
   /**
    * Register WifiPhyListener to this WifiPhyStateHelper.
    *
-   * \param listener
+   * \param listener the WifiPhyListener to register
    */
   void RegisterListener (WifiPhyListener *listener);
   /**
    * Remove WifiPhyListener from this WifiPhyStateHelper.
    *
-   * \param listener
+   * \param listener the WifiPhyListener to unregister
    */
   void UnregisterListener (WifiPhyListener *listener);
   /**
@@ -154,14 +154,20 @@ public:
    * \return the time the last RX start.
    */
   Time GetLastRxStartTime (void) const;
+  /**
+   * Return the time the last RX end.
+   *
+   * \return the time the last RX end.
+   */
+  Time GetLastRxEndTime (void) const;
 
   /**
    * Switch state to TX for the given duration.
    *
    * \param txDuration the duration of the TX
    * \param packet the packet
-   * \param txPowerDbm the nominal tx power in dBm
-   * \param txVector the tx vector of the packet
+   * \param txPowerDbm the nominal TX power in dBm
+   * \param txVector the TX vector of the packet
    */
   void SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm, WifiTxVector txVector);
   /**
@@ -180,7 +186,7 @@ public:
    * Switch from RX after the reception was successful.
    *
    * \param psdu the successfully received PSDU
-   * \param snr the SNR of the received PSDU
+   * \param snr the SNR of the received PSDU in linear scale
    * \param txVector TXVECTOR of the PSDU
    * \param statusPerMpdu reception status per MPDU
    */
@@ -189,7 +195,7 @@ public:
    * Switch from RX after the reception failed.
    *
    * \param psdu the PSDU that we failed to received
-   * \param snr the SNR of the received PSDU
+   * \param snr the SNR of the received PSDU in linear scale
    */
   void SwitchFromRxEndError (Ptr<WifiPsdu> psdu, double snr);
   /**
@@ -210,10 +216,8 @@ public:
   void SwitchFromSleep (Time duration);
   /**
    * Abort current reception
-   *
-   * \param failure flag to indicate whether RX abortion is due to a failure
    */
-  void SwitchFromRxAbort (bool failure);
+  void SwitchFromRxAbort (void);
   /**
    * Switch to off mode.
    */
@@ -228,18 +232,18 @@ public:
   /**
    * TracedCallback signature for state changes.
    *
-   * \param [in] start Time when the \p state started.
+   * \param [in] start Time when the \pname{state} started.
    * \param [in] duration Amount of time we've been in (or will be in)
-   *             the \p state.
+   *             the \pname{state}.
    * \param [in] state The state.
    */
   typedef void (* StateTracedCallback)(Time start, Time duration, WifiPhyState state);
 
   /**
-   * TracedCallback signature for receive end ok event.
+   * TracedCallback signature for receive end OK event.
    *
    * \param [in] packet The received packet.
-   * \param [in] snr    The SNR of the received packet.
+   * \param [in] snr    The SNR of the received packet in linear scale.
    * \param [in] mode   The transmission mode of the packet.
    * \param [in] preamble The preamble of the packet.
    */
@@ -249,7 +253,7 @@ public:
    * TracedCallback signature for receive end error event.
    *
    * \param [in] packet       The received packet.
-   * \param [in] snr          The SNR of the received packet.
+   * \param [in] snr          The SNR of the received packet in linear scale.
    */
   typedef void (* RxEndErrorTracedCallback)(Ptr<const Packet> packet, double snr);
 
@@ -284,7 +288,7 @@ private:
    * Notify all WifiPhyListener that the transmission has started for the given duration.
    *
    * \param duration the duration of the transmission
-   * \param txPowerDbm the nominal tx power in dBm
+   * \param txPowerDbm the nominal TX power in dBm
    */
   void NotifyTxStart (Time duration, double txPowerDbm);
   /**
@@ -344,7 +348,7 @@ private:
   bool m_isOff; ///< switched off
   Time m_endTx; ///< end transmit
   Time m_endRx; ///< end receive
-  Time m_endCcaBusy; ///< endn CCA busy
+  Time m_endCcaBusy; ///< end CCA busy
   Time m_endSwitching; ///< end switching
   Time m_startTx; ///< start transmit
   Time m_startRx; ///< start receive

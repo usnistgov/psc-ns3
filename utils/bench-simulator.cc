@@ -91,7 +91,7 @@ private:
   Ptr<RandomVariableStream> m_rand; ///< random variable
   uint32_t m_population; ///< population
   uint32_t m_total; ///< total
-  uint32_t m_count; ///< count 
+  uint32_t m_count; ///< count
 };
 
 void
@@ -203,17 +203,19 @@ GetRandomStream (std::string filename)
 int main (int argc, char *argv[])
 {
 
-  bool schedCal  = false;
-  bool schedHeap = false;
-  bool schedList = false;
-  bool schedMap  = true;
+  bool schedCal           = false;
+  bool schedHeap          = false;
+  bool schedList          = false;
+  bool schedMap           = true;
+  bool schedPriorityQueue = false;
 
   uint32_t pop   =  100000;
   uint32_t total = 1000000;
   uint32_t runs  =       1;
   std::string filename = "";
+  bool calRev = false;
 
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.Usage ("Benchmark the simulator scheduler.\n"
              "\n"
              "Event intervals are taken from one of:\n"
@@ -223,9 +225,11 @@ int main (int argc, char *argv[])
              "In the case of either --file form, the input is expected\n"
              "to be ascii, giving the relative event times in ns.");
   cmd.AddValue ("cal",   "use CalendarSheduler",          schedCal);
+  cmd.AddValue ("calrev", "reverse ordering in the CalendarScheduler", calRev);
   cmd.AddValue ("heap",  "use HeapScheduler",             schedHeap);
   cmd.AddValue ("list",  "use ListSheduler",              schedList);
   cmd.AddValue ("map",   "use MapScheduler (default)",    schedMap);
+  cmd.AddValue ("pri",   "use PriorityQueue",             schedPriorityQueue);
   cmd.AddValue ("debug", "enable debugging output",       g_debug);
   cmd.AddValue ("pop",   "event population size (default 1E5)",         pop);
   cmd.AddValue ("total", "total number of events to run (default 1E6)", total);
@@ -240,6 +244,7 @@ int main (int argc, char *argv[])
   if (schedCal)
     {
       factory.SetTypeId ("ns3::CalendarScheduler");
+      factory.Set ("Reverse", BooleanValue (calRev));
     }
   if (schedHeap)
     {
@@ -249,12 +254,22 @@ int main (int argc, char *argv[])
     {
       factory.SetTypeId ("ns3::ListScheduler");
     }
+  if (schedPriorityQueue)
+    {
+      factory.SetTypeId ("ns3::PriorityQueueScheduler");
+    }
+      
   Simulator::SetScheduler (factory);
 
   LOGME (std::setprecision (g_fwidth - 6));
   DEB ("debugging is ON");
 
-  LOGME ("scheduler: " << factory.GetTypeId ().GetName ());
+  std::string order;
+  if (schedCal)
+    {
+      order = ": insertion order: " + std::string (calRev ? "reverse" : "normal");
+    }
+  LOGME ("scheduler: " << factory.GetTypeId ().GetName () << order);
   LOGME ("population: " << pop);
   LOGME ("total events: " << total);
   LOGME ("runs: " << runs);
@@ -265,7 +280,7 @@ int main (int argc, char *argv[])
   // table header
   LOG ("");
   LOG (std::left << std::setw (g_fwidth) << "Run #" <<
-       std::left << std::setw (3 * g_fwidth) << "Inititialization:" <<
+       std::left << std::setw (3 * g_fwidth) << "Initialization:" <<
        std::left << std::setw (3 * g_fwidth) << "Simulation:");
   LOG (std::left << std::setw (g_fwidth) << "" <<
        std::left << std::setw (g_fwidth) << "Time (s)" <<

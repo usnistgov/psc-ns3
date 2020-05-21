@@ -101,7 +101,7 @@ public:
   struct FreqInfo
   {
     uint32_t ulCarrierFreq; ///< UL carrier frequency
-    uint8_t ulBandwidth; ///< UL bandwidth
+    uint16_t ulBandwidth; ///< UL bandwidth
   };
 
   /// RlcConfig structure
@@ -134,7 +134,7 @@ public:
     {
       SETUP, RESET
     } type; ///< action type
-    uint8_t srsBandwidthConfig; ///< SRS bandwidth config
+    uint16_t srsBandwidthConfig; ///< SRS bandwidth config
     uint8_t srsSubframeConfig; ///< SRS subframe config
   };
 
@@ -146,7 +146,7 @@ public:
     {
       SETUP, RESET
     } type; ///< action type
-    uint8_t srsBandwidth; ///< SRS bandwidth
+    uint16_t srsBandwidth; ///< SRS bandwidth
     uint16_t srsConfigIndex; ///< SRS config index
   };
 
@@ -338,7 +338,7 @@ public:
   struct MeasObjectEutra
   {
     uint32_t carrierFreq; ///< carrier frequency
-    uint8_t allowedMeasBandwidth; ///< allowed measure bandwidth
+    uint16_t allowedMeasBandwidth; ///< allowed measure bandwidth
     bool presenceAntennaPort1; ///< antenna port 1 present?
     uint8_t neighCellConfig; ///< neighbor cell config
     int8_t offsetFreq; ///< offset frequency
@@ -556,8 +556,8 @@ public:
   /// CarrierBandwidthEutra structure
   struct CarrierBandwidthEutra
   {
-    uint8_t dlBandwidth; ///< DL bandwidth
-    uint8_t ulBandwidth; ///< UL bandwidth
+    uint16_t dlBandwidth; ///< DL bandwidth
+    uint16_t ulBandwidth; ///< UL bandwidth
   };
 
   /// RachConfigDedicated structure
@@ -599,8 +599,8 @@ public:
   /// MasterInformationBlock structure
   struct MasterInformationBlock
   {
-    uint8_t dlBandwidth; ///< DL bandwidth
-    uint8_t systemFrameNumber; ///< system frame number
+    uint16_t dlBandwidth; ///< DL bandwidth
+    uint16_t systemFrameNumber; ///< system frame number
   };
 
   /// SystemInformationBlockType1 structure

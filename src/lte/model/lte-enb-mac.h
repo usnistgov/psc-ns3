@@ -214,7 +214,7 @@ private:
   * \param ulBandwidth The UL bandwidth
   * \param dlBandwidth The DL bandwidth
   */
-  void DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  void DoConfigureMac (uint16_t ulBandwidth, uint16_t dlBandwidth);
   /**
   * \brief Add UE function
   * \param rnti The RNTI

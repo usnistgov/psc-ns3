@@ -73,6 +73,10 @@ namespace
   std::string functionStop;        ///< end of a method/function
   std::string headingStart;        ///< start of section heading (h3)
   std::string headingStop;         ///< end of section heading (h3)
+  // Linking:  [The link text displayed](\ref TheTarget) 
+  std::string hrefStart;           ///< start of a link
+  std::string hrefMid;             ///< middle part of a link
+  std::string hrefStop;            ///< end of a link
   std::string indentHtmlOnly;      ///< small indent
   std::string listLineStart;       ///< start unordered list item
   std::string listLineStop;        ///< end unordered list item
@@ -81,6 +85,7 @@ namespace
   std::string note;                ///< start a note section
   std::string page;                ///< start a separate page
   std::string reference;           ///< reference tag
+  std::string referenceNo;         ///< block automatic references
   std::string returns;             ///< the return value
   std::string sectionStart;        ///< start of a section or group
   std::string seeAlso;             ///< Reference to other docs
@@ -126,6 +131,10 @@ SetMarkup (bool outputText)
       functionStop                 = "\n\n";
       headingStart                 = "";
       headingStop                  = "";
+      // Linking:  The link text displayed (see TheTarget) 
+      hrefStart                    = "";
+      hrefMid                      = "(see ";
+      hrefStop                     = ")";
       indentHtmlOnly               = "";
       listLineStart                = "    * ";
       listLineStop                 = "";
@@ -134,6 +143,7 @@ SetMarkup (bool outputText)
       note                         = "Note: ";
       page                         = "Page ";
       reference                    = " ";
+      referenceNo                  = " ";
       returns                      = "  Returns: ";
       sectionStart                 = "Section ";
       seeAlso                      = "  See: ";
@@ -166,6 +176,10 @@ SetMarkup (bool outputText)
       functionStop                 = "";
       headingStart                 = "<h3>";
       headingStop                  = "</h3>";
+      // Linking:  [The link text displayed](\ref TheTarget) 
+      hrefStart                    = "[";
+      hrefMid                      = "](\\ref ";
+      hrefStop                     = ")";
       indentHtmlOnly               = "  ";
       listLineStart                = "<li>";
       listLineStop                 = "</li>";
@@ -174,6 +188,7 @@ SetMarkup (bool outputText)
       note                         = "\\note ";
       page                         = "\\page ";
       reference                    = " \\ref ";
+      referenceNo                  = " %";
       returns                      = "\\returns ";
       sectionStart                 = "\\ingroup ";
       seeAlso                      = "\\see ";
@@ -560,7 +575,6 @@ typedef NameMap::const_iterator         NameMapIterator; ///< NameMap iterator
  * Create a map from the class names to their index in the vector of
  * TypeId's so that the names will end up in alphabetical order.
  *
- * \param info type names withut type ids
  * \returns NameMap
  */
 NameMap
@@ -618,7 +632,6 @@ GetNameMap (void)
 /**
  * Print config paths
  * \param os the output stream
- * \param info the information
  * \param tid the type ID
  */
 void
@@ -985,12 +998,14 @@ void
 PrintAllTypeIds (std::ostream & os)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  os << commentStart << page << "TypeIdList All TypeIds\n"
+  os << commentStart << page << "TypeIdList All ns3::TypeId's\n"
      << std::endl;
-  os << "This is a list of all" << reference << "TypeIds.\n"
-     << "For more information see the" << reference << "TypeId "
-     << "section of this API documentation and the TypeId section "
-     << "in the Configuration and Attributes chapter of the Manual.\n"
+  os << "This is a list of all" << reference << "ns3::TypeId's.\n"
+     << "For more information see the" << reference << "ns3::TypeId "
+     << "section of this API documentation and the"
+     << referenceNo << "TypeId section "
+     << "in the Configuration and "
+     << referenceNo << "Attributes chapter of the Manual.\n"
      << std::endl;
 
   os << listStart << std::endl;
@@ -1017,6 +1032,7 @@ PrintAllTypeIds (std::ostream & os)
 	 << std::endl;
       
     }
+  os << listStop << std::endl;
   os << commentStop << std::endl;
 
 }  // PrintAllTypeIds ()
@@ -1036,8 +1052,8 @@ PrintAllAttributes (std::ostream & os)
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
-  os << "This is a list of all" << reference << "attribute by class.  "
-     << "For more information see the" << reference << "attribute "
+  os << "This is a list of all" << reference << "ns3::Attributes by class.  "
+     << "For more information see the" << reference << "ns3:Attributes "
      << "section of this API documentation and the Attributes sections "
      << "in the Tutorial and Manual.\n"
      << std::endl;
@@ -1091,6 +1107,7 @@ PrintAllGlobals (std::ostream & os)
   os << commentStart << page << "GlobalValueList All GlobalValues\n"
      << std::endl;
   os << "This is a list of all" << reference << "ns3::GlobalValue instances.\n"
+     << "See ns3::GlobalValue for how to set these."
      << std::endl;
   
   os << listStart << std::endl;
@@ -1103,11 +1120,12 @@ PrintAllGlobals (std::ostream & os)
       os << indentHtmlOnly
 	 <<   listLineStart
 	 <<     boldStart
-	 <<       anchor
-	 <<       "GlobalValue" << (*i)->GetName () << " " << (*i)->GetName ()
+         <<       hrefStart << (*i)->GetName ()
+         <<       hrefMid << "GlobalValue" << (*i)->GetName ()
+         <<       hrefStop
 	 <<     boldStop
-	 <<     ": "            << (*i)->GetHelp ()
-	 <<     ".  Default value: " << val.Get () << "."
+	 <<     ": " << (*i)->GetHelp ()
+	 <<     ".  Default value: " << val.Get () << ". "
 	 <<   listLineStop
 	 << std::endl;
     }
@@ -1287,7 +1305,7 @@ PrintAttributeValueSection (std::ostream & os,
 /**
  * Print the AttributeValue documentation for a class.
  *
- * This will print documentation for the \p AttributeValue class and methods.
+ * This will print documentation for the \pname{AttributeValue} class and methods.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.
@@ -1376,7 +1394,7 @@ PrintAttributeValueWithName (std::ostream & os,
 /**
  * Print the AttributeValue MakeAccessor documentation for a class.
  *
- * This will print documentation for the \p Make<name>Accessor functions.
+ * This will print documentation for the \pname{Make<name>Accessor} functions.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.
@@ -1411,7 +1429,7 @@ PrintMakeAccessors (std::ostream & os, const std::string & name)
 /**
  * Print the AttributeValue MakeChecker documentation for a class.
  *
- * This will print documentation for the \p Make<name>Checker function.
+ * This will print documentation for the \pname{Make<name>Checker} function.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.
@@ -1478,6 +1496,7 @@ PrintAttributeHelper (std::ostream & os,
 
 /**
  * Print documentation for Attribute implementations.
+ * \param os The stream to print on.
  */
 void
 PrintAttributeImplementations (std::ostream & os)
@@ -1492,17 +1511,6 @@ PrintAttributeImplementations (std::ostream & os)
       { "Address",        "Address",        true,  "address.h"          },
       { "Box",            "Box",            true,  "box.h"              },
       { "DataRate",       "DataRate",       true,  "data-rate.h"        },
-      { "DsssParameterSet",
-                          "DsssParameterSet",
-                                            true,  "dsss-parameter-set.h"},
-      { "EdcaParameterSet",
-                          "EdcaParameterSet",
-                                            true,  "edca-parameter-set.h"},
-      { "ErpInformation", "ErpInformation", true,  "erp-information.h"  },
-      { "ExtendedCapabilities", "ExtendedCapabilities", true,  "extended-capabilities.h"  },
-      { "HeCapabilities", "HeCapabilities", true,  "he-capabilities.h"  },
-      { "VhtCapabilities","VhtCapabilities",true,  "vht-capabilities.h" },
-      { "HtCapabilities", "HtCapabilities", true,  "ht-capabilities.h"  },
       { "IeMeshId",       "IeMeshId",       true,  "ie-dot11s-id.h"     },
       { "Ipv4Address",    "Ipv4Address",    true,  "ipv4-address.h"     },
       { "Ipv4Mask",       "Ipv4Mask",       true,  "ipv4-address.h"     },
@@ -1520,22 +1528,19 @@ PrintAttributeImplementations (std::ostream & os)
       { "TypeId",         "TypeId",         true,  "type-id.h"          },
       { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
       // { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
+      { "Vector",         "Vector",         true,  "vector.h"           },
       { "Vector2D",       "Vector2D",       true,  "vector.h"           },
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
-      { "HeOperation",    "HeOperation",    true,  "he-operation.h"    },
-      { "VhtOperation",   "VhtOperation",   true,  "vht-operation.h"    },
-      { "HtOperation",    "HtOperation",    true,  "ht-operation.h"  },
       { "Waypoint",       "Waypoint",       true,  "waypoint.h"         },
       { "WifiMode",       "WifiMode",       true,  "wifi-mode.h"        },
       
       // All three (Value, Access and Checkers) defined, but custom
-      { "Boolean",        "Boolean",        false, "boolean.h"          },
+      { "Boolean",        "bool",           false, "boolean.h"          },
       { "Callback",       "Callback",       true,  "callback.h"         },
       { "Double",         "double",         false, "double.h"           },
       { "Enum",           "int",            false, "enum.h"             },
       { "Integer",        "int64_t",        false, "integer.h"          },
       { "Pointer",        "Pointer",        false, "pointer.h"          },
-      { "RandomVariable", "RandomVariable", true,  "random-variable-stream.h"  },
       { "String",         "std::string",    false, "string.h"           },
       { "Time",           "Time",           true,  "nstime.h"           },
       { "Uinteger",       "uint64_t",       false, "uinteger.h"         },
@@ -1578,7 +1583,7 @@ int main (int argc, char *argv[])
   NS_LOG_FUNCTION_NOARGS ();
   bool outputText = false;
 
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.Usage ("Generate documentation for all ns-3 registered types, "
 	     "trace sources, attributes and global variables.");
   cmd.AddValue ("output-text", "format output as plain text", outputText);
@@ -1597,8 +1602,6 @@ int main (int argc, char *argv[])
       std::cout << "/* -*- Mode:C++; c-file-style:\"gnu\"; "
 	           "indent-tabs-mode:nil; -*- */\n"
 		<< std::endl;
-      std::cout << "#include \"ns3/log.h\""
-                << std::endl;
     }
 
   // Doxygen file header

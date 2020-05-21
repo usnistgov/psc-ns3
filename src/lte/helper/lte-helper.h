@@ -855,7 +855,7 @@ private:
    * \param ulbw The uplink bandwidth for the current CC
    * \param dlbw The downlink bandwidth for the current CC
    */
-  void DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint8_t ulbw, uint8_t dlbw);
+  void DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint16_t ulbw, uint16_t dlbw);
   /**
    * Create an eNodeB device (LteEnbNetDevice) on the given node.
    * \param n The node where the device is to be installed

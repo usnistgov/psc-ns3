@@ -35,6 +35,7 @@
 #include "ns3/rng-seed-manager.h"
 #include "ns3/config.h"
 #include "ns3/error-model.h"
+#include "ns3/socket.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
@@ -46,6 +47,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/waypoint-mobility-model.h"
 
 using namespace ns3;
 
@@ -1222,7 +1224,7 @@ private:
    * \param context the context
    * \param adr the MAC address
    */
-  void TxDataFailedTrace (std::string context, Mac48Address adr);
+  void TxDataFailedTrace (std::string context, Mac48Address adress);
 };
 
 Bug2222TestCase::Bug2222TestCase ()
@@ -1365,7 +1367,7 @@ private:
   void StoreDistinctTuple (std::string context, Ptr<SpectrumSignalParameters> txParams);
   /**
    * Triggers the arrival of a burst of 1000 Byte-long packets in the source device
-   * \param numPackets number of packets in burst (maximum: 255)
+   * \param numPackets number of packets in burst
    * \param sourceDevice pointer to the source NetDevice
    * \param destination address of the destination device
    */
@@ -1922,10 +1924,10 @@ private:
   /**
    * Callback when packet is dropped
    * \param context node context
-   * \param p the dropped packet
-   * \param reason the reason
+   * \param p the failed packet
+   * \param snr the SNR of the failed packet in linear scale
    */
-  void RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason);
+  void RxErrorCallback (std::string context, Ptr<const Packet> p, double snr);
   /**
    * Triggers the arrival of a burst of 1000 Byte-long packets in the source device
    * \param numPackets number of packets in burst
@@ -1942,7 +1944,7 @@ private:
 
   uint16_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
   uint16_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
-  uint16_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
+  uint16_t m_failedActionCount;       ///< Count failed ADDBA request/response
   uint16_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
   uint16_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
   uint16_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
@@ -1954,7 +1956,7 @@ Bug2470TestCase::Bug2470TestCase ()
   : TestCase ("Test case for Bug 2470"),
     m_receivedNormalMpduCount (0),
     m_receivedAmpduCount (0),
-    m_droppedActionCount (0),
+    m_failedActionCount (0),
     m_addbaEstablishedCount (0),
     m_addbaPendingCount (0),
     m_addbaRejectedCount (0),
@@ -2010,14 +2012,14 @@ Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t 
 }
 
 void
-Bug2470TestCase::RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason)
+Bug2470TestCase::RxErrorCallback (std::string context, Ptr<const Packet> p, double snr)
 {
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;
   packet->RemoveHeader (hdr);
   if (hdr.IsAction ())
     {
-      m_droppedActionCount++;
+      m_failedActionCount++;
     }
 }
 
@@ -2079,7 +2081,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   mobility.Install (wifiStaNode);
 
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx", MakeCallback (&Bug2470TestCase::RxCallback, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop", MakeCallback (&Bug2470TestCase::RxDropCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&Bug2470TestCase::RxErrorCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
 
   Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
@@ -2112,9 +2114,9 @@ Bug2470TestCase::DoRun (void)
 
   {
     RunSubtest (PointerValue (), PointerValue (staPem));
-    NS_TEST_ASSERT_MSG_EQ (m_droppedActionCount, 6, "ADDBA request packet is not dropped correctly");
+    NS_TEST_ASSERT_MSG_EQ (m_failedActionCount, 6, "ADDBA request packets are not failed");
     // There are two sets of 5 packets to be transmitted. The first 5 packets should be sent by normal
-    // MPDU because of failed ADDBA handshake.For the second set, the first packet should be sent by
+    // MPDU because of failed ADDBA handshake. For the second set, the first packet should be sent by
     // normal MPDU, and the rest with A-MPDU. In total we expect to receive 2 normal MPDU packets and
     // 8 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 2, "Receiving incorrect number of normal MPDU packet on subtest 1");
@@ -2129,7 +2131,7 @@ Bug2470TestCase::DoRun (void)
 
   m_receivedNormalMpduCount = 0;
   m_receivedAmpduCount = 0;
-  m_droppedActionCount = 0;
+  m_failedActionCount = 0;
   m_addbaEstablishedCount = 0;
   m_addbaPendingCount = 0;
   m_addbaRejectedCount = 0;
@@ -2141,12 +2143,12 @@ Bug2470TestCase::DoRun (void)
   // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (4);
   blackList.push_back (5);
-  blackList.push_back (8);
+  blackList.push_back (6);
   apPem->SetList (blackList);
 
   {
     RunSubtest (PointerValue (apPem), PointerValue ());
-    NS_TEST_ASSERT_MSG_EQ (m_droppedActionCount, 3, "ADDBA response packet is not dropped correctly");
+    NS_TEST_ASSERT_MSG_EQ (m_failedActionCount, 3, "ADDBA response packets are not failed");
     // Similar to subtest 1, we also expect to receive 6 normal MPDU packets and 4 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 6, "Receiving incorrect number of normal MPDU packet on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 4, "Receiving incorrect number of A-MPDU packet on subtest 2");
@@ -2160,6 +2162,325 @@ Bug2470TestCase::DoRun (void)
 
   // TODO: In the second test set, it does not go to reset state since ADDBA response is received after timeout (NO_REPLY)
   // but before it does not enter RESET state. More tests should be written to verify all possible scenarios.
+}
+
+
+//-----------------------------------------------------------------------------
+/**
+ * Make sure that Ideal rate manager recovers when the station is moving away from the access point.
+ *
+ * The scenario considers an access point and a moving station.
+ * Initially, the station is located at 1 meter from the access point.
+ * After 1s, the station moves away from the access for 0.5s to
+ * reach a point away of 50 meters from the access point.
+ * The tests checks the Ideal rate manager is reset once it has
+ * failed to transmit a data packet, so that the next data packets
+ * can be successfully transmitted using a lower modulation.
+ *
+ * See \issueid{40}
+ */
+
+class Issue40TestCase : public TestCase
+{
+public:
+  Issue40TestCase ();
+  virtual ~Issue40TestCase ();
+  virtual void DoRun (void);
+
+private:
+  /**
+   * Run one function
+   * \param useAmpdu flag to indicate whether the test should be run with A-MPDU
+   */
+  void RunOne (bool useAmpdu);
+
+  /**
+   * Callback when packet is successfully received
+   * \param context node context
+   * \param p the received packet
+   */
+  void RxSuccessCallback (std::string context, Ptr<const Packet> p);
+  /**
+   * Triggers the arrival of 1000 Byte-long packets in the source device
+   * \param numPackets number of packets in burst
+   * \param sourceDevice pointer to the source NetDevice
+   * \param destination address of the destination device
+   */
+   void SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination);
+  /**
+   * Transmit final data failed function
+   * \param context the context
+   * \param adr the MAC address
+   */
+  void TxFinalDataFailedCallback (std::string context, Mac48Address address);
+
+  uint16_t m_rxCount; ///< Count number of successfully received data packets
+  uint16_t m_txCount; ///< Count number of transmitted data packets
+  uint16_t m_txMacFinalDataFailedCount; ///< Count number of unsuccessfully transmitted data packets
+};
+
+Issue40TestCase::Issue40TestCase ()
+  : TestCase ("Test case for issue #40"),
+    m_rxCount (0),
+    m_txCount (0),
+    m_txMacFinalDataFailedCount (0)
+{
+}
+
+Issue40TestCase::~Issue40TestCase ()
+{
+}
+
+void
+Issue40TestCase::RxSuccessCallback (std::string context, Ptr<const Packet> p)
+{
+  m_rxCount++;
+}
+
+void
+Issue40TestCase::SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination)
+{
+  for (uint8_t i = 0; i < numPackets; i++)
+    {
+      Ptr<Packet> pkt = Create<Packet> (1000); // 1000 dummy bytes of data
+      sourceDevice->Send (pkt, destination, 0);
+      m_txCount++;
+    }
+}
+
+void
+Issue40TestCase::TxFinalDataFailedCallback (std::string context, Mac48Address address)
+{
+  m_txMacFinalDataFailedCount++;
+}
+
+void
+Issue40TestCase::RunOne (bool useAmpdu)
+{
+  m_rxCount = 0;
+  m_txCount = 0;
+  m_txMacFinalDataFailedCount = 0;
+
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 100;
+
+  NodeContainer wifiApNode, wifiStaNode;
+  wifiApNode.Create (1);
+  wifiStaNode.Create (1);
+
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  phy.SetChannel (channel.Create ());
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+
+  WifiMacHelper mac;
+  NetDeviceContainer apDevice;
+  mac.SetType ("ns3::ApWifiMac");
+  apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  NetDeviceContainer staDevice;
+  mac.SetType ("ns3::StaWifiMac");
+  staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (apDevice, streamNumber);
+  wifi.AssignStreams (staDevice, streamNumber);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiApNode);
+
+  mobility.SetMobilityModel("ns3::WaypointMobilityModel");
+  mobility.Install (wifiStaNode);
+
+  Config::Connect ("/NodeList/*/DeviceList/*/RemoteStationManager/MacTxFinalDataFailed", MakeCallback (&Issue40TestCase::TxFinalDataFailedCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/MacRx", MakeCallback (&Issue40TestCase::RxSuccessCallback, this));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20)); //see issue #159
+              
+  Ptr<WaypointMobilityModel> staWaypointMobility = DynamicCast<WaypointMobilityModel>(wifiStaNode.Get(0)->GetObject<MobilityModel>());
+  staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.0), Vector (1.0, 0.0, 0.0)));
+  staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.5), Vector (50.0, 0.0, 0.0)));
+
+  if (useAmpdu)
+    {
+      // Disable use of BAR that are sent with the lowest modulation so that we can also reproduce the problem with A-MPDU, i.e. the lack of feedback about SNR change
+      Ptr<WifiNetDevice> ap_device = DynamicCast<WifiNetDevice> (apDevice.Get (0));
+      Ptr<RegularWifiMac> ap_mac = DynamicCast<RegularWifiMac> (ap_device->GetMac ());
+      NS_ASSERT (ap_mac);
+      PointerValue ptr;
+      ap_mac->GetAttribute ("BE_Txop", ptr);
+      ptr.Get<QosTxop> ()->SetAttribute ("UseExplicitBarAfterMissedBlockAck", BooleanValue (false));
+  }
+
+  // Transmit a first data packet before the station moves: it should be sent with a high modulation and successfully received
+  Simulator::Schedule (Seconds (0.5), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+
+  // Transmit a second data packet once the station is away from the access point: it should be sent with the same high modulation and be unsuccessfully received
+  Simulator::Schedule (Seconds (2.0), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+
+  // Keep on transmitting data packets while the station is away from the access point: it should be sent with a lower modulation and be successfully received
+  Simulator::Schedule (Seconds (2.1), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (2.2), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (2.3), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (2.4), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (2.5), &Issue40TestCase::SendPackets, this, useAmpdu ? 2 : 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+
+  Simulator::Stop (Seconds (3.0));
+  Simulator::Run ();
+
+  NS_TEST_ASSERT_MSG_EQ (m_txCount, (useAmpdu ? 14 : 7), "Incorrect number of transmitted packets");
+  NS_TEST_ASSERT_MSG_EQ (m_rxCount, (useAmpdu ? 12 : 6), "Incorrect number of successfully received packets");
+  NS_TEST_ASSERT_MSG_EQ (m_txMacFinalDataFailedCount, 1, "Incorrect number of dropped TX packets");
+
+  Simulator::Destroy ();
+}
+
+void
+Issue40TestCase::DoRun (void)
+{
+  //Test without A-MPDU
+  RunOne (false);
+
+  //Test with A-MPDU
+  RunOne (true);
+}
+
+//-----------------------------------------------------------------------------
+/**
+ * Make sure that Ideal rate manager is able to handle non best-effort traffic.
+ *
+ * The scenario considers an access point and a fixed station.
+ * The station first sends a best-effort packet to the access point,
+ * for which Ideal rate manager should select a VHT rate. Then,
+ * the station sends a non best-effort (voice) packet to the access point,
+ * and since SNR is unchanged, the same VHT rate should be used.
+ *
+ * See \issueid{169}
+ */
+
+class Issue169TestCase : public TestCase
+{
+public:
+  Issue169TestCase ();
+  virtual ~Issue169TestCase ();
+  virtual void DoRun (void);
+
+private:
+  /**
+   * Triggers the arrival of 1000 Byte-long packets in the source device
+   * \param numPackets number of packets in burst
+   * \param sourceDevice pointer to the source NetDevice
+   * \param destination address of the destination device
+   * \param priority the priority of the packets to send
+   */
+   void SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination, uint8_t priority);
+
+  /**
+   * Callback that indicates a PSDU is being transmitted
+   * \param context the context
+   * \param psdu the PSDU to transmit
+   * \param txVector the TX vector
+   * \param txPowerW the TX power (W)
+   */
+  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+};
+
+Issue169TestCase::Issue169TestCase ()
+  : TestCase ("Test case for issue #169")
+{
+}
+
+Issue169TestCase::~Issue169TestCase ()
+{
+}
+
+void
+Issue169TestCase::SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination, uint8_t priority)
+{
+  SocketPriorityTag priorityTag;
+  priorityTag.SetPriority (priority);
+  for (uint8_t i = 0; i < numPackets; i++)
+    {
+      Ptr<Packet> packet = Create<Packet> (1000); // 1000 dummy bytes of data
+      packet->AddPacketTag (priorityTag);
+      sourceDevice->Send (packet, destination, 0);
+    }
+}
+
+void
+Issue169TestCase::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+{
+  if (psdu->GetSize () >= 1000)
+    {
+      NS_TEST_ASSERT_MSG_EQ (txVector.GetMode ().GetModulationClass (), WifiModulationClass::WIFI_MOD_CLASS_VHT, "Ideal rate manager selected incorrect modulation class");
+    }
+}
+
+void
+Issue169TestCase::DoRun (void)
+{
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 100;
+
+  NodeContainer wifiApNode, wifiStaNode;
+  wifiApNode.Create (1);
+  wifiStaNode.Create (1);
+
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  phy.SetChannel (channel.Create ());
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+
+  WifiMacHelper mac;
+  NetDeviceContainer apDevice;
+  mac.SetType ("ns3::ApWifiMac");
+  apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  NetDeviceContainer staDevice;
+  mac.SetType ("ns3::StaWifiMac");
+  staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (apDevice, streamNumber);
+  wifi.AssignStreams (staDevice, streamNumber);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiApNode);
+  mobility.Install (wifiStaNode);
+
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20)); //see issue #159
+
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyTxPsduBegin", MakeCallback (&Issue169TestCase::TxCallback, this));
+
+  //Send best-effort packet (i.e. priority 0)
+  Simulator::Schedule (Seconds (0.5), &Issue169TestCase::SendPackets, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress (), 0);
+
+  //Send non best-effort (voice) packet (i.e. priority 6)
+  Simulator::Schedule (Seconds (1.0), &Issue169TestCase::SendPackets, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress (), 6);
+
+  Simulator::Stop (Seconds (2.0));
+  Simulator::Run ();
+
+  Simulator::Destroy ();
 }
 
 /**
@@ -2189,6 +2510,8 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new Bug2831TestCase, TestCase::QUICK); //Bug 2831
   AddTestCase (new StaWifiMacScanningTestCase, TestCase::QUICK); //Bug 2399
   AddTestCase (new Bug2470TestCase, TestCase::QUICK); //Bug 2470
+  AddTestCase (new Issue40TestCase, TestCase::QUICK); //Issue #40
+  AddTestCase (new Issue169TestCase, TestCase::QUICK); //Issue #169
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite
