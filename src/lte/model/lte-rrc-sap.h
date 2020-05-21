@@ -1445,7 +1445,7 @@ public:
   {
     SlSensingWindow slSensingWindow; //!< Parameter that indicates the start of the sensing window.
     SlSelectionWindow slSelectionWindow; //!< Parameter that determines the end of the selection window in the resource selection for a TB with respect to priority indicated in SCI.
-    bool slMultiReserveResource; //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
+    bool slMultiReserveResource {false}; //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
     std::array <SlResourceReservePeriod, 16> slResourceReservePeriodList; //!< Set of possible resource reservation period allowed in the resource pool.
 
     //sl-CBR-Priority-TxConfigList-r16 //TODO
@@ -1492,7 +1492,7 @@ public:
    */
   struct SlResourcePoolIdNr
   {
-    uint16_t id {333}; //!< Sidelink pool id. Valid range [1, 16]
+    uint16_t id {333}; //!< Sidelink pool id. Valid range [1, 16] by standard. In the simulator it is from [0, 15]
   };
 
   /**
