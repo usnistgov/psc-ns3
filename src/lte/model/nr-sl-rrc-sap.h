@@ -203,14 +203,14 @@ template <class C>
 void
 MemberNrSlUeRrcSapUser<C>::AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
 {
-  return m_owner->DoAddNrSlDataRadioBearer (slDrb);
+  m_owner->DoAddNrSlDataRadioBearer (slDrb);
 }
 
 template <class C>
 void
 MemberNrSlUeRrcSapUser<C>::AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
 {
-  return m_owner->DoAddNrSlRxDataRadioBearer (slRxDrb);
+  m_owner->DoAddNrSlRxDataRadioBearer (slRxDrb);
 }
 
 
