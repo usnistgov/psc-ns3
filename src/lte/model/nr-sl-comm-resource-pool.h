@@ -58,7 +58,15 @@ public:
    * Key of the second map is the pool id
    * Value of the second map is a vector, which is a physical SL pool
    */
-  typedef std::unordered_map<uint16_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > PhySlPoolMap;
+  typedef std::unordered_map<uint8_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > PhySlPoolMap;
+
+  /**
+   * \brief Checks if two NR Sidelink pool configurations are identical
+   *
+   * \param other The configuration of the other resource pool
+   * \return true if this configuration is the same as the other one
+   */
+  bool operator== (const NrSlCommResourcePool& other) const;
 
   /**
    * \brief Constructor

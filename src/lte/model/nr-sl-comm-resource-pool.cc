@@ -52,6 +52,64 @@ NrSlCommResourcePool::SetSlPreConfigFreqInfoList (const std::array <LteRrcSap::S
   m_slPreconfigFreqInfoList = slPreconfigFreqInfoList;
 }
 
+bool
+NrSlCommResourcePool::operator== (const NrSlCommResourcePool& other) const
+{
+  //std::array <LteRrcSap::SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> m_slPreconfigFreqInfoList
+  //if Physical SL pool is equal that means SL Bitmap and TDD pattern are
+  //also equal.
+  bool equal = m_phySlPoolMap == other.m_phySlPoolMap;
+  if (equal == false)
+    {
+      return equal;
+    }
+  else
+    {
+      NS_ASSERT_MSG (m_phySlPoolMap.begin ()->first == other.m_phySlPoolMap.begin ()->first, "BWP id mismatched");
+      uint8_t bwpId = m_phySlPoolMap.begin ()->first;
+      LteRrcSap::SlFreqConfigCommonNr slfreqConfigLocal = m_slPreconfigFreqInfoList.at (0);
+      LteRrcSap::SlFreqConfigCommonNr slfreqConfigOther = other.m_slPreconfigFreqInfoList.at (0);
+
+      LteRrcSap::SlBwpConfigCommonNr slBwpConfigLocal = slfreqConfigLocal.slBwpList.at (bwpId);
+      LteRrcSap::SlBwpConfigCommonNr slBwpConfigOther = slfreqConfigOther.slBwpList.at (bwpId);
+
+
+      std::array <LteRrcSap::SlResourcePoolConfigNr, MAX_NUM_OF_TX_POOL> slTxPoolLocal = slBwpConfigLocal.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal;
+      std::array <LteRrcSap::SlResourcePoolConfigNr, MAX_NUM_OF_TX_POOL> slTxPoolOther = slBwpConfigOther.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal;
+
+      for (uint16_t poolIndex = 0; poolIndex < slTxPoolLocal.size (); ++poolIndex)
+        {
+          equal = slTxPoolLocal.at (poolIndex).haveSlResourcePoolConfigNr == slTxPoolOther.at (poolIndex).haveSlResourcePoolConfigNr
+               && slTxPoolLocal.at (poolIndex).slResourcePoolId.id == slTxPoolOther.at (poolIndex).slResourcePoolId.id
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slPscchConfig.setupRelease == slTxPoolOther.at (poolIndex).slResourcePool.slPscchConfig.setupRelease
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slPscchConfig.slFreqResourcePscch.resources == slTxPoolOther.at (poolIndex).slResourcePool.slPscchConfig.slFreqResourcePscch.resources
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slPscchConfig.slTimeResourcePscch.resources == slTxPoolOther.at (poolIndex).slResourcePool.slPscchConfig.slTimeResourcePscch.resources
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slSubchannelSize.numPrbs == slTxPoolOther.at (poolIndex).slResourcePool.slSubchannelSize.numPrbs
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slTimeResource == slTxPoolOther.at (poolIndex).slResourcePool.slTimeResource
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slSelectionWindow.windSize == slTxPoolOther.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slSelectionWindow.windSize
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slSensingWindow.windSize == slTxPoolOther.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slSensingWindow.windSize
+               && slTxPoolLocal.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slMultiReserveResource == slTxPoolOther.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slMultiReserveResource;
+
+          std::array <LteRrcSap::SlResourceReservePeriod, 16> listLocal = slTxPoolLocal.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slResourceReservePeriodList;
+          std::array <LteRrcSap::SlResourceReservePeriod, 16> listOther = slTxPoolOther.at (poolIndex).slResourcePool.slUeSelectedConfigRp.slResourceReservePeriodList;
+          bool listEquality = false;
+          for (uint16_t resPListIndex = 0; resPListIndex < listLocal.size (); ++resPListIndex)
+            {
+              listEquality = listLocal.at (resPListIndex).period == listOther.at (resPListIndex).period;
+            }
+
+          equal = equal && listEquality;
+
+          if (equal == false)
+            {
+              break;
+            }
+        }
+
+      return equal;
+    }
+}
+
 void
 NrSlCommResourcePool::SetPhysicalSlPoolMap (NrSlCommResourcePool::PhySlPoolMap phySlPoolMap)
 {
