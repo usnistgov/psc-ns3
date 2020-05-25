@@ -121,6 +121,14 @@ public:
    * \return A list of sidelink communication opportunities for each available slot in a selection window
    */
   std::list <NrSlCommResourcePool::SlotInfo> GetSlCommOpportunities (uint16_t numAbsSlot, uint16_t bwpId, uint16_t poolId, uint16_t t1);
+  /**
+   * \brief Get number of slots for sensing window
+   *
+   * \param bwpId The bandwidth part id
+   * \param poolId The pool id
+   * \return The length of the sensing window in slots
+   */
+  uint16_t GetNumSlotsSensWind (uint16_t bwpId, uint16_t poolId, Time slotLength);
 
 
 

@@ -207,6 +207,29 @@ NrSlCommResourcePool::GetSlCommOpportunities (uint16_t absIndexCurretSlot, uint1
   return list;
 }
 
+uint16_t
+NrSlCommResourcePool::GetNumSlotsSensWind (uint16_t bwpId, uint16_t poolId, Time slotLength)
+{
+NS_LOG_FUNCTION (this << bwpId << poolId << slotLength);
+
+NrSlCommResourcePool::PhySlPoolMap::iterator itBwp = m_phySlPoolMap.find (bwpId);
+NS_ASSERT_MSG (itBwp != m_phySlPoolMap.end (), "Unable to find physical pool for bandwidth part id " << bwpId);
+//If there is no physical pool set for the given BWP id, avoid accessing
+//the slBwpList array index.
+
+LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
+LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
+LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
+LteRrcSap::SlSensingWindow slSensingWindowLen = slResourcePoolConfig.slResourcePool.slUeSelectedConfigRp.slSensingWindow;
+NS_ASSERT_MSG (slSensingWindowLen.windSize != LteRrcSap::SlSensingWindow::INVALID, "Sensing window not set for BWP id " << bwpId << " pool id " << poolId);
+
+uint16_t windLenInMs = LteRrcSap::GetSlSensWindowValue (slSensingWindowLen);
+
+double numSlots = (windLenInMs / static_cast <double>(1000)) / slotLength.GetSeconds ();
+
+return static_cast <uint16_t> (numSlots);
+}
+
 
 }
 
