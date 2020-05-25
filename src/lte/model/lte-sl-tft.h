@@ -86,18 +86,18 @@ public:
    *
    * \param d The direction
    * \param remoteAddr The IPv4 address of the remote
-   * \param remoteL2Id The remote layer 2 id
+   * \param dstL2Id The destination layer 2 id
    */
-  LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t remoteL2Id);
+  LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t dstL2Id);
 
   /**
    * \brief Constructor (sets remote address only)
    *
    * \param d The direction
    * \param remoteAddr The IPv6 address of the remote
-   * \param remoteL2Id The remote layer 2 id
+   * \param dstL2Id The destination layer 2 id
    */
-  LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t remoteL2Id);
+  LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t dstL2Id);
 
   /**
    * \brief Constructor for copy
@@ -134,10 +134,10 @@ public:
   bool Equals (Ptr<LteSlTft> tft);
 
   /**
-   * \brief Gets the remote L2 id associated with the TFT
-   * \return the remote L2 address associated with the TFT
+   * \brief Gets the Destination L2 id associated with the TFT
+   * \return The Destination L2 address associated with the TFT
    */
-  uint32_t GetRemoteL2Id ();
+  uint32_t GetDstL2Id ();
 
   /**
    * \brief Indicates if the TFT is for an incoming sidelink bearer
@@ -167,7 +167,7 @@ private:
   Ipv6Address m_remoteAddress6 {Ipv6Address::GetZero ()};       //!< IPv6 address of the remote host
   Ipv4Mask m_remoteMask {Ipv4Mask::GetZero ()};         //!< IPv4 address mask of the remote host
   Ipv6Prefix m_remoteMask6 {Ipv6Prefix::GetZero ()};    //!< IPv6 address mask of the remote host
-  uint32_t m_remoteL2Id {0};      //!< 24 bit L2 id of remote entity
+  uint32_t m_dstL2Id {0};      //!< 24 bit L2 id of remote entity
 
 };
 

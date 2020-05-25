@@ -41,7 +41,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteSlTft");
 
-LteSlTft::LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t remoteL2Id)
+LteSlTft::LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t dstL2Id)
 {
   NS_LOG_FUNCTION (this);
   m_direction = d;
@@ -50,12 +50,12 @@ LteSlTft::LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint
   m_remoteAddress = remoteAddr;
   m_remoteMask = Ipv4Mask::GetOnes ();
 
-  NS_ASSERT_MSG (remoteL2Id > 0, "Remote L2 id must be greater than zero");
-  NS_ASSERT_MSG ((remoteL2Id & 0xFF000000) == 0, "Remote L2 id must be 24 bits");
-  m_remoteL2Id = remoteL2Id;
+  NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
+  m_dstL2Id = dstL2Id;
 }
 
-LteSlTft::LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t remoteL2Id)
+LteSlTft::LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t dstL2Id)
 {
   NS_LOG_FUNCTION (this);
   m_direction = d;
@@ -64,9 +64,9 @@ LteSlTft::LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint
   m_remoteAddress6 = remoteAddr;
   m_remoteMask6 = Ipv6Prefix::GetOnes ();
 
-  NS_ASSERT_MSG (remoteL2Id > 0, "Remote L2 id must be greater than zero");
-  NS_ASSERT_MSG ((remoteL2Id & 0xFF000000) == 0, "Remote L2 id must be 24 bits");
-  m_remoteL2Id = remoteL2Id;
+  NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
+  m_dstL2Id = dstL2Id;
 }
 
 LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
@@ -79,7 +79,7 @@ LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
   m_remoteAddress6 = tft->m_remoteAddress6;
   m_remoteMask = tft->m_remoteMask;
   m_remoteMask6 = tft->m_remoteMask6;
-  m_remoteL2Id = tft->m_remoteL2Id;
+  m_dstL2Id = tft->m_dstL2Id;
 }
 
 bool
@@ -113,7 +113,7 @@ LteSlTft::Equals (Ptr<LteSlTft> tft)
       && m_remoteAddress6 != tft->m_remoteAddress6
       && m_remoteMask != tft->m_remoteMask
       && m_remoteMask6 != tft->m_remoteMask6
-      && m_remoteL2Id != tft->m_remoteL2Id)
+      && m_dstL2Id != tft->m_dstL2Id)
     {
       equals = false;
     }
@@ -122,9 +122,9 @@ LteSlTft::Equals (Ptr<LteSlTft> tft)
 }
 
 uint32_t
-LteSlTft::GetRemoteL2Id()
+LteSlTft::GetDstL2Id()
 {
-  return m_remoteL2Id;
+  return m_dstL2Id;
 }
 
 bool
