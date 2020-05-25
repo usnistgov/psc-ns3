@@ -1461,28 +1461,43 @@ private:
   /**
    * \brief Activate NR sidelink radio bearer
    *
-   * \param remoteL2Id The remote layer 3 id
+   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
    * \param isUnicast True if the bearer is for unicast communication
+   * \param poolId The id of the pool used for TX and RX
    */
-  void DoActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast, uint16_t poolId);
   /**
    * \brief Send sidelink data packet to RRC.
    *
    * \param packet The packet
-   * \param remoteL2Id The remote layer 2 id
+   * \param dstL2Id The destination layer 2 id
    */
-  void DoSendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id);
+  void DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
 
+  // NR SL RRC SAP provider methods
+  /**
+   * \brief Populate NR Sidelink pools
+   *
+   * After getting the pre-configuration
+   * NrSlUeRrc instruct the LteUeRrc to
+   * populate the pools.
+   *
+   */
+  void DoPopulatePools ();
+
+  //Internal private methods and member variables
+private:
   /**
    * \brief Activate NR sidelink data radio bearer
    *
-   * \param remoteL2Id The remote layer 3 id
+   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
+   * \param poolId The id of the pool used for TX and RX
    */
-  void ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive);
+  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive, uint16_t poolId);
 
   /**
    * \brief set out-of-coverage UE RNTI
@@ -1497,23 +1512,21 @@ private:
    * \brief Add Nr sidelink data radio bearer
    *
    * \param srcL2Id The sidelink source layer 2 id
-   * \param destL2Id The sidelink destinations layer 2 id
+   * \param dstL2Id The sidelink destination layer 2 id
    * \param lcid The logical channel id
+   * \param poolId The id of the pool used for TX and RX
    * \return The Sidelink radio bearer information
    */
-  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid);
+  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid, uint16_t poolId);
 
   /**
    * \brief Populate NR SL Pool to lower layers
    *
    * This methods populates the NR SL pools
-   * specifically to MAC and PHY of the UE
+   * specifically to MAC and PHY of the UE.
    *
-   * \param remoteL2Id the remote layer 2 id for which we are populating the pool
-   * \param isTransmit True if UE is interested in transmission, else, it is
-   *        interested in reception
    */
-  void PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit);
+  void PopulateNrSlPools ();
 
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc

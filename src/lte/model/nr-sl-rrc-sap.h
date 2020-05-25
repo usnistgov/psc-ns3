@@ -84,10 +84,10 @@ public:
   /**
    * \brief Get NR Sidelink data radio bearer
    *
-   * \param remoteL2Id The remote/destination layer 2 id
+   * \param dstL2Id The remote/destination layer 2 id
    * \return The NrSlDataRadioBearerInfo
    */
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t remoteL2Id) = 0;
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id) = 0;
   /**
    * \brief Get Sidelink source layer 2 id
    *
@@ -124,6 +124,15 @@ public:
    * \brief Destructor
    */
   virtual ~NrSlUeRrcSapProvider ();
+  /**
+   * \brief Populate NR Sidelink pools
+   *
+   * After getting the pre-configuration
+   * NrSlUeRrc instruct the LteUeRrc to
+   * populate the pools.
+   *
+   */
+  virtual void PopulatePools () = 0 ;
 
 
 };
@@ -156,7 +165,7 @@ public:
   virtual const std::set<uint8_t> GetBwpIdContainer ();
   virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t remoteL2Id);
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
   virtual uint32_t GetSourceL2Id ();
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
 
@@ -216,9 +225,9 @@ MemberNrSlUeRrcSapUser<C>::AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo
 
 template <class C>
 Ptr<NrSlDataRadioBearerInfo>
-MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t remoteL2Id)
+MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t dstL2Id)
 {
-  return m_owner->DoGetSidelinkDataRadioBearer (remoteL2Id);
+  return m_owner->DoGetSidelinkDataRadioBearer (dstL2Id);
 }
 
 template <class C>
@@ -252,8 +261,8 @@ public:
    */
   MemberNrSlUeRrcSapProvider (C* owner);
 
-  // inherited from NRSlUeRrcSapUser
-//  virtual void Setup (SetupParameters params);
+  // inherited from NRSlUeRrcSapProvider
+  virtual void PopulatePools () ;
 
 
 private:
@@ -272,14 +281,14 @@ MemberNrSlUeRrcSapProvider<C>::MemberNrSlUeRrcSapProvider ()
 {
 }
 
-/*
+
 template <class C>
 void
-MemberNrSlUeRrcSapProvider<C>::Setup (SetupParameters params)
+MemberNrSlUeRrcSapProvider<C>::PopulatePools ()
 {
-  m_owner->DoSetup (params);
+  m_owner->DoPopulatePools ();
 }
-*/
+
 
 
 

@@ -90,27 +90,26 @@ public:
    *
    * Adds transmission pool for NR Sidelink communication
    *
-   * \param remoteL2Id The destination Layer 2 ID
    * \param pool The pointer to the NrSlCommResourcePool
    */
-  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool) = 0;
+  virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
    * \brief Add NR Sidelink communication reception pool
    *
    * Adds reception pool for NR Sidelink communication
    *
-   * \param remoteL2Id The destination Layer 2 ID
    * \param pool The pointer to the NrSlCommResourcePool
    */
-  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool) = 0;
+  virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**
-   * \brief Add NR Sidelink remote Layer 2 Id
+   * \brief Add NR Sidelink destination layer 2 Id
    *
-   * Adds remote layer 2 id to list to destinations
+   * Adds destination layer 2 id to list to destinations
    *
-   * \param remoteL2Id The destination Layer 2 ID
+   * \param dstL2Id The destination layer 2 ID
+   * \param poolId The id of the pool to used for TX and RX
    */
-  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id) = 0;
+  virtual void AddNrSlDstL2Id (uint32_t dstL2Id, uint16_t poolId) = 0;
 };
 
 /**
@@ -138,9 +137,9 @@ public:
   virtual void AddNrSlLc (const SidelinkLogicalChannelInfo &slLcInfo, NrSlMacSapUser* msu);
   virtual void RemoveNrSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id);
   virtual void ResetNrSlLcMap ();
-  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool);
-  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool);
-  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id);
+  virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
+  virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
+  virtual void AddNrSlDstL2Id (uint32_t dstL2Id, uint16_t poolId);
 
 private:
   C* m_mac; ///< the MAC class
@@ -173,22 +172,22 @@ void MemberNrSlUeCmacSapProvider<C>::ResetNrSlLcMap ()
 
 template <class C>
 void
-MemberNrSlUeCmacSapProvider<C>::AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool)
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool)
 {
-  m_mac->DoAddNrSlCommTxPool (remoteL2Id, txPool);
+  m_mac->DoAddNrSlCommTxPool (txPool);
 }
 
 template <class C>
 void
-MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool)
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool)
 {
-  m_mac->DoAddNrSlCommRxPool (remoteL2Id, rxPool);
+  m_mac->DoAddNrSlCommRxPool (rxPool);
 }
 
 template <class C>
-void MemberNrSlUeCmacSapProvider<C>::AddNrSlRemoteL2Id (uint32_t remoteL2Id)
+void MemberNrSlUeCmacSapProvider<C>::AddNrSlDstL2Id (uint32_t dstL2Id, uint16_t poolId)
 {
-  m_mac->DoAddNrSlRemoteL2Id (remoteL2Id);
+  m_mac->DoAddNrSlDstL2Id (dstL2Id, poolId);
 }
 
 
