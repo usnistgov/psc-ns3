@@ -397,12 +397,7 @@ int main (int argc, char *argv[])
     }
 
   NS_LOG_INFO ("Enabling Sidelink traces...");
-
-  lteHelper->EnableSlPscchMacTraces ();
-  lteHelper->EnableSlPsschMacTraces ();
-
-  lteHelper->EnableSlRxPhyTraces ();
-  lteHelper->EnableSlPscchRxPhyTraces ();
+  lteHelper->EnableSidelinkTraces ();
 
   NS_LOG_INFO ("Starting simulation...");
 

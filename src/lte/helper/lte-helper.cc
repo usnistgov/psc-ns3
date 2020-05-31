@@ -1613,7 +1613,6 @@ LteHelper::EnableTraces (void)
   EnableMacTraces ();
   EnableRlcTraces ();
   EnablePdcpTraces ();
-  EnableRrcTraces ();
 }
 
 void
@@ -1681,12 +1680,6 @@ LteHelper::EnablePhyTraces (void)
   EnableUlTxPhyTraces ();
   EnableDlRxPhyTraces ();
   EnableUlRxPhyTraces ();
-  //Sidelink
-  if (m_useSidelink)
-    {
-      EnableSlRxPhyTraces ();
-      EnableSlPscchRxPhyTraces ();
-    }
 }
 
 void
@@ -1737,13 +1730,6 @@ LteHelper::EnableMacTraces (void)
 {
   EnableDlMacTraces ();
   EnableUlMacTraces ();
-  //Sidelink
-  if (m_useSidelink)
-    {
-      EnableSlPscchMacTraces ();
-      EnableSlPsschMacTraces ();
-      EnableSlPsdchMacTraces ();
-    }
 }
 
 
@@ -1895,6 +1881,19 @@ LteHelper::RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uin
 {
   NS_LOG_FUNCTION (this << relayImsi << ueImsi << ipv6Prefix);
   m_epcHelper->RemoteUeContextDisconnected (relayImsi, ueImsi, ipv6Prefix);
+}
+
+void
+LteHelper::EnableSidelinkTraces (void)
+{
+  // Transmissiontraces
+  EnableSlPscchMacTraces ();
+  EnableSlPsschMacTraces ();
+  EnableSlPsdchMacTraces ();
+  // Reception traces
+  EnableSlRxPhyTraces ();
+  EnableSlPscchRxPhyTraces ();
+  EnableRrcTraces ();
 }
 
 } // namespace ns3

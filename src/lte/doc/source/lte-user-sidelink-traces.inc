@@ -24,6 +24,16 @@ of PHY, MAC and RRC level KPIs. You can enable them in the following way::
 
         Simulator::Run ();
 
+A helper method exists to enable all six traces above in one statement::
+
+        Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+
+        // configure all the simulation scenario here...
+
+        lteHelper->EnableSidelinkTraces ();
+
+        Simulator::Run ();
+
 The Sidelink PSCCH and PSSCH MAC level KPIs are gathered at UE MAC and are
 written into two files, first one for PSCCH and the second for PSSCH.
 These KPIs are basically the trace of resource allocation for the Sidelink

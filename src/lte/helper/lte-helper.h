@@ -842,6 +842,26 @@ public:
    */
   void RemoteUeContextDisconnected (uint64_t relayImsi, uint64_t ueImsi, uint8_t ipv6Prefix[8]);
 
+  /**
+   * \brief Enables Sidelink trace sinks for PHY, MAC, and RRC.
+   *
+   * Enables sidelink trace sinks at the PHY and MAC layer, and discovery
+   * traces at the RRC layer.  This method is designed to complement
+   * the on-network EnableTraces() method, which enables RLC and PDCP
+   * traces in addition to uplink and downlink PHY and MAC traces (if 
+   * uplink and downlink are present).
+   *
+   * RLC and PDCP traces are not generated for Sidelink bearers.  If they
+   * are implemented, this method should be extended to cover them.
+   *
+   * To make sure all nodes are traced, this method should
+   * be called just before starting the simulation.  If no sidelinks are
+   * defined, this method will generate a runtime error.
+   *
+   * \sa LteHelper::EnableTraces
+   */
+  void EnableSidelinkTraces (void);
+
 protected:
   // inherited from Object
   virtual void DoInitialize (void);

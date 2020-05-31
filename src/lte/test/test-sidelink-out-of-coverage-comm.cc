@@ -283,9 +283,6 @@ SidelinkOutOfCoverageCommTestCase::DoRun (void)
   outputConfig2.ConfigureDefaults ();
   outputConfig2.ConfigureAttributes ();
 
-  //Enable traces
-  lteHelper->EnableTraces ();
-
   Simulator::Stop (Seconds (simTime));
 
   Simulator::Run ();
