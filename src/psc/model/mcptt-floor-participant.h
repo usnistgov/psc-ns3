@@ -133,6 +133,22 @@ public:
   * Notifies this machine that the button has been released.
   */
  virtual void PttRelease (void) = 0;
+
+ // Events to report
+ static constexpr const char* PTT_BUTTON_RELEASED = "PTT button released";
+ static constexpr const char* RECEIVED_FLOOR_DENY = "Received Floor Deny";
+ static constexpr const char* RECEIVED_FLOOR_GRANTED = "Received Floor Granted";
+ static constexpr const char* RECEIVED_FLOOR_IDLE = "Received Floor Idle";
+ static constexpr const char* RECEIVED_FLOOR_REVOKED = "Received Floor Revoked";
+ static constexpr const char* RECEIVED_FLOOR_TAKEN = "Received Floor Taken";
+ static constexpr const char* TIMER_T100_EXPIRED = "Timer T100 expired";
+ static constexpr const char* TIMER_T100_EXPIRED_N_TIMES = "Timer T100 expired N times";
+ static constexpr const char* TIMER_T101_EXPIRED = "Timer T101 expired";
+ static constexpr const char* TIMER_T101_EXPIRED_N_TIMES = "Timer T101 expired N times";
+ static constexpr const char* TIMER_T103_EXPIRED = "Timer T103 expired";
+ static constexpr const char* TIMER_T104_EXPIRED = "Timer T104 expired";
+ static constexpr const char* TIMER_T104_EXPIRED_N_TIMES = "Timer T104 expired N times";
+ static constexpr const char* TIMER_T132_EXPIRED = "Timer T132 expired";
 };
 
 /**

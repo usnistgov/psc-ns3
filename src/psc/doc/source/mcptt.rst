@@ -536,7 +536,7 @@ option to enable |ns3| logging, ``--enableNsLogs``, will not enable LTE
 logging as in the LTE D2D example, but will instead enable all MCPTT logs,
 as shown above.
 
-Finally, we note three tracing statements inserted near the bottom of the
+Finally, we note four tracing statements inserted near the bottom of the
 program: 
  
 .. sourcecode:: cpp
@@ -544,7 +544,8 @@ program:
    NS_LOG_INFO ("Enabling MCPTT traces...");
    mcpttHelper.EnableMsgTraces ();
    mcpttHelper.EnableStateMachineTraces ();
-   mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
+   mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+   mcpttHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
 
 These statements are explained in the next section.  Some other aspects
 of LTE tracing are omitted in this modified example, in order to focus on
@@ -627,7 +628,7 @@ column contains the string representation of the ``ns3::McpttEntityId`` which
 gives the name of the state that the state machine was in AFTER the transition
 took place.
 
-Finally, one of the key performance indicators (KPI) defined for MCPTT is
+One of the key performance indicators (KPI) defined for MCPTT is
 the mouth-to-ear latency.  More information about this statistic can be
 found in NIST technical report NISTIR 8206 [NIST.IR.8206]_.  When the
 |ns3| model generates the first RTP packet of a talk spurt, the timestamp
@@ -650,6 +651,54 @@ argument, the trace filename.  The output file is formatted as follows.
 In the example, node ID 6 started to receive a talk spurt at time 5.063s, 
 on call ID 0, with a mouth-to-ear latency of 35 ms (see Figure 1 of 
 [NIST.IR.8206]_).
+
+The MCPTT Access time is defined as KPI1 in [TS22179]_, and measures the time
+between a request to speak (normally by pushing to talk) and when the user
+receives an indication from floor control to start speaking.  In the ns-3
+model, this is measured by state transitions of the floor machinei; the
+initial request to speak is marked by a change to a Pending Request state in the
+MCPTT user's floor control machine, and permission is marked by the transition
+to the Has Permission state.  There can be a few possible state transition
+outcomes.  The first is that the floor control server immediately grants
+permission.  The second is that the request is initially queued but later
+granted.  The third is that the request is denied (perhaps because queuing
+is disabled or the queue is full).  the fourth is that the request ultimately
+fails, either due to the user (pusher) abandoning the request, or the end
+of the call, or some other reason.
+
+The latency and outcomes of access requests can be traced using the helper
+method ``ns3::McpttHelper::EnableAccessTimeTrace()`` which takes a single
+argument, the trace filename.  The output file is formatted as follows.
+
+.. sourcecode:: text
+
+    time(s) userid callid result latency(s)
+   7.246000      1      0     I   0.024115
+  11.251000      2      0     Q   1.302355
+  22.689000      4      1     I   0.024172
+  25.907000      3      1     Q   2.652518
+  28.952000      4      1     I   0.024378
+  34.017000      3      1     F   0.651460
+
+The above example illustrates that at time 7.246s, user ID 1 from call ID 0
+was able to immediately request the floor in a transaction that took a bit
+more than 24 ms.  The timestamp in the first column indicates the time at
+which the outcome is decided, not when the floor request was initiated.
+The five possible results described above can be filtered based on the
+fourth column above, with "I" denoting "immediate", "Q" denoting "queued",
+"D" denoting "denied", "F" denoting "failed" (such as due to message loss),
+and "A" denoting "abandoned" (when the PTT button is released while the
+request is pending).
+
+When measuring access time in ns-3, we recommend to count the "I" and "Q"
+outcomes and filter out the "D", "F", and "A" outcomes.  The [TS22179]_ standard
+suggests that access time should be less than 300ms for 99% of all MCPTT
+requests, but suggests that the system should have negligible backhaul
+delay and not be overloaded (less than 70% load per node) when comparing
+against this threshold.  In simulations, the access time may rise above
+300ms due to non-negligible backhaul delay, the pusher model (if too many
+MCPTT users are contending for the floor), or congestion or transmission
+losses in the LTE network.
 
 Testing and Validation
 ======================

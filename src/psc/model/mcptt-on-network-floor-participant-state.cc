@@ -502,8 +502,8 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::ReceiveFloorIdle (McpttOnNet
       machine.Send (ackMsg);
     }
 
-  //TODO: Provide floor idle notification to user.
-  
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_IDLE);
+
   if (machine.GetT103 ()->IsRunning ())
     {
       machine.GetT103 ()->Stop ();
@@ -523,7 +523,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::ReceiveFloorTaken (McpttOnNe
       machine.Send (ackMsg);
     }
   
-  //TODO: Provide floor taken notification to user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_TAKEN);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
@@ -565,7 +565,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::ExpiryOfT103 (McpttOnNetwork
 {
   NS_LOG_FUNCTION (this << &machine);
   
-  //TODO: Provide floor idle notification to the user.
+  machine.ReportEvent (McpttFloorParticipant::TIMER_T103_EXPIRED);
 }
 
 void
@@ -781,6 +781,39 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
 }
 
 void
+McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorRevoke (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgRevoke& msg) const
+{
+  NS_LOG_FUNCTION (this << &machine << msg);
+
+  // This could occur if the user had previously been granted the floor, but
+  // the grant message was lost, and in the meantime, another user preempted
+  // this user, causing the server to issue a revoke.
+
+  if (machine.GetT103 ()->IsRunning ())
+    {
+      NS_LOG_WARN ("T103 being stopped from PendingRequest state");
+      machine.GetT103 ()->Stop ();
+    }
+  machine.GetT101 ()->Stop ();
+
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_REVOKED);
+
+  McpttFloorMsgRelease releaseMsg;
+  releaseMsg.SetSsrc (machine.GetTxSsrc ());
+  releaseMsg.SetIndicator (msg.GetIndicator ());
+
+  if (machine.IsAckRequired ())
+    {
+      releaseMsg.SetSubtype (McpttFloorMsgRelease::SUBTYPE_ACK);
+    }
+
+  machine.Send (releaseMsg);
+  machine.GetC100 ()->Reset ();
+  machine.GetT100 ()->Start ();
+  machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRelease::GetInstance ());
+}
+
+void
 McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorGranted (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgGranted& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
@@ -794,7 +827,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorGranted (McpttOnN
       machine.Send (ackMsg);
     }
 
-  //TODO: Provide floor granted notification to the user, if not already done.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
   
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
@@ -830,7 +863,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorDeny (McpttOnNetw
       machine.Send (ackMsg);
     }
 
-  //TODO: Provide floor deny notification to the user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
   //TODO: Display floor deny reason to the user.
 
   machine.GetT101 ()->Stop ();
@@ -844,7 +877,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ExpiryOfT101 (McpttOnNetworkF
 
   if (machine.GetC101 ()->IsLimitReached ())
     {
-      //TODO: Provide a floor request timeout to the user
+      machine.ReportEvent (McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES);
       machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
     }
   else
@@ -875,6 +908,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::PttRelease (McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this << &machine);
 
+  machine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_RELEASED);
   McpttFloorMsgRelease releaseMsg;
   releaseMsg.SetSsrc (machine.GetTxSsrc ());
   releaseMsg.SetIndicator (machine.GetIndicator ());
@@ -971,6 +1005,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::PttRelease (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine);
 
+  machine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_RELEASED);
   McpttFloorMsgRelease releaseMsg;
   releaseMsg.SetSsrc (machine.GetTxSsrc ());
   releaseMsg.SetIndicator (machine.GetIndicator ());
@@ -994,9 +1029,10 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorRevoke (McpttOnNet
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  //TODO: Inform the user that the permission to send RTP media is being revoked.
   //TODO: Give reason the user about why the floor is being revoked.
   //TODO: Request the media mixer to discard any remaining buffered RTP media and stop fowarding conded voice to server.
+
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_REVOKED);
 
   McpttFloorMsgRelease releaseMsg;
   releaseMsg.SetSsrc (machine.GetTxSsrc ());
@@ -1085,6 +1121,8 @@ void
 McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorTaken (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgTaken& msg) const
 {
   NS_LOG_FUNCTION (this << &machine << msg);
+
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_TAKEN);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR))
     {
@@ -1177,6 +1215,7 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ExpiryOfT100 (McpttOnNetworkF
 
   if (machine.GetC100 ()->IsLimitReached ())
     {
+      machine.ReportEvent (McpttFloorParticipant::TIMER_T100_EXPIRED_N_TIMES);
       machine.ChangeState (McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance ());
     }
   else
@@ -1207,7 +1246,7 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorIdle (McpttOnNetw
       machine.Send (ackMsg);
     }
 
-  //TODO: Provide floor idle notification to the MCPTT user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_IDLE);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
@@ -1242,7 +1281,7 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorTaken (McpttOnNet
       machine.Send (ackMsg);
     }
   
-  //TODO: Provide floor taken notification to user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_TAKEN);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
@@ -1389,7 +1428,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorTaken (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  //TODO: May provide a floor taken notification to the MCPTT user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_TAKEN);
 
   if (msg.GetSubtype () == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
@@ -1399,6 +1438,37 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorTaken (McpttOnNetworkFloo
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
       machine.Send (ackMsg);
     }
+}
+
+void
+McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorRevoke (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgRevoke& msg) const
+{
+  NS_LOG_FUNCTION (this << &machine << msg);
+
+  // This could occur if the user had previously been granted the floor, but
+  // the grant message was lost, and in the meantime, another user preempted
+  // this user, causing the server to issue a revoke.
+
+  if (machine.GetT104 ()->IsRunning ())
+    {
+      machine.GetT104 ()->Stop ();
+    }
+
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_REVOKED);
+
+  McpttFloorMsgRelease releaseMsg;
+  releaseMsg.SetSsrc (machine.GetTxSsrc ());
+  releaseMsg.SetIndicator (msg.GetIndicator ());
+
+  if (machine.IsAckRequired ())
+    {
+      releaseMsg.SetSubtype (McpttFloorMsgRelease::SUBTYPE_ACK);
+    }
+
+  machine.Send (releaseMsg);
+  machine.GetC100 ()->Reset ();
+  machine.GetT100 ()->Start ();
+  machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRelease::GetInstance ());
 }
 
 void
@@ -1415,7 +1485,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorGranted (McpttOnNetworkFl
       machine.Send (ackMsg);
     }
 
-  //TODO: Shall provide a floor granted notification to the MCPTT user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
   
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
@@ -1430,8 +1500,6 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorGranted (McpttOnNetworkFl
   machine.GetT132 ()->Start ();
 
   machine.FloorGranted ();
-
-  //TODO: Shall indicate the user that the floor is granted.
 }
 
 void
@@ -1447,6 +1515,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorDeny (McpttOnNetworkFloor
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
     }
 
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
   //TODO: Shall provide a floor deny notification to the MCPTT user.
   //TODO: May display the deny reason to the user using information in the Reject Cause field.
  
@@ -1463,6 +1532,7 @@ McpttOnNetworkFloorParticipantStateQueued::PttRelease (McpttOnNetworkFloorPartic
 {
   NS_LOG_FUNCTION (this << &machine);
 
+  machine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_RELEASED);
   McpttFloorMsgRelease releaseMsg;
   releaseMsg.SetSsrc (machine.GetTxSsrc ());
   releaseMsg.SetIndicator (machine.GetIndicator ());
@@ -1519,7 +1589,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorIdle (McpttOnNetworkFloor
       machine.Send (ackMsg);
     }
 
-  //TODO: May provide a floor idle notification to the user.
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_IDLE);
 
   if (machine.GetT104 ()->IsRunning ())
     {
@@ -1549,6 +1619,7 @@ McpttOnNetworkFloorParticipantStateQueued::ExpiryOfT104 (McpttOnNetworkFloorPart
 
   if (machine.GetC104 ()->IsLimitReached ())
     {
+      machine.ReportEvent (McpttFloorParticipant::TIMER_T104_EXPIRED_N_TIMES);
       McpttFloorMsgQueuePositionRequest requestMsg;
       requestMsg.SetSsrc (machine.GetTxSsrc ());
 

@@ -81,6 +81,15 @@ public:
   */
  virtual void DisableStateMachineTraces (void);
  /**
+  * Enables a trace for MCPTT access time statistics
+  * \param filename Filename to open for writing the trace
+  */
+ virtual void EnableAccessTimeTrace (std::string filename);
+ /**
+  * Disables any traces for MCPTT access time statistics
+  */
+ virtual void DisableAccessTimeTrace (void);
+ /**
   * Enables a trace for MCPTT mouth-to-ear latency statistics
   * \param filename Filename to open for writing the trace
   */
@@ -92,10 +101,14 @@ public:
 private:
  Ptr<McpttMsgStats> m_msgTracer; //!< The object used to trace MCPTT messages.
  Ptr<McpttStateMachineStats> m_stateMachineTracer; //!< The object used to trace MCPTT state machine traces.
- std::map<std::pair<uint32_t, uint16_t>, Time> m_mouthToEarLatencyMap;
+ std::map<std::pair<uint32_t, uint16_t>, Time> m_mouthToEarLatencyMap; //!< state tracker
+ std::map<std::pair<uint32_t, uint16_t>, std::pair<Time, std::string> > m_accessTimeMap; //!< state tracker
  std::ofstream m_mouthToEarLatencyTraceFile; //!< file stream for latency trace
+ std::ofstream m_accessTimeTraceFile; //!< file stream for the access time trace
 
   void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const Header& msg);
+  void TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+  void TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const char* description);
 };
 
 } // namespace ns3

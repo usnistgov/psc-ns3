@@ -307,6 +307,11 @@ public:
   * Stop the McpttOnNetworkFloorParticipant state machine.
   */
  virtual void Stop (void);
+ /**
+  * \brief Report an event to the McpttPttApp.
+  * \param reason the reason to report.
+  */
+ virtual void ReportEvent (const char* reason) const;
 protected:
  /**
   * \brief Disposes of the McpttFloorMachine.

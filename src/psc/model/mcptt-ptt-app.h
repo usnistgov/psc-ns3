@@ -245,6 +245,12 @@ public:
   * \param callType The call type to upgrade to.
   */
  virtual void UpgradeCallType (uint8_t callType);
+ /**
+  * Report an event to the Event trace source.
+  * \param callId Call ID for the event.
+  * \param reason Description of the event.
+  */
+ virtual void ReportEvent (uint16_t callId, const char* reason);
 protected:
  /**
   * Disposes of the McpttPttApp instance.
@@ -291,6 +297,13 @@ protected:
   * \param [in] msg The SIP header or specialized McpttMsg header sent or received
   */ 
  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
+ /**
+  * TracedCallback signature for event reporting
+  * \param [in] userId MCPTT user ID
+  * \param [in] callId MCPTT call ID
+  * \param [in] event event description
+  */
+ typedef void (* EventTracedCallback) (uint32_t, uint16_t callId, const char*);
 private:
  static uint16_t s_portNumber; //!< A port number.
  bool m_isRunning; //!< Whether application is running or not
@@ -310,6 +323,7 @@ private:
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
+ TracedCallback<uint32_t, uint16_t, const char* > m_eventTrace; //!< Event trace
 public:
  /**
   * Gets the channel used for call control messages.
@@ -357,7 +371,20 @@ public:
   */
  virtual void SetCalls (const std::map<uint16_t, Ptr<McpttCall> >  calls);
  /**
-  * Sets the callback used to notify a floor granted.
+  * Sets the callback used to notify a floor granted.  Use of this callback
+  * is optional, depending on the pusher model.  In real-world operation,
+  * the MCPTT user would request talk permission by pushing the button.  If
+  * immediately granted, the pusher would continue to push and to generate
+  * media.  If queued, the pusher would, upon notification of a queue position,
+  * release the button, and wait for a floor grant to arrive through this
+  * callback.  When it arrives, this app model expects the user to accept the
+  * grant by again starting a push and generating media within the T132
+  * timer interval.  Failure to do so will trigger a T132 timeout.
+  *
+  * If this callback is not set, the McpttPttApp will stand in for the
+  * user and automatically accept any floor grants, and the pusher will
+  * not be notified except possibly through the event trace.
+  * 
   * \param floorGrantedCb The callback.
   */
  virtual void SetFloorGrantedCb (const Callback<void>  floorGrantedCb);

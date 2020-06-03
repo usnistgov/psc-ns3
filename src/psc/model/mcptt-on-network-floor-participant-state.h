@@ -441,6 +441,12 @@ public:
   */
  virtual void Selected (McpttOnNetworkFloorParticipant& machine) const;
  /**
+  * Receives a floor revoke message.
+  * \param machine The FSM.
+  * \param msg The received message.
+  */
+ virtual void ReceiveFloorRevoke (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgRevoke& msg) const;
+ /**
   * Receives a floor granted message.
   * \param machine The FSM.
   * \param msg The received message.
@@ -713,6 +719,12 @@ public:
   * \param msg The received message.
   */
  virtual void ReceiveFloorGranted (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgGranted& msg) const;
+ /**
+  * Receives a floor revoke message.
+  * \param machine The FSM.
+  * \param msg The received message.
+  */
+ virtual void ReceiveFloorRevoke (McpttOnNetworkFloorParticipant& machine, const McpttFloorMsgRevoke& msg) const;
  /**
   * Receives a floor deny message.
   * \param machine The FSM.

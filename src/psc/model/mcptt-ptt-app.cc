@@ -115,8 +115,10 @@ McpttPttApp::GetTypeId (void)
     .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
                      MakeTraceSourceAccessor (&McpttPttApp::m_txTrace),
                      "ns3::McpttPttApp::TxRxTracedCallback")
+    .AddTraceSource ("EventTrace", "General event trace",
+                     MakeTraceSourceAccessor (&McpttPttApp::m_eventTrace),
+                     "ns3::McpttPttApp::EventTracedCallback")
    ;
-
     return tid;
 }  
 
@@ -655,6 +657,13 @@ McpttPttApp::UpgradeCallType (uint8_t callType)
 
       callMachine->UpgradeCallType (callType);
     }
+}
+
+void
+McpttPttApp::ReportEvent (uint16_t callId, const char* reason)
+{
+  NS_LOG_FUNCTION (this << callId << reason);
+  m_eventTrace (m_userId, callId, reason);
 }
 
 void

@@ -719,6 +719,12 @@ McpttOnNetworkFloorParticipant::Stop (void)
 }
 
 void
+McpttOnNetworkFloorParticipant::ReportEvent (const char* reason) const
+{
+  GetCall ()->GetOwner ()->ReportEvent (GetCall ()->GetCallId (), reason);
+}
+
+void
 McpttOnNetworkFloorParticipant::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);

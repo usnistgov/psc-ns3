@@ -59,6 +59,10 @@ McpttTraceHelper::~McpttTraceHelper ()
     {
       m_mouthToEarLatencyTraceFile.close ();
     }
+  if (m_accessTimeTraceFile.is_open ())
+    {
+      m_accessTimeTraceFile.close ();
+    }
 }
 
 void
@@ -179,6 +183,278 @@ McpttTraceHelper::DisableMouthToEarLatencyTrace (void)
 {
   NS_LOG_FUNCTION (this);
   Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/RxTrace", MakeCallback (&McpttTraceHelper::TraceMcpttMediaMsg, this));
+}
+
+// Possible events (implied state transitions) traced here
+//
+// PendingRequest -> R: Floor Deny : Denied ('D')
+// PendingRequest -> R: Floor Revoke : Failed ('F')
+// PendingRequest -> Timer T101 exp. N times : Failed ('F')
+// PendingRequest -> PTT button released : Abandoned ('A')
+// Queued -> R: Floor Deny : Denied ('D')
+// Queued -> R: Floor Revoke : Failed ('F')
+// Queued -> R: Floor Idle : Failed ('F')
+// Queued -> Timer T104 exp. N times : Failed ('F')
+// Queued -> Timer T132 expired : Not applicable (floor previously granted)
+// Queued -> PTT button released : Abandoned ('A')
+//
+void
+McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const char* description)
+{
+  NS_LOG_FUNCTION (userId << callId << description);
+  std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
+  auto it = m_accessTimeMap.find (key);
+  if (it == m_accessTimeMap.end ())
+    {
+      NS_LOG_DEBUG ("Event key not found for " << userId  << " " << callId);
+      return;
+    }
+  if (it->second.second == "'U: pending Request'")
+    {
+      if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_DENY) == 0)
+        {
+          NS_LOG_DEBUG ("pending request, received event RECEIVED_FLOOR_DENY " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "D"; // denied
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
+        {
+          NS_LOG_DEBUG ("pending request, received event RECEIVED_FLOOR_REVOKED " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "F"; // failed
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
+        {
+          NS_LOG_DEBUG ("pending request, received event TIMER_T101_EXPIRED_N_TIMES " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "F"; // failed
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
+        {
+          NS_LOG_DEBUG ("pending request, received event PTT_BUTTON_RELEASED " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "A"; // abandoned
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+    }
+  else if (it->second.second == "'U: queued'")
+    {
+      if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_GRANTED) == 0)
+        {
+          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_GRANTED " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "Q"; // queued
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+          return;
+        }
+      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_DENY) == 0)
+        {
+          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_DENY " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "D"; // denied
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
+        {
+          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_REVOKED " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "F"; // failed
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_IDLE) == 0)
+        {
+          NS_LOG_DEBUG ("queued, received event RECEIVED_FLOOR_IDLE " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "F"; // failed
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
+        {
+          NS_LOG_DEBUG ("queued, received event TIMER_T101_EXPIRED_N_TIMES " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "F"; // failed
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else if (strcmp (description, McpttFloorParticipant::TIMER_T132_EXPIRED) == 0)
+        {
+          NS_FATAL_ERROR ("Floor should have been previously granted and entry removed");
+        }
+      else if (strcmp (description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
+        {
+          NS_LOG_DEBUG ("queued, received event PTT_BUTTON_RELEASED " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "A"; // abandoned
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+    }
+}
+
+// Possible state transitions traced here:
+// StartStop or HasNoPermission -> PendingRequest (start of an access trace)
+// PendingRequest -> HasPermission : Immediate ('I') outcome
+//
+// Regarding the following outcome:
+// PendingRequest -> Queued -> HasPermission : Queued ('Q') outcome
+// This path could be traced here, but because the transition from Queued
+// to HasPermission requires the user or PttApp to accept the grant before
+// changing state, we handle it instead in TraceEventsForAccessTime
+//
+// Other transitions from PendingRequest or Queued (to PendingRelease or
+// HasNoPermission) are handled in TraceEventsForAccessTime
+//
+// Note:  StartStop -> HasPermission : Immediate ('I') outcome described in
+// Section 6.2.4.2.2 (NOTE) is not traced for access time
+//
+void
+McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
+{
+  NS_LOG_FUNCTION (userId << callId << typeId << oldStateName << newStateName);
+  std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
+  auto it = m_accessTimeMap.find (key);
+  if (it == m_accessTimeMap.end ())
+    {
+      if ((oldStateName == "'Start-stop'" || oldStateName == "'U: has no permission'") && newStateName == "'U: pending Request'")
+        {
+          std::pair<Time, std::string> item = std::make_pair (Simulator::Now (), newStateName);
+          m_accessTimeMap.insert (std::make_pair (key, item));
+        }
+      return;
+    }
+
+  if (it->second.second == "'U: pending Request'")
+    {
+      if (newStateName == "'U: has permission'")
+        {
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "I"; // immediate
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+          return;
+        }
+      else if (newStateName == "'U: queued'")
+        {
+          it->second.second = newStateName;
+          return;
+        }
+      else if (newStateName == "'U: has no permission'")
+        {
+          // Transition can either be due to Floor Deny or T101 expiry
+          // Both cases are handled by the event trace, which should
+          // catch them before this state transition and erase the entry
+          NS_FATAL_ERROR ("Invalid transition to U: has no permission");
+        }
+      else if (newStateName == "'U: pending release'")
+        {
+          // Transition can either be due to Floor Revoke or PTT button release
+          // Both cases are handled by the event trace, which should
+          // catch them before this state transition and erase the entry
+          // However, end of call may trigger this also, so just erase here
+          m_accessTimeMap.erase (key);
+        }
+      else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
+        {
+          // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
+          // However, end of call may trigger this also, so just erase here
+          m_accessTimeMap.erase (key);
+        }
+      else
+        {
+          // Unknown state transition
+          NS_FATAL_ERROR ("Unknown state transition from U:  pending request");
+        }
+    }
+  if (it->second.second == "'U: queued'")
+    {
+      if (newStateName == "'U: has permission'")
+        {
+          NS_FATAL_ERROR ("This transition should be traced as an event");
+        }
+      else if (newStateName == "'U: has no permission'")
+        {
+          // Transition can either be due to Floor Deny or Floor Idle or
+          // T132 expiry
+          // These cases are handled by the event trace, which should
+          // catch them before this state transition and erase the entry
+          NS_FATAL_ERROR ("Invalid transition to U: has no permission");
+        }
+      else if (newStateName == "'U: pending release'")
+        {
+          // Transition can either be due to T104 expiry or PTT button release
+          // Both cases are handled by the event trace, which should
+          // catch them before this state transition and erase the entry
+          // However, end of call may trigger this also, so just erase here
+          m_accessTimeMap.erase (key);
+        }
+      else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
+        {
+          // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
+          // However, end of call may trigger this also, so just erase here
+          m_accessTimeMap.erase (key);
+        }
+      else
+        {
+          // Unknown state transition
+          NS_FATAL_ERROR ("Unknown state transition from U:  queued");
+        }
+    }
+}
+
+void
+McpttTraceHelper::EnableAccessTimeTrace (std::string filename)
+{
+  NS_LOG_FUNCTION (this << filename);
+  m_accessTimeTraceFile.open (filename.c_str ());
+  m_accessTimeTraceFile << "#";
+  m_accessTimeTraceFile << std::setw (9) << "time(s)";
+  m_accessTimeTraceFile << std::setw (7) << "userid";
+  m_accessTimeTraceFile << std::setw (7) << "callid";
+  m_accessTimeTraceFile << std::setw (7) << "result";
+  m_accessTimeTraceFile << " latency(s)" << std::endl;
+  Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttTraceHelper::TraceStatesForAccessTime, this));
+  Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/EventTrace", MakeCallback (&McpttTraceHelper::TraceEventsForAccessTime, this));
+}
+
+void
+McpttTraceHelper::DisableAccessTimeTrace (void)
+{
+  NS_LOG_FUNCTION (this);
+  Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/Calls/*/FloorMachine/StateChangeTrace", MakeCallback (&McpttTraceHelper::TraceStatesForAccessTime, this));
+  Config::DisconnectWithoutContext ("/NodeList/*/ApplicationList/*/$ns3::McpttPttApp/EventTrace", MakeCallback (&McpttTraceHelper::TraceEventsForAccessTime, this));
 }
 
 } // namespace ns3

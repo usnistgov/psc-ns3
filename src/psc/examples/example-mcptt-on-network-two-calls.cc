@@ -260,7 +260,8 @@ main (int argc, char *argv[])
   McpttTraceHelper traceHelper;
   traceHelper.EnableMsgTraces ();
   traceHelper.EnableStateMachineTraces ();
-  traceHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
+  traceHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+  traceHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
 
   // Uncomment to enable PCAP tracing
   // p2ph.EnablePcap("example-mcptt-on-network-two-calls.ims.pcap", imsHelper->GetImsGmDevice (), true, true);
