@@ -677,6 +677,44 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
   return periodEnum;
 }
 
+uint16_t
+LteRrcSap::GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve)
+{
+  uint16_t maxResInt = 0;
+  switch (slMaxReserve.maxNumPerRes)
+  {
+    case SlMaxNumPerReserve::N2:
+      maxResInt = 2;
+      break;
+    case SlMaxNumPerReserve::N3:
+      maxResInt = 3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slMaxReserve.maxNumPerRes << " LteRrcSap::SlMaxNumPerReserve");
+  }
+
+  return maxResInt;
+}
+
+LteRrcSap::SlMaxNumPerReserve
+LteRrcSap::GetSlMaxNumPerReserveEnum (uint16_t slMaxReserveInt)
+{
+  SlMaxNumPerReserve maxResPerEnum;
+  switch (slMaxReserveInt)
+  {
+    case 2:
+      maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N2;
+      break;
+    case 3:
+      maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink value " << slMaxReserveInt << " used for number SlMaxNumPerReserve");
+  }
+
+  return maxResPerEnum;
+}
+
 
 
 } // namespace ns3

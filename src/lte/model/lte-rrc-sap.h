@@ -1126,6 +1126,16 @@ public:
     } period {INVALID};
   };
 
+  struct SlMaxNumPerReserve
+  {
+    enum
+    {
+      N2,
+      N3,
+      INVALID
+    } maxNumPerRes {INVALID};
+  };
+
 
   /**
    * \brief Get subcarrier spacing value
@@ -1355,6 +1365,30 @@ public:
    */
   static LteRrcSap::SlResourceReservePeriod GetSlResoResvPrdEnum (uint16_t period);
 
+  /**
+   * \brief Get sidelink maximum number per reserve value
+   *
+   * This method converts the enum of type LteRrcSap::SlMaxNumPerReserve
+   * to its unsigned integer representation, such the, N2 is 2 slots,
+   * N3 is 3 slots, and so on. This value is a maximum number of reserved
+   * PSCCH/PSSCH resources that can be indicated by an SCI.
+   *
+   * \param slMaxReserve The object of type LteRrcSap::SlMaxNumPerReserve
+   * \returns The unsigned integer representation of LteRrcSap::SlMaxNumPerReserve
+   */
+  static uint16_t GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve);
+
+  /**
+   * \brief Get sidelink maximum number per reserve enum
+   *
+   * This method converts the sidelink maximum number per reserve value to
+   * an enum of type LteRrcSap::SlMaxNumPerReserve.
+   *
+   * \param slMaxReserveInt The sidelink maximum number per reserve value in number of slots
+   * \returns The object of type LteRrcSap::SlMaxNumPerReserve
+   */
+  static LteRrcSap::SlMaxNumPerReserve GetSlMaxNumPerReserveEnum (uint16_t slMaxReserveInt);
+
 
   /**
    * \brief SCS-SpecificCarrier information element
@@ -1447,6 +1481,7 @@ public:
     SlSelectionWindow slSelectionWindow; //!< Parameter that determines the end of the selection window in the resource selection for a TB with respect to priority indicated in SCI.
     bool slMultiReserveResource {false}; //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
     std::array <SlResourceReservePeriod, 16> slResourceReservePeriodList; //!< Set of possible resource reservation period allowed in the resource pool.
+    SlMaxNumPerReserve slMaxNumPerReserve; //!< Indicates the maximum number of reserved PSCCH/PSSCH resources that can be indicated by an SCI.
 
     //sl-CBR-Priority-TxConfigList-r16 //TODO
     //We probably going to simplify the RSRP threshold
@@ -1454,7 +1489,6 @@ public:
     //sl-ThresPSSCH-RSRP-List-r16 //TODO //!< Indicates a threshold used for sensing based UE autonomous resource selection.
 
     //sl-MultiReserveResource-r16 //TODO //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
-    //sl-MaxNumPerReserve-r16 //TODO //!< Indicates the maximum number of reserved PSCCH/PSSCH resources that can be indicated by an SCI.
     //sl-ResourceReservePeriodList-r16 //TODO //!< Set of possible resource reservation period allowed in the resource pool.
 
      //since we do not support DMRS signals
