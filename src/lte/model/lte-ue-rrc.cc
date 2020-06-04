@@ -3745,11 +3745,11 @@ LteUeRrc::PopulateNrSlPools ()
           //set the PhysicalSlPoolMap
           slPool->SetPhysicalSlPoolMap (mapPerBwp);
 
-          NS_LOG_INFO ("Configuring TX pool for BWP " << index << " IMSI " << m_imsi);
+          NS_LOG_INFO ("Configuring TX pool for BWP " << +index << " IMSI " << m_imsi);
           m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommTxPool (slPool);
           m_nrSlUeCphySapProvider.at (index)->AddNrSlCommTxPool (slPool);
 
-          NS_LOG_INFO("Configuring RX pool for BWP " << index << " IMSI " << m_imsi);
+          NS_LOG_INFO("Configuring RX pool for BWP " << +index << " IMSI " << m_imsi);
           m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommRxPool (slPool);
           m_nrSlUeCphySapProvider.at (index)->AddNrSlCommRxPool (slPool);
           mapPerPool.clear ();
