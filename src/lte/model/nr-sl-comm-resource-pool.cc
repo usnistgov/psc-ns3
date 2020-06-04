@@ -201,7 +201,7 @@ NrSlCommResourcePool::GetSlCommOpportunities (uint16_t absIndexCurretSlot, uint1
           info.absSlotIndex = i;
           list.emplace_back (info);
         }
-      ++absPoolIndex;
+      absPoolIndex = (absPoolIndex + 1) % itPhyPool->second.size ();
     }
 
   return list;
