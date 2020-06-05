@@ -564,8 +564,8 @@ LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &peri
   uint16_t perodInt = 0;
   switch (period.period)
   {
-    case SlResourceReservePeriod::MS10:
-      perodInt = 10;
+    case SlResourceReservePeriod::MS0:
+      perodInt = 0;
       break;
     case SlResourceReservePeriod::MS50:
       perodInt = 50;
@@ -622,8 +622,8 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
   SlResourceReservePeriod periodEnum;
   switch (period)
   {
-    case 10:
-      periodEnum.period = SlResourceReservePeriod::MS10;
+    case 0:
+      periodEnum.period = SlResourceReservePeriod::MS0;
       break;
     case 50:
       periodEnum.period = SlResourceReservePeriod::MS50;
@@ -677,12 +677,15 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
   return periodEnum;
 }
 
-uint16_t
+uint8_t
 LteRrcSap::GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve)
 {
-  uint16_t maxResInt = 0;
+  uint8_t maxResInt = 0;
   switch (slMaxReserve.maxNumPerRes)
   {
+    case SlMaxNumPerReserve::N1:
+      maxResInt = 1;
+      break;
     case SlMaxNumPerReserve::N2:
       maxResInt = 2;
       break;
@@ -697,11 +700,14 @@ LteRrcSap::GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMa
 }
 
 LteRrcSap::SlMaxNumPerReserve
-LteRrcSap::GetSlMaxNumPerReserveEnum (uint16_t slMaxReserveInt)
+LteRrcSap::GetSlMaxNumPerReserveEnum (uint8_t slMaxReserveInt)
 {
   SlMaxNumPerReserve maxResPerEnum;
   switch (slMaxReserveInt)
   {
+    case 1:
+      maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N1;
+      break;
     case 2:
       maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N2;
       break;
@@ -709,7 +715,7 @@ LteRrcSap::GetSlMaxNumPerReserveEnum (uint16_t slMaxReserveInt)
       maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N3;
       break;
     default:
-      NS_FATAL_ERROR ("Invalid sidelink value " << slMaxReserveInt << " used for number SlMaxNumPerReserve");
+      NS_FATAL_ERROR ("Invalid sidelink value " << +slMaxReserveInt << " used for number SlMaxNumPerReserve");
   }
 
   return maxResPerEnum;

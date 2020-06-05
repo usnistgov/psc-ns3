@@ -1106,7 +1106,7 @@ public:
   {
     enum
     {
-      MS10, //!< Milliseconds
+      MS0, //!< Milliseconds
       MS50,
       MS100,
       MS150,
@@ -1130,6 +1130,7 @@ public:
   {
     enum
     {
+      N1, //Added for modeling
       N2,
       N3,
       INVALID
@@ -1376,7 +1377,7 @@ public:
    * \param slMaxReserve The object of type LteRrcSap::SlMaxNumPerReserve
    * \returns The unsigned integer representation of LteRrcSap::SlMaxNumPerReserve
    */
-  static uint16_t GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve);
+  static uint8_t GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve);
 
   /**
    * \brief Get sidelink maximum number per reserve enum
@@ -1387,7 +1388,7 @@ public:
    * \param slMaxReserveInt The sidelink maximum number per reserve value in number of slots
    * \returns The object of type LteRrcSap::SlMaxNumPerReserve
    */
-  static LteRrcSap::SlMaxNumPerReserve GetSlMaxNumPerReserveEnum (uint16_t slMaxReserveInt);
+  static LteRrcSap::SlMaxNumPerReserve GetSlMaxNumPerReserveEnum (uint8_t slMaxReserveInt);
 
 
   /**
