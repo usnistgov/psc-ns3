@@ -3744,6 +3744,7 @@ LteUeRrc::PopulateNrSlPools ()
           slPool->SetSlPreConfigFreqInfoList (preConfig.slPreconfigFreqInfoList);
           //set the PhysicalSlPoolMap
           slPool->SetPhysicalSlPoolMap (mapPerBwp);
+          slPool->SetSchedulingType (NrSlCommResourcePool::UE_SELECTED);
 
           NS_LOG_INFO ("Configuring TX pool for BWP " << +index << " IMSI " << m_imsi);
           m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommTxPool (slPool);
