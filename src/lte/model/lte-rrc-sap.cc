@@ -401,7 +401,7 @@ LteRrcSap::GetSlScalingEnum (float slScaling)
 }
 
 uint16_t
-LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
+LteRrcSap::GetNrSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
 {
   uint16_t subChSizeInt = 0;
   switch (subChSize.numPrbs)
@@ -435,7 +435,7 @@ LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
 }
 
 LteRrcSap::SlSubchannelSize
-LteRrcSap::GetSlSubChSizeEnum (uint16_t subChSize)
+LteRrcSap::GetNrSlSubChSizeEnum (uint16_t subChSize)
 {
   SlSubchannelSize slSubchannelSizeEnum;
   switch (subChSize)

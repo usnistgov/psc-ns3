@@ -1283,7 +1283,7 @@ public:
    * \param subChSize The object of type LteRrcSap::SlSubchannelSize
    * \returns The unsigned integer representation of LteRrcSap::SlSubchannelSize
    */
-  static uint16_t GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize);
+  static uint16_t GetNrSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize);
 
   /**
    * \brief Get sidelink subchannel size enum.
@@ -1294,7 +1294,7 @@ public:
    * \param subChSize The sidelink subchannel size in PRBs
    * \returns The object of type LteRrcSap::SlSubchannelSize
    */
-  static LteRrcSap::SlSubchannelSize GetSlSubChSizeEnum (uint16_t subChSize);
+  static LteRrcSap::SlSubchannelSize GetNrSlSubChSizeEnum (uint16_t subChSize);
 
   /**
    * \brief Get sidelink sensing window value
@@ -1421,7 +1421,7 @@ public:
     //UE in out-of-coverage scenarios
     uint16_t numerology {99}; //!< The numerology
     uint16_t symbolsPerSlots {0}; //!< Total number of symbols per slot
-    uint32_t rbPerRbg {0}; //!< Resource block per resource blok group
+    uint32_t rbPerRbg {0}; //!< Resource block per resource block group
     uint16_t bandwidth {0};
 
   };
