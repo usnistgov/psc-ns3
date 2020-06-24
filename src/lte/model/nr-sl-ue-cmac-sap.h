@@ -109,7 +109,7 @@ public:
    * \param dstL2Id The destination layer 2 ID
    * \param poolId The id of the pool to used for TX and RX
    */
-  virtual void AddNrSlDstL2Id (uint32_t dstL2Id, uint16_t poolId) = 0;
+  virtual void AddNrSlDstL2Id (uint32_t dstL2Id) = 0;
 };
 
 /**
@@ -139,7 +139,7 @@ public:
   virtual void ResetNrSlLcMap ();
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
-  virtual void AddNrSlDstL2Id (uint32_t dstL2Id, uint16_t poolId);
+  virtual void AddNrSlDstL2Id (uint32_t dstL2Id);
 
 private:
   C* m_mac; ///< the MAC class
@@ -185,9 +185,9 @@ MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePoo
 }
 
 template <class C>
-void MemberNrSlUeCmacSapProvider<C>::AddNrSlDstL2Id (uint32_t dstL2Id, uint16_t poolId)
+void MemberNrSlUeCmacSapProvider<C>::AddNrSlDstL2Id (uint32_t dstL2Id)
 {
-  m_mac->DoAddNrSlDstL2Id (dstL2Id, poolId);
+  m_mac->DoAddNrSlDstL2Id (dstL2Id);
 }
 
 

@@ -1465,9 +1465,8 @@ private:
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
    * \param isUnicast True if the bearer is for unicast communication
-   * \param poolId The id of the pool used for TX and RX
    */
-  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast, uint16_t poolId);
+  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
   /**
    * \brief Send sidelink data packet to RRC.
    *
@@ -1495,9 +1494,8 @@ private:
    * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
-   * \param poolId The id of the pool used for TX and RX
    */
-  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive, uint16_t poolId);
+  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive);
 
   /**
    * \brief set out-of-coverage UE RNTI
@@ -1517,7 +1515,7 @@ private:
    * \param poolId The id of the pool used for TX and RX
    * \return The Sidelink radio bearer information
    */
-  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid, uint16_t poolId);
+  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
 
   /**
    * \brief Populate NR SL Pool to lower layers

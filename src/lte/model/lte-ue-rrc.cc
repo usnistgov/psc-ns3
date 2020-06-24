@@ -3497,12 +3497,12 @@ LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
 }
 
 void
-LteUeRrc::DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast, uint16_t poolId)
+LteUeRrc::DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
 {
   NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive << isUnicast);
   if (!isUnicast)
     {
-      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive, poolId);
+      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive);
     }
 }
 
@@ -3514,7 +3514,7 @@ LteUeRrc::DoPopulatePools ()
 }
 
 void
-LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive, uint16_t poolId)
+LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
 {
   NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive);
 
@@ -3538,7 +3538,7 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive, ui
 
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id), poolId);
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
           NS_LOG_INFO ("Created new TX SLRB for remote id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
@@ -3599,7 +3599,7 @@ LteUeRrc::SetOutofCovrgUeRnti ()
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid, uint16_t poolId)
+LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this);
 
@@ -3685,7 +3685,7 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid, uint16_t
                     << " BWP Id " << +itSlLcOnBwpMapping->bwpId);
       uint8_t bwpId = itSlLcOnBwpMapping->bwpId;
       m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlLc (itSlLcOnBwpMapping->lcInfo, itSlLcOnBwpMapping->msu);
-      m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlDstL2Id (dstL2Id, poolId);
+      m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlDstL2Id (dstL2Id);
     }
 
   return slDrbInfo;

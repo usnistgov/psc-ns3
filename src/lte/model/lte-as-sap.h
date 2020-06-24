@@ -101,9 +101,8 @@ public:
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
    * \param isUnicast True if the bearer is for unicast communication
-   * \param poolId The id of the pool used for TX and RX
    */
-  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast, uint16_t poolId) = 0;
+  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast) = 0;
 
   /**
    * \brief Send sidelink data packet to RRC.
@@ -191,7 +190,7 @@ public:
   virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
-  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast, uint16_t poolId);
+  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
   virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
 
 private:
@@ -254,9 +253,9 @@ MemberLteAsSapProvider<C>::Disconnect ()
 
 template <class C>
 void
-MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast, uint16_t poolId)
+MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
 {
-  m_owner->DoActivateNrSlRadioBearer (dstL2Id, isTransmit, isReceive, isUnicast, poolId);
+  m_owner->DoActivateNrSlRadioBearer (dstL2Id, isTransmit, isReceive, isUnicast);
 }
 
 template <class C>

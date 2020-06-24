@@ -420,14 +420,14 @@ EpcUeNas::SwitchToState (State newState)
 }
 
 void
-EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft, uint16_t poolId)
+EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
   //regardless of the state we need to request RRC to setup the bearer
   //for in coverage case, it will trigger communication with the gNodeb
   //for out of coverage, it will trigger the use of preconfiguration
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast (), poolId);
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
 }
 
 void
