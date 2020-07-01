@@ -348,10 +348,8 @@ McpttCallMachineNull::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttPttApp> pttApp = GetCall ()->GetOwner ();
   AddressValue grpAddr;
-
-  pttApp->GetAttribute ("PeerAddress", grpAddr);
+  GetCall ()->GetAttribute ("PeerAddress", grpAddr);
 
   Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 

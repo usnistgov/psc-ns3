@@ -52,7 +52,6 @@ public:
  virtual TypeId GetInstanceTypeId (void) const;
 protected:
  virtual void DoDispose (void);
- virtual void Receive (const McpttCallMsg& msg);
 private:
  std::vector<Ptr<McpttMsgDropper> >* m_droppers;
 protected:

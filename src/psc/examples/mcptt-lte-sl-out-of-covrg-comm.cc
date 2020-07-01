@@ -254,7 +254,6 @@ int main (int argc, char *argv[])
     }
 
   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
-                         "PeerAddress", AddressValue (peerIp),
                          "LocalAddress", AddressValue (localIp),
                          "PushOnStart", BooleanValue (true));
   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
@@ -274,7 +273,7 @@ int main (int argc, char *argv[])
   clientApps.Stop (stopTime);
 
   McpttCallHelper callHelper;
-  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, usersPerGroup);
+  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, peerIp, usersPerGroup);
 
   //Set Sidelink bearers
   proseHelper->ActivateSidelinkBearer (slBearersActivationTime, ueDevs, tft);

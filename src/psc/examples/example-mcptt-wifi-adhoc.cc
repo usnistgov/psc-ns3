@@ -152,7 +152,6 @@ int main (int argc, char *argv[])
   ApplicationContainer clientApps;
   McpttHelper mcpttHelper;
   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
-                         "PeerAddress", AddressValue (peerAddress),
                          "PushOnStart", BooleanValue (true));
   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
@@ -171,7 +170,7 @@ int main (int argc, char *argv[])
   clientApps.Stop (stop);
 
   McpttCallHelper callHelper;
-  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, usersPerGroup);
+  callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, peerAddress, usersPerGroup);
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
   McpttTraceHelper traceHelper;

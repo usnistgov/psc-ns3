@@ -282,7 +282,7 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
 
   machine.GetAttribute ("TargetId", targetId);
-  pttApp->GetAttribute ("PeerAddress", grpAddress);
+  machine.GetCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   Vector myLoc = pttApp->GetNodeLoc ();
   uint16_t callId = machine.GenerateRandomCallId ();

@@ -51,7 +51,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttServerApp");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttServerApp);
 
-uint16_t McpttServerApp::s_callId = 0;
+uint16_t McpttServerApp::s_callId = 1;
 
 TypeId
 McpttServerApp::GetTypeId (void)

@@ -585,7 +585,7 @@ McpttCallTypeMachinePrivateStateQ1::UpgradeTo (McpttCallTypeMachinePrivate& mach
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = pttApp->GetLocalAddress ();
-  pttApp->GetAttribute ("PeerAddress", grpAddress);
+  call->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldCallId myCallId = callMachine->GetCallId ();
   McpttCallMsgFieldUserId myCallerId = callMachine->GetCallerId ();

@@ -166,11 +166,24 @@ public:
   * \param msg The media message.
   */
  void Send (const McpttMediaMsg& msg);
+ /**
+  * Starts the call.
+  */
+ void Start (void);
+ /**
+  * Stops the call.
+  */
+ void Stop (void);
 protected:
  /**
   * Disposes of the McpttCall instance.
   */
  void DoDispose (void);
+ /**
+  * Handles the receieved call control packet.
+  * \param pkt The packet that was received.
+  */
+ void ReceiveCallPkt (Ptr<Packet>  pkt);
  /**
   * Handles the receieved floor control packet.
   * \param pkt The packet that was received.
@@ -183,16 +196,24 @@ protected:
  void ReceiveMediaPkt (Ptr<Packet>  pkt);
  private:
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
+ Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
+ uint16_t m_callPort; //!< The port on which call control messages will flow.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
  Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
  Ptr<McpttPttApp> m_owner; //!< The owner of this call.
+ Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_pushOnSelect; //!< Whether to start pusher upon call select
  Time m_startTime; //!< The call start time.
  Time m_stopTime; //!< The call stop time.
  Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The received message callback.
  Callback<void, Ptr<const McpttCall>, const Header&> m_txCb; //!< The transmitted message callback.
 public:
+ /**
+  * Gets the channel used for call control messages.
+  * \returns The channel.
+  */
+ virtual Ptr<McpttChan> GetCallChan (void) const;
  /**
   * Gets the call control state machine.
   * \returns The call machine.
@@ -228,6 +249,11 @@ public:
   * \return The call stop time.
   */
  Time GetStopTime (void) const;
+ /**
+  * Sets the channel used for call control messages.
+  * \param callChan The channel.
+  */
+ virtual void SetCallChan (Ptr<McpttChan>  callChan);
  /**
   * Sets the call control state machine.
   * \param callMachine The call control state machine.

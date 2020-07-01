@@ -61,13 +61,25 @@ public:
    * \return the call ID of the call
    */
   uint16_t AddCall (ApplicationContainer clients, Ptr<McpttServerApp> server, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
+  /**
+   * Configure a call in the scenario for a set of off-network clients.
+   * \param clients container of client applications
+   * \param callId The ID of the call.
+   * \param peerAddress The address of the off-network group.
+   * \param groupId GroupId to assign
+   * \param callType type of call to configure
+   * \param startTime start time of the call
+   * \param stopTime stop time of the call
+   */
+  void AddCallOffNetwork (ApplicationContainer clients, uint16_t callId, Address peerAddress, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
  /**
   * Configures and selects a call for a set of MCPTT applications.
   * \param apps The application container with the set of apps to configure.
+  * \param peerAddress The peer address.
   * \param usersPerGroup The number of users to put in each group.
   * \param baseGroupId The starting group ID.
   */
- virtual void ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
+ virtual void ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Address peerAddress, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
  /**
   * Configures the default floor control arbitrator object.
   * \param name the name of the model to set

@@ -201,11 +201,6 @@ public:
   */
  virtual void SessionReleaseRequest (void);
  /**
-  * Receives a call control message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttCallMsg& msg);
- /**
   * Selects a call.  An existing active call will be released.  If the
   * pushOnSelect option is false, the user must separately restart the
   * pusher object.  If true, the pusher process will be restarted upon
@@ -215,17 +210,6 @@ public:
   * \param pushOnSelect Whether to start the pusher upon call selection
   */
  virtual void SelectCall (uint32_t callId, bool pushOnSelect = false);
- /**
-  * Sends an on-network call control message.
-  * \param pkt The packet (already serialized with SIP header)
-  * \param hdr A reference to the SIP header that has been serialized
-  */
- virtual void Send (Ptr<Packet> pkt, const SipHeader& hdr);
- /**
-  * Sends a call control message.
-  * \param msg The message to send.
-  */
- virtual void Send (const McpttCallMsg& msg);
  /**
   * Notifies the application that the button has been pushed.
   */
@@ -266,11 +250,6 @@ protected:
   */
  virtual void NewCallCb (uint16_t callId);
  /**
-  * Receives a call control packet.
-  * \param pkt The call control packet that was received.
-  */
- virtual void ReceiveCallPkt (Ptr<Packet>  pkt);
- /**
   * The callback to fire when a message is received.
   * \param call The call that the message is for.
   * \param msg The message that was received.
@@ -308,14 +287,11 @@ private:
  static uint16_t s_portNumber; //!< A port number.
  bool m_isRunning; //!< Whether application is running or not
  uint16_t m_callIdAllocator; //!< Counter to allocate call IDs
- uint16_t m_callPort; //!< The port on which call control messages will flow.
- Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
  std::map<uint16_t, Ptr<McpttCall> > m_calls; //!< The container of calls.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  Address m_localAddress; //!< The local IP address.
  Ptr<McpttMediaSrc> m_mediaSrc; //!< The media source.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
- Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
  Ptr<McpttPusher> m_pusher; //!< The object that calls the Pushed() function.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
@@ -325,11 +301,6 @@ private:
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
  TracedCallback<uint32_t, uint16_t, const char* > m_eventTrace; //!< Event trace
 public:
- /**
-  * Gets the channel used for call control messages.
-  * \returns The channel.
-  */
- virtual Ptr<McpttChan> GetCallChan (void) const;
  /**
   * Gets the container of calls.
   * \returns The container of calls.
@@ -360,11 +331,6 @@ public:
   * \returns The MCPTT user ID.
   */
  virtual uint32_t GetUserId (void) const;
- /**
-  * Sets the channel used for call control messages.
-  * \param callChan The channel.
-  */
- virtual void SetCallChan (Ptr<McpttChan>  callChan);
  /**
   * Sets the container of calls.
   * \param calls The container of calls.

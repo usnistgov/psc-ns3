@@ -163,7 +163,6 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
     {
       Ptr<McpttPttApp> app = clients.Get (i)->GetObject<McpttPttApp> ();
       clientUserIds.push_back (app->GetUserId ());
-      app->SetAttribute ("PeerAddress", AddressValue (server->GetLocalAddress ()));
       // McpttPttApp uses a static integer for allocating unique port numbers
       uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
       uint16_t mediaPort = McpttPttApp::AllocateNextPortNumber ();
@@ -172,6 +171,7 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
                     << " media " << mediaPort);
       // Each application gets its own instance of a McpttCall object
       Ptr<McpttCall> call = CreateObject<McpttCall> ();
+      call->SetAttribute ("PeerAddress", AddressValue (server->GetLocalAddress ()));
       call->SetStartTime (startTime);
       call->SetStopTime (stopTime);
       // XXX TODO: configure call machine type from call type 
@@ -221,7 +221,55 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
 }
 
 void
-McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, uint32_t usersPerGroup, uint32_t baseGroupId)
+McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callId, Address peerAddress, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime)
+{
+  NS_LOG_FUNCTION (this << clients.GetN () << +callId << peerAddress
+    << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
+
+  ObjectFactory callFac;
+
+  ObjectFactory floorFac;
+
+  if (callType.GetType () == McpttCallMsgFieldCallType::BASIC_GROUP)
+    {
+      callFac.SetTypeId ("ns3::McpttCallMachineGrpBasic");
+      floorFac.SetTypeId ("ns3::McpttOffNetworkFloorParticipant");
+    }
+  else
+    {
+      NS_ABORT_MSG ("Call type not supported.");
+    }
+
+
+  for (uint32_t idx = 0; idx < clients.GetN (); idx++)
+    {
+      Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clients.Get (idx));
+        
+      Ptr<McpttCall> call = CreateObject<McpttCall> ();
+      Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
+      Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
+      Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
+      Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
+
+      callMachine->SetAttribute ("GroupId", UintegerValue (groupId));
+
+      call->SetAttribute ("CallPort", UintegerValue (5062));
+      call->SetAttribute ("PeerAddress", AddressValue (peerAddress));
+      call->SetCallMachine (callMachine);
+      call->SetFloorChan (floorChan);
+      call->SetFloorMachine (floorMachine);
+      call->SetMediaChan (mediaChan);
+      call->SetCallId (callId);
+      call->SetStartTime (startTime);
+      call->SetStopTime (stopTime);
+      call->SetPushOnSelect (true);
+
+      pttApp->AddCall (call);
+    }
+}
+
+void
+McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Address peerAddress, uint32_t usersPerGroup, uint32_t baseGroupId)
 {
   uint32_t groupId = baseGroupId;
 
@@ -238,6 +286,7 @@ McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, ui
       callFac.Set ("GroupId", UintegerValue (groupId));
 
       Ptr<McpttCall> call = pttApp->CreateCall (callFac, floorFac);
+      call->SetAttribute ("PeerAddress", AddressValue (peerAddress));
       pttApp->SelectCall (call->GetCallId ());
  
       if ((idx + 1) % usersPerGroup == 0)

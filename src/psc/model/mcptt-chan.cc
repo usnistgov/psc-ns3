@@ -115,13 +115,13 @@ McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Add
 
   if (Ipv4Address::IsMatchingType (local))
     {
-      Ipv4Address localIpv4 = Ipv4Address::ConvertFrom (local);
+      Ipv4Address localIpv4 = Ipv4Address::GetAny ();
       result = socket->Bind (InetSocketAddress (localIpv4, port));
       ssLocal << localIpv4;
     }
   else if (Ipv6Address::IsMatchingType (local))
     {
-      Ipv6Address localIpv6 = Ipv6Address::ConvertFrom (local);
+      Ipv6Address localIpv6 = Ipv6Address::GetAny ();
       result = socket->Bind (Inet6SocketAddress (localIpv6, port));
       ssLocal << localIpv6;
     }
@@ -181,6 +181,7 @@ McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Add
     }
   else
     {
+      NS_LOG_DEBUG ("Unable to create socket");
       socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> >());
       socket = 0;
     }

@@ -92,22 +92,6 @@ McpttTestApp::GetInstanceTypeId (void) const
   return McpttTestApp::GetTypeId ();
 }
 
-void
-McpttTestApp::Receive (const McpttCallMsg& msg)
-{
-  bool drop = false;
-  std::vector<Ptr<McpttMsgDropper> >* droppers = GetDroppers ();
-  for (std::vector<Ptr<McpttMsgDropper> >::iterator it = droppers->begin (); it != droppers->end () && drop == false; it++)
-    {
-      drop = (*it)->ShouldDropMsg (msg);
-    }
-
-  if (drop == false)
-    {
-      McpttPttApp::Receive (msg);
-    }
-}
-
 std::vector<Ptr<McpttMsgDropper> >*
 McpttTestApp::GetDroppers (void) const
 {

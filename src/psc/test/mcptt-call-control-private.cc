@@ -2724,7 +2724,7 @@ PrivateCallCancel1::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3136,7 +3136,7 @@ PrivateCallCancel2::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3410,7 +3410,7 @@ PrivateCallExpiration::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);

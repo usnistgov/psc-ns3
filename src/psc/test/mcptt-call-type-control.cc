@@ -1018,7 +1018,7 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1306,7 +1306,7 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1591,7 +1591,7 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1873,7 +1873,7 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2166,7 +2166,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2457,7 +2457,7 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2864,7 +2864,7 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3284,7 +3284,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3704,7 +3704,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -4119,7 +4119,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -4423,7 +4423,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -4724,7 +4724,7 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -4995,7 +4995,7 @@ McpttCallTypeMerge::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);

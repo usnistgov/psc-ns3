@@ -1065,7 +1065,7 @@ BroadcastCallScenario3::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1380,7 +1380,7 @@ BroadcastCallScenario4::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);

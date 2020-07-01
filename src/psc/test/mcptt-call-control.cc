@@ -768,7 +768,7 @@ McpttCallSetupJoinCall::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1790,7 +1790,7 @@ McpttCallMerge::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1954,7 +1954,7 @@ McpttCallMerge::UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg
     }
   else 
     {
-      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected message recived " << msg << ".");
+      NS_TEST_ASSERT_MSG_EQ (true, false, "Unexpected message received " << msg << ".");
     }
 
   NS_TEST_ASSERT_MSG_EQ (tfg1->IsRunning (), false, "UE A TFG1 is running.");
@@ -2382,7 +2382,7 @@ McpttCallRelease::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2806,7 +2806,7 @@ McpttCallReleaseAfterProbe::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3085,7 +3085,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3376,7 +3376,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -3793,7 +3793,7 @@ McpttCallReleaseMaxDuration::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueBPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueBPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);

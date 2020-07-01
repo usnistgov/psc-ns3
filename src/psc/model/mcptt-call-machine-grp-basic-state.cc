@@ -375,7 +375,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   McpttCallMsgFieldUserId lastChgUserId = typeMachine->GetLastChgUserId ();
   McpttCallMsgFieldLastChgTime lastChgTime = typeMachine->GetLastChgTime ();
 
-  pttApp->GetAttribute ("PeerAddress", grpAddress);
+  call->GetAttribute ("PeerAddress", grpAddress);
 
   //TODO: Not in standard - there is no check to stop TFG3.
   if (tfg3->IsRunning ())

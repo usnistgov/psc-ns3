@@ -136,7 +136,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
       m_outputFile << "  message";
       m_outputFile << std::endl;
     }
-  if (msg.GetInstanceTypeId () == SipHeader::GetTypeId ())
+  if (msg.GetInstanceTypeId () == SipHeader::GetTypeId () && m_callControl == true)
     {
       m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
       m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
@@ -193,15 +193,6 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
           // substr (5):  trims leading 'ns3::'
           m_outputFile << std::left << "    " << msg.GetInstanceTypeId ().GetName ().substr (5) << std::right;
         }
-      m_outputFile << std::endl;
-    }
-  else if (msg.GetInstanceTypeId () != McpttMediaMsg::GetTypeId ())
-    {
-      m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
-      m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
-      m_outputFile << std::setw (18) << (rx ? "RX" : "TX");
-      m_outputFile << std::setw (6) << msg.GetSerializedSize ();
-      m_outputFile << "    Unknown header type: " << msg.GetInstanceTypeId ().GetName ().substr (5);
       m_outputFile << std::endl;
     }
 }

@@ -180,7 +180,7 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = pttApp->GetLocalAddress ();
   AddressValue grpAddress;
-  pttApp->GetAttribute ("PeerAddress", grpAddress);
+  call->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);

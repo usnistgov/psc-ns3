@@ -1135,7 +1135,7 @@ McpttCallTypePrivateUpgradeCall1::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1468,7 +1468,7 @@ McpttCallTypePrivateUpgradeCall2::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -1813,7 +1813,7 @@ McpttCallTypePrivateUpgradeCall3::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2093,7 +2093,7 @@ McpttCallTypePrivateDowngradeCall1::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2451,7 +2451,7 @@ McpttCallTypePrivateDowngradeCall2::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2711,7 +2711,7 @@ McpttCallTypePrivateDowngradeCall3::Configure (void)
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   Address origAddress = ueBPttApp->GetLocalAddress ();
 
-  ueAPttApp->GetAttribute ("PeerAddress", grpAddress);
+  ueAPttApp->GetSelectedCall ()->GetAttribute ("PeerAddress", grpAddress);
 
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
@@ -2770,7 +2770,6 @@ McpttCallTypePrivateDowngradeCall3::Configure (void)
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
   Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-
 }
 
 void 

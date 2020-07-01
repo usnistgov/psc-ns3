@@ -184,8 +184,8 @@ McpttServerHelper::SetupFloorControl (const ApplicationContainer& server, const 
 
       clientFloorControl->GetAttribute ("McImplicitRequest", mcImplicitRequest);
 
-      clientApp->SetAttribute ("PeerAddress", AddressValue (serverApp->GetLocalAddress ()));
-      clientApp->SetAttribute ("CallPort", UintegerValue (callPort));
+      selectedCall->SetAttribute ("PeerAddress", AddressValue (serverApp->GetLocalAddress ()));
+      selectedCall->SetAttribute ("CallPort", UintegerValue (callPort));
       clientCallControl->SetAttribute ("FloorPort", UintegerValue (floorPort));
       clientCallControl->SetAttribute ("MediaPort", UintegerValue (mediaPort));
       participant->SetAttribute ("PeerAddress", AddressValue (clientApp->GetLocalAddress ()));
