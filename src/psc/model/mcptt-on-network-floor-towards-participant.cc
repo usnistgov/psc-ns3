@@ -447,25 +447,29 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt)
       pkt->RemoveHeader (reqMsg);
       Receive (reqMsg);
     }
-  else if (subtype == McpttFloorMsgGranted::SUBTYPE)
+  else if (subtype == McpttFloorMsgGranted::SUBTYPE
+      || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
       McpttFloorMsgGranted grantedMsg;
       pkt->RemoveHeader (grantedMsg);
       Receive (grantedMsg);
     }
-  else if (subtype == McpttFloorMsgDeny::SUBTYPE)
+  else if (subtype == McpttFloorMsgDeny::SUBTYPE
+      || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
       McpttFloorMsgDeny denyMsg;
       pkt->RemoveHeader (denyMsg);
       Receive (denyMsg);
     }
-  else if (subtype == McpttFloorMsgRelease::SUBTYPE)
+  else if (subtype == McpttFloorMsgRelease::SUBTYPE
+      || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgRelease releaseMsg;
       pkt->RemoveHeader (releaseMsg);
       Receive (releaseMsg);
     }
-  else if (subtype == McpttFloorMsgTaken::SUBTYPE)
+  else if (subtype == McpttFloorMsgTaken::SUBTYPE
+      || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
       McpttFloorMsgTaken takenMsg;
       pkt->RemoveHeader (takenMsg);
@@ -477,7 +481,8 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt)
       pkt->RemoveHeader (queuePositionRequestMsg);
       Receive (queuePositionRequestMsg);
     }
-  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE)
+  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
+    || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
       pkt->RemoveHeader (queueInfoMsg);
