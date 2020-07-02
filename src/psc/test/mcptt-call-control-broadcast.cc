@@ -35,7 +35,6 @@
 #include <ns3/mcptt-call-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 
-#include "mcptt-test-app.h"
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"

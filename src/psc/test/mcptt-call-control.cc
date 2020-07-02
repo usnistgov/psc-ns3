@@ -35,7 +35,7 @@
 #include <ns3/mcptt-call-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 
-#include "mcptt-test-app.h"
+#include "mcptt-test-call.h"
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"
@@ -1752,17 +1752,16 @@ void
 McpttCallMerge::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<TestCallMachine> ueAMachine = DynamicCast<TestCallMachine, McpttCallMachine> (GetCallMachine (0));
   Ptr<TestCallMachine> ueBMachine = DynamicCast<TestCallMachine, McpttCallMachine> (GetCallMachine (1));
@@ -1799,8 +1798,8 @@ McpttCallMerge::Configure (void)
   sdp.SetSpeechPort (speechPort);
 
   // UE A
-  ueAPttApp->AddDropper (Create<McpttMsgDropperImpl> (5, McpttCallMsgGrpProbe::GetTypeId ()));
-  ueAPttApp->AddDropper (Create<McpttMsgDropperImpl> (0, McpttCallMsgGrpAnnoun::GetTypeId ()));
+  ueACall->AddDropper (Create<McpttMsgDropperImpl> (5, McpttCallMsgGrpProbe::GetTypeId ()));
+  ueACall->AddDropper (Create<McpttMsgDropperImpl> (0, McpttCallMsgGrpAnnoun::GetTypeId ()));
 
   ueAMachine->SetCallId (callId);
   ueAMachine->SetGrpId (grpId);
@@ -1830,8 +1829,8 @@ McpttCallMerge::Configure (void)
   ueATfg6->SetDelay (ueATfg6Delay);
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (5, McpttCallMsgGrpProbe::GetTypeId ()));
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (0, McpttCallMsgGrpAnnoun::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (5, McpttCallMsgGrpProbe::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (0, McpttCallMsgGrpAnnoun::GetTypeId ()));
 
   ueBMachine->SetCallId (callId);
   ueBMachine->SetGrpId (grpId);

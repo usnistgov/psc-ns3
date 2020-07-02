@@ -42,6 +42,7 @@
 #include <ns3/network-module.h>
 
 #include "mcptt-test-case-config.h"
+#include "mcptt-test-call.h"
 
 namespace ns3 {
 
@@ -120,10 +121,12 @@ McpttTestCaseConfig::Configure (void)
   ObjectFactory floorFac;
   floorFac.SetTypeId (floorTid);
 
+  uint16_t callId = 0;
   for (uint32_t idx = 0; idx < clientApps.GetN (); idx++)
     {
       Ptr<McpttPttApp> app = DynamicCast<McpttPttApp, Application> (clientApps.Get (idx));
-      app->CreateCall (callFac, floorFac);
+      Ptr<McpttTestCall> call = CreateTestCall (callFac, floorFac, callId);
+      app->AddCall (call);
       app->SelectCall (0);
       app->GetSelectedCall ()->SetAttribute ("PeerAddress", AddressValue (Ipv4Address ("255.255.255.255")));
     }
@@ -207,6 +210,24 @@ McpttTestCaseConfig::SetStop (const Time& stop)
 {
   m_stop = stop;
 }
+
+Ptr<McpttTestCall>
+McpttTestCaseConfig::CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const
+{
+  Ptr<McpttTestCall> call = CreateObject<McpttTestCall> ();
+  Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
+  Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
+  Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
+  Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
+
+  call->SetCallMachine (callMachine);
+  call->SetFloorChan (floorChan);
+  call->SetFloorMachine (floorMachine);
+  call->SetMediaChan (mediaChan);
+  call->SetCallId (callId);
+  return call;
+}
+
 
 }
 

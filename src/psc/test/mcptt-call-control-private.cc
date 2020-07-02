@@ -35,7 +35,7 @@
 #include <ns3/mcptt-call-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 
-#include "mcptt-test-app.h"
+#include "mcptt-test-call.h"
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"
@@ -3102,16 +3102,15 @@ void
 PrivateCallCancel2::Configure (void)
 {
   GetConfig ()->SetAppCount (2);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast <McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast <McpttTestApp, McpttPttApp> (GetApp (1));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<PrivateTestCallMachine> ueAMachine = DynamicCast<PrivateTestCallMachine, McpttCallMachine> (GetCallMachine (0));
   Ptr<PrivateTestCallMachine> ueBMachine = DynamicCast<PrivateTestCallMachine, McpttCallMachine> (GetCallMachine (1));
@@ -3167,7 +3166,7 @@ PrivateCallCancel2::Configure (void)
   ueATypeMachine->SetStarted (true);
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (4, McpttCallMsgPrivateRelease::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (4, McpttCallMsgPrivateRelease::GetTypeId ()));
 
   ueBMachine->SetCallId (callId);
   ueBMachine->SetCallerId (callerId);

@@ -36,7 +36,7 @@
 #include <ns3/mcptt-call-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 
-#include "mcptt-test-app.h"
+#include "mcptt-test-call.h"
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"
@@ -1431,16 +1431,15 @@ void
 McpttCallTypePrivateUpgradeCall2::Configure (void)
 {
   GetConfig ()->SetAppCount (2);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachinePrivate::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<McpttCallMachinePrivate> ueACallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (0));
   Ptr<McpttCallMachinePrivate> ueBCallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (1));
@@ -1498,7 +1497,7 @@ McpttCallTypePrivateUpgradeCall2::Configure (void)
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypePrivateUpgradeCall2::UeATimerExpCb, this));
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateSetupReq::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateSetupReq::GetTypeId ()));
 
   ueBCallMachine->SetCallId (callId);
   ueBCallMachine->SetCallerId (callerId);
@@ -1776,16 +1775,15 @@ void
 McpttCallTypePrivateUpgradeCall3::Configure (void)
 {
   GetConfig ()->SetAppCount (2);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachinePrivate::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<McpttCallMachinePrivate> ueACallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (0));
   Ptr<McpttCallMachinePrivate> ueBCallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (1));
@@ -1844,7 +1842,7 @@ McpttCallTypePrivateUpgradeCall3::Configure (void)
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypePrivateUpgradeCall3::UeATimerExpCb, this));
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (4, McpttCallMsgPrivateSetupReq::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (4, McpttCallMsgPrivateSetupReq::GetTypeId ()));
 
   ueBCallMachine->SetCallId (callId);
   ueBCallMachine->SetCallerId (callerId);
@@ -2054,16 +2052,15 @@ void
 McpttCallTypePrivateDowngradeCall1::Configure (void)
 {
   GetConfig ()->SetAppCount (2);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachinePrivate::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<McpttCallMachinePrivate> ueACallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (0));
   Ptr<McpttCallMachinePrivate> ueBCallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (1));
@@ -2123,7 +2120,7 @@ McpttCallTypePrivateDowngradeCall1::Configure (void)
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypePrivateDowngradeCall1::UeATimerExpCb, this));
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateEmergCancel::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateEmergCancel::GetTypeId ()));
 
   ueBCallMachine->SetCallId (callId);
   ueBCallMachine->SetCallerId (callerId);
@@ -2412,16 +2409,15 @@ void
 McpttCallTypePrivateDowngradeCall2::Configure (void)
 {
   GetConfig ()->SetAppCount (2);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachinePrivate::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<McpttCallMachinePrivate> ueACallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (0));
   Ptr<McpttCallMachinePrivate> ueBCallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (1));
@@ -2482,7 +2478,7 @@ McpttCallTypePrivateDowngradeCall2::Configure (void)
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypePrivateDowngradeCall2::UeATimerExpCb, this));
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateEmergCancel::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateEmergCancel::GetTypeId ()));
 
   ueBCallMachine->SetCallId (callId);
   ueBCallMachine->SetCallerId (callerId);
@@ -2673,16 +2669,15 @@ void
 McpttCallTypePrivateDowngradeCall3::Configure (void)
 {
   GetConfig ()->SetAppCount (2);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachinePrivate::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
 
-  Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
-  Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
+  Ptr<McpttTestCall> ueACall = ueAPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
+  Ptr<McpttTestCall> ueBCall = ueBPttApp->GetSelectedCall ()->GetObject<McpttTestCall> ();
 
   Ptr<McpttCallMachinePrivate> ueACallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (0));
   Ptr<McpttCallMachinePrivate> ueBCallMachine = DynamicCast<McpttCallMachinePrivate, McpttCallMachine> (GetCallMachine (1));
@@ -2741,7 +2736,7 @@ McpttCallTypePrivateDowngradeCall3::Configure (void)
   ueATypeMachine->SetPostTimerExpCb (MakeCallback (&McpttCallTypePrivateDowngradeCall3::UeATimerExpCb, this));
 
   // UE B
-  ueBPttApp->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateEmergCancel::GetTypeId ()));
+  ueBCall->AddDropper (Create<McpttMsgDropperImpl> (2, McpttCallMsgPrivateEmergCancel::GetTypeId ()));
 
   ueBCallMachine->SetCallId (callId);
   ueBCallMachine->SetCallerId (callerId);

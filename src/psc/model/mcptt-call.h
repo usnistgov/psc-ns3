@@ -129,22 +129,22 @@ public:
   * \param pkt The packet (serialized with SIP header)
   * \param hdr A reference to the SIP header that has been serialized
   */
- void Receive (Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void Receive (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Receives a call message.
   * \param msg The message that was received.
   */
- void Receive (const McpttCallMsg& msg);
+ virtual void Receive (const McpttCallMsg& msg);
  /**
   * Receives a floor message.
   * \param msg The message that was received.
   */
- void Receive (const McpttFloorMsg& msg);
+ virtual void Receive (const McpttFloorMsg& msg);
  /**
   * Receive a media message.
   * \param msg The message that was received.
   */
- void Receive (const McpttMediaMsg& msg);
+ virtual void Receive (const McpttMediaMsg& msg);
  /**
   * Sends a call message.
   * \param pkt The packet (already serialized with SIP header)
@@ -206,6 +206,7 @@ protected:
  bool m_pushOnSelect; //!< Whether to start pusher upon call select
  Time m_startTime; //!< The call start time.
  Time m_stopTime; //!< The call stop time.
+protected:
  Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The received message callback.
  Callback<void, Ptr<const McpttCall>, const Header&> m_txCb; //!< The transmitted message callback.
 public:

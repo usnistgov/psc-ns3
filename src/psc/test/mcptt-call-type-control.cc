@@ -36,9 +36,9 @@
 #include <ns3/mcptt-call-msg.h>
 #include <ns3/mcptt-ptt-app.h>
 
-#include "mcptt-test-app.h"
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config.h"
+#include "mcptt-test-call.h"
 #include "mcptt-msg-dropper.h"
 
 using namespace ns3;
@@ -778,7 +778,6 @@ void
 McpttCallTypeInitEstabNewCall::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
@@ -968,14 +967,13 @@ void
 McpttCallTypeInitJoinEmergCall::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueCCall = ueCPttApp->GetSelectedCall ();
@@ -1256,14 +1254,13 @@ void
 McpttCallTypeInitJoinImmPerilCall::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueCCall = ueCPttApp->GetSelectedCall ();
@@ -1544,14 +1541,13 @@ void
 McpttCallTypeInitJoinBasicCall::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueCCall = ueCPttApp->GetSelectedCall ();
@@ -1825,13 +1821,12 @@ void
 McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueCCall = ueCPttApp->GetSelectedCall ();
@@ -2118,13 +2113,12 @@ void
 McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueCCall = ueCPttApp->GetSelectedCall ();
@@ -2408,14 +2402,13 @@ void
 McpttCallTypeUpgradeFromBasicCall::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -2811,14 +2804,13 @@ void
 McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -3231,14 +3223,13 @@ void
 McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -3651,14 +3642,13 @@ void
 McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -4067,14 +4057,13 @@ void
 McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -4370,14 +4359,13 @@ void
 McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -4673,14 +4661,13 @@ void
 McpttCallTypeReleaseAfterCallEstab::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();
@@ -4946,14 +4933,13 @@ void
 McpttCallTypeMerge::Configure (void)
 {
   GetConfig ()->SetAppCount (3);
-  GetConfig ()->SetAppTid (McpttTestApp::GetTypeId ());
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
 
   McpttTestCase::Configure ();
 
-  Ptr<McpttTestApp> ueAPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (0));
-  Ptr<McpttTestApp> ueBPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (1));
-  Ptr<McpttTestApp> ueCPttApp = DynamicCast<McpttTestApp, McpttPttApp> (GetApp (2));
+  Ptr<McpttPttApp> ueAPttApp = GetApp (0);
+  Ptr<McpttPttApp> ueBPttApp = GetApp (1);
+  Ptr<McpttPttApp> ueCPttApp = GetApp (2);
 
   Ptr<McpttCall> ueACall = ueAPttApp->GetSelectedCall ();
   Ptr<McpttCall> ueBCall = ueBPttApp->GetSelectedCall ();

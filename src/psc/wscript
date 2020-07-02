@@ -91,7 +91,7 @@ def build(bld):
         'test/mcptt-floor-control.cc',
         'test/mcptt-floor-control-msg.cc',
         'test/mcptt-msg-dropper.cc',
-        'test/mcptt-test-app.cc',
+        'test/mcptt-test-call.cc',
         'test/mcptt-test-case-config.cc',
         'test/mcptt-test-case-config-on-network.cc',
         'test/mcptt-test-case.cc',

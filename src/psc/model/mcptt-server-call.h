@@ -126,22 +126,17 @@ public:
   * \param pkt The packet (without SIP header) that was received.
   * \param hdr The (deserialized) SIP header.
   */
- void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
- /**
-  * Receives a call message.
-  * \param msg The message that was received.
-  */
- void Receive (const McpttCallMsg& msg);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
  /**
   * Receives a floor message.
   * \param msg The message that was received.
   */
- void Receive (const McpttFloorMsg& msg);
+ virtual void Receive (const McpttFloorMsg& msg);
  /**
   * Receive a media message.
   * \param msg The message that was received.
   */
- void Receive (const McpttMediaMsg& msg);
+ virtual void Receive (const McpttMediaMsg& msg);
  /**
   * Sends a floor message.
   * \param msg The message to send.

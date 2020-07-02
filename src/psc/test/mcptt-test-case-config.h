@@ -43,6 +43,8 @@
 
 namespace ns3 {
 
+class McpttTestCall;
+
 /**
  * Test case configuration framework for off-network MCPTT tests
  */
@@ -73,9 +75,10 @@ public:
  virtual void SetFloorTid (const TypeId& floorTid);
  virtual void SetStart (const Time& start);
  virtual void SetStop (const Time& stop);
+ virtual Ptr<McpttTestCall> CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const;
 };
 
-}
+} //namespace ns3
 
 #endif
 
