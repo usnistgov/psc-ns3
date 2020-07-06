@@ -503,7 +503,7 @@ McpttCall::SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine)
 
   if (floorMachine != 0)
     {
-      floorMachine->SetOwner (this);
+      floorMachine->SetCall (this);
     }
 
   m_floorMachine = floorMachine;

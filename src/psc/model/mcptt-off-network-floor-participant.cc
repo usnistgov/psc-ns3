@@ -127,7 +127,7 @@ McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant (void)
     m_floorGrantedCb (MakeNullCallback<void> ()),
     m_lastGrantMsg (McpttFloorMsgGranted ()),
     m_originator (false),
-    m_owner (0),
+    m_call (0),
     m_priority (1),
     m_queue (CreateObject<McpttFloorQueue> ()),
     m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
@@ -170,7 +170,7 @@ McpttOffNetworkFloorParticipant::AcceptGrant (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " accepting grant" << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " accepting grant" << ".");
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->AcceptGrant (*this);
@@ -194,7 +194,7 @@ McpttOffNetworkFloorParticipant::ChangeState (Ptr<McpttOffNetworkFloorParticipan
 
   if (currStateId != stateId)
     {
-      uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+      uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
       NS_LOG_LOGIC ("UserId " << userId << " moving from state " << *curr << " to state " << *state << ".");
 
@@ -218,7 +218,7 @@ McpttOffNetworkFloorParticipant::ChangeState (Ptr<McpttOffNetworkFloorParticipan
         {
           m_stateChangeCb (curr->GetInstanceStateId (), state->GetInstanceStateId ());
         }
-      m_stateChangeTrace (m_owner->GetOwner ()->GetUserId (), m_owner->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (m_call->GetOwner ()->GetUserId (), m_call->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 
@@ -241,8 +241,7 @@ McpttOffNetworkFloorParticipant::ClearCurrentSsrc (void)
 uint8_t
 McpttOffNetworkFloorParticipant::GetCallTypeId (void) const
 {
-  Ptr<McpttCall> owner = GetOwner ();
-  Ptr<McpttCallMachine> callMachine = owner->GetCallMachine ();
+  Ptr<McpttCallMachine> callMachine = GetCall ()->GetCallMachine ();
   McpttCallMsgFieldCallType callType = callMachine->GetCallType ();
   uint8_t callTypeId = callType.GetType ();
 
@@ -308,7 +307,7 @@ McpttOffNetworkFloorParticipant::GetStateId (void) const
 uint32_t
 McpttOffNetworkFloorParticipant::GetTxSsrc () const
 {
-  uint32_t txSsrc = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t txSsrc = GetCall ()->GetOwner ()-> GetUserId ();
 
   return txSsrc;
 }
@@ -340,7 +339,7 @@ McpttOffNetworkFloorParticipant::HasFloor (void) const
 
   bool hasFloor = state->HasFloor (*this);
 
-  // NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()-> GetUserId () << " does" << (hasFloor ? " " : " not ") << "have floor.");
+  // NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()-> GetUserId () << " does" << (hasFloor ? " " : " not ") << "have floor.");
 
   return hasFloor;
 }
@@ -372,7 +371,7 @@ McpttOffNetworkFloorParticipant::MediaReady (McpttMediaMsg& msg)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << myUserId << "'s client is about to send media.");
@@ -423,7 +422,7 @@ void
 McpttOffNetworkFloorParticipant::ReceiveFloorAck (const McpttFloorMsgAck& msg)
 {
   NS_LOG_FUNCTION (this);
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_ABORT_MSG (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " should never receive " << msg.GetInstanceTypeId () << ".");
 }
@@ -433,7 +432,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -451,7 +450,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorGranted (const McpttFloorMsgGranted
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -468,7 +467,7 @@ void
 McpttOffNetworkFloorParticipant::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
 {
   NS_LOG_FUNCTION (this);
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_ABORT_MSG (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " should never receive " << msg.GetInstanceTypeId () << ".");
 }
@@ -478,7 +477,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorQueuePositionRequest (const McpttFl
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -496,7 +495,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorQueuePositionInfo (const McpttFloor
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -514,7 +513,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorRelease (const McpttFloorMsgRelease
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -532,7 +531,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorRequest (const McpttFloorMsgRequest
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -550,7 +549,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorRevoke (const McpttFloorMsgRevoke& 
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_ABORT_MSG (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " should never receive " << msg.GetInstanceTypeId () << ".");
 }
@@ -560,7 +559,7 @@ McpttOffNetworkFloorParticipant::ReceiveFloorTaken (const McpttFloorMsgTaken& ms
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -578,7 +577,7 @@ McpttOffNetworkFloorParticipant::ReceiveMedia (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -597,7 +596,7 @@ McpttOffNetworkFloorParticipant::ReleaseRequest (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " releasing request" << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " releasing request" << ".");
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReleaseRequest (*this);
@@ -628,8 +627,6 @@ McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
       return;
     }
 
-  Ptr<McpttCall> owner = GetOwner ();
-
   if (msg.IsA (McpttFloorMsgGranted::GetTypeId ()))
     {
       const McpttFloorMsgGranted& grantedMsg = dynamic_cast<const McpttFloorMsgGranted&> (msg);
@@ -637,9 +634,9 @@ McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
       SetLastGrantMsg (grantedMsg);
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
 
-  owner->Send (msg);
+  GetCall ()->Send (msg);
 
   if (!m_txCb.IsNull ())
     {
@@ -658,7 +655,7 @@ McpttOffNetworkFloorParticipant::SendFloorQueuePositionRequest (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " requesting queue position" << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " requesting queue position" << ".");
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->SendFloorQueuePositionRequest (*this);
@@ -763,7 +760,7 @@ McpttOffNetworkFloorParticipant::Start (void)
 {
   Stop ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " started.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " started.");
 
   SetStarted (true);
 
@@ -782,7 +779,7 @@ McpttOffNetworkFloorParticipant::Stop (void)
     {
       Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetOwner ()->GetOwner ()->GetUserId () << " stopped.");
+      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " stopped.");
 
       state->Stop (*this);
 
@@ -860,8 +857,7 @@ McpttOffNetworkFloorParticipant::PttPush (void)
     }
 
   uint8_t callTypeId = GetCallTypeId ();
-  Ptr<McpttCall> call = GetOwner ();
-  Ptr<McpttPttApp> pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = GetCall ()->GetOwner ();
   uint32_t userId = pttApp->GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
@@ -899,7 +895,7 @@ McpttOffNetworkFloorParticipant::PttRelease (void)
       return;
     }
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << userId << " taking release notification.");
@@ -915,7 +911,7 @@ McpttOffNetworkFloorParticipant::DoDispose (void)
   SetC201 (0);
   SetC204 (0);
   SetC205 (0);
-  SetOwner (0);
+  SetCall (0);
   SetQueue (0);
   SetState (0);
   SetT201 (0);
@@ -939,7 +935,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT201 (void)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   Ptr<McpttCounter> c201 = GetC201 ();
 
@@ -959,7 +955,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT203 (void)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T203 expired.");
@@ -978,7 +974,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT204 (void)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   Ptr<McpttCounter> c204 = GetC204 ();
 
@@ -998,7 +994,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT205 (void)
       return;
     }
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   Ptr<McpttCounter> c205 = GetC205 ();
 
@@ -1018,7 +1014,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT206 (void)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T206 expired.");
@@ -1037,7 +1033,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT207 (void)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T207 expired.");
@@ -1056,7 +1052,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT230 (void)
       return;
     }
 
-  uint32_t userId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << userId << " T230 expired.");
@@ -1075,7 +1071,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT233 (void)
       return;
     }
 
-  uint32_t myUserId = GetOwner ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOffNetworkFloorParticipant " << myUserId << " T233 expired.");
@@ -1128,9 +1124,9 @@ McpttOffNetworkFloorParticipant::GetOriginator (void) const
 }
 
 Ptr<McpttCall>
-McpttOffNetworkFloorParticipant::GetOwner (void) const
+McpttOffNetworkFloorParticipant::GetCall (void) const
 {
-  return m_owner;
+  return m_call;
 }
 
 uint8_t
@@ -1266,11 +1262,11 @@ McpttOffNetworkFloorParticipant::SetOriginator (const bool& originator)
 }
 
 void
-McpttOffNetworkFloorParticipant::SetOwner (Ptr<McpttCall> owner)
+McpttOffNetworkFloorParticipant::SetCall (Ptr<McpttCall> call)
 {
   NS_LOG_FUNCTION (this);
 
-  m_owner = owner;
+  m_call = call;
 }
 
 void

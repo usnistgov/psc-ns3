@@ -345,7 +345,7 @@ private:
  bool m_originator; //!< A flag that indicates if this floor machine is the call originator.
  bool m_overridden; //!< A flag that indicates whether the user is overridden without revoke.
  bool m_overriding; //!< A flag that indicates whether the user is overriding without revoke.
- Ptr<McpttCall> m_owner; //!< The client application that owns this floor machine.
+ Ptr<McpttCall> m_call; //!< The McpttCall that owns this floor machine.
  uint8_t m_priority; //!< The priority of this floor machine.
  Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
@@ -375,10 +375,10 @@ public:
   */
  virtual Ptr<McpttCounter> GetC104 (void) const;
  /**
-  * Gets the owner of the state machine.
-  * \returns The owner.
+  * Gets the McpttCall for the state machine.
+  * \returns The call object
   */
- virtual Ptr<McpttCall> GetOwner (void) const;
+ virtual Ptr<McpttCall> GetCall (void) const;
  /**
   * Gets the priority of the state machine.
   * \returns The priority.
@@ -440,10 +440,10 @@ public:
   */
  virtual void SetOverriding (const bool& overriding);
  /**
-  * Sets the owner of the floor machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the floor machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the current priority of the floor.
   * \param priority The current priority.

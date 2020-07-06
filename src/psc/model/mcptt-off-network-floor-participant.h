@@ -364,7 +364,7 @@ private:
   * pointer's sole purpose is to provide access to the
   * object that the user has provided.
   */
- Ptr<McpttCall> m_owner; //!< The client application that owns this floor machine.
+ Ptr<McpttCall> m_call; //!< The McpttCall that owns this floor machine.
  uint8_t m_priority; //!< The priority of this floor machine.
  Ptr<McpttFloorQueue> m_queue; //!< The floor queue.
  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
@@ -418,10 +418,10 @@ public:
   */
  virtual bool GetOriginator (void) const;
  /**
-  * Gets the client application that owns this floor machine.
-  * \returns The owner.
+  * Gets the McpttCall for the state machine.
+  * \returns The call object
   */
- virtual Ptr<McpttCall> GetOwner (void) const;
+ virtual Ptr<McpttCall> GetCall (void) const;
   /**
   * Gets the current priority of the floor.
   * \returns The current priority.
@@ -528,10 +528,10 @@ public:
   */
  virtual void SetOriginator (const bool& originator);
  /**
-  * Sets the client application that owns this floor machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the floor machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the current priority of the floor.
   * \param priority The current priority.

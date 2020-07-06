@@ -5333,8 +5333,8 @@ McpttSessionInitPrivateCall::Configure (void)
 
   Ptr<McpttMediaSrc> ueAMediaSrc = ueAPttApp->GetMediaSrc ();
 
-  Ptr<McpttCallMachineNull> ueACallMachine = DynamicCast<McpttCallMachineNull, McpttCallMachine> (ueAMachine->GetOwner ()->GetCallMachine ());
-  Ptr<McpttCallMachineNull> ueBCallMachine = DynamicCast<McpttCallMachineNull, McpttCallMachine> (ueBMachine->GetOwner ()->GetCallMachine ());
+  Ptr<McpttCallMachineNull> ueACallMachine = DynamicCast<McpttCallMachineNull, McpttCallMachine> (ueAMachine->GetCall ()->GetCallMachine ());
+  Ptr<McpttCallMachineNull> ueBCallMachine = DynamicCast<McpttCallMachineNull, McpttCallMachine> (ueBMachine->GetCall ()->GetCallMachine ());
 
   Ptr<McpttTimer> ueAT205 = ueAMachine->GetT205 ();
   Ptr<McpttTimer> ueBT201 = ueBMachine->GetT201 ();

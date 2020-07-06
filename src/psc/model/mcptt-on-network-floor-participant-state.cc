@@ -573,11 +573,11 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::Selected (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine);
   
-  Ptr<McpttPttApp> appOwner = machine.GetOwner ()->GetOwner ();
+  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner ();
 
-  if (appOwner->IsPushed ())
+  if (app->IsPushed ())
     {
-      appOwner->NotifyReleased ();
+      app->NotifyReleased ();
     }
 }
 /** McpttOnNetworkFloorParticipantStateHasNoPermission - end **/
@@ -1098,14 +1098,13 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
 {
   NS_LOG_FUNCTION (this << " HasPermission::Selected " << &machine);
 
-  Ptr<McpttCall> callOwner = machine.GetOwner ();
-  Ptr<McpttPttApp> appOwner = callOwner->GetOwner (); 
-  Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
+  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner (); 
+  Ptr<McpttMediaSrc> mediaSrc = app->GetMediaSrc ();
 
-  if (!appOwner->IsPushed ())
+  if (!app->IsPushed ())
     {
       NS_LOG_DEBUG ("McpttPttApp is not pushed; notify that it is now pushed");
-      appOwner->NotifyPushed ();
+      app->NotifyPushed ();
     }
 
   if (machine.ShouldGenMedia ()
@@ -1121,13 +1120,13 @@ McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << " HasPermission::Unselected " << &machine);
 
-  Ptr<McpttPttApp> appOwner = machine.GetOwner ()->GetOwner (); 
-  Ptr<McpttMediaSrc> mediaSrc = appOwner->GetMediaSrc ();
+  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner (); 
+  Ptr<McpttMediaSrc> mediaSrc = app->GetMediaSrc ();
 
-  if (appOwner->IsPushed ())
+  if (app->IsPushed ())
     {
       NS_LOG_DEBUG ("IsPushed true; notifying McpttPttApp of release");
-      appOwner->NotifyReleased ();
+      app->NotifyReleased ();
     }
 
   if (mediaSrc->IsMakingReq ())

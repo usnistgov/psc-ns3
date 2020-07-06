@@ -108,10 +108,10 @@ public:
   */
  virtual void SetOriginator (const bool& originator) = 0;
  /**
-  * Sets the owner of the floor machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the floor machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner) = 0;
+ virtual void SetCall (Ptr<McpttCall> call) = 0;
   /**
   * Sets the current priority of the floor.
   * \param priority The current priority.
@@ -198,10 +198,10 @@ public:
   */
  virtual void SetOriginator (const bool& originator);
  /**
-  * Sets the owner.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the current priority of the floor.
   * \param priority The current priority.
