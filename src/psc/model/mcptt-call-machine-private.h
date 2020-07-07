@@ -377,7 +377,7 @@ private:
  bool m_failure; //!< Indicates if the call should fail.
  McpttCallMsgFieldGrpId m_grpId; //!< TODO: Not in standard - private call use of emergency alert machine
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
- Ptr<McpttCall> m_owner; //!< The call under which this MCPTT call control machine is under.
+ Ptr<McpttCall> m_call; //!< The call under which this MCPTT call control machine is under.
  Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
  McpttCallMsgFieldSdp m_sdpEmerg; //!< Emergency SDP information.
@@ -442,10 +442,10 @@ public:
   */
  virtual Ptr<McpttEmergAlertMachineBasic> GetEmergMachine (void) const;
  /**
-  * Gets the owner of this call control state machine.
-  * \returns The owner.
+  * Gets the McpttCall associated with the call machine.
+  * \returns The call.
   */
- virtual Ptr<McpttCall> GetOwner (void) const;
+ virtual Ptr<McpttCall> GetCall (void) const;
  /**
   * Generate and return a randomly generated call ID
   * \returns The random call ID generated.
@@ -562,10 +562,10 @@ public:
   */
  virtual void SetNewCallCb (const Callback<void, uint16_t>  newCallCb);
  /**
-  * Sets the owner of this call control machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the call machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the SDP inforamtion.
   * \param sdp The SDP information.

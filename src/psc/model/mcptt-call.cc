@@ -477,7 +477,7 @@ McpttCall::SetCallMachine (Ptr<McpttCallMachine>  callMachine)
 
   if (callMachine != 0)
     {
-      callMachine->SetOwner (this);
+      callMachine->SetCall (this);
     }
 
   m_callMachine = callMachine;

@@ -119,7 +119,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
   McpttCallMsgFieldGrpId grpId = GetOwner ()->GetGrpId ();
-  uint32_t myId = GetOwner ()->GetOwner ()->GetOwner ()->GetUserId ();
+  uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
 
   if (IsInEmergState ())
     {
@@ -138,7 +138,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
         {
           m_stateChangeCb (false);
         }
-      m_stateChangeTrace (m_owner->GetOwner ()->GetOwner ()->GetUserId (), m_owner->GetOwner ()->GetCallId (), McpttEmergAlertMachineBasic::GetTypeId ().GetName (), "'E2: Emergency State'", "'E1: Not in emergency state'");
+      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), McpttEmergAlertMachineBasic::GetTypeId ().GetName (), "'E2: Emergency State'", "'E1: Not in emergency state'");
     }
 }
 
@@ -203,7 +203,7 @@ McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmer
   uint32_t theirId = msg.GetUserId ().GetId ();
   Vector theirLoc = msg.GetUserLoc ().GetLoc ();
   std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
-  uint32_t myId = GetOwner ()->GetOwner ()->GetOwner ()->GetUserId ();
+  uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
   
   if (FindEmergUser (theirId, it))
     {
@@ -246,7 +246,7 @@ McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlertCancel (const McpttCallMsgG
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
 
   uint32_t theirId = msg.GetSendingId ().GetId ();
-  uint32_t myId = GetOwner ()->GetOwner ()->GetOwner ()->GetUserId ();
+  uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
 
   if (RemoveEmergUser (theirId))
     {
@@ -292,9 +292,9 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
   Ptr<McpttCallMachineGrp> owner = GetOwner ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
-  uint32_t userId = owner->GetOwner ()->GetOwner ()->GetUserId ();
+  uint32_t userId = owner->GetCall ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldOrgName orgName = GetOrgName ();
-  Vector nodeLoc = owner->GetOwner ()->GetOwner ()->GetNodeLoc ();
+  Vector nodeLoc = owner->GetCall ()->GetOwner ()->GetNodeLoc ();
 
   if (!IsInEmergState ())
     {
@@ -314,7 +314,7 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
         {
           m_stateChangeCb (true);
         }
-      m_stateChangeTrace (m_owner->GetOwner ()->GetOwner ()->GetUserId (), m_owner->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), "'E1: Not in emergency state'", "'E2: Emergency State'");
+      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), GetInstanceTypeId ().GetName (), "'E1: Not in emergency state'", "'E2: Emergency State'");
     }
 }
 
@@ -424,9 +424,9 @@ McpttEmergAlertMachineBasic::ExpiryOfTfe2 (void)
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
   Ptr<McpttCallMachineGrp> owner = GetOwner ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
-  uint32_t userId = owner->GetOwner ()->GetOwner ()->GetUserId ();
+  uint32_t userId = owner->GetCall ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldOrgName orgName = GetOrgName ();
-  Vector nodeLoc = owner->GetOwner ()->GetOwner ()->GetNodeLoc ();
+  Vector nodeLoc = owner->GetCall ()->GetOwner ()->GetNodeLoc ();
 
   if (IsInEmergState ())
     {

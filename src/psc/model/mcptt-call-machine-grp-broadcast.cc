@@ -85,14 +85,14 @@ McpttCallMachineGrpBroadcast::GetTypeId (void)
   return tid;
 }
 
-McpttCallMachineGrpBroadcast::McpttCallMachineGrpBroadcast (Ptr<McpttCall> owner)
+McpttCallMachineGrpBroadcast::McpttCallMachineGrpBroadcast (Ptr<McpttCall> call)
   : McpttCallMachineGrp (),
     m_callId (McpttCallMsgFieldCallId ()),
     m_callType (McpttCallMsgFieldCallType::BROADCAST_GROUP),
     m_grpId (McpttCallMsgFieldGrpId ()),
     m_newCallCb (MakeNullCallback<void, uint16_t> ()),
     m_origId (McpttCallMsgFieldUserId ()),
-    m_owner (owner),
+    m_call (call),
     m_priority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::BROADCAST_GROUP)),
     m_randomCallIdGenerator (CreateObject<UniformRandomVariable> ()),
     m_sdp (McpttCallMsgFieldSdp ()),
@@ -126,7 +126,7 @@ McpttCallMachineGrpBroadcast::AcceptCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " accepting call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " accepting call.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->AcceptCall (*this);
@@ -166,14 +166,14 @@ McpttCallMachineGrpBroadcast::ChangeState (Ptr<McpttCallMachineGrpBroadcastState
 
   if (currStateId != stateId)
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
+      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
 
       SetState (state);
       if (!m_stateChangeCb.IsNull ())
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      m_stateChangeTrace (m_owner->GetOwner ()->GetUserId (), m_owner->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetCall ()->GetOwner ()->GetUserId (), m_call->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 
@@ -225,7 +225,7 @@ McpttCallMachineGrpBroadcast::InitiateCall (void)
       NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " initiating call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " initiating call.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->InitiateCall (*this);
@@ -263,7 +263,7 @@ McpttCallMachineGrpBroadcast::IsUserAckReq (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " does" << (m_userAckReq ? " " : " NOT ") << "require user acknowledgement.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " does" << (m_userAckReq ? " " : " NOT ") << "require user acknowledgement.");
 
   return m_userAckReq;
 }
@@ -279,7 +279,7 @@ McpttCallMachineGrpBroadcast::Receive (const McpttCallMsg& msg)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
 
   msg.Visit (*this);
 }
@@ -295,7 +295,7 @@ McpttCallMachineGrpBroadcast::Receive (const McpttMediaMsg& msg)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
 }
 
 void
@@ -339,7 +339,7 @@ McpttCallMachineGrpBroadcast::ReleaseCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " releasing call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " releasing call.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->ReleaseCall (*this);
@@ -356,7 +356,7 @@ McpttCallMachineGrpBroadcast::RejectCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " rejecting call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " rejecting call.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->RejectCall (*this);
@@ -373,10 +373,9 @@ McpttCallMachineGrpBroadcast::Send (const McpttCallMsg& msg)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
 
-  Ptr<McpttCall> call = GetOwner ();
-  call->Send (msg);
+  GetCall ()->Send (msg);
 }
 
 void
@@ -419,7 +418,7 @@ McpttCallMachineGrpBroadcast::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " started.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " started.");
 
   SetStarted (true);
 }
@@ -429,20 +428,19 @@ McpttCallMachineGrpBroadcast::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " stopped.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " stopped.");
 
   Ptr<McpttTimer> tfb1 = GetTfb1 ();
   Ptr<McpttTimer> tfb2 = GetTfb2 ();
   Ptr<McpttTimer> tfb3 = GetTfb3 ();
-  Ptr<McpttCall> call = GetOwner ();
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
   if (floorMachine->IsStarted ())
     {
       floorMachine->Stop ();
 
-      call->CloseFloorChan ();
-      call->CloseMediaChan ();
+      GetCall ()->CloseFloorChan ();
+      GetCall ()->CloseMediaChan ();
     }
 
   if (tfb1->IsRunning ())
@@ -498,7 +496,7 @@ McpttCallMachineGrpBroadcast::DoDispose (void)
   SetGrpId (McpttCallMsgFieldGrpId ());
   SetNewCallCb (MakeNullCallback<void, uint16_t> ());
   SetOrigId (McpttCallMsgFieldUserId ());
-  SetOwner (0);
+  SetCall (0);
   SetPriority (0);
   SetSdp (McpttCallMsgFieldSdp ());
   SetStarted (false);
@@ -522,7 +520,7 @@ McpttCallMachineGrpBroadcast::ExpiryOfTfb1 (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " TFB1 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " TFB1 expired.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->ExpiryOfTfb1 (*this);
@@ -539,7 +537,7 @@ McpttCallMachineGrpBroadcast::ExpiryOfTfb2 (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " TFB2 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " TFB2 expired.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->ExpiryOfTfb2 (*this);
@@ -556,7 +554,7 @@ McpttCallMachineGrpBroadcast::ExpiryOfTfb3 (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetUserId () << " TFB3 expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " TFB3 expired.");
 
   Ptr<McpttCallMachineGrpBroadcastState> state = GetState ();
   state->ExpiryOfTfb3 (*this);
@@ -611,11 +609,11 @@ McpttCallMachineGrpBroadcast::GetOrigId (void) const
 }
 
 Ptr<McpttCall>
-McpttCallMachineGrpBroadcast::GetOwner (void) const
+McpttCallMachineGrpBroadcast::GetCall (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  return m_owner;
+  return m_call;
 }
 
 uint8_t
@@ -715,11 +713,10 @@ McpttCallMachineGrpBroadcast::SetOrigId (const McpttCallMsgFieldUserId& origId)
 }
 
 void
-McpttCallMachineGrpBroadcast::SetOwner (Ptr<McpttCall> owner)
+McpttCallMachineGrpBroadcast::SetCall (Ptr<McpttCall> call)
 {
-  NS_LOG_FUNCTION (this << owner);
-
-  m_owner = owner;
+  NS_LOG_FUNCTION (this << call);
+  m_call = call;
 }
 
 void

@@ -380,7 +380,7 @@ private:
  Callback<void, uint16_t> m_mergeCb; //!< The merge callback.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  McpttCallMsgFieldUserId m_origId; //!< The ID of MCPTT user that the call originated from.
- Ptr<McpttCall> m_owner {nullptr}; //!< The call under which this MCPTT call control machine is under.
+ Ptr<McpttCall> m_call {nullptr}; //!< The call under which this MCPTT call control machine is under.
  bool m_probeRespVal; //!< The probe response value flag.
  McpttCallMsgFieldRefreshInterval m_refInt; //!< The minimum time interval of periodic announcements.
  Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation. 
@@ -426,10 +426,10 @@ public:
   */
  virtual McpttCallMsgFieldUserId GetOrigId (void) const;
  /**
-  * Gets the owner of this call control state machine.
-  * \returns The owner.
+  * Gets the McpttCall associated with the call machine.
+  * \returns The call.
   */
- virtual Ptr<McpttCall> GetOwner (void) const;
+ virtual Ptr<McpttCall> GetCall (void) const;
  /**
   * Gets the probe response value flag.
   * \returns The flag.
@@ -536,10 +536,10 @@ public:
   */
  virtual void SetOrigId (const McpttCallMsgFieldUserId& origId);
  /**
-  * Sets the owner of this call control machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the call machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the probe response value flag.
   * \param probeRespVal The flag.

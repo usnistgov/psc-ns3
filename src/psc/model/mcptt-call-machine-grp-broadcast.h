@@ -228,7 +228,7 @@ private:
  McpttCallMsgFieldGrpId m_grpId; //!< The group ID of the call.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  McpttCallMsgFieldUserId m_origId; //!< The originating MCPTT user's ID.
- Ptr<McpttCall> m_owner; //!< The owner under which the call machine resides.
+ Ptr<McpttCall> m_call; //!< The owner under which the call machine resides.
  uint8_t m_priority; //!< The ProSe per-packet priority.
  Ptr<UniformRandomVariable> m_randomCallIdGenerator; //!< The RNG used for call ID generation.
  McpttCallMsgFieldSdp m_sdp; //!< SDP information.
@@ -262,10 +262,10 @@ public:
   */
  virtual McpttCallMsgFieldUserId GetOrigId (void) const;
  /**
-  * Gets the owner of this call control state machine.
-  * \returns The owner.
+  * Gets the McpttCall associated with the call machine.
+  * \returns The call.
   */
- virtual Ptr<McpttCall> GetOwner (void) const;
+ virtual Ptr<McpttCall> GetCall (void) const;
  /**
   * Gets the ProSe per-packet priority.
   * \returns The ProSe per-packet priority.
@@ -327,10 +327,10 @@ public:
   */
  virtual void SetOrigId (const McpttCallMsgFieldUserId& origId);
  /**
-  * Sets the owner of this call control machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the call machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the ProSe per-packet priority.
   * \param priority The ProSe per-packet priority.

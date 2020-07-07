@@ -188,7 +188,7 @@ McpttCallTypeMachineGrpBasic::CallStarted (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner ()->GetUserId () <<  " call started.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " call started.");
 
   Ptr<McpttTimer> tfg13 = GetTfg13 ();
   Ptr<McpttTimer> tfg14 = GetTfg14 ();
@@ -233,8 +233,8 @@ McpttCallTypeMachineGrpBasic::ChangeState (const McpttEntityId& stateId)
 
   if (stateId != m_stateId)
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner ()->GetUserId () << " moving from " << GetStateId ().GetName () << " to " << stateId.GetName () << ".");
-      m_stateChangeTrace (m_owner->GetOwner ()->GetOwner ()->GetUserId (), m_owner->GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), GetStateId ().GetName (), stateId.GetName ());
+      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " moving from " << GetStateId ().GetName () << " to " << stateId.GetName () << ".");
+      m_stateChangeTrace (m_owner->GetCall ()->GetOwner ()->GetUserId (), m_owner->GetCall ()->GetCallId (), GetInstanceTypeId ().GetName (), GetStateId ().GetName (), stateId.GetName ());
       SetStateId (stateId);
     }
 }
@@ -250,10 +250,10 @@ McpttCallTypeMachineGrpBasic::Downgrade (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner ()->GetUserId () <<  " downgrading call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " downgrading call.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
-  uint32_t myUserId = owner->GetOwner ()->GetOwner ()->GetUserId ();
+  uint32_t myUserId = owner->GetCall ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldCallId callId = owner->GetCallId ();
   McpttCallMsgFieldUserId origId = owner->GetOrigId ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
@@ -334,7 +334,7 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg1 (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner ()->GetUserId () <<  "'s TFG1 timer expired.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  "'s TFG1 timer expired.");
 
   CallStarted ();
 }
@@ -358,12 +358,12 @@ McpttCallTypeMachineGrpBasic::InitiateCall (uint8_t callType)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner ()->GetUserId () <<  " initiating group call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " initiating group call.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
   Ptr<McpttEmergAlertMachine> emergMachineGrpBasic = owner->GetEmergMachine ();
-  uint32_t myUserId = owner->GetOwner ()->GetOwner () ->GetUserId ();
+  uint32_t myUserId = owner->GetCall ()->GetOwner () ->GetUserId ();
   McpttCallMsgFieldLastChgTime lastChgTime (Simulator::Now ());
   McpttCallMsgFieldUserId lastChgUserId (myUserId);
 
@@ -419,7 +419,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
@@ -688,7 +688,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmerg
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
@@ -717,7 +717,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpIm
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
@@ -752,7 +752,7 @@ McpttCallTypeMachineGrpBasic::ReleaseCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " releasing call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " releasing call.");
 
   McpttEntityId stateId = GetStateId ();
 
@@ -786,7 +786,7 @@ McpttCallTypeMachineGrpBasic::RejectCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " rejecting call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " rejecting call.");
 
   McpttEntityId stateId = GetStateId ();
 
@@ -810,7 +810,7 @@ McpttCallTypeMachineGrpBasic::Send (const McpttCallMsg& msg)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetOwner ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   owner->Send (msg);
@@ -853,7 +853,7 @@ McpttCallTypeMachineGrpBasic::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " started.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " started.");
 
   SetStarted (true);
 }
@@ -863,7 +863,7 @@ McpttCallTypeMachineGrpBasic::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " stopped.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " stopped.");
 
   Ptr<McpttTimer> tfg11 = GetTfg11 ();
   Ptr<McpttTimer> tfg12 = GetTfg12 ();
@@ -915,11 +915,11 @@ McpttCallTypeMachineGrpBasic::UpgradeTo (const McpttCallMsgFieldCallType& callTy
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetOwner ()->GetOwner () ->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
-  uint32_t myUserId = owner->GetOwner ()->GetOwner () ->GetUserId ();
+  uint32_t myUserId = owner->GetCall ()->GetOwner () ->GetUserId ();
   McpttCallMsgFieldCallId callId = owner->GetCallId ();
   McpttCallMsgFieldSdp sdp = owner->GetSdp ();
   McpttCallMsgFieldRefreshInterval refInt = owner->GetRefInt ();

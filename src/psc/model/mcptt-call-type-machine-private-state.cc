@@ -380,7 +380,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveAccept (McpttCallTypeMachinePrivate& 
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
 
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();
   Ptr<McpttTimer> tfp2 = callMachine->GetTfp2 ();
@@ -435,7 +435,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancel (McpttCallTypeMachine
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
 
   Ptr<McpttTimer> tfp8 = callMachine->GetTfp8 ();
 
@@ -483,7 +483,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancelAck (McpttCallTypeMach
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
 
   Ptr<McpttTimer> tfp6 = callMachine->GetTfp6 ();
 
@@ -516,7 +516,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveSetupRequest (McpttCallTypeMachinePri
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   uint32_t myUserId = pttApp->GetUserId ();
@@ -573,7 +573,7 @@ McpttCallTypeMachinePrivateStateQ1::UpgradeTo (McpttCallTypeMachinePrivate& mach
   NS_LOG_FUNCTION (this << &machine << &callType);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   Ptr<McpttTimer> tfp1 = callMachine->GetTfp1 ();
@@ -721,7 +721,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp1 (McpttCallTypeMachinePrivate& m
   NS_LOG_FUNCTION (this << &machine);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   Vector myLoc = pttApp->GetNodeLoc ();
@@ -761,7 +761,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp8 (McpttCallTypeMachinePrivate& m
   NS_LOG_FUNCTION (this << &machine);
 
   Ptr<McpttCallMachinePrivate> callMachine = machine.GetOwner ();
-  Ptr<McpttCall> call = callMachine->GetOwner ();
+  Ptr<McpttCall> call = callMachine->GetCall ();
 
   McpttCallMsgFieldSdp mySdp = callMachine->GetSdp ();
 

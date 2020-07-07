@@ -121,10 +121,10 @@ public:
   */
  virtual TypeId GetInstanceTypeId (void) const;
  /**
-  * Gets the owner of the call machine.
-  * \returns The owner.
+  * Gets the McpttCall for the call machine.
+  * \returns The call object
   */
- virtual Ptr<McpttCall> GetOwner (void) const;
+ virtual Ptr<McpttCall> GetCall (void) const;
  /**
   * Gets the ID of the current state.
   * \returns The state ID.
@@ -197,10 +197,10 @@ public:
   */
  virtual void SetNewCallCb (const Callback<void, uint16_t>  newCallCb);
  /**
-  * Sets the owner of the call machine.
-  * \param owner The owner.
+  * Sets the McpttCall associated with the call machine.
+  * \param call The call.
   */
- virtual void SetOwner (Ptr<McpttCall> owner);
+ virtual void SetCall (Ptr<McpttCall> call);
  /**
   * Sets the group ID
   * \param grpId The group ID
@@ -230,7 +230,7 @@ protected:
   */
  virtual void DoDispose (void);
 private:
- Ptr<McpttCall> m_owner; //!< The owner.
+ Ptr<McpttCall> m_call; //!< The call object associated with this machine.
  uint16_t m_callId;    //!< The call ID
  uint16_t m_floorPort; //!< The port number to use for floor control.
  uint16_t m_mediaPort; //!< The port number to use for media.

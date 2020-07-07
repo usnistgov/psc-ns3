@@ -76,7 +76,7 @@ McpttOnNetworkCallMachineClient::GetTypeId (void)
 
 McpttOnNetworkCallMachineClient::McpttOnNetworkCallMachineClient (void)
   : McpttCallMachineGrp (),
-    m_owner (0),
+    m_call (0),
     m_callId (0),
     m_started (false)
 {
@@ -98,13 +98,13 @@ McpttOnNetworkCallMachineClient::SetState (Ptr<McpttOnNetworkCallMachineClientSt
   McpttEntityId currStateId = m_state->GetInstanceStateId ();
   if (m_started && (stateId != currStateId))
     {
-      NS_LOG_LOGIC (GetOwner ()->GetOwner ()->GetUserId () << " moving from state " << *m_state << " to state " << *state << ".");
+      NS_LOG_LOGIC (GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *m_state << " to state " << *state << ".");
       m_state = state;
       if (!m_stateChangeCb.IsNull ())
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      m_stateChangeTrace (m_owner->GetOwner ()->GetUserId (), m_owner->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetCall ()->GetOwner ()->GetUserId (), m_call->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 
@@ -176,9 +176,9 @@ McpttOnNetworkCallMachineClient::GetInstanceTypeId (void) const
 }
 
 Ptr<McpttCall>
-McpttOnNetworkCallMachineClient::GetOwner (void) const
+McpttOnNetworkCallMachineClient::GetCall (void) const
 {
-  return m_owner;
+  return m_call;
 }
 
 McpttEntityId
@@ -281,14 +281,14 @@ void
 McpttOnNetworkCallMachineClient::Send (const McpttCallMsg& hdr)
 {
   NS_LOG_FUNCTION (this << hdr);
-  GetOwner ()->Send (hdr);
+  GetCall ()->Send (hdr);
 }
 
 void
 McpttOnNetworkCallMachineClient::Send (Ptr<Packet> pkt, const SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt << hdr);
-  GetOwner ()->Send (pkt, hdr);
+  GetCall ()->Send (pkt, hdr);
 }
 
 void
@@ -305,10 +305,10 @@ McpttOnNetworkCallMachineClient::SetNewCallCb (const Callback<void, uint16_t>  n
 }
 
 void
-McpttOnNetworkCallMachineClient::SetOwner (Ptr<McpttCall> owner)
+McpttOnNetworkCallMachineClient::SetCall (Ptr<McpttCall> call)
 {
-  NS_LOG_FUNCTION (this << owner);
-  m_owner = owner;
+  NS_LOG_FUNCTION (this << call);
+  m_call = call;
 }
 
 void
@@ -316,16 +316,15 @@ McpttOnNetworkCallMachineClient::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCall> call = GetOwner ();
-  Ptr<McpttPttApp> pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = GetCall ()->GetOwner ();
   AddressValue grpAddr;
 
   pttApp->GetAttribute ("PeerAddress", grpAddr);
 
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
-  call->OpenFloorChan (grpAddr.Get (), m_floorPort);
-  call->OpenMediaChan (grpAddr.Get (), m_mediaPort);
+  GetCall ()->OpenFloorChan (grpAddr.Get (), m_floorPort);
+  GetCall ()->OpenMediaChan (grpAddr.Get (), m_mediaPort);
 
   floorMachine->Start ();
   m_started = true;
@@ -336,12 +335,10 @@ McpttOnNetworkCallMachineClient::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCall> call = GetOwner ();
+  Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
-
-  call->CloseFloorChan ();
-  call->CloseMediaChan ();
+  GetCall ()->CloseFloorChan ();
+  GetCall ()->CloseMediaChan ();
 
   floorMachine->Stop ();
   m_started = false;
@@ -359,7 +356,7 @@ void
 McpttOnNetworkCallMachineClient::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_owner = 0;
+  m_call = 0;
   McpttCallMachine::DoDispose ();
 }
 

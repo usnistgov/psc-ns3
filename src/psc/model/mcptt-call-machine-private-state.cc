@@ -278,7 +278,7 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   Ptr<McpttTimer> tfp1 = machine.GetTfp1 ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCounter> cfp1 = machine.GetCfp1 ();
-  Ptr<McpttPttApp> pttApp = machine.GetOwner ()->GetOwner ();
+  Ptr<McpttPttApp> pttApp = machine.GetCall ()->GetOwner ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
 
   machine.GetAttribute ("TargetId", targetId);
@@ -352,7 +352,7 @@ McpttCallMachinePrivateStateP0::ReceiveSetupRequest (McpttCallMachinePrivate& ma
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttPttApp> pttApp = call->GetOwner ();
 
   Ptr<McpttTimer> tfp2 = machine.GetTfp2 ();
@@ -611,7 +611,7 @@ McpttCallMachinePrivateStateP2::ExpiryOfTfp1 (McpttCallMachinePrivate& machine)
   Ptr<McpttTimer> tfp2 = machine.GetTfp2 ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCounter> cfp1 = machine.GetCfp1 ();
-  Ptr<McpttPttApp> pttApp = machine.GetOwner ()->GetOwner ();
+  Ptr<McpttPttApp> pttApp = machine.GetCall ()->GetOwner ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
 
   Vector myLoc = pttApp->GetNodeLoc ();
@@ -688,7 +688,7 @@ McpttCallMachinePrivateStateP2::ReceiveAccept (McpttCallMachinePrivate& machine,
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp1 = machine.GetTfp1 ();
   Ptr<McpttTimer> tfp2 = machine.GetTfp2 ();
   Ptr<McpttTimer> tfp5 = machine.GetTfp5 ();
@@ -843,7 +843,7 @@ McpttCallMachinePrivateStateP3::ExpiryOfTfp3 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp3 = machine.GetTfp3 ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCounter> cfp3 = machine.GetCfp3 ();
@@ -892,7 +892,7 @@ McpttCallMachinePrivateStateP3::ReceiveReleaseAck (McpttCallMachinePrivate& mach
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp3 = machine.GetTfp3 ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
@@ -979,7 +979,7 @@ McpttCallMachinePrivateStateP4::ExpiryOfTfp5 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
 
@@ -1036,7 +1036,7 @@ McpttCallMachinePrivateStateP4::ReceiveRelease (McpttCallMachinePrivate& machine
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp5 = machine.GetTfp5 ();
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
@@ -1133,7 +1133,7 @@ McpttCallMachinePrivateStateP5::AcceptCall (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp2 = machine.GetTfp2 ();
   Ptr<McpttTimer> tfp4 = machine.GetTfp4 ();
   Ptr<McpttCounter> cfp4 = machine.GetCfp4 ();
@@ -1243,7 +1243,7 @@ McpttCallMachinePrivateStateP5::ReceiveAcceptAck (McpttCallMachinePrivate& machi
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp4 = machine.GetTfp4 ();
   Ptr<McpttTimer> tfp5 = machine.GetTfp5 ();
 
@@ -1272,7 +1272,7 @@ McpttCallMachinePrivateStateP5::ReceiveMedia (McpttCallMachinePrivate& machine, 
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttCall> call = machine.GetOwner ();
+  Ptr<McpttCall> call = machine.GetCall ();
   Ptr<McpttTimer> tfp4 = machine.GetTfp4 ();
   Ptr<McpttTimer> tfp5 = machine.GetTfp5 ();
 

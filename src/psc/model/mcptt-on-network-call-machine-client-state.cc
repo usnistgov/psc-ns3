@@ -155,7 +155,7 @@ McpttOnNetworkCallMachineClientStateS1::InitiateCall (McpttOnNetworkCallMachineC
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->SetOriginator (true);
   floorMachine->CallInitiated ();
 
@@ -170,9 +170,9 @@ McpttOnNetworkCallMachineClientStateS1::InitiateCall (McpttOnNetworkCallMachineC
   sipHeader.SetMessageType (SipHeader::SIP_REQUEST);
   sipHeader.SetMethod (SipHeader::INVITE);
   sipHeader.SetRequestUri (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetFrom (machine.GetOwner ()->GetOwner ()->GetUserId ());
+  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
   sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetOwner ()->GetCallId ());
+  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
   pkt->AddHeader (sipHeader);
   machine.Send (pkt, sipHeader);
 
@@ -187,20 +187,20 @@ McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachine
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
 
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->SetOriginator (false);
   floorMachine->CallEstablished (sdpHeader);
 
   // Notify McpttPttApp of session initiation
-  machine.GetOwner ()->GetOwner ()->SessionInitiateRequest ();
+  machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
 
   Ptr<Packet> newPkt = Create<Packet> ();
   SipHeader sipHeader;
   sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
   sipHeader.SetStatusCode (200);
-  sipHeader.SetFrom (machine.GetOwner ()->GetOwner ()->GetUserId ());
+  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
   sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetOwner ()->GetCallId ());
+  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
   newPkt->AddHeader (sipHeader);
   machine.Send (newPkt, sipHeader);
 
@@ -250,20 +250,20 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachine
   NS_LOG_LOGIC ("Handle received INVITE despite being in state S2 (collision)");
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->SetOriginator (false);
   //floorMachine->CallEstablished (sdpHeader);
 
   // Notify McpttPttApp of session initiation
-  machine.GetOwner ()->GetOwner ()->SessionInitiateRequest ();
+  machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
   
   Ptr<Packet> newPkt = Create<Packet> ();
   SipHeader sipHeader;
   sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
   sipHeader.SetStatusCode (200);
-  sipHeader.SetFrom (machine.GetOwner ()->GetOwner ()->GetUserId ());
+  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
   sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetOwner ()->GetCallId ());
+  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
   newPkt->AddHeader (sipHeader);
   machine.Send (newPkt, sipHeader);
   machine.SetState (McpttOnNetworkCallMachineClientStateS3::GetInstance ());
@@ -277,12 +277,12 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachi
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
 
-  //Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  //Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   //floorMachine->CallEstablished (sdpHeader);
 
   // Originating client is responsible for scheduling the release of the call
-  NS_ABORT_MSG_UNLESS (machine.GetOwner ()->GetStopTime () >= Simulator::Now (), "Stop time in the past");
-  Simulator::Schedule (machine.GetOwner ()->GetStopTime ()  - Simulator::Now (), &McpttPttApp::ReleaseCall, machine.GetOwner ()->GetOwner ());
+  NS_ABORT_MSG_UNLESS (machine.GetCall ()->GetStopTime () >= Simulator::Now (), "Stop time in the past");
+  Simulator::Schedule (machine.GetCall ()->GetStopTime ()  - Simulator::Now (), &McpttPttApp::ReleaseCall, machine.GetCall ()->GetOwner ());
   machine.SetState (McpttOnNetworkCallMachineClientStateS3::GetInstance ());
 }
 
@@ -354,20 +354,20 @@ McpttOnNetworkCallMachineClientStateS3::ReceiveBye (McpttOnNetworkCallMachineCli
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
 
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->CallRelease1 ();
   floorMachine->CallRelease2 ();
 
   // Notify McpttPttApp of session release
-  machine.GetOwner ()->GetOwner ()->SessionReleaseRequest ();
+  machine.GetCall ()->GetOwner ()->SessionReleaseRequest ();
 
   Ptr<Packet> newPkt = Create<Packet> ();
   SipHeader sipHeader;
   sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
   sipHeader.SetStatusCode (200);
-  sipHeader.SetFrom (machine.GetOwner ()->GetOwner ()->GetUserId ());
+  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
   sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetOwner ()->GetCallId ());
+  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
   newPkt->AddHeader (sipHeader);
   machine.Send (newPkt, sipHeader);
 
@@ -378,7 +378,7 @@ void
 McpttOnNetworkCallMachineClientStateS3::ReleaseCall (McpttOnNetworkCallMachineClient& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->CallRelease1 ();
 
   Ptr<Packet> newPkt = Create<Packet> ();
@@ -386,9 +386,9 @@ McpttOnNetworkCallMachineClientStateS3::ReleaseCall (McpttOnNetworkCallMachineCl
   sipHeader.SetMessageType (SipHeader::SIP_REQUEST);
   sipHeader.SetMethod (SipHeader::BYE);
   sipHeader.SetRequestUri (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetFrom (machine.GetOwner ()->GetOwner ()->GetUserId ());
+  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
   sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetOwner ()->GetCallId ());
+  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
   newPkt->AddHeader (sipHeader);
   machine.Send (newPkt, sipHeader);
 
@@ -440,7 +440,7 @@ void
 McpttOnNetworkCallMachineClientStateS4::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
-  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetOwner ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
+  Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->CallRelease2 ();
   machine.SetState (McpttOnNetworkCallMachineClientStateS1::GetInstance ());
 }

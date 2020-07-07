@@ -182,7 +182,7 @@ McpttCallMachineNull::GetTypeId (void)
 
 McpttCallMachineNull::McpttCallMachineNull (void)
   : McpttCallMachine (),
-    m_owner (0),
+    m_call (0),
     m_callId (0)
 {
   NS_LOG_FUNCTION (this);
@@ -250,11 +250,9 @@ McpttCallMachineNull::GetInstanceTypeId (void) const
 }
 
 Ptr<McpttCall>
-McpttCallMachineNull::GetOwner (void) const
+McpttCallMachineNull::GetCall (void) const
 {
-  NS_LOG_FUNCTION (this);
-
-  return m_owner;
+  return m_call;
 }
 
 McpttEntityId
@@ -339,11 +337,10 @@ McpttCallMachineNull::SetNewCallCb (const Callback<void, uint16_t>  newCallCb)
 }
 
 void
-McpttCallMachineNull::SetOwner (Ptr<McpttCall> owner)
+McpttCallMachineNull::SetCall (Ptr<McpttCall> call)
 {
-  NS_LOG_FUNCTION (this << owner);
-
-  m_owner = owner;
+  NS_LOG_FUNCTION (this << call);
+  m_call = call;
 }
 
 void
@@ -351,16 +348,15 @@ McpttCallMachineNull::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCall> call = GetOwner ();
-  Ptr<McpttPttApp> pttApp = call->GetOwner ();
+  Ptr<McpttPttApp> pttApp = GetCall ()->GetOwner ();
   AddressValue grpAddr;
 
   pttApp->GetAttribute ("PeerAddress", grpAddr);
 
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
+  Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
-  call->OpenFloorChan (grpAddr.Get (), m_floorPort);
-  call->OpenMediaChan (grpAddr.Get (), m_mediaPort);
+  GetCall ()->OpenFloorChan (grpAddr.Get (), m_floorPort);
+  GetCall ()->OpenMediaChan (grpAddr.Get (), m_mediaPort);
 
   floorMachine->Start ();
 }
@@ -370,12 +366,10 @@ McpttCallMachineNull::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCall> call = GetOwner ();
+  Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
-  Ptr<McpttFloorParticipant> floorMachine = call->GetFloorMachine ();
-
-  call->CloseFloorChan ();
-  call->CloseMediaChan ();
+  GetCall ()->CloseFloorChan ();
+  GetCall ()->CloseMediaChan ();
 
   floorMachine->Stop ();
 }
@@ -392,7 +386,7 @@ McpttCallMachineNull::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetOwner (0);
+  SetCall (0);
 
   McpttCallMachine::DoDispose ();
 }
