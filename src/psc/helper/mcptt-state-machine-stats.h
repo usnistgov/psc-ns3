@@ -74,7 +74,7 @@ public:
   * \param oldStateName The name of the previous state.
   * \param newStateName THe name of the current state.
   */
- virtual void StateChangeCb (uint32_t userId, uint32_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+ virtual void StateChangeCb (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
 private:
  bool m_firstCb; //!< Flag that indicates if the callback has been fired yet.
  std::string m_outputFileName; //!< The file name of the trace file.

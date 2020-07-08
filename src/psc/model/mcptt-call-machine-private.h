@@ -384,7 +384,7 @@ private:
  bool m_started; //!< The flag that indicates if the machine has been started.
  Ptr<McpttCallMachinePrivateState> m_state; //!< The current state of the machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  uint32_t m_targetId; //!< The MCPTT user ID of the user to call.
  Ptr<McpttTimer> m_tfp1; //!< The timer TFP1.
  Ptr<McpttTimer> m_tfp2; //!< The timer TFP2.

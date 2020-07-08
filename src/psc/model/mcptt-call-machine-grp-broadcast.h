@@ -235,7 +235,7 @@ private:
  bool m_started; //!< The flag that indicates if the state machine has been started.
  Ptr<McpttCallMachineGrpBroadcastState> m_state; //!< The current state.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state changed callback.
- TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  Ptr<McpttTimer> m_tfb1; //!< The timer TFB1.
  Ptr<McpttTimer> m_tfb2; //!< The timer TFB2.
  Ptr<McpttTimer> m_tfb3; //!< The timer TFB3.

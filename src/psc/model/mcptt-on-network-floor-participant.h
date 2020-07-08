@@ -350,7 +350,7 @@ private:
  Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  Ptr<Packet> m_storedMsgs; //!< The collection of stored messages.
  Ptr<McpttTimer> m_t100; //!< The timer T100.
  Ptr<McpttTimer> m_t101; //!< The timer T101.

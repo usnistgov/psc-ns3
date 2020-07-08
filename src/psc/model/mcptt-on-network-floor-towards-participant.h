@@ -272,7 +272,7 @@ private:
  Callback<void, Ptr<const McpttServerCall>, const Header&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorTowardsParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  uint32_t m_storedSsrc; //!< The SSRC of the floor participant with permission to transmit media.
  uint8_t m_storedPriority; //!< The stored priority the floor machine.
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.

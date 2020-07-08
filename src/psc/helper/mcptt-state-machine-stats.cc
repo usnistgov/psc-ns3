@@ -92,7 +92,7 @@ McpttStateMachineStats::GetInstanceTypeId (void) const
 }
 
 void
-McpttStateMachineStats::StateChangeCb (uint32_t userId, uint32_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
+McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
 {
   NS_LOG_FUNCTION (this << userId << callId << typeId << oldStateName << newStateName);
   if (m_firstCb == true)

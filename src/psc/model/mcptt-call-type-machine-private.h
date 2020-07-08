@@ -188,7 +188,7 @@ private:
  uint8_t m_priority; //!< The ProSe per-packet priority.
  bool m_started; //!< The flag that indicates if the machine has been started.
  Ptr<McpttCallTypeMachinePrivateState> m_state; //!< The current state of the machine.
- TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  Callback<void, uint8_t> m_upgradeCb; //!< The downgrade callback.
 public:
  /**

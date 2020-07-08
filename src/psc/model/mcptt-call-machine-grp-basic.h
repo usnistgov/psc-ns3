@@ -390,7 +390,7 @@ private:
  McpttCallMsgFieldStartTime m_startTime; //!< The time at which the call started.
  Ptr<McpttCallMachineGrpBasicState> m_state; //!< The current state of the machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint32_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  Ptr<McpttTimer> m_tfg1; //!< The timer TFG1.
  Ptr<McpttTimer> m_tfg2; //!< The timer TFG2.
  Ptr<McpttTimer> m_tfg3; //!< The timer TFG3.
