@@ -62,6 +62,12 @@ public:
    * \param pool The pointer to the NrSlCommResourcePool
    */
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
+  /**
+   * \brief Ask the PHY the bandwidth in RBs
+   *
+   * \return the bandwidth in RBs
+   */
+  virtual uint32_t GetBwInRbs () const = 0;
 
 };
 
@@ -113,6 +119,7 @@ public:
   //NR Sidelink communication
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
+  virtual uint32_t GetBwInRbs () const;
 
 private:
   MemberNrSlUeCphySapProvider ();
@@ -139,6 +146,13 @@ void
 MemberNrSlUeCphySapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool)
 {
   m_owner->DoAddNrSlCommRxPool (rxPool);
+}
+
+template <class C>
+uint32_t
+MemberNrSlUeCphySapProvider<C>::GetBwInRbs () const
+{
+  return m_owner->DoGetBwInRbs ();
 }
 
 
