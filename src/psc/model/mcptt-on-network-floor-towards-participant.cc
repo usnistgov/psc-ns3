@@ -482,11 +482,17 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt)
       Receive (queuePositionRequestMsg);
     }
   else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-    || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+      || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
       pkt->RemoveHeader (queueInfoMsg);
       Receive (queueInfoMsg);
+    }
+  else if (subtype == McpttFloorMsgAck::SUBTYPE)
+    {
+      McpttFloorMsgAck ackMsg;
+      pkt->RemoveHeader (ackMsg);
+      Receive(ackMsg);
     }
   else
     {
