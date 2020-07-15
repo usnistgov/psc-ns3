@@ -432,15 +432,16 @@ LteSlBasicUeController::DoRelayUeSelection (std::map <uint64_t, double> validRel
 
         }//validRelays.size () != 0
 
-
       if (selectedRelayId != currentRelayId)
         {
-          // This implies a new Relay UE was selected (the first time, or for reselection)
-          // and a one-to-one communication connection procedure will start with
-          // the selectedRelayId in the LteSlUeRrc
-          m_connectingRelayUeId = selectedRelayId;
-          NS_LOG_DEBUG ("Selected Relay UE for SC " << serviceCode << " changed");
-
+          if (selectedRelayId != 0)
+            {
+              // This implies a new Relay UE was selected (the first time, or for reselection)
+              // and a one-to-one communication connection procedure will start with
+              // the selectedRelayId in the LteSlUeRrc
+              m_connectingRelayUeId = selectedRelayId;
+              NS_LOG_DEBUG ("Selected Relay UE for SC " << serviceCode << " changed");
+            }
           //Trace only when a change is actually made
           m_traceRelayUeSelection (m_netDevice->GetRrc ()->GetImsi (), serviceCode, currentRelayId, selectedRelayId );
         }

@@ -172,23 +172,23 @@ LteSlTft::Equals (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
   bool equals = true;
-  
-  if (m_direction != tft->m_direction &&
-	  m_hasLocalAddress != tft->m_hasLocalAddress &&
-	  m_hasRemoteAddress != tft->m_hasRemoteAddress &&
-	  m_localAddress != tft->m_localAddress &&
-	  m_localAddress6 != tft->m_localAddress6 &&
-	  m_localMask != tft->m_localMask &&
-	  m_localMask6 != tft->m_localMask6 &&
-	  m_remoteAddress != tft->m_remoteAddress &&
-	  m_remoteAddress6 != tft->m_remoteAddress6 &&
-	  m_remoteMask != tft->m_remoteMask &&
-	  m_remoteMask6 != tft->m_remoteMask6 &&
-	  m_remoteL2Address != tft->m_remoteL2Address)
-	  {
-		  equals = false;
-	  }
-	  
+
+  if (m_direction != tft->m_direction
+      || m_hasLocalAddress != tft->m_hasLocalAddress
+      || m_hasRemoteAddress != tft->m_hasRemoteAddress
+      || m_localAddress != tft->m_localAddress
+      || m_localAddress6 != tft->m_localAddress6
+      || m_localMask != tft->m_localMask
+      || m_localMask6 != tft->m_localMask6
+      || m_remoteAddress != tft->m_remoteAddress
+      || m_remoteAddress6 != tft->m_remoteAddress6
+      || m_remoteMask != tft->m_remoteMask
+      || m_remoteMask6 != tft->m_remoteMask6
+      || m_remoteL2Address != tft->m_remoteL2Address)
+    {
+      equals = false;
+    }
+
   return equals;
 }
 
