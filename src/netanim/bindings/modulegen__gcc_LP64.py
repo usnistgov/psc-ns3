@@ -61,7 +61,7 @@ def register_types(module):
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList [class]
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
-    module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
+    module.add_class('Item', outer_class=root_module['ns3::AttributeConstructionList'], import_from_module='ns.core')
     typehandlers.add_type_alias('std::list< ns3::AttributeConstructionList::Item > const_iterator', 'ns3::AttributeConstructionList::CIterator')
     typehandlers.add_type_alias('std::list< ns3::AttributeConstructionList::Item > const_iterator*', 'ns3::AttributeConstructionList::CIterator*')
     typehandlers.add_type_alias('std::list< ns3::AttributeConstructionList::Item > const_iterator&', 'ns3::AttributeConstructionList::CIterator&')
@@ -70,7 +70,7 @@ def register_types(module):
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
-    module.add_class('Iterator', import_from_module='ns.network', outer_class=root_module['ns3::Buffer'])
+    module.add_class('Iterator', outer_class=root_module['ns3::Buffer'], import_from_module='ns.network')
     ## lte-common.h (module 'lte'): ns3::BufferSizeLevelBsr [class]
     module.add_class('BufferSizeLevelBsr', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::BuildBroadcastListElement_s [struct]
@@ -86,13 +86,13 @@ def register_types(module):
     ## packet.h (module 'network'): ns3::ByteTagIterator [class]
     module.add_class('ByteTagIterator', import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::ByteTagIterator::Item [class]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagIterator'])
+    module.add_class('Item', outer_class=root_module['ns3::ByteTagIterator'], import_from_module='ns.network')
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList [class]
     module.add_class('ByteTagList', import_from_module='ns.network')
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator [class]
-    module.add_class('Iterator', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList'])
+    module.add_class('Iterator', outer_class=root_module['ns3::ByteTagList'], import_from_module='ns.network')
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item [struct]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
+    module.add_class('Item', outer_class=root_module['ns3::ByteTagList::Iterator'], import_from_module='ns.network')
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## ff-mac-common.h (module 'lte'): ns3::CqiConfig_s [struct]
@@ -104,37 +104,39 @@ def register_types(module):
     ## data-rate.h (module 'network'): ns3::DataRate [class]
     module.add_class('DataRate', import_from_module='ns.network')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::AttributeAccessor> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::AttributeAccessor'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::AttributeChecker> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::AttributeChecker'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::AttributeChecker'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::AttributeValue> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::AttributeValue'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::AttributeValue'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::CallbackImplBase> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::CallbackImplBase'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Event> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Event'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::Event'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::EventImpl> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::EventImpl'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::EventImpl'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Hash::Implementation> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::LteControlMessage> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::LteControlMessage'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::LteControlMessage'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::LteHarqPhy> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::LteHarqPhy'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::LteHarqPhy'], import_from_module='ns.core')
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::LteSlHarqPhy> [struct]
+    module.add_class('DefaultDeleter', template_parameters=['ns3::LteSlHarqPhy'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::NixVector> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::NixVector'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::NixVector'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Packet> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Packet'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::Packet'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SpectrumModel> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::SpectrumModel'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::SpectrumModel'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SpectrumSignalParameters> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::SpectrumSignalParameters'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::SpectrumSignalParameters'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SpectrumValue> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::SpectrumValue'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::SpectrumValue'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::TraceSourceAccessor> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::TraceSourceAccessor'], import_from_module='ns.core')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::VendorSpecificValue> [struct]
-    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::VendorSpecificValue'])
+    module.add_class('DefaultDeleter', template_parameters=['ns3::VendorSpecificValue'], import_from_module='ns.core')
     ## ff-mac-common.h (module 'lte'): ns3::DlDciListElement_s [struct]
     module.add_class('DlDciListElement_s', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::DlDciListElement_s::Format_e [enumeration]
@@ -156,35 +158,35 @@ def register_types(module):
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider [class]
-    module.add_class('FfMacSchedSapProvider', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('FfMacSchedSapProvider', allow_subclassing=True, import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedDlCqiInfoReqParameters [struct]
-    module.add_class('SchedDlCqiInfoReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedDlCqiInfoReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedDlMacBufferReqParameters [struct]
-    module.add_class('SchedDlMacBufferReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedDlMacBufferReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedDlPagingBufferReqParameters [struct]
-    module.add_class('SchedDlPagingBufferReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedDlPagingBufferReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedDlRachInfoReqParameters [struct]
-    module.add_class('SchedDlRachInfoReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedDlRachInfoReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedDlRlcBufferReqParameters [struct]
-    module.add_class('SchedDlRlcBufferReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedDlRlcBufferReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedDlTriggerReqParameters [struct]
-    module.add_class('SchedDlTriggerReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedDlTriggerReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedUlCqiInfoReqParameters [struct]
-    module.add_class('SchedUlCqiInfoReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedUlCqiInfoReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters [struct]
-    module.add_class('SchedUlMacCtrlInfoReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedUlMacCtrlInfoReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters [struct]
-    module.add_class('SchedUlNoiseInterferenceReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedUlNoiseInterferenceReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedUlSrInfoReqParameters [struct]
-    module.add_class('SchedUlSrInfoReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedUlSrInfoReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapProvider::SchedUlTriggerReqParameters [struct]
-    module.add_class('SchedUlTriggerReqParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapProvider'])
+    module.add_class('SchedUlTriggerReqParameters', outer_class=root_module['ns3::FfMacSchedSapProvider'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapUser [class]
-    module.add_class('FfMacSchedSapUser', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('FfMacSchedSapUser', allow_subclassing=True, import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapUser::SchedDlConfigIndParameters [struct]
-    module.add_class('SchedDlConfigIndParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapUser'])
+    module.add_class('SchedDlConfigIndParameters', outer_class=root_module['ns3::FfMacSchedSapUser'], import_from_module='ns.lte')
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapUser::SchedUlConfigIndParameters [struct]
-    module.add_class('SchedUlConfigIndParameters', import_from_module='ns.lte', outer_class=root_module['ns3::FfMacSchedSapUser'])
+    module.add_class('SchedUlConfigIndParameters', outer_class=root_module['ns3::FfMacSchedSapUser'], import_from_module='ns.lte')
     ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation [struct]
     module.add_class('GbrQosInformation', import_from_module='ns.lte')
     ## lte-harq-phy.h (module 'lte'): ns3::HarqProcessInfoElement_t [struct]
@@ -208,7 +210,7 @@ def register_types(module):
     ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper [class]
     module.add_class('InterferenceHelper', import_from_module='ns.wifi')
     ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer [struct]
-    module.add_class('SnrPer', import_from_module='ns.wifi', outer_class=root_module['ns3::InterferenceHelper'])
+    module.add_class('SnrPer', outer_class=root_module['ns3::InterferenceHelper'], import_from_module='ns.wifi')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
     module.add_class('Ipv4Address', import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
@@ -237,131 +239,153 @@ def register_types(module):
     ## ff-mac-common.h (module 'lte'): ns3::LogicalChannelConfigListElement_s::QosBearerType_e [enumeration]
     module.add_enum('QosBearerType_e', ['QBT_NON_GBR', 'QBT_GBR'], outer_class=root_module['ns3::LogicalChannelConfigListElement_s'], import_from_module='ns.lte')
     ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapProvider [class]
-    module.add_class('LteEnbCphySapProvider', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteEnbCphySapProvider', allow_subclassing=True, import_from_module='ns.lte')
     ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser [class]
     module.add_class('LteEnbCphySapUser', import_from_module='ns.lte')
     ## lte-enb-phy-sap.h (module 'lte'): ns3::LteEnbPhySapProvider [class]
-    module.add_class('LteEnbPhySapProvider', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteEnbPhySapProvider', allow_subclassing=True, import_from_module='ns.lte')
     ## lte-enb-phy-sap.h (module 'lte'): ns3::LteEnbPhySapUser [class]
-    module.add_class('LteEnbPhySapUser', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteEnbPhySapUser', allow_subclassing=True, import_from_module='ns.lte')
     ## lte-common.h (module 'lte'): ns3::LteFfConverter [class]
     module.add_class('LteFfConverter', import_from_module='ns.lte')
     ## lte-common.h (module 'lte'): ns3::LteFlowId_t [struct]
     module.add_class('LteFlowId_t', import_from_module='ns.lte')
+    ## lte-nist-error-model.h (module 'lte'): ns3::LteNistErrorModel [class]
+    module.add_class('LteNistErrorModel', import_from_module='ns.lte')
+    ## lte-nist-error-model.h (module 'lte'): ns3::LteNistErrorModel::LtePhyChannel [enumeration]
+    module.add_enum('LtePhyChannel', ['PDCCH', 'PDSCH', 'PUCCH', 'PUSCH', 'PSCCH', 'PSSCH', 'PSDCH'], outer_class=root_module['ns3::LteNistErrorModel'], import_from_module='ns.lte')
+    ## lte-nist-error-model.h (module 'lte'): ns3::LteNistErrorModel::LteFadingModel [enumeration]
+    module.add_enum('LteFadingModel', ['AWGN'], outer_class=root_module['ns3::LteNistErrorModel'], import_from_module='ns.lte')
+    ## lte-nist-error-model.h (module 'lte'): ns3::LteNistErrorModel::LteTxMode [enumeration]
+    module.add_enum('LteTxMode', ['SISO', 'SIMO', 'TxDiversity', 'SpatMultplex'], outer_class=root_module['ns3::LteNistErrorModel'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap [class]
     module.add_class('LteRrcSap', import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReestablishmentCause [enumeration]
     module.add_enum('ReestablishmentCause', ['RECONFIGURATION_FAILURE', 'HANDOVER_FAILURE', 'OTHER_FAILURE'], outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoCommon [struct]
-    module.add_class('AntennaInfoCommon', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('AntennaInfoCommon', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoDedicated [struct]
-    module.add_class('AntennaInfoDedicated', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('AntennaInfoDedicated', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AntennaInfoUl [struct]
-    module.add_class('AntennaInfoUl', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('AntennaInfoUl', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::AsConfig [struct]
-    module.add_class('AsConfig', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('AsConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::BlackCellsToAddMod [struct]
-    module.add_class('BlackCellsToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('BlackCellsToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CarrierBandwidthEutra [struct]
-    module.add_class('CarrierBandwidthEutra', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CarrierBandwidthEutra', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CarrierFreqEutra [struct]
-    module.add_class('CarrierFreqEutra', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CarrierFreqEutra', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellAccessRelatedInfo [struct]
-    module.add_class('CellAccessRelatedInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CellAccessRelatedInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellIdentification [struct]
-    module.add_class('CellIdentification', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CellIdentification', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellSelectionInfo [struct]
-    module.add_class('CellSelectionInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CellSelectionInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CellsToAddMod [struct]
-    module.add_class('CellsToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CellsToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::CgiInfo [struct]
-    module.add_class('CgiInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('CgiInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::DrbToAddMod [struct]
-    module.add_class('DrbToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('DrbToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::FreqInfo [struct]
-    module.add_class('FreqInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('FreqInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::HandoverPreparationInfo [struct]
-    module.add_class('HandoverPreparationInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('HandoverPreparationInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::LogicalChannelConfig [struct]
-    module.add_class('LogicalChannelConfig', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('LogicalChannelConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlock [struct]
-    module.add_class('MasterInformationBlock', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MasterInformationBlock', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL [struct]
+    module.add_class('MasterInformationBlockSL', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasConfig [struct]
-    module.add_class('MeasConfig', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasGapConfig [struct]
-    module.add_class('MeasGapConfig', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasGapConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasGapConfig::action [enumeration]
     module.add_enum('action', ['SETUP', 'RESET'], outer_class=root_module['ns3::LteRrcSap::MeasGapConfig'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasGapConfig::gap [enumeration]
     module.add_enum('gap', ['GP0', 'GP1'], outer_class=root_module['ns3::LteRrcSap::MeasGapConfig'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasIdToAddMod [struct]
-    module.add_class('MeasIdToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasIdToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectEutra [struct]
-    module.add_class('MeasObjectEutra', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasObjectEutra', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasObjectToAddMod [struct]
-    module.add_class('MeasObjectToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasObjectToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultBestNeighCell [struct]
-    module.add_class('MeasResultBestNeighCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasResultBestNeighCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultEutra [struct]
-    module.add_class('MeasResultEutra', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasResultEutra', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultScell [struct]
-    module.add_class('MeasResultScell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasResultScell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResultServFreqList [struct]
-    module.add_class('MeasResultServFreqList', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasResultServFreqList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasResults [struct]
-    module.add_class('MeasResults', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasResults', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MeasurementReport [struct]
-    module.add_class('MeasurementReport', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MeasurementReport', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MobilityControlInfo [struct]
-    module.add_class('MobilityControlInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MobilityControlInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MobilityStateParameters [struct]
-    module.add_class('MobilityStateParameters', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('MobilityStateParameters', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonCriticalExtensionConfiguration [struct]
-    module.add_class('NonCriticalExtensionConfiguration', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('NonCriticalExtensionConfiguration', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::NonUlConfiguration [struct]
-    module.add_class('NonUlConfiguration', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('NonUlConfiguration', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PdschConfigCommon [struct]
-    module.add_class('PdschConfigCommon', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PdschConfigCommon', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PdschConfigDedicated [struct]
-    module.add_class('PdschConfigDedicated', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PdschConfigDedicated', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PdschConfigDedicated::db [enumeration]
     module.add_enum('db', ['dB_6', 'dB_4dot77', 'dB_3', 'dB_1dot77', 'dB0', 'dB1', 'dB2', 'dB3'], outer_class=root_module['ns3::LteRrcSap::PdschConfigDedicated'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PeriodicBsrTimer [struct]
+    module.add_class('PeriodicBsrTimer', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PeriodicBsrTimer [enumeration]
+    module.add_enum('', ['sf5', 'sf10', 'sf16', 'sf20', 'sf32', 'sf40', 'sf64', 'sf80', 'sf128', 'sf160', 'sf320', 'sf640', 'sf1280', 'sf2560', 'infinity'], outer_class=root_module['ns3::LteRrcSap::PeriodicBsrTimer'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysCellIdRange [struct]
-    module.add_class('PhysCellIdRange', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PhysCellIdRange', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicated [struct]
-    module.add_class('PhysicalConfigDedicated', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PhysicalConfigDedicated', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysicalConfigDedicatedSCell [struct]
-    module.add_class('PhysicalConfigDedicatedSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PhysicalConfigDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityInfo [struct]
-    module.add_class('PlmnIdentityInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PlmnIdentityInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityList [struct]
+    module.add_class('PlmnIdentityList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelection [struct]
+    module.add_class('PoolSelection', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelection [enumeration]
+    module.add_enum('', ['RSRPBASED', 'RANDOM'], outer_class=root_module['ns3::LteRrcSap::PoolSelection'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelectionRsrpBased [struct]
+    module.add_class('PoolSelectionRsrpBased', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PrachConfigSCell [struct]
-    module.add_class('PrachConfigSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PrachConfigSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PreambleInfo [struct]
-    module.add_class('PreambleInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PreambleInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PuschConfigDedicatedSCell [struct]
-    module.add_class('PuschConfigDedicatedSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('PuschConfigDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::QuantityConfig [struct]
-    module.add_class('QuantityConfig', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('QuantityConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RaSupervisionInfo [struct]
-    module.add_class('RaSupervisionInfo', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RaSupervisionInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RachConfigCommon [struct]
-    module.add_class('RachConfigCommon', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RachConfigCommon', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RachConfigDedicated [struct]
-    module.add_class('RachConfigDedicated', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RachConfigDedicated', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommon [struct]
-    module.add_class('RadioResourceConfigCommon', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RadioResourceConfigCommon', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSCell [struct]
-    module.add_class('RadioResourceConfigCommonSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RadioResourceConfigCommonSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigCommonSib [struct]
-    module.add_class('RadioResourceConfigCommonSib', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RadioResourceConfigCommonSib', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicated [struct]
-    module.add_class('RadioResourceConfigDedicated', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RadioResourceConfigDedicated', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicatedSCell [struct]
-    module.add_class('RadioResourceConfigDedicatedSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RadioResourceConfigDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReestabUeIdentity [struct]
-    module.add_class('ReestabUeIdentity', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('ReestabUeIdentity', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra [struct]
-    module.add_class('ReportConfigEutra', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('ReportConfigEutra', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra [enumeration]
     module.add_enum('', ['EVENT', 'PERIODICAL'], outer_class=root_module['ns3::LteRrcSap::ReportConfigEutra'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra [enumeration]
@@ -375,91 +399,265 @@ def register_types(module):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigEutra [enumeration]
     module.add_enum('', ['MS120', 'MS240', 'MS480', 'MS640', 'MS1024', 'MS2048', 'MS5120', 'MS10240', 'MIN1', 'MIN6', 'MIN12', 'MIN30', 'MIN60', 'SPARE3', 'SPARE2', 'SPARE1'], outer_class=root_module['ns3::LteRrcSap::ReportConfigEutra'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReportConfigToAddMod [struct]
-    module.add_class('ReportConfigToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('ReportConfigToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RetxBsrTimer [struct]
+    module.add_class('RetxBsrTimer', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RetxBsrTimer [enumeration]
+    module.add_enum('', ['sf320', 'sf640', 'sf1280', 'sf2560', 'sf5120', 'sf10240'], outer_class=root_module['ns3::LteRrcSap::RetxBsrTimer'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RlcConfig [struct]
-    module.add_class('RlcConfig', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RlcConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RlcConfig::direction [enumeration]
     module.add_enum('direction', ['AM', 'UM_BI_DIRECTIONAL', 'UM_UNI_DIRECTIONAL_UL', 'UM_UNI_DIRECTIONAL_DL'], outer_class=root_module['ns3::LteRrcSap::RlcConfig'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration [struct]
-    module.add_class('RrcConnectionReconfiguration', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReconfiguration', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfigurationCompleted [struct]
-    module.add_class('RrcConnectionReconfigurationCompleted', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReconfigurationCompleted', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReestablishment [struct]
-    module.add_class('RrcConnectionReestablishment', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReestablishment', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReestablishmentComplete [struct]
-    module.add_class('RrcConnectionReestablishmentComplete', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReestablishmentComplete', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReestablishmentReject [struct]
-    module.add_class('RrcConnectionReestablishmentReject', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReestablishmentReject', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReestablishmentRequest [struct]
-    module.add_class('RrcConnectionReestablishmentRequest', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReestablishmentRequest', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReject [struct]
-    module.add_class('RrcConnectionReject', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionReject', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRelease [struct]
-    module.add_class('RrcConnectionRelease', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionRelease', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRequest [struct]
-    module.add_class('RrcConnectionRequest', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionRequest', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSetup [struct]
-    module.add_class('RrcConnectionSetup', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionSetup', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSetupCompleted [struct]
-    module.add_class('RrcConnectionSetupCompleted', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('RrcConnectionSetupCompleted', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod [struct]
-    module.add_class('SCellToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SCellToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig [struct]
+    module.add_class('Sib18CommConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig [struct]
+    module.add_class('Sib19DiscConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay [struct]
+    module.add_class('Sib19DiscConfigRelay', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation [struct]
+    module.add_class('SidelinkUeInformation', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCarrierFreqInfoList [struct]
+    module.add_class('SlCarrierFreqInfoList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfig [struct]
+    module.add_class('SlCommConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfig [enumeration]
+    module.add_enum('', ['RELEASE', 'SETUP'], outer_class=root_module['ns3::LteRrcSap::SlCommConfig'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled [struct]
+    module.add_class('SlCommConfigScheduled', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected [struct]
+    module.add_class('SlCommConfigUeSelected', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool [struct]
+    module.add_class('SlCommResourcePool', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::TxParameters [struct]
+    module.add_class('TxParameters', outer_class=root_module['ns3::LteRrcSap::SlCommResourcePool'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig [struct]
+    module.add_class('UeSelectedResourceConfig', outer_class=root_module['ns3::LteRrcSap::SlCommResourcePool'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommRxPoolList [struct]
+    module.add_class('SlCommRxPoolList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolList [struct]
+    module.add_class('SlCommTxPoolList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddMod [struct]
+    module.add_class('SlCommTxPoolToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddModList [struct]
+    module.add_class('SlCommTxPoolToAddModList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourceReq [struct]
+    module.add_class('SlCommTxResourceReq', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourcesSetup [struct]
+    module.add_class('SlCommTxResourcesSetup', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourcesSetup [enumeration]
+    module.add_enum('', ['SCHEDULED', 'UE_SELECTED'], outer_class=root_module['ns3::LteRrcSap::SlCommTxResourcesSetup'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCpLen [struct]
+    module.add_class('SlCpLen', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCpLen [enumeration]
+    module.add_enum('', ['NORMAL', 'EXTENDED'], outer_class=root_module['ns3::LteRrcSap::SlCpLen'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDestinationInfoList [struct]
+    module.add_class('SlDestinationInfoList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfig [struct]
+    module.add_class('SlDiscConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfig [enumeration]
+    module.add_enum('', ['RELEASE', 'SETUP'], outer_class=root_module['ns3::LteRrcSap::SlDiscConfig'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe [struct]
+    module.add_class('SlDiscConfigRelayUe', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe [struct]
+    module.add_class('SlDiscConfigRemoteUe', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigScheduled [struct]
+    module.add_class('SlDiscConfigScheduled', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected [struct]
+    module.add_class('SlDiscConfigUeSelected', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool [struct]
+    module.add_class('SlDiscResourcePool', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters [struct]
+    module.add_class('RxParameters', outer_class=root_module['ns3::LteRrcSap::SlDiscResourcePool'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig [struct]
+    module.add_class('TddConfig', outer_class=root_module['ns3::LteRrcSap::SlDiscResourcePool::RxParameters'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters [struct]
+    module.add_class('TxParameters', outer_class=root_module['ns3::LteRrcSap::SlDiscResourcePool'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig [struct]
+    module.add_class('UeSelectedResourceConfig', outer_class=root_module['ns3::LteRrcSap::SlDiscResourcePool::TxParameters'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscRxPoolList [struct]
+    module.add_class('SlDiscRxPoolList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolList [struct]
+    module.add_class('SlDiscTxPoolList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddMod [struct]
+    module.add_class('SlDiscTxPoolToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddModList [struct]
+    module.add_class('SlDiscTxPoolToAddModList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfo [struct]
+    module.add_class('SlDiscTxPowerInfo', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfoList [struct]
+    module.add_class('SlDiscTxPowerInfoList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxResourcesSetup [struct]
+    module.add_class('SlDiscTxResourcesSetup', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxResourcesSetup [enumeration]
+    module.add_enum('', ['SCHEDULED', 'UE_SELECTED'], outer_class=root_module['ns3::LteRrcSap::SlDiscTxResourcesSetup'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm [struct]
+    module.add_class('SlHoppingConfigComm', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm [enumeration]
+    module.add_enum('', ['ns1', 'ns2', 'ns4', 'uninitialized'], outer_class=root_module['ns3::LteRrcSap::SlHoppingConfigComm'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigDisc [struct]
+    module.add_class('SlHoppingConfigDisc', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigDisc [enumeration]
+    module.add_enum('', ['n1', 'n5'], outer_class=root_module['ns3::LteRrcSap::SlHoppingConfigDisc'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlMacMainConfigSl [struct]
+    module.add_class('SlMacMainConfigSl', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlOffsetIndicator [struct]
+    module.add_class('SlOffsetIndicator', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodComm [struct]
+    module.add_class('SlPeriodComm', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodComm [enumeration]
+    module.add_enum('', ['sf40', 'sf60', 'sf70', 'sf80', 'sf120', 'sf140', 'sf160', 'sf240', 'sf280', 'sf320'], outer_class=root_module['ns3::LteRrcSap::SlPeriodComm'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodDisc [struct]
+    module.add_class('SlPeriodDisc', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodDisc [enumeration]
+    module.add_enum('', ['rf32', 'rf64', 'rf128', 'rf256', 'rf512', 'rf1024'], outer_class=root_module['ns3::LteRrcSap::SlPeriodDisc'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool [struct]
+    module.add_class('SlPreconfigCommPool', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPoolList [struct]
+    module.add_class('SlPreconfigCommPoolList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool [struct]
+    module.add_class('SlPreconfigDiscPool', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters [struct]
+    module.add_class('TxParameters', outer_class=root_module['ns3::LteRrcSap::SlPreconfigDiscPool'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPoolList [struct]
+    module.add_class('SlPreconfigDiscPoolList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigGeneral [struct]
+    module.add_class('SlPreconfigGeneral', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigRelay [struct]
+    module.add_class('SlPreconfigRelay', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync [struct]
+    module.add_class('SlPreconfigSync', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration [struct]
+    module.add_class('SlPreconfiguration', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlReselectionInfoRelay [struct]
+    module.add_class('SlReselectionInfoRelay', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlSyncConfigList [struct]
+    module.add_class('SlSyncConfigList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPair [struct]
+    module.add_class('SlTfIndexPair', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPairList [struct]
+    module.add_class('SlTfIndexPairList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig [struct]
+    module.add_class('SlTfResourceConfig', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTrptSubset [struct]
+    module.add_class('SlTrptSubset', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxParameters [struct]
+    module.add_class('SlTxParameters', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxParameters [enumeration]
+    module.add_enum('', ['al0', 'al04', 'al05', 'al06', 'al07', 'al08', 'al09', 'al1'], outer_class=root_module['ns3::LteRrcSap::SlTxParameters'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxPoolToReleaseList [struct]
+    module.add_class('SlTxPoolToReleaseList', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon [struct]
-    module.add_class('SoundingRsUlConfigCommon', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SoundingRsUlConfigCommon', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon::action [enumeration]
     module.add_enum('action', ['SETUP', 'RESET'], outer_class=root_module['ns3::LteRrcSap::SoundingRsUlConfigCommon'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigDedicated [struct]
-    module.add_class('SoundingRsUlConfigDedicated', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SoundingRsUlConfigDedicated', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigDedicated::action [enumeration]
     module.add_enum('action', ['SETUP', 'RESET'], outer_class=root_module['ns3::LteRrcSap::SoundingRsUlConfigDedicated'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpecialSubframePatterns [struct]
+    module.add_class('SpecialSubframePatterns', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpecialSubframePatterns [enumeration]
+    module.add_enum('', ['ssp0', 'ssp1', 'ssp2', 'ssp3', 'ssp4', 'ssp5', 'ssp6', 'ssp7', 'ssp8'], outer_class=root_module['ns3::LteRrcSap::SpecialSubframePatterns'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpeedStatePars [struct]
-    module.add_class('SpeedStatePars', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SpeedStatePars', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpeedStatePars::action [enumeration]
     module.add_enum('action', ['SETUP', 'RESET'], outer_class=root_module['ns3::LteRrcSap::SpeedStatePars'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpeedStateScaleFactors [struct]
-    module.add_class('SpeedStateScaleFactors', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SpeedStateScaleFactors', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SrbToAddMod [struct]
-    module.add_class('SrbToAddMod', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SrbToAddMod', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeAssignment [struct]
+    module.add_class('SubframeAssignment', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeAssignment [enumeration]
+    module.add_enum('', ['sa0', 'sa1', 'sa2', 'sa3', 'sa4', 'sa5', 'sa6'], outer_class=root_module['ns3::LteRrcSap::SubframeAssignment'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeBitmapSl [struct]
+    module.add_class('SubframeBitmapSl', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation [struct]
-    module.add_class('SystemInformation', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SystemInformation', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType1 [struct]
-    module.add_class('SystemInformationBlockType1', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SystemInformationBlockType1', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType18 [struct]
+    module.add_class('SystemInformationBlockType18', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType19 [struct]
+    module.add_class('SystemInformationBlockType19', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType2 [struct]
-    module.add_class('SystemInformationBlockType2', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('SystemInformationBlockType2', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ThresholdEutra [struct]
-    module.add_class('ThresholdEutra', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('ThresholdEutra', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ThresholdEutra [enumeration]
     module.add_enum('', ['THRESHOLD_RSRP', 'THRESHOLD_RSRQ'], outer_class=root_module['ns3::LteRrcSap::ThresholdEutra'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::TxFailParam [struct]
-    module.add_class('TxFailParam', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('TxFailParam', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::TxProbability [struct]
+    module.add_class('TxProbability', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::TxProbability [enumeration]
+    module.add_enum('', ['p25', 'p50', 'p75', 'p100'], outer_class=root_module['ns3::LteRrcSap::TxProbability'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlConfiguration [struct]
-    module.add_class('UlConfiguration', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('UlConfiguration', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlCommonSCell [struct]
-    module.add_class('UlPowerControlCommonSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('UlPowerControlCommonSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::UlPowerControlDedicatedSCell [struct]
-    module.add_class('UlPowerControlDedicatedSCell', import_from_module='ns.lte', outer_class=root_module['ns3::LteRrcSap'])
+    module.add_class('UlPowerControlDedicatedSCell', outer_class=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams [struct]
+    module.add_class('LteSlSyncParams', import_from_module='ns.lte')
     ## lte-common.h (module 'lte'): ns3::LteUeConfig_t [struct]
     module.add_class('LteUeConfig_t', import_from_module='ns.lte')
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapProvider [class]
-    module.add_class('LteUeCphySapProvider', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteUeCphySapProvider', allow_subclassing=True, import_from_module='ns.lte')
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser [class]
-    module.add_class('LteUeCphySapUser', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteUeCphySapUser', allow_subclassing=True, import_from_module='ns.lte')
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeMeasurementsElement [struct]
-    module.add_class('UeMeasurementsElement', import_from_module='ns.lte', outer_class=root_module['ns3::LteUeCphySapUser'])
+    module.add_class('UeMeasurementsElement', outer_class=root_module['ns3::LteUeCphySapUser'], import_from_module='ns.lte')
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeMeasurementsParameters [struct]
-    module.add_class('UeMeasurementsParameters', import_from_module='ns.lte', outer_class=root_module['ns3::LteUeCphySapUser'])
+    module.add_class('UeMeasurementsParameters', outer_class=root_module['ns3::LteUeCphySapUser'], import_from_module='ns.lte')
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement [struct]
+    module.add_class('UeSdRsrpMeasurementsElement', outer_class=root_module['ns3::LteUeCphySapUser'], import_from_module='ns.lte')
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters [struct]
+    module.add_class('UeSdRsrpMeasurementsParameters', outer_class=root_module['ns3::LteUeCphySapUser'], import_from_module='ns.lte')
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsElement [struct]
+    module.add_class('UeSlssMeasurementsElement', outer_class=root_module['ns3::LteUeCphySapUser'], import_from_module='ns.lte')
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsParameters [struct]
+    module.add_class('UeSlssMeasurementsParameters', outer_class=root_module['ns3::LteUeCphySapUser'], import_from_module='ns.lte')
     ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider [class]
-    module.add_class('LteUePhySapProvider', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteUePhySapProvider', allow_subclassing=True, import_from_module='ns.lte')
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters [struct]
+    module.add_class('TransmitSlPhySduParameters', outer_class=root_module['ns3::LteUePhySapProvider'], import_from_module='ns.lte')
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::SidelinkChannel [enumeration]
+    module.add_enum('SidelinkChannel', ['PSBCH', 'PSCCH', 'PSSCH', 'PSDCH', 'INVALID_CH'], outer_class=root_module['ns3::LteUePhySapProvider::TransmitSlPhySduParameters'], import_from_module='ns.lte')
     ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapUser [class]
-    module.add_class('LteUePhySapUser', import_from_module='ns.lte', allow_subclassing=True)
+    module.add_class('LteUePhySapUser', allow_subclassing=True, import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteUeRrcSapProvider [class]
-    module.add_class('LteUeRrcSapProvider', import_from_module='ns.lte', parent=root_module['ns3::LteRrcSap'])
+    module.add_class('LteUeRrcSapProvider', parent=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteUeRrcSapProvider::CompleteSetupParameters [struct]
-    module.add_class('CompleteSetupParameters', import_from_module='ns.lte', outer_class=root_module['ns3::LteUeRrcSapProvider'])
+    module.add_class('CompleteSetupParameters', outer_class=root_module['ns3::LteUeRrcSapProvider'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteUeRrcSapUser [class]
-    module.add_class('LteUeRrcSapUser', import_from_module='ns.lte', parent=root_module['ns3::LteRrcSap'])
+    module.add_class('LteUeRrcSapUser', parent=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteUeRrcSapUser::SetupParameters [struct]
-    module.add_class('SetupParameters', import_from_module='ns.lte', outer_class=root_module['ns3::LteUeRrcSapUser'])
+    module.add_class('SetupParameters', outer_class=root_module['ns3::LteUeRrcSapUser'], import_from_module='ns.lte')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
     typehandlers.add_type_alias('void ( * ) ( ns3::Mac48Address )', 'ns3::Mac48Address::TracedCallback')
@@ -478,7 +676,7 @@ def register_types(module):
     ## ff-mac-common.h (module 'lte'): ns3::MacCeListElement_s [struct]
     module.add_class('MacCeListElement_s', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::MacCeListElement_s::MacCeType_e [enumeration]
-    module.add_enum('MacCeType_e', ['BSR', 'PHR', 'CRNTI'], outer_class=root_module['ns3::MacCeListElement_s'], import_from_module='ns.lte')
+    module.add_enum('MacCeType_e', ['BSR', 'PHR', 'CRNTI', 'SLBSR'], outer_class=root_module['ns3::MacCeListElement_s'], import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::MacCeValue_u [struct]
     module.add_class('MacCeValue_u', import_from_module='ns.lte')
     ## wifi-phy.h (module 'wifi'): ns3::MpduInfo [struct]
@@ -494,7 +692,7 @@ def register_types(module):
     typehandlers.add_type_alias('std::vector< ns3::Ptr< ns3::Node > > const_iterator*', 'ns3::NodeList::Iterator*')
     typehandlers.add_type_alias('std::vector< ns3::Ptr< ns3::Node > > const_iterator&', 'ns3::NodeList::Iterator&')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
-    module.add_class('ObjectBase', import_from_module='ns.core', allow_subclassing=True)
+    module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
     module.add_class('ObjectDeleter', import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactory [class]
@@ -502,19 +700,19 @@ def register_types(module):
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata [class]
     module.add_class('PacketMetadata', import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item [struct]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::PacketMetadata'])
+    module.add_class('Item', outer_class=root_module['ns3::PacketMetadata'], import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::ItemType [enumeration]
     module.add_enum('ItemType', ['PAYLOAD', 'HEADER', 'TRAILER'], outer_class=root_module['ns3::PacketMetadata::Item'], import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator [class]
-    module.add_class('ItemIterator', import_from_module='ns.network', outer_class=root_module['ns3::PacketMetadata'])
+    module.add_class('ItemIterator', outer_class=root_module['ns3::PacketMetadata'], import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::PacketTagIterator [class]
     module.add_class('PacketTagIterator', import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::PacketTagIterator::Item [class]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagIterator'])
+    module.add_class('Item', outer_class=root_module['ns3::PacketTagIterator'], import_from_module='ns.network')
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList [class]
     module.add_class('PacketTagList', import_from_module='ns.network')
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData [struct]
-    module.add_class('TagData', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagList'])
+    module.add_class('TagData', outer_class=root_module['ns3::PacketTagList'], import_from_module='ns.network')
     ## ff-mac-common.h (module 'lte'): ns3::PagingInfoListElement_s [struct]
     module.add_class('PagingInfoListElement_s', import_from_module='ns.lte')
     ## log.h (module 'core'): ns3::ParameterLogger [class]
@@ -543,6 +741,8 @@ def register_types(module):
     module.add_class('RlcPduListElement_s', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::SbMeasResult_s [struct]
     module.add_class('SbMeasResult_s', import_from_module='ns.lte')
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s [struct]
+    module.add_class('SciListElement_s', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::SiConfiguration_s [struct]
     module.add_class('SiConfiguration_s', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::SiMessageListElement_s [struct]
@@ -550,11 +750,40 @@ def register_types(module):
     ## wifi-phy.h (module 'wifi'): ns3::SignalNoiseDbm [struct]
     module.add_class('SignalNoiseDbm', import_from_module='ns.wifi')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::ObjectBase'], template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::ObjectBase'], template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], automatic_type_narrowing=True)
     ## simulator.h (module 'core'): ns3::Simulator [class]
-    module.add_class('Simulator', import_from_module='ns.core', destructor_visibility='private')
+    module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
     module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'], import_from_module='ns.core')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlCtrlPacketInfo_t [struct]
+    module.add_class('SlCtrlPacketInfo_t', import_from_module='ns.lte')
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s [struct]
+    module.add_class('SlDciListElement_s', import_from_module='ns.lte')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDiscTbId_t [struct]
+    module.add_class('SlDiscTbId_t', import_from_module='ns.lte')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t [struct]
+    module.add_class('SlDisctbInfo_t', import_from_module='ns.lte')
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters [struct]
+    module.add_class('SlPhyReceptionStatParameters', import_from_module='ns.lte')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlPhyReceptionStatParameters const )', 'ns3::SlPhyReceptionStatParameters::TracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlPhyReceptionStatParameters const )*', 'ns3::SlPhyReceptionStatParameters::TracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlPhyReceptionStatParameters const )&', 'ns3::SlPhyReceptionStatParameters::TracedCallback&')
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters [struct]
+    module.add_class('SlPhyTransmissionStatParameters', import_from_module='ns.lte')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlPhyTransmissionStatParameters const )', 'ns3::SlPhyTransmissionStatParameters::TracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlPhyTransmissionStatParameters const )*', 'ns3::SlPhyTransmissionStatParameters::TracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlPhyTransmissionStatParameters const )&', 'ns3::SlPhyTransmissionStatParameters::TracedCallback&')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlRxPacketInfo_t [struct]
+    module.add_class('SlRxPacketInfo_t', import_from_module='ns.lte')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlTbId_t [struct]
+    module.add_class('SlTbId_t', import_from_module='ns.lte')
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters [struct]
+    module.add_class('SlUeMacStatParameters', import_from_module='ns.lte')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlUeMacStatParameters const )', 'ns3::SlUeMacStatParameters::TracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlUeMacStatParameters const )*', 'ns3::SlUeMacStatParameters::TracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SlUeMacStatParameters const )&', 'ns3::SlUeMacStatParameters::TracedCallback&')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t [struct]
+    module.add_class('SltbInfo_t', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::SpsConfig_s [struct]
     module.add_class('SpsConfig_s', import_from_module='ns.lte')
     ## ff-mac-common.h (module 'lte'): ns3::SrConfig_s [struct]
@@ -562,13 +791,22 @@ def register_types(module):
     ## ff-mac-common.h (module 'lte'): ns3::SrListElement_s [struct]
     module.add_class('SrListElement_s', import_from_module='ns.lte')
     ## tag.h (module 'network'): ns3::Tag [class]
-    module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
+    module.add_class('Tag', parent=root_module['ns3::ObjectBase'], import_from_module='ns.network')
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
     ## uan-prop-model.h (module 'uan'): ns3::Tap [class]
     module.add_class('Tap', import_from_module='ns.uan')
+    ## lte-nist-error-model.h (module 'lte'): ns3::TbErrorStats_t [struct]
+    module.add_class('TbErrorStats_t', import_from_module='ns.lte')
     ## lte-spectrum-phy.h (module 'lte'): ns3::TbId_t [struct]
     module.add_class('TbId_t', import_from_module='ns.lte')
+    ## nstime.h (module 'core'): ns3::Time [class]
+    module.add_class('Time', import_from_module='ns.core')
+    ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
+    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    typehandlers.add_type_alias('void ( * ) ( ns3::Time )', 'ns3::Time::TracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( ns3::Time )*', 'ns3::Time::TracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::Time )&', 'ns3::Time::TracedCallback&')
     ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
     module.add_class('TimeWithUnit', import_from_module='ns.core')
     ## lte-common.h (module 'lte'): ns3::TransmissionModesLayers [class]
@@ -580,9 +818,9 @@ def register_types(module):
     ## type-id.h (module 'core'): ns3::TypeId::SupportLevel [enumeration]
     module.add_enum('SupportLevel', ['SUPPORTED', 'DEPRECATED', 'OBSOLETE'], outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation [struct]
-    module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    module.add_class('AttributeInformation', outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
-    module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    module.add_class('TraceSourceInformation', outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     typehandlers.add_type_alias('uint32_t', 'ns3::TypeId::hash_t')
     typehandlers.add_type_alias('uint32_t*', 'ns3::TypeId::hash_t*')
     typehandlers.add_type_alias('uint32_t&', 'ns3::TypeId::hash_t&')
@@ -596,7 +834,7 @@ def register_types(module):
     typehandlers.add_type_alias('std::vector< ns3::Tap > const_iterator*', 'ns3::UanPdp::Iterator*')
     typehandlers.add_type_alias('std::vector< ns3::Tap > const_iterator&', 'ns3::UanPdp::Iterator&')
     ## uan-phy.h (module 'uan'): ns3::UanPhyListener [class]
-    module.add_class('UanPhyListener', import_from_module='ns.uan', allow_subclassing=True)
+    module.add_class('UanPhyListener', allow_subclassing=True, import_from_module='ns.uan')
     ## uan-tx-mode.h (module 'uan'): ns3::UanTxMode [class]
     module.add_class('UanTxMode', import_from_module='ns.uan')
     ## uan-tx-mode.h (module 'uan'): ns3::UanTxMode::ModulationType [enumeration]
@@ -645,90 +883,119 @@ def register_types(module):
     ## animation-interface.h (module 'netanim'): ns3::AnimByteTag [class]
     module.add_class('AnimByteTag', parent=root_module['ns3::Tag'])
     ## chunk.h (module 'network'): ns3::Chunk [class]
-    module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
+    module.add_class('Chunk', parent=root_module['ns3::ObjectBase'], import_from_module='ns.network')
     ## eps-bearer.h (module 'lte'): ns3::EpsBearer [class]
-    module.add_class('EpsBearer', import_from_module='ns.lte', parent=root_module['ns3::ObjectBase'])
+    module.add_class('EpsBearer', parent=root_module['ns3::ObjectBase'], import_from_module='ns.lte')
     ## eps-bearer.h (module 'lte'): ns3::EpsBearer::Qci [enumeration]
     module.add_enum('Qci', ['GBR_CONV_VOICE', 'GBR_CONV_VIDEO', 'GBR_GAMING', 'GBR_NON_CONV_VIDEO', 'GBR_MC_PUSH_TO_TALK', 'GBR_NMC_PUSH_TO_TALK', 'GBR_MC_VIDEO', 'GBR_V2X', 'NGBR_IMS', 'NGBR_VIDEO_TCP_OPERATOR', 'NGBR_VOICE_VIDEO_GAMING', 'NGBR_VIDEO_TCP_PREMIUM', 'NGBR_VIDEO_TCP_DEFAULT', 'NGBR_MC_DELAY_SIGNAL', 'NGBR_MC_DATA', 'NGBR_V2X', 'NGBR_LOW_LAT_EMBB', 'DGBR_DISCRETE_AUT_SMALL', 'DGBR_DISCRETE_AUT_LARGE', 'DGBR_ITS', 'DGBR_ELECTRICITY'], outer_class=root_module['ns3::EpsBearer'], import_from_module='ns.lte')
     ## header.h (module 'network'): ns3::Header [class]
-    module.add_class('Header', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
+    module.add_class('Header', parent=root_module['ns3::Chunk'], import_from_module='ns.network')
     ## ipv4-header.h (module 'internet'): ns3::Ipv4Header [class]
-    module.add_class('Ipv4Header', import_from_module='ns.internet', parent=root_module['ns3::Header'])
+    module.add_class('Ipv4Header', parent=root_module['ns3::Header'], import_from_module='ns.internet')
     ## ipv4-header.h (module 'internet'): ns3::Ipv4Header::DscpType [enumeration]
     module.add_enum('DscpType', ['DscpDefault', 'DSCP_CS1', 'DSCP_AF11', 'DSCP_AF12', 'DSCP_AF13', 'DSCP_CS2', 'DSCP_AF21', 'DSCP_AF22', 'DSCP_AF23', 'DSCP_CS3', 'DSCP_AF31', 'DSCP_AF32', 'DSCP_AF33', 'DSCP_CS4', 'DSCP_AF41', 'DSCP_AF42', 'DSCP_AF43', 'DSCP_CS5', 'DSCP_EF', 'DSCP_CS6', 'DSCP_CS7'], outer_class=root_module['ns3::Ipv4Header'], import_from_module='ns.internet')
     ## ipv4-header.h (module 'internet'): ns3::Ipv4Header::EcnType [enumeration]
     module.add_enum('EcnType', ['ECN_NotECT', 'ECN_ECT1', 'ECN_ECT0', 'ECN_CE'], outer_class=root_module['ns3::Ipv4Header'], import_from_module='ns.internet')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteEnbRrcSapProvider [class]
-    module.add_class('LteEnbRrcSapProvider', import_from_module='ns.lte', parent=root_module['ns3::LteRrcSap'])
+    module.add_class('LteEnbRrcSapProvider', parent=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteEnbRrcSapProvider::CompleteSetupUeParameters [struct]
-    module.add_class('CompleteSetupUeParameters', import_from_module='ns.lte', outer_class=root_module['ns3::LteEnbRrcSapProvider'])
+    module.add_class('CompleteSetupUeParameters', outer_class=root_module['ns3::LteEnbRrcSapProvider'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteEnbRrcSapUser [class]
-    module.add_class('LteEnbRrcSapUser', import_from_module='ns.lte', parent=root_module['ns3::LteRrcSap'])
+    module.add_class('LteEnbRrcSapUser', parent=root_module['ns3::LteRrcSap'], import_from_module='ns.lte')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteEnbRrcSapUser::SetupUeParameters [struct]
-    module.add_class('SetupUeParameters', import_from_module='ns.lte', outer_class=root_module['ns3::LteEnbRrcSapUser'])
+    module.add_class('SetupUeParameters', outer_class=root_module['ns3::LteEnbRrcSapUser'], import_from_module='ns.lte')
     ## object.h (module 'core'): ns3::Object [class]
-    module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
+    module.add_class('Object', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'], import_from_module='ns.core')
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
-    module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
+    module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'], import_from_module='ns.core')
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
-    module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('PacketBurst', parent=root_module['ns3::Object'], import_from_module='ns.network')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )', 'ns3::PacketBurst::TracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )*', 'ns3::PacketBurst::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )&', 'ns3::PacketBurst::TracedCallback&')
     ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel [class]
-    module.add_class('PropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
+    module.add_class('PropagationDelayModel', parent=root_module['ns3::Object'], import_from_module='ns.propagation')
     ## propagation-loss-model.h (module 'propagation'): ns3::PropagationLossModel [class]
-    module.add_class('PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
+    module.add_class('PropagationLossModel', parent=root_module['ns3::Object'], import_from_module='ns.propagation')
     ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel [class]
-    module.add_class('RandomPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
+    module.add_class('RandomPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'], import_from_module='ns.propagation')
     ## propagation-loss-model.h (module 'propagation'): ns3::RandomPropagationLossModel [class]
-    module.add_class('RandomPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream [class]
-    module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
+    module.add_class('RandomVariableStream', parent=root_module['ns3::Object'], import_from_module='ns.core')
     ## propagation-loss-model.h (module 'propagation'): ns3::RangePropagationLossModel [class]
-    module.add_class('RangePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('RangePropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable [class]
-    module.add_class('SequentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('SequentialRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool [class]
+    module.add_class('SidelinkCommResourcePool', parent=root_module['ns3::Object'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SlPoolType [enumeration]
+    module.add_enum('SlPoolType', ['UNKNOWN', 'SCHEDULED', 'UE_SELECTED'], outer_class=root_module['ns3::SidelinkCommResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo [struct]
+    module.add_class('SidelinkTransmissionInfo', outer_class=root_module['ns3::SidelinkCommResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo [struct]
+    module.add_class('SubframeInfo', outer_class=root_module['ns3::SidelinkCommResourcePool'], import_from_module='ns.lte')
+    typehandlers.add_type_alias('void ( * ) ( uint32_t const, uint32_t const, uint32_t const )', 'ns3::SidelinkCommResourcePool::ScPeriodTracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( uint32_t const, uint32_t const, uint32_t const )*', 'ns3::SidelinkCommResourcePool::ScPeriodTracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( uint32_t const, uint32_t const, uint32_t const )&', 'ns3::SidelinkCommResourcePool::ScPeriodTracedCallback&')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool [class]
+    module.add_class('SidelinkDiscResourcePool', parent=root_module['ns3::Object'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SlPoolType [enumeration]
+    module.add_enum('SlPoolType', ['UNKNOWN', 'SCHEDULED', 'UE_SELECTED'], outer_class=root_module['ns3::SidelinkDiscResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo [struct]
+    module.add_class('SidelinkTransmissionInfo', outer_class=root_module['ns3::SidelinkDiscResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo [struct]
+    module.add_class('SubframeInfo', outer_class=root_module['ns3::SidelinkDiscResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkRxCommResourcePool [class]
+    module.add_class('SidelinkRxCommResourcePool', parent=root_module['ns3::SidelinkCommResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkRxDiscResourcePool [class]
+    module.add_class('SidelinkRxDiscResourcePool', parent=root_module['ns3::SidelinkDiscResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkTxCommResourcePool [class]
+    module.add_class('SidelinkTxCommResourcePool', parent=root_module['ns3::SidelinkCommResourcePool'], import_from_module='ns.lte')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkTxDiscResourcePool [class]
+    module.add_class('SidelinkTxDiscResourcePool', parent=root_module['ns3::SidelinkDiscResourcePool'], import_from_module='ns.lte')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Event, ns3::empty, ns3::DefaultDeleter<ns3::Event> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Event', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Event>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Event', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Event>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Ipv4MulticastRoute', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4MulticastRoute>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Ipv4MulticastRoute', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4MulticastRoute>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Ipv4Route', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4Route>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Ipv4Route', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4Route>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::LteControlMessage, ns3::empty, ns3::DefaultDeleter<ns3::LteControlMessage> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::LteControlMessage', 'ns3::empty', 'ns3::DefaultDeleter<ns3::LteControlMessage>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::LteControlMessage', 'ns3::empty', 'ns3::DefaultDeleter<ns3::LteControlMessage>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::LteHarqPhy', 'ns3::empty', 'ns3::DefaultDeleter<ns3::LteHarqPhy>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::LteHarqPhy', 'ns3::empty', 'ns3::DefaultDeleter<ns3::LteHarqPhy>'], automatic_type_narrowing=True)
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteSlHarqPhy> > [class]
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::LteSlHarqPhy', 'ns3::empty', 'ns3::DefaultDeleter<ns3::LteSlHarqPhy>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::OutputStreamWrapper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamWrapper>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::OutputStreamWrapper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamWrapper>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumModel', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumModel>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumModel', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumModel>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumSignalParameters', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumSignalParameters>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumSignalParameters', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumSignalParameters>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumValue>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumValue>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::VendorSpecificValue, ns3::empty, ns3::DefaultDeleter<ns3::VendorSpecificValue> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::VendorSpecificValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::VendorSpecificValue>'])
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::VendorSpecificValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::VendorSpecificValue>'], automatic_type_narrowing=True)
     ## socket.h (module 'network'): ns3::Socket [class]
-    module.add_class('Socket', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('Socket', parent=root_module['ns3::Object'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::Socket::SocketErrno [enumeration]
     module.add_enum('SocketErrno', ['ERROR_NOTERROR', 'ERROR_ISCONN', 'ERROR_NOTCONN', 'ERROR_MSGSIZE', 'ERROR_AGAIN', 'ERROR_SHUTDOWN', 'ERROR_OPNOTSUPP', 'ERROR_AFNOSUPPORT', 'ERROR_INVAL', 'ERROR_BADF', 'ERROR_NOROUTETOHOST', 'ERROR_NODEV', 'ERROR_ADDRNOTAVAIL', 'ERROR_ADDRINUSE', 'SOCKET_ERRNO_LAST'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::Socket::SocketType [enumeration]
@@ -738,58 +1005,49 @@ def register_types(module):
     ## socket.h (module 'network'): ns3::Socket::Ipv6MulticastFilterMode [enumeration]
     module.add_enum('Ipv6MulticastFilterMode', ['INCLUDE', 'EXCLUDE'], outer_class=root_module['ns3::Socket'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketIpTosTag [class]
-    module.add_class('SocketIpTosTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    module.add_class('SocketIpTosTag', parent=root_module['ns3::Tag'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketIpTtlTag [class]
-    module.add_class('SocketIpTtlTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    module.add_class('SocketIpTtlTag', parent=root_module['ns3::Tag'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketIpv6HopLimitTag [class]
-    module.add_class('SocketIpv6HopLimitTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    module.add_class('SocketIpv6HopLimitTag', parent=root_module['ns3::Tag'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketIpv6TclassTag [class]
-    module.add_class('SocketIpv6TclassTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    module.add_class('SocketIpv6TclassTag', parent=root_module['ns3::Tag'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketPriorityTag [class]
-    module.add_class('SocketPriorityTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    module.add_class('SocketPriorityTag', parent=root_module['ns3::Tag'], import_from_module='ns.network')
     ## socket.h (module 'network'): ns3::SocketSetDontFragmentTag [class]
-    module.add_class('SocketSetDontFragmentTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    module.add_class('SocketSetDontFragmentTag', parent=root_module['ns3::Tag'], import_from_module='ns.network')
     ## spectrum-interference.h (module 'spectrum'): ns3::SpectrumInterference [class]
-    module.add_class('SpectrumInterference', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
+    module.add_class('SpectrumInterference', parent=root_module['ns3::Object'], import_from_module='ns.spectrum')
     ## spectrum-model.h (module 'spectrum'): ns3::SpectrumModel [class]
-    module.add_class('SpectrumModel', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> >'])
+    module.add_class('SpectrumModel', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> >'], import_from_module='ns.spectrum')
     ## spectrum-phy.h (module 'spectrum'): ns3::SpectrumPhy [class]
-    module.add_class('SpectrumPhy', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
+    module.add_class('SpectrumPhy', parent=root_module['ns3::Object'], import_from_module='ns.spectrum')
     ## spectrum-propagation-loss-model.h (module 'spectrum'): ns3::SpectrumPropagationLossModel [class]
-    module.add_class('SpectrumPropagationLossModel', import_from_module='ns.spectrum', parent=root_module['ns3::Object'])
+    module.add_class('SpectrumPropagationLossModel', parent=root_module['ns3::Object'], import_from_module='ns.spectrum')
     ## spectrum-signal-parameters.h (module 'spectrum'): ns3::SpectrumSignalParameters [struct]
-    module.add_class('SpectrumSignalParameters', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
+    module.add_class('SpectrumSignalParameters', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'], import_from_module='ns.spectrum')
     ## spectrum-value.h (module 'spectrum'): ns3::SpectrumValue [class]
-    module.add_class('SpectrumValue', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
+    module.add_class('SpectrumValue', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'], import_from_module='ns.spectrum')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumValue > )', 'ns3::SpectrumValue::TracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumValue > )*', 'ns3::SpectrumValue::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumValue > )&', 'ns3::SpectrumValue::TracedCallback&')
     ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel [class]
-    module.add_class('ThreeLogDistancePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
-    ## nstime.h (module 'core'): ns3::Time [class]
-    module.add_class('Time', import_from_module='ns.core')
-    ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
-    typehandlers.add_type_alias('void ( * ) ( ns3::Time )', 'ns3::Time::TracedCallback')
-    typehandlers.add_type_alias('void ( * ) ( ns3::Time )*', 'ns3::Time::TracedCallback*')
-    typehandlers.add_type_alias('void ( * ) ( ns3::Time )&', 'ns3::Time::TracedCallback&')
-    ## nstime.h (module 'core'): ns3::Time [class]
-    root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
+    module.add_class('ThreeLogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
-    module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
+    module.add_class('TraceSourceAccessor', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'], import_from_module='ns.core')
     ## trailer.h (module 'network'): ns3::Trailer [class]
-    module.add_class('Trailer', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
+    module.add_class('Trailer', parent=root_module['ns3::Chunk'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::TriangularRandomVariable [class]
-    module.add_class('TriangularRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('TriangularRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## propagation-loss-model.h (module 'propagation'): ns3::TwoRayGroundPropagationLossModel [class]
-    module.add_class('TwoRayGroundPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('TwoRayGroundPropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## uan-mac.h (module 'uan'): ns3::UanMac [class]
-    module.add_class('UanMac', import_from_module='ns.uan', parent=root_module['ns3::Object'])
+    module.add_class('UanMac', parent=root_module['ns3::Object'], import_from_module='ns.uan')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::UanTxMode )', 'ns3::UanMac::PacketModeTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::UanTxMode )*', 'ns3::UanMac::PacketModeTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::UanTxMode )&', 'ns3::UanMac::PacketModeTracedCallback&')
     ## uan-phy.h (module 'uan'): ns3::UanPhy [class]
-    module.add_class('UanPhy', import_from_module='ns.uan', parent=root_module['ns3::Object'])
+    module.add_class('UanPhy', parent=root_module['ns3::Object'], import_from_module='ns.uan')
     ## uan-phy.h (module 'uan'): ns3::UanPhy::State [enumeration]
     module.add_enum('State', ['IDLE', 'CCABUSY', 'RX', 'TX', 'SLEEP', 'DISABLED'], outer_class=root_module['ns3::UanPhy'], import_from_module='ns.uan')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::UanPhy::RxOkCallback')
@@ -802,25 +1060,25 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double, ns3::UanTxMode )*', 'ns3::UanPhy::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double, ns3::UanTxMode )&', 'ns3::UanPhy::TracedCallback&')
     ## uan-phy.h (module 'uan'): ns3::UanPhyCalcSinr [class]
-    module.add_class('UanPhyCalcSinr', import_from_module='ns.uan', parent=root_module['ns3::Object'])
+    module.add_class('UanPhyCalcSinr', parent=root_module['ns3::Object'], import_from_module='ns.uan')
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyCalcSinrDefault [class]
-    module.add_class('UanPhyCalcSinrDefault', import_from_module='ns.uan', parent=root_module['ns3::UanPhyCalcSinr'])
+    module.add_class('UanPhyCalcSinrDefault', parent=root_module['ns3::UanPhyCalcSinr'], import_from_module='ns.uan')
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyCalcSinrFhFsk [class]
-    module.add_class('UanPhyCalcSinrFhFsk', import_from_module='ns.uan', parent=root_module['ns3::UanPhyCalcSinr'])
+    module.add_class('UanPhyCalcSinrFhFsk', parent=root_module['ns3::UanPhyCalcSinr'], import_from_module='ns.uan')
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyGen [class]
-    module.add_class('UanPhyGen', import_from_module='ns.uan', parent=root_module['ns3::UanPhy'])
+    module.add_class('UanPhyGen', parent=root_module['ns3::UanPhy'], import_from_module='ns.uan')
     ## uan-phy.h (module 'uan'): ns3::UanPhyPer [class]
-    module.add_class('UanPhyPer', import_from_module='ns.uan', parent=root_module['ns3::Object'])
+    module.add_class('UanPhyPer', parent=root_module['ns3::Object'], import_from_module='ns.uan')
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyPerCommonModes [class]
-    module.add_class('UanPhyPerCommonModes', import_from_module='ns.uan', parent=root_module['ns3::UanPhyPer'])
+    module.add_class('UanPhyPerCommonModes', parent=root_module['ns3::UanPhyPer'], import_from_module='ns.uan')
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyPerGenDefault [class]
-    module.add_class('UanPhyPerGenDefault', import_from_module='ns.uan', parent=root_module['ns3::UanPhyPer'])
+    module.add_class('UanPhyPerGenDefault', parent=root_module['ns3::UanPhyPer'], import_from_module='ns.uan')
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyPerUmodem [class]
-    module.add_class('UanPhyPerUmodem', import_from_module='ns.uan', parent=root_module['ns3::UanPhyPer'])
+    module.add_class('UanPhyPerUmodem', parent=root_module['ns3::UanPhyPer'], import_from_module='ns.uan')
     ## uan-prop-model.h (module 'uan'): ns3::UanPropModel [class]
-    module.add_class('UanPropModel', import_from_module='ns.uan', parent=root_module['ns3::Object'])
+    module.add_class('UanPropModel', parent=root_module['ns3::Object'], import_from_module='ns.uan')
     ## uan-transducer.h (module 'uan'): ns3::UanTransducer [class]
-    module.add_class('UanTransducer', import_from_module='ns.uan', parent=root_module['ns3::Object'])
+    module.add_class('UanTransducer', parent=root_module['ns3::Object'], import_from_module='ns.uan')
     ## uan-transducer.h (module 'uan'): ns3::UanTransducer::State [enumeration]
     module.add_enum('State', ['TX', 'RX'], outer_class=root_module['ns3::UanTransducer'], import_from_module='ns.uan')
     typehandlers.add_type_alias('std::list< ns3::UanPacketArrival >', 'ns3::UanTransducer::ArrivalList')
@@ -830,13 +1088,13 @@ def register_types(module):
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::UanPhy > >*', 'ns3::UanTransducer::UanPhyList*')
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::UanPhy > >&', 'ns3::UanTransducer::UanPhyList&')
     ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable [class]
-    module.add_class('UniformRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('UniformRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## ff-mac-common.h (module 'lte'): ns3::VendorSpecificValue [struct]
-    module.add_class('VendorSpecificValue', import_from_module='ns.lte', parent=root_module['ns3::SimpleRefCount< ns3::VendorSpecificValue, ns3::empty, ns3::DefaultDeleter<ns3::VendorSpecificValue> >'])
+    module.add_class('VendorSpecificValue', parent=root_module['ns3::SimpleRefCount< ns3::VendorSpecificValue, ns3::empty, ns3::DefaultDeleter<ns3::VendorSpecificValue> >'], import_from_module='ns.lte')
     ## random-variable-stream.h (module 'core'): ns3::WeibullRandomVariable [class]
-    module.add_class('WeibullRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('WeibullRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy [class]
-    module.add_class('WifiPhy', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
+    module.add_class('WifiPhy', parent=root_module['ns3::Object'], import_from_module='ns.wifi')
     typehandlers.add_type_alias('std::pair< unsigned char, ns3::WifiPhyStandard >', 'ns3::WifiPhy::ChannelNumberStandardPair')
     typehandlers.add_type_alias('std::pair< unsigned char, ns3::WifiPhyStandard >*', 'ns3::WifiPhy::ChannelNumberStandardPair*')
     typehandlers.add_type_alias('std::pair< unsigned char, ns3::WifiPhyStandard >&', 'ns3::WifiPhy::ChannelNumberStandardPair&')
@@ -859,7 +1117,7 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::WifiTxVector, ns3::Time )*', 'ns3::WifiPhy::PhyRxPayloadBeginTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::WifiTxVector, ns3::Time )&', 'ns3::WifiPhy::PhyRxPayloadBeginTracedCallback&')
     ## wifi-phy-state-helper.h (module 'wifi'): ns3::WifiPhyStateHelper [class]
-    module.add_class('WifiPhyStateHelper', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
+    module.add_class('WifiPhyStateHelper', parent=root_module['ns3::Object'], import_from_module='ns.wifi')
     typehandlers.add_type_alias('void ( * ) ( ns3::Time, ns3::Time, WifiPhyState )', 'ns3::WifiPhyStateHelper::StateTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Time, ns3::Time, WifiPhyState )*', 'ns3::WifiPhyStateHelper::StateTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Time, ns3::Time, WifiPhyState )&', 'ns3::WifiPhyStateHelper::StateTracedCallback&')
@@ -873,78 +1131,78 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::WifiMode, ns3::WifiPreamble, uint8_t )*', 'ns3::WifiPhyStateHelper::TxTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::WifiMode, ns3::WifiPreamble, uint8_t )&', 'ns3::WifiPhyStateHelper::TxTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ZetaRandomVariable [class]
-    module.add_class('ZetaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ZetaRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ZipfRandomVariable [class]
-    module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ZipfRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
-    module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
+    module.add_class('AttributeAccessor', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
-    module.add_class('AttributeChecker', import_from_module='ns.core', automatic_type_narrowing=True, allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
+    module.add_class('AttributeChecker', import_from_module='ns.core', allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], automatic_type_narrowing=True)
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
-    module.add_class('AttributeValue', import_from_module='ns.core', automatic_type_narrowing=True, allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    module.add_class('AttributeValue', import_from_module='ns.core', allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], automatic_type_narrowing=True)
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
-    module.add_class('CallbackChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('CallbackChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImplBase [class]
-    module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
+    module.add_class('CallbackImplBase', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackValue [class]
-    module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('CallbackValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## channel.h (module 'network'): ns3::Channel [class]
-    module.add_class('Channel', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('Channel', parent=root_module['ns3::Object'], import_from_module='ns.network')
     ## component-carrier.h (module 'lte'): ns3::ComponentCarrier [class]
-    module.add_class('ComponentCarrier', import_from_module='ns.lte', parent=root_module['ns3::Object'])
+    module.add_class('ComponentCarrier', parent=root_module['ns3::Object'], import_from_module='ns.lte')
     ## component-carrier.h (module 'lte'): ns3::ComponentCarrierBaseStation [class]
-    module.add_class('ComponentCarrierBaseStation', import_from_module='ns.lte', parent=root_module['ns3::ComponentCarrier'])
+    module.add_class('ComponentCarrierBaseStation', parent=root_module['ns3::ComponentCarrier'], import_from_module='ns.lte')
     ## component-carrier-enb.h (module 'lte'): ns3::ComponentCarrierEnb [class]
-    module.add_class('ComponentCarrierEnb', import_from_module='ns.lte', parent=root_module['ns3::ComponentCarrierBaseStation'])
+    module.add_class('ComponentCarrierEnb', parent=root_module['ns3::ComponentCarrierBaseStation'], import_from_module='ns.lte')
     ## component-carrier-ue.h (module 'lte'): ns3::ComponentCarrierUe [class]
-    module.add_class('ComponentCarrierUe', import_from_module='ns.lte', parent=root_module['ns3::ComponentCarrier'])
+    module.add_class('ComponentCarrierUe', parent=root_module['ns3::ComponentCarrier'], import_from_module='ns.lte')
     ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable [class]
-    module.add_class('ConstantRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ConstantRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## propagation-delay-model.h (module 'propagation'): ns3::ConstantSpeedPropagationDelayModel [class]
-    module.add_class('ConstantSpeedPropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationDelayModel'])
+    module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'], import_from_module='ns.propagation')
     ## data-rate.h (module 'network'): ns3::DataRateChecker [class]
-    module.add_class('DataRateChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('DataRateChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## data-rate.h (module 'network'): ns3::DataRateValue [class]
-    module.add_class('DataRateValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('DataRateValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable [class]
-    module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('DeterministicRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## device-energy-model.h (module 'energy'): ns3::DeviceEnergyModel [class]
-    module.add_class('DeviceEnergyModel', import_from_module='ns.energy', parent=root_module['ns3::Object'])
+    module.add_class('DeviceEnergyModel', parent=root_module['ns3::Object'], import_from_module='ns.energy')
     typehandlers.add_type_alias('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::DeviceEnergyModel::ChangeStateCallback')
     typehandlers.add_type_alias('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::DeviceEnergyModel::ChangeStateCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::DeviceEnergyModel::ChangeStateCallback&')
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
-    module.add_class('EmpiricalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('EmpiricalRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::EmptyAttributeAccessor [class]
-    module.add_class('EmptyAttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::AttributeAccessor'])
+    module.add_class('EmptyAttributeAccessor', parent=root_module['ns3::AttributeAccessor'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::EmptyAttributeChecker [class]
-    module.add_class('EmptyAttributeChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('EmptyAttributeChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
-    module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('EmptyAttributeValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ErlangRandomVariable [class]
-    module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ErlangRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## error-model.h (module 'network'): ns3::ErrorModel [class]
-    module.add_class('ErrorModel', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('ErrorModel', parent=root_module['ns3::Object'], import_from_module='ns.network')
     ## interference-helper.h (module 'wifi'): ns3::Event [class]
-    module.add_class('Event', import_from_module='ns.wifi', parent=root_module['ns3::SimpleRefCount< ns3::Event, ns3::empty, ns3::DefaultDeleter<ns3::Event> >'])
+    module.add_class('Event', parent=root_module['ns3::SimpleRefCount< ns3::Event, ns3::empty, ns3::DefaultDeleter<ns3::Event> >'], import_from_module='ns.wifi')
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
-    module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    module.add_class('EventImpl', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ExponentialRandomVariable [class]
-    module.add_class('ExponentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ExponentialRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## propagation-loss-model.h (module 'propagation'): ns3::FixedRssLossModel [class]
-    module.add_class('FixedRssLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('FixedRssLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel [class]
-    module.add_class('FriisPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('FriisPropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## random-variable-stream.h (module 'core'): ns3::GammaRandomVariable [class]
-    module.add_class('GammaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('GammaRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## ipv4.h (module 'internet'): ns3::Ipv4 [class]
-    module.add_class('Ipv4', import_from_module='ns.internet', parent=root_module['ns3::Object'])
+    module.add_class('Ipv4', parent=root_module['ns3::Object'], import_from_module='ns.internet')
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
-    module.add_class('Ipv4AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv4AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue [class]
-    module.add_class('Ipv4AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv4AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol [class]
-    module.add_class('Ipv4L3Protocol', import_from_module='ns.internet', parent=root_module['ns3::Ipv4'])
+    module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Ipv4'], import_from_module='ns.internet')
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol::DropReason [enumeration]
     module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT', 'DROP_DUPLICATE'], outer_class=root_module['ns3::Ipv4L3Protocol'], import_from_module='ns.internet')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )', 'ns3::Ipv4L3Protocol::SentTracedCallback')
@@ -957,15 +1215,15 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr< ns3::Ipv4 >, uint32_t )*', 'ns3::Ipv4L3Protocol::DropTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr< ns3::Ipv4 >, uint32_t )&', 'ns3::Ipv4L3Protocol::DropTracedCallback&')
     ## ipv4-address.h (module 'network'): ns3::Ipv4MaskChecker [class]
-    module.add_class('Ipv4MaskChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv4MaskChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue [class]
-    module.add_class('Ipv4MaskValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv4MaskValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## ipv4-route.h (module 'internet'): ns3::Ipv4MulticastRoute [class]
-    module.add_class('Ipv4MulticastRoute', import_from_module='ns.internet', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> >'])
+    module.add_class('Ipv4MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> >'], import_from_module='ns.internet')
     ## ipv4-route.h (module 'internet'): ns3::Ipv4Route [class]
-    module.add_class('Ipv4Route', import_from_module='ns.internet', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'])
+    module.add_class('Ipv4Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'], import_from_module='ns.internet')
     ## ipv4-routing-protocol.h (module 'internet'): ns3::Ipv4RoutingProtocol [class]
-    module.add_class('Ipv4RoutingProtocol', import_from_module='ns.internet', parent=root_module['ns3::Object'])
+    module.add_class('Ipv4RoutingProtocol', parent=root_module['ns3::Object'], import_from_module='ns.internet')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::Ipv4RoutingProtocol::UnicastForwardCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::Ipv4RoutingProtocol::UnicastForwardCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::Ipv4RoutingProtocol::UnicastForwardCallback&')
@@ -979,39 +1237,51 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::Ipv4RoutingProtocol::ErrorCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::Ipv4RoutingProtocol::ErrorCallback&')
     ## ipv6-address.h (module 'network'): ns3::Ipv6AddressChecker [class]
-    module.add_class('Ipv6AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv6AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6AddressValue [class]
-    module.add_class('Ipv6AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv6AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixChecker [class]
-    module.add_class('Ipv6PrefixChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv6PrefixChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue [class]
-    module.add_class('Ipv6PrefixValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv6PrefixValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## error-model.h (module 'network'): ns3::ListErrorModel [class]
-    module.add_class('ListErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
+    module.add_class('ListErrorModel', parent=root_module['ns3::ErrorModel'], import_from_module='ns.network')
     ## propagation-loss-model.h (module 'propagation'): ns3::LogDistancePropagationLossModel [class]
-    module.add_class('LogDistancePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('LogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## random-variable-stream.h (module 'core'): ns3::LogNormalRandomVariable [class]
-    module.add_class('LogNormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('LogNormalRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## lte-amc.h (module 'lte'): ns3::LteAmc [class]
-    module.add_class('LteAmc', import_from_module='ns.lte', parent=root_module['ns3::Object'])
+    module.add_class('LteAmc', parent=root_module['ns3::Object'], import_from_module='ns.lte')
     ## lte-amc.h (module 'lte'): ns3::LteAmc::AmcModel [enumeration]
-    module.add_enum('AmcModel', ['PiroEW2010', 'MiErrorModel'], outer_class=root_module['ns3::LteAmc'], import_from_module='ns.lte')
+    module.add_enum('AmcModel', ['PiroEW2010', 'MiErrorModel', 'NistErrorModel'], outer_class=root_module['ns3::LteAmc'], import_from_module='ns.lte')
+    ## lte-amc.h (module 'lte'): ns3::LteAmc::McsPrbInfo [struct]
+    module.add_class('McsPrbInfo', outer_class=root_module['ns3::LteAmc'], import_from_module='ns.lte')
     ## lte-control-messages.h (module 'lte'): ns3::LteControlMessage [class]
-    module.add_class('LteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::SimpleRefCount< ns3::LteControlMessage, ns3::empty, ns3::DefaultDeleter<ns3::LteControlMessage> >'])
+    module.add_class('LteControlMessage', parent=root_module['ns3::SimpleRefCount< ns3::LteControlMessage, ns3::empty, ns3::DefaultDeleter<ns3::LteControlMessage> >'], import_from_module='ns.lte')
     ## lte-control-messages.h (module 'lte'): ns3::LteControlMessage::MessageType [enumeration]
-    module.add_enum('MessageType', ['DL_DCI', 'UL_DCI', 'DL_CQI', 'UL_CQI', 'BSR', 'DL_HARQ', 'RACH_PREAMBLE', 'RAR', 'MIB', 'SIB1'], outer_class=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
+    module.add_enum('MessageType', ['DL_DCI', 'UL_DCI', 'DL_CQI', 'UL_CQI', 'BSR', 'DL_HARQ', 'RACH_PREAMBLE', 'RAR', 'MIB', 'SIB1', 'SL_DCI'], outer_class=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## lte-harq-phy.h (module 'lte'): ns3::LteHarqPhy [class]
-    module.add_class('LteHarqPhy', import_from_module='ns.lte', parent=root_module['ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> >'])
+    module.add_class('LteHarqPhy', parent=root_module['ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> >'], import_from_module='ns.lte')
     ## lte-interference.h (module 'lte'): ns3::LteInterference [class]
-    module.add_class('LteInterference', import_from_module='ns.lte', parent=root_module['ns3::Object'])
+    module.add_class('LteInterference', parent=root_module['ns3::Object'], import_from_module='ns.lte')
     ## lte-phy.h (module 'lte'): ns3::LtePhy [class]
-    module.add_class('LtePhy', import_from_module='ns.lte', parent=root_module['ns3::Object'])
+    module.add_class('LtePhy', parent=root_module['ns3::Object'], import_from_module='ns.lte')
+    ## lte-sl-harq-phy.h (module 'lte'): ns3::LteSlHarqPhy [class]
+    module.add_class('LteSlHarqPhy', parent=root_module['ns3::SimpleRefCount< ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteSlHarqPhy> >'], import_from_module='ns.lte')
+    ## lte-sl-interference.h (module 'lte'): ns3::LteSlInterference [class]
+    module.add_class('LteSlInterference', parent=root_module['ns3::Object'], import_from_module='ns.lte')
     ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy [class]
-    module.add_class('LteSpectrumPhy', import_from_module='ns.lte', parent=root_module['ns3::SpectrumPhy'])
+    module.add_class('LteSpectrumPhy', parent=root_module['ns3::SpectrumPhy'], import_from_module='ns.lte')
     ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy::State [enumeration]
     module.add_enum('State', ['IDLE', 'TX_DL_CTRL', 'TX_DATA', 'TX_UL_SRS', 'RX_DL_CTRL', 'RX_DATA', 'RX_UL_SRS'], outer_class=root_module['ns3::LteSpectrumPhy'], import_from_module='ns.lte')
+    typehandlers.add_type_alias('void ( * ) ( uint64_t )', 'ns3::LteSpectrumPhy::DropSlTbTracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( uint64_t )*', 'ns3::LteSpectrumPhy::DropSlTbTracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( uint64_t )&', 'ns3::LteSpectrumPhy::DropSlTbTracedCallback&')
+    typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::LteSpectrumPhy > )', 'ns3::LteSpectrumPhy::SlStartRxTracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::LteSpectrumPhy > )*', 'ns3::LteSpectrumPhy::SlStartRxTracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::LteSpectrumPhy > )&', 'ns3::LteSpectrumPhy::SlStartRxTracedCallback&')
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy [class]
-    module.add_class('LteUePhy', import_from_module='ns.lte', parent=root_module['ns3::LtePhy'])
+    module.add_class('LteUePhy', parent=root_module['ns3::LtePhy'], import_from_module='ns.lte')
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy::State [enumeration]
     module.add_enum('State', ['CELL_SEARCH', 'SYNCHRONIZED', 'NUM_STATES'], outer_class=root_module['ns3::LteUePhy'], import_from_module='ns.lte')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, ns3::LteUePhy::State, ns3::LteUePhy::State )', 'ns3::LteUePhy::StateTracedCallback')
@@ -1023,32 +1293,41 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double, double, bool, uint8_t )', 'ns3::LteUePhy::RsrpRsrqTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double, double, bool, uint8_t )*', 'ns3::LteUePhy::RsrpRsrqTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double, double, bool, uint8_t )&', 'ns3::LteUePhy::RsrpRsrqTracedCallback&')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, std::vector< int > const & )', 'ns3::LteUePhy::UlPhyResourceBlocksTracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, std::vector< int > const & )*', 'ns3::LteUePhy::UlPhyResourceBlocksTracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, std::vector< int > const & )&', 'ns3::LteUePhy::UlPhyResourceBlocksTracedCallback&')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )', 'ns3::LteUePhy::PowerSpectralDensityTracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )*', 'ns3::LteUePhy::PowerSpectralDensityTracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )&', 'ns3::LteUePhy::PowerSpectralDensityTracedCallback&')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, uint64_t, uint32_t, double )', 'ns3::LteUePhy::SdRsrpTracedCallback')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, uint64_t, uint32_t, double )*', 'ns3::LteUePhy::SdRsrpTracedCallback*')
+    typehandlers.add_type_alias('void ( * ) ( uint16_t, uint64_t, uint32_t, double )&', 'ns3::LteUePhy::SdRsrpTracedCallback&')
     ## lte-ue-power-control.h (module 'lte'): ns3::LteUePowerControl [class]
-    module.add_class('LteUePowerControl', import_from_module='ns.lte', parent=root_module['ns3::Object'])
+    module.add_class('LteUePowerControl', parent=root_module['ns3::Object'], import_from_module='ns.lte')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double )', 'ns3::LteUePowerControl::TxPowerTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double )*', 'ns3::LteUePowerControl::TxPowerTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double )&', 'ns3::LteUePowerControl::TxPowerTracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker [class]
-    module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Mac48AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
-    module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Mac48AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## mac64-address.h (module 'network'): ns3::Mac64AddressChecker [class]
-    module.add_class('Mac64AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Mac64AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## mac64-address.h (module 'network'): ns3::Mac64AddressValue [class]
-    module.add_class('Mac64AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Mac64AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## propagation-loss-model.h (module 'propagation'): ns3::MatrixPropagationLossModel [class]
-    module.add_class('MatrixPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('MatrixPropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## lte-control-messages.h (module 'lte'): ns3::MibLteControlMessage [class]
-    module.add_class('MibLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('MibLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
-    module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
+    module.add_class('MobilityModel', parent=root_module['ns3::Object'], import_from_module='ns.mobility')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )', 'ns3::MobilityModel::TracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )*', 'ns3::MobilityModel::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )&', 'ns3::MobilityModel::TracedCallback&')
     ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel [class]
-    module.add_class('NakagamiPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'], import_from_module='ns.propagation')
     ## net-device.h (module 'network'): ns3::NetDevice [class]
-    module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('NetDevice', parent=root_module['ns3::Object'], import_from_module='ns.network')
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
     typehandlers.add_type_alias('void ( * ) (  )', 'ns3::NetDevice::LinkChangeTracedCallback')
@@ -1061,9 +1340,9 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::NetDevice::PromiscReceiveCallback*')
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
-    module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
+    module.add_class('NixVector', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'], import_from_module='ns.network')
     ## node.h (module 'network'): ns3::Node [class]
-    module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('Node', parent=root_module['ns3::Object'], import_from_module='ns.network')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'ns3::Node::ProtocolHandler')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::Node::ProtocolHandler*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::Node::ProtocolHandler&')
@@ -1071,15 +1350,15 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::Node::DeviceAdditionListener*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
-    module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('NormalRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
-    module.add_class('ObjectFactoryChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('ObjectFactoryChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
-    module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('ObjectFactoryValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## output-stream-wrapper.h (module 'network'): ns3::OutputStreamWrapper [class]
-    module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
+    module.add_class('OutputStreamWrapper', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'], import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::Packet [class]
-    module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'], import_from_module='ns.network')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )', 'ns3::Packet::TracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )*', 'ns3::Packet::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )&', 'ns3::Packet::TracedCallback&')
@@ -1099,31 +1378,33 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', 'ns3::Packet::SinrTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', 'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
-    module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ParetoRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## pointer.h (module 'core'): ns3::PointerChecker [class]
-    module.add_class('PointerChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('PointerChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## pointer.h (module 'core'): ns3::PointerValue [class]
-    module.add_class('PointerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('PointerValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## lte-control-messages.h (module 'lte'): ns3::RachPreambleLteControlMessage [class]
-    module.add_class('RachPreambleLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('RachPreambleLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## lte-control-messages.h (module 'lte'): ns3::RarLteControlMessage [class]
-    module.add_class('RarLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('RarLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## lte-control-messages.h (module 'lte'): ns3::RarLteControlMessage::Rar [struct]
-    module.add_class('Rar', import_from_module='ns.lte', outer_class=root_module['ns3::RarLteControlMessage'])
+    module.add_class('Rar', outer_class=root_module['ns3::RarLteControlMessage'], import_from_module='ns.lte')
     ## error-model.h (module 'network'): ns3::RateErrorModel [class]
-    module.add_class('RateErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
+    module.add_class('RateErrorModel', parent=root_module['ns3::ErrorModel'], import_from_module='ns.network')
     ## error-model.h (module 'network'): ns3::RateErrorModel::ErrorUnit [enumeration]
     module.add_enum('ErrorUnit', ['ERROR_UNIT_BIT', 'ERROR_UNIT_BYTE', 'ERROR_UNIT_PACKET'], outer_class=root_module['ns3::RateErrorModel'], import_from_module='ns.network')
     ## error-model.h (module 'network'): ns3::ReceiveListErrorModel [class]
-    module.add_class('ReceiveListErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
+    module.add_class('ReceiveListErrorModel', parent=root_module['ns3::ErrorModel'], import_from_module='ns.network')
     ## rectangle.h (module 'mobility'): ns3::RectangleChecker [class]
-    module.add_class('RectangleChecker', import_from_module='ns.mobility', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('RectangleChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.mobility')
     ## rectangle.h (module 'mobility'): ns3::RectangleValue [class]
-    module.add_class('RectangleValue', import_from_module='ns.mobility', parent=root_module['ns3::AttributeValue'])
+    module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.mobility')
     ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage [class]
-    module.add_class('Sib1LteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('Sib1LteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
+    ## lte-control-messages.h (module 'lte'): ns3::SlDciLteControlMessage [class]
+    module.add_class('SlDciLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel [class]
-    module.add_class('SpectrumChannel', import_from_module='ns.spectrum', parent=root_module['ns3::Channel'])
+    module.add_class('SpectrumChannel', parent=root_module['ns3::Channel'], import_from_module='ns.spectrum')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumPhy const >, ns3::Ptr< ns3::SpectrumPhy const >, double )', 'ns3::SpectrumChannel::LossTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumPhy const >, ns3::Ptr< ns3::SpectrumPhy const >, double )*', 'ns3::SpectrumChannel::LossTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumPhy const >, ns3::Ptr< ns3::SpectrumPhy const >, double )&', 'ns3::SpectrumChannel::LossTracedCallback&')
@@ -1134,131 +1415,141 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumSignalParameters > )*', 'ns3::SpectrumChannel::SignalParametersTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumSignalParameters > )&', 'ns3::SpectrumChannel::SignalParametersTracedCallback&')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
-    module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
-    module.add_class('TypeIdChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('TypeIdChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeIdValue [class]
-    module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('TypeIdValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## uan-tx-mode.h (module 'uan'): ns3::UanModesListChecker [class]
-    module.add_class('UanModesListChecker', import_from_module='ns.uan', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('UanModesListChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.uan')
     ## uan-tx-mode.h (module 'uan'): ns3::UanModesListValue [class]
-    module.add_class('UanModesListValue', import_from_module='ns.uan', parent=root_module['ns3::AttributeValue'])
+    module.add_class('UanModesListValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.uan')
     ## uinteger.h (module 'core'): ns3::UintegerValue [class]
-    module.add_class('UintegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('UintegerValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## lte-control-messages.h (module 'lte'): ns3::UlDciLteControlMessage [class]
-    module.add_class('UlDciLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('UlDciLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## vector.h (module 'core'): ns3::Vector2DChecker [class]
-    module.add_class('Vector2DChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Vector2DChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## vector.h (module 'core'): ns3::Vector2DValue [class]
-    module.add_class('Vector2DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Vector2DValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## vector.h (module 'core'): ns3::Vector3DChecker [class]
-    module.add_class('Vector3DChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
-    module.add_class('Vector3DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## wifi-mode.h (module 'wifi'): ns3::WifiModeChecker [class]
-    module.add_class('WifiModeChecker', import_from_module='ns.wifi', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('WifiModeChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.wifi')
     ## wifi-mode.h (module 'wifi'): ns3::WifiModeValue [class]
-    module.add_class('WifiModeValue', import_from_module='ns.wifi', parent=root_module['ns3::AttributeValue'])
+    module.add_class('WifiModeValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.wifi')
     ## address.h (module 'network'): ns3::AddressChecker [class]
-    module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## address.h (module 'network'): ns3::AddressValue [class]
-    module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## error-model.h (module 'network'): ns3::BinaryErrorModel [class]
-    module.add_class('BinaryErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
+    module.add_class('BinaryErrorModel', parent=root_module['ns3::ErrorModel'], import_from_module='ns.network')
     ## lte-control-messages.h (module 'lte'): ns3::BsrLteControlMessage [class]
-    module.add_class('BsrLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('BsrLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## error-model.h (module 'network'): ns3::BurstErrorModel [class]
-    module.add_class('BurstErrorModel', import_from_module='ns.network', parent=root_module['ns3::ErrorModel'])
+    module.add_class('BurstErrorModel', parent=root_module['ns3::ErrorModel'], import_from_module='ns.network')
     ## callback.h (module 'core'): ns3::CallbackImpl<bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['bool', 'ns3::Ptr<ns3::Socket>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['bool', 'ns3::Ptr<ns3::Socket>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Ipv4Header &, ns3::Ptr<const ns3::Packet>, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr<ns3::Ipv4>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'const ns3::Ipv4Header &', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ipv4L3Protocol::DropReason', 'ns3::Ptr<ns3::Ipv4>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'const ns3::Ipv4Header &', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ipv4L3Protocol::DropReason', 'ns3::Ptr<ns3::Ipv4>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Ipv4Header &, ns3::Ptr<const ns3::Packet>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'const ns3::Ipv4Header &', 'ns3::Ptr<const ns3::Packet>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'const ns3::Ipv4Header &', 'ns3::Ptr<const ns3::Packet>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::HePreambleParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::HePreambleParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::HePreambleParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::PhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::PhyReceptionStatParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::PhyReceptionStatParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::PhyTransmissionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::PhyTransmissionStatParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::PhyTransmissionStatParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::Ptr<const ns3::MobilityModel>', 'double', 'double', 'double', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::Ptr<const ns3::MobilityModel>', 'double', 'double', 'double', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::UanTxMode', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::UanTxMode', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::WifiMode, ns3::WifiPreamble, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::WifiMode', 'ns3::WifiPreamble', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::WifiMode', 'ns3::WifiPreamble', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::Ptr<ns3::Ipv4>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ptr<ns3::Ipv4>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ptr<ns3::Ipv4>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::WifiMode, ns3::WifiPreamble, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::WifiMode', 'ns3::WifiPreamble', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::WifiMode', 'ns3::WifiPreamble', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::WifiPhyRxfailureReason, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::WifiPhyRxfailureReason', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::WifiPhyRxfailureReason', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, unsigned short, ns3::WifiTxVector, ns3::MpduInfo, ns3::SignalNoiseDbm, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'ns3::WifiTxVector', 'ns3::MpduInfo', 'ns3::SignalNoiseDbm', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'ns3::WifiTxVector', 'ns3::MpduInfo', 'ns3::SignalNoiseDbm', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, unsigned short, ns3::WifiTxVector, ns3::MpduInfo, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'ns3::WifiTxVector', 'ns3::MpduInfo', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'ns3::WifiTxVector', 'ns3::MpduInfo', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::PacketBurst>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::PacketBurst>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::PacketBurst>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::SpectrumPhy>, ns3::Ptr<const ns3::SpectrumPhy>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::SpectrumPhy>', 'ns3::Ptr<const ns3::SpectrumPhy>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::SpectrumPhy>', 'ns3::Ptr<const ns3::SpectrumPhy>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::WifiPsdu>, ns3::WifiTxVector, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::WifiPsdu>', 'ns3::WifiTxVector', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::WifiPsdu>', 'ns3::WifiTxVector', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::LteSpectrumPhy>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::Packet>, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::UanTxMode', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::UanTxMode', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::SpectrumSignalParameters>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::SpectrumSignalParameters>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::SpectrumSignalParameters>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::WifiPsdu>, double, ns3::WifiTxVector, std::vector<bool, std::allocator<bool> >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::WifiPsdu>', 'double', 'ns3::WifiTxVector', 'std::vector<bool, std::allocator<bool> >', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::WifiPsdu>', 'double', 'ns3::WifiTxVector', 'std::vector<bool, std::allocator<bool> >', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::WifiPsdu>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::WifiPsdu>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::WifiPsdu>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::SlPhyReceptionStatParameters', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Time, ns3::Time, WifiPhyState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Time', 'ns3::Time', 'WifiPhyState', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Time', 'ns3::Time', 'WifiPhyState', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::WifiTxVector, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::WifiTxVector', 'ns3::Time', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::WifiTxVector', 'ns3::Time', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned int', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'const std::vector<int, std::allocator<int> > &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, ns3::Ptr<ns3::SpectrumValue>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'ns3::Ptr<ns3::SpectrumValue>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'ns3::Ptr<ns3::SpectrumValue>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned long', 'unsigned int', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, double, double, bool, unsigned char, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'double', 'bool', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'double', 'bool', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, double, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'double', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'double', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'double', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, ns3::LteUePhy::State, ns3::LteUePhy::State, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::LteUePhy::State', 'ns3::LteUePhy::State', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::LteUePhy::State', 'ns3::LteUePhy::State', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## lte-control-messages.h (module 'lte'): ns3::DlCqiLteControlMessage [class]
-    module.add_class('DlCqiLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('DlCqiLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## lte-control-messages.h (module 'lte'): ns3::DlDciLteControlMessage [class]
-    module.add_class('DlDciLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('DlDciLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## lte-control-messages.h (module 'lte'): ns3::DlHarqFeedbackLteControlMessage [class]
-    module.add_class('DlHarqFeedbackLteControlMessage', import_from_module='ns.lte', parent=root_module['ns3::LteControlMessage'])
+    module.add_class('DlHarqFeedbackLteControlMessage', parent=root_module['ns3::LteControlMessage'], import_from_module='ns.lte')
     ## lte-enb-phy.h (module 'lte'): ns3::LteEnbPhy [class]
-    module.add_class('LteEnbPhy', import_from_module='ns.lte', parent=root_module['ns3::LtePhy'])
+    module.add_class('LteEnbPhy', parent=root_module['ns3::LtePhy'], import_from_module='ns.lte')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double, uint8_t )', 'ns3::LteEnbPhy::ReportUeSinrTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double, uint8_t )*', 'ns3::LteEnbPhy::ReportUeSinrTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, uint16_t, double, uint8_t )&', 'ns3::LteEnbPhy::ReportUeSinrTracedCallback&')
@@ -1266,11 +1557,11 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )*', 'ns3::LteEnbPhy::ReportInterferenceTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )&', 'ns3::LteEnbPhy::ReportInterferenceTracedCallback&')
     ## lte-net-device.h (module 'lte'): ns3::LteNetDevice [class]
-    module.add_class('LteNetDevice', import_from_module='ns.lte', parent=root_module['ns3::NetDevice'])
+    module.add_class('LteNetDevice', parent=root_module['ns3::NetDevice'], import_from_module='ns.lte')
     ## lte-ue-net-device.h (module 'lte'): ns3::LteUeNetDevice [class]
-    module.add_class('LteUeNetDevice', import_from_module='ns.lte', parent=root_module['ns3::LteNetDevice'])
+    module.add_class('LteUeNetDevice', parent=root_module['ns3::LteNetDevice'], import_from_module='ns.lte')
     ## lte-enb-net-device.h (module 'lte'): ns3::LteEnbNetDevice [class]
-    module.add_class('LteEnbNetDevice', import_from_module='ns.lte', parent=root_module['ns3::LteNetDevice'])
+    module.add_class('LteEnbNetDevice', parent=root_module['ns3::LteNetDevice'], import_from_module='ns.lte')
     module.add_container('std::vector< ns3::CeBitmap_e >', 'ns3::CeBitmap_e', container_type='vector')
     module.add_container('std::vector< std::vector< ns3::RlcPduListElement_s > >', 'std::vector< ns3::RlcPduListElement_s >', container_type='vector')
     module.add_container('std::vector< unsigned char >', 'unsigned char', container_type='vector')
@@ -1289,7 +1580,9 @@ def register_types(module):
     module.add_container('std::vector< ns3::BuildBroadcastListElement_s >', 'ns3::BuildBroadcastListElement_s', container_type='vector')
     module.add_container('std::vector< ns3::UlDciListElement_s >', 'ns3::UlDciListElement_s', container_type='vector')
     module.add_container('std::vector< ns3::PhichListElement_s >', 'ns3::PhichListElement_s', container_type='vector')
+    module.add_container('std::vector< ns3::SlDciListElement_s >', 'ns3::SlDciListElement_s', container_type='vector')
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
+    module.add_container('ns3::HarqProcessInfoList_t', 'ns3::HarqProcessInfoElement_t', container_type='vector')
     module.add_container('std::list< ns3::LteRrcSap::SrbToAddMod >', 'ns3::LteRrcSap::SrbToAddMod', container_type='list')
     module.add_container('std::list< ns3::LteRrcSap::DrbToAddMod >', 'ns3::LteRrcSap::DrbToAddMod', container_type='list')
     module.add_container('std::list< unsigned char >', 'unsigned char', container_type='list')
@@ -1303,22 +1596,32 @@ def register_types(module):
     module.add_container('std::list< ns3::LteRrcSap::MeasResultBestNeighCell >', 'ns3::LteRrcSap::MeasResultBestNeighCell', container_type='list')
     module.add_container('std::list< ns3::LteRrcSap::MeasResultEutra >', 'ns3::LteRrcSap::MeasResultEutra', container_type='list')
     module.add_container('std::list< ns3::LteRrcSap::SCellToAddMod >', 'ns3::LteRrcSap::SCellToAddMod', container_type='list')
+    module.add_container('std::list< ns3::Ptr< ns3::SidelinkRxDiscResourcePool > >', 'ns3::Ptr< ns3::SidelinkRxDiscResourcePool >', container_type='list')
+    module.add_container('std::list< ns3::Ptr< ns3::SidelinkRxCommResourcePool > >', 'ns3::Ptr< ns3::SidelinkRxCommResourcePool >', container_type='list')
     module.add_container('std::vector< ns3::LteUeCphySapUser::UeMeasurementsElement >', 'ns3::LteUeCphySapUser::UeMeasurementsElement', container_type='vector')
+    module.add_container('std::vector< ns3::LteUeCphySapUser::UeSlssMeasurementsElement >', 'ns3::LteUeCphySapUser::UeSlssMeasurementsElement', container_type='vector')
+    module.add_container('std::vector< ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement >', 'ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement', container_type='vector')
     module.add_container('std::vector< ns3::HigherLayerSelected_s >', 'ns3::HigherLayerSelected_s', container_type='vector')
     module.add_container('std::vector< ns3::SiMessageListElement_s >', 'ns3::SiMessageListElement_s', container_type='vector')
+    module.add_container('std::vector< int >', 'int', container_type='vector')
     module.add_container('std::vector< ns3::Tap >', 'ns3::Tap', container_type='vector')
     module.add_container('std::vector< std::complex< double > >', 'std::complex< double >', container_type='vector')
     module.add_container('std::vector< double >', 'double', container_type='vector')
-    module.add_container('std::vector< int >', 'int', container_type='vector')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
+    module.add_container('std::list< ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo >', 'ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo', container_type='list')
+    module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
+    module.add_container('std::vector< std::vector< unsigned char > >', 'std::vector< unsigned char >', container_type='vector')
+    module.add_container('std::list< ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo >', 'ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo', container_type='list')
+    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type='vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type='vector')
     module.add_container('std::list< ns3::UanPacketArrival >', 'ns3::UanPacketArrival', container_type='list')
     module.add_container('std::list< ns3::Ptr< ns3::UanPhy > >', 'ns3::Ptr< ns3::UanPhy >', container_type='list')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type='map')
-    module.add_container('ns3::HarqProcessInfoList_t', 'ns3::HarqProcessInfoElement_t', container_type='vector')
+    module.add_container('std::vector< ns3::LteAmc::McsPrbInfo >', 'ns3::LteAmc::McsPrbInfo', container_type='vector')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type='list')
+    module.add_container('std::vector< ns3::SpectrumValue >', 'ns3::SpectrumValue', container_type='vector')
     module.add_container('std::list< ns3::UlDciLteControlMessage >', 'ns3::UlDciLteControlMessage', container_type='list')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierUe > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierUe >'), container_type='map')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierBaseStation > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierBaseStation >'), container_type='map')
@@ -1337,12 +1640,21 @@ def register_types(module):
     typehandlers.add_type_alias('std::map< ns3::TbId_t, ns3::tbInfo_t >', 'ns3::expectedTbs_t')
     typehandlers.add_type_alias('std::map< ns3::TbId_t, ns3::tbInfo_t >*', 'ns3::expectedTbs_t*')
     typehandlers.add_type_alias('std::map< ns3::TbId_t, ns3::tbInfo_t >&', 'ns3::expectedTbs_t&')
+    typehandlers.add_type_alias('std::map< ns3::SlTbId_t, ns3::SltbInfo_t >', 'ns3::expectedSlTbs_t')
+    typehandlers.add_type_alias('std::map< ns3::SlTbId_t, ns3::SltbInfo_t >*', 'ns3::expectedSlTbs_t*')
+    typehandlers.add_type_alias('std::map< ns3::SlTbId_t, ns3::SltbInfo_t >&', 'ns3::expectedSlTbs_t&')
+    typehandlers.add_type_alias('std::map< ns3::SlDiscTbId_t, ns3::SlDisctbInfo_t >', 'ns3::expectedDiscTbs_t')
+    typehandlers.add_type_alias('std::map< ns3::SlDiscTbId_t, ns3::SlDisctbInfo_t >*', 'ns3::expectedDiscTbs_t*')
+    typehandlers.add_type_alias('std::map< ns3::SlDiscTbId_t, ns3::SlDisctbInfo_t >&', 'ns3::expectedDiscTbs_t&')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyRxDataEndErrorCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyRxDataEndErrorCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyRxDataEndErrorCallback&')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyRxDataEndOkCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyRxDataEndOkCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyRxDataEndOkCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyRxPsbchEndOkCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyRxPsbchEndOkCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyRxPsbchEndOkCallback&')
     typehandlers.add_type_alias('ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyRxCtrlEndOkCallback')
     typehandlers.add_type_alias('ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyRxCtrlEndOkCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyRxCtrlEndOkCallback&')
@@ -1358,6 +1670,12 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< void, ns3::UlInfoListElement_s, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyUlHarqFeedbackCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::UlInfoListElement_s, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyUlHarqFeedbackCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::UlInfoListElement_s, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyUlHarqFeedbackCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, unsigned short, ns3::Ptr< ns3::SpectrumValue >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyRxSlssCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, unsigned short, ns3::Ptr< ns3::SpectrumValue >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyRxSlssCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, unsigned short, ns3::Ptr< ns3::SpectrumValue >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyRxSlssCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ptr< ns3::SpectrumValue >, std::vector< int, std::allocator< int > > const, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LtePhyRxPsdchSdRsrpCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ptr< ns3::SpectrumValue >, std::vector< int, std::allocator< int > > const, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LtePhyRxPsdchSdRsrpCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ptr< ns3::SpectrumValue >, std::vector< int, std::allocator< int > > const, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LtePhyRxPsdchSdRsrpCallback&')
     typehandlers.add_type_alias('std::vector< ns3::HarqProcessInfoElement_t >', 'ns3::HarqProcessInfoList_t')
     typehandlers.add_type_alias('std::vector< ns3::HarqProcessInfoElement_t >*', 'ns3::HarqProcessInfoList_t*')
     typehandlers.add_type_alias('std::vector< ns3::HarqProcessInfoElement_t >&', 'ns3::HarqProcessInfoList_t&')
@@ -1453,7 +1771,7 @@ def register_types_ns3_Hash(module):
     root_module = module.get_root()
     
     ## hash-function.h (module 'core'): ns3::Hash::Implementation [class]
-    module.add_class('Implementation', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
+    module.add_class('Implementation', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'], import_from_module='ns.core')
     typehandlers.add_type_alias('uint32_t ( * ) ( char const *, std::size_t const )', 'ns3::Hash::Hash32Function_ptr')
     typehandlers.add_type_alias('uint32_t ( * ) ( char const *, std::size_t const )*', 'ns3::Hash::Hash32Function_ptr*')
     typehandlers.add_type_alias('uint32_t ( * ) ( char const *, std::size_t const )&', 'ns3::Hash::Hash32Function_ptr&')
@@ -1471,13 +1789,13 @@ def register_types_ns3_Hash_Function(module):
     root_module = module.get_root()
     
     ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a [class]
-    module.add_class('Fnv1a', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Fnv1a', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32 [class]
-    module.add_class('Hash32', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Hash32', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64 [class]
-    module.add_class('Hash64', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Hash64', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3 [class]
-    module.add_class('Murmur3', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Murmur3', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
 
 def register_types_ns3_TracedValueCallback(module):
     root_module = module.get_root()
@@ -1522,6 +1840,7 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Hash::Implementation >'])
     register_Ns3DefaultDeleter__Ns3LteControlMessage_methods(root_module, root_module['ns3::DefaultDeleter< ns3::LteControlMessage >'])
     register_Ns3DefaultDeleter__Ns3LteHarqPhy_methods(root_module, root_module['ns3::DefaultDeleter< ns3::LteHarqPhy >'])
+    register_Ns3DefaultDeleter__Ns3LteSlHarqPhy_methods(root_module, root_module['ns3::DefaultDeleter< ns3::LteSlHarqPhy >'])
     register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, root_module['ns3::DefaultDeleter< ns3::NixVector >'])
     register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Packet >'])
     register_Ns3DefaultDeleter__Ns3SpectrumModel_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumModel >'])
@@ -1573,6 +1892,7 @@ def register_methods(root_module):
     register_Ns3LteEnbPhySapUser_methods(root_module, root_module['ns3::LteEnbPhySapUser'])
     register_Ns3LteFfConverter_methods(root_module, root_module['ns3::LteFfConverter'])
     register_Ns3LteFlowId_t_methods(root_module, root_module['ns3::LteFlowId_t'])
+    register_Ns3LteNistErrorModel_methods(root_module, root_module['ns3::LteNistErrorModel'])
     register_Ns3LteRrcSap_methods(root_module, root_module['ns3::LteRrcSap'])
     register_Ns3LteRrcSapAntennaInfoCommon_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoCommon'])
     register_Ns3LteRrcSapAntennaInfoDedicated_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoDedicated'])
@@ -1591,6 +1911,7 @@ def register_methods(root_module):
     register_Ns3LteRrcSapHandoverPreparationInfo_methods(root_module, root_module['ns3::LteRrcSap::HandoverPreparationInfo'])
     register_Ns3LteRrcSapLogicalChannelConfig_methods(root_module, root_module['ns3::LteRrcSap::LogicalChannelConfig'])
     register_Ns3LteRrcSapMasterInformationBlock_methods(root_module, root_module['ns3::LteRrcSap::MasterInformationBlock'])
+    register_Ns3LteRrcSapMasterInformationBlockSL_methods(root_module, root_module['ns3::LteRrcSap::MasterInformationBlockSL'])
     register_Ns3LteRrcSapMeasConfig_methods(root_module, root_module['ns3::LteRrcSap::MeasConfig'])
     register_Ns3LteRrcSapMeasGapConfig_methods(root_module, root_module['ns3::LteRrcSap::MeasGapConfig'])
     register_Ns3LteRrcSapMeasIdToAddMod_methods(root_module, root_module['ns3::LteRrcSap::MeasIdToAddMod'])
@@ -1608,10 +1929,14 @@ def register_methods(root_module):
     register_Ns3LteRrcSapNonUlConfiguration_methods(root_module, root_module['ns3::LteRrcSap::NonUlConfiguration'])
     register_Ns3LteRrcSapPdschConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::PdschConfigCommon'])
     register_Ns3LteRrcSapPdschConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::PdschConfigDedicated'])
+    register_Ns3LteRrcSapPeriodicBsrTimer_methods(root_module, root_module['ns3::LteRrcSap::PeriodicBsrTimer'])
     register_Ns3LteRrcSapPhysCellIdRange_methods(root_module, root_module['ns3::LteRrcSap::PhysCellIdRange'])
     register_Ns3LteRrcSapPhysicalConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::PhysicalConfigDedicated'])
     register_Ns3LteRrcSapPhysicalConfigDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::PhysicalConfigDedicatedSCell'])
     register_Ns3LteRrcSapPlmnIdentityInfo_methods(root_module, root_module['ns3::LteRrcSap::PlmnIdentityInfo'])
+    register_Ns3LteRrcSapPlmnIdentityList_methods(root_module, root_module['ns3::LteRrcSap::PlmnIdentityList'])
+    register_Ns3LteRrcSapPoolSelection_methods(root_module, root_module['ns3::LteRrcSap::PoolSelection'])
+    register_Ns3LteRrcSapPoolSelectionRsrpBased_methods(root_module, root_module['ns3::LteRrcSap::PoolSelectionRsrpBased'])
     register_Ns3LteRrcSapPrachConfigSCell_methods(root_module, root_module['ns3::LteRrcSap::PrachConfigSCell'])
     register_Ns3LteRrcSapPreambleInfo_methods(root_module, root_module['ns3::LteRrcSap::PreambleInfo'])
     register_Ns3LteRrcSapPuschConfigDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::PuschConfigDedicatedSCell'])
@@ -1627,6 +1952,7 @@ def register_methods(root_module):
     register_Ns3LteRrcSapReestabUeIdentity_methods(root_module, root_module['ns3::LteRrcSap::ReestabUeIdentity'])
     register_Ns3LteRrcSapReportConfigEutra_methods(root_module, root_module['ns3::LteRrcSap::ReportConfigEutra'])
     register_Ns3LteRrcSapReportConfigToAddMod_methods(root_module, root_module['ns3::LteRrcSap::ReportConfigToAddMod'])
+    register_Ns3LteRrcSapRetxBsrTimer_methods(root_module, root_module['ns3::LteRrcSap::RetxBsrTimer'])
     register_Ns3LteRrcSapRlcConfig_methods(root_module, root_module['ns3::LteRrcSap::RlcConfig'])
     register_Ns3LteRrcSapRrcConnectionReconfiguration_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionReconfiguration'])
     register_Ns3LteRrcSapRrcConnectionReconfigurationCompleted_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionReconfigurationCompleted'])
@@ -1640,25 +1966,96 @@ def register_methods(root_module):
     register_Ns3LteRrcSapRrcConnectionSetup_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSetup'])
     register_Ns3LteRrcSapRrcConnectionSetupCompleted_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSetupCompleted'])
     register_Ns3LteRrcSapSCellToAddMod_methods(root_module, root_module['ns3::LteRrcSap::SCellToAddMod'])
+    register_Ns3LteRrcSapSib18CommConfig_methods(root_module, root_module['ns3::LteRrcSap::Sib18CommConfig'])
+    register_Ns3LteRrcSapSib19DiscConfig_methods(root_module, root_module['ns3::LteRrcSap::Sib19DiscConfig'])
+    register_Ns3LteRrcSapSib19DiscConfigRelay_methods(root_module, root_module['ns3::LteRrcSap::Sib19DiscConfigRelay'])
+    register_Ns3LteRrcSapSidelinkUeInformation_methods(root_module, root_module['ns3::LteRrcSap::SidelinkUeInformation'])
+    register_Ns3LteRrcSapSlCarrierFreqInfoList_methods(root_module, root_module['ns3::LteRrcSap::SlCarrierFreqInfoList'])
+    register_Ns3LteRrcSapSlCommConfig_methods(root_module, root_module['ns3::LteRrcSap::SlCommConfig'])
+    register_Ns3LteRrcSapSlCommConfigScheduled_methods(root_module, root_module['ns3::LteRrcSap::SlCommConfigScheduled'])
+    register_Ns3LteRrcSapSlCommConfigUeSelected_methods(root_module, root_module['ns3::LteRrcSap::SlCommConfigUeSelected'])
+    register_Ns3LteRrcSapSlCommResourcePool_methods(root_module, root_module['ns3::LteRrcSap::SlCommResourcePool'])
+    register_Ns3LteRrcSapSlCommResourcePoolTxParameters_methods(root_module, root_module['ns3::LteRrcSap::SlCommResourcePool::TxParameters'])
+    register_Ns3LteRrcSapSlCommResourcePoolUeSelectedResourceConfig_methods(root_module, root_module['ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig'])
+    register_Ns3LteRrcSapSlCommRxPoolList_methods(root_module, root_module['ns3::LteRrcSap::SlCommRxPoolList'])
+    register_Ns3LteRrcSapSlCommTxPoolList_methods(root_module, root_module['ns3::LteRrcSap::SlCommTxPoolList'])
+    register_Ns3LteRrcSapSlCommTxPoolToAddMod_methods(root_module, root_module['ns3::LteRrcSap::SlCommTxPoolToAddMod'])
+    register_Ns3LteRrcSapSlCommTxPoolToAddModList_methods(root_module, root_module['ns3::LteRrcSap::SlCommTxPoolToAddModList'])
+    register_Ns3LteRrcSapSlCommTxResourceReq_methods(root_module, root_module['ns3::LteRrcSap::SlCommTxResourceReq'])
+    register_Ns3LteRrcSapSlCommTxResourcesSetup_methods(root_module, root_module['ns3::LteRrcSap::SlCommTxResourcesSetup'])
+    register_Ns3LteRrcSapSlCpLen_methods(root_module, root_module['ns3::LteRrcSap::SlCpLen'])
+    register_Ns3LteRrcSapSlDestinationInfoList_methods(root_module, root_module['ns3::LteRrcSap::SlDestinationInfoList'])
+    register_Ns3LteRrcSapSlDiscConfig_methods(root_module, root_module['ns3::LteRrcSap::SlDiscConfig'])
+    register_Ns3LteRrcSapSlDiscConfigRelayUe_methods(root_module, root_module['ns3::LteRrcSap::SlDiscConfigRelayUe'])
+    register_Ns3LteRrcSapSlDiscConfigRemoteUe_methods(root_module, root_module['ns3::LteRrcSap::SlDiscConfigRemoteUe'])
+    register_Ns3LteRrcSapSlDiscConfigScheduled_methods(root_module, root_module['ns3::LteRrcSap::SlDiscConfigScheduled'])
+    register_Ns3LteRrcSapSlDiscConfigUeSelected_methods(root_module, root_module['ns3::LteRrcSap::SlDiscConfigUeSelected'])
+    register_Ns3LteRrcSapSlDiscResourcePool_methods(root_module, root_module['ns3::LteRrcSap::SlDiscResourcePool'])
+    register_Ns3LteRrcSapSlDiscResourcePoolRxParameters_methods(root_module, root_module['ns3::LteRrcSap::SlDiscResourcePool::RxParameters'])
+    register_Ns3LteRrcSapSlDiscResourcePoolRxParametersTddConfig_methods(root_module, root_module['ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig'])
+    register_Ns3LteRrcSapSlDiscResourcePoolTxParameters_methods(root_module, root_module['ns3::LteRrcSap::SlDiscResourcePool::TxParameters'])
+    register_Ns3LteRrcSapSlDiscResourcePoolTxParametersUeSelectedResourceConfig_methods(root_module, root_module['ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig'])
+    register_Ns3LteRrcSapSlDiscRxPoolList_methods(root_module, root_module['ns3::LteRrcSap::SlDiscRxPoolList'])
+    register_Ns3LteRrcSapSlDiscTxPoolList_methods(root_module, root_module['ns3::LteRrcSap::SlDiscTxPoolList'])
+    register_Ns3LteRrcSapSlDiscTxPoolToAddMod_methods(root_module, root_module['ns3::LteRrcSap::SlDiscTxPoolToAddMod'])
+    register_Ns3LteRrcSapSlDiscTxPoolToAddModList_methods(root_module, root_module['ns3::LteRrcSap::SlDiscTxPoolToAddModList'])
+    register_Ns3LteRrcSapSlDiscTxPowerInfo_methods(root_module, root_module['ns3::LteRrcSap::SlDiscTxPowerInfo'])
+    register_Ns3LteRrcSapSlDiscTxPowerInfoList_methods(root_module, root_module['ns3::LteRrcSap::SlDiscTxPowerInfoList'])
+    register_Ns3LteRrcSapSlDiscTxResourcesSetup_methods(root_module, root_module['ns3::LteRrcSap::SlDiscTxResourcesSetup'])
+    register_Ns3LteRrcSapSlHoppingConfigComm_methods(root_module, root_module['ns3::LteRrcSap::SlHoppingConfigComm'])
+    register_Ns3LteRrcSapSlHoppingConfigDisc_methods(root_module, root_module['ns3::LteRrcSap::SlHoppingConfigDisc'])
+    register_Ns3LteRrcSapSlMacMainConfigSl_methods(root_module, root_module['ns3::LteRrcSap::SlMacMainConfigSl'])
+    register_Ns3LteRrcSapSlOffsetIndicator_methods(root_module, root_module['ns3::LteRrcSap::SlOffsetIndicator'])
+    register_Ns3LteRrcSapSlPeriodComm_methods(root_module, root_module['ns3::LteRrcSap::SlPeriodComm'])
+    register_Ns3LteRrcSapSlPeriodDisc_methods(root_module, root_module['ns3::LteRrcSap::SlPeriodDisc'])
+    register_Ns3LteRrcSapSlPreconfigCommPool_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigCommPool'])
+    register_Ns3LteRrcSapSlPreconfigCommPoolList_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigCommPoolList'])
+    register_Ns3LteRrcSapSlPreconfigDiscPool_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigDiscPool'])
+    register_Ns3LteRrcSapSlPreconfigDiscPoolTxParameters_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters'])
+    register_Ns3LteRrcSapSlPreconfigDiscPoolList_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigDiscPoolList'])
+    register_Ns3LteRrcSapSlPreconfigGeneral_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigGeneral'])
+    register_Ns3LteRrcSapSlPreconfigRelay_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigRelay'])
+    register_Ns3LteRrcSapSlPreconfigSync_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfigSync'])
+    register_Ns3LteRrcSapSlPreconfiguration_methods(root_module, root_module['ns3::LteRrcSap::SlPreconfiguration'])
+    register_Ns3LteRrcSapSlReselectionInfoRelay_methods(root_module, root_module['ns3::LteRrcSap::SlReselectionInfoRelay'])
+    register_Ns3LteRrcSapSlSyncConfigList_methods(root_module, root_module['ns3::LteRrcSap::SlSyncConfigList'])
+    register_Ns3LteRrcSapSlTfIndexPair_methods(root_module, root_module['ns3::LteRrcSap::SlTfIndexPair'])
+    register_Ns3LteRrcSapSlTfIndexPairList_methods(root_module, root_module['ns3::LteRrcSap::SlTfIndexPairList'])
+    register_Ns3LteRrcSapSlTfResourceConfig_methods(root_module, root_module['ns3::LteRrcSap::SlTfResourceConfig'])
+    register_Ns3LteRrcSapSlTrptSubset_methods(root_module, root_module['ns3::LteRrcSap::SlTrptSubset'])
+    register_Ns3LteRrcSapSlTxParameters_methods(root_module, root_module['ns3::LteRrcSap::SlTxParameters'])
+    register_Ns3LteRrcSapSlTxPoolToReleaseList_methods(root_module, root_module['ns3::LteRrcSap::SlTxPoolToReleaseList'])
     register_Ns3LteRrcSapSoundingRsUlConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::SoundingRsUlConfigCommon'])
     register_Ns3LteRrcSapSoundingRsUlConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::SoundingRsUlConfigDedicated'])
+    register_Ns3LteRrcSapSpecialSubframePatterns_methods(root_module, root_module['ns3::LteRrcSap::SpecialSubframePatterns'])
     register_Ns3LteRrcSapSpeedStatePars_methods(root_module, root_module['ns3::LteRrcSap::SpeedStatePars'])
     register_Ns3LteRrcSapSpeedStateScaleFactors_methods(root_module, root_module['ns3::LteRrcSap::SpeedStateScaleFactors'])
     register_Ns3LteRrcSapSrbToAddMod_methods(root_module, root_module['ns3::LteRrcSap::SrbToAddMod'])
+    register_Ns3LteRrcSapSubframeAssignment_methods(root_module, root_module['ns3::LteRrcSap::SubframeAssignment'])
+    register_Ns3LteRrcSapSubframeBitmapSl_methods(root_module, root_module['ns3::LteRrcSap::SubframeBitmapSl'])
     register_Ns3LteRrcSapSystemInformation_methods(root_module, root_module['ns3::LteRrcSap::SystemInformation'])
     register_Ns3LteRrcSapSystemInformationBlockType1_methods(root_module, root_module['ns3::LteRrcSap::SystemInformationBlockType1'])
+    register_Ns3LteRrcSapSystemInformationBlockType18_methods(root_module, root_module['ns3::LteRrcSap::SystemInformationBlockType18'])
+    register_Ns3LteRrcSapSystemInformationBlockType19_methods(root_module, root_module['ns3::LteRrcSap::SystemInformationBlockType19'])
     register_Ns3LteRrcSapSystemInformationBlockType2_methods(root_module, root_module['ns3::LteRrcSap::SystemInformationBlockType2'])
     register_Ns3LteRrcSapThresholdEutra_methods(root_module, root_module['ns3::LteRrcSap::ThresholdEutra'])
     register_Ns3LteRrcSapTxFailParam_methods(root_module, root_module['ns3::LteRrcSap::TxFailParam'])
+    register_Ns3LteRrcSapTxProbability_methods(root_module, root_module['ns3::LteRrcSap::TxProbability'])
     register_Ns3LteRrcSapUlConfiguration_methods(root_module, root_module['ns3::LteRrcSap::UlConfiguration'])
     register_Ns3LteRrcSapUlPowerControlCommonSCell_methods(root_module, root_module['ns3::LteRrcSap::UlPowerControlCommonSCell'])
     register_Ns3LteRrcSapUlPowerControlDedicatedSCell_methods(root_module, root_module['ns3::LteRrcSap::UlPowerControlDedicatedSCell'])
+    register_Ns3LteSlSyncParams_methods(root_module, root_module['ns3::LteSlSyncParams'])
     register_Ns3LteUeConfig_t_methods(root_module, root_module['ns3::LteUeConfig_t'])
     register_Ns3LteUeCphySapProvider_methods(root_module, root_module['ns3::LteUeCphySapProvider'])
     register_Ns3LteUeCphySapUser_methods(root_module, root_module['ns3::LteUeCphySapUser'])
     register_Ns3LteUeCphySapUserUeMeasurementsElement_methods(root_module, root_module['ns3::LteUeCphySapUser::UeMeasurementsElement'])
     register_Ns3LteUeCphySapUserUeMeasurementsParameters_methods(root_module, root_module['ns3::LteUeCphySapUser::UeMeasurementsParameters'])
+    register_Ns3LteUeCphySapUserUeSdRsrpMeasurementsElement_methods(root_module, root_module['ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement'])
+    register_Ns3LteUeCphySapUserUeSdRsrpMeasurementsParameters_methods(root_module, root_module['ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters'])
+    register_Ns3LteUeCphySapUserUeSlssMeasurementsElement_methods(root_module, root_module['ns3::LteUeCphySapUser::UeSlssMeasurementsElement'])
+    register_Ns3LteUeCphySapUserUeSlssMeasurementsParameters_methods(root_module, root_module['ns3::LteUeCphySapUser::UeSlssMeasurementsParameters'])
     register_Ns3LteUePhySapProvider_methods(root_module, root_module['ns3::LteUePhySapProvider'])
+    register_Ns3LteUePhySapProviderTransmitSlPhySduParameters_methods(root_module, root_module['ns3::LteUePhySapProvider::TransmitSlPhySduParameters'])
     register_Ns3LteUePhySapUser_methods(root_module, root_module['ns3::LteUePhySapUser'])
     register_Ns3LteUeRrcSapProvider_methods(root_module, root_module['ns3::LteUeRrcSapProvider'])
     register_Ns3LteUeRrcSapProviderCompleteSetupParameters_methods(root_module, root_module['ns3::LteUeRrcSapProvider::CompleteSetupParameters'])
@@ -1691,18 +2088,31 @@ def register_methods(root_module):
     register_Ns3Rectangle_methods(root_module, root_module['ns3::Rectangle'])
     register_Ns3RlcPduListElement_s_methods(root_module, root_module['ns3::RlcPduListElement_s'])
     register_Ns3SbMeasResult_s_methods(root_module, root_module['ns3::SbMeasResult_s'])
+    register_Ns3SciListElement_s_methods(root_module, root_module['ns3::SciListElement_s'])
     register_Ns3SiConfiguration_s_methods(root_module, root_module['ns3::SiConfiguration_s'])
     register_Ns3SiMessageListElement_s_methods(root_module, root_module['ns3::SiMessageListElement_s'])
     register_Ns3SignalNoiseDbm_methods(root_module, root_module['ns3::SignalNoiseDbm'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
+    register_Ns3SlCtrlPacketInfo_t_methods(root_module, root_module['ns3::SlCtrlPacketInfo_t'])
+    register_Ns3SlDciListElement_s_methods(root_module, root_module['ns3::SlDciListElement_s'])
+    register_Ns3SlDiscTbId_t_methods(root_module, root_module['ns3::SlDiscTbId_t'])
+    register_Ns3SlDisctbInfo_t_methods(root_module, root_module['ns3::SlDisctbInfo_t'])
+    register_Ns3SlPhyReceptionStatParameters_methods(root_module, root_module['ns3::SlPhyReceptionStatParameters'])
+    register_Ns3SlPhyTransmissionStatParameters_methods(root_module, root_module['ns3::SlPhyTransmissionStatParameters'])
+    register_Ns3SlRxPacketInfo_t_methods(root_module, root_module['ns3::SlRxPacketInfo_t'])
+    register_Ns3SlTbId_t_methods(root_module, root_module['ns3::SlTbId_t'])
+    register_Ns3SlUeMacStatParameters_methods(root_module, root_module['ns3::SlUeMacStatParameters'])
+    register_Ns3SltbInfo_t_methods(root_module, root_module['ns3::SltbInfo_t'])
     register_Ns3SpsConfig_s_methods(root_module, root_module['ns3::SpsConfig_s'])
     register_Ns3SrConfig_s_methods(root_module, root_module['ns3::SrConfig_s'])
     register_Ns3SrListElement_s_methods(root_module, root_module['ns3::SrListElement_s'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3Tap_methods(root_module, root_module['ns3::Tap'])
+    register_Ns3TbErrorStats_t_methods(root_module, root_module['ns3::TbErrorStats_t'])
     register_Ns3TbId_t_methods(root_module, root_module['ns3::TbId_t'])
+    register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3TransmissionModesLayers_methods(root_module, root_module['ns3::TransmissionModesLayers'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -1748,6 +2158,16 @@ def register_methods(root_module):
     register_Ns3RandomVariableStream_methods(root_module, root_module['ns3::RandomVariableStream'])
     register_Ns3RangePropagationLossModel_methods(root_module, root_module['ns3::RangePropagationLossModel'])
     register_Ns3SequentialRandomVariable_methods(root_module, root_module['ns3::SequentialRandomVariable'])
+    register_Ns3SidelinkCommResourcePool_methods(root_module, root_module['ns3::SidelinkCommResourcePool'])
+    register_Ns3SidelinkCommResourcePoolSidelinkTransmissionInfo_methods(root_module, root_module['ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo'])
+    register_Ns3SidelinkCommResourcePoolSubframeInfo_methods(root_module, root_module['ns3::SidelinkCommResourcePool::SubframeInfo'])
+    register_Ns3SidelinkDiscResourcePool_methods(root_module, root_module['ns3::SidelinkDiscResourcePool'])
+    register_Ns3SidelinkDiscResourcePoolSidelinkTransmissionInfo_methods(root_module, root_module['ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo'])
+    register_Ns3SidelinkDiscResourcePoolSubframeInfo_methods(root_module, root_module['ns3::SidelinkDiscResourcePool::SubframeInfo'])
+    register_Ns3SidelinkRxCommResourcePool_methods(root_module, root_module['ns3::SidelinkRxCommResourcePool'])
+    register_Ns3SidelinkRxDiscResourcePool_methods(root_module, root_module['ns3::SidelinkRxDiscResourcePool'])
+    register_Ns3SidelinkTxCommResourcePool_methods(root_module, root_module['ns3::SidelinkTxCommResourcePool'])
+    register_Ns3SidelinkTxDiscResourcePool_methods(root_module, root_module['ns3::SidelinkTxDiscResourcePool'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
@@ -1759,6 +2179,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3Ipv4Route_Ns3Empty_Ns3DefaultDeleter__lt__ns3Ipv4Route__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'])
     register_Ns3SimpleRefCount__Ns3LteControlMessage_Ns3Empty_Ns3DefaultDeleter__lt__ns3LteControlMessage__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::LteControlMessage, ns3::empty, ns3::DefaultDeleter<ns3::LteControlMessage> >'])
     register_Ns3SimpleRefCount__Ns3LteHarqPhy_Ns3Empty_Ns3DefaultDeleter__lt__ns3LteHarqPhy__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> >'])
+    register_Ns3SimpleRefCount__Ns3LteSlHarqPhy_Ns3Empty_Ns3DefaultDeleter__lt__ns3LteSlHarqPhy__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteSlHarqPhy> >'])
     register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
@@ -1781,7 +2202,6 @@ def register_methods(root_module):
     register_Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::SpectrumSignalParameters'])
     register_Ns3SpectrumValue_methods(root_module, root_module['ns3::SpectrumValue'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
-    register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TriangularRandomVariable_methods(root_module, root_module['ns3::TriangularRandomVariable'])
@@ -1851,10 +2271,13 @@ def register_methods(root_module):
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
     register_Ns3LogNormalRandomVariable_methods(root_module, root_module['ns3::LogNormalRandomVariable'])
     register_Ns3LteAmc_methods(root_module, root_module['ns3::LteAmc'])
+    register_Ns3LteAmcMcsPrbInfo_methods(root_module, root_module['ns3::LteAmc::McsPrbInfo'])
     register_Ns3LteControlMessage_methods(root_module, root_module['ns3::LteControlMessage'])
     register_Ns3LteHarqPhy_methods(root_module, root_module['ns3::LteHarqPhy'])
     register_Ns3LteInterference_methods(root_module, root_module['ns3::LteInterference'])
     register_Ns3LtePhy_methods(root_module, root_module['ns3::LtePhy'])
+    register_Ns3LteSlHarqPhy_methods(root_module, root_module['ns3::LteSlHarqPhy'])
+    register_Ns3LteSlInterference_methods(root_module, root_module['ns3::LteSlInterference'])
     register_Ns3LteSpectrumPhy_methods(root_module, root_module['ns3::LteSpectrumPhy'])
     register_Ns3LteUePhy_methods(root_module, root_module['ns3::LteUePhy'])
     register_Ns3LteUePowerControl_methods(root_module, root_module['ns3::LteUePowerControl'])
@@ -1885,6 +2308,7 @@ def register_methods(root_module):
     register_Ns3RectangleChecker_methods(root_module, root_module['ns3::RectangleChecker'])
     register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
     register_Ns3Sib1LteControlMessage_methods(root_module, root_module['ns3::Sib1LteControlMessage'])
+    register_Ns3SlDciLteControlMessage_methods(root_module, root_module['ns3::SlDciLteControlMessage'])
     register_Ns3SpectrumChannel_methods(root_module, root_module['ns3::SpectrumChannel'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
@@ -1926,6 +2350,7 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3PacketBurst__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::PacketBurst>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::SpectrumPhy>, ns3::Ptr<const ns3::SpectrumPhy>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3WifiPsdu__gt___Ns3WifiTxVector_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::WifiPsdu>, ns3::WifiTxVector, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3LteSpectrumPhy__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Packet__gt___Double_Ns3UanTxMode_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Packet>, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -1936,10 +2361,14 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3SpectrumSignalParameters__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::SpectrumSignalParameters>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3WifiPsdu__gt___Double_Ns3WifiTxVector_StdVector__lt__bool__stdAllocator__lt__bool__gt_____gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::WifiPsdu>, double, ns3::WifiTxVector, std::vector<bool, std::allocator<bool> >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3WifiPsdu__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::WifiPsdu>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3SlPhyReceptionStatParameters_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Time_Ns3Time_WifiPhyState_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Time, ns3::Time, WifiPhyState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3WifiTxVector_Ns3Time_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::WifiTxVector, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_short_Const_stdVector__lt__int__stdAllocator__lt__int__gt_____gt_____amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Ns3Ptr__lt__ns3SpectrumValue__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, ns3::Ptr<ns3::SpectrumValue>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_long_Unsigned_int_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_Bool_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, double, double, bool, unsigned char, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, double, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -2845,6 +3274,18 @@ def register_Ns3DefaultDeleter__Ns3LteHarqPhy_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3DefaultDeleter__Ns3LteSlHarqPhy_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::LteSlHarqPhy>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::LteSlHarqPhy>::DefaultDeleter(ns3::DefaultDeleter<ns3::LteSlHarqPhy> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::LteSlHarqPhy > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::LteSlHarqPhy>::Delete(ns3::LteSlHarqPhy * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::LteSlHarqPhy *', 'object')], 
+                   is_static=True)
+    return
+
 def register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, cls):
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::NixVector>::DefaultDeleter() [constructor]
     cls.add_constructor([])
@@ -3154,6 +3595,10 @@ def register_Ns3EventId_methods(root_module, cls):
                    'ns3::EventImpl *', 
                    [], 
                    is_const=True)
+    ## event-id.h (module 'core'): void ns3::EventId::Remove() [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3FfMacSchedSapProvider_methods(root_module, cls):
@@ -3165,57 +3610,57 @@ def register_Ns3FfMacSchedSapProvider_methods(root_module, cls):
     cls.add_method('SchedDlCqiInfoReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedDlCqiInfoReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedDlMacBufferReq(ns3::FfMacSchedSapProvider::SchedDlMacBufferReqParameters const & params) [member function]
     cls.add_method('SchedDlMacBufferReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedDlMacBufferReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedDlPagingBufferReq(ns3::FfMacSchedSapProvider::SchedDlPagingBufferReqParameters const & params) [member function]
     cls.add_method('SchedDlPagingBufferReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedDlPagingBufferReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedDlRachInfoReq(ns3::FfMacSchedSapProvider::SchedDlRachInfoReqParameters const & params) [member function]
     cls.add_method('SchedDlRachInfoReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedDlRachInfoReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedDlRlcBufferReq(ns3::FfMacSchedSapProvider::SchedDlRlcBufferReqParameters const & params) [member function]
     cls.add_method('SchedDlRlcBufferReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedDlRlcBufferReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedDlTriggerReq(ns3::FfMacSchedSapProvider::SchedDlTriggerReqParameters const & params) [member function]
     cls.add_method('SchedDlTriggerReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedDlTriggerReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedUlCqiInfoReq(ns3::FfMacSchedSapProvider::SchedUlCqiInfoReqParameters const & params) [member function]
     cls.add_method('SchedUlCqiInfoReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedUlCqiInfoReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedUlMacCtrlInfoReq(ns3::FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters const & params) [member function]
     cls.add_method('SchedUlMacCtrlInfoReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedUlNoiseInterferenceReq(ns3::FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters const & params) [member function]
     cls.add_method('SchedUlNoiseInterferenceReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedUlSrInfoReq(ns3::FfMacSchedSapProvider::SchedUlSrInfoReqParameters const & params) [member function]
     cls.add_method('SchedUlSrInfoReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedUlSrInfoReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapProvider::SchedUlTriggerReq(ns3::FfMacSchedSapProvider::SchedUlTriggerReqParameters const & params) [member function]
     cls.add_method('SchedUlTriggerReq', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedUlTriggerReqParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3FfMacSchedSapProviderSchedDlCqiInfoReqParameters_methods(root_module, cls):
@@ -3382,12 +3827,12 @@ def register_Ns3FfMacSchedSapUser_methods(root_module, cls):
     cls.add_method('SchedDlConfigInd', 
                    'void', 
                    [param('ns3::FfMacSchedSapUser::SchedDlConfigIndParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ff-mac-sched-sap.h (module 'lte'): void ns3::FfMacSchedSapUser::SchedUlConfigInd(ns3::FfMacSchedSapUser::SchedUlConfigIndParameters const & params) [member function]
     cls.add_method('SchedUlConfigInd', 
                    'void', 
                    [param('ns3::FfMacSchedSapUser::SchedUlConfigIndParameters const &', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3FfMacSchedSapUserSchedDlConfigIndParameters_methods(root_module, cls):
@@ -3416,6 +3861,8 @@ def register_Ns3FfMacSchedSapUserSchedUlConfigIndParameters_methods(root_module,
     cls.add_instance_attribute('m_dciList', 'std::vector< ns3::UlDciListElement_s >', is_const=False)
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapUser::SchedUlConfigIndParameters::m_phichList [variable]
     cls.add_instance_attribute('m_phichList', 'std::vector< ns3::PhichListElement_s >', is_const=False)
+    ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapUser::SchedUlConfigIndParameters::m_sldciList [variable]
+    cls.add_instance_attribute('m_sldciList', 'std::vector< ns3::SlDciListElement_s >', is_const=False)
     ## ff-mac-sched-sap.h (module 'lte'): ns3::FfMacSchedSapUser::SchedUlConfigIndParameters::m_vendorSpecificList [variable]
     cls.add_instance_attribute('m_vendorSpecificList', 'std::vector< ns3::VendorSpecificListElement_s >', is_const=False)
     return
@@ -3448,6 +3895,8 @@ def register_Ns3HarqProcessInfoElement_t_methods(root_module, cls):
     cls.add_instance_attribute('m_mi', 'double', is_const=False)
     ## lte-harq-phy.h (module 'lte'): ns3::HarqProcessInfoElement_t::m_rv [variable]
     cls.add_instance_attribute('m_rv', 'uint8_t', is_const=False)
+    ## lte-harq-phy.h (module 'lte'): ns3::HarqProcessInfoElement_t::m_sinr [variable]
+    cls.add_instance_attribute('m_sinr', 'double', is_const=False)
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
@@ -3678,6 +4127,16 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('SetNumberOfReceiveAntennas', 
                    'void', 
                    [param('uint8_t', 'rx')])
+    ## interference-helper.h (module 'wifi'): double ns3::InterferenceHelper::CalculateChunkSuccessRate(double snir, ns3::Time duration, ns3::WifiMode mode, ns3::WifiTxVector txVector) const [member function]
+    cls.add_method('CalculateChunkSuccessRate', 
+                   'double', 
+                   [param('double', 'snir'), param('ns3::Time', 'duration'), param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector', 'txVector')], 
+                   visibility='protected', is_const=True)
+    ## interference-helper.h (module 'wifi'): double ns3::InterferenceHelper::CalculateSnr(double signal, double noiseInterference, ns3::WifiTxVector txVector) const [member function]
+    cls.add_method('CalculateSnr', 
+                   'double', 
+                   [param('double', 'signal'), param('double', 'noiseInterference'), param('ns3::WifiTxVector', 'txVector')], 
+                   visibility='protected', is_const=True)
     return
 
 def register_Ns3InterferenceHelperSnrPer_methods(root_module, cls):
@@ -3763,7 +4222,12 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ipv4Address const &', 'other')], 
-                   is_const=True, deprecated=True)
+                   deprecated=True, is_const=True)
+    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsInitialized() const [member function]
+    cls.add_method('IsInitialized', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsLocalMulticast() const [member function]
     cls.add_method('IsLocalMulticast', 
                    'bool', 
@@ -3916,7 +4380,7 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ipv4Mask', 'other')], 
-                   is_const=True, deprecated=True)
+                   deprecated=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsMatch(ns3::Ipv4Address a, ns3::Ipv4Address b) const [member function]
     cls.add_method('IsMatch', 
                    'bool', 
@@ -4037,7 +4501,12 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
-                   is_const=True, deprecated=True)
+                   deprecated=True, is_const=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsInitialized() const [member function]
+    cls.add_method('IsInitialized', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() const [member function]
     cls.add_method('IsIpv4MappedAddress', 
                    'bool', 
@@ -4207,7 +4676,7 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ipv6Prefix const &', 'other')], 
-                   is_const=True, deprecated=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsMatch(ns3::Ipv6Address a, ns3::Ipv6Address b) const [member function]
     cls.add_method('IsMatch', 
                    'bool', 
@@ -4307,57 +4776,57 @@ def register_Ns3LteEnbCphySapProvider_methods(root_module, cls):
     cls.add_method('AddUe', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): int8_t ns3::LteEnbCphySapProvider::GetReferenceSignalPower() [member function]
     cls.add_method('GetReferenceSignalPower', 
                    'int8_t', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::RemoveUe(uint16_t rnti) [member function]
     cls.add_method('RemoveUe', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetBandwidth(uint16_t ulBandwidth, uint16_t dlBandwidth) [member function]
     cls.add_method('SetBandwidth', 
                    'void', 
                    [param('uint16_t', 'ulBandwidth'), param('uint16_t', 'dlBandwidth')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetCellId(uint16_t cellId) [member function]
     cls.add_method('SetCellId', 
                    'void', 
                    [param('uint16_t', 'cellId')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetEarfcn(uint32_t ulEarfcn, uint32_t dlEarfcn) [member function]
     cls.add_method('SetEarfcn', 
                    'void', 
                    [param('uint32_t', 'ulEarfcn'), param('uint32_t', 'dlEarfcn')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetMasterInformationBlock(ns3::LteRrcSap::MasterInformationBlock mib) [member function]
     cls.add_method('SetMasterInformationBlock', 
                    'void', 
                    [param('ns3::LteRrcSap::MasterInformationBlock', 'mib')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetPa(uint16_t rnti, double pa) [member function]
     cls.add_method('SetPa', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('double', 'pa')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetSrsConfigurationIndex(uint16_t rnti, uint16_t srsCi) [member function]
     cls.add_method('SetSrsConfigurationIndex', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint16_t', 'srsCi')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetSystemInformationBlockType1(ns3::LteRrcSap::SystemInformationBlockType1 sib1) [member function]
     cls.add_method('SetSystemInformationBlockType1', 
                    'void', 
                    [param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapProvider::SetTransmissionMode(uint16_t rnti, uint8_t txMode) [member function]
     cls.add_method('SetTransmissionMode', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'txMode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteEnbCphySapUser_methods(root_module, cls):
@@ -4376,17 +4845,17 @@ def register_Ns3LteEnbPhySapProvider_methods(root_module, cls):
     cls.add_method('GetMacChTtiDelay', 
                    'uint8_t', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapProvider::SendLteControlMessage(ns3::Ptr<ns3::LteControlMessage> msg) [member function]
     cls.add_method('SendLteControlMessage', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteControlMessage >', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapProvider::SendMacPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('SendMacPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteEnbPhySapUser_methods(root_module, cls):
@@ -4398,37 +4867,37 @@ def register_Ns3LteEnbPhySapUser_methods(root_module, cls):
     cls.add_method('DlInfoListElementHarqFeeback', 
                    'void', 
                    [param('ns3::DlInfoListElement_s', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapUser::ReceiveLteControlMessage(ns3::Ptr<ns3::LteControlMessage> msg) [member function]
     cls.add_method('ReceiveLteControlMessage', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteControlMessage >', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapUser::ReceivePhyPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('ReceivePhyPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapUser::ReceiveRachPreamble(uint32_t prachId) [member function]
     cls.add_method('ReceiveRachPreamble', 
                    'void', 
                    [param('uint32_t', 'prachId')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapUser::SubframeIndication(uint32_t frameNo, uint32_t subframeNo) [member function]
     cls.add_method('SubframeIndication', 
                    'void', 
                    [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapUser::UlCqiReport(ns3::FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi) [member function]
     cls.add_method('UlCqiReport', 
                    'void', 
                    [param('ns3::FfMacSchedSapProvider::SchedUlCqiInfoReqParameters', 'ulcqi')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-enb-phy-sap.h (module 'lte'): void ns3::LteEnbPhySapUser::UlInfoListElementHarqFeeback(ns3::UlInfoListElement_s params) [member function]
     cls.add_method('UlInfoListElementHarqFeeback', 
                    'void', 
                    [param('ns3::UlInfoListElement_s', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteFfConverter_methods(root_module, cls):
@@ -4468,15 +4937,77 @@ def register_Ns3LteFlowId_t_methods(root_module, cls):
     cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
     return
 
+def register_Ns3LteNistErrorModel_methods(root_module, cls):
+    ## lte-nist-error-model.h (module 'lte'): ns3::LteNistErrorModel::LteNistErrorModel() [constructor]
+    cls.add_constructor([])
+    ## lte-nist-error-model.h (module 'lte'): ns3::LteNistErrorModel::LteNistErrorModel(ns3::LteNistErrorModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteNistErrorModel const &', 'arg0')])
+    ## lte-nist-error-model.h (module 'lte'): static ns3::TbErrorStats_t ns3::LteNistErrorModel::GetPsbchBler(ns3::LteNistErrorModel::LteFadingModel fadingChannel, ns3::LteNistErrorModel::LteTxMode txmode, double sinr) [member function]
+    cls.add_method('GetPsbchBler', 
+                   'ns3::TbErrorStats_t', 
+                   [param('ns3::LteNistErrorModel::LteFadingModel', 'fadingChannel'), param('ns3::LteNistErrorModel::LteTxMode', 'txmode'), param('double', 'sinr')], 
+                   is_static=True)
+    ## lte-nist-error-model.h (module 'lte'): static ns3::TbErrorStats_t ns3::LteNistErrorModel::GetPscchBler(ns3::LteNistErrorModel::LteFadingModel fadingChannel, ns3::LteNistErrorModel::LteTxMode txmode, double sinr) [member function]
+    cls.add_method('GetPscchBler', 
+                   'ns3::TbErrorStats_t', 
+                   [param('ns3::LteNistErrorModel::LteFadingModel', 'fadingChannel'), param('ns3::LteNistErrorModel::LteTxMode', 'txmode'), param('double', 'sinr')], 
+                   is_static=True)
+    ## lte-nist-error-model.h (module 'lte'): static ns3::TbErrorStats_t ns3::LteNistErrorModel::GetPsdchBler(ns3::LteNistErrorModel::LteFadingModel fadingChannel, ns3::LteNistErrorModel::LteTxMode txmode, double sinr, ns3::HarqProcessInfoList_t harqHistory) [member function]
+    cls.add_method('GetPsdchBler', 
+                   'ns3::TbErrorStats_t', 
+                   [param('ns3::LteNistErrorModel::LteFadingModel', 'fadingChannel'), param('ns3::LteNistErrorModel::LteTxMode', 'txmode'), param('double', 'sinr'), param('std::vector< ns3::HarqProcessInfoElement_t >', 'harqHistory')], 
+                   is_static=True)
+    ## lte-nist-error-model.h (module 'lte'): static ns3::TbErrorStats_t ns3::LteNistErrorModel::GetPsschBler(ns3::LteNistErrorModel::LteFadingModel fadingChannel, ns3::LteNistErrorModel::LteTxMode txmode, uint16_t mcs, double sinr, ns3::HarqProcessInfoList_t harqHistory) [member function]
+    cls.add_method('GetPsschBler', 
+                   'ns3::TbErrorStats_t', 
+                   [param('ns3::LteNistErrorModel::LteFadingModel', 'fadingChannel'), param('ns3::LteNistErrorModel::LteTxMode', 'txmode'), param('uint16_t', 'mcs'), param('double', 'sinr'), param('std::vector< ns3::HarqProcessInfoElement_t >', 'harqHistory')], 
+                   is_static=True)
+    ## lte-nist-error-model.h (module 'lte'): static double ns3::LteNistErrorModel::GetPsschSinrFromBler(ns3::LteNistErrorModel::LteFadingModel fadingChannel, ns3::LteNistErrorModel::LteTxMode txmode, uint16_t mcs, uint8_t harq, double bler) [member function]
+    cls.add_method('GetPsschSinrFromBler', 
+                   'double', 
+                   [param('ns3::LteNistErrorModel::LteFadingModel', 'fadingChannel'), param('ns3::LteNistErrorModel::LteTxMode', 'txmode'), param('uint16_t', 'mcs'), param('uint8_t', 'harq'), param('double', 'bler')], 
+                   is_static=True)
+    ## lte-nist-error-model.h (module 'lte'): static ns3::TbErrorStats_t ns3::LteNistErrorModel::GetPuschBler(ns3::LteNistErrorModel::LteFadingModel fadingChannel, ns3::LteNistErrorModel::LteTxMode txmode, uint16_t mcs, double sinr, ns3::HarqProcessInfoList_t harqHistory) [member function]
+    cls.add_method('GetPuschBler', 
+                   'ns3::TbErrorStats_t', 
+                   [param('ns3::LteNistErrorModel::LteFadingModel', 'fadingChannel'), param('ns3::LteNistErrorModel::LteTxMode', 'txmode'), param('uint16_t', 'mcs'), param('double', 'sinr'), param('std::vector< ns3::HarqProcessInfoElement_t >', 'harqHistory')], 
+                   is_static=True)
+    return
+
 def register_Ns3LteRrcSap_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::LteRrcSap() [constructor]
     cls.add_constructor([])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::LteRrcSap(ns3::LteRrcSap const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteRrcSap const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): static double ns3::LteRrcSap::AlphaAsDouble(ns3::LteRrcSap::SlTxParameters param) [member function]
+    cls.add_method('AlphaAsDouble', 
+                   'double', 
+                   [param('ns3::LteRrcSap::SlTxParameters', 'param')], 
+                   is_static=True)
     ## lte-rrc-sap.h (module 'lte'): static double ns3::LteRrcSap::ConvertPdschConfigDedicated2Double(ns3::LteRrcSap::PdschConfigDedicated pdschConfigDedicated) [member function]
     cls.add_method('ConvertPdschConfigDedicated2Double', 
                    'double', 
                    [param('ns3::LteRrcSap::PdschConfigDedicated', 'pdschConfigDedicated')], 
+                   is_static=True)
+    ## lte-rrc-sap.h (module 'lte'): static uint32_t ns3::LteRrcSap::DiscPeriodAsInt(ns3::LteRrcSap::SlPeriodDisc period) [member function]
+    cls.add_method('DiscPeriodAsInt', 
+                   'uint32_t', 
+                   [param('ns3::LteRrcSap::SlPeriodDisc', 'period')], 
+                   is_static=True)
+    ## lte-rrc-sap.h (module 'lte'): static ns3::LteRrcSap::SlPeriodComm ns3::LteRrcSap::PeriodAsEnum(uint32_t periodLength) [member function]
+    cls.add_method('PeriodAsEnum', 
+                   'ns3::LteRrcSap::SlPeriodComm', 
+                   [param('uint32_t', 'periodLength')], 
+                   is_static=True)
+    ## lte-rrc-sap.h (module 'lte'): static uint32_t ns3::LteRrcSap::PeriodAsInt(ns3::LteRrcSap::SlPeriodComm period) [member function]
+    cls.add_method('PeriodAsInt', 
+                   'uint32_t', 
+                   [param('ns3::LteRrcSap::SlPeriodComm', 'period')], 
+                   is_static=True)
+    ## lte-rrc-sap.h (module 'lte'): static uint32_t ns3::LteRrcSap::RsrpValueDbm(uint32_t rsrp) [member function]
+    cls.add_method('RsrpValueDbm', 
+                   'uint32_t', 
+                   [param('uint32_t', 'rsrp')], 
                    is_static=True)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MaxReportCells [variable]
     cls.add_static_attribute('MaxReportCells', 'uint8_t const', is_const=True)
@@ -4689,6 +5220,21 @@ def register_Ns3LteRrcSapMasterInformationBlock_methods(root_module, cls):
     cls.add_instance_attribute('dlBandwidth', 'uint16_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlock::systemFrameNumber [variable]
     cls.add_instance_attribute('systemFrameNumber', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapMasterInformationBlockSL_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL::MasterInformationBlockSL() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL::MasterInformationBlockSL(ns3::LteRrcSap::MasterInformationBlockSL const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::MasterInformationBlockSL const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL::directFrameNo [variable]
+    cls.add_instance_attribute('directFrameNo', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL::directSubframeNo [variable]
+    cls.add_instance_attribute('directSubframeNo', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL::inCoverage [variable]
+    cls.add_instance_attribute('inCoverage', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::MasterInformationBlockSL::slBandwidth [variable]
+    cls.add_instance_attribute('slBandwidth', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapMeasConfig_methods(root_module, cls):
@@ -4978,6 +5524,13 @@ def register_Ns3LteRrcSapPdschConfigDedicated_methods(root_module, cls):
     cls.add_instance_attribute('pa', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapPeriodicBsrTimer_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PeriodicBsrTimer::PeriodicBsrTimer() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PeriodicBsrTimer::PeriodicBsrTimer(ns3::LteRrcSap::PeriodicBsrTimer const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PeriodicBsrTimer const &', 'arg0')])
+    return
+
 def register_Ns3LteRrcSapPhysCellIdRange_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PhysCellIdRange::PhysCellIdRange() [constructor]
     cls.add_constructor([])
@@ -5050,6 +5603,35 @@ def register_Ns3LteRrcSapPlmnIdentityInfo_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::PlmnIdentityInfo const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityInfo::plmnIdentity [variable]
     cls.add_instance_attribute('plmnIdentity', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapPlmnIdentityList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityList::PlmnIdentityList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityList::PlmnIdentityList(ns3::LteRrcSap::PlmnIdentityList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PlmnIdentityList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityList::nbPlmn [variable]
+    cls.add_instance_attribute('nbPlmn', 'int', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PlmnIdentityList::plmnIdentityInfo [variable]
+    cls.add_instance_attribute('plmnIdentityInfo', 'ns3::LteRrcSap::PlmnIdentityInfo [ 6 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapPoolSelection_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelection::PoolSelection() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelection::PoolSelection(ns3::LteRrcSap::PoolSelection const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PoolSelection const &', 'arg0')])
+    return
+
+def register_Ns3LteRrcSapPoolSelectionRsrpBased_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelectionRsrpBased::PoolSelectionRsrpBased() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelectionRsrpBased::PoolSelectionRsrpBased(ns3::LteRrcSap::PoolSelectionRsrpBased const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::PoolSelectionRsrpBased const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelectionRsrpBased::threshHigh [variable]
+    cls.add_instance_attribute('threshHigh', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::PoolSelectionRsrpBased::threshLow [variable]
+    cls.add_instance_attribute('threshLow', 'uint32_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapPrachConfigSCell_methods(root_module, cls):
@@ -5233,6 +5815,13 @@ def register_Ns3LteRrcSapReportConfigToAddMod_methods(root_module, cls):
     cls.add_instance_attribute('reportConfigId', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapRetxBsrTimer_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RetxBsrTimer::RetxBsrTimer() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RetxBsrTimer::RetxBsrTimer(ns3::LteRrcSap::RetxBsrTimer const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::RetxBsrTimer const &', 'arg0')])
+    return
+
 def register_Ns3LteRrcSapRlcConfig_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RlcConfig::RlcConfig() [constructor]
     cls.add_constructor([])
@@ -5255,6 +5844,10 @@ def register_Ns3LteRrcSapRrcConnectionReconfiguration_methods(root_module, cls):
     cls.add_instance_attribute('haveNonCriticalExtension', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::haveRadioResourceConfigDedicated [variable]
     cls.add_instance_attribute('haveRadioResourceConfigDedicated', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::haveSlCommConfig [variable]
+    cls.add_instance_attribute('haveSlCommConfig', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::haveSlDiscConfig [variable]
+    cls.add_instance_attribute('haveSlDiscConfig', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::measConfig [variable]
     cls.add_instance_attribute('measConfig', 'ns3::LteRrcSap::MeasConfig', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::mobilityControlInfo [variable]
@@ -5265,6 +5858,10 @@ def register_Ns3LteRrcSapRrcConnectionReconfiguration_methods(root_module, cls):
     cls.add_instance_attribute('radioResourceConfigDedicated', 'ns3::LteRrcSap::RadioResourceConfigDedicated', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::rrcTransactionIdentifier [variable]
     cls.add_instance_attribute('rrcTransactionIdentifier', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::slCommConfig [variable]
+    cls.add_instance_attribute('slCommConfig', 'ns3::LteRrcSap::SlCommConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration::slDiscConfig [variable]
+    cls.add_instance_attribute('slDiscConfig', 'ns3::LteRrcSap::SlDiscConfig', is_const=False)
     return
 
 def register_Ns3LteRrcSapRrcConnectionReconfigurationCompleted_methods(root_module, cls):
@@ -5378,6 +5975,766 @@ def register_Ns3LteRrcSapSCellToAddMod_methods(root_module, cls):
     cls.add_instance_attribute('sCellIndex', 'uint32_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapSib18CommConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig::Sib18CommConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig::Sib18CommConfig(ns3::LteRrcSap::Sib18CommConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::Sib18CommConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig::commRxPool [variable]
+    cls.add_instance_attribute('commRxPool', 'ns3::LteRrcSap::SlCommRxPoolList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig::commSyncConfig [variable]
+    cls.add_instance_attribute('commSyncConfig', 'ns3::LteRrcSap::SlSyncConfigList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig::commTxPoolExceptional [variable]
+    cls.add_instance_attribute('commTxPoolExceptional', 'ns3::LteRrcSap::SlCommTxPoolList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib18CommConfig::commTxPoolNormalCommon [variable]
+    cls.add_instance_attribute('commTxPoolNormalCommon', 'ns3::LteRrcSap::SlCommTxPoolList', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSib19DiscConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig::Sib19DiscConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig::Sib19DiscConfig(ns3::LteRrcSap::Sib19DiscConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::Sib19DiscConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig::discRxPool [variable]
+    cls.add_instance_attribute('discRxPool', 'ns3::LteRrcSap::SlDiscRxPoolList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig::discSyncConfig [variable]
+    cls.add_instance_attribute('discSyncConfig', 'ns3::LteRrcSap::SlSyncConfigList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig::discTxPoolCommon [variable]
+    cls.add_instance_attribute('discTxPoolCommon', 'ns3::LteRrcSap::SlDiscTxPoolList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfig::discTxPowerInfo [variable]
+    cls.add_instance_attribute('discTxPowerInfo', 'ns3::LteRrcSap::SlDiscTxPowerInfoList', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSib19DiscConfigRelay_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay::Sib19DiscConfigRelay() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay::Sib19DiscConfigRelay(ns3::LteRrcSap::Sib19DiscConfigRelay const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::Sib19DiscConfigRelay const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay::haveRelayUeConfig [variable]
+    cls.add_instance_attribute('haveRelayUeConfig', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay::haveRemoteUeConfig [variable]
+    cls.add_instance_attribute('haveRemoteUeConfig', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay::relayUeConfig [variable]
+    cls.add_instance_attribute('relayUeConfig', 'ns3::LteRrcSap::SlDiscConfigRelayUe', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::Sib19DiscConfigRelay::remoteUeConfig [variable]
+    cls.add_instance_attribute('remoteUeConfig', 'ns3::LteRrcSap::SlDiscConfigRemoteUe', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSidelinkUeInformation_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::SidelinkUeInformation() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::SidelinkUeInformation(ns3::LteRrcSap::SidelinkUeInformation const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SidelinkUeInformation const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::commRxInterestedFreq [variable]
+    cls.add_instance_attribute('commRxInterestedFreq', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::discRxInterest [variable]
+    cls.add_instance_attribute('discRxInterest', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::discTxResourceReq [variable]
+    cls.add_instance_attribute('discTxResourceReq', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::haveCommRxInterestedFreq [variable]
+    cls.add_instance_attribute('haveCommRxInterestedFreq', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::haveCommTxResourceReq [variable]
+    cls.add_instance_attribute('haveCommTxResourceReq', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::haveDiscRxInterest [variable]
+    cls.add_instance_attribute('haveDiscRxInterest', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::haveDiscTxResourceReq [variable]
+    cls.add_instance_attribute('haveDiscTxResourceReq', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SidelinkUeInformation::slCommTxResourceReq [variable]
+    cls.add_instance_attribute('slCommTxResourceReq', 'ns3::LteRrcSap::SlCommTxResourceReq', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCarrierFreqInfoList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCarrierFreqInfoList::SlCarrierFreqInfoList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCarrierFreqInfoList::SlCarrierFreqInfoList(ns3::LteRrcSap::SlCarrierFreqInfoList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCarrierFreqInfoList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCarrierFreqInfoList::carrierFreq [variable]
+    cls.add_instance_attribute('carrierFreq', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCarrierFreqInfoList::plmnIdentityList [variable]
+    cls.add_instance_attribute('plmnIdentityList', 'ns3::LteRrcSap::PlmnIdentityList', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfig::SlCommConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfig::SlCommConfig(ns3::LteRrcSap::SlCommConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfig::setup [variable]
+    cls.add_instance_attribute('setup', 'ns3::LteRrcSap::SlCommTxResourcesSetup', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommConfigScheduled_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::SlCommConfigScheduled() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::SlCommConfigScheduled(ns3::LteRrcSap::SlCommConfigScheduled const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommConfigScheduled const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::commTxConfig [variable]
+    cls.add_instance_attribute('commTxConfig', 'ns3::LteRrcSap::SlCommResourcePool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::crnti [variable]
+    cls.add_instance_attribute('crnti', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::haveMcs [variable]
+    cls.add_instance_attribute('haveMcs', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::macMainConfig [variable]
+    cls.add_instance_attribute('macMainConfig', 'ns3::LteRrcSap::SlMacMainConfigSl', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigScheduled::mcs [variable]
+    cls.add_instance_attribute('mcs', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommConfigUeSelected_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected::SlCommConfigUeSelected() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected::SlCommConfigUeSelected(ns3::LteRrcSap::SlCommConfigUeSelected const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommConfigUeSelected const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected::havePoolToAdd [variable]
+    cls.add_instance_attribute('havePoolToAdd', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected::havePoolToRelease [variable]
+    cls.add_instance_attribute('havePoolToRelease', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected::poolToAddModList [variable]
+    cls.add_instance_attribute('poolToAddModList', 'ns3::LteRrcSap::SlCommTxPoolToAddModList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommConfigUeSelected::poolToRelease [variable]
+    cls.add_instance_attribute('poolToRelease', 'ns3::LteRrcSap::SlTxPoolToReleaseList', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommResourcePool_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::SlCommResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::SlCommResourcePool(ns3::LteRrcSap::SlCommResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommResourcePool const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::dataCpLen [variable]
+    cls.add_instance_attribute('dataCpLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::dataHoppingConfig [variable]
+    cls.add_instance_attribute('dataHoppingConfig', 'ns3::LteRrcSap::SlHoppingConfigComm', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::haveTxParameters [variable]
+    cls.add_instance_attribute('haveTxParameters', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::haveUeSelectedResourceConfig [variable]
+    cls.add_instance_attribute('haveUeSelectedResourceConfig', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::scCpLen [variable]
+    cls.add_instance_attribute('scCpLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::scPeriod [variable]
+    cls.add_instance_attribute('scPeriod', 'ns3::LteRrcSap::SlPeriodComm', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::scTfResourceConfig [variable]
+    cls.add_instance_attribute('scTfResourceConfig', 'ns3::LteRrcSap::SlTfResourceConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::txParameters [variable]
+    cls.add_instance_attribute('txParameters', 'ns3::LteRrcSap::SlCommResourcePool::TxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::ueSelectedResourceConfig [variable]
+    cls.add_instance_attribute('ueSelectedResourceConfig', 'ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommResourcePoolTxParameters_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::TxParameters::TxParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::TxParameters::TxParameters(ns3::LteRrcSap::SlCommResourcePool::TxParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommResourcePool::TxParameters const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::TxParameters::dataTxParameters [variable]
+    cls.add_instance_attribute('dataTxParameters', 'ns3::LteRrcSap::SlTxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::TxParameters::scTxParameters [variable]
+    cls.add_instance_attribute('scTxParameters', 'ns3::LteRrcSap::SlTxParameters', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommResourcePoolUeSelectedResourceConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig::UeSelectedResourceConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig::UeSelectedResourceConfig(ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig::dataTfResourceConfig [variable]
+    cls.add_instance_attribute('dataTfResourceConfig', 'ns3::LteRrcSap::SlTfResourceConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig::haveTrptSubset [variable]
+    cls.add_instance_attribute('haveTrptSubset', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommResourcePool::UeSelectedResourceConfig::trptSubset [variable]
+    cls.add_instance_attribute('trptSubset', 'ns3::LteRrcSap::SlTrptSubset', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommRxPoolList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommRxPoolList::SlCommRxPoolList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommRxPoolList::SlCommRxPoolList(ns3::LteRrcSap::SlCommRxPoolList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommRxPoolList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommRxPoolList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommRxPoolList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlCommResourcePool [ 16 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommTxPoolList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolList::SlCommTxPoolList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolList::SlCommTxPoolList(ns3::LteRrcSap::SlCommTxPoolList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommTxPoolList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlCommResourcePool [ 4 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommTxPoolToAddMod_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddMod::SlCommTxPoolToAddMod() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddMod::SlCommTxPoolToAddMod(ns3::LteRrcSap::SlCommTxPoolToAddMod const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommTxPoolToAddMod const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddMod::pool [variable]
+    cls.add_instance_attribute('pool', 'ns3::LteRrcSap::SlCommResourcePool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddMod::poolIdentity [variable]
+    cls.add_instance_attribute('poolIdentity', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommTxPoolToAddModList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddModList::SlCommTxPoolToAddModList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddModList::SlCommTxPoolToAddModList(ns3::LteRrcSap::SlCommTxPoolToAddModList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommTxPoolToAddModList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddModList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxPoolToAddModList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlCommTxPoolToAddMod [ 4 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommTxResourceReq_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourceReq::SlCommTxResourceReq() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourceReq::SlCommTxResourceReq(ns3::LteRrcSap::SlCommTxResourceReq const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommTxResourceReq const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourceReq::carrierFreq [variable]
+    cls.add_instance_attribute('carrierFreq', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourceReq::slDestinationInfoList [variable]
+    cls.add_instance_attribute('slDestinationInfoList', 'ns3::LteRrcSap::SlDestinationInfoList', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCommTxResourcesSetup_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourcesSetup::SlCommTxResourcesSetup() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourcesSetup::SlCommTxResourcesSetup(ns3::LteRrcSap::SlCommTxResourcesSetup const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCommTxResourcesSetup const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourcesSetup::scheduled [variable]
+    cls.add_instance_attribute('scheduled', 'ns3::LteRrcSap::SlCommConfigScheduled', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCommTxResourcesSetup::ueSelected [variable]
+    cls.add_instance_attribute('ueSelected', 'ns3::LteRrcSap::SlCommConfigUeSelected', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlCpLen_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCpLen::SlCpLen() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlCpLen::SlCpLen(ns3::LteRrcSap::SlCpLen const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlCpLen const &', 'arg0')])
+    return
+
+def register_Ns3LteRrcSapSlDestinationInfoList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDestinationInfoList::SlDestinationInfoList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDestinationInfoList::SlDestinationInfoList(ns3::LteRrcSap::SlDestinationInfoList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDestinationInfoList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDestinationInfoList::SlDestinationIdentity [variable]
+    cls.add_instance_attribute('SlDestinationIdentity', 'uint32_t [ 16 ]', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDestinationInfoList::nbDestinations [variable]
+    cls.add_instance_attribute('nbDestinations', 'int', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfig::SlDiscConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfig::SlDiscConfig(ns3::LteRrcSap::SlDiscConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfig::setup [variable]
+    cls.add_instance_attribute('setup', 'ns3::LteRrcSap::SlDiscTxResourcesSetup', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscConfigRelayUe_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe::SlDiscConfigRelayUe() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe::SlDiscConfigRelayUe(ns3::LteRrcSap::SlDiscConfigRelayUe const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscConfigRelayUe const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe::hystMax [variable]
+    cls.add_instance_attribute('hystMax', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe::hystMin [variable]
+    cls.add_instance_attribute('hystMin', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe::threshHigh [variable]
+    cls.add_instance_attribute('threshHigh', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRelayUe::threshLow [variable]
+    cls.add_instance_attribute('threshLow', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscConfigRemoteUe_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe::SlDiscConfigRemoteUe() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe::SlDiscConfigRemoteUe(ns3::LteRrcSap::SlDiscConfigRemoteUe const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscConfigRemoteUe const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe::haveReselectionInfoIc [variable]
+    cls.add_instance_attribute('haveReselectionInfoIc', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe::hystMax [variable]
+    cls.add_instance_attribute('hystMax', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe::reselectionInfoIc [variable]
+    cls.add_instance_attribute('reselectionInfoIc', 'ns3::LteRrcSap::SlReselectionInfoRelay', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigRemoteUe::threshHigh [variable]
+    cls.add_instance_attribute('threshHigh', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscConfigScheduled_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigScheduled::SlDiscConfigScheduled() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigScheduled::SlDiscConfigScheduled(ns3::LteRrcSap::SlDiscConfigScheduled const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscConfigScheduled const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigScheduled::discHoppingConfigDisc [variable]
+    cls.add_instance_attribute('discHoppingConfigDisc', 'ns3::LteRrcSap::SlHoppingConfigDisc', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigScheduled::discTfIndexList [variable]
+    cls.add_instance_attribute('discTfIndexList', 'ns3::LteRrcSap::SlTfIndexPairList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigScheduled::discTxConfig [variable]
+    cls.add_instance_attribute('discTxConfig', 'ns3::LteRrcSap::SlDiscResourcePool', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscConfigUeSelected_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected::SlDiscConfigUeSelected() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected::SlDiscConfigUeSelected(ns3::LteRrcSap::SlDiscConfigUeSelected const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscConfigUeSelected const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected::havePoolToAdd [variable]
+    cls.add_instance_attribute('havePoolToAdd', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected::havePoolToRelease [variable]
+    cls.add_instance_attribute('havePoolToRelease', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected::poolToAddModList [variable]
+    cls.add_instance_attribute('poolToAddModList', 'ns3::LteRrcSap::SlDiscTxPoolToAddModList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscConfigUeSelected::poolToRelease [variable]
+    cls.add_instance_attribute('poolToRelease', 'ns3::LteRrcSap::SlTxPoolToReleaseList', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscResourcePool_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::SlDiscResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::SlDiscResourcePool(ns3::LteRrcSap::SlDiscResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscResourcePool const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::cpLen [variable]
+    cls.add_instance_attribute('cpLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::discPeriod [variable]
+    cls.add_instance_attribute('discPeriod', 'ns3::LteRrcSap::SlPeriodDisc', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::haveRxParameters [variable]
+    cls.add_instance_attribute('haveRxParameters', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::haveTxParameters [variable]
+    cls.add_instance_attribute('haveTxParameters', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::numRepetition [variable]
+    cls.add_instance_attribute('numRepetition', 'int32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::numRetx [variable]
+    cls.add_instance_attribute('numRetx', 'int8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::rxParameters [variable]
+    cls.add_instance_attribute('rxParameters', 'ns3::LteRrcSap::SlDiscResourcePool::RxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::tfResourceConfig [variable]
+    cls.add_instance_attribute('tfResourceConfig', 'ns3::LteRrcSap::SlTfResourceConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::txParameters [variable]
+    cls.add_instance_attribute('txParameters', 'ns3::LteRrcSap::SlDiscResourcePool::TxParameters', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscResourcePoolRxParameters_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::RxParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::RxParameters(ns3::LteRrcSap::SlDiscResourcePool::RxParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscResourcePool::RxParameters const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::syncConfigIndex [variable]
+    cls.add_instance_attribute('syncConfigIndex', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::tddConfig [variable]
+    cls.add_instance_attribute('tddConfig', 'ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscResourcePoolRxParametersTddConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig::TddConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig::TddConfig(ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig::specialSubframePatterns [variable]
+    cls.add_instance_attribute('specialSubframePatterns', 'ns3::LteRrcSap::SpecialSubframePatterns', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::RxParameters::TddConfig::subframeAssignment [variable]
+    cls.add_instance_attribute('subframeAssignment', 'ns3::LteRrcSap::SubframeAssignment', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscResourcePoolTxParameters_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::TxParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::TxParameters(ns3::LteRrcSap::SlDiscResourcePool::TxParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscResourcePool::TxParameters const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::txParametersGeneral [variable]
+    cls.add_instance_attribute('txParametersGeneral', 'ns3::LteRrcSap::SlTxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::ueSelectedResourceConfig [variable]
+    cls.add_instance_attribute('ueSelectedResourceConfig', 'ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscResourcePoolTxParametersUeSelectedResourceConfig_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig::UeSelectedResourceConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig::UeSelectedResourceConfig(ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig::havePoolSelectionRsrpBased [variable]
+    cls.add_instance_attribute('havePoolSelectionRsrpBased', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig::poolSelection [variable]
+    cls.add_instance_attribute('poolSelection', 'ns3::LteRrcSap::PoolSelection', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig::poolSelectionRsrpBased [variable]
+    cls.add_instance_attribute('poolSelectionRsrpBased', 'ns3::LteRrcSap::PoolSelectionRsrpBased', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscResourcePool::TxParameters::UeSelectedResourceConfig::txProbability [variable]
+    cls.add_instance_attribute('txProbability', 'ns3::LteRrcSap::TxProbability', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscRxPoolList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscRxPoolList::SlDiscRxPoolList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscRxPoolList::SlDiscRxPoolList(ns3::LteRrcSap::SlDiscRxPoolList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscRxPoolList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscRxPoolList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscRxPoolList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlDiscResourcePool [ 16 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscTxPoolList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolList::SlDiscTxPoolList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolList::SlDiscTxPoolList(ns3::LteRrcSap::SlDiscTxPoolList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscTxPoolList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlDiscResourcePool [ 4 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscTxPoolToAddMod_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddMod::SlDiscTxPoolToAddMod() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddMod::SlDiscTxPoolToAddMod(ns3::LteRrcSap::SlDiscTxPoolToAddMod const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscTxPoolToAddMod const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddMod::pool [variable]
+    cls.add_instance_attribute('pool', 'ns3::LteRrcSap::SlDiscResourcePool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddMod::poolIdentity [variable]
+    cls.add_instance_attribute('poolIdentity', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscTxPoolToAddModList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddModList::SlDiscTxPoolToAddModList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddModList::SlDiscTxPoolToAddModList(ns3::LteRrcSap::SlDiscTxPoolToAddModList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscTxPoolToAddModList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddModList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPoolToAddModList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlDiscTxPoolToAddMod [ 4 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscTxPowerInfo_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfo::SlDiscTxPowerInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfo::SlDiscTxPowerInfo(ns3::LteRrcSap::SlDiscTxPowerInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscTxPowerInfo const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfo::discMaxTxPower [variable]
+    cls.add_instance_attribute('discMaxTxPower', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscTxPowerInfoList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfoList::SlDiscTxPowerInfoList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfoList::SlDiscTxPowerInfoList(ns3::LteRrcSap::SlDiscTxPowerInfoList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscTxPowerInfoList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfoList::nbPowerInfo [variable]
+    cls.add_instance_attribute('nbPowerInfo', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxPowerInfoList::power [variable]
+    cls.add_instance_attribute('power', 'ns3::LteRrcSap::SlDiscTxPowerInfo [ 3 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlDiscTxResourcesSetup_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxResourcesSetup::SlDiscTxResourcesSetup() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxResourcesSetup::SlDiscTxResourcesSetup(ns3::LteRrcSap::SlDiscTxResourcesSetup const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlDiscTxResourcesSetup const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxResourcesSetup::scheduled [variable]
+    cls.add_instance_attribute('scheduled', 'ns3::LteRrcSap::SlDiscConfigScheduled', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlDiscTxResourcesSetup::ueSelected [variable]
+    cls.add_instance_attribute('ueSelected', 'ns3::LteRrcSap::SlDiscConfigUeSelected', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlHoppingConfigComm_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm::SlHoppingConfigComm() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm::SlHoppingConfigComm(ns3::LteRrcSap::SlHoppingConfigComm const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlHoppingConfigComm const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm::hoppingInfo [variable]
+    cls.add_instance_attribute('hoppingInfo', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm::hoppingParameter [variable]
+    cls.add_instance_attribute('hoppingParameter', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm::rbOffset [variable]
+    cls.add_instance_attribute('rbOffset', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlHoppingConfigDisc_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigDisc::SlHoppingConfigDisc() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigDisc::SlHoppingConfigDisc(ns3::LteRrcSap::SlHoppingConfigDisc const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlHoppingConfigDisc const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigDisc::a [variable]
+    cls.add_instance_attribute('a', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigDisc::b [variable]
+    cls.add_instance_attribute('b', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlMacMainConfigSl_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlMacMainConfigSl::SlMacMainConfigSl() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlMacMainConfigSl::SlMacMainConfigSl(ns3::LteRrcSap::SlMacMainConfigSl const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlMacMainConfigSl const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlMacMainConfigSl::periodicBsrTimer [variable]
+    cls.add_instance_attribute('periodicBsrTimer', 'ns3::LteRrcSap::PeriodicBsrTimer', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlMacMainConfigSl::retxBsrTimer [variable]
+    cls.add_instance_attribute('retxBsrTimer', 'ns3::LteRrcSap::RetxBsrTimer', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlOffsetIndicator_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlOffsetIndicator::SlOffsetIndicator() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlOffsetIndicator::SlOffsetIndicator(ns3::LteRrcSap::SlOffsetIndicator const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlOffsetIndicator const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlOffsetIndicator::offset [variable]
+    cls.add_instance_attribute('offset', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPeriodComm_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodComm::SlPeriodComm() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodComm::SlPeriodComm(ns3::LteRrcSap::SlPeriodComm const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPeriodComm const &', 'arg0')])
+    return
+
+def register_Ns3LteRrcSapSlPeriodDisc_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodDisc::SlPeriodDisc() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPeriodDisc::SlPeriodDisc(ns3::LteRrcSap::SlPeriodDisc const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPeriodDisc const &', 'arg0')])
+    return
+
+def register_Ns3LteRrcSapSlPreconfigCommPool_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::SlPreconfigCommPool() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::SlPreconfigCommPool(ns3::LteRrcSap::SlPreconfigCommPool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigCommPool const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::dataCpLen [variable]
+    cls.add_instance_attribute('dataCpLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::dataHoppingConfig [variable]
+    cls.add_instance_attribute('dataHoppingConfig', 'ns3::LteRrcSap::SlHoppingConfigComm', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::dataTfResourceConfig [variable]
+    cls.add_instance_attribute('dataTfResourceConfig', 'ns3::LteRrcSap::SlTfResourceConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::dataTxParameters [variable]
+    cls.add_instance_attribute('dataTxParameters', 'ns3::LteRrcSap::SlTxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::scCpLen [variable]
+    cls.add_instance_attribute('scCpLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::scPeriod [variable]
+    cls.add_instance_attribute('scPeriod', 'ns3::LteRrcSap::SlPeriodComm', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::scTfResourceConfig [variable]
+    cls.add_instance_attribute('scTfResourceConfig', 'ns3::LteRrcSap::SlTfResourceConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::scTxParameters [variable]
+    cls.add_instance_attribute('scTxParameters', 'ns3::LteRrcSap::SlTxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPool::trptSubset [variable]
+    cls.add_instance_attribute('trptSubset', 'ns3::LteRrcSap::SlTrptSubset', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigCommPoolList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPoolList::SlPreconfigCommPoolList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPoolList::SlPreconfigCommPoolList(ns3::LteRrcSap::SlPreconfigCommPoolList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigCommPoolList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPoolList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigCommPoolList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlPreconfigCommPool [ 4 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigDiscPool_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::SlPreconfigDiscPool() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::SlPreconfigDiscPool(ns3::LteRrcSap::SlPreconfigDiscPool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigDiscPool const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::cpLen [variable]
+    cls.add_instance_attribute('cpLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::discPeriod [variable]
+    cls.add_instance_attribute('discPeriod', 'ns3::LteRrcSap::SlPeriodDisc', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::numRepetition [variable]
+    cls.add_instance_attribute('numRepetition', 'int32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::numRetx [variable]
+    cls.add_instance_attribute('numRetx', 'int8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::tfResourceConfig [variable]
+    cls.add_instance_attribute('tfResourceConfig', 'ns3::LteRrcSap::SlTfResourceConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::txParameters [variable]
+    cls.add_instance_attribute('txParameters', 'ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigDiscPoolTxParameters_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters::TxParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters::TxParameters(ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters::txParametersGeneral [variable]
+    cls.add_instance_attribute('txParametersGeneral', 'ns3::LteRrcSap::SlTxParameters', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPool::TxParameters::txProbability [variable]
+    cls.add_instance_attribute('txProbability', 'ns3::LteRrcSap::TxProbability', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigDiscPoolList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPoolList::SlPreconfigDiscPoolList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPoolList::SlPreconfigDiscPoolList(ns3::LteRrcSap::SlPreconfigDiscPoolList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigDiscPoolList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPoolList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigDiscPoolList::pools [variable]
+    cls.add_instance_attribute('pools', 'ns3::LteRrcSap::SlPreconfigDiscPool [ 4 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigGeneral_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigGeneral::SlPreconfigGeneral() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigGeneral::SlPreconfigGeneral(ns3::LteRrcSap::SlPreconfigGeneral const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigGeneral const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigGeneral::carrierFreq [variable]
+    cls.add_instance_attribute('carrierFreq', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigGeneral::slBandwidth [variable]
+    cls.add_instance_attribute('slBandwidth', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigRelay_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigRelay::SlPreconfigRelay() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigRelay::SlPreconfigRelay(ns3::LteRrcSap::SlPreconfigRelay const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigRelay const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigRelay::haveReselectionInfoOoc [variable]
+    cls.add_instance_attribute('haveReselectionInfoOoc', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigRelay::reselectionInfoOoc [variable]
+    cls.add_instance_attribute('reselectionInfoOoc', 'ns3::LteRrcSap::SlReselectionInfoRelay', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfigSync_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::SlPreconfigSync() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::SlPreconfigSync(ns3::LteRrcSap::SlPreconfigSync const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfigSync const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::filterCoefficient [variable]
+    cls.add_instance_attribute('filterCoefficient', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::syncCPLen [variable]
+    cls.add_instance_attribute('syncCPLen', 'ns3::LteRrcSap::SlCpLen', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::syncOffsetIndicator1 [variable]
+    cls.add_instance_attribute('syncOffsetIndicator1', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::syncOffsetIndicator2 [variable]
+    cls.add_instance_attribute('syncOffsetIndicator2', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::syncRefDiffHyst [variable]
+    cls.add_instance_attribute('syncRefDiffHyst', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::syncRefMinHyst [variable]
+    cls.add_instance_attribute('syncRefMinHyst', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfigSync::syncTxThreshOoC [variable]
+    cls.add_instance_attribute('syncTxThreshOoC', 'int16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlPreconfiguration_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::SlPreconfiguration() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::SlPreconfiguration(ns3::LteRrcSap::SlPreconfiguration const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlPreconfiguration const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::preconfigComm [variable]
+    cls.add_instance_attribute('preconfigComm', 'ns3::LteRrcSap::SlPreconfigCommPoolList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::preconfigDisc [variable]
+    cls.add_instance_attribute('preconfigDisc', 'ns3::LteRrcSap::SlPreconfigDiscPoolList', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::preconfigGeneral [variable]
+    cls.add_instance_attribute('preconfigGeneral', 'ns3::LteRrcSap::SlPreconfigGeneral', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::preconfigRelay [variable]
+    cls.add_instance_attribute('preconfigRelay', 'ns3::LteRrcSap::SlPreconfigRelay', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlPreconfiguration::preconfigSync [variable]
+    cls.add_instance_attribute('preconfigSync', 'ns3::LteRrcSap::SlPreconfigSync', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlReselectionInfoRelay_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlReselectionInfoRelay::SlReselectionInfoRelay() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlReselectionInfoRelay::SlReselectionInfoRelay(ns3::LteRrcSap::SlReselectionInfoRelay const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlReselectionInfoRelay const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlReselectionInfoRelay::filterCoefficient [variable]
+    cls.add_instance_attribute('filterCoefficient', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlReselectionInfoRelay::minHyst [variable]
+    cls.add_instance_attribute('minHyst', 'uint16_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlReselectionInfoRelay::qRxLevMin [variable]
+    cls.add_instance_attribute('qRxLevMin', 'int16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlSyncConfigList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlSyncConfigList::SlSyncConfigList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlSyncConfigList::SlSyncConfigList(ns3::LteRrcSap::SlSyncConfigList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlSyncConfigList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlSyncConfigList::nbConfig [variable]
+    cls.add_instance_attribute('nbConfig', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlTfIndexPair_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPair::SlTfIndexPair() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPair::SlTfIndexPair(ns3::LteRrcSap::SlTfIndexPair const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlTfIndexPair const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPair::discPrbIndex [variable]
+    cls.add_instance_attribute('discPrbIndex', 'uint32_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPair::discSfIndex [variable]
+    cls.add_instance_attribute('discSfIndex', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlTfIndexPairList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPairList::SlTfIndexPairList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPairList::SlTfIndexPairList(ns3::LteRrcSap::SlTfIndexPairList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlTfIndexPairList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPairList::nbPair [variable]
+    cls.add_instance_attribute('nbPair', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfIndexPairList::pair [variable]
+    cls.add_instance_attribute('pair', 'ns3::LteRrcSap::SlTfIndexPair [ 64 ]', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlTfResourceConfig_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::SlTfResourceConfig() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::SlTfResourceConfig(ns3::LteRrcSap::SlTfResourceConfig const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlTfResourceConfig const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::offsetIndicator [variable]
+    cls.add_instance_attribute('offsetIndicator', 'ns3::LteRrcSap::SlOffsetIndicator', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::prbEnd [variable]
+    cls.add_instance_attribute('prbEnd', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::prbNum [variable]
+    cls.add_instance_attribute('prbNum', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::prbStart [variable]
+    cls.add_instance_attribute('prbStart', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTfResourceConfig::subframeBitmap [variable]
+    cls.add_instance_attribute('subframeBitmap', 'ns3::LteRrcSap::SubframeBitmapSl', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlTrptSubset_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTrptSubset::SlTrptSubset() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTrptSubset::SlTrptSubset(ns3::LteRrcSap::SlTrptSubset const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlTrptSubset const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTrptSubset::subset [variable]
+    cls.add_instance_attribute('subset', 'std::bitset< 3 >', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlTxParameters_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxParameters::SlTxParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxParameters::SlTxParameters(ns3::LteRrcSap::SlTxParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlTxParameters const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxParameters::p0 [variable]
+    cls.add_instance_attribute('p0', 'int16_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSlTxPoolToReleaseList_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxPoolToReleaseList::SlTxPoolToReleaseList() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxPoolToReleaseList::SlTxPoolToReleaseList(ns3::LteRrcSap::SlTxPoolToReleaseList const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SlTxPoolToReleaseList const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxPoolToReleaseList::nbPools [variable]
+    cls.add_instance_attribute('nbPools', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SlTxPoolToReleaseList::poolIdentities [variable]
+    cls.add_instance_attribute('poolIdentities', 'uint8_t [ 4 ]', is_const=False)
+    return
+
 def register_Ns3LteRrcSapSoundingRsUlConfigCommon_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon::SoundingRsUlConfigCommon() [constructor]
     cls.add_constructor([])
@@ -5402,6 +6759,13 @@ def register_Ns3LteRrcSapSoundingRsUlConfigDedicated_methods(root_module, cls):
     cls.add_instance_attribute('srsConfigIndex', 'uint16_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigDedicated::type [variable]
     cls.add_instance_attribute('type', 'ns3::LteRrcSap::SoundingRsUlConfigDedicated::action', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSpecialSubframePatterns_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpecialSubframePatterns::SpecialSubframePatterns() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SpecialSubframePatterns::SpecialSubframePatterns(ns3::LteRrcSap::SpecialSubframePatterns const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SpecialSubframePatterns const &', 'arg0')])
     return
 
 def register_Ns3LteRrcSapSpeedStatePars_methods(root_module, cls):
@@ -5439,13 +6803,37 @@ def register_Ns3LteRrcSapSrbToAddMod_methods(root_module, cls):
     cls.add_instance_attribute('srbIdentity', 'uint8_t', is_const=False)
     return
 
+def register_Ns3LteRrcSapSubframeAssignment_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeAssignment::SubframeAssignment() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeAssignment::SubframeAssignment(ns3::LteRrcSap::SubframeAssignment const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SubframeAssignment const &', 'arg0')])
+    return
+
+def register_Ns3LteRrcSapSubframeBitmapSl_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeBitmapSl::SubframeBitmapSl() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeBitmapSl::SubframeBitmapSl(ns3::LteRrcSap::SubframeBitmapSl const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SubframeBitmapSl const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SubframeBitmapSl::bitmap [variable]
+    cls.add_instance_attribute('bitmap', 'std::bitset< 40 >', is_const=False)
+    return
+
 def register_Ns3LteRrcSapSystemInformation_methods(root_module, cls):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::SystemInformation() [constructor]
     cls.add_constructor([])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::SystemInformation(ns3::LteRrcSap::SystemInformation const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteRrcSap::SystemInformation const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::haveSib18 [variable]
+    cls.add_instance_attribute('haveSib18', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::haveSib19 [variable]
+    cls.add_instance_attribute('haveSib19', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::haveSib2 [variable]
     cls.add_instance_attribute('haveSib2', 'bool', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::sib18 [variable]
+    cls.add_instance_attribute('sib18', 'ns3::LteRrcSap::SystemInformationBlockType18', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::sib19 [variable]
+    cls.add_instance_attribute('sib19', 'ns3::LteRrcSap::SystemInformationBlockType19', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformation::sib2 [variable]
     cls.add_instance_attribute('sib2', 'ns3::LteRrcSap::SystemInformationBlockType2', is_const=False)
     return
@@ -5459,6 +6847,28 @@ def register_Ns3LteRrcSapSystemInformationBlockType1_methods(root_module, cls):
     cls.add_instance_attribute('cellAccessRelatedInfo', 'ns3::LteRrcSap::CellAccessRelatedInfo', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType1::cellSelectionInfo [variable]
     cls.add_instance_attribute('cellSelectionInfo', 'ns3::LteRrcSap::CellSelectionInfo', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSystemInformationBlockType18_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType18::SystemInformationBlockType18() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType18::SystemInformationBlockType18(ns3::LteRrcSap::SystemInformationBlockType18 const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SystemInformationBlockType18 const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType18::commConfig [variable]
+    cls.add_instance_attribute('commConfig', 'ns3::LteRrcSap::Sib18CommConfig', is_const=False)
+    return
+
+def register_Ns3LteRrcSapSystemInformationBlockType19_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType19::SystemInformationBlockType19() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType19::SystemInformationBlockType19(ns3::LteRrcSap::SystemInformationBlockType19 const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::SystemInformationBlockType19 const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType19::discConfig [variable]
+    cls.add_instance_attribute('discConfig', 'ns3::LteRrcSap::Sib19DiscConfig', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType19::discConfigRelay [variable]
+    cls.add_instance_attribute('discConfigRelay', 'ns3::LteRrcSap::Sib19DiscConfigRelay', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SystemInformationBlockType19::discInterFreqList [variable]
+    cls.add_instance_attribute('discInterFreqList', 'ns3::LteRrcSap::SlCarrierFreqInfoList', is_const=False)
     return
 
 def register_Ns3LteRrcSapSystemInformationBlockType2_methods(root_module, cls):
@@ -5488,6 +6898,13 @@ def register_Ns3LteRrcSapTxFailParam_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::TxFailParam const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::TxFailParam::connEstFailCount [variable]
     cls.add_instance_attribute('connEstFailCount', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapTxProbability_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::TxProbability::TxProbability() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::TxProbability::TxProbability(ns3::LteRrcSap::TxProbability const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::TxProbability const &', 'arg0')])
     return
 
 def register_Ns3LteRrcSapUlConfiguration_methods(root_module, cls):
@@ -5523,6 +6940,23 @@ def register_Ns3LteRrcSapUlPowerControlDedicatedSCell_methods(root_module, cls):
     cls.add_instance_attribute('pSrsOffset', 'uint16_t', is_const=False)
     return
 
+def register_Ns3LteSlSyncParams_methods(root_module, cls):
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::LteSlSyncParams() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::LteSlSyncParams(ns3::LteSlSyncParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteSlSyncParams const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::newSubframe [variable]
+    cls.add_instance_attribute('newSubframe', 'ns3::SidelinkCommResourcePool::SubframeInfo', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::offset [variable]
+    cls.add_instance_attribute('offset', 'uint16_t', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::rxSubframe [variable]
+    cls.add_instance_attribute('rxSubframe', 'ns3::SidelinkCommResourcePool::SubframeInfo', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::slssid [variable]
+    cls.add_instance_attribute('slssid', 'uint16_t', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteSlSyncParams::syncRefMib [variable]
+    cls.add_instance_attribute('syncRefMib', 'ns3::LteRrcSap::MasterInformationBlockSL', is_const=False)
+    return
+
 def register_Ns3LteUeConfig_t_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
@@ -5545,86 +6979,136 @@ def register_Ns3LteUeCphySapProvider_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapProvider::LteUeCphySapProvider(ns3::LteUeCphySapProvider const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteUeCphySapProvider const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::AddSlDestination(uint32_t destination) [member function]
+    cls.add_method('AddSlDestination', 
+                   'void', 
+                   [param('uint32_t', 'destination')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::ConfigureReferenceSignalPower(int8_t referenceSignalPower) [member function]
     cls.add_method('ConfigureReferenceSignalPower', 
                    'void', 
                    [param('int8_t', 'referenceSignalPower')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::ConfigureUplink(uint32_t ulEarfcn, uint16_t ulBandwidth) [member function]
     cls.add_method('ConfigureUplink', 
                    'void', 
                    [param('uint32_t', 'ulEarfcn'), param('uint16_t', 'ulBandwidth')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::DisableUeSdRsrpMeasurements() [member function]
+    cls.add_method('DisableUeSdRsrpMeasurements', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::EnableUeSdRsrpMeasurements() [member function]
+    cls.add_method('EnableUeSdRsrpMeasurements', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::RemoveSlCommTxPool() [member function]
+    cls.add_method('RemoveSlCommTxPool', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::RemoveSlDestination(uint32_t destination) [member function]
+    cls.add_method('RemoveSlDestination', 
+                   'void', 
+                   [param('uint32_t', 'destination')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::Reset() [member function]
     cls.add_method('Reset', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::ResetPhyAfterRlf() [member function]
     cls.add_method('ResetPhyAfterRlf', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::ResetRlfParams() [member function]
     cls.add_method('ResetRlfParams', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetDlBandwidth(uint16_t dlBandwidth) [member function]
     cls.add_method('SetDlBandwidth', 
                    'void', 
                    [param('uint16_t', 'dlBandwidth')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetImsi(uint64_t imsi) [member function]
     cls.add_method('SetImsi', 
                    'void', 
                    [param('uint64_t', 'imsi')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetPa(double pa) [member function]
     cls.add_method('SetPa', 
                    'void', 
                    [param('double', 'pa')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetRnti(uint16_t rnti) [member function]
     cls.add_method('SetRnti', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient) [member function]
     cls.add_method('SetRsrpFilterCoefficient', 
                    'void', 
                    [param('uint8_t', 'rsrpFilterCoefficient')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSlCommRxPools(std::list<ns3::Ptr<ns3::SidelinkRxCommResourcePool>, std::allocator<ns3::Ptr<ns3::SidelinkRxCommResourcePool> > > pools) [member function]
+    cls.add_method('SetSlCommRxPools', 
+                   'void', 
+                   [param('std::list< ns3::Ptr< ns3::SidelinkRxCommResourcePool > >', 'pools')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSlCommTxPool(ns3::Ptr<ns3::SidelinkTxCommResourcePool> pool) [member function]
+    cls.add_method('SetSlCommTxPool', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SidelinkTxCommResourcePool >', 'pool')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSlDiscRxPools(std::list<ns3::Ptr<ns3::SidelinkRxDiscResourcePool>, std::allocator<ns3::Ptr<ns3::SidelinkRxDiscResourcePool> > > pools) [member function]
+    cls.add_method('SetSlDiscRxPools', 
+                   'void', 
+                   [param('std::list< ns3::Ptr< ns3::SidelinkRxDiscResourcePool > >', 'pools')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSlssId(uint64_t slssid) [member function]
+    cls.add_method('SetSlssId', 
+                   'void', 
+                   [param('uint64_t', 'slssid')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSrsConfigurationIndex(uint16_t srcCi) [member function]
     cls.add_method('SetSrsConfigurationIndex', 
                    'void', 
                    [param('uint16_t', 'srcCi')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetTransmissionMode(uint8_t txMode) [member function]
     cls.add_method('SetTransmissionMode', 
                    'void', 
                    [param('uint8_t', 'txMode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::StartCellSearch(uint32_t dlEarfcn) [member function]
     cls.add_method('StartCellSearch', 
                    'void', 
                    [param('uint32_t', 'dlEarfcn')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::StartInSnycDetection() [member function]
     cls.add_method('StartInSnycDetection', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SynchronizeToSyncRef(ns3::LteSlSyncParams synchParams) [member function]
+    cls.add_method('SynchronizeToSyncRef', 
+                   'void', 
+                   [param('ns3::LteSlSyncParams', 'synchParams')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SynchronizeWithEnb(uint16_t cellId) [member function]
     cls.add_method('SynchronizeWithEnb', 
                    'void', 
                    [param('uint16_t', 'cellId')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SynchronizeWithEnb(uint16_t cellId, uint32_t dlEarfcn) [member function]
     cls.add_method('SynchronizeWithEnb', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('uint32_t', 'dlEarfcn')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteUeCphySapUser_methods(root_module, cls):
@@ -5636,32 +7120,57 @@ def register_Ns3LteUeCphySapUser_methods(root_module, cls):
     cls.add_method('NotifyInSync', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::NotifyOutOfSync() [member function]
     cls.add_method('NotifyOutOfSync', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReceiveMibSL(ns3::Ptr<ns3::Packet> p, uint16_t slssid) [member function]
+    cls.add_method('ReceiveMibSL', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'slssid')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::RecvMasterInformationBlock(uint16_t cellId, ns3::LteRrcSap::MasterInformationBlock mib) [member function]
     cls.add_method('RecvMasterInformationBlock', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('ns3::LteRrcSap::MasterInformationBlock', 'mib')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::RecvSystemInformationBlockType1(uint16_t cellId, ns3::LteRrcSap::SystemInformationBlockType1 sib1) [member function]
     cls.add_method('RecvSystemInformationBlockType1', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReportChangeOfSyncRef(ns3::LteSlSyncParams params) [member function]
+    cls.add_method('ReportChangeOfSyncRef', 
+                   'void', 
+                   [param('ns3::LteSlSyncParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReportSlssMeasurements(ns3::LteUeCphySapUser::UeSlssMeasurementsParameters params, uint64_t slssid, uint16_t offset) [member function]
+    cls.add_method('ReportSlssMeasurements', 
+                   'void', 
+                   [param('ns3::LteUeCphySapUser::UeSlssMeasurementsParameters', 'params'), param('uint64_t', 'slssid'), param('uint16_t', 'offset')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReportSubframeIndication(uint16_t frameNo, uint16_t subFrameNo) [member function]
+    cls.add_method('ReportSubframeIndication', 
+                   'void', 
+                   [param('uint16_t', 'frameNo'), param('uint16_t', 'subFrameNo')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReportUeMeasurements(ns3::LteUeCphySapUser::UeMeasurementsParameters params) [member function]
     cls.add_method('ReportUeMeasurements', 
                    'void', 
                    [param('ns3::LteUeCphySapUser::UeMeasurementsParameters', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ReportUeSdRsrpMeasurements(ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters params) [member function]
+    cls.add_method('ReportUeSdRsrpMeasurements', 
+                   'void', 
+                   [param('ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::ResetSyncIndicationCounter() [member function]
     cls.add_method('ResetSyncIndicationCounter', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteUeCphySapUserUeMeasurementsElement_methods(root_module, cls):
@@ -5688,6 +7197,50 @@ def register_Ns3LteUeCphySapUserUeMeasurementsParameters_methods(root_module, cl
     cls.add_instance_attribute('m_ueMeasurementsList', 'std::vector< ns3::LteUeCphySapUser::UeMeasurementsElement >', is_const=False)
     return
 
+def register_Ns3LteUeCphySapUserUeSdRsrpMeasurementsElement_methods(root_module, cls):
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement::UeSdRsrpMeasurementsElement() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement::UeSdRsrpMeasurementsElement(ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement::m_relayId [variable]
+    cls.add_instance_attribute('m_relayId', 'uint64_t', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement::m_sdRsrp [variable]
+    cls.add_instance_attribute('m_sdRsrp', 'double', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement::m_serviceCode [variable]
+    cls.add_instance_attribute('m_serviceCode', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3LteUeCphySapUserUeSdRsrpMeasurementsParameters_methods(root_module, cls):
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters::UeSdRsrpMeasurementsParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters::UeSdRsrpMeasurementsParameters(ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSdRsrpMeasurementsParameters::m_ueSdRsrpMeasurementsList [variable]
+    cls.add_instance_attribute('m_ueSdRsrpMeasurementsList', 'std::vector< ns3::LteUeCphySapUser::UeSdRsrpMeasurementsElement >', is_const=False)
+    return
+
+def register_Ns3LteUeCphySapUserUeSlssMeasurementsElement_methods(root_module, cls):
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsElement::UeSlssMeasurementsElement() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsElement::UeSlssMeasurementsElement(ns3::LteUeCphySapUser::UeSlssMeasurementsElement const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteUeCphySapUser::UeSlssMeasurementsElement const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsElement::m_offset [variable]
+    cls.add_instance_attribute('m_offset', 'uint16_t', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsElement::m_slssid [variable]
+    cls.add_instance_attribute('m_slssid', 'uint16_t', is_const=False)
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsElement::m_srsrp [variable]
+    cls.add_instance_attribute('m_srsrp', 'double', is_const=False)
+    return
+
+def register_Ns3LteUeCphySapUserUeSlssMeasurementsParameters_methods(root_module, cls):
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsParameters::UeSlssMeasurementsParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsParameters::UeSlssMeasurementsParameters(ns3::LteUeCphySapUser::UeSlssMeasurementsParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteUeCphySapUser::UeSlssMeasurementsParameters const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::UeSlssMeasurementsParameters::m_ueSlssMeasurementsList [variable]
+    cls.add_instance_attribute('m_ueSlssMeasurementsList', 'std::vector< ns3::LteUeCphySapUser::UeSlssMeasurementsElement >', is_const=False)
+    return
+
 def register_Ns3LteUePhySapProvider_methods(root_module, cls):
     ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::LteUePhySapProvider() [constructor]
     cls.add_constructor([])
@@ -5697,22 +7250,50 @@ def register_Ns3LteUePhySapProvider_methods(root_module, cls):
     cls.add_method('NotifyConnectionSuccessful', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapProvider::SendLteControlMessage(ns3::Ptr<ns3::LteControlMessage> msg) [member function]
     cls.add_method('SendLteControlMessage', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteControlMessage >', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapProvider::SendMacPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('SendMacPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapProvider::SendRachPreamble(uint32_t prachId, uint32_t raRnti) [member function]
     cls.add_method('SendRachPreamble', 
                    'void', 
                    [param('uint32_t', 'prachId'), param('uint32_t', 'raRnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapProvider::SendSlMacPdu(ns3::Ptr<ns3::Packet> p, ns3::LteUePhySapProvider::TransmitSlPhySduParameters params) [member function]
+    cls.add_method('SendSlMacPdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::LteUePhySapProvider::TransmitSlPhySduParameters', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteUePhySapProviderTransmitSlPhySduParameters_methods(root_module, cls):
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::TransmitSlPhySduParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::TransmitSlPhySduParameters(ns3::LteUePhySapProvider::TransmitSlPhySduParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteUePhySapProvider::TransmitSlPhySduParameters const &', 'arg0')])
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::channel [variable]
+    cls.add_instance_attribute('channel', 'ns3::LteUePhySapProvider::TransmitSlPhySduParameters::SidelinkChannel', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::dstId [variable]
+    cls.add_instance_attribute('dstId', 'uint8_t', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::hopping [variable]
+    cls.add_instance_attribute('hopping', 'uint8_t', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::hoppingInfo [variable]
+    cls.add_instance_attribute('hoppingInfo', 'uint8_t', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::rbLen [variable]
+    cls.add_instance_attribute('rbLen', 'uint8_t', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::rbStart [variable]
+    cls.add_instance_attribute('rbStart', 'uint8_t', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::resNo [variable]
+    cls.add_instance_attribute('resNo', 'uint32_t', is_const=False)
+    ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapProvider::TransmitSlPhySduParameters::rv [variable]
+    cls.add_instance_attribute('rv', 'uint8_t', is_const=False)
     return
 
 def register_Ns3LteUePhySapUser_methods(root_module, cls):
@@ -5720,21 +7301,46 @@ def register_Ns3LteUePhySapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-ue-phy-sap.h (module 'lte'): ns3::LteUePhySapUser::LteUePhySapUser(ns3::LteUePhySapUser const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteUePhySapUser const &', 'arg0')])
+    ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::NotifyChangeOfTiming(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('NotifyChangeOfTiming', 
+                   'void', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::NotifySidelinkEnabled() [member function]
+    cls.add_method('NotifySidelinkEnabled', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::NotifyUlTransmission() [member function]
+    cls.add_method('NotifyUlTransmission', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::ReceiveLteControlMessage(ns3::Ptr<ns3::LteControlMessage> msg) [member function]
     cls.add_method('ReceiveLteControlMessage', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteControlMessage >', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::ReceivePhyPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('ReceivePhyPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::ReceiveSlDiscPhyPdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('ReceiveSlDiscPhyPdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::ReceiveSlSciPhyPdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('ReceiveSlSciPhyPdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-phy-sap.h (module 'lte'): void ns3::LteUePhySapUser::SubframeIndication(uint32_t frameNo, uint32_t subframeNo) [member function]
     cls.add_method('SubframeIndication', 
                    'void', 
                    [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteUeRrcSapProvider_methods(root_module, cls):
@@ -5746,42 +7352,42 @@ def register_Ns3LteUeRrcSapProvider_methods(root_module, cls):
     cls.add_method('CompleteSetup', 
                    'void', 
                    [param('ns3::LteUeRrcSapProvider::CompleteSetupParameters', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionReconfiguration(ns3::LteRrcSap::RrcConnectionReconfiguration msg) [member function]
     cls.add_method('RecvRrcConnectionReconfiguration', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReconfiguration', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionReestablishment(ns3::LteRrcSap::RrcConnectionReestablishment msg) [member function]
     cls.add_method('RecvRrcConnectionReestablishment', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReestablishment', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionReestablishmentReject(ns3::LteRrcSap::RrcConnectionReestablishmentReject msg) [member function]
     cls.add_method('RecvRrcConnectionReestablishmentReject', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReestablishmentReject', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionReject(ns3::LteRrcSap::RrcConnectionReject msg) [member function]
     cls.add_method('RecvRrcConnectionReject', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReject', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionRelease(ns3::LteRrcSap::RrcConnectionRelease msg) [member function]
     cls.add_method('RecvRrcConnectionRelease', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionRelease', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionSetup(ns3::LteRrcSap::RrcConnectionSetup msg) [member function]
     cls.add_method('RecvRrcConnectionSetup', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionSetup', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvSystemInformation(ns3::LteRrcSap::SystemInformation msg) [member function]
     cls.add_method('RecvSystemInformation', 
                    'void', 
                    [param('ns3::LteRrcSap::SystemInformation', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteUeRrcSapProviderCompleteSetupParameters_methods(root_module, cls):
@@ -5804,42 +7410,47 @@ def register_Ns3LteUeRrcSapUser_methods(root_module, cls):
     cls.add_method('SendIdealUeContextRemoveRequest', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendMeasurementReport(ns3::LteRrcSap::MeasurementReport msg) [member function]
     cls.add_method('SendMeasurementReport', 
                    'void', 
                    [param('ns3::LteRrcSap::MeasurementReport', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendRrcConnectionReconfigurationCompleted(ns3::LteRrcSap::RrcConnectionReconfigurationCompleted msg) [member function]
     cls.add_method('SendRrcConnectionReconfigurationCompleted', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReconfigurationCompleted', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendRrcConnectionReestablishmentComplete(ns3::LteRrcSap::RrcConnectionReestablishmentComplete msg) [member function]
     cls.add_method('SendRrcConnectionReestablishmentComplete', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReestablishmentComplete', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendRrcConnectionReestablishmentRequest(ns3::LteRrcSap::RrcConnectionReestablishmentRequest msg) [member function]
     cls.add_method('SendRrcConnectionReestablishmentRequest', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionReestablishmentRequest', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendRrcConnectionRequest(ns3::LteRrcSap::RrcConnectionRequest msg) [member function]
     cls.add_method('SendRrcConnectionRequest', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionRequest', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendRrcConnectionSetupCompleted(ns3::LteRrcSap::RrcConnectionSetupCompleted msg) [member function]
     cls.add_method('SendRrcConnectionSetupCompleted', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionSetupCompleted', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendSidelinkUeInformation(ns3::LteRrcSap::SidelinkUeInformation msg) [member function]
+    cls.add_method('SendSidelinkUeInformation', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SidelinkUeInformation', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::Setup(ns3::LteUeRrcSapUser::SetupParameters params) [member function]
     cls.add_method('Setup', 
                    'void', 
                    [param('ns3::LteUeRrcSapUser::SetupParameters', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteUeRrcSapUserSetupParameters_methods(root_module, cls):
@@ -6163,7 +7774,7 @@ def register_Ns3ObjectBase_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## object-base.h (module 'core'): static ns3::TypeId ns3::ObjectBase::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -6202,7 +7813,7 @@ def register_Ns3ObjectBase_methods(root_module, cls):
     cls.add_method('NotifyConstructionCompleted', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ObjectDeleter_methods(root_module, cls):
@@ -6507,6 +8118,8 @@ def register_Ns3PhyReceptionStatParameters_methods(root_module, cls):
     cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
     ## lte-common.h (module 'lte'): ns3::PhyReceptionStatParameters::m_rv [variable]
     cls.add_instance_attribute('m_rv', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::PhyReceptionStatParameters::m_sinrPerRb [variable]
+    cls.add_instance_attribute('m_sinrPerRb', 'double', is_const=False)
     ## lte-common.h (module 'lte'): ns3::PhyReceptionStatParameters::m_size [variable]
     cls.add_instance_attribute('m_size', 'uint16_t', is_const=False)
     ## lte-common.h (module 'lte'): ns3::PhyReceptionStatParameters::m_timestamp [variable]
@@ -6610,6 +8223,35 @@ def register_Ns3SbMeasResult_s_methods(root_module, cls):
     cls.add_instance_attribute('m_higherLayerSelected', 'std::vector< ns3::HigherLayerSelected_s >', is_const=False)
     ## ff-mac-common.h (module 'lte'): ns3::SbMeasResult_s::m_ueSelected [variable]
     cls.add_instance_attribute('m_ueSelected', 'ns3::UeSelected_s', is_const=False)
+    return
+
+def register_Ns3SciListElement_s_methods(root_module, cls):
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::SciListElement_s() [constructor]
+    cls.add_constructor([])
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::SciListElement_s(ns3::SciListElement_s const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SciListElement_s const &', 'arg0')])
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_groupDstId [variable]
+    cls.add_instance_attribute('m_groupDstId', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_hopping [variable]
+    cls.add_instance_attribute('m_hopping', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_hoppingInfo [variable]
+    cls.add_instance_attribute('m_hoppingInfo', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_mcs [variable]
+    cls.add_instance_attribute('m_mcs', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_rbLen [variable]
+    cls.add_instance_attribute('m_rbLen', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_rbStart [variable]
+    cls.add_instance_attribute('m_rbStart', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_resPscch [variable]
+    cls.add_instance_attribute('m_resPscch', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_tbSize [variable]
+    cls.add_instance_attribute('m_tbSize', 'uint16_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_timing [variable]
+    cls.add_instance_attribute('m_timing', 'uint16_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SciListElement_s::m_trp [variable]
+    cls.add_instance_attribute('m_trp', 'uint8_t', is_const=False)
     return
 
 def register_Ns3SiConfiguration_s_methods(root_module, cls):
@@ -6741,6 +8383,248 @@ def register_Ns3Simulator_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3SlCtrlPacketInfo_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlCtrlPacketInfo_t::SlCtrlPacketInfo_t() [constructor]
+    cls.add_constructor([])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlCtrlPacketInfo_t::SlCtrlPacketInfo_t(ns3::SlCtrlPacketInfo_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlCtrlPacketInfo_t const &', 'arg0')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlCtrlPacketInfo_t::index [variable]
+    cls.add_instance_attribute('index', 'int', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlCtrlPacketInfo_t::sinr [variable]
+    cls.add_instance_attribute('sinr', 'double', is_const=False)
+    return
+
+def register_Ns3SlDciListElement_s_methods(root_module, cls):
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::SlDciListElement_s() [constructor]
+    cls.add_constructor([])
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::SlDciListElement_s(ns3::SlDciListElement_s const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlDciListElement_s const &', 'arg0')])
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_hopping [variable]
+    cls.add_instance_attribute('m_hopping', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_hoppingInfo [variable]
+    cls.add_instance_attribute('m_hoppingInfo', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_rbLen [variable]
+    cls.add_instance_attribute('m_rbLen', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_rbStart [variable]
+    cls.add_instance_attribute('m_rbStart', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_resPscch [variable]
+    cls.add_instance_attribute('m_resPscch', 'uint16_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_tpc [variable]
+    cls.add_instance_attribute('m_tpc', 'uint8_t', is_const=False)
+    ## ff-mac-common.h (module 'lte'): ns3::SlDciListElement_s::m_trp [variable]
+    cls.add_instance_attribute('m_trp', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3SlDiscTbId_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDiscTbId_t::SlDiscTbId_t(ns3::SlDiscTbId_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlDiscTbId_t const &', 'arg0')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDiscTbId_t::SlDiscTbId_t() [constructor]
+    cls.add_constructor([])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDiscTbId_t::SlDiscTbId_t(uint16_t const a, uint8_t const b) [constructor]
+    cls.add_constructor([param('uint16_t const', 'a'), param('uint8_t const', 'b')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDiscTbId_t::m_resPsdch [variable]
+    cls.add_instance_attribute('m_resPsdch', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDiscTbId_t::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3SlDisctbInfo_t_methods(root_module, cls):
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::SlDisctbInfo_t() [constructor]
+    cls.add_constructor([])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::SlDisctbInfo_t(ns3::SlDisctbInfo_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlDisctbInfo_t const &', 'arg0')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::corrupt [variable]
+    cls.add_instance_attribute('corrupt', 'bool', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::harqFeedbackSent [variable]
+    cls.add_instance_attribute('harqFeedbackSent', 'bool', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::index [variable]
+    cls.add_instance_attribute('index', 'int', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::mi [variable]
+    cls.add_instance_attribute('mi', 'double', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::ndi [variable]
+    cls.add_instance_attribute('ndi', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::rbBitmap [variable]
+    cls.add_instance_attribute('rbBitmap', 'std::vector< int >', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::resPsdch [variable]
+    cls.add_instance_attribute('resPsdch', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::rv [variable]
+    cls.add_instance_attribute('rv', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlDisctbInfo_t::sinr [variable]
+    cls.add_instance_attribute('sinr', 'double', is_const=False)
+    return
+
+def register_Ns3SlPhyReceptionStatParameters_methods(root_module, cls):
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::SlPhyReceptionStatParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::SlPhyReceptionStatParameters(ns3::SlPhyReceptionStatParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlPhyReceptionStatParameters const &', 'arg0')])
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_cellId [variable]
+    cls.add_instance_attribute('m_cellId', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_correctness [variable]
+    cls.add_instance_attribute('m_correctness', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_groupDstId [variable]
+    cls.add_instance_attribute('m_groupDstId', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_hopping [variable]
+    cls.add_instance_attribute('m_hopping', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_hoppingInfo [variable]
+    cls.add_instance_attribute('m_hoppingInfo', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_iTrp [variable]
+    cls.add_instance_attribute('m_iTrp', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_imsi [variable]
+    cls.add_instance_attribute('m_imsi', 'uint64_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_mcs [variable]
+    cls.add_instance_attribute('m_mcs', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_rbLen [variable]
+    cls.add_instance_attribute('m_rbLen', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_rbStart [variable]
+    cls.add_instance_attribute('m_rbStart', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_resPscch [variable]
+    cls.add_instance_attribute('m_resPscch', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_size [variable]
+    cls.add_instance_attribute('m_size', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyReceptionStatParameters::m_timestamp [variable]
+    cls.add_instance_attribute('m_timestamp', 'int64_t', is_const=False)
+    return
+
+def register_Ns3SlPhyTransmissionStatParameters_methods(root_module, cls):
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::SlPhyTransmissionStatParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::SlPhyTransmissionStatParameters(ns3::SlPhyTransmissionStatParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlPhyTransmissionStatParameters const &', 'arg0')])
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_ccId [variable]
+    cls.add_instance_attribute('m_ccId', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_cellId [variable]
+    cls.add_instance_attribute('m_cellId', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_hopping [variable]
+    cls.add_instance_attribute('m_hopping', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_hoppingInfo [variable]
+    cls.add_instance_attribute('m_hoppingInfo', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_iTrp [variable]
+    cls.add_instance_attribute('m_iTrp', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_imsi [variable]
+    cls.add_instance_attribute('m_imsi', 'uint64_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_rbLen [variable]
+    cls.add_instance_attribute('m_rbLen', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_rbStart [variable]
+    cls.add_instance_attribute('m_rbStart', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_resPscch [variable]
+    cls.add_instance_attribute('m_resPscch', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_timestamp [variable]
+    cls.add_instance_attribute('m_timestamp', 'int64_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlPhyTransmissionStatParameters::m_tpc [variable]
+    cls.add_instance_attribute('m_tpc', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3SlRxPacketInfo_t_methods(root_module, cls):
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlRxPacketInfo_t::params [variable]
+    cls.add_instance_attribute('params', 'ns3::Ptr< ns3::LteSpectrumSignalParametersSlFrame >', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlRxPacketInfo_t::rbBitmap [variable]
+    cls.add_instance_attribute('rbBitmap', 'std::vector< int >', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlRxPacketInfo_t::SlRxPacketInfo_t(ns3::SlRxPacketInfo_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlRxPacketInfo_t const &', 'arg0')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlRxPacketInfo_t::SlRxPacketInfo_t() [constructor]
+    cls.add_constructor([])
+    return
+
+def register_Ns3SlTbId_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlTbId_t::SlTbId_t(ns3::SlTbId_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlTbId_t const &', 'arg0')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlTbId_t::SlTbId_t() [constructor]
+    cls.add_constructor([])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlTbId_t::SlTbId_t(uint16_t const a, uint8_t const b) [constructor]
+    cls.add_constructor([param('uint16_t const', 'a'), param('uint8_t const', 'b')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlTbId_t::m_l1dst [variable]
+    cls.add_instance_attribute('m_l1dst', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SlTbId_t::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3SlUeMacStatParameters_methods(root_module, cls):
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::SlUeMacStatParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::SlUeMacStatParameters(ns3::SlUeMacStatParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlUeMacStatParameters const &', 'arg0')])
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_cellId [variable]
+    cls.add_instance_attribute('m_cellId', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_frameNo [variable]
+    cls.add_instance_attribute('m_frameNo', 'uint32_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_groupDstId [variable]
+    cls.add_instance_attribute('m_groupDstId', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_hopping [variable]
+    cls.add_instance_attribute('m_hopping', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_hoppingInfo [variable]
+    cls.add_instance_attribute('m_hoppingInfo', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_imsi [variable]
+    cls.add_instance_attribute('m_imsi', 'uint64_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_mcs [variable]
+    cls.add_instance_attribute('m_mcs', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_periodStartFrame [variable]
+    cls.add_instance_attribute('m_periodStartFrame', 'uint32_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_periodStartSubframe [variable]
+    cls.add_instance_attribute('m_periodStartSubframe', 'uint32_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_pscchTxLengthRB [variable]
+    cls.add_instance_attribute('m_pscchTxLengthRB', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_pscchTxStartRB [variable]
+    cls.add_instance_attribute('m_pscchTxStartRB', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_psschItrp [variable]
+    cls.add_instance_attribute('m_psschItrp', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_resIndex [variable]
+    cls.add_instance_attribute('m_resIndex', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_rnti [variable]
+    cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_rv [variable]
+    cls.add_instance_attribute('m_rv', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_sidelinkDropped [variable]
+    cls.add_instance_attribute('m_sidelinkDropped', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_subframeNo [variable]
+    cls.add_instance_attribute('m_subframeNo', 'uint32_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_tbSize [variable]
+    cls.add_instance_attribute('m_tbSize', 'uint16_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_timestamp [variable]
+    cls.add_instance_attribute('m_timestamp', 'int64_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_txLengthRB [variable]
+    cls.add_instance_attribute('m_txLengthRB', 'uint8_t', is_const=False)
+    ## lte-common.h (module 'lte'): ns3::SlUeMacStatParameters::m_txStartRB [variable]
+    cls.add_instance_attribute('m_txStartRB', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3SltbInfo_t_methods(root_module, cls):
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::SltbInfo_t() [constructor]
+    cls.add_constructor([])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::SltbInfo_t(ns3::SltbInfo_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SltbInfo_t const &', 'arg0')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::corrupt [variable]
+    cls.add_instance_attribute('corrupt', 'bool', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::harqFeedbackSent [variable]
+    cls.add_instance_attribute('harqFeedbackSent', 'bool', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::mcs [variable]
+    cls.add_instance_attribute('mcs', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::mi [variable]
+    cls.add_instance_attribute('mi', 'double', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::ndi [variable]
+    cls.add_instance_attribute('ndi', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::rbBitmap [variable]
+    cls.add_instance_attribute('rbBitmap', 'std::vector< int >', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::rv [variable]
+    cls.add_instance_attribute('rv', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::sinr [variable]
+    cls.add_instance_attribute('sinr', 'double', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::SltbInfo_t::size [variable]
+    cls.add_instance_attribute('size', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3SpsConfig_s_methods(root_module, cls):
     ## ff-mac-common.h (module 'lte'): ns3::SpsConfig_s::SpsConfig_s() [constructor]
     cls.add_constructor([])
@@ -6791,12 +8675,12 @@ def register_Ns3Tag_methods(root_module, cls):
     cls.add_method('Deserialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## tag.h (module 'network'): uint32_t ns3::Tag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## tag.h (module 'network'): static ns3::TypeId ns3::Tag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -6806,12 +8690,12 @@ def register_Ns3Tag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## tag.h (module 'network'): void ns3::Tag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3TagBuffer_methods(root_module, cls):
@@ -6896,6 +8780,17 @@ def register_Ns3Tap_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3TbErrorStats_t_methods(root_module, cls):
+    ## lte-nist-error-model.h (module 'lte'): ns3::TbErrorStats_t::TbErrorStats_t() [constructor]
+    cls.add_constructor([])
+    ## lte-nist-error-model.h (module 'lte'): ns3::TbErrorStats_t::TbErrorStats_t(ns3::TbErrorStats_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TbErrorStats_t const &', 'arg0')])
+    ## lte-nist-error-model.h (module 'lte'): ns3::TbErrorStats_t::sinr [variable]
+    cls.add_instance_attribute('sinr', 'double', is_const=False)
+    ## lte-nist-error-model.h (module 'lte'): ns3::TbErrorStats_t::tbler [variable]
+    cls.add_instance_attribute('tbler', 'double', is_const=False)
+    return
+
 def register_Ns3TbId_t_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
@@ -6909,6 +8804,207 @@ def register_Ns3TbId_t_methods(root_module, cls):
     cls.add_instance_attribute('m_layer', 'uint8_t', is_const=False)
     ## lte-spectrum-phy.h (module 'lte'): ns3::TbId_t::m_rnti [variable]
     cls.add_instance_attribute('m_rnti', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3Time_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('<=')
+    cls.add_binary_comparison_operator('>=')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
+    cls.add_output_stream_operator()
+    ## nstime.h (module 'core'): ns3::Time::Time() [constructor]
+    cls.add_constructor([])
+    ## nstime.h (module 'core'): ns3::Time::Time(ns3::Time const & o) [constructor]
+    cls.add_constructor([param('ns3::Time const &', 'o')])
+    ## nstime.h (module 'core'): ns3::Time::Time(double v) [constructor]
+    cls.add_constructor([param('double', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(int v) [constructor]
+    cls.add_constructor([param('int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(long int v) [constructor]
+    cls.add_constructor([param('long int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(long long int v) [constructor]
+    cls.add_constructor([param('long long int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(unsigned int v) [constructor]
+    cls.add_constructor([param('unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(long unsigned int v) [constructor]
+    cls.add_constructor([param('long unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(long long unsigned int v) [constructor]
+    cls.add_constructor([param('long long unsigned int', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & v) [constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
+    ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
+    cls.add_constructor([param('std::string const &', 's')])
+    ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
+    cls.add_method('As', 
+                   'ns3::TimeWithUnit', 
+                   [param('ns3::Time::Unit const', 'unit')], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int ns3::Time::Compare(ns3::Time const & o) const [member function]
+    cls.add_method('Compare', 
+                   'int', 
+                   [param('ns3::Time const &', 'o')], 
+                   is_const=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value, ns3::Time::Unit unit) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit unit) [member function]
+    cls.add_method('FromDouble', 
+                   'ns3::Time', 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
+    cls.add_method('FromInteger', 
+                   'ns3::Time', 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
+    cls.add_method('GetDays', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetDouble() const [member function]
+    cls.add_method('GetDouble', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetFemtoSeconds() const [member function]
+    cls.add_method('GetFemtoSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetHours() const [member function]
+    cls.add_method('GetHours', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetInteger() const [member function]
+    cls.add_method('GetInteger', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetMicroSeconds() const [member function]
+    cls.add_method('GetMicroSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetMilliSeconds() const [member function]
+    cls.add_method('GetMilliSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetMinutes() const [member function]
+    cls.add_method('GetMinutes', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetNanoSeconds() const [member function]
+    cls.add_method('GetNanoSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetPicoSeconds() const [member function]
+    cls.add_method('GetPicoSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): static ns3::Time::Unit ns3::Time::GetResolution() [member function]
+    cls.add_method('GetResolution', 
+                   'ns3::Time::Unit', 
+                   [], 
+                   is_static=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetSeconds() const [member function]
+    cls.add_method('GetSeconds', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::GetTimeStep() const [member function]
+    cls.add_method('GetTimeStep', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::GetYears() const [member function]
+    cls.add_method('GetYears', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): bool ns3::Time::IsNegative() const [member function]
+    cls.add_method('IsNegative', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): bool ns3::Time::IsPositive() const [member function]
+    cls.add_method('IsPositive', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): bool ns3::Time::IsStrictlyNegative() const [member function]
+    cls.add_method('IsStrictlyNegative', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): bool ns3::Time::IsStrictlyPositive() const [member function]
+    cls.add_method('IsStrictlyPositive', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): bool ns3::Time::IsZero() const [member function]
+    cls.add_method('IsZero', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Max() [member function]
+    cls.add_method('Max', 
+                   'ns3::Time', 
+                   [], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Min() [member function]
+    cls.add_method('Min', 
+                   'ns3::Time', 
+                   [], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
+    cls.add_method('SetResolution', 
+                   'void', 
+                   [param('ns3::Time::Unit', 'resolution')], 
+                   is_static=True)
+    ## nstime.h (module 'core'): static bool ns3::Time::StaticInit() [member function]
+    cls.add_method('StaticInit', 
+                   'bool', 
+                   [], 
+                   is_static=True)
+    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit unit) const [member function]
+    cls.add_method('To', 
+                   'ns3::int64x64_t', 
+                   [param('ns3::Time::Unit', 'unit')], 
+                   is_const=True)
+    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit unit) const [member function]
+    cls.add_method('ToDouble', 
+                   'double', 
+                   [param('ns3::Time::Unit', 'unit')], 
+                   is_const=True)
+    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit unit) const [member function]
+    cls.add_method('ToInteger', 
+                   'int64_t', 
+                   [param('ns3::Time::Unit', 'unit')], 
+                   is_const=True)
     return
 
 def register_Ns3TimeWithUnit_methods(root_module, cls):
@@ -7288,32 +9384,32 @@ def register_Ns3UanPhyListener_methods(root_module, cls):
     cls.add_method('NotifyCcaEnd', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyCcaStart() [member function]
     cls.add_method('NotifyCcaStart', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyRxEndError() [member function]
     cls.add_method('NotifyRxEndError', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyRxEndOk() [member function]
     cls.add_method('NotifyRxEndOk', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyRxStart() [member function]
     cls.add_method('NotifyRxStart', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyTxStart(ns3::Time duration) [member function]
     cls.add_method('NotifyTxStart', 
                    'void', 
                    [param('ns3::Time', 'duration')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3UanTxMode_methods(root_module, cls):
@@ -7901,6 +9997,8 @@ def register_Ns3TbInfo_t_methods(root_module, cls):
     cls.add_instance_attribute('rbBitmap', 'std::vector< int >', is_const=False)
     ## lte-spectrum-phy.h (module 'lte'): ns3::tbInfo_t::rv [variable]
     cls.add_instance_attribute('rv', 'uint8_t', is_const=False)
+    ## lte-spectrum-phy.h (module 'lte'): ns3::tbInfo_t::sinr [variable]
+    cls.add_instance_attribute('sinr', 'double', is_const=False)
     ## lte-spectrum-phy.h (module 'lte'): ns3::tbInfo_t::size [variable]
     cls.add_instance_attribute('size', 'uint16_t', is_const=False)
     return
@@ -7924,12 +10022,12 @@ def register_Ns3AnimByteTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## animation-interface.h (module 'netanim'): uint32_t ns3::AnimByteTag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## animation-interface.h (module 'netanim'): static ns3::TypeId ns3::AnimByteTag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -7939,12 +10037,12 @@ def register_Ns3AnimByteTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## animation-interface.h (module 'netanim'): void ns3::AnimByteTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## animation-interface.h (module 'netanim'): void ns3::AnimByteTag::Set(uint64_t AnimUid) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -7960,7 +10058,7 @@ def register_Ns3Chunk_methods(root_module, cls):
     cls.add_method('Deserialize', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## chunk.h (module 'network'): uint32_t ns3::Chunk::Deserialize(ns3::Buffer::Iterator start, ns3::Buffer::Iterator end) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
@@ -7975,7 +10073,7 @@ def register_Ns3Chunk_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3EpsBearer_methods(root_module, cls):
@@ -7991,7 +10089,7 @@ def register_Ns3EpsBearer_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## eps-bearer.h (module 'lte'): uint16_t ns3::EpsBearer::GetPacketDelayBudgetMs() const [member function]
     cls.add_method('GetPacketDelayBudgetMs', 
                    'uint16_t', 
@@ -8044,12 +10142,12 @@ def register_Ns3Header_methods(root_module, cls):
     cls.add_method('Deserialize', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## header.h (module 'network'): uint32_t ns3::Header::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## header.h (module 'network'): static ns3::TypeId ns3::Header::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -8059,12 +10157,12 @@ def register_Ns3Header_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## header.h (module 'network'): void ns3::Header::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3Ipv4Header_methods(root_module, cls):
@@ -8120,7 +10218,7 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-header.h (module 'internet'): uint16_t ns3::Ipv4Header::GetPayloadSize() const [member function]
     cls.add_method('GetPayloadSize', 
                    'uint16_t', 
@@ -8135,7 +10233,7 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-header.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4Header::GetSource() const [member function]
     cls.add_method('GetSource', 
                    'ns3::Ipv4Address', 
@@ -8175,12 +10273,12 @@ def register_Ns3Ipv4Header_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-header.h (module 'internet'): void ns3::Ipv4Header::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-header.h (module 'internet'): void ns3::Ipv4Header::SetDestination(ns3::Ipv4Address destination) [member function]
     cls.add_method('SetDestination', 
                    'void', 
@@ -8248,42 +10346,47 @@ def register_Ns3LteEnbRrcSapProvider_methods(root_module, cls):
     cls.add_method('CompleteSetupUe', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteEnbRrcSapProvider::CompleteSetupUeParameters', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest(uint16_t rnti) [member function]
     cls.add_method('RecvIdealUeContextRemoveRequest', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvMeasurementReport(uint16_t rnti, ns3::LteRrcSap::MeasurementReport msg) [member function]
     cls.add_method('RecvMeasurementReport', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasurementReport', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReconfigurationCompleted msg) [member function]
     cls.add_method('RecvRrcConnectionReconfigurationCompleted', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReconfigurationCompleted', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReestablishmentComplete msg) [member function]
     cls.add_method('RecvRrcConnectionReestablishmentComplete', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReestablishmentComplete', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReestablishmentRequest msg) [member function]
     cls.add_method('RecvRrcConnectionReestablishmentRequest', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReestablishmentRequest', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvRrcConnectionRequest(uint16_t rnti, ns3::LteRrcSap::RrcConnectionRequest msg) [member function]
     cls.add_method('RecvRrcConnectionRequest', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionRequest', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted(uint16_t rnti, ns3::LteRrcSap::RrcConnectionSetupCompleted msg) [member function]
     cls.add_method('RecvRrcConnectionSetupCompleted', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionSetupCompleted', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvSidelinkUeInformation(uint16_t rnti, ns3::LteRrcSap::SidelinkUeInformation msg) [member function]
+    cls.add_method('RecvSidelinkUeInformation', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::SidelinkUeInformation', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteEnbRrcSapProviderCompleteSetupUeParameters_methods(root_module, cls):
@@ -8306,67 +10409,67 @@ def register_Ns3LteEnbRrcSapUser_methods(root_module, cls):
     cls.add_method('DecodeHandoverCommand', 
                    'ns3::LteRrcSap::RrcConnectionReconfiguration', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::HandoverPreparationInfo ns3::LteEnbRrcSapUser::DecodeHandoverPreparationInformation(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DecodeHandoverPreparationInformation', 
                    'ns3::LteRrcSap::HandoverPreparationInfo', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): ns3::Ptr<ns3::Packet> ns3::LteEnbRrcSapUser::EncodeHandoverCommand(ns3::LteRrcSap::RrcConnectionReconfiguration msg) [member function]
     cls.add_method('EncodeHandoverCommand', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('ns3::LteRrcSap::RrcConnectionReconfiguration', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): ns3::Ptr<ns3::Packet> ns3::LteEnbRrcSapUser::EncodeHandoverPreparationInformation(ns3::LteRrcSap::HandoverPreparationInfo msg) [member function]
     cls.add_method('EncodeHandoverPreparationInformation', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('ns3::LteRrcSap::HandoverPreparationInfo', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::RemoveUe(uint16_t rnti) [member function]
     cls.add_method('RemoveUe', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionReconfiguration(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReconfiguration msg) [member function]
     cls.add_method('SendRrcConnectionReconfiguration', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReconfiguration', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionReestablishment(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReestablishment msg) [member function]
     cls.add_method('SendRrcConnectionReestablishment', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReestablishment', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionReestablishmentReject(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReestablishmentReject msg) [member function]
     cls.add_method('SendRrcConnectionReestablishmentReject', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReestablishmentReject', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionReject(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReject msg) [member function]
     cls.add_method('SendRrcConnectionReject', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionReject', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionRelease(uint16_t rnti, ns3::LteRrcSap::RrcConnectionRelease msg) [member function]
     cls.add_method('SendRrcConnectionRelease', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionRelease', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionSetup(uint16_t rnti, ns3::LteRrcSap::RrcConnectionSetup msg) [member function]
     cls.add_method('SendRrcConnectionSetup', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionSetup', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendSystemInformation(uint16_t cellId, ns3::LteRrcSap::SystemInformation msg) [member function]
     cls.add_method('SendSystemInformation', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('ns3::LteRrcSap::SystemInformation', 'msg')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SetupUe(uint16_t rnti, ns3::LteEnbRrcSapUser::SetupUeParameters params) [member function]
     cls.add_method('SetupUe', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteEnbRrcSapUser::SetupUeParameters', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteEnbRrcSapUserSetupUeParameters_methods(root_module, cls):
@@ -8400,17 +10503,17 @@ def register_Ns3Object_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## object.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Object::GetObject() const [member function]
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
                    [], 
-                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
+                   template_parameters=['ns3::Object'], custom_template_method_name='GetObject', is_const=True)
     ## object.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Object::GetObject(ns3::TypeId tid) const [member function]
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
                    [param('ns3::TypeId', 'tid')], 
-                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
+                   template_parameters=['ns3::Object'], custom_template_method_name='GetObject', is_const=True)
     ## object.h (module 'core'): static ns3::TypeId ns3::Object::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -8432,17 +10535,17 @@ def register_Ns3Object_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## object.h (module 'core'): void ns3::Object::NotifyNewAggregate() [member function]
     cls.add_method('NotifyNewAggregate', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
@@ -8509,7 +10612,7 @@ def register_Ns3PacketBurst_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3PropagationDelayModel_methods(root_module, cls):
@@ -8525,7 +10628,7 @@ def register_Ns3PropagationDelayModel_methods(root_module, cls):
     cls.add_method('GetDelay', 
                    'ns3::Time', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::PropagationDelayModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -8535,7 +10638,7 @@ def register_Ns3PropagationDelayModel_methods(root_module, cls):
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3PropagationLossModel_methods(root_module, cls):
@@ -8567,12 +10670,12 @@ def register_Ns3PropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::PropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
@@ -8584,7 +10687,7 @@ def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
     cls.add_method('GetDelay', 
                    'ns3::Time', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## propagation-delay-model.h (module 'propagation'): static ns3::TypeId ns3::RandomPropagationDelayModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -8594,7 +10697,7 @@ def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
@@ -8609,12 +10712,12 @@ def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::RandomPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RandomVariableStream_methods(root_module, cls):
@@ -8647,17 +10750,17 @@ def register_Ns3RandomVariableStream_methods(root_module, cls):
     cls.add_method('GetValue', 
                    'double', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## random-variable-stream.h (module 'core'): uint32_t ns3::RandomVariableStream::GetInteger() [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## random-variable-stream.h (module 'core'): ns3::RngStream * ns3::RandomVariableStream::Peek() const [member function]
     cls.add_method('Peek', 
                    'ns3::RngStream *', 
                    [], 
-                   is_const=True, visibility='protected')
+                   visibility='protected', is_const=True)
     return
 
 def register_Ns3RangePropagationLossModel_methods(root_module, cls):
@@ -8672,12 +10775,12 @@ def register_Ns3RangePropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::RangePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3SequentialRandomVariable_methods(root_module, cls):
@@ -8718,6 +10821,340 @@ def register_Ns3SequentialRandomVariable_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_virtual=True)
+    return
+
+def register_Ns3SidelinkCommResourcePool_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkCommResourcePool(ns3::SidelinkCommResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkCommResourcePool const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkCommResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): std::vector<unsigned int, std::allocator<unsigned int> > ns3::SidelinkCommResourcePool::GetAllPsschSubframes() [member function]
+    cls.add_method('GetAllPsschSubframes', 
+                   'std::vector< unsigned int >', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo ns3::SidelinkCommResourcePool::GetCurrentScPeriod(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('GetCurrentScPeriod', 
+                   'ns3::SidelinkCommResourcePool::SubframeInfo', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')])
+    ## lte-sl-pool.h (module 'lte'): ns3::LteRrcSap::SlHoppingConfigComm ns3::SidelinkCommResourcePool::GetDataHoppingConfig() [member function]
+    cls.add_method('GetDataHoppingConfig', 
+                   'ns3::LteRrcSap::SlHoppingConfigComm', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkCommResourcePool::GetNPscch() [member function]
+    cls.add_method('GetNPscch', 
+                   'uint32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo ns3::SidelinkCommResourcePool::GetNextScPeriod(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('GetNextScPeriod', 
+                   'ns3::SidelinkCommResourcePool::SubframeInfo', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')])
+    ## lte-sl-pool.h (module 'lte'): std::list<unsigned char, std::allocator<unsigned char> > ns3::SidelinkCommResourcePool::GetPscchOpportunities(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('GetPscchOpportunities', 
+                   'std::list< unsigned char >', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')])
+    ## lte-sl-pool.h (module 'lte'): std::vector<int, std::allocator<int> > ns3::SidelinkCommResourcePool::GetPscchRbs(uint32_t frameNo, uint32_t subframeNo, uint32_t n) [member function]
+    cls.add_method('GetPscchRbs', 
+                   'std::vector< int >', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo'), param('uint32_t', 'n')])
+    ## lte-sl-pool.h (module 'lte'): std::list<ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo, std::allocator<ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo> > ns3::SidelinkCommResourcePool::GetPscchTransmissions(uint32_t n) [member function]
+    cls.add_method('GetPscchTransmissions', 
+                   'std::list< ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo >', 
+                   [param('uint32_t', 'n')])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkCommResourcePool::GetPsschBandwidth() [member function]
+    cls.add_method('GetPsschBandwidth', 
+                   'uint32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): std::list<ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo, std::allocator<ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo> > ns3::SidelinkCommResourcePool::GetPsschTransmissions(ns3::SidelinkCommResourcePool::SubframeInfo periodStart, uint8_t itrp, uint8_t rbStart, uint8_t rbLen) [member function]
+    cls.add_method('GetPsschTransmissions', 
+                   'std::list< ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo >', 
+                   [param('ns3::SidelinkCommResourcePool::SubframeInfo', 'periodStart'), param('uint8_t', 'itrp'), param('uint8_t', 'rbStart'), param('uint8_t', 'rbLen')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SlPoolType ns3::SidelinkCommResourcePool::GetSchedulingType() [member function]
+    cls.add_method('GetSchedulingType', 
+                   'ns3::SidelinkCommResourcePool::SlPoolType', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): std::vector<unsigned int, std::allocator<unsigned int> > ns3::SidelinkCommResourcePool::GetTbPerSlPeriod() [member function]
+    cls.add_method('GetTbPerSlPeriod', 
+                   'std::vector< unsigned int >', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): static ns3::TypeId ns3::SidelinkCommResourcePool::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-sl-pool.h (module 'lte'): std::vector<std::vector<unsigned char, std::allocator<unsigned char> >, std::allocator<std::vector<unsigned char, std::allocator<unsigned char> > > > ns3::SidelinkCommResourcePool::GetValidAllocations() [member function]
+    cls.add_method('GetValidAllocations', 
+                   'std::vector< std::vector< unsigned char > >', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): std::vector<unsigned char, std::allocator<unsigned char> > ns3::SidelinkCommResourcePool::GetValidRBstart(uint8_t rbLen) [member function]
+    cls.add_method('GetValidRBstart', 
+                   'std::vector< unsigned char >', 
+                   [param('uint8_t', 'rbLen')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkCommResourcePool::SetPool(ns3::LteRrcSap::SlCommResourcePool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlCommResourcePool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkCommResourcePool::SetPool(ns3::LteRrcSap::SlPreconfigCommPool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlPreconfigCommPool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkCommResourcePool::Initialize() [member function]
+    cls.add_method('Initialize', 
+                   'void', 
+                   [], 
+                   visibility='protected')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo ns3::SidelinkCommResourcePool::TranslatePscch(ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo info) [member function]
+    cls.add_method('TranslatePscch', 
+                   'ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo', 
+                   [param('ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo', 'info')], 
+                   visibility='protected')
+    return
+
+def register_Ns3SidelinkCommResourcePoolSidelinkTransmissionInfo_methods(root_module, cls):
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo::SidelinkTransmissionInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo::SidelinkTransmissionInfo(ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo::nbRb [variable]
+    cls.add_instance_attribute('nbRb', 'uint8_t', is_const=False)
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo::rbStart [variable]
+    cls.add_instance_attribute('rbStart', 'uint8_t', is_const=False)
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SidelinkTransmissionInfo::subframe [variable]
+    cls.add_instance_attribute('subframe', 'ns3::SidelinkCommResourcePool::SubframeInfo', is_const=False)
+    return
+
+def register_Ns3SidelinkCommResourcePoolSubframeInfo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_numeric_operator('-', root_module['ns3::SidelinkCommResourcePool::SubframeInfo'], root_module['ns3::SidelinkCommResourcePool::SubframeInfo'], param('ns3::SidelinkCommResourcePool::SubframeInfo const &', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::SidelinkCommResourcePool::SubframeInfo'], root_module['ns3::SidelinkCommResourcePool::SubframeInfo'], param('ns3::SidelinkCommResourcePool::SubframeInfo const &', 'right'))
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo::SubframeInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo::SubframeInfo(ns3::SidelinkCommResourcePool::SubframeInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkCommResourcePool::SubframeInfo const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo::frameNo [variable]
+    cls.add_instance_attribute('frameNo', 'uint32_t', is_const=False)
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkCommResourcePool::SubframeInfo::subframeNo [variable]
+    cls.add_instance_attribute('subframeNo', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3SidelinkDiscResourcePool_methods(root_module, cls):
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkDiscResourcePool(ns3::SidelinkDiscResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkDiscResourcePool const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkDiscResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > ns3::SidelinkDiscResourcePool::GetConflictingResources(uint32_t res) [member function]
+    cls.add_method('GetConflictingResources', 
+                   'std::set< unsigned int >', 
+                   [param('uint32_t', 'res')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo ns3::SidelinkDiscResourcePool::GetCurrentDiscPeriod(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('GetCurrentDiscPeriod', 
+                   'ns3::SidelinkDiscResourcePool::SubframeInfo', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')])
+    ## lte-sl-pool.h (module 'lte'): int32_t ns3::SidelinkDiscResourcePool::GetDiscPeriod() [member function]
+    cls.add_method('GetDiscPeriod', 
+                   'int32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkDiscResourcePool::GetNPsdch() [member function]
+    cls.add_method('GetNPsdch', 
+                   'uint32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkDiscResourcePool::GetNRbPairs() [member function]
+    cls.add_method('GetNRbPairs', 
+                   'uint32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkDiscResourcePool::GetNSubframes() [member function]
+    cls.add_method('GetNSubframes', 
+                   'uint32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo ns3::SidelinkDiscResourcePool::GetNextDiscPeriod(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('GetNextDiscPeriod', 
+                   'ns3::SidelinkDiscResourcePool::SubframeInfo', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')])
+    ## lte-sl-pool.h (module 'lte'): uint8_t ns3::SidelinkDiscResourcePool::GetNumRetx() [member function]
+    cls.add_method('GetNumRetx', 
+                   'uint8_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): std::vector<unsigned int, std::allocator<unsigned int> > ns3::SidelinkDiscResourcePool::GetPsdchOpportunities(uint32_t frameNo, uint32_t subframeNo) [member function]
+    cls.add_method('GetPsdchOpportunities', 
+                   'std::vector< unsigned int >', 
+                   [param('uint32_t', 'frameNo'), param('uint32_t', 'subframeNo')])
+    ## lte-sl-pool.h (module 'lte'): std::list<ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo, std::allocator<ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo> > ns3::SidelinkDiscResourcePool::GetPsdchTransmissions(uint32_t npsdch) [member function]
+    cls.add_method('GetPsdchTransmissions', 
+                   'std::list< ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo >', 
+                   [param('uint32_t', 'npsdch')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SlPoolType ns3::SidelinkDiscResourcePool::GetSchedulingType() [member function]
+    cls.add_method('GetSchedulingType', 
+                   'ns3::SidelinkDiscResourcePool::SlPoolType', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): static ns3::TypeId ns3::SidelinkDiscResourcePool::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkDiscResourcePool::SetPool(ns3::LteRrcSap::SlDiscResourcePool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlDiscResourcePool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkDiscResourcePool::SetPool(ns3::LteRrcSap::SlPreconfigDiscPool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlPreconfigDiscPool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkDiscResourcePool::TxProbabilityAsInt(ns3::LteRrcSap::TxProbability prob) [member function]
+    cls.add_method('TxProbabilityAsInt', 
+                   'uint32_t', 
+                   [param('ns3::LteRrcSap::TxProbability', 'prob')])
+    ## lte-sl-pool.h (module 'lte'): static ns3::LteRrcSap::TxProbability ns3::SidelinkDiscResourcePool::TxProbabilityFromInt(uint32_t p) [member function]
+    cls.add_method('TxProbabilityFromInt', 
+                   'ns3::LteRrcSap::TxProbability', 
+                   [param('uint32_t', 'p')], 
+                   is_static=True)
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkDiscResourcePool::Initialize() [member function]
+    cls.add_method('Initialize', 
+                   'void', 
+                   [], 
+                   visibility='protected')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo ns3::SidelinkDiscResourcePool::TranslatePsdch(ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo info) [member function]
+    cls.add_method('TranslatePsdch', 
+                   'ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo', 
+                   [param('ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo', 'info')], 
+                   visibility='protected')
+    return
+
+def register_Ns3SidelinkDiscResourcePoolSidelinkTransmissionInfo_methods(root_module, cls):
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo::SidelinkTransmissionInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo::SidelinkTransmissionInfo(ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo::nbRb [variable]
+    cls.add_instance_attribute('nbRb', 'uint8_t', is_const=False)
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo::rbStart [variable]
+    cls.add_instance_attribute('rbStart', 'uint8_t', is_const=False)
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SidelinkTransmissionInfo::subframe [variable]
+    cls.add_instance_attribute('subframe', 'ns3::SidelinkDiscResourcePool::SubframeInfo', is_const=False)
+    return
+
+def register_Ns3SidelinkDiscResourcePoolSubframeInfo_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_numeric_operator('+', root_module['ns3::SidelinkDiscResourcePool::SubframeInfo'], root_module['ns3::SidelinkDiscResourcePool::SubframeInfo'], param('ns3::SidelinkDiscResourcePool::SubframeInfo const &', 'right'))
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo::SubframeInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo::SubframeInfo(ns3::SidelinkDiscResourcePool::SubframeInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkDiscResourcePool::SubframeInfo const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo::frameNo [variable]
+    cls.add_instance_attribute('frameNo', 'uint32_t', is_const=False)
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkDiscResourcePool::SubframeInfo::subframeNo [variable]
+    cls.add_instance_attribute('subframeNo', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3SidelinkRxCommResourcePool_methods(root_module, cls):
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkRxCommResourcePool::SidelinkRxCommResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkRxCommResourcePool::SidelinkRxCommResourcePool(ns3::SidelinkRxCommResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkRxCommResourcePool const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): static ns3::TypeId ns3::SidelinkRxCommResourcePool::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SidelinkRxDiscResourcePool_methods(root_module, cls):
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkRxDiscResourcePool::SidelinkRxDiscResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkRxDiscResourcePool::SidelinkRxDiscResourcePool(ns3::SidelinkRxDiscResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkRxDiscResourcePool const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): static ns3::TypeId ns3::SidelinkRxDiscResourcePool::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SidelinkTxCommResourcePool_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkTxCommResourcePool::SidelinkTxCommResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkTxCommResourcePool::SidelinkTxCommResourcePool(ns3::SidelinkTxCommResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkTxCommResourcePool const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): uint8_t ns3::SidelinkTxCommResourcePool::GetIndex() [member function]
+    cls.add_method('GetIndex', 
+                   'uint8_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint8_t ns3::SidelinkTxCommResourcePool::GetMcs() [member function]
+    cls.add_method('GetMcs', 
+                   'uint8_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint8_t ns3::SidelinkTxCommResourcePool::GetPoolIdentity() [member function]
+    cls.add_method('GetPoolIdentity', 
+                   'uint8_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): static ns3::TypeId ns3::SidelinkTxCommResourcePool::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxCommResourcePool::SetPool(ns3::LteRrcSap::SlCommResourcePool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlCommResourcePool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxCommResourcePool::SetPool(ns3::LteRrcSap::SlPreconfigCommPool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlPreconfigCommPool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxCommResourcePool::SetScheduledTxParameters(uint16_t slrnti, ns3::LteRrcSap::SlMacMainConfigSl macMainConfig, ns3::LteRrcSap::SlCommResourcePool commTxConfig, uint8_t index) [member function]
+    cls.add_method('SetScheduledTxParameters', 
+                   'void', 
+                   [param('uint16_t', 'slrnti'), param('ns3::LteRrcSap::SlMacMainConfigSl', 'macMainConfig'), param('ns3::LteRrcSap::SlCommResourcePool', 'commTxConfig'), param('uint8_t', 'index')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxCommResourcePool::SetScheduledTxParameters(uint16_t slrnti, ns3::LteRrcSap::SlMacMainConfigSl macMainConfig, ns3::LteRrcSap::SlCommResourcePool commTxConfig, uint8_t index, uint8_t mcs) [member function]
+    cls.add_method('SetScheduledTxParameters', 
+                   'void', 
+                   [param('uint16_t', 'slrnti'), param('ns3::LteRrcSap::SlMacMainConfigSl', 'macMainConfig'), param('ns3::LteRrcSap::SlCommResourcePool', 'commTxConfig'), param('uint8_t', 'index'), param('uint8_t', 'mcs')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxCommResourcePool::SetUeSelectedTxParameters(uint8_t identity) [member function]
+    cls.add_method('SetUeSelectedTxParameters', 
+                   'void', 
+                   [param('uint8_t', 'identity')])
+    return
+
+def register_Ns3SidelinkTxDiscResourcePool_methods(root_module, cls):
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkTxDiscResourcePool::SidelinkTxDiscResourcePool() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-pool.h (module 'lte'): ns3::SidelinkTxDiscResourcePool::SidelinkTxDiscResourcePool(ns3::SidelinkTxDiscResourcePool const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SidelinkTxDiscResourcePool const &', 'arg0')])
+    ## lte-sl-pool.h (module 'lte'): uint8_t ns3::SidelinkTxDiscResourcePool::GetPoolIdentity() [member function]
+    cls.add_method('GetPoolIdentity', 
+                   'uint8_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): uint32_t ns3::SidelinkTxDiscResourcePool::GetTxProbability() [member function]
+    cls.add_method('GetTxProbability', 
+                   'uint32_t', 
+                   [])
+    ## lte-sl-pool.h (module 'lte'): static ns3::TypeId ns3::SidelinkTxDiscResourcePool::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxDiscResourcePool::SetPool(ns3::LteRrcSap::SlDiscResourcePool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlDiscResourcePool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxDiscResourcePool::SetPool(ns3::LteRrcSap::SlPreconfigDiscPool pool) [member function]
+    cls.add_method('SetPool', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlPreconfigDiscPool', 'pool')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxDiscResourcePool::SetScheduledTxParameters(ns3::LteRrcSap::SlDiscResourcePool discPool, ns3::LteRrcSap::SlTfIndexPairList discResources, ns3::LteRrcSap::SlHoppingConfigDisc discHopping) [member function]
+    cls.add_method('SetScheduledTxParameters', 
+                   'void', 
+                   [param('ns3::LteRrcSap::SlDiscResourcePool', 'discPool'), param('ns3::LteRrcSap::SlTfIndexPairList', 'discResources'), param('ns3::LteRrcSap::SlHoppingConfigDisc', 'discHopping')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxDiscResourcePool::SetTxProbability(uint32_t theta) [member function]
+    cls.add_method('SetTxProbability', 
+                   'void', 
+                   [param('uint32_t', 'theta')])
+    ## lte-sl-pool.h (module 'lte'): void ns3::SidelinkTxDiscResourcePool::SetUeSelectedTxParameters(uint8_t identity) [member function]
+    cls.add_method('SetUeSelectedTxParameters', 
+                   'void', 
+                   [param('uint8_t', 'identity')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
@@ -8797,6 +11234,13 @@ def register_Ns3SimpleRefCount__Ns3LteHarqPhy_Ns3Empty_Ns3DefaultDeleter__lt__ns
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter< ns3::LteHarqPhy > > const &', 'o')])
     return
 
+def register_Ns3SimpleRefCount__Ns3LteSlHarqPhy_Ns3Empty_Ns3DefaultDeleter__lt__ns3LteSlHarqPhy__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteSlHarqPhy> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteSlHarqPhy> >::SimpleRefCount(ns3::SimpleRefCount<ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteSlHarqPhy> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::LteSlHarqPhy, ns3::empty, ns3::DefaultDeleter< ns3::LteSlHarqPhy > > const &', 'o')])
+    return
+
 def register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -8862,17 +11306,17 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('Bind', 
                    'int', 
                    [param('ns3::Address const &', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Bind() [member function]
     cls.add_method('Bind', 
                    'int', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Bind6() [member function]
     cls.add_method('Bind6', 
                    'int', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): void ns3::Socket::BindToNetDevice(ns3::Ptr<ns3::NetDevice> netdevice) [member function]
     cls.add_method('BindToNetDevice', 
                    'void', 
@@ -8882,12 +11326,12 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('Close', 
                    'int', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Connect(ns3::Address const & address) [member function]
     cls.add_method('Connect', 
                    'int', 
                    [param('ns3::Address const &', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): static ns3::Ptr<ns3::Socket> ns3::Socket::CreateSocket(ns3::Ptr<ns3::Node> node, ns3::TypeId tid) [member function]
     cls.add_method('CreateSocket', 
                    'ns3::Ptr< ns3::Socket >', 
@@ -8897,7 +11341,7 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('GetAllowBroadcast', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Socket::GetBoundNetDevice() [member function]
     cls.add_method('GetBoundNetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
@@ -8906,7 +11350,7 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('GetErrno', 
                    'ns3::Socket::SocketErrno', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::Socket::GetIpTos() const [member function]
     cls.add_method('GetIpTos', 
                    'uint8_t', 
@@ -8916,12 +11360,12 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('GetIpTtl', 
                    'uint8_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::Socket::GetIpv6HopLimit() const [member function]
     cls.add_method('GetIpv6HopLimit', 
                    'uint8_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::Socket::GetIpv6Tclass() const [member function]
     cls.add_method('GetIpv6Tclass', 
                    'uint8_t', 
@@ -8931,12 +11375,12 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): int ns3::Socket::GetPeerName(ns3::Address & address) const [member function]
     cls.add_method('GetPeerName', 
                    'int', 
                    [param('ns3::Address &', 'address')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::Socket::GetPriority() const [member function]
     cls.add_method('GetPriority', 
                    'uint8_t', 
@@ -8946,22 +11390,22 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('GetRxAvailable', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): int ns3::Socket::GetSockName(ns3::Address & address) const [member function]
     cls.add_method('GetSockName', 
                    'int', 
                    [param('ns3::Address &', 'address')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): ns3::Socket::SocketType ns3::Socket::GetSocketType() const [member function]
     cls.add_method('GetSocketType', 
                    'ns3::Socket::SocketType', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::Socket::GetTxAvailable() const [member function]
     cls.add_method('GetTxAvailable', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## socket.h (module 'network'): static ns3::TypeId ns3::Socket::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -9016,12 +11460,12 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('Listen', 
                    'int', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::Recv(uint32_t maxSize, uint32_t flags) [member function]
     cls.add_method('Recv', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::Recv() [member function]
     cls.add_method('Recv', 
                    'ns3::Ptr< ns3::Packet >', 
@@ -9034,7 +11478,7 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('RecvFrom', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::RecvFrom(ns3::Address & fromAddress) [member function]
     cls.add_method('RecvFrom', 
                    'ns3::Ptr< ns3::Packet >', 
@@ -9047,7 +11491,7 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('Send', 
                    'int', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Send(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('Send', 
                    'int', 
@@ -9060,7 +11504,7 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SendTo', 
                    'int', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address const &', 'toAddress')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::SendTo(uint8_t const * buf, uint32_t size, uint32_t flags, ns3::Address const & address) [member function]
     cls.add_method('SendTo', 
                    'int', 
@@ -9073,7 +11517,7 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SetAllowBroadcast', 
                    'bool', 
                    [param('bool', 'allowBroadcast')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): void ns3::Socket::SetCloseCallbacks(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> normalClose, ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> errorClose) [member function]
     cls.add_method('SetCloseCallbacks', 
                    'void', 
@@ -9140,32 +11584,32 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('ShutdownRecv', 
                    'int', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::ShutdownSend() [member function]
     cls.add_method('ShutdownSend', 
                    'int', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): void ns3::Socket::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## socket.h (module 'network'): bool ns3::Socket::IsManualIpTtl() const [member function]
     cls.add_method('IsManualIpTtl', 
                    'bool', 
                    [], 
-                   is_const=True, visibility='protected')
+                   visibility='protected', is_const=True)
     ## socket.h (module 'network'): bool ns3::Socket::IsManualIpv6HopLimit() const [member function]
     cls.add_method('IsManualIpv6HopLimit', 
                    'bool', 
                    [], 
-                   is_const=True, visibility='protected')
+                   visibility='protected', is_const=True)
     ## socket.h (module 'network'): bool ns3::Socket::IsManualIpv6Tclass() const [member function]
     cls.add_method('IsManualIpv6Tclass', 
                    'bool', 
                    [], 
-                   is_const=True, visibility='protected')
+                   visibility='protected', is_const=True)
     ## socket.h (module 'network'): void ns3::Socket::NotifyConnectionFailed() [member function]
     cls.add_method('NotifyConnectionFailed', 
                    'void', 
@@ -9227,12 +11671,12 @@ def register_Ns3SocketIpTosTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::SocketIpTosTag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::SocketIpTosTag::GetTos() const [member function]
     cls.add_method('GetTos', 
                    'uint8_t', 
@@ -9247,12 +11691,12 @@ def register_Ns3SocketIpTosTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpTosTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpTosTag::SetTos(uint8_t tos) [member function]
     cls.add_method('SetTos', 
                    'void', 
@@ -9273,12 +11717,12 @@ def register_Ns3SocketIpTtlTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::SocketIpTtlTag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::SocketIpTtlTag::GetTtl() const [member function]
     cls.add_method('GetTtl', 
                    'uint8_t', 
@@ -9293,12 +11737,12 @@ def register_Ns3SocketIpTtlTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpTtlTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpTtlTag::SetTtl(uint8_t ttl) [member function]
     cls.add_method('SetTtl', 
                    'void', 
@@ -9324,12 +11768,12 @@ def register_Ns3SocketIpv6HopLimitTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::SocketIpv6HopLimitTag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): static ns3::TypeId ns3::SocketIpv6HopLimitTag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -9339,12 +11783,12 @@ def register_Ns3SocketIpv6HopLimitTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpv6HopLimitTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpv6HopLimitTag::SetHopLimit(uint8_t hopLimit) [member function]
     cls.add_method('SetHopLimit', 
                    'void', 
@@ -9365,12 +11809,12 @@ def register_Ns3SocketIpv6TclassTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::SocketIpv6TclassTag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::SocketIpv6TclassTag::GetTclass() const [member function]
     cls.add_method('GetTclass', 
                    'uint8_t', 
@@ -9385,12 +11829,12 @@ def register_Ns3SocketIpv6TclassTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpv6TclassTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketIpv6TclassTag::SetTclass(uint8_t tclass) [member function]
     cls.add_method('SetTclass', 
                    'void', 
@@ -9411,7 +11855,7 @@ def register_Ns3SocketPriorityTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint8_t ns3::SocketPriorityTag::GetPriority() const [member function]
     cls.add_method('GetPriority', 
                    'uint8_t', 
@@ -9421,7 +11865,7 @@ def register_Ns3SocketPriorityTag_methods(root_module, cls):
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): static ns3::TypeId ns3::SocketPriorityTag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -9431,12 +11875,12 @@ def register_Ns3SocketPriorityTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketPriorityTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketPriorityTag::SetPriority(uint8_t priority) [member function]
     cls.add_method('SetPriority', 
                    'void', 
@@ -9465,12 +11909,12 @@ def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): uint32_t ns3::SocketSetDontFragmentTag::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): static ns3::TypeId ns3::SocketSetDontFragmentTag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -9485,12 +11929,12 @@ def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## socket.h (module 'network'): void ns3::SocketSetDontFragmentTag::Serialize(ns3::TagBuffer i) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     return
 
 def register_Ns3SpectrumInterference_methods(root_module, cls):
@@ -9531,7 +11975,7 @@ def register_Ns3SpectrumInterference_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3SpectrumModel_methods(root_module, cls):
@@ -9581,42 +12025,42 @@ def register_Ns3SpectrumPhy_methods(root_module, cls):
     cls.add_method('SetDevice', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'd')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::NetDevice> ns3::SpectrumPhy::GetDevice() const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetMobility(ns3::Ptr<ns3::MobilityModel> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'm')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::MobilityModel> ns3::SpectrumPhy::GetMobility() [member function]
     cls.add_method('GetMobility', 
                    'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::SetChannel(ns3::Ptr<ns3::SpectrumChannel> c) [member function]
     cls.add_method('SetChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<const ns3::SpectrumModel> ns3::SpectrumPhy::GetRxSpectrumModel() const [member function]
     cls.add_method('GetRxSpectrumModel', 
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## spectrum-phy.h (module 'spectrum'): ns3::Ptr<ns3::AntennaModel> ns3::SpectrumPhy::GetRxAntenna() [member function]
     cls.add_method('GetRxAntenna', 
                    'ns3::Ptr< ns3::AntennaModel >', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-phy.h (module 'spectrum'): void ns3::SpectrumPhy::StartRx(ns3::Ptr<ns3::SpectrumSignalParameters> params) [member function]
     cls.add_method('StartRx', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3SpectrumPropagationLossModel_methods(root_module, cls):
@@ -9642,12 +12086,12 @@ def register_Ns3SpectrumPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## spectrum-propagation-loss-model.h (module 'spectrum'): ns3::Ptr<ns3::SpectrumValue> ns3::SpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<const ns3::SpectrumValue> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3SpectrumSignalParameters_methods(root_module, cls):
@@ -9762,213 +12206,12 @@ def register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::ThreeLogDistancePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
-    return
-
-def register_Ns3Time_methods(root_module, cls):
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<=')
-    cls.add_binary_comparison_operator('>=')
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
-    cls.add_output_stream_operator()
-    ## nstime.h (module 'core'): ns3::Time::Time() [constructor]
-    cls.add_constructor([])
-    ## nstime.h (module 'core'): ns3::Time::Time(ns3::Time const & o) [constructor]
-    cls.add_constructor([param('ns3::Time const &', 'o')])
-    ## nstime.h (module 'core'): ns3::Time::Time(double v) [constructor]
-    cls.add_constructor([param('double', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(int v) [constructor]
-    cls.add_constructor([param('int', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(long int v) [constructor]
-    cls.add_constructor([param('long int', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(long long int v) [constructor]
-    cls.add_constructor([param('long long int', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(unsigned int v) [constructor]
-    cls.add_constructor([param('unsigned int', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(long unsigned int v) [constructor]
-    cls.add_constructor([param('long unsigned int', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(long long unsigned int v) [constructor]
-    cls.add_constructor([param('long long unsigned int', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(ns3::int64x64_t const & v) [constructor]
-    cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
-    ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
-    cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
-    cls.add_method('As', 
-                   'ns3::TimeWithUnit', 
-                   [param('ns3::Time::Unit const', 'unit')], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int ns3::Time::Compare(ns3::Time const & o) const [member function]
-    cls.add_method('Compare', 
-                   'int', 
-                   [param('ns3::Time const &', 'o')], 
-                   is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
-    cls.add_method('From', 
-                   'ns3::Time', 
-                   [param('ns3::int64x64_t const &', 'value')], 
-                   is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::From(ns3::int64x64_t const & value, ns3::Time::Unit unit) [member function]
-    cls.add_method('From', 
-                   'ns3::Time', 
-                   [param('ns3::int64x64_t const &', 'value'), param('ns3::Time::Unit', 'unit')], 
-                   is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit unit) [member function]
-    cls.add_method('FromDouble', 
-                   'ns3::Time', 
-                   [param('double', 'value'), param('ns3::Time::Unit', 'unit')], 
-                   is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
-    cls.add_method('FromInteger', 
-                   'ns3::Time', 
-                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
-                   is_static=True)
-    ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
-    cls.add_method('GetDays', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::GetDouble() const [member function]
-    cls.add_method('GetDouble', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetFemtoSeconds() const [member function]
-    cls.add_method('GetFemtoSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::GetHours() const [member function]
-    cls.add_method('GetHours', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetInteger() const [member function]
-    cls.add_method('GetInteger', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetMicroSeconds() const [member function]
-    cls.add_method('GetMicroSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetMilliSeconds() const [member function]
-    cls.add_method('GetMilliSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::GetMinutes() const [member function]
-    cls.add_method('GetMinutes', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetNanoSeconds() const [member function]
-    cls.add_method('GetNanoSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetPicoSeconds() const [member function]
-    cls.add_method('GetPicoSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time::Unit ns3::Time::GetResolution() [member function]
-    cls.add_method('GetResolution', 
-                   'ns3::Time::Unit', 
-                   [], 
-                   is_static=True)
-    ## nstime.h (module 'core'): double ns3::Time::GetSeconds() const [member function]
-    cls.add_method('GetSeconds', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::GetTimeStep() const [member function]
-    cls.add_method('GetTimeStep', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::GetYears() const [member function]
-    cls.add_method('GetYears', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): bool ns3::Time::IsNegative() const [member function]
-    cls.add_method('IsNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): bool ns3::Time::IsPositive() const [member function]
-    cls.add_method('IsPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): bool ns3::Time::IsStrictlyNegative() const [member function]
-    cls.add_method('IsStrictlyNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): bool ns3::Time::IsStrictlyPositive() const [member function]
-    cls.add_method('IsStrictlyPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): bool ns3::Time::IsZero() const [member function]
-    cls.add_method('IsZero', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Max() [member function]
-    cls.add_method('Max', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True)
-    ## nstime.h (module 'core'): static ns3::Time ns3::Time::Min() [member function]
-    cls.add_method('Min', 
-                   'ns3::Time', 
-                   [], 
-                   is_static=True)
-    ## nstime.h (module 'core'): static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
-    cls.add_method('SetResolution', 
-                   'void', 
-                   [param('ns3::Time::Unit', 'resolution')], 
-                   is_static=True)
-    ## nstime.h (module 'core'): static bool ns3::Time::StaticInit() [member function]
-    cls.add_method('StaticInit', 
-                   'bool', 
-                   [], 
-                   is_static=True)
-    ## nstime.h (module 'core'): ns3::int64x64_t ns3::Time::To(ns3::Time::Unit unit) const [member function]
-    cls.add_method('To', 
-                   'ns3::int64x64_t', 
-                   [param('ns3::Time::Unit', 'unit')], 
-                   is_const=True)
-    ## nstime.h (module 'core'): double ns3::Time::ToDouble(ns3::Time::Unit unit) const [member function]
-    cls.add_method('ToDouble', 
-                   'double', 
-                   [param('ns3::Time::Unit', 'unit')], 
-                   is_const=True)
-    ## nstime.h (module 'core'): int64_t ns3::Time::ToInteger(ns3::Time::Unit unit) const [member function]
-    cls.add_method('ToInteger', 
-                   'int64_t', 
-                   [param('ns3::Time::Unit', 'unit')], 
-                   is_const=True)
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
@@ -9980,22 +12223,22 @@ def register_Ns3TraceSourceAccessor_methods(root_module, cls):
     cls.add_method('Connect', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
     cls.add_method('ConnectWithoutContext', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::Disconnect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
     cls.add_method('Disconnect', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::DisconnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
     cls.add_method('DisconnectWithoutContext', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3Trailer_methods(root_module, cls):
@@ -10008,7 +12251,7 @@ def register_Ns3Trailer_methods(root_module, cls):
     cls.add_method('Deserialize', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'end')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## trailer.h (module 'network'): uint32_t ns3::Trailer::Deserialize(ns3::Buffer::Iterator start, ns3::Buffer::Iterator end) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
@@ -10018,7 +12261,7 @@ def register_Ns3Trailer_methods(root_module, cls):
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## trailer.h (module 'network'): static ns3::TypeId ns3::Trailer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -10028,12 +12271,12 @@ def register_Ns3Trailer_methods(root_module, cls):
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## trailer.h (module 'network'): void ns3::Trailer::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3TriangularRandomVariable_methods(root_module, cls):
@@ -10122,12 +12365,12 @@ def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::TwoRayGroundPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3UanMac_methods(root_module, cls):
@@ -10139,22 +12382,22 @@ def register_Ns3UanMac_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-mac.h (module 'uan'): void ns3::UanMac::AttachPhy(ns3::Ptr<ns3::UanPhy> phy) [member function]
     cls.add_method('AttachPhy', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-mac.h (module 'uan'): void ns3::UanMac::Clear() [member function]
     cls.add_method('Clear', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-mac.h (module 'uan'): bool ns3::UanMac::Enqueue(ns3::Ptr<ns3::Packet> pkt, uint16_t protocolNumber, ns3::Address const & dest) [member function]
     cls.add_method('Enqueue', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('uint16_t', 'protocolNumber'), param('ns3::Address const &', 'dest')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-mac.h (module 'uan'): ns3::Address ns3::UanMac::GetAddress() [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 
@@ -10164,7 +12407,7 @@ def register_Ns3UanMac_methods(root_module, cls):
     cls.add_method('GetBroadcast', 
                    'ns3::Address', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-mac.h (module 'uan'): uint32_t ns3::UanMac::GetTxModeIndex() [member function]
     cls.add_method('GetTxModeIndex', 
                    'uint32_t', 
@@ -10183,7 +12426,7 @@ def register_Ns3UanMac_methods(root_module, cls):
     cls.add_method('SetForwardUpCb', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, unsigned short, ns3::Mac8Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-mac.h (module 'uan'): void ns3::UanMac::SetTxModeIndex(uint32_t txModeIndex) [member function]
     cls.add_method('SetTxModeIndex', 
                    'void', 
@@ -10199,67 +12442,67 @@ def register_Ns3UanPhy_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::Clear() [member function]
     cls.add_method('Clear', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::EnergyDepletionHandler() [member function]
     cls.add_method('EnergyDepletionHandler', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::EnergyRechargeHandler() [member function]
     cls.add_method('EnergyRechargeHandler', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): double ns3::UanPhy::GetCcaThresholdDb() [member function]
     cls.add_method('GetCcaThresholdDb', 
                    'double', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): ns3::Ptr<ns3::UanChannel> ns3::UanPhy::GetChannel() const [member function]
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::UanChannel >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-phy.h (module 'uan'): ns3::Ptr<ns3::UanNetDevice> ns3::UanPhy::GetDevice() const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::UanNetDevice >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-phy.h (module 'uan'): ns3::UanTxMode ns3::UanPhy::GetMode(uint32_t n) [member function]
     cls.add_method('GetMode', 
                    'ns3::UanTxMode', 
                    [param('uint32_t', 'n')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): uint32_t ns3::UanPhy::GetNModes() [member function]
     cls.add_method('GetNModes', 
                    'uint32_t', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): ns3::Ptr<ns3::Packet> ns3::UanPhy::GetPacketRx() const [member function]
     cls.add_method('GetPacketRx', 
                    'ns3::Ptr< ns3::Packet >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-phy.h (module 'uan'): double ns3::UanPhy::GetRxThresholdDb() [member function]
     cls.add_method('GetRxThresholdDb', 
                    'double', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): ns3::Ptr<ns3::UanTransducer> ns3::UanPhy::GetTransducer() [member function]
     cls.add_method('GetTransducer', 
                    'ns3::Ptr< ns3::UanTransducer >', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): double ns3::UanPhy::GetTxPowerDb() [member function]
     cls.add_method('GetTxPowerDb', 
                    'double', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): static ns3::TypeId ns3::UanPhy::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -10269,37 +12512,37 @@ def register_Ns3UanPhy_methods(root_module, cls):
     cls.add_method('IsStateBusy', 
                    'bool', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): bool ns3::UanPhy::IsStateCcaBusy() [member function]
     cls.add_method('IsStateCcaBusy', 
                    'bool', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): bool ns3::UanPhy::IsStateIdle() [member function]
     cls.add_method('IsStateIdle', 
                    'bool', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): bool ns3::UanPhy::IsStateRx() [member function]
     cls.add_method('IsStateRx', 
                    'bool', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): bool ns3::UanPhy::IsStateSleep() [member function]
     cls.add_method('IsStateSleep', 
                    'bool', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): bool ns3::UanPhy::IsStateTx() [member function]
     cls.add_method('IsStateTx', 
                    'bool', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyIntChange() [member function]
     cls.add_method('NotifyIntChange', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyRxBegin(ns3::Ptr<const ns3::Packet> packet) [member function]
     cls.add_method('NotifyRxBegin', 
                    'void', 
@@ -10316,7 +12559,7 @@ def register_Ns3UanPhy_methods(root_module, cls):
     cls.add_method('NotifyTransStartTx', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'txPowerDb'), param('ns3::UanTxMode', 'txMode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::NotifyTxBegin(ns3::Ptr<const ns3::Packet> packet) [member function]
     cls.add_method('NotifyTxBegin', 
                    'void', 
@@ -10333,72 +12576,72 @@ def register_Ns3UanPhy_methods(root_module, cls):
     cls.add_method('RegisterListener', 
                    'void', 
                    [param('ns3::UanPhyListener *', 'listener')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SendPacket(ns3::Ptr<ns3::Packet> pkt, uint32_t modeNum) [member function]
     cls.add_method('SendPacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('uint32_t', 'modeNum')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetCcaThresholdDb(double thresh) [member function]
     cls.add_method('SetCcaThresholdDb', 
                    'void', 
                    [param('double', 'thresh')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetChannel(ns3::Ptr<ns3::UanChannel> channel) [member function]
     cls.add_method('SetChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanChannel >', 'channel')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetDevice(ns3::Ptr<ns3::UanNetDevice> device) [member function]
     cls.add_method('SetDevice', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanNetDevice >', 'device')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetEnergyModelCallback(ns3::DeviceEnergyModel::ChangeStateCallback callback) [member function]
     cls.add_method('SetEnergyModelCallback', 
                    'void', 
                    [param('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetMac(ns3::Ptr<ns3::UanMac> mac) [member function]
     cls.add_method('SetMac', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanMac >', 'mac')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetReceiveErrorCallback(ns3::UanPhy::RxErrCallback cb) [member function]
     cls.add_method('SetReceiveErrorCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetReceiveOkCallback(ns3::UanPhy::RxOkCallback cb) [member function]
     cls.add_method('SetReceiveOkCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetRxThresholdDb(double thresh) [member function]
     cls.add_method('SetRxThresholdDb', 
                    'void', 
                    [param('double', 'thresh')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetSleepMode(bool sleep) [member function]
     cls.add_method('SetSleepMode', 
                    'void', 
                    [param('bool', 'sleep')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetTransducer(ns3::Ptr<ns3::UanTransducer> trans) [member function]
     cls.add_method('SetTransducer', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanTransducer >', 'trans')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::SetTxPowerDb(double txpwr) [member function]
     cls.add_method('SetTxPowerDb', 
                    'void', 
                    [param('double', 'txpwr')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhy::StartRxPacket(ns3::Ptr<ns3::Packet> pkt, double rxPowerDb, ns3::UanTxMode txMode, ns3::UanPdp pdp) [member function]
     cls.add_method('StartRxPacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('double', 'rxPowerDb'), param('ns3::UanTxMode', 'txMode'), param('ns3::UanPdp', 'pdp')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
@@ -10410,7 +12653,7 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
     cls.add_method('CalcSinrDb', 
                    'double', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('ns3::Time', 'arrTime'), param('double', 'rxPowerDb'), param('double', 'ambNoiseDb'), param('ns3::UanTxMode', 'mode'), param('ns3::UanPdp', 'pdp'), param('ns3::UanTransducer::ArrivalList const &', 'arrivalList')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyCalcSinr::Clear() [member function]
     cls.add_method('Clear', 
                    'void', 
@@ -10435,7 +12678,7 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyCalcSinrDefault_methods(root_module, cls):
@@ -10447,7 +12690,7 @@ def register_Ns3UanPhyCalcSinrDefault_methods(root_module, cls):
     cls.add_method('CalcSinrDb', 
                    'double', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('ns3::Time', 'arrTime'), param('double', 'rxPowerDb'), param('double', 'ambNoiseDb'), param('ns3::UanTxMode', 'mode'), param('ns3::UanPdp', 'pdp'), param('ns3::UanTransducer::ArrivalList const &', 'arrivalList')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-phy-gen.h (module 'uan'): static ns3::TypeId ns3::UanPhyCalcSinrDefault::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -10464,7 +12707,7 @@ def register_Ns3UanPhyCalcSinrFhFsk_methods(root_module, cls):
     cls.add_method('CalcSinrDb', 
                    'double', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('ns3::Time', 'arrTime'), param('double', 'rxPowerDb'), param('double', 'ambNoiseDb'), param('ns3::UanTxMode', 'mode'), param('ns3::UanPdp', 'pdp'), param('ns3::UanTransducer::ArrivalList const &', 'arrivalList')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-phy-gen.h (module 'uan'): static ns3::TypeId ns3::UanPhyCalcSinrFhFsk::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -10589,12 +12832,12 @@ def register_Ns3UanPhyGen_methods(root_module, cls):
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::UanChannel >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-phy-gen.h (module 'uan'): ns3::Ptr<ns3::UanNetDevice> ns3::UanPhyGen::GetDevice() const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::UanNetDevice >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-phy-gen.h (module 'uan'): ns3::Ptr<ns3::UanTransducer> ns3::UanPhyGen::GetTransducer() [member function]
     cls.add_method('GetTransducer', 
                    'ns3::Ptr< ns3::UanTransducer >', 
@@ -10644,7 +12887,7 @@ def register_Ns3UanPhyGen_methods(root_module, cls):
     cls.add_method('GetPacketRx', 
                    'ns3::Ptr< ns3::Packet >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-phy-gen.h (module 'uan'): void ns3::UanPhyGen::Clear() [member function]
     cls.add_method('Clear', 
                    'void', 
@@ -10666,7 +12909,7 @@ def register_Ns3UanPhyGen_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyPer_methods(root_module, cls):
@@ -10678,7 +12921,7 @@ def register_Ns3UanPhyPer_methods(root_module, cls):
     cls.add_method('CalcPer', 
                    'double', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('double', 'sinrDb'), param('ns3::UanTxMode', 'mode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyPer::Clear() [member function]
     cls.add_method('Clear', 
                    'void', 
@@ -10693,7 +12936,7 @@ def register_Ns3UanPhyPer_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3UanPhyPerCommonModes_methods(root_module, cls):
@@ -10766,17 +13009,17 @@ def register_Ns3UanPropModel_methods(root_module, cls):
     cls.add_method('GetDelay', 
                    'ns3::Time', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('ns3::UanTxMode', 'mode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-prop-model.h (module 'uan'): double ns3::UanPropModel::GetPathLossDb(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b, ns3::UanTxMode txMode) [member function]
     cls.add_method('GetPathLossDb', 
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('ns3::UanTxMode', 'txMode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-prop-model.h (module 'uan'): ns3::UanPdp ns3::UanPropModel::GetPdp(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b, ns3::UanTxMode mode) [member function]
     cls.add_method('GetPdp', 
                    'ns3::UanPdp', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('ns3::UanTxMode', 'mode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-prop-model.h (module 'uan'): static ns3::TypeId ns3::UanPropModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -10793,42 +13036,42 @@ def register_Ns3UanTransducer_methods(root_module, cls):
     cls.add_method('AddPhy', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): double ns3::UanTransducer::ApplyRxGainDb(double rxPowerDb, ns3::UanTxMode mode) [member function]
     cls.add_method('ApplyRxGainDb', 
                    'double', 
                    [param('double', 'rxPowerDb'), param('ns3::UanTxMode', 'mode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): void ns3::UanTransducer::Clear() [member function]
     cls.add_method('Clear', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): ns3::UanTransducer::ArrivalList const & ns3::UanTransducer::GetArrivalList() const [member function]
     cls.add_method('GetArrivalList', 
                    'ns3::UanTransducer::ArrivalList const &', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-transducer.h (module 'uan'): ns3::Ptr<ns3::UanChannel> ns3::UanTransducer::GetChannel() const [member function]
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::UanChannel >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-transducer.h (module 'uan'): ns3::UanTransducer::UanPhyList const & ns3::UanTransducer::GetPhyList() const [member function]
     cls.add_method('GetPhyList', 
                    'ns3::UanTransducer::UanPhyList const &', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-transducer.h (module 'uan'): double ns3::UanTransducer::GetRxGainDb() [member function]
     cls.add_method('GetRxGainDb', 
                    'double', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): ns3::UanTransducer::State ns3::UanTransducer::GetState() const [member function]
     cls.add_method('GetState', 
                    'ns3::UanTransducer::State', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-transducer.h (module 'uan'): static ns3::TypeId ns3::UanTransducer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -10838,32 +13081,32 @@ def register_Ns3UanTransducer_methods(root_module, cls):
     cls.add_method('IsRx', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-transducer.h (module 'uan'): bool ns3::UanTransducer::IsTx() const [member function]
     cls.add_method('IsTx', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## uan-transducer.h (module 'uan'): void ns3::UanTransducer::Receive(ns3::Ptr<ns3::Packet> packet, double rxPowerDb, ns3::UanTxMode txMode, ns3::UanPdp pdp) [member function]
     cls.add_method('Receive', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'rxPowerDb'), param('ns3::UanTxMode', 'txMode'), param('ns3::UanPdp', 'pdp')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): void ns3::UanTransducer::SetChannel(ns3::Ptr<ns3::UanChannel> chan) [member function]
     cls.add_method('SetChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanChannel >', 'chan')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): void ns3::UanTransducer::SetRxGainDb(double gainDb) [member function]
     cls.add_method('SetRxGainDb', 
                    'void', 
                    [param('double', 'gainDb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h (module 'uan'): void ns3::UanTransducer::Transmit(ns3::Ptr<ns3::UanPhy> src, ns3::Ptr<ns3::Packet> packet, double txPowerDb, ns3::UanTxMode txMode) [member function]
     cls.add_method('Transmit', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'src'), param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'txPowerDb'), param('ns3::UanTxMode', 'txMode')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3UniformRandomVariable_methods(root_module, cls):
@@ -11023,7 +13266,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('StartTx', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPpdu >', 'ppdu')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetSleepMode() [member function]
     cls.add_method('SetSleepMode', 
                    'void', 
@@ -11277,7 +13520,7 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetDsssRate1Mbps() [member function]
     cls.add_method('GetDsssRate1Mbps', 
                    'ns3::WifiMode', 
@@ -11994,12 +14237,12 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::DoChannelSwitch(uint8_t id) [member function]
     cls.add_method('DoChannelSwitch', 
                    'bool', 
@@ -12224,22 +14467,22 @@ def register_Ns3AttributeAccessor_methods(root_module, cls):
     cls.add_method('Get', 
                    'bool', 
                    [param('ns3::ObjectBase const *', 'object'), param('ns3::AttributeValue &', 'attribute')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::AttributeAccessor::HasGetter() const [member function]
     cls.add_method('HasGetter', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::AttributeAccessor::HasSetter() const [member function]
     cls.add_method('HasSetter', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::AttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
     cls.add_method('Set', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'object', transfer_ownership=False), param('ns3::AttributeValue const &', 'value')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3AttributeChecker_methods(root_module, cls):
@@ -12251,17 +14494,17 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
     cls.add_method('Check', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'value')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::AttributeChecker::Copy(ns3::AttributeValue const & source, ns3::AttributeValue & destination) const [member function]
     cls.add_method('Copy', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'source'), param('ns3::AttributeValue &', 'destination')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeChecker::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeChecker::CreateValidValue(ns3::AttributeValue const & value) const [member function]
     cls.add_method('CreateValidValue', 
                    'ns3::Ptr< ns3::AttributeValue >', 
@@ -12271,17 +14514,17 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
     cls.add_method('GetUnderlyingTypeInformation', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): std::string ns3::AttributeChecker::GetValueTypeName() const [member function]
     cls.add_method('GetValueTypeName', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::AttributeChecker::HasUnderlyingTypeInformation() const [member function]
     cls.add_method('HasUnderlyingTypeInformation', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3AttributeValue_methods(root_module, cls):
@@ -12293,17 +14536,17 @@ def register_Ns3AttributeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::AttributeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): std::string ns3::AttributeValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3CallbackChecker_methods(root_module, cls):
@@ -12322,207 +14565,227 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## callback.h (module 'core'): bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<const ns3::CallbackImplBase> other) const [member function]
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::Demangle(std::string const & mangled) [member function]
     cls.add_method('Demangle', 
                    'std::string', 
                    [param('std::string const &', 'mangled')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::ObjectBase*'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::ObjectBase*'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['void'], visibility='protected')
+                   visibility='protected', template_parameters=['void'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::NetDevice> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::NetDevice> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::Packet const> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::Packet const> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned short'], visibility='protected')
+                   visibility='protected', template_parameters=['unsigned short'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Address const&'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Address const&'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::NetDevice::PacketType'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::NetDevice::PacketType'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::MobilityModel const> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::MobilityModel const> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::SpectrumPhy const> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::SpectrumPhy const> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['double'], visibility='protected')
+                   visibility='protected', template_parameters=['double'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::SpectrumSignalParameters> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::SpectrumSignalParameters> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::PacketBurst const> '], visibility='protected')
+                   visibility='protected', template_parameters=['unsigned int'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::PhyReceptionStatParameters'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::PacketBurst const> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::LteUePhy::State'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::PhyReceptionStatParameters'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned char'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::SlPhyReceptionStatParameters'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['bool'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::LteSpectrumPhy> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::PhyTransmissionStatParameters'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::LteUePhy::State'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::SpectrumValue> '], visibility='protected')
+                   visibility='protected', template_parameters=['unsigned char'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::UanTxMode'], visibility='protected')
+                   visibility='protected', template_parameters=['bool'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::Packet> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::PhyTransmissionStatParameters'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['int'], visibility='protected')
+                   visibility='protected', template_parameters=['std::vector<int', ' std::allocator<int> > const&'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Time'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::SpectrumValue> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['WifiPhyState'], visibility='protected')
+                   visibility='protected', template_parameters=['unsigned long'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::WifiMode'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::UanTxMode'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::WifiPreamble'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::Packet> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::WifiPsdu> '], visibility='protected')
+                   visibility='protected', template_parameters=['int'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::WifiTxVector'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Time'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['std::vector<bool', ' std::allocator<bool> > '], visibility='protected')
+                   visibility='protected', template_parameters=['WifiPhyState'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::WifiPsdu const> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::WifiMode'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::WifiPhyRxfailureReason'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::WifiPreamble'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::MpduInfo'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::WifiPsdu> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::SignalNoiseDbm'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::WifiTxVector'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::HePreambleParameters'], visibility='protected')
+                   visibility='protected', template_parameters=['std::vector<bool', ' std::allocator<bool> > '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::Socket> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::WifiPsdu const> '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned int'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::WifiPhyRxfailureReason'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ipv4Header const&'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::MpduInfo'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::Ipv4> '], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::SignalNoiseDbm'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ipv4L3Protocol::DropReason'], visibility='protected')
+                   visibility='protected', template_parameters=['ns3::HePreambleParameters'], is_static=True)
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::Socket> '], is_static=True)
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   visibility='protected', template_parameters=['ns3::Ipv4Header const&'], is_static=True)
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   visibility='protected', template_parameters=['ns3::Ptr<ns3::Ipv4> '], is_static=True)
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   visibility='protected', template_parameters=['ns3::Ipv4L3Protocol::DropReason'], is_static=True)
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -12536,7 +14799,7 @@ def register_Ns3CallbackValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): bool ns3::CallbackValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -12546,7 +14809,7 @@ def register_Ns3CallbackValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackValue::Set(ns3::CallbackBase base) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -12562,7 +14825,7 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('std::size_t', 'i')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
@@ -12572,7 +14835,7 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_method('GetNDevices', 
                    'std::size_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -12733,7 +14996,7 @@ def register_Ns3ComponentCarrierEnb_methods(root_module, cls):
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ComponentCarrierUe_methods(root_module, cls):
@@ -12773,7 +15036,7 @@ def register_Ns3ComponentCarrierUe_methods(root_module, cls):
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ConstantRandomVariable_methods(root_module, cls):
@@ -12818,7 +15081,7 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
     cls.add_method('GetDelay', 
                    'ns3::Time', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## propagation-delay-model.h (module 'propagation'): double ns3::ConstantSpeedPropagationDelayModel::GetSpeed() const [member function]
     cls.add_method('GetSpeed', 
                    'double', 
@@ -12837,7 +15100,7 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3DataRateChecker_methods(root_module, cls):
@@ -12858,7 +15121,7 @@ def register_Ns3DataRateValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## data-rate.h (module 'network'): bool ns3::DataRateValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -12873,7 +15136,7 @@ def register_Ns3DataRateValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## data-rate.h (module 'network'): void ns3::DataRateValue::Set(ns3::DataRate const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -12913,7 +15176,7 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
     cls.add_method('ChangeState', 
                    'void', 
                    [param('int', 'newState')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): double ns3::DeviceEnergyModel::GetCurrentA() const [member function]
     cls.add_method('GetCurrentA', 
                    'double', 
@@ -12923,7 +15186,7 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
     cls.add_method('GetTotalEnergyConsumption', 
                    'double', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## device-energy-model.h (module 'energy'): static ns3::TypeId ns3::DeviceEnergyModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -12933,27 +15196,27 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
     cls.add_method('HandleEnergyChanged', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyDepletion() [member function]
     cls.add_method('HandleEnergyDepletion', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyRecharged() [member function]
     cls.add_method('HandleEnergyRecharged', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::SetEnergySource(ns3::Ptr<ns3::EnergySource> source) [member function]
     cls.add_method('SetEnergySource', 
                    'void', 
                    [param('ns3::Ptr< ns3::EnergySource >', 'source')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): double ns3::DeviceEnergyModel::DoGetCurrentA() const [member function]
     cls.add_method('DoGetCurrentA', 
                    'double', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     return
 
 def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
@@ -12978,16 +15241,15 @@ def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_virtual=True)
-    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate(double c1, double c2, double v1, double v2, double r) [member function]
+    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate() [member function]
     cls.add_method('Interpolate', 
                    'double', 
-                   [param('double', 'c1'), param('double', 'c2'), param('double', 'v1'), param('double', 'v2'), param('double', 'r')], 
-                   is_virtual=True, visibility='private')
-    ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::Validate() [member function]
-    cls.add_method('Validate', 
-                   'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): bool ns3::EmpiricalRandomVariable::SetInterpolate(bool interpolate) [member function]
+    cls.add_method('SetInterpolate', 
+                   'bool', 
+                   [param('bool', 'interpolate')])
     return
 
 def register_Ns3EmptyAttributeAccessor_methods(root_module, cls):
@@ -12999,22 +15261,22 @@ def register_Ns3EmptyAttributeAccessor_methods(root_module, cls):
     cls.add_method('Get', 
                    'bool', 
                    [param('ns3::ObjectBase const *', 'object'), param('ns3::AttributeValue &', 'attribute')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::HasGetter() const [member function]
     cls.add_method('HasGetter', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::HasSetter() const [member function]
     cls.add_method('HasSetter', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
     cls.add_method('Set', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'object'), param('ns3::AttributeValue const &', 'value')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     return
 
 def register_Ns3EmptyAttributeChecker_methods(root_module, cls):
@@ -13026,32 +15288,32 @@ def register_Ns3EmptyAttributeChecker_methods(root_module, cls):
     cls.add_method('Check', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'value')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeChecker::Copy(ns3::AttributeValue const & source, ns3::AttributeValue & destination) const [member function]
     cls.add_method('Copy', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'source'), param('ns3::AttributeValue &', 'destination')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::EmptyAttributeChecker::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): std::string ns3::EmptyAttributeChecker::GetUnderlyingTypeInformation() const [member function]
     cls.add_method('GetUnderlyingTypeInformation', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): std::string ns3::EmptyAttributeChecker::GetValueTypeName() const [member function]
     cls.add_method('GetValueTypeName', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeChecker::HasUnderlyingTypeInformation() const [member function]
     cls.add_method('HasUnderlyingTypeInformation', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     return
 
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
@@ -13063,17 +15325,17 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## attribute.h (module 'core'): std::string ns3::EmptyAttributeValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     return
 
 def register_Ns3ErlangRandomVariable_methods(root_module, cls):
@@ -13149,12 +15411,12 @@ def register_Ns3ErrorModel_methods(root_module, cls):
     cls.add_method('DoCorrupt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     ## error-model.h (module 'network'): void ns3::ErrorModel::DoReset() [member function]
     cls.add_method('DoReset', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3Event_methods(root_module, cls):
@@ -13221,7 +15483,7 @@ def register_Ns3EventImpl_methods(root_module, cls):
     cls.add_method('Notify', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True, visibility='protected')
+                   visibility='protected', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
@@ -13278,12 +15540,12 @@ def register_Ns3FixedRssLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::FixedRssLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
@@ -13325,12 +15587,12 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::FriisPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3GammaRandomVariable_methods(root_module, cls):
@@ -13380,82 +15642,82 @@ def register_Ns3Ipv4_methods(root_module, cls):
     cls.add_method('AddAddress', 
                    'bool', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): uint32_t ns3::Ipv4::AddInterface(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('AddInterface', 
                    'uint32_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): ns3::Ptr<ns3::Socket> ns3::Ipv4::CreateRawSocket() [member function]
     cls.add_method('CreateRawSocket', 
                    'ns3::Ptr< ns3::Socket >', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::DeleteRawSocket(ns3::Ptr<ns3::Socket> socket) [member function]
     cls.add_method('DeleteRawSocket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Socket >', 'socket')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): ns3::Ipv4InterfaceAddress ns3::Ipv4::GetAddress(uint32_t interface, uint32_t addressIndex) const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Ipv4InterfaceAddress', 
                    [param('uint32_t', 'interface'), param('uint32_t', 'addressIndex')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): int32_t ns3::Ipv4::GetInterfaceForAddress(ns3::Ipv4Address address) const [member function]
     cls.add_method('GetInterfaceForAddress', 
                    'int32_t', 
                    [param('ns3::Ipv4Address', 'address')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): int32_t ns3::Ipv4::GetInterfaceForDevice(ns3::Ptr<const ns3::NetDevice> device) const [member function]
     cls.add_method('GetInterfaceForDevice', 
                    'int32_t', 
                    [param('ns3::Ptr< ns3::NetDevice const >', 'device')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): int32_t ns3::Ipv4::GetInterfaceForPrefix(ns3::Ipv4Address address, ns3::Ipv4Mask mask) const [member function]
     cls.add_method('GetInterfaceForPrefix', 
                    'int32_t', 
                    [param('ns3::Ipv4Address', 'address'), param('ns3::Ipv4Mask', 'mask')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): uint16_t ns3::Ipv4::GetMetric(uint32_t interface) const [member function]
     cls.add_method('GetMetric', 
                    'uint16_t', 
                    [param('uint32_t', 'interface')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): uint16_t ns3::Ipv4::GetMtu(uint32_t interface) const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
                    [param('uint32_t', 'interface')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): uint32_t ns3::Ipv4::GetNAddresses(uint32_t interface) const [member function]
     cls.add_method('GetNAddresses', 
                    'uint32_t', 
                    [param('uint32_t', 'interface')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): uint32_t ns3::Ipv4::GetNInterfaces() const [member function]
     cls.add_method('GetNInterfaces', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): ns3::Ptr<ns3::NetDevice> ns3::Ipv4::GetNetDevice(uint32_t interface) [member function]
     cls.add_method('GetNetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'interface')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): ns3::Ptr<ns3::IpL4Protocol> ns3::Ipv4::GetProtocol(int protocolNumber) const [member function]
     cls.add_method('GetProtocol', 
                    'ns3::Ptr< ns3::IpL4Protocol >', 
                    [param('int', 'protocolNumber')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): ns3::Ptr<ns3::IpL4Protocol> ns3::Ipv4::GetProtocol(int protocolNumber, int32_t interfaceIndex) const [member function]
     cls.add_method('GetProtocol', 
                    'ns3::Ptr< ns3::IpL4Protocol >', 
                    [param('int', 'protocolNumber'), param('int32_t', 'interfaceIndex')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4::GetRoutingProtocol() const [member function]
     cls.add_method('GetRoutingProtocol', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): static ns3::TypeId ns3::Ipv4::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -13465,114 +15727,114 @@ def register_Ns3Ipv4_methods(root_module, cls):
     cls.add_method('Insert', 
                    'void', 
                    [param('ns3::Ptr< ns3::IpL4Protocol >', 'protocol')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::Insert(ns3::Ptr<ns3::IpL4Protocol> protocol, uint32_t interfaceIndex) [member function]
     cls.add_method('Insert', 
                    'void', 
                    [param('ns3::Ptr< ns3::IpL4Protocol >', 'protocol'), param('uint32_t', 'interfaceIndex')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::IsDestinationAddress(ns3::Ipv4Address address, uint32_t iif) const [member function]
     cls.add_method('IsDestinationAddress', 
                    'bool', 
                    [param('ns3::Ipv4Address', 'address'), param('uint32_t', 'iif')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::IsForwarding(uint32_t interface) const [member function]
     cls.add_method('IsForwarding', 
                    'bool', 
                    [param('uint32_t', 'interface')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::IsUp(uint32_t interface) const [member function]
     cls.add_method('IsUp', 
                    'bool', 
                    [param('uint32_t', 'interface')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::Remove(ns3::Ptr<ns3::IpL4Protocol> protocol) [member function]
     cls.add_method('Remove', 
                    'void', 
                    [param('ns3::Ptr< ns3::IpL4Protocol >', 'protocol')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::Remove(ns3::Ptr<ns3::IpL4Protocol> protocol, uint32_t interfaceIndex) [member function]
     cls.add_method('Remove', 
                    'void', 
                    [param('ns3::Ptr< ns3::IpL4Protocol >', 'protocol'), param('uint32_t', 'interfaceIndex')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::RemoveAddress(uint32_t interface, uint32_t addressIndex) [member function]
     cls.add_method('RemoveAddress', 
                    'bool', 
                    [param('uint32_t', 'interface'), param('uint32_t', 'addressIndex')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::RemoveAddress(uint32_t interface, ns3::Ipv4Address address) [member function]
     cls.add_method('RemoveAddress', 
                    'bool', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4Address', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4::SelectSourceAddress(ns3::Ptr<const ns3::NetDevice> device, ns3::Ipv4Address dst, ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e scope) [member function]
     cls.add_method('SelectSourceAddress', 
                    'ns3::Ipv4Address', 
                    [param('ns3::Ptr< ns3::NetDevice const >', 'device'), param('ns3::Ipv4Address', 'dst'), param('ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e', 'scope')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol, ns3::Ptr<ns3::Ipv4Route> route) [member function]
     cls.add_method('Send', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SendWithHeader(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Header ipHeader, ns3::Ptr<ns3::Ipv4Route> route) [member function]
     cls.add_method('SendWithHeader', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Header', 'ipHeader'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetDown(uint32_t interface) [member function]
     cls.add_method('SetDown', 
                    'void', 
                    [param('uint32_t', 'interface')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetForwarding(uint32_t interface, bool val) [member function]
     cls.add_method('SetForwarding', 
                    'void', 
                    [param('uint32_t', 'interface'), param('bool', 'val')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetMetric(uint32_t interface, uint16_t metric) [member function]
     cls.add_method('SetMetric', 
                    'void', 
                    [param('uint32_t', 'interface'), param('uint16_t', 'metric')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetRoutingProtocol(ns3::Ptr<ns3::Ipv4RoutingProtocol> routingProtocol) [member function]
     cls.add_method('SetRoutingProtocol', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4RoutingProtocol >', 'routingProtocol')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetUp(uint32_t interface) [member function]
     cls.add_method('SetUp', 
                    'void', 
                    [param('uint32_t', 'interface')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4::SourceAddressSelection(uint32_t interface, ns3::Ipv4Address dest) [member function]
     cls.add_method('SourceAddressSelection', 
                    'ns3::Ipv4Address', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4Address', 'dest')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): ns3::Ipv4::IF_ANY [variable]
     cls.add_static_attribute('IF_ANY', 'uint32_t const', is_const=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::GetIpForward() const [member function]
     cls.add_method('GetIpForward', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): bool ns3::Ipv4::GetWeakEsModel() const [member function]
     cls.add_method('GetWeakEsModel', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetIpForward(bool forward) [member function]
     cls.add_method('SetIpForward', 
                    'void', 
                    [param('bool', 'forward')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     ## ipv4.h (module 'internet'): void ns3::Ipv4::SetWeakEsModel(bool model) [member function]
     cls.add_method('SetWeakEsModel', 
                    'void', 
                    [param('bool', 'model')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
@@ -13593,7 +15855,7 @@ def register_Ns3Ipv4AddressValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4AddressValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -13608,7 +15870,7 @@ def register_Ns3Ipv4AddressValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-address.h (module 'network'): void ns3::Ipv4AddressValue::Set(ns3::Ipv4Address const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -13642,7 +15904,7 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('GetAddress', 
                    'ns3::Ipv4InterfaceAddress', 
                    [param('uint32_t', 'interfaceIndex'), param('uint32_t', 'addressIndex')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ptr<ns3::Ipv4Interface> ns3::Ipv4L3Protocol::GetInterface(uint32_t i) const [member function]
     cls.add_method('GetInterface', 
                    'ns3::Ptr< ns3::Ipv4Interface >', 
@@ -13652,37 +15914,37 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('GetInterfaceForAddress', 
                    'int32_t', 
                    [param('ns3::Ipv4Address', 'addr')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): int32_t ns3::Ipv4L3Protocol::GetInterfaceForDevice(ns3::Ptr<const ns3::NetDevice> device) const [member function]
     cls.add_method('GetInterfaceForDevice', 
                    'int32_t', 
                    [param('ns3::Ptr< ns3::NetDevice const >', 'device')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): int32_t ns3::Ipv4L3Protocol::GetInterfaceForPrefix(ns3::Ipv4Address addr, ns3::Ipv4Mask mask) const [member function]
     cls.add_method('GetInterfaceForPrefix', 
                    'int32_t', 
                    [param('ns3::Ipv4Address', 'addr'), param('ns3::Ipv4Mask', 'mask')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): uint16_t ns3::Ipv4L3Protocol::GetMetric(uint32_t i) const [member function]
     cls.add_method('GetMetric', 
                    'uint16_t', 
                    [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): uint16_t ns3::Ipv4L3Protocol::GetMtu(uint32_t i) const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
                    [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): uint32_t ns3::Ipv4L3Protocol::GetNAddresses(uint32_t interface) const [member function]
     cls.add_method('GetNAddresses', 
                    'uint32_t', 
                    [param('uint32_t', 'interface')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): uint32_t ns3::Ipv4L3Protocol::GetNInterfaces() const [member function]
     cls.add_method('GetNInterfaces', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ptr<ns3::NetDevice> ns3::Ipv4L3Protocol::GetNetDevice(uint32_t i) [member function]
     cls.add_method('GetNetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
@@ -13692,17 +15954,17 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('GetProtocol', 
                    'ns3::Ptr< ns3::IpL4Protocol >', 
                    [param('int', 'protocolNumber')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ptr<ns3::IpL4Protocol> ns3::Ipv4L3Protocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) const [member function]
     cls.add_method('GetProtocol', 
                    'ns3::Ptr< ns3::IpL4Protocol >', 
                    [param('int', 'protocolNumber'), param('int32_t', 'interfaceIndex')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4L3Protocol::GetRoutingProtocol() const [member function]
     cls.add_method('GetRoutingProtocol', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): static ns3::TypeId ns3::Ipv4L3Protocol::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -13722,12 +15984,12 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('IsDestinationAddress', 
                    'bool', 
                    [param('ns3::Ipv4Address', 'address'), param('uint32_t', 'iif')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::IsForwarding(uint32_t i) const [member function]
     cls.add_method('IsForwarding', 
                    'bool', 
                    [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::IsUnicast(ns3::Ipv4Address ad) const [member function]
     cls.add_method('IsUnicast', 
                    'bool', 
@@ -13737,7 +15999,7 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('IsUp', 
                    'bool', 
                    [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): void ns3::Ipv4L3Protocol::Receive(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<const ns3::Packet> p, uint16_t protocol, ns3::Address const & from, ns3::Address const & to, ns3::NetDevice::PacketType packetType) [member function]
     cls.add_method('Receive', 
                    'void', 
@@ -13821,32 +16083,32 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## ipv4-l3-protocol.h (module 'internet'): void ns3::Ipv4L3Protocol::NotifyNewAggregate() [member function]
     cls.add_method('NotifyNewAggregate', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::GetIpForward() const [member function]
     cls.add_method('GetIpForward', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): bool ns3::Ipv4L3Protocol::GetWeakEsModel() const [member function]
     cls.add_method('GetWeakEsModel', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## ipv4-l3-protocol.h (module 'internet'): void ns3::Ipv4L3Protocol::SetIpForward(bool forward) [member function]
     cls.add_method('SetIpForward', 
                    'void', 
                    [param('bool', 'forward')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## ipv4-l3-protocol.h (module 'internet'): void ns3::Ipv4L3Protocol::SetWeakEsModel(bool model) [member function]
     cls.add_method('SetWeakEsModel', 
                    'void', 
                    [param('bool', 'model')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Ipv4MaskChecker_methods(root_module, cls):
@@ -13867,7 +16129,7 @@ def register_Ns3Ipv4MaskValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4MaskValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -13882,7 +16144,7 @@ def register_Ns3Ipv4MaskValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv4-address.h (module 'network'): void ns3::Ipv4MaskValue::Set(ns3::Ipv4Mask const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -13994,42 +16256,42 @@ def register_Ns3Ipv4RoutingProtocol_methods(root_module, cls):
     cls.add_method('NotifyAddAddress', 
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::NotifyInterfaceDown(uint32_t interface) [member function]
     cls.add_method('NotifyInterfaceDown', 
                    'void', 
                    [param('uint32_t', 'interface')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::NotifyInterfaceUp(uint32_t interface) [member function]
     cls.add_method('NotifyInterfaceUp', 
                    'void', 
                    [param('uint32_t', 'interface')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::NotifyRemoveAddress(uint32_t interface, ns3::Ipv4InterfaceAddress address) [member function]
     cls.add_method('NotifyRemoveAddress', 
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Time::Unit unit=::ns3::Time::Unit::S) const [member function]
     cls.add_method('PrintRoutingTable', 
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Time::Unit', 'unit', default_value='::ns3::Time::Unit::S')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## ipv4-routing-protocol.h (module 'internet'): bool ns3::Ipv4RoutingProtocol::RouteInput(ns3::Ptr<const ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Ipv4RoutingProtocol::UnicastForwardCallback ucb, ns3::Ipv4RoutingProtocol::MulticastForwardCallback mcb, ns3::Ipv4RoutingProtocol::LocalDeliverCallback lcb, ns3::Ipv4RoutingProtocol::ErrorCallback ecb) [member function]
     cls.add_method('RouteInput', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::NetDevice const >', 'idev'), param('ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ucb'), param('ns3::Callback< void, ns3::Ptr< ns3::Ipv4MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'mcb'), param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'lcb'), param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ecb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): ns3::Ptr<ns3::Ipv4Route> ns3::Ipv4RoutingProtocol::RouteOutput(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::NetDevice> oif, ns3::Socket::SocketErrno & sockerr) [member function]
     cls.add_method('RouteOutput', 
                    'ns3::Ptr< ns3::Ipv4Route >', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::NetDevice >', 'oif'), param('ns3::Socket::SocketErrno &', 'sockerr')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4-routing-protocol.h (module 'internet'): void ns3::Ipv4RoutingProtocol::SetIpv4(ns3::Ptr<ns3::Ipv4> ipv4) [member function]
     cls.add_method('SetIpv4', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3Ipv6AddressChecker_methods(root_module, cls):
@@ -14050,7 +16312,7 @@ def register_Ns3Ipv6AddressValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6AddressValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -14065,7 +16327,7 @@ def register_Ns3Ipv6AddressValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv6-address.h (module 'network'): void ns3::Ipv6AddressValue::Set(ns3::Ipv6Address const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -14090,7 +16352,7 @@ def register_Ns3Ipv6PrefixValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6PrefixValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -14105,7 +16367,7 @@ def register_Ns3Ipv6PrefixValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## ipv6-address.h (module 'network'): void ns3::Ipv6PrefixValue::Set(ns3::Ipv6Prefix const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -14135,12 +16397,12 @@ def register_Ns3ListErrorModel_methods(root_module, cls):
     cls.add_method('DoCorrupt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): void ns3::ListErrorModel::DoReset() [member function]
     cls.add_method('DoReset', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
@@ -14168,12 +16430,12 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::LogDistancePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3LogNormalRandomVariable_methods(root_module, cls):
@@ -14244,10 +16506,27 @@ def register_Ns3LteAmc_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## lte-amc.h (module 'lte'): std::vector<ns3::LteAmc::McsPrbInfo, std::allocator<ns3::LteAmc::McsPrbInfo> > ns3::LteAmc::GetUlMcsNprbInfoFromTbs(int tbs, int max_prb=110, int max_mcs=28) [member function]
+    cls.add_method('GetUlMcsNprbInfoFromTbs', 
+                   'std::vector< ns3::LteAmc::McsPrbInfo >', 
+                   [param('int', 'tbs'), param('int', 'max_prb', default_value='110'), param('int', 'max_mcs', default_value='28')])
     ## lte-amc.h (module 'lte'): int ns3::LteAmc::GetUlTbSizeFromMcs(int mcs, int nprb) [member function]
     cls.add_method('GetUlTbSizeFromMcs', 
                    'int', 
                    [param('int', 'mcs'), param('int', 'nprb')])
+    return
+
+def register_Ns3LteAmcMcsPrbInfo_methods(root_module, cls):
+    ## lte-amc.h (module 'lte'): ns3::LteAmc::McsPrbInfo::McsPrbInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-amc.h (module 'lte'): ns3::LteAmc::McsPrbInfo::McsPrbInfo(ns3::LteAmc::McsPrbInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteAmc::McsPrbInfo const &', 'arg0')])
+    ## lte-amc.h (module 'lte'): ns3::LteAmc::McsPrbInfo::mcs [variable]
+    cls.add_instance_attribute('mcs', 'uint8_t', is_const=False)
+    ## lte-amc.h (module 'lte'): ns3::LteAmc::McsPrbInfo::nbRb [variable]
+    cls.add_instance_attribute('nbRb', 'uint8_t', is_const=False)
+    ## lte-amc.h (module 'lte'): ns3::LteAmc::McsPrbInfo::tbs [variable]
+    cls.add_instance_attribute('tbs', 'int32_t', is_const=False)
     return
 
 def register_Ns3LteControlMessage_methods(root_module, cls):
@@ -14306,10 +16585,18 @@ def register_Ns3LteHarqPhy_methods(root_module, cls):
     cls.add_method('UpdateDlHarqProcessStatus', 
                    'void', 
                    [param('uint8_t', 'id'), param('uint8_t', 'layer'), param('double', 'mi'), param('uint16_t', 'infoBytes'), param('uint16_t', 'codeBytes')])
+    ## lte-harq-phy.h (module 'lte'): void ns3::LteHarqPhy::UpdateDlHarqProcessStatus(uint8_t id, uint8_t layer, double sinr) [member function]
+    cls.add_method('UpdateDlHarqProcessStatus', 
+                   'void', 
+                   [param('uint8_t', 'id'), param('uint8_t', 'layer'), param('double', 'sinr')])
     ## lte-harq-phy.h (module 'lte'): void ns3::LteHarqPhy::UpdateUlHarqProcessStatus(uint16_t rnti, double mi, uint16_t infoBytes, uint16_t codeBytes) [member function]
     cls.add_method('UpdateUlHarqProcessStatus', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('double', 'mi'), param('uint16_t', 'infoBytes'), param('uint16_t', 'codeBytes')])
+    ## lte-harq-phy.h (module 'lte'): void ns3::LteHarqPhy::UpdateUlHarqProcessStatus(uint16_t rnti, double sinr) [member function]
+    cls.add_method('UpdateUlHarqProcessStatus', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('double', 'sinr')])
     return
 
 def register_Ns3LteInterference_methods(root_module, cls):
@@ -14366,17 +16653,17 @@ def register_Ns3LteInterference_methods(root_module, cls):
     cls.add_method('ConditionallyEvaluateChunk', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## lte-interference.h (module 'lte'): void ns3::LteInterference::DoAddSignal(ns3::Ptr<const ns3::SpectrumValue> spd) [member function]
     cls.add_method('DoAddSignal', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'spd')], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## lte-interference.h (module 'lte'): void ns3::LteInterference::DoSubtractSignal(ns3::Ptr<const ns3::SpectrumValue> spd, uint32_t signalId) [member function]
     cls.add_method('DoSubtractSignal', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'spd'), param('uint32_t', 'signalId')], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3LtePhy_methods(root_module, cls):
@@ -14390,7 +16677,7 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('CreateTxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -14400,7 +16687,7 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('DoSendMacPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::DoSetCellId(uint16_t cellId) [member function]
     cls.add_method('DoSetCellId', 
                    'void', 
@@ -14409,12 +16696,12 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('GenerateCtrlCqiReport', 
                    'void', 
                    [param('ns3::SpectrumValue const &', 'sinr')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::GenerateDataCqiReport(ns3::SpectrumValue const & sinr) [member function]
     cls.add_method('GenerateDataCqiReport', 
                    'void', 
                    [param('ns3::SpectrumValue const &', 'sinr')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-phy.h (module 'lte'): uint8_t ns3::LtePhy::GetComponentCarrierId() [member function]
     cls.add_method('GetComponentCarrierId', 
                    'uint8_t', 
@@ -14469,12 +16756,12 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('ReportInterference', 
                    'void', 
                    [param('ns3::SpectrumValue const &', 'interf')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::ReportRsReceivedPower(ns3::SpectrumValue const & power) [member function]
     cls.add_method('ReportRsReceivedPower', 
                    'void', 
                    [param('ns3::SpectrumValue const &', 'power')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetComponentCarrierId(uint8_t index) [member function]
     cls.add_method('SetComponentCarrierId', 
                    'void', 
@@ -14503,6 +16790,130 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('SetUplinkChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumChannel >', 'c')])
+    return
+
+def register_Ns3LteSlHarqPhy_methods(root_module, cls):
+    ## lte-sl-harq-phy.h (module 'lte'): ns3::LteSlHarqPhy::LteSlHarqPhy(ns3::LteSlHarqPhy const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteSlHarqPhy const &', 'arg0')])
+    ## lte-sl-harq-phy.h (module 'lte'): ns3::LteSlHarqPhy::LteSlHarqPhy() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-harq-phy.h (module 'lte'): double ns3::LteSlHarqPhy::GetAccumulatedMiSl(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('GetAccumulatedMiSl', 
+                   'double', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): ns3::HarqProcessInfoList_t ns3::LteSlHarqPhy::GetHarqProcessInfoDisc(uint16_t rnti, uint8_t resPsdch) [member function]
+    cls.add_method('GetHarqProcessInfoDisc', 
+                   'ns3::HarqProcessInfoList_t', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch')])
+    ## lte-sl-harq-phy.h (module 'lte'): ns3::HarqProcessInfoList_t ns3::LteSlHarqPhy::GetHarqProcessInfoSl(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('GetHarqProcessInfoSl', 
+                   'ns3::HarqProcessInfoList_t', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): uint32_t ns3::LteSlHarqPhy::GetTbIdx(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('GetTbIdx', 
+                   'uint32_t', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::IncreaseTbIdx(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('IncreaseTbIdx', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::IndicateDiscTbPrevDecoded(uint16_t rnti, uint8_t resPsdch) [member function]
+    cls.add_method('IndicateDiscTbPrevDecoded', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::IndicatePrevDecoded(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('IndicatePrevDecoded', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): bool ns3::LteSlHarqPhy::IsDiscTbPrevDecoded(uint16_t rnti, uint8_t resPsdch) [member function]
+    cls.add_method('IsDiscTbPrevDecoded', 
+                   'bool', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch')])
+    ## lte-sl-harq-phy.h (module 'lte'): bool ns3::LteSlHarqPhy::IsPrevDecoded(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('IsPrevDecoded', 
+                   'bool', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::ResetDiscHarqProcessStatus(uint16_t rnti, uint8_t resPsdch) [member function]
+    cls.add_method('ResetDiscHarqProcessStatus', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::ResetDiscTbPrevDecoded(uint16_t rnti, uint8_t resPsdch) [member function]
+    cls.add_method('ResetDiscTbPrevDecoded', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::ResetPrevDecoded(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('ResetPrevDecoded', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::ResetSlHarqProcessStatus(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('ResetSlHarqProcessStatus', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::ResetTbIdx(uint16_t rnti, uint8_t l1dst) [member function]
+    cls.add_method('ResetTbIdx', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::SetDiscNumRetx(uint8_t retx) [member function]
+    cls.add_method('SetDiscNumRetx', 
+                   'void', 
+                   [param('uint8_t', 'retx')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::UpdateDiscHarqProcessStatus(uint16_t rnti, uint8_t resPsdch, double sinr) [member function]
+    cls.add_method('UpdateDiscHarqProcessStatus', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch'), param('double', 'sinr')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::UpdateSlHarqProcessStatus(uint16_t rnti, uint8_t l1dst, double mi, uint16_t infoBytes, uint16_t codeBytes) [member function]
+    cls.add_method('UpdateSlHarqProcessStatus', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst'), param('double', 'mi'), param('uint16_t', 'infoBytes'), param('uint16_t', 'codeBytes')])
+    ## lte-sl-harq-phy.h (module 'lte'): void ns3::LteSlHarqPhy::UpdateSlHarqProcessStatus(uint16_t rnti, uint8_t l1dst, double sinr) [member function]
+    cls.add_method('UpdateSlHarqProcessStatus', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst'), param('double', 'sinr')])
+    return
+
+def register_Ns3LteSlInterference_methods(root_module, cls):
+    ## lte-sl-interference.h (module 'lte'): ns3::LteSlInterference::LteSlInterference(ns3::LteSlInterference const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteSlInterference const &', 'arg0')])
+    ## lte-sl-interference.h (module 'lte'): ns3::LteSlInterference::LteSlInterference() [constructor]
+    cls.add_constructor([])
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::AddInterferenceChunkProcessor(ns3::Ptr<ns3::LteSlChunkProcessor> p) [member function]
+    cls.add_method('AddInterferenceChunkProcessor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlChunkProcessor >', 'p')])
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::AddRsPowerChunkProcessor(ns3::Ptr<ns3::LteSlChunkProcessor> p) [member function]
+    cls.add_method('AddRsPowerChunkProcessor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlChunkProcessor >', 'p')])
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::AddSignal(ns3::Ptr<const ns3::SpectrumValue> spd, ns3::Time const duration) [member function]
+    cls.add_method('AddSignal', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'spd'), param('ns3::Time const', 'duration')])
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::AddSinrChunkProcessor(ns3::Ptr<ns3::LteSlChunkProcessor> p) [member function]
+    cls.add_method('AddSinrChunkProcessor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlChunkProcessor >', 'p')])
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::EndRx() [member function]
+    cls.add_method('EndRx', 
+                   'void', 
+                   [])
+    ## lte-sl-interference.h (module 'lte'): static ns3::TypeId ns3::LteSlInterference::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::SetNoisePowerSpectralDensity(ns3::Ptr<const ns3::SpectrumValue> noisePsd) [member function]
+    cls.add_method('SetNoisePowerSpectralDensity', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'noisePsd')])
+    ## lte-sl-interference.h (module 'lte'): void ns3::LteSlInterference::StartRx(ns3::Ptr<const ns3::SpectrumValue> rxPsd) [member function]
+    cls.add_method('StartRx', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd')])
     return
 
 def register_Ns3LteSpectrumPhy_methods(root_module, cls):
@@ -14542,12 +16953,12 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<const ns3::SpectrumModel> ns3::LteSpectrumPhy::GetRxSpectrumModel() const [member function]
     cls.add_method('GetRxSpectrumModel', 
                    'ns3::Ptr< ns3::SpectrumModel const >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-spectrum-phy.h (module 'lte'): ns3::Ptr<ns3::AntennaModel> ns3::LteSpectrumPhy::GetRxAntenna() [member function]
     cls.add_method('GetRxAntenna', 
                    'ns3::Ptr< ns3::AntennaModel >', 
@@ -14570,10 +16981,18 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('StartRxUlSrs', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteSpectrumSignalParametersUlSrsFrame >', 'lteUlSrsRxParams')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::StartRxSlFrame(ns3::Ptr<ns3::LteSpectrumSignalParametersSlFrame> lteSlRxParams) [member function]
+    cls.add_method('StartRxSlFrame', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSpectrumSignalParametersSlFrame >', 'lteSlRxParams')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetHarqPhyModule(ns3::Ptr<ns3::LteHarqPhy> harq) [member function]
     cls.add_method('SetHarqPhyModule', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteHarqPhy >', 'harq')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetSlHarqPhyModule(ns3::Ptr<ns3::LteSlHarqPhy> lteSlHarq) [member function]
+    cls.add_method('SetSlHarqPhyModule', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlHarqPhy >', 'lteSlHarq')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetTxPowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue> txPsd) [member function]
     cls.add_method('SetTxPowerSpectralDensity', 
                    'void', 
@@ -14586,12 +17005,40 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('Reset', 
                    'void', 
                    [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::ClearExpectedSlTb() [member function]
+    cls.add_method('ClearExpectedSlTb', 
+                   'void', 
+                   [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::ClearExpectedDiscTb() [member function]
+    cls.add_method('ClearExpectedDiscTb', 
+                   'void', 
+                   [])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetAntenna(ns3::Ptr<ns3::AntennaModel> a) [member function]
     cls.add_method('SetAntenna', 
                    'void', 
                    [param('ns3::Ptr< ns3::AntennaModel >', 'a')])
     ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxDataFrame(ns3::Ptr<ns3::PacketBurst> pb, std::list<ns3::Ptr<ns3::LteControlMessage>, std::allocator<ns3::Ptr<ns3::LteControlMessage> > > ctrlMsgList, ns3::Time duration) [member function]
     cls.add_method('StartTxDataFrame', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ctrlMsgList'), param('ns3::Time', 'duration')])
+    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxSlMibFrame(ns3::Ptr<ns3::PacketBurst> pb, ns3::Time duration) [member function]
+    cls.add_method('StartTxSlMibFrame', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('ns3::Time', 'duration')])
+    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxSlCtrlFrame(ns3::Ptr<ns3::PacketBurst> pb, ns3::Time duration) [member function]
+    cls.add_method('StartTxSlCtrlFrame', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('ns3::Time', 'duration')])
+    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxSlDataFrame(ns3::Ptr<ns3::PacketBurst> pb, ns3::Time duration, uint8_t groupId) [member function]
+    cls.add_method('StartTxSlDataFrame', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('ns3::Time', 'duration'), param('uint8_t', 'groupId')])
+    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxSlDiscFrame(ns3::Ptr<ns3::PacketBurst> pb, uint32_t resNo, uint8_t rv, ns3::Time duration) [member function]
+    cls.add_method('StartTxSlDiscFrame', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('uint32_t', 'resNo'), param('uint8_t', 'rv'), param('ns3::Time', 'duration')])
+    ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxSlMibFrame(ns3::Ptr<ns3::PacketBurst> pb, std::list<ns3::Ptr<ns3::LteControlMessage>, std::allocator<ns3::Ptr<ns3::LteControlMessage> > > ctrlMsgList, ns3::Time duration) [member function]
+    cls.add_method('StartTxSlMibFrame', 
                    'bool', 
                    [param('ns3::Ptr< ns3::PacketBurst >', 'pb'), param('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ctrlMsgList'), param('ns3::Time', 'duration')])
     ## lte-spectrum-phy.h (module 'lte'): bool ns3::LteSpectrumPhy::StartTxDlCtrlFrame(std::list<ns3::Ptr<ns3::LteControlMessage>, std::allocator<ns3::Ptr<ns3::LteControlMessage> > > ctrlMsgList, bool pss) [member function]
@@ -14610,6 +17057,18 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetLtePhyRxDataEndOkCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxPscchEndOkCallback(ns3::LtePhyRxDataEndOkCallback c) [member function]
+    cls.add_method('SetLtePhyRxPscchEndOkCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxPsdchEndOkCallback(ns3::LtePhyRxDataEndOkCallback c) [member function]
+    cls.add_method('SetLtePhyRxPsdchEndOkCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxPsbchEndOkCallback(ns3::LtePhyRxPsbchEndOkCallback c) [member function]
+    cls.add_method('SetLtePhyRxPsbchEndOkCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxCtrlEndOkCallback(ns3::LtePhyRxCtrlEndOkCallback c) [member function]
     cls.add_method('SetLtePhyRxCtrlEndOkCallback', 
                    'void', 
@@ -14638,6 +17097,14 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetCellId', 
                    'void', 
                    [param('uint16_t', 'cellId')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddL1GroupId(uint8_t groupId) [member function]
+    cls.add_method('AddL1GroupId', 
+                   'void', 
+                   [param('uint8_t', 'groupId')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::RemoveL1GroupId(uint8_t groupId) [member function]
+    cls.add_method('RemoveL1GroupId', 
+                   'void', 
+                   [param('uint8_t', 'groupId')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetComponentCarrierId(uint8_t componentCarrierId) [member function]
     cls.add_method('SetComponentCarrierId', 
                    'void', 
@@ -14666,6 +17133,18 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('AddCtrlSinrChunkProcessor', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteChunkProcessor >', 'p')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddSlSinrChunkProcessor(ns3::Ptr<ns3::LteSlChunkProcessor> p) [member function]
+    cls.add_method('AddSlSinrChunkProcessor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlChunkProcessor >', 'p')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddSlSignalChunkProcessor(ns3::Ptr<ns3::LteSlChunkProcessor> p) [member function]
+    cls.add_method('AddSlSignalChunkProcessor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlChunkProcessor >', 'p')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddSlInterferenceChunkProcessor(ns3::Ptr<ns3::LteSlChunkProcessor> p) [member function]
+    cls.add_method('AddSlInterferenceChunkProcessor', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSlChunkProcessor >', 'p')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddExpectedTb(uint16_t rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int, std::allocator<int> > map, uint8_t layer, uint8_t harqId, uint8_t rv, bool downlink) [member function]
     cls.add_method('AddExpectedTb', 
                    'void', 
@@ -14674,10 +17153,30 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('RemoveExpectedTb', 
                    'void', 
                    [param('uint16_t', 'rnti')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddExpectedTb(uint16_t rnti, uint8_t l1dst, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int, std::allocator<int> > map, uint8_t rv) [member function]
+    cls.add_method('AddExpectedTb', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'l1dst'), param('uint8_t', 'ndi'), param('uint16_t', 'size'), param('uint8_t', 'mcs'), param('std::vector< int >', 'map'), param('uint8_t', 'rv')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::AddExpectedTb(uint16_t rnti, uint8_t resPsdch, uint8_t ndi, std::vector<int, std::allocator<int> > map, uint8_t rv, int index) [member function]
+    cls.add_method('AddExpectedTb', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint8_t', 'resPsdch'), param('uint8_t', 'ndi'), param('std::vector< int >', 'map'), param('uint8_t', 'rv'), param('int', 'index')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::UpdateSinrPerceived(ns3::SpectrumValue const & sinr) [member function]
     cls.add_method('UpdateSinrPerceived', 
                    'void', 
                    [param('ns3::SpectrumValue const &', 'sinr')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::UpdateSlSinrPerceived(std::vector<ns3::SpectrumValue, std::allocator<ns3::SpectrumValue> > sinr) [member function]
+    cls.add_method('UpdateSlSinrPerceived', 
+                   'void', 
+                   [param('std::vector< ns3::SpectrumValue >', 'sinr')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::UpdateSlSigPerceived(std::vector<ns3::SpectrumValue, std::allocator<ns3::SpectrumValue> > signal) [member function]
+    cls.add_method('UpdateSlSigPerceived', 
+                   'void', 
+                   [param('std::vector< ns3::SpectrumValue >', 'signal')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::UpdateSlIntPerceived(std::vector<ns3::SpectrumValue, std::allocator<ns3::SpectrumValue> > interference) [member function]
+    cls.add_method('UpdateSlIntPerceived', 
+                   'void', 
+                   [param('std::vector< ns3::SpectrumValue >', 'interference')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetTransmissionMode(uint8_t txMode) [member function]
     cls.add_method('SetTransmissionMode', 
                    'void', 
@@ -14686,10 +17185,34 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::SpectrumChannel >', 
                    [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetSlssid(uint64_t slssid) [member function]
+    cls.add_method('SetSlssid', 
+                   'void', 
+                   [param('uint64_t', 'slssid')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxSlssCallback(ns3::LtePhyRxSlssCallback c) [member function]
+    cls.add_method('SetLtePhyRxSlssCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, unsigned short, ns3::Ptr< ns3::SpectrumValue >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxPsdchSdRsrpCallback(ns3::LtePhyRxPsdchSdRsrpCallback c) [member function]
+    cls.add_method('SetLtePhyRxPsdchSdRsrpCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ptr< ns3::SpectrumValue >, std::vector< int, std::allocator< int > > const, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
     ## lte-spectrum-phy.h (module 'lte'): int64_t ns3::LteSpectrumPhy::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')])
+    ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy::State ns3::LteSpectrumPhy::GetState() [member function]
+    cls.add_method('GetState', 
+                   'ns3::LteSpectrumPhy::State', 
+                   [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetRxPool(ns3::Ptr<ns3::SidelinkDiscResourcePool> newpool) [member function]
+    cls.add_method('SetRxPool', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::SidelinkDiscResourcePool >', 'newpool')])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetDiscNumRetx(uint8_t retx) [member function]
+    cls.add_method('SetDiscNumRetx', 
+                   'void', 
+                   [param('uint8_t', 'retx')])
     return
 
 def register_Ns3LteUePhy_methods(root_module, cls):
@@ -14699,6 +17222,10 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy::LteUePhy(ns3::Ptr<ns3::LteSpectrumPhy> dlPhy, ns3::Ptr<ns3::LteSpectrumPhy> ulPhy) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::LteSpectrumPhy >', 'dlPhy'), param('ns3::Ptr< ns3::LteSpectrumPhy >', 'ulPhy')])
+    ## lte-ue-phy.h (module 'lte'): int64_t ns3::LteUePhy::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
     ## lte-ue-phy.h (module 'lte'): ns3::Ptr<ns3::DlCqiLteControlMessage> ns3::LteUePhy::CreateDlCqiFeedbackMessage(ns3::SpectrumValue const & sinr) [member function]
     cls.add_method('CreateDlCqiFeedbackMessage', 
                    'ns3::Ptr< ns3::DlCqiLteControlMessage >', 
@@ -14743,6 +17270,10 @@ def register_Ns3LteUePhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::LteSpectrumPhy >', 
                    [], 
                    is_const=True)
+    ## lte-ue-phy.h (module 'lte'): ns3::Time ns3::LteUePhy::GetFirstScanningTime() [member function]
+    cls.add_method('GetFirstScanningTime', 
+                   'ns3::Time', 
+                   [])
     ## lte-ue-phy.h (module 'lte'): ns3::LteUeCphySapProvider * ns3::LteUePhy::GetLteUeCphySapProvider() [member function]
     cls.add_method('GetLteUeCphySapProvider', 
                    'ns3::LteUeCphySapProvider *', 
@@ -14759,6 +17290,11 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     ## lte-ue-phy.h (module 'lte'): double ns3::LteUePhy::GetNoiseFigure() const [member function]
     cls.add_method('GetNoiseFigure', 
                    'double', 
+                   [], 
+                   is_const=True)
+    ## lte-ue-phy.h (module 'lte'): ns3::Ptr<ns3::LteSpectrumPhy> ns3::LteUePhy::GetSlSpectrumPhy() const [member function]
+    cls.add_method('GetSlSpectrumPhy', 
+                   'ns3::Ptr< ns3::LteSpectrumPhy >', 
                    [], 
                    is_const=True)
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy::State ns3::LteUePhy::GetState() const [member function]
@@ -14798,15 +17334,37 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_method('PhyPduReceived', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::PhyPsbchPduReceived(ns3::Ptr<ns3::Packet> p, uint16_t slssid) [member function]
+    cls.add_method('PhyPsbchPduReceived', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'slssid')])
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::PhyPscchPduReceived(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('PhyPscchPduReceived', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::PhyPsdchPduReceived(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('PhyPsdchPduReceived', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')])
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReceiveLteControlMessageList(std::list<ns3::Ptr<ns3::LteControlMessage>, std::allocator<ns3::Ptr<ns3::LteControlMessage> > > msgList) [member function]
     cls.add_method('ReceiveLteControlMessageList', 
                    'void', 
                    [param('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'msgList')], 
                    is_virtual=True)
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReceivePsdchSdRsrp(ns3::Ptr<ns3::Packet> p, ns3::Ptr<ns3::SpectrumValue> psd, std::vector<int, std::allocator<int> > const & rbs) [member function]
+    cls.add_method('ReceivePsdchSdRsrp', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'psd'), param('std::vector< int > const &', 'rbs')], 
+                   is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReceivePss(uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> p) [member function]
     cls.add_method('ReceivePss', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('ns3::Ptr< ns3::SpectrumValue >', 'p')], 
+                   is_virtual=True)
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReceiveSlss(uint16_t slssid, ns3::Ptr<ns3::SpectrumValue> p) [member function]
+    cls.add_method('ReceiveSlss', 
+                   'void', 
+                   [param('uint16_t', 'slssid'), param('ns3::Ptr< ns3::SpectrumValue >', 'p')], 
                    is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReportDataInterference(ns3::SpectrumValue const & interf) [member function]
     cls.add_method('ReportDataInterference', 
@@ -14827,6 +17385,10 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_method('SendSrs', 
                    'void', 
                    [])
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::SetFirstScanningTime(ns3::Time t) [member function]
+    cls.add_method('SetFirstScanningTime', 
+                   'void', 
+                   [param('ns3::Time', 't')])
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::SetHarqPhyModule(ns3::Ptr<ns3::LteHarqPhy> harq) [member function]
     cls.add_method('SetHarqPhyModule', 
                    'void', 
@@ -14843,6 +17405,10 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_method('SetNoiseFigure', 
                    'void', 
                    [param('double', 'nf')])
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::SetSlSpectrumPhy(ns3::Ptr<ns3::LteSpectrumPhy> phy) [member function]
+    cls.add_method('SetSlSpectrumPhy', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSpectrumPhy >', 'phy')])
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::SetSubChannelsForReception(std::vector<int, std::allocator<int> > mask) [member function]
     cls.add_method('SetSubChannelsForReception', 
                    'void', 
@@ -14855,6 +17421,10 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_method('SetTxPower', 
                    'void', 
                    [param('double', 'pow')])
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::StartRandomInitialSubframeIndication() [member function]
+    cls.add_method('StartRandomInitialSubframeIndication', 
+                   'void', 
+                   [])
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::SubframeIndication(uint32_t frameNo, uint32_t subframeNo) [member function]
     cls.add_method('SubframeIndication', 
                    'void', 
@@ -14863,22 +17433,27 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_method('DoNotifyConnectionSuccessful', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::DoSendLteControlMessage(ns3::Ptr<ns3::LteControlMessage> msg) [member function]
     cls.add_method('DoSendLteControlMessage', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteControlMessage >', 'msg')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::DoSendMacPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoSendMacPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::DoSendRachPreamble(uint32_t prachId, uint32_t raRnti) [member function]
     cls.add_method('DoSendRachPreamble', 
                    'void', 
                    [param('uint32_t', 'prachId'), param('uint32_t', 'raRnti')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::DoSendSlMacPdu(ns3::Ptr<ns3::Packet> p, ns3::LteUePhySapProvider::TransmitSlPhySduParameters params) [member function]
+    cls.add_method('DoSendSlMacPdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::LteUePhySapProvider::TransmitSlPhySduParameters', 'params')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3LteUePowerControl_methods(root_module, cls):
@@ -14916,6 +17491,18 @@ def register_Ns3LteUePowerControl_methods(root_module, cls):
     cls.add_method('GetPcmax', 
                    'double', 
                    [])
+    ## lte-ue-power-control.h (module 'lte'): double ns3::LteUePowerControl::GetPscchTxPower(std::vector<int, std::allocator<int> > rb) [member function]
+    cls.add_method('GetPscchTxPower', 
+                   'double', 
+                   [param('std::vector< int >', 'rb')])
+    ## lte-ue-power-control.h (module 'lte'): double ns3::LteUePowerControl::GetPsdchTxPower(std::vector<int, std::allocator<int> > rb) [member function]
+    cls.add_method('GetPsdchTxPower', 
+                   'double', 
+                   [param('std::vector< int >', 'rb')])
+    ## lte-ue-power-control.h (module 'lte'): double ns3::LteUePowerControl::GetPsschTxPower(std::vector<int, std::allocator<int> > rb) [member function]
+    cls.add_method('GetPsschTxPower', 
+                   'double', 
+                   [param('std::vector< int >', 'rb')])
     ## lte-ue-power-control.h (module 'lte'): double ns3::LteUePowerControl::GetPucchTxPower(std::vector<int, std::allocator<int> > rb) [member function]
     cls.add_method('GetPucchTxPower', 
                    'double', 
@@ -14993,7 +17580,7 @@ def register_Ns3Mac48AddressValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## mac48-address.h (module 'network'): bool ns3::Mac48AddressValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -15008,7 +17595,7 @@ def register_Ns3Mac48AddressValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## mac48-address.h (module 'network'): void ns3::Mac48AddressValue::Set(ns3::Mac48Address const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -15033,7 +17620,7 @@ def register_Ns3Mac64AddressValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## mac64-address.h (module 'network'): bool ns3::Mac64AddressValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -15048,7 +17635,7 @@ def register_Ns3Mac64AddressValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## mac64-address.h (module 'network'): void ns3::Mac64AddressValue::Set(ns3::Mac64Address const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -15075,12 +17662,12 @@ def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::MatrixPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3MibLteControlMessage_methods(root_module, cls):
@@ -15141,27 +17728,27 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     cls.add_method('NotifyCourseChange', 
                    'void', 
                    [], 
-                   is_const=True, visibility='protected')
+                   visibility='protected', is_const=True)
     ## mobility-model.h (module 'mobility'): int64_t ns3::MobilityModel::DoAssignStreams(int64_t start) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'start')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True, is_const=True)
     ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
                    'ns3::Vector', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True, is_const=True)
     ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
@@ -15176,12 +17763,12 @@ def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_const=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::NakagamiPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NetDevice_methods(root_module, cls):
@@ -15193,47 +17780,47 @@ def register_Ns3NetDevice_methods(root_module, cls):
     cls.add_method('AddLinkChangeCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): ns3::Address ns3::NetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): ns3::Address ns3::NetDevice::GetBroadcast() const [member function]
     cls.add_method('GetBroadcast', 
                    'ns3::Address', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): ns3::Ptr<ns3::Channel> ns3::NetDevice::GetChannel() const [member function]
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): uint32_t ns3::NetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): uint16_t ns3::NetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): ns3::Address ns3::NetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
     cls.add_method('GetMulticast', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): ns3::Address ns3::NetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
     cls.add_method('GetMulticast', 
                    'ns3::Address', 
                    [param('ns3::Ipv6Address', 'addr')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): ns3::Ptr<ns3::Node> ns3::NetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): static ns3::TypeId ns3::NetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -15243,77 +17830,77 @@ def register_Ns3NetDevice_methods(root_module, cls):
     cls.add_method('IsBridge', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::IsBroadcast() const [member function]
     cls.add_method('IsBroadcast', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::IsLinkUp() const [member function]
     cls.add_method('IsLinkUp', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::IsMulticast() const [member function]
     cls.add_method('IsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::NeedsArp() const [member function]
     cls.add_method('NeedsArp', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('SendFrom', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::NetDevice::SetAddress(ns3::Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Address', 'address')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::NetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 
                    [param('uint32_t const', 'index')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
                    [param('uint16_t const', 'mtu')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::NetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::NetDevice::SetPromiscReceiveCallback(ns3::NetDevice::PromiscReceiveCallback cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::NetDevice::SetReceiveCallback(ns3::NetDevice::ReceiveCallback cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3NixVector_methods(root_module, cls):
@@ -15428,6 +18015,10 @@ def register_Ns3Node_methods(root_module, cls):
     cls.add_method('RegisterProtocolHandler', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'promiscuous', default_value='false')])
+    ## node.h (module 'network'): void ns3::Node::RemoveDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
+    cls.add_method('RemoveDevice', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device')])
     ## node.h (module 'network'): void ns3::Node::UnregisterDeviceAdditionListener(ns3::Node::DeviceAdditionListener listener) [member function]
     cls.add_method('UnregisterDeviceAdditionListener', 
                    'void', 
@@ -15440,12 +18031,12 @@ def register_Ns3Node_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3NormalRandomVariable_methods(root_module, cls):
@@ -15511,7 +18102,7 @@ def register_Ns3ObjectFactoryValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## object-factory.h (module 'core'): bool ns3::ObjectFactoryValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -15526,7 +18117,7 @@ def register_Ns3ObjectFactoryValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## object-factory.h (module 'core'): void ns3::ObjectFactoryValue::Set(ns3::ObjectFactory const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -15797,7 +18388,7 @@ def register_Ns3PointerChecker_methods(root_module, cls):
     cls.add_method('GetPointeeTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, is_const=True)
     return
 
 def register_Ns3PointerValue_methods(root_module, cls):
@@ -15811,7 +18402,7 @@ def register_Ns3PointerValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## pointer.h (module 'core'): bool ns3::PointerValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -15826,7 +18417,7 @@ def register_Ns3PointerValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## pointer.h (module 'core'): void ns3::PointerValue::SetObject(ns3::Ptr<ns3::Object> object) [member function]
     cls.add_method('SetObject', 
                    'void', 
@@ -15930,27 +18521,27 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
     cls.add_method('DoCorrupt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): bool ns3::RateErrorModel::DoCorruptBit(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoCorruptBit', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): bool ns3::RateErrorModel::DoCorruptByte(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoCorruptByte', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): bool ns3::RateErrorModel::DoCorruptPkt(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoCorruptPkt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): void ns3::RateErrorModel::DoReset() [member function]
     cls.add_method('DoReset', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ReceiveListErrorModel_methods(root_module, cls):
@@ -15976,12 +18567,12 @@ def register_Ns3ReceiveListErrorModel_methods(root_module, cls):
     cls.add_method('DoCorrupt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): void ns3::ReceiveListErrorModel::DoReset() [member function]
     cls.add_method('DoReset', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RectangleChecker_methods(root_module, cls):
@@ -16002,7 +18593,7 @@ def register_Ns3RectangleValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## rectangle.h (module 'mobility'): bool ns3::RectangleValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16017,7 +18608,7 @@ def register_Ns3RectangleValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## rectangle.h (module 'mobility'): void ns3::RectangleValue::Set(ns3::Rectangle const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16040,6 +18631,21 @@ def register_Ns3Sib1LteControlMessage_methods(root_module, cls):
                    [param('ns3::LteRrcSap::SystemInformationBlockType1', 'sib1')])
     return
 
+def register_Ns3SlDciLteControlMessage_methods(root_module, cls):
+    ## lte-control-messages.h (module 'lte'): ns3::SlDciLteControlMessage::SlDciLteControlMessage(ns3::SlDciLteControlMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SlDciLteControlMessage const &', 'arg0')])
+    ## lte-control-messages.h (module 'lte'): ns3::SlDciLteControlMessage::SlDciLteControlMessage() [constructor]
+    cls.add_constructor([])
+    ## lte-control-messages.h (module 'lte'): ns3::SlDciListElement_s ns3::SlDciLteControlMessage::GetDci() [member function]
+    cls.add_method('GetDci', 
+                   'ns3::SlDciListElement_s', 
+                   [])
+    ## lte-control-messages.h (module 'lte'): void ns3::SlDciLteControlMessage::SetDci(ns3::SlDciListElement_s dci) [member function]
+    cls.add_method('SetDci', 
+                   'void', 
+                   [param('ns3::SlDciListElement_s', 'dci')])
+    return
+
 def register_Ns3SpectrumChannel_methods(root_module, cls):
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel::SpectrumChannel(ns3::SpectrumChannel const & arg0) [constructor]
     cls.add_constructor([param('ns3::SpectrumChannel const &', 'arg0')])
@@ -16053,7 +18659,7 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
     cls.add_method('AddRx', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumPhy >', 'phy')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## spectrum-channel.h (module 'spectrum'): void ns3::SpectrumChannel::AddSpectrumPropagationLossModel(ns3::Ptr<ns3::SpectrumPropagationLossModel> loss) [member function]
     cls.add_method('AddSpectrumPropagationLossModel', 
                    'void', 
@@ -16084,7 +18690,7 @@ def register_Ns3SpectrumChannel_methods(root_module, cls):
     cls.add_method('StartTx', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'params')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3TimeValue_methods(root_module, cls):
@@ -16098,7 +18704,7 @@ def register_Ns3TimeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## nstime.h (module 'core'): bool ns3::TimeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16113,7 +18719,7 @@ def register_Ns3TimeValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## nstime.h (module 'core'): void ns3::TimeValue::Set(ns3::Time const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16138,7 +18744,7 @@ def register_Ns3TypeIdValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## type-id.h (module 'core'): bool ns3::TypeIdValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16153,7 +18759,7 @@ def register_Ns3TypeIdValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## type-id.h (module 'core'): void ns3::TypeIdValue::Set(ns3::TypeId const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16178,7 +18784,7 @@ def register_Ns3UanModesListValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-tx-mode.h (module 'uan'): bool ns3::UanModesListValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16193,7 +18799,7 @@ def register_Ns3UanModesListValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uan-tx-mode.h (module 'uan'): void ns3::UanModesListValue::Set(ns3::UanModesList const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16211,7 +18817,7 @@ def register_Ns3UintegerValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uinteger.h (module 'core'): bool ns3::UintegerValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16226,7 +18832,7 @@ def register_Ns3UintegerValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## uinteger.h (module 'core'): void ns3::UintegerValue::Set(uint64_t const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16266,7 +18872,7 @@ def register_Ns3Vector2DValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## vector.h (module 'core'): bool ns3::Vector2DValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16281,7 +18887,7 @@ def register_Ns3Vector2DValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## vector.h (module 'core'): void ns3::Vector2DValue::Set(ns3::Vector2D const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16306,7 +18912,7 @@ def register_Ns3Vector3DValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## vector.h (module 'core'): bool ns3::Vector3DValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16321,7 +18927,7 @@ def register_Ns3Vector3DValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## vector.h (module 'core'): void ns3::Vector3DValue::Set(ns3::Vector3D const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16346,7 +18952,7 @@ def register_Ns3WifiModeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## wifi-mode.h (module 'wifi'): bool ns3::WifiModeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16361,7 +18967,7 @@ def register_Ns3WifiModeValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## wifi-mode.h (module 'wifi'): void ns3::WifiModeValue::Set(ns3::WifiMode const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16386,7 +18992,7 @@ def register_Ns3AddressValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## address.h (module 'network'): bool ns3::AddressValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -16401,7 +19007,7 @@ def register_Ns3AddressValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## address.h (module 'network'): void ns3::AddressValue::Set(ns3::Address const & value) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -16422,12 +19028,12 @@ def register_Ns3BinaryErrorModel_methods(root_module, cls):
     cls.add_method('DoCorrupt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): void ns3::BinaryErrorModel::DoReset() [member function]
     cls.add_method('DoReset', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3BsrLteControlMessage_methods(root_module, cls):
@@ -16480,12 +19086,12 @@ def register_Ns3BurstErrorModel_methods(root_module, cls):
     cls.add_method('DoCorrupt', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## error-model.h (module 'network'): void ns3::BurstErrorModel::DoReset() [member function]
     cls.add_method('DoReset', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16502,12 +19108,12 @@ def register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address_
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): bool ns3::CallbackImpl<bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::Socket> arg0, ns3::Address const & arg1) [member operator]
     cls.add_method('operator()', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Socket >', 'arg0'), param('ns3::Address const &', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16524,12 +19130,12 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): ns3::ObjectBase * ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()() [member operator]
     cls.add_method('operator()', 
                    'ns3::ObjectBase *', 
                    [], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Const_ns3Ipv4Header___amp___Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ipv4L3ProtocolDropReason_Ns3Ptr__lt__ns3Ipv4__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16546,12 +19152,12 @@ def register_Ns3CallbackImpl__Void_Const_ns3Ipv4Header___amp___Ns3Ptr__lt__const
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, const ns3::Ipv4Header &, ns3::Ptr<const ns3::Packet>, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr<ns3::Ipv4>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ipv4Header const & arg0, ns3::Ptr<const ns3::Packet> arg1, ns3::Ipv4L3Protocol::DropReason arg2, ns3::Ptr<ns3::Ipv4> arg3, unsigned int arg4) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ipv4Header const &', 'arg0'), param('ns3::Ptr< ns3::Packet const >', 'arg1'), param('ns3::Ipv4L3Protocol::DropReason', 'arg2'), param('ns3::Ptr< ns3::Ipv4 >', 'arg3'), param('unsigned int', 'arg4')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Const_ns3Ipv4Header___amp___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16568,12 +19174,12 @@ def register_Ns3CallbackImpl__Void_Const_ns3Ipv4Header___amp___Ns3Ptr__lt__const
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, const ns3::Ipv4Header &, ns3::Ptr<const ns3::Packet>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ipv4Header const & arg0, ns3::Ptr<const ns3::Packet> arg1, unsigned int arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ipv4Header const &', 'arg0'), param('ns3::Ptr< ns3::Packet const >', 'arg1'), param('unsigned int', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16590,12 +19196,12 @@ def register_Ns3CallbackImpl__Void_Int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Em
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(int arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('int', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3HePreambleParameters_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16612,12 +19218,12 @@ def register_Ns3CallbackImpl__Void_Ns3HePreambleParameters_Ns3Empty_Ns3Empty_Ns3
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::HePreambleParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::HePreambleParameters arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::HePreambleParameters', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3PhyReceptionStatParameters_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16634,12 +19240,12 @@ def register_Ns3CallbackImpl__Void_Ns3PhyReceptionStatParameters_Ns3Empty_Ns3Emp
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::PhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::PhyReceptionStatParameters arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::PhyReceptionStatParameters', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3PhyTransmissionStatParameters_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16656,12 +19262,12 @@ def register_Ns3CallbackImpl__Void_Ns3PhyTransmissionStatParameters_Ns3Empty_Ns3
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::PhyTransmissionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::PhyTransmissionStatParameters arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::PhyTransmissionStatParameters', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Ptr__lt__const_ns3MobilityModel__gt___Double_Double_Double_Double_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16678,12 +19284,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3P
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::Ptr<const ns3::MobilityModel>, double, double, double, double, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::MobilityModel> arg0, ns3::Ptr<const ns3::MobilityModel> arg1, double arg2, double arg3, double arg4, double arg5) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::MobilityModel const >', 'arg0'), param('ns3::Ptr< ns3::MobilityModel const >', 'arg1'), param('double', 'arg2'), param('double', 'arg3'), param('double', 'arg4'), param('double', 'arg5')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16700,12 +19306,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3E
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::MobilityModel> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::MobilityModel const >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3UanTxMode_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16722,12 +19328,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3U
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, double arg1, ns3::UanTxMode arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('double', 'arg1'), param('ns3::UanTxMode', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3WifiMode_Ns3WifiPreamble_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16744,12 +19350,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3W
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::WifiMode, ns3::WifiPreamble, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, double arg1, ns3::WifiMode arg2, ns3::WifiPreamble arg3) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('double', 'arg1'), param('ns3::WifiMode', 'arg2'), param('ns3::WifiPreamble', 'arg3')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16766,12 +19372,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3E
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, double arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('double', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ptr__lt__ns3Ipv4__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16788,12 +19394,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ptr__lt_
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::Ptr<ns3::Ipv4>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, ns3::Ptr<ns3::Ipv4> arg1, unsigned int arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('ns3::Ptr< ns3::Ipv4 >', 'arg1'), param('unsigned int', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3WifiMode_Ns3WifiPreamble_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16810,12 +19416,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3WifiMode
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::WifiMode, ns3::WifiPreamble, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, ns3::WifiMode arg1, ns3::WifiPreamble arg2, unsigned char arg3) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('ns3::WifiMode', 'arg1'), param('ns3::WifiPreamble', 'arg2'), param('unsigned char', 'arg3')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3WifiPhyRxfailureReason_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16832,12 +19438,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3WifiPhyR
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::WifiPhyRxfailureReason, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, ns3::WifiPhyRxfailureReason arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('ns3::WifiPhyRxfailureReason', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16854,12 +19460,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Ns3WifiTxVector_Ns3MpduInfo_Ns3SignalNoiseDbm_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16876,12 +19482,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_sh
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, unsigned short, ns3::WifiTxVector, ns3::MpduInfo, ns3::SignalNoiseDbm, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, short unsigned int arg1, ns3::WifiTxVector arg2, ns3::MpduInfo arg3, ns3::SignalNoiseDbm arg4) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('short unsigned int', 'arg1'), param('ns3::WifiTxVector', 'arg2'), param('ns3::MpduInfo', 'arg3'), param('ns3::SignalNoiseDbm', 'arg4')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Ns3WifiTxVector_Ns3MpduInfo_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16898,12 +19504,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_sh
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, unsigned short, ns3::WifiTxVector, ns3::MpduInfo, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, short unsigned int arg1, ns3::WifiTxVector arg2, ns3::MpduInfo arg3) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('short unsigned int', 'arg1'), param('ns3::WifiTxVector', 'arg2'), param('ns3::MpduInfo', 'arg3')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3PacketBurst__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16920,12 +19526,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3PacketBurst__gt___Ns3Emp
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::PacketBurst>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::PacketBurst> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::PacketBurst const >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16942,12 +19548,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Ns3Ptr
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::SpectrumPhy>, ns3::Ptr<const ns3::SpectrumPhy>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::SpectrumPhy> arg0, ns3::Ptr<const ns3::SpectrumPhy> arg1, double arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumPhy const >', 'arg0'), param('ns3::Ptr< ns3::SpectrumPhy const >', 'arg1'), param('double', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3WifiPsdu__gt___Ns3WifiTxVector_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16964,12 +19570,34 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3WifiPsdu__gt___Ns3WifiTx
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::WifiPsdu>, ns3::WifiTxVector, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::WifiPsdu> arg0, ns3::WifiTxVector arg1, double arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPsdu const >', 'arg0'), param('ns3::WifiTxVector', 'arg1'), param('double', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3LteSpectrumPhy__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::LteSpectrumPhy >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_virtual=True, is_const=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::LteSpectrumPhy>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::LteSpectrumPhy> arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::LteSpectrumPhy >', 'arg0')], 
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -16986,12 +19614,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__co
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::NetDevice> arg0, ns3::Ptr<const ns3::Packet> arg1, short unsigned int arg2, ns3::Address const & arg3, ns3::Address const & arg4, ns3::NetDevice::PacketType arg5) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'arg0'), param('ns3::Ptr< ns3::Packet const >', 'arg1'), param('short unsigned int', 'arg2'), param('ns3::Address const &', 'arg3'), param('ns3::Address const &', 'arg4'), param('ns3::NetDevice::PacketType', 'arg5')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17008,12 +19636,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Em
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::NetDevice> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Packet__gt___Double_Ns3UanTxMode_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17030,12 +19658,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Packet__gt___Double_Ns3UanTxMo
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::Packet>, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::Packet> arg0, double arg1, ns3::UanTxMode arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('double', 'arg1'), param('ns3::UanTxMode', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Packet__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17052,12 +19680,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Packet__gt___Double_Ns3Empty_N
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::Packet> arg0, double arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('double', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17074,12 +19702,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address_
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::Socket> arg0, ns3::Address const & arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Socket >', 'arg0'), param('ns3::Address const &', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17096,12 +19724,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Ns3Empty_Ns3Empty
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::Socket> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Socket >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17118,12 +19746,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Unsigned_int_Ns3E
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::Socket> arg0, unsigned int arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Socket >', 'arg0'), param('unsigned int', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3SpectrumSignalParameters__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17140,12 +19768,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3SpectrumSignalParameters__gt__
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::SpectrumSignalParameters>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::SpectrumSignalParameters> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumSignalParameters >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3WifiPsdu__gt___Double_Ns3WifiTxVector_StdVector__lt__bool__stdAllocator__lt__bool__gt_____gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17162,12 +19790,12 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3WifiPsdu__gt___Double_Ns3WifiT
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::WifiPsdu>, double, ns3::WifiTxVector, std::vector<bool, std::allocator<bool> >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::WifiPsdu> arg0, double arg1, ns3::WifiTxVector arg2, std::vector<bool, std::allocator<bool> > arg3) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPsdu >', 'arg0'), param('double', 'arg1'), param('ns3::WifiTxVector', 'arg2'), param('std::vector< bool >', 'arg3')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     cls.add_copy_constructor()
     return
 
@@ -17185,12 +19813,34 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3WifiPsdu__gt___Ns3Empty_Ns3Emp
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<ns3::WifiPsdu>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::WifiPsdu> arg0) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPsdu >', 'arg0')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3SlPhyReceptionStatParameters_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_virtual=True, is_const=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::SlPhyReceptionStatParameters, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::SlPhyReceptionStatParameters arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::SlPhyReceptionStatParameters', 'arg0')], 
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Time_Ns3Time_WifiPhyState_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17207,12 +19857,12 @@ def register_Ns3CallbackImpl__Void_Ns3Time_Ns3Time_WifiPhyState_Ns3Empty_Ns3Empt
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Time, ns3::Time, WifiPhyState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Time arg0, ns3::Time arg1, WifiPhyState arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Time', 'arg0'), param('ns3::Time', 'arg1'), param('WifiPhyState', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3WifiTxVector_Ns3Time_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17229,12 +19879,12 @@ def register_Ns3CallbackImpl__Void_Ns3WifiTxVector_Ns3Time_Ns3Empty_Ns3Empty_Ns3
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::WifiTxVector, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::WifiTxVector arg0, ns3::Time arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::WifiTxVector', 'arg0'), param('ns3::Time', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17251,12 +19901,57 @@ def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()() [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_virtual=True, is_const=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(unsigned int arg0, unsigned int arg1, unsigned int arg2) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('unsigned int', 'arg0'), param('unsigned int', 'arg1'), param('unsigned int', 'arg2')], 
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Unsigned_short_Const_stdVector__lt__int__stdAllocator__lt__int__gt_____gt_____amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned short, std::vector< int, std::allocator< int > > const, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_virtual=True, is_const=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, const std::vector<int, std::allocator<int> > &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, std::vector<int, std::allocator<int> > const & arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('short unsigned int', 'arg0'), param('std::vector< int > const &', 'arg1')], 
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+    cls.add_copy_constructor()
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Ns3Ptr__lt__ns3SpectrumValue__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17273,12 +19968,34 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Ns3Ptr__lt__ns3SpectrumValue__
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, ns3::Ptr<ns3::SpectrumValue>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, ns3::Ptr<ns3::SpectrumValue> arg1) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('ns3::Ptr< ns3::SpectrumValue >', 'arg1')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_long_Unsigned_int_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_virtual=True, is_const=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned long, unsigned int, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, long unsigned int arg1, unsigned int arg2, double arg3) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('short unsigned int', 'arg0'), param('long unsigned int', 'arg1'), param('unsigned int', 'arg2'), param('double', 'arg3')], 
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_Bool_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17295,12 +20012,12 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_B
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned short, double, double, bool, unsigned char, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, short unsigned int arg1, double arg2, double arg3, bool arg4, unsigned char arg5) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('double', 'arg2'), param('double', 'arg3'), param('bool', 'arg4'), param('unsigned char', 'arg5')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17317,12 +20034,12 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_U
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned short, double, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, short unsigned int arg1, double arg2, double arg3, unsigned char arg4) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('double', 'arg2'), param('double', 'arg3'), param('unsigned char', 'arg4')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17339,12 +20056,12 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Ns3Empty
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned short, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, short unsigned int arg1, double arg2) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('double', 'arg2')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17361,12 +20078,12 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Unsigned
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned short, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, short unsigned int arg1, double arg2, unsigned char arg3) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('double', 'arg2'), param('unsigned char', 'arg3')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3LteUePhyState_Ns3LteUePhyState_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -17383,12 +20100,12 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3LteUePhyStat
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned short, ns3::LteUePhy::State, ns3::LteUePhy::State, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, short unsigned int arg1, ns3::LteUePhy::State arg2, ns3::LteUePhy::State arg3) [member operator]
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('ns3::LteUePhy::State', 'arg2'), param('ns3::LteUePhy::State', 'arg3')], 
-                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3DlCqiLteControlMessage_methods(root_module, cls):
@@ -17469,6 +20186,10 @@ def register_Ns3LteEnbPhy_methods(root_module, cls):
     cls.add_method('DequeueUlDci', 
                    'std::list< ns3::UlDciLteControlMessage >', 
                    [])
+    ## lte-enb-phy.h (module 'lte'): void ns3::LteEnbPhy::DisableEnbPhy(bool disableEnbPhy) [member function]
+    cls.add_method('DisableEnbPhy', 
+                   'void', 
+                   [param('bool', 'disableEnbPhy')])
     ## lte-enb-phy.h (module 'lte'): void ns3::LteEnbPhy::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -17633,7 +20354,7 @@ def register_Ns3LteEnbPhy_methods(root_module, cls):
     cls.add_method('DoSendMacPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3LteNetDevice_methods(root_module, cls):
@@ -17658,12 +20379,12 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('GetIfIndex', 
                    'uint32_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): ns3::Ptr<ns3::Channel> ns3::LteNetDevice::GetChannel() const [member function]
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): bool ns3::LteNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
@@ -17673,7 +20394,7 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('GetMtu', 
                    'uint16_t', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): void ns3::LteNetDevice::SetAddress(ns3::Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
@@ -17683,12 +20404,12 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('GetAddress', 
                    'ns3::Address', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): bool ns3::LteNetDevice::IsLinkUp() const [member function]
     cls.add_method('IsLinkUp', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): void ns3::LteNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('AddLinkChangeCallback', 
                    'void', 
@@ -17698,32 +20419,32 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('IsBroadcast', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): ns3::Address ns3::LteNetDevice::GetBroadcast() const [member function]
     cls.add_method('GetBroadcast', 
                    'ns3::Address', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): bool ns3::LteNetDevice::IsMulticast() const [member function]
     cls.add_method('IsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): bool ns3::LteNetDevice::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): bool ns3::LteNetDevice::IsBridge() const [member function]
     cls.add_method('IsBridge', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::LteNetDevice::GetNode() const [member function]
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): void ns3::LteNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
@@ -17733,7 +20454,7 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('NeedsArp', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): void ns3::LteNetDevice::SetReceiveCallback(ns3::NetDevice::ReceiveCallback cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
@@ -17743,12 +20464,12 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('GetMulticast', 
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'addr')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): ns3::Address ns3::LteNetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
     cls.add_method('GetMulticast', 
                    'ns3::Address', 
                    [param('ns3::Ipv6Address', 'addr')], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): void ns3::LteNetDevice::SetPromiscReceiveCallback(ns3::NetDevice::PromiscReceiveCallback cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
@@ -17763,7 +20484,7 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
     cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_virtual=True, is_const=True)
     ## lte-net-device.h (module 'lte'): void ns3::LteNetDevice::Receive(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('Receive', 
                    'void', 
@@ -17856,7 +20577,7 @@ def register_Ns3LteUeNetDevice_methods(root_module, cls):
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3LteEnbNetDevice_methods(root_module, cls):
@@ -17984,7 +20705,7 @@ def register_Ns3LteEnbNetDevice_methods(root_module, cls):
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ConfigMatchContainer_methods(root_module, cls):
@@ -18067,7 +20788,7 @@ def register_Ns3HashImplementation_methods(root_module, cls):
     cls.add_method('GetHash32', 
                    'uint32_t', 
                    [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## hash-function.h (module 'core'): uint64_t ns3::Hash::Implementation::GetHash64(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
@@ -18077,7 +20798,7 @@ def register_Ns3HashImplementation_methods(root_module, cls):
     cls.add_method('clear', 
                    'void', 
                    [], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3HashFunctionFnv1a_methods(root_module, cls):

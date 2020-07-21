@@ -208,7 +208,6 @@ def build(bld):
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
         'test/lte-test-cell-selection.cc',
-        #'test/lte-test-secondary-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
         'test/test-lte-handover-target.cc',
         'test/lte-test-deactivate-bearer.cc',
@@ -249,6 +248,12 @@ def build(bld):
         'test/test-sidelink-synch.cc'
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/lte-examples-test-suite.cc',
+            ])
+        
     headers = bld(features='ns3header')
     headers.module = 'lte'
     headers.source = [

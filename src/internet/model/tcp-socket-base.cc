@@ -243,6 +243,7 @@ TcpSocketBase::TcpSocketBase (void)
 {
   NS_LOG_FUNCTION (this);
   m_txBuffer = CreateObject<TcpTxBuffer> ();
+  m_txBuffer->SetRWndCallback (MakeCallback (&TcpSocketBase::GetRWnd, this));
   m_tcb      = CreateObject<TcpSocketState> ();
   m_rateOps  = CreateObject <TcpRateLinux> ();
 
@@ -333,6 +334,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_timestampEnabled (sock.m_timestampEnabled),
     m_timestampToEcho (sock.m_timestampToEcho),
     m_recover (sock.m_recover),
+    m_recoverActive (sock.m_recoverActive),
     m_retxThresh (sock.m_retxThresh),
     m_limitedTx (sock.m_limitedTx),
     m_isFirstPartialAck (sock.m_isFirstPartialAck),
@@ -359,6 +361,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
   SetSendCallback (vPSUI);
   SetRecvCallback (vPS);
   m_txBuffer = CopyObject (sock.m_txBuffer);
+  m_txBuffer->SetRWndCallback (MakeCallback (&TcpSocketBase::GetRWnd, this));
   m_tcb = CopyObject (sock.m_tcb);
   m_tcb->m_rxBuffer = CopyObject (sock.m_tcb->m_rxBuffer);
 
@@ -1058,16 +1061,16 @@ TcpSocketBase::DoClose (void)
       CloseAndNotify ();
       break;
     case LISTEN:
-    case LAST_ACK:
-      // In these three states, move to CLOSED and tear down the end point
+      // In this state, move to CLOSED and tear down the end point
       CloseAndNotify ();
       break;
+    case LAST_ACK:
     case CLOSED:
     case FIN_WAIT_1:
     case FIN_WAIT_2:
     case TIME_WAIT:
     default: /* mute compiler */
-      // Do nothing in these four states
+      // Do nothing in these five states
       break;
     }
   return 0;
@@ -1084,7 +1087,10 @@ TcpSocketBase::CloseAndNotify (void)
       NotifyNormalClose ();
       m_closeNotified = true;
     }
-
+  if (m_lastAckEvent.IsRunning ())
+    {
+      m_lastAckEvent.Cancel ();
+    }
   NS_LOG_DEBUG (TcpStateName[m_state] << " -> CLOSED");
   m_state = CLOSED;
   DeallocateEndPoint ();
@@ -1575,6 +1581,7 @@ TcpSocketBase::EnterRecovery (uint32_t currentDelivered)
   // (4) Invoke fast retransmit and enter loss recovery as follows:
   // (4.1) RecoveryPoint = HighData
   m_recover = m_tcb->m_highTxMark;
+  m_recoverActive = true;
 
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
   m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
@@ -1655,10 +1662,26 @@ TcpSocketBase::DupAck (uint32_t currentDelivered)
     }
   else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
     {
+      // m_dupackCount should not exceed its threshold in CA_DISORDER state
+      // when m_recoverActive has not been set. When recovery point
+      // have been set after timeout, the sender could enter into CA_DISORDER
+      // after receiving new ACK smaller than m_recover. After that, m_dupackCount
+      // can be equal and larger than m_retxThresh and we should avoid entering
+      // CA_RECOVERY and reducing sending rate again.
+      NS_ASSERT((m_dupAckCount <= m_retxThresh) || m_recoverActive);
+
       // RFC 6675, Section 5, continuing:
       // ... and take the following steps:
       // (1) If DupAcks >= DupThresh, go to step (4).
-      if ((m_dupAckCount == m_retxThresh) && (m_highRxAckMark >= m_recover))
+      //     Sequence number comparison (m_highRxAckMark >= m_recover) will take
+      //     effect only when m_recover has been set. Hence, we can avoid to use
+      //     m_recover in the last congestion event and fail to enter
+      //     CA_RECOVERY when sequence number is advanced significantly since
+      //     the last congestion event, which could be common for
+      //     bandwidth-greedy application in high speed and reliable network
+      //     (such as datacenter network) whose sending rate is constrainted by
+      //     TCP socket buffer size at receiver side.
+      if ((m_dupAckCount == m_retxThresh) && ((m_highRxAckMark >= m_recover) || (!m_recoverActive)))
         {
           EnterRecovery (currentDelivered);
           NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
@@ -2007,6 +2030,14 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
               NS_LOG_DEBUG (segsAcked << " segments acked in CA_LOSS, ack of" <<
                             ackNumber << ", exiting CA_LOSS -> CA_OPEN");
+            }
+
+          if (ackNumber >= m_recover)
+            {
+              // All lost segments in the congestion event have been
+              // retransmitted successfully. The recovery point (m_recover)
+              // should be deactivated.
+              m_recoverActive = false;
             }
 
           if (exitedFastRecovery)
@@ -2474,6 +2505,7 @@ TcpSocketBase::DoPeerClose (void)
     }
   if (m_state == LAST_ACK)
     {
+      m_dataRetrCount = m_dataRetries; // prevent endless FINs
       NS_LOG_LOGIC ("TcpSocketBase " << this << " scheduling LATO1");
       Time lastRto = m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4);
       m_lastAckEvent = Simulator::Schedule (lastRto, &TcpSocketBase::LastAckTimeout, this);
@@ -2577,7 +2609,9 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
         { // No more connection retries, give up
           NS_LOG_LOGIC ("Connection failed.");
           m_rtt->Reset (); //According to recommendation -> RFC 6298
-          CloseAndNotify ();
+          NotifyConnectionFailed ();
+          m_state = CLOSED;
+          DeallocateEndPoint ();
           return;
         }
       else
@@ -2899,6 +2933,10 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   uint8_t flags = withAck ? TcpHeader::ACK : 0;
   uint32_t remainingData = m_txBuffer->SizeFromSequence (seq + SequenceNumber32 (sz));
 
+  // TCP sender should not send data out of the window advertised by the
+  // peer when it is not retransmission.
+  NS_ASSERT (isRetransmission || ((m_highRxAckMark + SequenceNumber32 (m_rWnd)) >= (seq + SequenceNumber32 (maxSize))));
+
   if (m_tcb->m_pacing)
     {
       NS_LOG_INFO ("Pacing is enabled");
@@ -3088,8 +3126,9 @@ TcpSocketBase::SendPendingData (bool withAck)
       //       failure (no data to send), return without sending anything
       //       (i.e., terminate steps C.1 -- C.5).
       SequenceNumber32 next;
+      SequenceNumber32 nextHigh;
       bool enableRule3 = m_sackEnabled && m_tcb->m_congState == TcpSocketState::CA_RECOVERY;
-      if (!m_txBuffer->NextSeg (&next, enableRule3))
+      if (!m_txBuffer->NextSeg (&next, &nextHigh, enableRule3))
         {
           NS_LOG_INFO ("no valid seq to transmit, or no data available");
           break;
@@ -3124,6 +3163,9 @@ TcpSocketBase::SendPendingData (bool withAck)
             }
 
           uint32_t s = std::min (availableWindow, m_tcb->m_segmentSize);
+          // NextSeg () may have further constrained the segment size
+          uint32_t maxSizeToSend = static_cast<uint32_t> (nextHigh - next);
+          s = std::min (s, maxSizeToSend);
 
           // (C.2) If any of the data octets sent in (C.1) are below HighData,
           //       HighRxt MUST be set to the highest sequence number of the
@@ -3479,21 +3521,14 @@ TcpSocketBase::ReTxTimeout ()
 
   if (m_state == SYN_SENT)
     {
-      if (m_synCount > 0)
+      NS_ASSERT (m_synCount > 0);
+      if (m_tcb->m_useEcn == TcpSocketState::On)
         {
-          if (m_tcb->m_useEcn != TcpSocketState::Off)
-            {
-              SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
-            }
-          else
-            {
-              SendEmptyPacket (TcpHeader::SYN);
-            }
-          m_tcb->m_ecnState = TcpSocketState::ECN_DISABLED;
+          SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
         }
       else
         {
-          NotifyConnectionFailed ();
+          SendEmptyPacket (TcpHeader::SYN);
         }
       return;
     }
@@ -3559,6 +3594,7 @@ TcpSocketBase::ReTxTimeout ()
   // RecoveryPoint MUST be preserved and the loss recovery algorithm
   // outlined in this document MUST be terminated.
   m_recover = m_tcb->m_highTxMark;
+  m_recoverActive = true;
 
   // RFC 6298, clause 2.5, double the timer
   Time doubledRto = m_rto + m_rto;
@@ -3625,11 +3661,18 @@ TcpSocketBase::LastAckTimeout (void)
   m_lastAckEvent.Cancel ();
   if (m_state == LAST_ACK)
     {
-      CloseAndNotify ();
-    }
-  if (!m_closeNotified)
-    {
-      m_closeNotified = true;
+      if (m_dataRetrCount == 0)
+        {
+          NS_LOG_INFO ("LAST-ACK: No more data retries available. Dropping connection");
+          NotifyErrorClose ();
+          DeallocateEndPoint ();
+          return;
+        }
+      m_dataRetrCount--;
+      SendEmptyPacket (TcpHeader::FIN | TcpHeader::ACK);
+      NS_LOG_LOGIC ("TcpSocketBase " << this << " rescheduling LATO1");
+      Time lastRto = m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4);
+      m_lastAckEvent = Simulator::Schedule (lastRto, &TcpSocketBase::LastAckTimeout, this);
     }
 }
 
@@ -3694,23 +3737,31 @@ TcpSocketBase::DoRetransmit ()
   NS_LOG_FUNCTION (this);
   bool res;
   SequenceNumber32 seq;
+  SequenceNumber32 seqHigh;
+  uint32_t maxSizeToSend;
 
   // Find the first segment marked as lost and not retransmitted. With Reno,
   // that should be the head
-  res = m_txBuffer->NextSeg (&seq, false);
+  res = m_txBuffer->NextSeg (&seq, &seqHigh, false);
   if (!res)
     {
       // We have already retransmitted the head. However, we still received
       // three dupacks, or the RTO expired, but no data to transmit.
       // Therefore, re-send again the head.
       seq = m_txBuffer->HeadSequence ();
+      maxSizeToSend = m_tcb->m_segmentSize;
+    }
+  else
+    {
+      // NextSeg() may constrain the segment size when res is true
+      maxSizeToSend = static_cast<uint32_t> (seqHigh - seq);
     }
   NS_ASSERT (m_sackEnabled || seq == m_txBuffer->HeadSequence ());
 
   NS_LOG_INFO ("Retransmitting " << seq);
   // Update the trace and retransmit the segment
   m_tcb->m_nextTxSequence = seq;
-  uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
+  uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, maxSizeToSend, true);
 
   NS_ASSERT (sz > 0);
 }
@@ -4277,7 +4328,7 @@ TcpSocketBase::SafeSubtraction (uint32_t a, uint32_t b)
 void
 TcpSocketBase::NotifyPacingPerformed (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Performing Pacing");
   SendPendingData (m_connected);
 }
@@ -4288,6 +4339,19 @@ TcpSocketBase::SetUseEcn (TcpSocketState::UseEcn_t useEcn)
   NS_LOG_FUNCTION (this << useEcn);
   m_tcb->m_useEcn = useEcn;
 }
+
+uint32_t
+TcpSocketBase::GetRWnd (void) const
+{
+  return m_rWnd.Get ();
+}
+
+SequenceNumber32
+TcpSocketBase::GetHighRxAck (void) const
+{
+  return m_highRxAckMark.Get ();
+}
+
 
 //RttHistory methods
 RttHistory::RttHistory (SequenceNumber32 s, uint32_t c, Time t)

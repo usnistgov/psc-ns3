@@ -756,10 +756,10 @@ MinstrelWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 }
 
 void
-MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                     double ackSnr, WifiMode ackMode, double dataSnr)
+MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                     double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
@@ -888,12 +888,6 @@ MinstrelWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Pack
       NS_LOG_DEBUG ("Re-transmit. Retries: " <<  station->m_longRetry << " Max retries: " << CountRetries (station));
       return true;
     }
-}
-
-bool
-MinstrelWifiManager::IsLowLatency (void) const
-{
-  return true;
 }
 
 uint16_t

@@ -209,11 +209,16 @@ def build(bld):
         'model/hash-fnv.cc',
         'model/hash.cc',
         'model/des-metrics.cc',
+        'model/ascii-file.cc',
         'model/node-printer.cc',
         'model/time-printer.cc',
         'model/show-progress.cc',
+        'model/system-wall-clock-timestamp.cc',
         ]
 
+    if (bld.env['ENABLE_EXAMPLES']):
+        core.source.append('model/example-as-test.cc')
+            
     core_test = bld.create_ns3_module_test_library('core')
     core_test.source = [
         'test/attribute-test-suite.cc',
@@ -240,6 +245,11 @@ def build(bld):
         'test/type-id-test-suite.cc',
         ]
 
+    if (bld.env['ENABLE_EXAMPLES']):
+        core_test.source.extend([
+            'test/examples-as-tests-test-suite.cc',
+            ])
+
     headers = bld(features='ns3header')
     headers.module = 'core'
     headers.source = [
@@ -263,6 +273,7 @@ def build(bld):
         'model/synchronizer.h',
         'model/make-event.h',
         'model/system-wall-clock-ms.h',
+        'model/system-wall-clock-timestamp.h',
         'model/empty.h',
         'model/callback.h',
         'model/object-base.h',
@@ -326,10 +337,15 @@ def build(bld):
         'model/non-copyable.h',
         'model/build-profile.h',
         'model/des-metrics.h',
+        'model/ascii-file.h',
+        'model/ascii-test.h',
         'model/node-printer.h',
         'model/time-printer.h',
         'model/show-progress.h',
         ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        headers.source.append('model/example-as-test.h')
 
     if sys.platform == 'win32':
         core.source.extend([

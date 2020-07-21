@@ -654,42 +654,18 @@ public:
   void RecordDisassociated (Mac48Address address);
 
   /**
-   * \param address remote address
-   * \param packet the packet to queue
-   *
-   * This method is typically invoked just before queuing a packet for transmission.
-   * It is a no-op unless the IsLowLatency attribute of the attached ns3::WifiRemoteStationManager
-   * is set to false, in which case, the TX parameters of the packet are calculated and stored in
-   * the packet as a tag. These TX parameters are later retrieved from GetDadaMode and GetRtsMode.
-   */
-  void PrepareForQueue (Mac48Address address, Ptr<const Packet> packet);
-
-  /**
-   * \param address remote address
    * \param header MAC header
-   * \param packet the packet to send
    *
    * \return the TXVECTOR to use to send this packet
    */
-  WifiTxVector GetDataTxVector (Mac48Address address, const WifiMacHeader *header,
-                                Ptr<const Packet> packet);
+  WifiTxVector GetDataTxVector (const WifiMacHeader &header);
   /**
    * \param address remote address
-   * \param packet the packet to send
    *
    * \return the TXVECTOR to use to send the RTS prior to the
    *         transmission of the data packet itself.
    */
-  WifiTxVector GetRtsTxVector (Mac48Address address, Ptr<const Packet> packet);
-  /**
-   * \param header MAC header
-   * \param packet the packet to send
-   *
-   * \return the transmission mode to use to send the CTS-to-self prior to the
-   *         transmission of the data packet itself.
-   */
-  WifiTxVector GetCtsToSelfTxVector (const WifiMacHeader *header,
-                                     Ptr<const Packet> packet);
+  WifiTxVector GetRtsTxVector (Mac48Address address);
   /**
    * Since CTS-to-self parameters are not dependent on the station,
    * it is implemented in wifi remote station manager
@@ -697,7 +673,7 @@ public:
    * \return the transmission mode to use to send the CTS-to-self prior to the
    *         transmission of the data packet itself.
    */
-  WifiTxVector DoGetCtsToSelfTxVector (void);
+  WifiTxVector GetCtsToSelfTxVector (void);
 
   /**
    * Should be invoked whenever the RtsTimeout associated to a transmission
@@ -739,10 +715,12 @@ public:
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
+   * \param dataTxVector the TXVECTOR of the DATA we sent
    * \param packetSize the size of the DATA packet
    */
   void ReportDataOk (Mac48Address address, const WifiMacHeader *header,
-                     double ackSnr, WifiMode ackMode, double dataSnr,
+                     double ackSnr, WifiMode ackMode,
+                     double dataSnr, WifiTxVector dataTxVector,
                      uint32_t packetSize);
   /**
    * Should be invoked after calling ReportRtsFailed if
@@ -767,18 +745,20 @@ public:
    * received or when a BlockAckTimeout has elapsed.
    *
    * \param address the address of the receiver
-   * \param nSuccessfulMpdus number of successfully transmitted MPDUs.
+   * \param nSuccessfulMpdus number of successfully transmitted MPDUs
    * A value of 0 means that the Block ACK was missed.
-   * \param nFailedMpdus number of unsuccessfully transmitted MPDUs.
+   * \param nFailedMpdus number of unsuccessfully transmitted MPDUs
    * \param rxSnr received SNR of the block ack frame itself
    * \param dataSnr data SNR reported by remote station
+   * \param dataTxVector the TXVECTOR of the MPDUs we sent
    */
-  void ReportAmpduTxStatus (Mac48Address address, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr);
+  void ReportAmpduTxStatus (Mac48Address address, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+                            double rxSnr, double dataSnr, WifiTxVector dataTxVector);
 
   /**
    * \param address remote address
    * \param rxSnr the SNR of the packet received
-   * \param txMode the transmission mode used for the packet received.
+   * \param txMode the transmission mode used for the packet received
    *
    * Should be invoked whenever a packet is successfully received.
    */
@@ -786,12 +766,12 @@ public:
 
   /**
    * \param header MAC header
-   * \param packet the packet to send
+   * \param size the size of the frame to send in bytes
    *
    * \return true if we want to use an RTS/CTS handshake for this
-   *         packet before sending it, false otherwise.
+   *         frame before sending it, false otherwise.
    */
-  bool NeedRts (const WifiMacHeader *header, Ptr<const Packet> packet);
+  bool NeedRts (const WifiMacHeader &header, uint32_t size);
   /**
    * Return if we need to do CTS-to-self before sending a DATA.
    *
@@ -1081,17 +1061,17 @@ protected:
 private:
   /**
    * \param station the station that we need to communicate
-   * \param packet the packet to send
+   * \param size the size of the frame to send in bytes
    * \param normally indicates whether the normal 802.11 RTS enable mechanism would
    *        request that the RTS is sent or not.
    *
-   * \return true if we want to use an RTS/CTS handshake for this packet before sending it,
+   * \return true if we want to use an RTS/CTS handshake for this frame before sending it,
    *         false otherwise.
    *
    * Note: This method is called before a unicast packet is sent on the medium.
    */
   virtual bool DoNeedRts (WifiRemoteStation *station,
-                          Ptr<const Packet> packet, bool normally);
+                          uint32_t size, bool normally);
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send
@@ -1118,13 +1098,6 @@ private:
    */
   virtual bool DoNeedFragmentation (WifiRemoteStation *station,
                                     Ptr<const Packet> packet, bool normally);
-  /**
-   * \return whether this manager is a manager designed to work in low-latency environments.
-   *
-   * Note: In this context, low vs high latency is defined in <i>IEEE 802.11 Rate Adaptation:
-   * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and T. Turletti.
-   */
-  virtual bool IsLowLatency (void) const = 0;
   /**
    * \return a new station data structure
    */
@@ -1181,9 +1154,11 @@ private:
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
+   * \param dataChannelWidth the channel width (in MHz) of the DATA we sent
+   * \param dataNss the number of spatial streams used to send the DATA
    */
-  virtual void DoReportDataOk (WifiRemoteStation *station,
-                               double ackSnr, WifiMode ackMode, double dataSnr) = 0;
+  virtual void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
+                               double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) = 0;
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
@@ -1220,8 +1195,11 @@ private:
    * \param nFailedMpdus number of unsuccessfully transmitted MPDUs.
    * \param rxSnr received SNR of the block ack frame itself
    * \param dataSnr data SNR reported by remote station
+   * \param dataChannelWidth the channel width (in MHz) of the A-MPDU we sent
+   * \param dataNss the number of spatial streams used to send the A-MPDU
    */
-  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr);
+  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+                                      double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
 
   /**
    * Return the state of the station associated with the given address.

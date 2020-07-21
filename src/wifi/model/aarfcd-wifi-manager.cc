@@ -270,10 +270,10 @@ AarfcdWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 }
 
 void
-AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                   double ackSnr, WifiMode ackMode, double dataSnr)
+AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                   double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;
@@ -361,19 +361,13 @@ AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 
 bool
 AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
-                              Ptr<const Packet> packet, bool normally)
+                              uint32_t size, bool normally)
 {
-  NS_LOG_FUNCTION (this << st << packet << normally);
+  NS_LOG_FUNCTION (this << st << size << normally);
   AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   NS_LOG_INFO ("" << station << " rate=" << station->m_rate << " rts=" << (station->m_rtsOn ? "RTS" : "BASIC") <<
                " rtsCounter=" << station->m_rtsCounter);
   return station->m_rtsOn;
-}
-
-bool
-AarfcdWifiManager::IsLowLatency (void) const
-{
-  return true;
 }
 
 void

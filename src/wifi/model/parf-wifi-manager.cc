@@ -258,10 +258,10 @@ void ParfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
   NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
 }
 
-void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                      double ackSnr, WifiMode ackMode, double dataSnr)
+void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                      double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nAttempt++;
@@ -360,12 +360,6 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     }
   rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
-}
-
-bool
-ParfWifiManager::IsLowLatency (void) const
-{
-  return true;
 }
 
 } //namespace ns3

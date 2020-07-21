@@ -323,10 +323,10 @@ RraaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 }
 
 void
-RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+RraaWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   station->m_lastFrameFail = false;
   CheckTimeout (station);
@@ -392,9 +392,9 @@ RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 
 bool
 RraaWifiManager::DoNeedRts (WifiRemoteStation *st,
-                            Ptr<const Packet> packet, bool normally)
+                            uint32_t size, bool normally)
 {
-  NS_LOG_FUNCTION (this << st << packet << normally);
+  NS_LOG_FUNCTION (this << st << size << normally);
   RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   CheckInit (station);
   if (m_basic)
@@ -470,12 +470,6 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, uint8_t index) c
   NS_LOG_FUNCTION (this << station << +index);
   WifiMode mode = GetSupported (station, index);
   return GetThresholds (station, mode);
-}
-
-bool
-RraaWifiManager::IsLowLatency (void) const
-{
-  return true;
 }
 
 } //namespace ns3

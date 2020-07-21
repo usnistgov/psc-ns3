@@ -283,6 +283,7 @@ def build(bld):
         'test/tcp-advertised-window-test.cc',
         'test/tcp-classic-recovery-test.cc',
         'test/tcp-prr-recovery-test.cc',
+        'test/tcp-loss-test.cc',
         'test/udp-test.cc',
         'test/ipv6-address-generator-test-suite.cc',
         'test/ipv6-dual-stack-test-suite.cc',
@@ -301,7 +302,14 @@ def build(bld):
         'test/icmp-test.cc',
         'test/ipv4-deduplication-test.cc',
         'test/tcp-dctcp-test.cc',
+        'test/tcp-syn-connection-failed-test.cc',
         ]
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        internet_test.source.extend([
+        #   'test/internet-examples-test-suite.cc',
+            ])
+    
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
     privateheaders.source = [

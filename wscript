@@ -200,6 +200,10 @@ def options(opt):
                          ' argument is the path to the python program, optionally followed'
                          ' by command-line options that are passed to the program.'),
                    type="string", default='', dest='pyrun_no_build')
+    opt.add_option('--gdb',
+                   help=('Change the default command template to run programs and unit tests with gdb'),
+                   action="store_true", default=False,
+                   dest='gdb')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
@@ -769,6 +773,9 @@ def register_ns3_script(bld, name, dependencies=('core',)):
 def add_examples_programs(bld):
     env = bld.env
     if env['ENABLE_EXAMPLES']:
+        # Add a define, so this is testable from code
+        env.append_value('DEFINES', 'NS3_ENABLE_EXAMPLES')
+
         try:
             for dir in os.listdir('examples'):
                 if dir.startswith('.') or dir == 'CVS':
@@ -1003,6 +1010,14 @@ def build(bld):
             # disable pcfile taskgens for disabled modules
             if 'ns3pcfile' in getattr(obj, "features", []):
                 if obj.module not in bld.env.NS3_ENABLED_MODULES and obj.module not in bld.env.NS3_ENABLED_CONTRIBUTED_MODULES:
+                    bld.exclude_taskgen(obj)
+
+            # disable python bindings for disabled modules
+            if 'pybindgen' in obj.name:
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
+                    bld.exclude_taskgen(obj)
+            if 'pyext' in getattr(obj, "features", []):
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
                     bld.exclude_taskgen(obj)
 
 
@@ -1266,7 +1281,7 @@ def _print_introspected_doxygen(bld):
     # NS_COMMANDLINE_INTROSPECTION=".." test.py --nowaf --constrain=example
     Logs.info("Running CommandLine introspection")
     proc_env['NS_COMMANDLINE_INTROSPECTION'] = '..'
-    subprocess.run(["test.py", "--nowaf", "--constrain=example"],
+    subprocess.run(["./test.py", "--nowaf", "--constrain=example"],
                    env=proc_env, stdout=subprocess.DEVNULL)
     
     doxygen_out = os.path.join('doc', 'introspected-command-line.h')

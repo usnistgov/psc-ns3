@@ -909,7 +909,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
                                         rxSnr, txVector.GetMode ());
           m_stationManager->ReportDataOk (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0),
                                           rxSnr, txVector.GetMode (), tag.Get (),
-                                          m_currentPacket->GetSize ());
+                                          m_currentTxVector, m_currentPacket->GetSize ());
         }
       // cancel the Normal Ack timer
       m_normalAckTimeoutEvent.Cancel ();
@@ -955,7 +955,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
       packet->RemoveHeader (blockAck);
       m_blockAckTimeoutEvent.Cancel ();
       NotifyAckTimeoutResetNow ();
-      m_currentTxop->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, txVector.GetMode (), tag.Get ());
+      m_currentTxop->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, tag.Get (), m_currentTxVector);
       // start next packet if TXOP remains, otherwise contend for accessing the channel again
       if (m_currentTxop->IsQosTxop () && m_currentTxop->GetTxopLimit ().IsStrictlyPositive ()
           && m_currentTxop->GetTxopRemaining () > GetSifs ())
@@ -1274,15 +1274,13 @@ MacLow::GetCtsDuration (WifiTxVector ctsTxVector) const
 WifiTxVector
 MacLow::GetRtsTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  Mac48Address to = item->GetHeader ().GetAddr1 ();
-  return m_stationManager->GetRtsTxVector (to, item->GetPacket ());
+  return m_stationManager->GetRtsTxVector (item->GetHeader ().GetAddr1 ());
 }
 
 WifiTxVector
 MacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  Mac48Address to = item->GetHeader ().GetAddr1 ();
-  return m_stationManager->GetDataTxVector (to, &item->GetHeader (), item->GetPacket ());
+  return m_stationManager->GetDataTxVector (item->GetHeader ());
 }
 
 Time

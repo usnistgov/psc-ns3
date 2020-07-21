@@ -168,10 +168,10 @@ AmrrWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 }
 
 void
-AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   station->m_retry = 0;
   station->m_tx_ok++;
@@ -400,12 +400,6 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     }
   rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
-}
-
-bool
-AmrrWifiManager::IsLowLatency (void) const
-{
-  return true;
 }
 
 } //namespace ns3

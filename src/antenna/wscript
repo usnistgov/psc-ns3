@@ -24,6 +24,12 @@ def build(bld):
         'test/test-parabolic-3d-antenna.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/antenna-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'antenna'
     headers.source = [
