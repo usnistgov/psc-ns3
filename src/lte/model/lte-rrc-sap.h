@@ -1120,7 +1120,12 @@ public:
       MS550,
       MS600,
       MS650,
+      MS700,
       MS750,
+      MS800,
+      MS850,
+      MS900,
+      MS950,
       MS1000,
       INVALID
     } period {INVALID};

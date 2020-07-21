@@ -603,8 +603,23 @@ LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &peri
     case SlResourceReservePeriod::MS650:
       perodInt = 650;
       break;
-    case SlResourceReservePeriod::MS750:
+    case SlResourceReservePeriod::MS700:
       perodInt = 700;
+      break;
+    case SlResourceReservePeriod::MS750:
+      perodInt = 750;
+      break;
+    case SlResourceReservePeriod::MS800:
+      perodInt = 800;
+      break;
+    case SlResourceReservePeriod::MS850:
+      perodInt = 850;
+      break;
+    case SlResourceReservePeriod::MS900:
+      perodInt = 900;
+      break;
+    case SlResourceReservePeriod::MS950:
+      perodInt = 950;
       break;
     case SlResourceReservePeriod::MS1000:
       perodInt = 1000;
@@ -664,8 +679,23 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
     case 650:
       periodEnum.period = SlResourceReservePeriod::MS650;
       break;
+    case 700:
+      periodEnum.period = SlResourceReservePeriod::MS700;
+      break;
     case 750:
       periodEnum.period = SlResourceReservePeriod::MS750;
+      break;
+    case 800:
+      periodEnum.period = SlResourceReservePeriod::MS800;
+      break;
+    case 850:
+      periodEnum.period = SlResourceReservePeriod::MS850;
+      break;
+    case 900:
+      periodEnum.period = SlResourceReservePeriod::MS900;
+      break;
+    case 950:
+      periodEnum.period = SlResourceReservePeriod::MS950;
       break;
     case 1000:
       periodEnum.period = SlResourceReservePeriod::MS1000;
