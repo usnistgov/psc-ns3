@@ -123,11 +123,8 @@ const std::vector <std::bitset<1>>
 NrSlCommResourcePool::GetNrSlPhyPool (uint8_t bwpId, uint16_t poolId) const
 {
   NS_LOG_FUNCTION (this);
-  NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp = m_phySlPoolMap.find (bwpId);
-  NS_ABORT_MSG_IF (itBwp == m_phySlPoolMap.end (), "Unable to find BWP id " << bwpId);
-  std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool = itBwp->second.find (poolId);
-  NS_ABORT_MSG_IF (itPool == itBwp->second.end (), "Unable to find pool id " << poolId);
-  return itPool->second;
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  return ret.itPool->second;
 }
 
 const LteRrcSap::SlResourcePoolNr
@@ -152,29 +149,19 @@ NrSlCommResourcePool::GetSlResourcePoolNr (uint8_t bwpId, uint16_t poolId) const
   return pool;
 }
 
-std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator
-NrSlCommResourcePool::GetIteratorToPhySlPool (uint8_t bwpId, uint16_t poolId) const
-{
-  NS_LOG_FUNCTION (this);
-  NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp = m_phySlPoolMap.find (bwpId);
-  NS_ABORT_MSG_IF (itBwp == m_phySlPoolMap.end (), "Unable to find bandwidth part id " << bwpId);
-  std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool = itBwp->second.find (poolId);
-  NS_ABORT_MSG_IF (itPool == itBwp->second.end (), "Unable to find pool id " << poolId);
-  return itPool;
-}
-
 std::list <NrSlCommResourcePool::SlotInfo>
 NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uint8_t bwpId, uint16_t numerology, uint16_t poolId, uint8_t t1, uint16_t t2) const
 {
   NS_LOG_FUNCTION (this);
-  std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPhyPool;
-  itPhyPool = GetIteratorToPhySlPool (bwpId, poolId);
+  std::vector <std::bitset<1>> phyPool = GetNrSlPhyPool (bwpId, poolId);
+  const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
+
   LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
   LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
   uint16_t totalSlSymbols = LteRrcSap::GetSlLengthSymbolsValue (slBwpConfigCommon.slBwpGeneric.slLengthSymbols);
   uint16_t slSymbolStart =  LteRrcSap::GetSlStartSymbolValue(slBwpConfigCommon.slBwpGeneric.slStartSymbol);
 
-  const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
+
   //t2_min as a function of numerology. Discussed in 3GPP meeting R1-2003807
   uint16_t t2min = LteRrcSap::GetSlSelWindowValue (pool.slUeSelectedConfigRp.slSelectionWindow);
   uint16_t multiplier = static_cast <uint16_t> (std::pow (2, numerology));
@@ -189,12 +176,12 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
   NS_LOG_DEBUG ("Final selection Window Length = " << lastAbsSlotIndex - firstAbsSlotIndex);
 
   std::list <NrSlCommResourcePool::SlotInfo> list;
-  uint16_t absPoolIndex = firstAbsSlotIndex % itPhyPool->second.size ();
+  uint16_t absPoolIndex = firstAbsSlotIndex % phyPool.size ();
   NS_LOG_DEBUG ("Absolute pool index = " << absPoolIndex);
 
   for (uint64_t i = firstAbsSlotIndex; i < lastAbsSlotIndex; ++i)
     {
-      if (itPhyPool->second [absPoolIndex] == 1)
+      if (phyPool [absPoolIndex] == 1)
         {
           //PSCCH
           uint16_t numSlPscchRbs = LteRrcSap::GetSlFResoPscchValue (pool.slPscchConfig.slFreqResourcePscch);
@@ -214,7 +201,7 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
                                                slMaxNumPerReserve, absSlotIndex, slotOffset);
           list.emplace_back (info);
         }
-      absPoolIndex = (absPoolIndex + 1) % itPhyPool->second.size ();
+      absPoolIndex = (absPoolIndex + 1) % phyPool.size ();
     }
 
   return list;
@@ -223,24 +210,21 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
 uint16_t
 NrSlCommResourcePool::GetNrSlSensWindInSlots (uint8_t bwpId, uint16_t poolId, Time slotLength) const
 {
-NS_LOG_FUNCTION (this << +bwpId << poolId << slotLength);
+  NS_LOG_FUNCTION (this << +bwpId << poolId << slotLength);
 
-NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp = m_phySlPoolMap.find (bwpId);
-NS_ASSERT_MSG (itBwp != m_phySlPoolMap.end (), "Unable to find physical pool for bandwidth part id " << +bwpId);
-//If there is no physical pool set for the given BWP id, avoid accessing
-//the slBwpList array index.
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  NS_UNUSED (ret);
+  LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
+  LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
+  LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
+  LteRrcSap::SlSensingWindow slSensingWindowLen = slResourcePoolConfig.slResourcePool.slUeSelectedConfigRp.slSensingWindow;
+  NS_ASSERT_MSG (slSensingWindowLen.windSize != LteRrcSap::SlSensingWindow::INVALID, "Sensing window not set for BWP id " << +bwpId << " pool id " << poolId);
 
-LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
-LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
-LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
-LteRrcSap::SlSensingWindow slSensingWindowLen = slResourcePoolConfig.slResourcePool.slUeSelectedConfigRp.slSensingWindow;
-NS_ASSERT_MSG (slSensingWindowLen.windSize != LteRrcSap::SlSensingWindow::INVALID, "Sensing window not set for BWP id " << +bwpId << " pool id " << poolId);
+  uint16_t windLenInMs = LteRrcSap::GetSlSensWindowValue (slSensingWindowLen);
 
-uint16_t windLenInMs = LteRrcSap::GetSlSensWindowValue (slSensingWindowLen);
+  double numSlots = (windLenInMs / static_cast <double>(1000)) / slotLength.GetSeconds ();
 
-double numSlots = (windLenInMs / static_cast <double>(1000)) / slotLength.GetSeconds ();
-
-return static_cast <uint16_t> (numSlots);
+  return static_cast <uint16_t> (numSlots);
 }
 
 void
@@ -253,28 +237,74 @@ NrSlCommResourcePool::SetNrSlSchedulingType (NrSlCommResourcePool::SchedulingTyp
 NrSlCommResourcePool::SchedulingType
 NrSlCommResourcePool::GetNrSlSchedulingType () const
 {
- return m_schType;
+  return m_schType;
 }
 
 uint16_t
 NrSlCommResourcePool::GetNrSlSubChSize (uint8_t bwpId, uint16_t poolId) const
 {
-NS_LOG_FUNCTION (this << +bwpId << poolId);
+  NS_LOG_FUNCTION (this << +bwpId << poolId);
 
-NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp = m_phySlPoolMap.find (bwpId);
-NS_ASSERT_MSG (itBwp != m_phySlPoolMap.end (), "Unable to find physical pool for bandwidth part id " << +bwpId);
-//If there is no physical pool set for the given BWP id, avoid accessing
-//the slBwpList array index.
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  NS_UNUSED (ret);
+  LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
+  LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
+  LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
+  LteRrcSap::SlSubchannelSize slSubChSize = slResourcePoolConfig.slResourcePool.slSubchannelSize;
+  NS_ASSERT_MSG (slSubChSize.numPrbs != LteRrcSap::SlSubchannelSize::INVALID, "Subchannel is not set for BWP id " << +bwpId << " pool id " << poolId);
 
-LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
-LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
-LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
-LteRrcSap::SlSubchannelSize slSubChSize = slResourcePoolConfig.slResourcePool.slSubchannelSize;
-NS_ASSERT_MSG (slSubChSize.numPrbs != LteRrcSap::SlSubchannelSize::INVALID, "Subchannel is not set for BWP id " << +bwpId << " pool id " << poolId);
+  uint16_t slSubChSizeInt = LteRrcSap::GetNrSlSubChSizeValue (slSubChSize);
 
-uint16_t slSubChSizeInt = LteRrcSap::GetNrSlSubChSizeValue (slSubChSize);
+  return slSubChSizeInt;
+}
 
-return slSubChSizeInt;
+NrSlCommResourcePool::BwpAndPoolIt
+NrSlCommResourcePool::ValidateBwpAndPoolId (uint8_t bwpId, uint16_t poolId) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId);
+  NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp = m_phySlPoolMap.find (bwpId);
+  NS_ABORT_MSG_IF (itBwp == m_phySlPoolMap.end (), "Unable to find bandwidth part id " << +bwpId);
+  std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool = itBwp->second.find (poolId);
+  NS_ABORT_MSG_IF (itPool == itBwp->second.end (), "Unable to find pool id " << poolId);
+
+  BwpAndPoolIt ret;
+  ret.itBwp = itBwp;
+  ret.itPool = itPool;
+  return ret;
+}
+
+void
+NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << resvPeriod.GetMilliSeconds ());
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  NS_UNUSED (ret);
+  const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
+  std::array <LteRrcSap::SlResourceReservePeriod, 16> resvPeriodList = pool.slUeSelectedConfigRp.slResourceReservePeriodList;
+  uint16_t periodInt = static_cast <uint16_t> (resvPeriod.GetMilliSeconds ());
+  LteRrcSap::SlResourceReservePeriod resvPeriodEnum =  LteRrcSap::GetSlResoResvPrdEnum (periodInt);
+  bool found = false;
+  for (const auto& it:resvPeriodList)
+    {
+      if (it.period == resvPeriodEnum.period)
+        {
+          found = true;
+        }
+    }
+  NS_ABORT_MSG_IF (!found, "The given reservation period is not in the user specified list");
+}
+
+uint16_t
+NrSlCommResourcePool::GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << resvPeriod.GetMilliSeconds () << slotLength);
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  NS_UNUSED (ret);
+  uint16_t periodInt = static_cast <uint16_t> (resvPeriod.GetMilliSeconds ());
+
+  double numResvSlots = (periodInt / static_cast <double>(1000)) / slotLength.GetSeconds ();
+
+  return static_cast <uint16_t> (numResvSlots);
 }
 
 

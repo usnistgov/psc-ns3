@@ -111,6 +111,16 @@ public:
   bool operator== (const NrSlCommResourcePool& other) const;
 
   /**
+   * \brief A struct containing the iterator of the BWP map and the pool
+   *        associated to the BWP.
+   */
+  struct BwpAndPoolIt
+  {
+    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp {nullptr};
+    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool {nullptr};
+  };
+
+  /**
    * \brief Constructor
    */
   NrSlCommResourcePool ();
@@ -170,6 +180,7 @@ public:
    *
    * \param bwpId The bandwidth part id
    * \param poolId The pool id
+   * \param slotLength The slot length in time
    * \return The length of the sensing window in slots
    */
   uint16_t GetNrSlSensWindInSlots (uint8_t bwpId, uint16_t poolId, Time slotLength) const;
@@ -193,19 +204,29 @@ public:
    * \return The subchannel size in RBs
    */
   uint16_t GetNrSlSubChSize (uint8_t bwpId, uint16_t poolId) const;
+  /**
+   * \brief Validate that the given resource reservation period is in the list
+   *        of user provided configuration. If it is not in the list an assert
+   *        will hit.
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \param resvPeriod The resource reservation period
+   */
+  void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod) const;
+  /**
+   * \brief Get the reservation period in slots
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \param resPeriod The reservation period in ms
+   * \param slotLength The slot length in time
+   * \return The reservation period in slots
+   */
+  uint16_t GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
 
 
 
 private:
   /**
-   * \brief Get iterator to physical sidelink pool
-   *
-   * \param bwpId The bandwidth part id
-   * \param poolId The pool id
-   * \return An iterator to the stored physical sidelink pool
-   */
-  std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator GetIteratorToPhySlPool (uint8_t bwpId, uint16_t pooId) const;
-  /*
    * \brief Get SlResourcePoolNr
    *
    * \param bwpId The BWP id
@@ -213,6 +234,9 @@ private:
    * \return The LteRrcSap::SlResourcePoolNr, which holds the SL pool related configuration
    */
   const LteRrcSap::SlResourcePoolNr GetSlResourcePoolNr (uint8_t bwpId, uint16_t poolId) const;
+
+  BwpAndPoolIt ValidateBwpAndPoolId (uint8_t bwpId, uint16_t poolId) const;
+
   std::array <LteRrcSap::SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> m_slPreconfigFreqInfoList; //!< A list containing per carrier configuration for NR sidelink communication
   PhySlPoolMap m_phySlPoolMap; //!< A map to store the physical SL pool per BWP and per SL pool
   SchedulingType m_schType {SchedulingType::UNKNOWN}; //!< Type of the scheduling to be used for the pools hold by this class
