@@ -1542,6 +1542,8 @@ McpttOnNetworkFloorParticipantStateQueued::PttRelease (McpttOnNetworkFloorPartic
       releaseMsg.SetSubtype (McpttFloorMsgRelease::SUBTYPE_ACK);
     }
 
+  machine.Send (releaseMsg);
+
   machine.GetC100 ()->Reset ();
   machine.GetT100 ()->Start ();
 
