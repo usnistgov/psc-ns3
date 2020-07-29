@@ -118,6 +118,19 @@ McpttServerApp::AddCall (Ptr<McpttServerCall> call)
   m_calls.insert ({call->GetCallId (), call});
 }
 
+Ptr<McpttServerCall>
+McpttServerApp::GetCall (uint16_t callId)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<McpttServerCall> call = nullptr;
+  std::map<uint16_t, Ptr<McpttServerCall> >::iterator it = m_calls.find (callId);
+  if (it != m_calls.end())
+  {
+    call = it->second;
+  }
+  return call;
+}
+
 void
 McpttServerApp::DoDispose (void)
 {

@@ -81,6 +81,11 @@ public:
   */
  void AddCall (Ptr<McpttServerCall> call);
  /**
+  * Get a call definition from the server
+  * \param callId The ID of the call
+  */
+ Ptr<McpttServerCall> GetCall (uint16_t callId);
+ /**
   * Sends a call control packet.
   * \param pkt The packet to send.
   * \param toAddr The address to send to
