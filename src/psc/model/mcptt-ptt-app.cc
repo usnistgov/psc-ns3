@@ -236,9 +236,9 @@ McpttPttApp::AddCall (Ptr<McpttCall> call)
   call->SetRxCb (MakeCallback (&McpttPttApp::RxCb, this));
   call->SetTxCb (MakeCallback (&McpttPttApp::TxCb, this));
   NS_ABORT_MSG_UNLESS (call->GetStartTime () >= Simulator::Now (), "Call start time in the past");
-  Simulator::Schedule (call->GetStartTime () - Simulator::Now (), &McpttPttApp::SelectCall, this, call->GetCallId (), call->GetPushOnSelect ());
+  Simulator::ScheduleWithContext (GetNode ()->GetId (), call->GetStartTime () - Simulator::Now (), &McpttPttApp::SelectCall, this, call->GetCallId (), call->GetPushOnSelect ());
   NS_ABORT_MSG_UNLESS (call->GetStopTime () >= Simulator::Now (), "Call stop time in the past");
-  Simulator::Schedule (call->GetStopTime () - Simulator::Now (), &McpttPttApp::ReleaseCall, this);
+  Simulator::ScheduleWithContext (GetNode ()->GetId (), call->GetStopTime () - Simulator::Now (), &McpttPttApp::ReleaseCall, this);
   m_calls.insert (std::pair<uint16_t, Ptr<McpttCall> > (call->GetCallId (), call));
 }
 
@@ -495,7 +495,7 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
             {
               NS_LOG_DEBUG ("Starting pusher on call ID " << newCallId);
               // Call will initiate once the first push notification arrives
-              m_pusher->Start ();
+              Simulator::ScheduleNow (&McpttPusher::Start, m_pusher);
             }
         }
       // if pushOnSelect is false, the pusher must be externally started
@@ -684,13 +684,13 @@ McpttPttApp::StartApplication (void)
           m_isRunning = !m_isRunning;
           m_isRunning = !m_isRunning;
         }
-      it->second->Start ();
+      Simulator::ScheduleNow (&McpttCall::Start, it->second);
     }
 
   if (m_pushOnStart == true && GetSelectedCall ())
     {
       // Start activity on the selected call (if one is selected) 
-      m_pusher->Start ();
+      Simulator::ScheduleNow (&McpttPusher::Start, m_pusher);
       NS_LOG_DEBUG ("m_pushOnStart " << m_pushOnStart);
     }
   m_isRunning = true;
