@@ -99,12 +99,14 @@ public:
 
   /**
     * TracedCallback signature for PC5 connection events.
-    * \param [in] remoteId
-    * \param [in] relayId
-    * \param [in] connectionCount
+    * \param [in] local UE Id
+    * \param [in] remote UE Id
+    * \param [in] role of the node
+    * \param [in] status
+    * \param [in] interface index. Default to 0 which is not used for PC5. Valid only SECURE_ESTABLISHED and TERMINATED
     */
   typedef void (* Pc5ConnectionStatusTracedCallback)(uint32_t selfUeId,  uint32_t peerUeId, LteSlUeRrc::RelayRole role,
-                                                     LteSlBasicUeController::Pc5ConnectionStatus status);
+                                                     LteSlBasicUeController::Pc5ConnectionStatus status, uint32_t iface);
 
 
 private:
@@ -151,7 +153,7 @@ protected:
    * Traces fired when a PC5 connection changes of status
    */
   TracedCallback<uint32_t, uint32_t, LteSlUeRrc::RelayRole,
-                 LteSlBasicUeController::Pc5ConnectionStatus> m_tracePc5ConnectionStatus;
+                 LteSlBasicUeController::Pc5ConnectionStatus, uint32_t> m_tracePc5ConnectionStatus;
 
 
 }; // end of class LteSlUeController

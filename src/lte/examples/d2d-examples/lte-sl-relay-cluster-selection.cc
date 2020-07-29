@@ -191,7 +191,7 @@ RelayUeSelectionTrace (Ptr<OutputStreamWrapper> stream, uint64_t imsi, uint32_t 
  */
 void
 Pc5ConnectionStatusTrace (Ptr<OutputStreamWrapper> stream, uint32_t selfUeId,  uint32_t peerUeId, LteSlUeRrc::RelayRole role,
-                          LteSlBasicUeController::Pc5ConnectionStatus status)
+                          LteSlBasicUeController::Pc5ConnectionStatus status, uint32_t iface)
 {
   std::ostringstream oss;
   stream->GetStream ()->precision (6);

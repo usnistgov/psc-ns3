@@ -109,7 +109,7 @@ void
 LteSlBasicUeController::DoPc5ConnectionStarted (uint32_t peerUeId, uint32_t selfUeId, LteSlUeRrc::RelayRole role)
 {
   NS_LOG_FUNCTION (this << peerUeId << selfUeId << role);
-  m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::STARTED);
+  m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::STARTED, 0);
 }
 
 void LteSlBasicUeController::DoPc5SecuredEstablished (uint32_t peerUeId, uint32_t selfUeId, LteSlUeRrc::RelayRole role)
@@ -146,8 +146,6 @@ void LteSlBasicUeController::DoPc5SecuredEstablished (uint32_t peerUeId, uint32_
 
   if (it == m_lteSlUeNetDeviceMap.end ())
     {
-      m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::SECURE_ESTABLISHED);
-
       //Create a new UeNetDevice for sidelink communication
       Ptr<LteSlUeNetDevice> slNetDev = CreateObject<LteSlUeNetDevice> ();
       slNetDev->SetNas (m_netDevice->GetNas ());
@@ -163,11 +161,12 @@ void LteSlBasicUeController::DoPc5SecuredEstablished (uint32_t peerUeId, uint32_
 
       //Configure IP addresses as well as ingress and egress TFTs
       Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      uint32_t ipInterfaceIndex = UINT32_MAX;
 
       if (role == LteSlUeRrc::RemoteUE)
         {
           Ipv6InterfaceContainer ifUp = m_lteSidelinkHelper->AssignIpv6AddressForRelayCommunication (slNetDev, peerUeId, selfUeId, role);
-          uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice (slNetDev);
+          ipInterfaceIndex = ipv6->GetInterfaceForDevice (slNetDev);
           NS_LOG_DEBUG ("New LteSlNetDevice in remote node has interface index " << ipInterfaceIndex);
 
           //add route
@@ -189,7 +188,7 @@ void LteSlBasicUeController::DoPc5SecuredEstablished (uint32_t peerUeId, uint32_
       if (role == LteSlUeRrc::RelayUE)
         {
           Ipv6InterfaceContainer ifUp = m_lteSidelinkHelper->AssignIpv6AddressForRelayCommunication (slNetDev, selfUeId, peerUeId, role);
-          uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice (slNetDev);
+          ipInterfaceIndex = ipv6->GetInterfaceForDevice (slNetDev);
           NS_LOG_DEBUG ("New LteSlNetDevice in relay node has interface index " << ipInterfaceIndex);
           //Since it is a relay, it needs to forward packets between sidelink and uplink/downlink netdevices
           ipv6->SetForwarding (ipInterfaceIndex, true);
@@ -208,6 +207,7 @@ void LteSlBasicUeController::DoPc5SecuredEstablished (uint32_t peerUeId, uint32_
           tft = Create<LteSlTft> (LteSlTft::BIDIRECTIONAL, LteSlTft::REMOTE, ifUp.GetAddress (0,1), Ipv6Prefix (64), peerUeId);
           m_netDevice->GetNas ()->ActivateSidelinkBearer (tft);
         }
+        m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::SECURE_ESTABLISHED, ipInterfaceIndex);
     }
 }
 
@@ -226,7 +226,7 @@ LteSlBasicUeController::DoPc5ConnectionTerminated (uint32_t peerUeId, uint32_t s
   uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice (slNetDev);
   ipv6->SetDown (ipInterfaceIndex);
 
-  m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::TERMINATED);
+  m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::TERMINATED, ipInterfaceIndex);
 
   if (role == LteSlUeRrc::RemoteUE)
     {
@@ -265,7 +265,7 @@ LteSlBasicUeController::DoPc5ConnectionAborted (uint32_t peerUeId, uint32_t self
 
   NS_ASSERT (role == LteSlUeRrc::RemoteUE);
 
-  m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::ABORTED);
+  m_tracePc5ConnectionStatus (selfUeId, peerUeId, role, LteSlBasicUeController::Pc5ConnectionStatus::ABORTED, 0);
 
   if (m_connectingRelayUeId == peerUeId)
     {
