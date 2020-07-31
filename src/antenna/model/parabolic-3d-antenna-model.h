@@ -122,6 +122,8 @@ private:
   double m_mTiltRadians;
 
   double m_maxVAttenuation;
+  
+  double m_boresightGain;
 
 };
 

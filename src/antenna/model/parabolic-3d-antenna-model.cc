@@ -78,6 +78,11 @@ Parabolic3dAntennaModel::GetTypeId ()
                    DoubleValue (20.0),
                    MakeDoubleAccessor (&Parabolic3dAntennaModel::m_maxVAttenuation),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("BoresightGain",
+                   "The boresight gain of the antenna.",
+                   DoubleValue (0),
+                   MakeDoubleAccessor (&Parabolic3dAntennaModel::m_boresightGain),
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -153,7 +158,7 @@ Parabolic3dAntennaModel::GetGainDb (Angles a)
 {
   NS_LOG_FUNCTION (this << a);
 
-  double gainDb = -std::min (-(GetHorizontalGainDb (a) + GetVerticalGainDb (a)), m_maxHAttenuation);
+  double gainDb = m_boresightGain -std::min (-(GetHorizontalGainDb (a) + GetVerticalGainDb (a)), m_maxHAttenuation);
 
 
   NS_LOG_LOGIC ("gain = " << gainDb);
