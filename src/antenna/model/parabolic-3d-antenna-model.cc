@@ -79,7 +79,7 @@ Parabolic3dAntennaModel::GetTypeId ()
                    MakeDoubleAccessor (&Parabolic3dAntennaModel::m_maxVAttenuation),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("BoresightGain",
-                   "The boresight gain of the antenna.",
+                   "The boresight gain of the antenna (dB).",
                    DoubleValue (0),
                    MakeDoubleAccessor (&Parabolic3dAntennaModel::m_boresightGain),
                    MakeDoubleChecker<double> ())
