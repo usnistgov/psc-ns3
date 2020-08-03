@@ -679,11 +679,6 @@ McpttPttApp::StartApplication (void)
 
   for (auto it = m_calls.begin (); it != m_calls.end (); it++)
     {
-      if (it->second->GetCallId () == 4)
-        {
-          m_isRunning = !m_isRunning;
-          m_isRunning = !m_isRunning;
-        }
       Simulator::ScheduleNow (&McpttCall::Start, it->second);
     }
 
