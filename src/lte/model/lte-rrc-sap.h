@@ -1609,12 +1609,35 @@ public:
   };
 
   /**
+   * \brief SL-UE-SelectedConfig-r16
+   */
+  struct SlUeSelectedConfig
+  {
+    uint8_t SlProbResourceKeep {0}; /**< Indicates the probability with which
+                                         the UE keeps the current resource when
+                                         the resource reselection counter reaches
+                                         zero for sensing based UE autonomous
+                                         resource selection (see TS 38.321).
+                                         Standard values for this parameter are
+                                         0, 0.2, 0.4, 0.6, 0.8, however, in the
+                                         simulator we are not restricting it to
+                                         evaluate other values.
+                                         */
+
+    //slPrioritizationThres; //TODO
+    //slPsschTxConfigList; //TODO
+    //SlReselAfter; //TODO
+    //UlPrioritizationThres; //TODO
+  };
+
+  /**
    * \brief SL-PreconfigNR information element
    */
   struct SidelinkPreconfigNr
   {
     std::array <SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> slPreconfigFreqInfoList; //!< List containing per carrier configuration for NR sidelink communication
     SlPreconfigGeneralNr slPreconfigGeneral;
+    SlUeSelectedConfig slUeSelectedPreConfig;
     /*
     sl-PreconfigNR-AnchorCarrierFreqList-r16
     sl-PreconfigEUTRA-AnchorCarrierFreqList-r16
