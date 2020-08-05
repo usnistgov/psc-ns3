@@ -102,14 +102,13 @@ public:
    */
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**
-   * \brief Add NR Sidelink destination layer 2 Id
+   * \brief Set Sidelink probability resource keep
    *
-   * Adds destination layer 2 id to list to destinations
-   *
-   * \param dstL2Id The destination layer 2 ID
-   * \param poolId The id of the pool to used for TX and RX
+   * \param prob Indicates the probability with which the UE keeps the
+   *        current resource when the resource reselection counter reaches zero
+   *        for sensing based UE autonomous resource selection (see TS 38.321)
    */
-  virtual void AddNrSlDstL2Id (uint32_t dstL2Id) = 0;
+  virtual void SetSlProbResoKeep (uint8_t prob) = 0;
 };
 
 /**
@@ -139,7 +138,7 @@ public:
   virtual void ResetNrSlLcMap ();
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
-  virtual void AddNrSlDstL2Id (uint32_t dstL2Id);
+  virtual void SetSlProbResoKeep (uint8_t prob);
 
 private:
   C* m_mac; ///< the MAC class
@@ -185,9 +184,9 @@ MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePoo
 }
 
 template <class C>
-void MemberNrSlUeCmacSapProvider<C>::AddNrSlDstL2Id (uint32_t dstL2Id)
+void MemberNrSlUeCmacSapProvider<C>::SetSlProbResoKeep (uint8_t prob)
 {
-  m_mac->DoAddNrSlDstL2Id (dstL2Id);
+  m_mac->DoSetSlProbResoKeep (prob);
 }
 
 
