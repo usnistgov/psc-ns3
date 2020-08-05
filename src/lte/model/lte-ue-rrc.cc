@@ -3685,7 +3685,6 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
                     << " BWP Id " << +itSlLcOnBwpMapping->bwpId);
       uint8_t bwpId = itSlLcOnBwpMapping->bwpId;
       m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlLc (itSlLcOnBwpMapping->lcInfo, itSlLcOnBwpMapping->msu);
-      m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlDstL2Id (dstL2Id);
     }
 
   return slDrbInfo;
