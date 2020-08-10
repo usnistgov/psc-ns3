@@ -44,3 +44,10 @@ def build(bld):
         'camad-2019/camad-2019-discovery.cc',
         'camad-2019/lte-sl-ue-controller-camad-2019.cc',
     ]
+
+    obj = bld.create_ns3_program('example-video-streaming',
+                                 ['psc'])
+    obj.source = 'example-video-streaming.cc'
+
+
+
