@@ -89,6 +89,7 @@ def build(bld):
         'test/mcptt-call-type-control-private.cc',
         'test/mcptt-call-type-control.cc',
         'test/mcptt-floor-control.cc',
+        'test/mcptt-floor-control-on-network.cc',
         'test/mcptt-floor-control-msg.cc',
         'test/mcptt-msg-dropper.cc',
         'test/mcptt-test-call.cc',
