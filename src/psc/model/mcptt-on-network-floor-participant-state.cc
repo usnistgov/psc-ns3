@@ -319,6 +319,13 @@ McpttOnNetworkFloorParticipantStateStartStop::GetInstanceStateId (void) const
 }
 
 void
+McpttOnNetworkFloorParticipantStateStartStop::PttPush (McpttOnNetworkFloorParticipant& machine) const
+{
+  NS_LOG_FUNCTION (this << &machine);
+  machine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_PUSHED);
+}
+
+void
 McpttOnNetworkFloorParticipantStateStartStop::CallEstablished (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this);
@@ -346,6 +353,7 @@ McpttOnNetworkFloorParticipantStateStartStop::CallInitiated (McpttOnNetworkFloor
         {
           machine.GetC101 ()->Reset ();
           machine.GetT101 ()->Start ();
+          machine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_PUSHED);
           machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
         }
     }
@@ -408,6 +416,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorQueuePositionInfo (Mcp
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_QUEUE);
   if (machine.IsOriginator ())
     {
       NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
@@ -550,6 +559,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::PttPush (McpttOnNetworkFloor
 {
   NS_LOG_FUNCTION (this << &machine);
 
+  machine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_PUSHED);
   McpttFloorMsgRequest reqMsg (machine.GetTxSsrc ());
   reqMsg.SetPriority (McpttFloorMsgFieldPriority (machine.GetPriority ()));
   reqMsg.SetIndicator (machine.GetIndicator ());
@@ -930,6 +940,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorQueuePositionInfo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_QUEUE);
   if (msg.GetSubtype () == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
@@ -1560,6 +1571,9 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorQueuePositionInfo (McpttO
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
+  machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_QUEUE);
+  //TODO: May provide the queue position and priority (if available) to the MCPTT user.
+
   if (msg.GetSubtype () == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgAck ackMsg;
@@ -1568,8 +1582,6 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorQueuePositionInfo (McpttO
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
       machine.Send (ackMsg);
     }
-
-  //TODO: May provide the queue position and priority (if available) to the MCPTT user.
 
   if (machine.GetT104 ()->IsRunning ())
     {

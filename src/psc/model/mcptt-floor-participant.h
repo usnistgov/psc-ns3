@@ -135,9 +135,11 @@ public:
  virtual void PttRelease (void) = 0;
 
  // Events to report
+ static constexpr const char* PTT_BUTTON_PUSHED = "PTT button pushed";
  static constexpr const char* PTT_BUTTON_RELEASED = "PTT button released";
  static constexpr const char* RECEIVED_FLOOR_DENY = "Received Floor Deny";
  static constexpr const char* RECEIVED_FLOOR_GRANTED = "Received Floor Granted";
+ static constexpr const char* RECEIVED_FLOOR_QUEUE = "Received Floor Queue Position Info";
  static constexpr const char* RECEIVED_FLOOR_IDLE = "Received Floor Idle";
  static constexpr const char* RECEIVED_FLOOR_REVOKED = "Received Floor Revoked";
  static constexpr const char* RECEIVED_FLOOR_TAKEN = "Received Floor Taken";

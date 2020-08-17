@@ -283,6 +283,11 @@ public:
   */
  virtual McpttEntityId GetInstanceStateId (void) const;
  /**
+  * Notifies this machine state that the button has been pushed.
+  * \param machine The FSM.
+  */
+ virtual void PttPush (McpttOnNetworkFloorParticipant& machine) const;
+ /**
   * Notifies the floor machine state that the call was established.
   * \param machine The FSM.
   */
