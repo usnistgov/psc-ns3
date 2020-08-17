@@ -51,7 +51,7 @@ public:
   virtual ~McpttCallHelper (void);
 
   /**
-   * Configure a call in the scenario for a set of clients and a server.
+   * Configure a call for a set of on-network clients and a server.
    * \param clients container of client applications
    * \param server pointer to the server application
    * \param groupId GroupId to assign
@@ -62,7 +62,7 @@ public:
    */
   uint16_t AddCall (ApplicationContainer clients, Ptr<McpttServerApp> server, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
   /**
-   * Configure a call in the scenario for a set of off-network clients.
+   * Configure a call for a set of off-network clients.
    * \param clients container of client applications
    * \param callId The ID of the call.
    * \param peerAddress The address of the off-network group.

@@ -47,13 +47,12 @@ McpttTestCall::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::McpttTestCall")
     .SetParent<McpttCall> ()
-    .AddConstructor<McpttTestCall> ()
   ;
   return tid;
 }
 
-McpttTestCall::McpttTestCall (void)
-  : McpttCall ()
+McpttTestCall::McpttTestCall (McpttCall::NetworkCallType callType)
+  : McpttCall (callType)
 {
   NS_LOG_FUNCTION (this);
 }

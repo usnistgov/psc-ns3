@@ -47,7 +47,7 @@
 namespace ns3 {
 
 /**
- * Test case configuration framework for off-network MCPTT tests
+ * Test case configuration framework for on-network MCPTT tests
  */
 class McpttTestCaseConfigOnNetwork : public McpttTestCaseConfig
 {

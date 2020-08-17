@@ -12,13 +12,6 @@ def build(bld):
                                  ['core', 'energy', 'mobility', 'psc'])
     obj.source = 'uav-mobility-energy-example.cc'
 
-    obj = bld.create_ns3_program('example-mcptt-wifi-adhoc',
-                                 ['psc', 'wifi'])
-    obj.source = 'example-mcptt-wifi-adhoc.cc'
-
-    obj = bld.create_ns3_program('mcptt-lte-sl-out-of-covrg-comm',
-                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
-    obj.source = 'mcptt-lte-sl-out-of-covrg-comm.cc'
 
     obj = bld.create_ns3_program('example-intel-http',
                                  ['psc'])
@@ -49,6 +42,14 @@ def build(bld):
                                  ['psc'])
     obj.source = 'example-video-streaming.cc'
 
+    obj = bld.create_ns3_program('example-mcptt-wifi-adhoc',
+                                 ['psc', 'wifi'])
+    obj.source = 'example-mcptt-wifi-adhoc.cc'
+
+    obj = bld.create_ns3_program('mcptt-lte-sl-out-of-covrg-comm',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'mcptt-lte-sl-out-of-covrg-comm.cc'
+
     obj = bld.create_ns3_program('example-mcptt-on-network-floor-control-csma',
                                  ['core', 'csma', 'network','mobility', 'internet', 'applications', 'psc'])
     obj.source = 'example-mcptt-on-network-floor-control-csma.cc'
@@ -60,3 +61,7 @@ def build(bld):
     obj = bld.create_ns3_program('example-mcptt-on-network-two-calls',
                                  ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc'])
     obj.source = 'example-mcptt-on-network-two-calls.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-on-network-two-simultaneous-calls',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'example-mcptt-on-network-two-simultaneous-calls.cc'

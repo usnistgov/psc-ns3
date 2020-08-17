@@ -66,8 +66,16 @@ McpttCall::GetTypeId (void)
                    PointerValue (0),
                    MakePointerAccessor (&McpttCall::m_callMachine),
                    MakePointerChecker<McpttCallMachine> ())
-    .AddAttribute ("CallPort", "The port that the application will use for call control messages.",
+    .AddAttribute ("DefaultOnNetworkCallPort", "The default port for on-network call control messages.",
                    UintegerValue (5060), // standard SIP call control port
+                   MakeUintegerAccessor (&McpttCall::m_defaultOnNetworkCallPort),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("DefaultOffNetworkCallPort", "The default port for off-network call control messages.",
+                   UintegerValue (8809), // standard MONP IANA allocation
+                   MakeUintegerAccessor (&McpttCall::m_defaultOffNetworkCallPort),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("CallPort", "The port to use for call control messages.",
+                   UintegerValue (0),
                    MakeUintegerAccessor (&McpttCall::m_callPort),
                    MakeUintegerChecker<uint16_t> ())
      .AddAttribute ("FloorMachine", "The floor machine of the call.",
@@ -84,7 +92,22 @@ McpttCall::GetTypeId (void)
 
 McpttCall::McpttCall (void)
   : Object (),
-    m_callChan (0),
+    m_networkCallType (NetworkCallType::INVALID), // type must be set later
+    m_floorChan (0),
+    m_mediaChan (0),
+    m_owner (0),
+    m_pushOnSelect (false),
+    m_startTime (Seconds (0)),
+    m_stopTime (Seconds (0)),
+    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ()),
+    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ())
+{
+  NS_LOG_FUNCTION (this);
+}
+
+McpttCall::McpttCall (NetworkCallType callType)
+  : Object (),
+    m_networkCallType (callType),
     m_floorChan (0),
     m_mediaChan (0),
     m_owner (0),
@@ -143,8 +166,15 @@ McpttCall::GetCallId (void) const
     }
   else
     {
+      NS_LOG_WARN ("CallId (CallMachine) not yet set");
       return 0;
     }
+}
+
+McpttCall::NetworkCallType
+McpttCall::GetNetworkCallType (void) const
+{
+  return m_networkCallType;
 }
 
 bool
@@ -187,7 +217,8 @@ McpttCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
   Ptr<McpttChan> floorChan = GetFloorChan ();
   Address localAddr = owner->GetLocalAddress ();
 
-  floorChan->Open (node, port, localAddr, peerAddr);
+  int result = floorChan->Open (node, port, localAddr, peerAddr);
+  NS_ABORT_MSG_UNLESS (result == 0, "Unable to open floor channel on node " << GetOwner ()->GetNode ()->GetId ());
 }
 
 void
@@ -200,14 +231,19 @@ McpttCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
   Ptr<McpttChan> mediaChan = GetMediaChan ();
   Address localAddr = owner->GetLocalAddress ();
 
-  mediaChan->Open (node, port, localAddr, peerAddr);
+  int result = mediaChan->Open (node, port, localAddr, peerAddr);
+  NS_ABORT_MSG_UNLESS (result == 0, "Unable to open media channel on node " << GetOwner ()->GetNode ()->GetId ());
 }
 
 void
 McpttCall::Receive (Ptr<Packet> pkt, const SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt);
-  NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
+  if (hdr.GetCallId () != GetCallId ())
+    {
+      NS_LOG_DEBUG ("Discarding SIP packet for call ID " << hdr.GetCallId ());
+      return;
+    }
   NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
   if (!m_rxCb.IsNull ())
     {
@@ -266,9 +302,25 @@ void
 McpttCall::Send (Ptr<Packet> pkt, const SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt);
-  Ptr<McpttChan> callChan = GetCallChan ();
   NS_LOG_LOGIC ("PttApp sending " << hdr << ".");
-  callChan->Send (pkt);
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
+    {
+      Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
+      GetCallChan ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
+      if (!m_txCb.IsNull ())
+        {
+          m_txCb (this, hdr);
+        }
+    }
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
+    {
+      Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
+      GetCallChan ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
+      if (!m_txCb.IsNull ())
+        {
+          m_txCb (this, hdr);
+        }
+    }
 }
 
 // off-network directly sends McpttCallMsg
@@ -277,15 +329,30 @@ McpttCall::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  Ptr<McpttChan> callChan = GetCallChan ();
-
   Ptr<Packet> pkt = Create<Packet> ();
 
   pkt->AddHeader (msg);
 
   NS_LOG_LOGIC ("PttApp sending " << msg << ".");
 
-  callChan->Send (pkt);
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
+    {
+      Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
+      GetCallChan ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
+      if (!m_txCb.IsNull ())
+        {
+          m_txCb (this, msg);
+        }
+    }
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
+    {
+      Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
+      GetCallChan ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
+      if (!m_txCb.IsNull ())
+        {
+          m_txCb (this, msg);
+        }
+    }
 }
 
 void
@@ -333,16 +400,25 @@ void
 McpttCall::Start (void)
 {
   NS_LOG_FUNCTION (this);
-
-  Address localAddr = GetOwner ()->GetLocalAddress ();
-  Ptr<McpttChan> callChan = CreateObject<McpttChan> ();
-
-  callChan->SetRxPktCb (MakeCallback (&McpttCall::ReceiveCallPkt, this));
-
-  callChan->Open (GetOwner ()->GetNode (), m_callPort, localAddr, m_peerAddress);
-
-  SetCallChan (callChan);
-
+  if (m_callPort == 0)
+    {
+      // user has not provided a non-default port, so initialize to default
+      if (m_networkCallType == McpttCall::NetworkCallType::ON_NETWORK)
+        {
+          m_callPort = m_defaultOnNetworkCallPort;
+          NS_LOG_DEBUG ("Starting on-network call on port " << m_callPort);
+        }
+      else if (m_networkCallType == McpttCall::NetworkCallType::OFF_NETWORK)
+        {
+          m_callPort = m_defaultOffNetworkCallPort;
+          NS_LOG_DEBUG ("Starting off-network call on port " << m_callPort);
+        }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Starting call on port " << m_callPort);
+    }
+  GetOwner ()->OpenCallChannel (m_callPort, this, m_networkCallType);
   GetCallMachine ()->Start ();
 }
 
@@ -351,16 +427,8 @@ McpttCall::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttChan> callChan = GetCallChan ();
-
   GetCallMachine ()->Stop ();
-
-  if (callChan->IsOpen ())
-    {
-      callChan->Close ();
-    }
-
-  callChan->SetRxPktCb (MakeNullCallback<void, Ptr<Packet> > ());
+  GetOwner ()->CloseCallChannel (m_callPort, this, m_networkCallType);
 }
 
 void
@@ -632,7 +700,7 @@ McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
 Ptr<McpttChan>
 McpttCall::GetCallChan (void) const
 {
-  return m_callChan;
+  return GetOwner ()->GetCallChannel (m_callPort);
 }
 
 Ptr<McpttCallMachine>
@@ -675,14 +743,6 @@ Time
 McpttCall::GetStopTime (void) const
 {
   return m_stopTime;
-}
-
-void
-McpttCall::SetCallChan (Ptr<McpttChan>  callChan)
-{
-  NS_LOG_FUNCTION (this << &callChan);
-
-  m_callChan = callChan;
 }
 
 void
@@ -773,6 +833,12 @@ McpttCall::SetStopTime (Time stopTime)
 {
   NS_LOG_FUNCTION (this << stopTime);
   m_stopTime = stopTime;
+}
+
+std::ostream& operator << (std::ostream& os, const McpttCall::NetworkCallType& obj)
+{
+   os << static_cast<std::underlying_type<McpttCall::NetworkCallType>::type> (obj);
+   return os;
 }
 
 } // namespace ns3

@@ -202,18 +202,18 @@ McpttPttApp::CancelEmergAlert (void)
     }
 }
 Ptr<McpttCall>
-McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac)
+McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, McpttCall::NetworkCallType callType)
 {
   // User did not supply a call ID, so allocate one locally
-  return CreateCall (callFac, floorFac, m_callIdAllocator++);
+  return CreateCall (callFac, floorFac, callType, m_callIdAllocator++);
 }
 
 Ptr<McpttCall>
-McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId)
+McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, McpttCall::NetworkCallType callType, uint16_t callId)
 {
-  NS_LOG_FUNCTION (this << callId);
+  NS_LOG_FUNCTION (this << callId << callType);
 
-  Ptr<McpttCall> call = CreateObject<McpttCall> ();
+  Ptr<McpttCall> call = CreateObject<McpttCall> (callType);
   Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
   Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
   Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
@@ -464,12 +464,12 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
       oldFloorMachine->SetFloorGrantedCb (MakeNullCallback<void> ());
       if (m_pusher && m_isRunning)
         {
-          NS_LOG_DEBUG ("Stopping pusher on call ID " << oldCallId);
+          if (IsPushed ())
+            {
+              oldFloorMachine->PttRelease ();
+            }
           m_pusher->Stop ();
-        }
-      if (m_isRunning)
-        {
-          oldCallMachine->ReleaseCall ();
+          NS_LOG_DEBUG ("Stopping pusher on call ID " << oldCallId);
         }
     }
 
@@ -502,6 +502,7 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
     }
 
   m_selectedCall = newCall;
+  ReportEvent (newCall->GetCallId (), CALL_SELECTED);
 
   if (!m_selectedCallChangeCb.IsNull ())
     {
@@ -630,6 +631,11 @@ McpttPttApp::DoDispose (void)
   SetLocalAddress (Address ());
   SetPusher (0);
   m_selectedCall = 0;
+  m_callChannels.clear ();
+  m_callChannelReferenceCount.clear ();
+  m_calls.clear ();
+  m_onNetworkCalls.clear ();
+  m_offNetworkCalls.clear ();
 
   Object::DoDispose ();
 }
@@ -661,6 +667,167 @@ McpttPttApp::NewCallCb (uint16_t callId)
   else
     {
       m_newCallCb (callId);
+    }
+}
+
+void
+McpttPttApp::ReceiveOnNetworkCallPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+  NS_LOG_LOGIC ("PttApp received " << pkt->GetSize () << " byte(s).");
+  SipHeader sipHeader;
+  pkt->RemoveHeader (sipHeader);
+  for (auto it = m_onNetworkCalls.begin (); it != m_onNetworkCalls.end (); it++)
+    {
+      it->second->Receive (pkt, sipHeader);
+    }
+}
+
+void
+McpttPttApp::ReceiveOffNetworkCallPacket (Ptr<Packet> pkt)
+{
+  NS_LOG_FUNCTION (this << pkt);
+  NS_LOG_LOGIC ("PttApp received " << pkt->GetSize () << " byte(s).");
+  McpttCallMsg temp;
+  pkt->PeekHeader (temp);
+
+  McpttCallMsgFieldMsgType msgType = temp.GetMsgType ();
+  uint8_t code = msgType.GetType ();
+
+  if (code == McpttCallMsgGrpProbe::CODE)
+    {
+      McpttCallMsgGrpProbe probeMsg;
+      pkt->RemoveHeader (probeMsg);
+      Receive (probeMsg);
+    }
+  else if (code == McpttCallMsgGrpAnnoun::CODE)
+    {
+      McpttCallMsgGrpAnnoun grpAnnounMsg;
+      pkt->RemoveHeader (grpAnnounMsg);
+      Receive (grpAnnounMsg);
+    }
+  else if (code == McpttCallMsgGrpAccept::CODE)
+    {
+      McpttCallMsgGrpAccept grpAcceptMsg;
+      pkt->RemoveHeader (grpAcceptMsg);
+      Receive (grpAcceptMsg);
+    }
+  else if (code == McpttCallMsgGrpImmPerilEnd::CODE)
+    {
+      McpttCallMsgGrpImmPerilEnd grpImmPerilEndMsg;
+      pkt->RemoveHeader (grpImmPerilEndMsg);
+      Receive (grpImmPerilEndMsg);
+    }
+  else if (code == McpttCallMsgGrpEmergEnd::CODE)
+    {
+      McpttCallMsgGrpEmergEnd grpEmergEndMsg;
+      pkt->RemoveHeader (grpEmergEndMsg);
+      Receive (grpEmergEndMsg);
+    }
+  else if (code == McpttCallMsgGrpEmergAlert::CODE)
+    {
+      McpttCallMsgGrpEmergAlert grpEmergAlertMsg;
+      pkt->RemoveHeader (grpEmergAlertMsg);
+      Receive (grpEmergAlertMsg);
+    }
+  else if (code == McpttCallMsgGrpEmergAlertAck::CODE)
+    {
+      McpttCallMsgGrpEmergAlertAck grpEmergAlertAckMsg;
+      pkt->RemoveHeader (grpEmergAlertAckMsg);
+      Receive (grpEmergAlertAckMsg);
+    }
+  else if (code == McpttCallMsgGrpEmergAlertCancel::CODE)
+    {
+      McpttCallMsgGrpEmergAlertCancel grpEmergAlertCancelMsg;
+      pkt->RemoveHeader (grpEmergAlertCancelMsg);
+      Receive (grpEmergAlertCancelMsg);
+    }
+  else if (code == McpttCallMsgGrpEmergAlertCancelAck::CODE)
+    {
+      McpttCallMsgGrpEmergAlertCancelAck emergAlertCancelAckMsg;
+      pkt->RemoveHeader (emergAlertCancelAckMsg);
+      Receive (emergAlertCancelAckMsg);
+    }
+  else if (code == McpttCallMsgGrpBroadcast::CODE)
+    {
+      McpttCallMsgGrpBroadcast grpBroadcastMsg;
+      pkt->RemoveHeader (grpBroadcastMsg);
+      Receive (grpBroadcastMsg);
+    }
+  else if (code == McpttCallMsgGrpBroadcastEnd::CODE)
+    {
+      McpttCallMsgGrpBroadcastEnd grpBroadcastEndMsg;
+      pkt->RemoveHeader (grpBroadcastEndMsg);
+      Receive (grpBroadcastEndMsg);
+    }
+  else if (code == McpttCallMsgPrivateSetupReq::CODE)
+    {
+      McpttCallMsgPrivateSetupReq privateSetupReqMsg;
+      pkt->RemoveHeader (privateSetupReqMsg);
+      Receive (privateSetupReqMsg);
+    }
+  else if (code == McpttCallMsgPrivateRinging::CODE)
+    {
+      McpttCallMsgPrivateRinging privateRingingMsg;
+      pkt->RemoveHeader (privateRingingMsg);
+      Receive (privateRingingMsg);
+    }
+  else if (code == McpttCallMsgPrivateAccept::CODE)
+    {
+      McpttCallMsgPrivateAccept privateAcceptMsg;
+      pkt->RemoveHeader (privateAcceptMsg);
+      Receive (privateAcceptMsg);
+    }
+  else if (code == McpttCallMsgPrivateReject::CODE)
+    {
+      McpttCallMsgPrivateReject privateRejectMsg;
+      pkt->RemoveHeader (privateRejectMsg);
+      Receive (privateRejectMsg);
+    }
+  else if (code == McpttCallMsgPrivateRelease::CODE)
+    {
+      McpttCallMsgPrivateRelease privateReleaseMsg;
+      pkt->RemoveHeader (privateReleaseMsg);
+      Receive (privateReleaseMsg);
+    }
+  else if (code == McpttCallMsgPrivateReleaseAck::CODE)
+    {
+      McpttCallMsgPrivateReleaseAck privateReleaseAckMsg;
+      pkt->RemoveHeader (privateReleaseAckMsg);
+      Receive (privateReleaseAckMsg);
+    }
+  else if (code == McpttCallMsgPrivateAcceptAck::CODE)
+    {
+      McpttCallMsgPrivateAcceptAck privateAcceptAckMsg;
+      pkt->RemoveHeader (privateAcceptAckMsg);
+      Receive (privateAcceptAckMsg);
+    }
+  else if (code == McpttCallMsgPrivateEmergCancel::CODE)
+    {
+      McpttCallMsgPrivateEmergCancel privateEmergCancelMsg;
+      pkt->RemoveHeader (privateEmergCancelMsg);
+      Receive (privateEmergCancelMsg);
+    }
+  else if (code == McpttCallMsgPrivateEmergCancelAck::CODE)
+    {
+      McpttCallMsgPrivateEmergCancelAck privateEmergCancelAckMsg;
+      pkt->RemoveHeader (privateEmergCancelAckMsg);
+      Receive (privateEmergCancelAckMsg);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Could not resolve message code = " << (uint32_t)code << ".");
+    }
+}
+
+void
+McpttPttApp::Receive (const McpttCallMsg& msg)
+{
+  NS_LOG_FUNCTION (this << &msg);
+
+  for (auto it = m_offNetworkCalls.begin (); it != m_offNetworkCalls.end (); it++)
+    {
+      it->second->Receive (msg);
     }
 }
 
@@ -725,6 +892,95 @@ McpttPttApp::TxCb (Ptr<const McpttCall> call, const Header& msg)
   m_txTrace (this, call->GetCallId (), msg);
 }
 
+void
+McpttPttApp::OpenCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::NetworkCallType callType)
+{
+  NS_LOG_FUNCTION (port << call << callType);
+
+  // Check if a call channel exists to the port.  If so,
+  // increase its reference count.  If not, create it.
+  auto it = m_callChannels.find (port);
+  if (it != m_callChannels.end ())
+    {
+      NS_LOG_DEBUG ("Call channel exists for port " << port << "; increment reference count");
+      m_callChannelReferenceCount[it->second]++;
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Call channel does not exist for port " << port << "; create it");
+      Ptr<McpttChan> channel = CreateObject<McpttChan> ();
+      int result = channel->Open (GetNode (), port, GetLocalAddress (), Ipv4Address::GetAny ());
+      NS_ABORT_MSG_UNLESS (result == 0, "Unable to open call channel on node " << GetNode ()->GetId ());
+      m_callChannels.emplace (port, channel);
+      if (callType == McpttCall::NetworkCallType::ON_NETWORK)
+        {
+          channel->SetRxPktCb (MakeCallback (&McpttPttApp::ReceiveOnNetworkCallPacket, this));
+        }
+      else if (callType == McpttCall::NetworkCallType::OFF_NETWORK)
+        {
+          channel->SetRxPktCb (MakeCallback (&McpttPttApp::ReceiveOffNetworkCallPacket, this));
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Call type unsupported");
+        }
+      m_callChannelReferenceCount.emplace (channel, 1);
+    }
+  
+  // Add this call to the list of on-network or off-network calls, respectively
+  if (callType == McpttCall::NetworkCallType::ON_NETWORK)
+    {
+      m_onNetworkCalls.insert (std::pair<uint16_t, Ptr<McpttCall> > (call->GetCallId (), call));
+    }
+  else if (callType == McpttCall::NetworkCallType::OFF_NETWORK)
+    {
+      m_offNetworkCalls.insert (std::pair<uint16_t, Ptr<McpttCall> > (call->GetCallId (), call));
+    }
+}
+
+void
+McpttPttApp::CloseCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::NetworkCallType callType)
+{
+  NS_LOG_FUNCTION (port << call << callType);
+  auto it = m_callChannels.find (port);
+  if (it != m_callChannels.end ())
+    {
+      if (m_callChannelReferenceCount[it->second] == 1)
+        {
+          NS_LOG_DEBUG ("Closing call channel");
+          it->second->Close ();
+          it->second->SetRxPktCb (MakeNullCallback<void, Ptr<Packet> > ());
+          m_callChannelReferenceCount.erase (it->second);
+          m_callChannels.erase (it);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Decrementing reference count on the call channel");
+          m_callChannelReferenceCount[it->second]--;
+        }
+    }
+  // Remove call from the list of on-network or off-network calls, respectively
+  if (callType == McpttCall::NetworkCallType::ON_NETWORK)
+    {
+      m_onNetworkCalls.erase (call->GetCallId ());
+    }
+  else if (callType == McpttCall::NetworkCallType::OFF_NETWORK)
+    {
+      m_offNetworkCalls.erase (call->GetCallId ());
+    }
+}
+
+Ptr<McpttChan>
+McpttPttApp::GetCallChannel (uint16_t port) const
+{
+  auto it = m_callChannels.find (port);  
+  if (it != m_callChannels.end ())
+    {
+      return it->second;
+    }
+  return nullptr;
+}
+
 std::map<uint16_t, Ptr<McpttCall> >
 McpttPttApp::GetCalls (void) const
 {
@@ -759,14 +1015,6 @@ uint32_t
 McpttPttApp::GetUserId (void) const
 {
   return m_userId;
-}
-
-void
-McpttPttApp::SetCalls (const std::map<uint16_t, Ptr<McpttCall> >  calls)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_calls = calls;
 }
 
 void

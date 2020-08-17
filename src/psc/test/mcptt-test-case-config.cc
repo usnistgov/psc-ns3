@@ -214,7 +214,7 @@ McpttTestCaseConfig::SetStop (const Time& stop)
 Ptr<McpttTestCall>
 McpttTestCaseConfig::CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const
 {
-  Ptr<McpttTestCall> call = CreateObject<McpttTestCall> ();
+  Ptr<McpttTestCall> call = CreateObject<McpttTestCall> (McpttCall::NetworkCallType::OFF_NETWORK);
   Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
   Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
   Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();

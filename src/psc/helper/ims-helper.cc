@@ -98,7 +98,7 @@ ImsHelper::ConnectPgw (Ptr<Node> pgw)
     {
       Ipv4AddressHelper ipv4h;
       // Configure IP addresses across the SGi interface
-      ipv4h.SetBase ("15.0.0.0", "255.0.0.0");
+      ipv4h.SetBase (m_ipv4BaseAddress, m_ipv4BaseMask);
       Ipv4InterfaceContainer imsIpIfaces = ipv4h.Assign (imsDevices);
 
       // Configure static route from IMS back to the UEs
@@ -109,7 +109,8 @@ ImsHelper::ConnectPgw (Ptr<Node> pgw)
   else
     {
       Ipv6AddressHelper ipv6h;
-      ipv6h.SetBase (Ipv6Address ("6001:db80::"), Ipv6Prefix (64));
+      // Configure IP addresses across the SGi interface
+      ipv6h.SetBase (m_ipv6BaseAddress, m_ipv6BasePrefix);
       Ipv6InterfaceContainer imsIpIfaces = ipv6h.Assign (imsDevices);
 
       imsIpIfaces.SetForwarding (0, true);
@@ -162,6 +163,22 @@ Ptr<PointToPointNetDevice>
 ImsHelper::GetImsGmDevice (void) const
 {
   return m_imsDevice;
+}
+
+void
+ImsHelper::SetImsIpv4Network (Ipv4Address baseAddress, Ipv4Mask baseMask)
+{
+  NS_LOG_FUNCTION (this << baseAddress << baseMask);
+  m_ipv4BaseAddress = baseAddress;
+  m_ipv4BaseMask = baseMask;
+}
+
+void
+ImsHelper::SetImsIpv6Network (Ipv6Address baseAddress, Ipv6Prefix basePrefix)
+{
+  NS_LOG_FUNCTION (this << baseAddress << basePrefix);
+  m_ipv6BaseAddress = baseAddress;
+  m_ipv6BasePrefix = basePrefix;
 }
 
 } // namespace ns3

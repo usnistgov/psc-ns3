@@ -170,7 +170,7 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
                     << " to server:  floor " << floorPort 
                     << " media " << mediaPort);
       // Each application gets its own instance of a McpttCall object
-      Ptr<McpttCall> call = CreateObject<McpttCall> ();
+      Ptr<McpttCall> call = CreateObject<McpttCall> (McpttCall::NetworkCallType::ON_NETWORK);
       call->SetAttribute ("PeerAddress", AddressValue (server->GetLocalAddress ()));
       call->SetStartTime (startTime);
       call->SetStopTime (stopTime);
@@ -245,7 +245,7 @@ McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callI
     {
       Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clients.Get (idx));
         
-      Ptr<McpttCall> call = CreateObject<McpttCall> ();
+      Ptr<McpttCall> call = CreateObject<McpttCall> (McpttCall::NetworkCallType::OFF_NETWORK);
       Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
       Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
       Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
@@ -253,7 +253,6 @@ McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callI
 
       callMachine->SetAttribute ("GroupId", UintegerValue (groupId));
 
-      call->SetAttribute ("CallPort", UintegerValue (5062));
       call->SetAttribute ("PeerAddress", AddressValue (peerAddress));
       call->SetCallMachine (callMachine);
       call->SetFloorChan (floorChan);
@@ -285,7 +284,7 @@ McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Ad
 
       callFac.Set ("GroupId", UintegerValue (groupId));
 
-      Ptr<McpttCall> call = pttApp->CreateCall (callFac, floorFac);
+      Ptr<McpttCall> call = pttApp->CreateCall (callFac, floorFac, McpttCall::NetworkCallType::OFF_NETWORK);
       call->SetAttribute ("PeerAddress", AddressValue (peerAddress));
       pttApp->SelectCall (call->GetCallId ());
  

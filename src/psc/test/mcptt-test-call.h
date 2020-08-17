@@ -53,8 +53,9 @@ public:
   static TypeId GetTypeId (void);
   /**
    * Creates an instance of the McpttTestCall class.
+   * \param callType network type for call
    */
-  McpttTestCall (void);
+  McpttTestCall (McpttCall::NetworkCallType callType);
   /**
    * The destructor of the McpttTestCall class.
    */

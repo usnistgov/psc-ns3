@@ -91,9 +91,27 @@ public:
    */
   Ptr<PointToPointNetDevice> GetImsGmDevice (void) const;
 
+  /**
+   * Override default IPv4 network configuration for IMS network
+   * \param baseAddress base IPv4 address
+   * \param baseMask base IPv4 mask
+   */
+  void SetImsIpv4Network (Ipv4Address baseAddress, Ipv4Mask baseMask);
+
+  /**
+   * Override default IPv6 network configuration for IMS network
+   * \param baseAddress base IPv6 address
+   * \param basePrefix base IPv6 prefix
+   */
+  void SetImsIpv6Network (Ipv6Address baseAddress, Ipv6Prefix basePrefix);
+
 private:
   bool m_useIpv6; //!< A flag that indicates if IPv6 should be used.
   Ptr<Node> m_imsNode;
+  Ipv4Address m_ipv4BaseAddress {"15.0.0.0"};
+  Ipv4Mask m_ipv4BaseMask {"255.0.0.0"};
+  Ipv6Address m_ipv6BaseAddress {"6001:db80::"};
+  Ipv6Prefix m_ipv6BasePrefix {64};
   Ptr<Node> m_pgwNode;
   Ptr<PointToPointNetDevice> m_imsDevice;
 };

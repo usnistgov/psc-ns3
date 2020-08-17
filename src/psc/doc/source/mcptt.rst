@@ -408,10 +408,31 @@ Usage
 Helpers
 #######
 
+Adding IP Multimedia Subsystem (IMS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An IMS node can be added to a simulation in a manner similar to the optional
+configuration of an EPC network.  In the below snippet, the ImsHelper object
+is LteHelper, and the ImsHelper also is connected to
+the PGW node::
+
+   Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
+   imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
+
+The IMS node itself can be fetched as follows::
+
+   Ptr<Node> ims = imsHelper->GetImsNode ();
+
+The ConnectPgw() method creates the IMS node, adds an IP (internet) stack to
+it, and then adds a point-to-point link between it and the PGW node.  The
+SGi interface is assigned the 15.0.0.0/8 network by default, although this
+can be changed to another network.  Finally, a static route
+towards the UE subnetwork (7.0.0.0/8) is inserted on the IMS.
+
 Examples
 ########
 
-There are two MCPTT examples in the 'psc/examples' folder:
+There are two off-network MCPTT examples in the 'psc/examples' folder:
   * ``example-mcptt.cc`` is a basic scenario with two users deployed randomly
     using the |ns3| WiFi module in Adhoc mode
   * ``mcptt-lte-sl-out-of-covrg-comm.cc`` is an adaptation of the LTE Sidelink
@@ -427,6 +448,17 @@ There are two MCPTT examples in the 'psc/examples' folder:
    to compute there own metrics or if the log component ``McpttProseExample`` is
    enabled at the "logic" level, the user will see the computed setup delays and
    reported error cases.
+
+There are several on-network MCTT examples in the 'psc/examples' folder:
+  * ``example-mcptt-on-network-floor-control-csma.cc`` demonstrates the
+    operation of the on-network floor control with a single call on a CSMA network.
+  * ``example-mcptt-on-network-floor-control-lte.cc`` demonstrates the
+    operation of the on-network floor control with a single call on an LTE network.
+  * ``example-mcptt-on-network-two-calls.cc`` demonstrates two sequential calls
+    executing sequentially in the same LTE scenario.
+  * ``example-mcptt-on-network-two-simultaneous-calls.cc`` demonstrates two
+    concurrent calls in the same LTE network, each with different MCPTT
+    server nodes, and an MCPTT user participating in both calls
 
 mcptt-lte-sl-out-of-covrg-comm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -551,25 +583,174 @@ These statements are explained in the next section.  Some other aspects
 of LTE tracing are omitted in this modified example, in order to focus on
 the MCPTT configuration.
 
-Adding IP Multimedia Subsystem (IMS)
-####################################
+mcptt-on-network-two-calls
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An IMS node can be added to a simulation in a manner similar to the optional
-configuration of an EPC network.  In the below snippet, the ImsHelper object
-is LteHelper, and the ImsHelper also is connected to
-the PGW node::
+The program ``mcptt-on-network-two-calls.cc`` is an adaptation of the LTE
+example ``lena-simple-epc.cc` to experiment with two MCPTT on-network calls
+involving two different pairs of UEs to a single MCPTT server managing 
+both calls.  The first group call (between the first pair of UEs) starts
+when the McpttPttApps start at time 2 seconds and runs until simulation
+time 16 seconds.  The second call starts at time 18 seconds and runs
+until time 34 seconds.
+
+This example provides examples of typical statements necessary to
+configure on-network calls.  The first necessary configuration is to
+add the MCPTT server to the EPC (via the notional IMS) with an ImsHelper.
+
+.. sourcecode:: cpp
 
    Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
    imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
 
-The IMS node itself can be fetched as follows::
+.. sourcecode:: cpp
 
-   Ptr<Node> ims = imsHelper->GetImsNode ();
+MCPTT clients are added in a manner similar to off-network configuration; e.g.:
 
-The ConnectPgw() method creates the IMS node, adds an IP (internet) stack to
-it, and then adds a point-to-point link between it and the PGW node.  The
-SGi interface is assigned the 15.0.0.0/8 network.  Finally, a static route
-towards the UE subnetwork (7.0.0.0/8) is inserted on the IMS.
+.. sourcecode:: cpp
+
+   McpttHelper mcpttClientHelper;
+   mcpttClientHelper.SetPttApp ("ns3::McpttPttApp");
+   ...
+   clientAppContainer1.Add (mcpttClientHelper.Install (ueNodePair1));
+   clientAppContainer1.Start (start);
+   clientAppContainer1.Stop (stop);
+
+However, in addition, an MCPTT server app must be configured:
+
+.. sourcecode:: cpp
+
+   Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverAppContainer.Get (0));
+   Ipv4Address serverAddress = Ipv4Address::ConvertFrom (imsHelper->GetImsGmAddress ());
+   serverApp->SetLocalAddress (serverAddress);
+
+and in a similar manner, the local IP address of the UEs is configured:
+
+.. sourcecode:: cpp
+
+   for (uint32_t index = 0; index < ueIpIface.GetN (); index++)
+     {
+       Ptr<McpttPttApp> pttApp = clientAppContainer.Get (index)->GetObject<McpttPttApp> ();
+       Ipv4Address clientAddress = ueIpIface.GetAddress (index);
+       pttApp->SetLocalAddress (clientAddress);
+       NS_LOG_INFO ("client " << index << " ip address = " << clientAddress);
+     }
+
+The next few statements show how to use a McpttCallHelper to configure
+the on-network components of floor arbitrator, the 'towards participant'
+state machine (the component of the floor control at the server that
+maintains state for each participant), the participant state machine,
+and properties of the call configurations on the server.
+
+.. sourcecode:: cpp
+
+   McpttCallHelper callHelper;
+   // Optional statements to tailor the configurable attributes
+   callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+                          "AckRequired", BooleanValue (false),
+                          "AudioCutIn", BooleanValue (false),
+                          "DualFloorSupported", BooleanValue (false),
+                          "TxSsrc", UintegerValue (100),
+                          "QueueCapacity", UintegerValue (1));
+   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+                          "ReceiveOnly", BooleanValue (false));
+   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+                          "AckRequired", BooleanValue (false),
+                          "GenMedia", BooleanValue (true));
+   callHelper.SetServerCall ("ns3::McpttServerCall",
+                          "AmbientListening", BooleanValue (false),
+                          "TemporaryGroup", BooleanValue (false));
+
+The next few statements configure the calls themselves, using the call helper.
+The user must specify the call type and group ID, the client (McpttPttAtt)
+applications to configure, the server application, and then the start and
+stop times of the call.
+
+.. sourcecode:: cpp
+
+   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+   // Add first call, to start at time 2 and stop at time 10
+   // Call will involve two nodes (7 and 8) and the MCPTT server (node 3)
+   uint32_t groupId = 1;
+   callHelper.AddCall (clientAppContainer1, serverApp, groupId, callType, Seconds (2), Seconds (16));
+
+   // Add second call, on new groupId, to start at time 8 and stop at time 15
+   // Call will involve two nodes (9 and 10) and the MCPTT server (node 3)
+   groupId = 2;
+   callHelper.AddCall (clientAppContainer2, serverApp, groupId, callType, Seconds (18), Seconds (34));
+
+Finally, the MCPTT tracing can be enabled to trace messages, state machine
+transitions, and statistics such as mouth-to-ear latency and access time.
+
+.. sourcecode:: cpp
+
+   NS_LOG_INFO ("Enabling MCPTT traces...");
+   McpttTraceHelper traceHelper;
+   traceHelper.EnableMsgTraces ();
+   traceHelper.EnableStateMachineTraces ();
+   traceHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+   traceHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
+
+mcptt-on-network-two-simultaneous-calls
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The program ``mcptt-on-network-two-simultaneous-calls.cc`` differs from
+the previously introduced ``mcptt-on-network-two-calls.cc`` example as
+follows.  First, two calls between three UEs are configured to run
+concurrently, rather than sequentially, for a duration of nearly 60 seconds.
+Second, each call has a different MCPTT server.  Third, one of the MCPTT
+users is configured to participate in both calls, and to switch between
+the two calls every second.
+
+The main change in configuration is to configure a second IMS network
+(essentially, a second MCPTT server) and to configure its network address
+to another subnet instead of the default 15.0.0.0:
+
+..sourcecode:: cpp
+
+   Ptr<ImsHelper> imsHelper2 = CreateObject<ImsHelper> ();
+   imsHelper2->SetImsIpv4Network (Ipv4Address ("16.0.0.0"), Ipv4Mask ("255.0.0.0"));
+   imsHelper2->ConnectPgw (epcHelper->GetPgwNode ());
+
+The first user is added to both the first and second call groups:
+
+..sourcecode:: cpp
+
+   ApplicationContainer callContainer1;
+   callContainer1.Add (clientAppContainer1.Get (0));
+   ...
+   ApplicationContainer callContainer2;
+   ...
+   // Add the first user to the second call also
+   callContainer2.Add (clientAppContainer1.Get (0));
+
+and the two calls configured in the call helper have different server apps:
+
+..sourcecode:: cpp
+
+   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
+   uint32_t groupId = 1;
+   callHelper.AddCall (callContainer1, serverApp, groupId, callType, callStartTime, callStopTime);
+
+   groupId = 2;
+   callHelper.AddCall (callContainer2, serverApp2, groupId, callType, callStartTime, callStopTime);
+
+
+Finally, some events must be added to cause the first MCPTT user to switch
+calls at specified times.  This is done with the ``McpttPttApp::SelectCall``
+method, such as follows:
+
+..sourcecode:: cpp
+
+   // schedule events to cause the user (McpttPusher) to switch calls at the
+   // configured times in the simulation
+   Simulator::Schedule (callStartTime, &McpttPttApp::SelectCall, pttApp, 1, true);
+   Simulator::Schedule (firstSwitchTime, &McpttPttApp::SelectCall, pttApp, 2, true);
+   Simulator::Schedule (secondSwitchTime, &McpttPttApp::SelectCall, pttApp, 1, true);
+
+The program output of this program shows application and floor control
+events traced on userId 1, illustrating that as one call is selected
+(sent to the foreground), the other call machine still evolves in
+the background.
 
 Traces
 ######

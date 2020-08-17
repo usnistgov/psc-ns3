@@ -124,18 +124,20 @@ public:
   * on this application instance.
   * \param callFac The factory used to create an ns3::McpttCallMachine.
   * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
+  * \param callType The type of network call (e.g. on-network)
   * \return pointer to newly created call
   */
- virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac);
+ virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, McpttCall::NetworkCallType callType);
  /**
   * Creates a call using factory objects and a provided call ID, and add
   * to the container of calls on this application instance.
   * \param callFac The factory used to create an ns3::McpttCallMachine.
   * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
+  * \param callType The type of network call (e.g. on-network)
   * \param callId The call ID to use
   * \return pointer to newly created call
   */
- virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId);
+ virtual Ptr<McpttCall> CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, McpttCall::NetworkCallType callType, uint16_t callId);
   /**
    * Adds a previously created call to the container of calls on this
    * application instance.
@@ -235,6 +237,10 @@ public:
   * \param reason Description of the event.
   */
  virtual void ReportEvent (uint16_t callId, const char* reason);
+
+ // Events to report
+ static constexpr const char* CALL_SELECTED  = "Call selected";
+
 protected:
  /**
   * Disposes of the McpttPttApp instance.
@@ -249,6 +255,21 @@ protected:
   * \param callId The ID of the new call.
   */
  virtual void NewCallCb (uint16_t callId);
+ /**
+  * Receives an on-network call control packet.
+  * \param pkt The call control packet that was received.
+  */
+ virtual void ReceiveOnNetworkCallPacket (Ptr<Packet>  pkt);
+ /**
+  * Receives an off-network call control packet.
+  * \param pkt The call control packet that was received.
+  */
+ virtual void ReceiveOffNetworkCallPacket (Ptr<Packet>  pkt);
+ /**
+  * Receives a call control message.
+  * \param msg The message that was received.
+  */
+ virtual void Receive (const McpttCallMsg& msg);
  /**
   * The callback to fire when a message is received.
   * \param call The call that the message is for.
@@ -287,7 +308,11 @@ private:
  static uint16_t s_portNumber; //!< A port number.
  bool m_isRunning; //!< Whether application is running or not
  uint16_t m_callIdAllocator; //!< Counter to allocate call IDs
- std::map<uint16_t, Ptr<McpttCall> > m_calls; //!< The container of calls.
+ std::map<uint16_t, Ptr<McpttChan> > m_callChannels; //!< Map of call channels
+ std::map<Ptr<McpttChan>, uint32_t> m_callChannelReferenceCount; //!< Reference count for call channels
+ std::map<uint16_t, Ptr<McpttCall> > m_calls; //!< The container of all calls.
+ std::map<uint16_t, Ptr<McpttCall> > m_onNetworkCalls; //!< The container of on-network calls.
+ std::map<uint16_t, Ptr<McpttCall> > m_offNetworkCalls; //!< The container of off-network calls.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  Address m_localAddress; //!< The local IP address.
  Ptr<McpttMediaSrc> m_mediaSrc; //!< The media source.
@@ -301,6 +326,28 @@ private:
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
  TracedCallback<uint32_t, uint16_t, const char* > m_eventTrace; //!< Event trace
 public:
+ /**
+  * Open a call control channel to listen on the provided port, if not already open
+  * \param port local port for the socket
+  * \param call pointer to McpttCall object
+  * \param callType network type for the call
+  */
+ void OpenCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::NetworkCallType callType);
+ /**
+  * Close the call control channel for the provided local port.  If other calls
+  * are using the same channel, the channel will remain open but the call will
+  * become disassociated from it.
+  * \param port local port for the socket
+  * \param call pointer to McpttCall object
+  * \param callType network type for the call
+  */
+ void CloseCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::NetworkCallType callType);
+ /**
+  * Gets the call channel bound to the provided port
+  * \param port local port for the socket
+  * \returns The channel.
+  */
+ virtual Ptr<McpttChan> GetCallChannel (uint16_t port) const;
  /**
   * Gets the container of calls.
   * \returns The container of calls.
@@ -331,11 +378,6 @@ public:
   * \returns The MCPTT user ID.
   */
  virtual uint32_t GetUserId (void) const;
- /**
-  * Sets the container of calls.
-  * \param calls The container of calls.
-  */
- virtual void SetCalls (const std::map<uint16_t, Ptr<McpttCall> >  calls);
  /**
   * Sets the callback used to notify a floor granted.  Use of this callback
   * is optional, depending on the pusher model.  In real-world operation,

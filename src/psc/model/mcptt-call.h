@@ -66,10 +66,25 @@ public:
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
+
+ /**
+  * Types of MCPTT calls
+  */
+ enum class NetworkCallType
+ {
+   ON_NETWORK,
+   OFF_NETWORK,
+   INVALID
+ };
  /**
   * Creates an instance of the McpttCall class.
   */
-  McpttCall (void);
+  McpttCall ();
+ /**
+  * Creates an instance of the McpttCall class.
+  * \param callType type of network call
+  */
+  McpttCall (NetworkCallType callType);
  /**
   * The destructor of the McpttCall class.
   */
@@ -92,6 +107,16 @@ public:
   * \returns The call ID.
   */
  uint16_t GetCallId (void) const;
+ /**
+  * Set the type of network for the McpttCall
+  * \param callType type of network call
+  */
+ void SetNetworkCallType (NetworkCallType callType);
+ /**
+  * Get the type of network for the McpttCall
+  * \return the type of network call
+  */
+ NetworkCallType GetNetworkCallType (void) const;
  /**
   * Sets the push on select flag.
   * \param pushOnSelect true if call should start pusher upon select.
@@ -195,8 +220,11 @@ protected:
   */
  void ReceiveMediaPkt (Ptr<Packet>  pkt);
  private:
+ NetworkCallType m_networkCallType; //!< The network call type
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
  Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
+ uint16_t m_defaultOnNetworkCallPort; //!< The default port for on-network call channels
+ uint16_t m_defaultOffNetworkCallPort; //!< The default port for off-network call channels
  uint16_t m_callPort; //!< The port on which call control messages will flow.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
@@ -251,11 +279,6 @@ public:
   */
  Time GetStopTime (void) const;
  /**
-  * Sets the channel used for call control messages.
-  * \param callChan The channel.
-  */
- virtual void SetCallChan (Ptr<McpttChan>  callChan);
- /**
   * Sets the call control state machine.
   * \param callMachine The call control state machine.
   */
@@ -301,6 +324,13 @@ public:
   */
  void SetStopTime (Time stopTime);
 };
+
+/**
+  * \brief Stream output operator
+  * \param os output stream
+  * \return updated stream
+  */
+std::ostream& operator<< (std::ostream& os, const McpttCall::NetworkCallType& obj);
 
 } // namespace ns3
 
