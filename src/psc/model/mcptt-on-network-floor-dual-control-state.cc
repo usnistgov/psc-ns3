@@ -495,6 +495,9 @@ McpttOnNetworkFloorDualControlStateTaken::Terminate (McpttOnNetworkFloorDualCont
       machine.GetOwner ()->GetT2 ()->StartWith (machine.GetT12 ()->GetTimeLeft ());
     }
 
+  machine.GetOwner ()->SetStoredSsrc (machine.GetStoredSsrc ());
+  machine.GetOwner ()->SetStoredPriority (machine.GetStoredPriority ());
+
   machine.ChangeState (McpttOnNetworkFloorDualControlStateStartStop::GetInstance ());
 }
 

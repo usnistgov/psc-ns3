@@ -318,9 +318,8 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator
 {
   NS_LOG_FUNCTION (this);
 
-  if ((machine->GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
-        && !machine->GetQueue ()->IsEnabled ())
-      || !machine->IsDualFloor ())
+  if (machine->GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
+      && !machine->IsDualFloor ())
     {
       machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
       if (machine->GetQueue ()->HasNext ())
@@ -354,6 +353,8 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator
       idleMsg.SetIndicator (machine->GetIndicator ());
       machine->SendToAllExcept (idleMsg, machine->GetStoredSsrc ());
 
+      machine->GetDualControl ()->Terminate ();
+
       McpttFloorMsgTaken takenMsg;
       takenMsg.SetSsrc (machine->GetTxSsrc ());
       takenMsg.SetPartyId (McpttFloorMsgFieldGrantedPartyId (machine->GetDualControl ()->GetStoredSsrc ()));
@@ -361,7 +362,6 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator
       machine->SendToAllExcept (takenMsg, machine->GetStoredSsrc ());
 
       machine->ChangeState (McpttOnNetworkFloorArbitratorStateTaken::GetInstance ());
-      machine->GetDualControl ()->Terminate ();
     }
 }
 
