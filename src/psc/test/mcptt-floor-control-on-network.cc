@@ -59,9 +59,9 @@ protected:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
 
 private:
-  bool m_ue1TxFloorRelease;
-  bool m_ue1RxFloorAck;
-  bool m_ue2RxFloorIdle;
+  bool m_ue1TxFloorRelease {false};
+  bool m_ue1RxFloorAck {false};
+  bool m_ue2RxFloorIdle {false};
 };
 
 /**
@@ -83,13 +83,13 @@ protected:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
 
 private:
-  bool m_ue1TxFloorRelease;
-  bool m_ue1RxFloorAck;
-  bool m_ue2RxFloorIdle;
-  bool m_ue2TxFloorAck1;
-  bool m_ue2TxFloorRequest;
-  bool m_ue2RxFloorGranted;
-  bool m_ue2TxFloorAck2;
+  bool m_ue1TxFloorRelease {false};
+  bool m_ue1RxFloorAck {false};
+  bool m_ue2RxFloorIdle {false};
+  bool m_ue2TxFloorAck1 {false};
+  bool m_ue2TxFloorRequest {false};
+  bool m_ue2RxFloorGranted {false};
+  bool m_ue2TxFloorAck2 {false};
 };
 
 /**
@@ -111,12 +111,12 @@ protected:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
 
 private:
-  bool m_ue2TxFloorRequest;
-  bool m_ue1RxFloorRevoke;
-  bool m_ue1TxFloorRelease;
-  bool m_ue2RxFloorGranted;
-  bool m_ue2TxFloorAck;
-  bool m_ue1RxFloorTaken;
+  bool m_ue2TxFloorRequest {false};
+  bool m_ue1RxFloorRevoke {false};
+  bool m_ue1TxFloorRelease {false};
+  bool m_ue2RxFloorGranted {false};
+  bool m_ue2TxFloorAck {false};
+  bool m_ue1RxFloorTaken {false};
 };
 
 /**
@@ -138,8 +138,8 @@ protected:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
 
 private:
-  bool m_ue2TxFloorRequest;
-  bool m_ue2RxFloorDeny;
+  bool m_ue2TxFloorRequest {false};
+  bool m_ue2RxFloorDeny {false};
 };
 
 /**
@@ -161,12 +161,12 @@ protected:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
 
 private:
-  bool m_ue2TxFloorRequest;
-  bool m_ue2RxFloorQueuePositionInfo;
-  bool m_ue2TxFloorQueuePositionRequest;
-  bool m_ue2RxFloorQueuePositionInfoTwo;
-  bool m_ue2TxFloorRelease;
-  bool m_ue2RxFloorAck;
+  bool m_ue2TxFloorRequest {false};
+  bool m_ue2RxFloorQueuePositionInfo {false};
+  bool m_ue2TxFloorQueuePositionRequest {false};
+  bool m_ue2RxFloorQueuePositionInfoTwo {false};
+  bool m_ue2TxFloorRelease {false};
+  bool m_ue2RxFloorAck {false};
 };
 
 /**
@@ -188,13 +188,13 @@ protected:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
 
 private:
-  bool m_ue2TxFloorRequest;
-  bool m_ue2RxFloorQueuePositionInfo;
-  bool m_ue2TxFloorAck1;
-  bool m_ue1TxFloorRelease;
-  bool m_ue1RxFloorAck;
-  bool m_ue2RxFloorGranted;
-  bool m_ue2TxFloorAck2;
+  bool m_ue2TxFloorRequest {false};
+  bool m_ue2RxFloorQueuePositionInfo {false};
+  bool m_ue2TxFloorAck1 {false};
+  bool m_ue1TxFloorRelease {false};
+  bool m_ue1RxFloorAck {false};
+  bool m_ue2RxFloorGranted {false};
+  bool m_ue2TxFloorAck2 {false};
 };
 
 class McpttTestSuiteFloorControlOnNetwork : public TestSuite
