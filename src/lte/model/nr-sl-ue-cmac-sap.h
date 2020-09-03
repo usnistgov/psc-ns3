@@ -109,6 +109,12 @@ public:
    *        for sensing based UE autonomous resource selection (see TS 38.321)
    */
   virtual void SetSlProbResoKeep (uint8_t prob) = 0;
+  /**
+   * \brief Set Sidelink source layer 2 id
+   *
+   * \param srcL2Id The Sidelink layer 2 id of the source
+   */
+  virtual void SetSourceL2Id (uint32_t srcL2Id) = 0;
 };
 
 /**
@@ -139,6 +145,7 @@ public:
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
   virtual void SetSlProbResoKeep (uint8_t prob);
+  virtual void SetSourceL2Id (uint32_t srcL2Id);
 
 private:
   C* m_mac; ///< the MAC class
@@ -189,6 +196,11 @@ void MemberNrSlUeCmacSapProvider<C>::SetSlProbResoKeep (uint8_t prob)
   m_mac->DoSetSlProbResoKeep (prob);
 }
 
+template <class C>
+void MemberNrSlUeCmacSapProvider<C>::SetSourceL2Id (uint32_t srcL2Id)
+{
+  m_mac->DoSetSourceL2Id (srcL2Id);
+}
 
 
 /**

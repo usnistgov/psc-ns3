@@ -3514,6 +3514,17 @@ LteUeRrc::DoPopulatePools ()
 }
 
 void
+LteUeRrc::DoSetSourceL2Id (uint32_t srcL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  m_srcL2Id = srcL2Id;
+  for (const auto it : GetNrSlBwpIdContainer ())
+    {
+      m_nrSlUeCmacSapProvider.at (it)->SetSourceL2Id (srcL2Id);
+    }
+}
+
+void
 LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
 {
   NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive);
@@ -3538,7 +3549,7 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
 
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
           NS_LOG_INFO ("Created new TX SLRB for remote id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
@@ -3628,7 +3639,7 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   slDrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
   slDrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
 
-  if (m_nrSlRrcSapUser->GetSourceL2Id () == srcL2Id)
+  if (m_srcL2Id == srcL2Id)
     {
       //Bearer for transmission
       m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
@@ -3695,7 +3706,7 @@ LteUeRrc::PopulateNrSlPools ()
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_DEBUG ("Adding pool for IMSI " << m_imsi << " srcL2 Id " << m_nrSlRrcSapUser->GetSourceL2Id ());
+  NS_LOG_DEBUG ("Adding pool for IMSI " << m_imsi << " srcL2 Id " << m_srcL2Id);
 
   const LteRrcSap::SidelinkPreconfigNr preConfig = m_nrSlRrcSapUser->GetNrSlPreconfiguration ();
 

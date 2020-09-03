@@ -1485,6 +1485,12 @@ private:
    *
    */
   void DoPopulatePools ();
+  /**
+   * \brief Set Sidelink source layer 2 id
+   *
+   * \param srcL2Id The Sidelink layer 2 id of the source
+   */
+  void DoSetSourceL2Id (uint32_t srcL2Id);
 
   //Internal private methods and member variables
 private:
@@ -1542,9 +1548,7 @@ private:
   NrSlPdcpSapProvider *m_nrSlPdcpSapProvider {nullptr}; //!< SAP interface to call methods of PDCP instance
   NrSlPdcpSapUser *m_nrSlPdcpSapUser; //!< SAP interface to receive calls from PDCP instance
   NrSlMacSapProvider *m_nrSlMacSapProvider; //!< SAP interface to be given to newly created RLC instance of RLC
-
-
-
+  uint32_t m_srcL2Id {std::numeric_limits <uint32_t>::max ()}; //!< The NR Sidelink Source L2 id;
 
 }; // end of class LteUeRrc
 

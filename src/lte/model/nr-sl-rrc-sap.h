@@ -89,12 +89,6 @@ public:
    */
   virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id) = 0;
   /**
-   * \brief Get Sidelink source layer 2 id
-   *
-   * \return The Sidelink layer 2 id of the source
-   */
-  virtual uint32_t GetSourceL2Id () = 0 ;
-  /**
    * \brief Get next LCID for setting up NR SL DRB towards the given destination
    *
    * As per, table 6.2.4-1 of 38.321 LCID for SL-SCH range from 4-19, i.e.,
@@ -133,6 +127,12 @@ public:
    *
    */
   virtual void PopulatePools () = 0 ;
+  /**
+   * \brief Set Sidelink source layer 2 id
+   *
+   * \param srcL2Id The Sidelink layer 2 id of the source
+   */
+  virtual void SetSourceL2Id (uint32_t srcL2Id) = 0;
 
 
 };
@@ -166,7 +166,6 @@ public:
   virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
   virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
-  virtual uint32_t GetSourceL2Id ();
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
 
 
@@ -231,13 +230,6 @@ MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t dstL2Id)
 }
 
 template <class C>
-uint32_t
-MemberNrSlUeRrcSapUser<C>::GetSourceL2Id ()
-{
-  return m_owner->DoGetSourceL2Id ();
-}
-
-template <class C>
 uint8_t
 MemberNrSlUeRrcSapUser<C>::GetNextLcid (uint32_t dstL2Id)
 {
@@ -262,7 +254,8 @@ public:
   MemberNrSlUeRrcSapProvider (C* owner);
 
   // inherited from NRSlUeRrcSapProvider
-  virtual void PopulatePools () ;
+  virtual void PopulatePools ();
+  virtual void SetSourceL2Id (uint32_t srcL2Id);
 
 
 private:
@@ -287,6 +280,13 @@ void
 MemberNrSlUeRrcSapProvider<C>::PopulatePools ()
 {
   m_owner->DoPopulatePools ();
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapProvider<C>::SetSourceL2Id (uint32_t srsL2Id)
+{
+  m_owner->DoSetSourceL2Id (srsL2Id);
 }
 
 

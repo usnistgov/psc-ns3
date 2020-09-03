@@ -98,6 +98,8 @@ NrSlUeRrc::SetSourceL2Id (uint32_t srcL2Id)
 {
   NS_LOG_FUNCTION (this);
   m_srcL2Id = srcL2Id;
+  //Set source L2 id in RCC
+  m_nrSlUeRrcSapProvider->SetSourceL2Id (srcL2Id);
 }
 
 uint32_t
