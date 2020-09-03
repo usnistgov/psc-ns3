@@ -9,6 +9,27 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3-dev
+=============
+
+New user-visible features
+-------------------------
+- (build system) Added "--enable-asserts" and "--enable-logs" to waf configure,
+   to selectively enable asserts and/or logs in release and optimized builds.
+- (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno' congestion control).
+- (traffic-control) Added, to PIE queue disc, queue delay calculation using
+  timestamp feature (Linux default behavior), cap drop adjustment feature
+  (Section 5.5 of RFC 8033), ECN (Section 5.1 of RFC 8033) and derandomization
+  feature (Section 5.4 of RFC 8033).
+- (traffic-control) Add support for L4S mode to CoDel and FqCoDel queue discs
+- (tcp) Support for dynamic pacing in TCP.
+
+Bugs fixed
+----------
+- (traffic-control) #225 - Do not mark packet twice within a CoDel queue
+- (mesh) - Enable possible use with SpectrumWifiPhy
+- (lte) #224 - The scheduled SendMeasurementReport() event doesn't cancel after link failure detection
+
 Release 3.31
 ============
 

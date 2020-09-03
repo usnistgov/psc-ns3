@@ -39,6 +39,7 @@ stages:
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
     - ./waf
+    - ./test.py
   cache:
     paths:
       - $CCACHE_BASEDIR_VALUE/
@@ -49,6 +50,11 @@ stages:
 # Defines the per-commit jobs. They are executed for any branch
 per-commit-compile-debug:
   extends: .base-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -59,6 +65,11 @@ per-commit-compile-debug:
 
 per-commit-compile-release:
   extends: .base-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -69,6 +80,11 @@ per-commit-compile-release:
 
 per-commit-compile-optimized:
   extends: .base-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -85,3 +101,4 @@ include:
   - 'utils/tests/gitlab-ci-clang.yml'
   - 'utils/tests/gitlab-ci-test.yml'
   - 'utils/tests/gitlab-ci-doc.yml'
+  - 'utils/tests/gitlab-ci-pybindgen.yml'

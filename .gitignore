@@ -16,7 +16,6 @@
 *.routes
 *.tr
 [D|U]l[A-Z][a-z]*Stats.txt
-seventh-packet-byte-count.png
 
 \#*#
 ~*
@@ -37,3 +36,5 @@ build-dir/
 build/
 /.cproject
 /.project
+
+version.cache

@@ -295,7 +295,6 @@ void OnOffApplication::ScheduleNextTx ()
   else
     { // All done, cancel any pending events
       StopApplication ();
-      exit(1);
     }
 }
 

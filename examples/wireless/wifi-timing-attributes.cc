@@ -57,21 +57,13 @@ int main (int argc, char *argv[])
 {
   uint32_t slot = 9; //slot time in microseconds
   uint32_t sifs = 10; //SIFS duration in microseconds
-  uint32_t ackTimeout = 88; //Ack timeout duration in microseconds
-  uint32_t ctsTimeout = 88; //CTS timeout duration in microseconds
-  uint32_t rifs = 2; //RIFS duration in microseconds
-  uint32_t basicBlockAckTimeout = 286; //Basic BlockAck timeout duration in microseconds
-  uint32_t compressedBlockAckTimeout = 112; //Compressed BlockAck timeout duration in microseconds
+  uint32_t pifs = 19; //PIFS duration in microseconds
   double simulationTime = 10; //simulation time in seconds
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("slot", "Slot time in microseconds", slot);
   cmd.AddValue ("sifs", "SIFS duration in microseconds", sifs);
-  cmd.AddValue ("ackTimeout", "Ack timeout duration in microseconds", ackTimeout);
-  cmd.AddValue ("ctsTimeout", "CTS timeout duration in microseconds", ctsTimeout);
-  cmd.AddValue ("rifs", "RIFS duration in microseconds", rifs);
-  cmd.AddValue ("basicBlockAckTimeoutTimeout", "Basic BlockAck timeout duration in microseconds", basicBlockAckTimeout);
-  cmd.AddValue ("compressedBlockAckTimeoutTimeout", "Compressed BlockAck timeout duration in microseconds", compressedBlockAckTimeout);
+  cmd.AddValue ("pifs", "PIFS duration in microseconds", pifs);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.Parse (argc,argv);
 
@@ -112,12 +104,9 @@ int main (int argc, char *argv[])
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
   //Once install is done, we overwrite the standard timing values
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/Slot", TimeValue (MicroSeconds (slot)));
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/Sifs", TimeValue (MicroSeconds (sifs)));
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/AckTimeout", TimeValue (MicroSeconds (ackTimeout)));
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/Rifs", TimeValue (MicroSeconds (rifs)));
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BasicBlockAckTimeout", TimeValue (MicroSeconds (basicBlockAckTimeout)));
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/CompressedBlockAckTimeout", TimeValue (MicroSeconds (compressedBlockAckTimeout)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/Slot", TimeValue (MicroSeconds (slot)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/Sifs", TimeValue (MicroSeconds (sifs)));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/Pifs", TimeValue (MicroSeconds (pifs)));
 
   //Mobility
   MobilityHelper mobility;

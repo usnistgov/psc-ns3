@@ -112,53 +112,11 @@ public:
    */
   void SetAddress (Mac48Address ad);
   /**
-   * Set Ack timeout of this MacLow.
-   *
-   * \param ackTimeout Ack timeout of this MacLow
-   */
-  void SetAckTimeout (Time ackTimeout);
-  /**
-   * Set Basic BlockAck timeout of this MacLow.
-   *
-   * \param blockAckTimeout Basic BlockAck timeout of this MacLow
-   */
-  void SetBasicBlockAckTimeout (Time blockAckTimeout);
-  /**
-   * Set Compressed BlockAck timeout of this MacLow.
-   *
-   * \param blockAckTimeout Compressed BlockAck timeout of this MacLow
-   */
-  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
-  /**
    * Enable or disable CTS-to-self capability.
    *
    * \param enable Enable or disable CTS-to-self capability
    */
   void SetCtsToSelfSupported (bool enable);
-  /**
-   * Set Short Interframe Space (SIFS) of this MacLow.
-   *
-   * \param sifs SIFS of this MacLow
-   */
-  void SetSifs (Time sifs);
-  /**
-   * Set Reduced Interframe Space (RIFS) of this MacLow.
-   *
-   * \param rifs RIFS of this MacLow
-   */
-  void SetRifs (Time rifs);
-  /**
-   * Set slot duration of this MacLow.
-   *
-   * \param slotTime slot duration of this MacLow
-   */
-  void SetSlotTime (Time slotTime);
-  /**
-   * Set PCF Interframe Space (PIFS) of this MacLow.
-   *
-   * \param pifs PIFS of this MacLow
-   */
-  void SetPifs (Time pifs);
   /**
    * \param interval the expected interval between two beacon transmissions.
    */
@@ -190,24 +148,6 @@ public:
    */
   Mac48Address GetAddress (void) const;
   /**
-   * Return Ack timeout of this MacLow.
-   *
-   * \return Ack timeout
-   */
-  Time GetAckTimeout (void) const;
-  /**
-   * Return Basic BlockAck timeout of this MacLow.
-   *
-   * \return Basic BlockAck timeout
-   */
-  Time GetBasicBlockAckTimeout (void) const;
-  /**
-   * Return Compressed BlockAck timeout of this MacLow.
-   *
-   * \return Compressed BlockAck timeout
-   */
-  Time GetCompressedBlockAckTimeout (void) const;
-  /**
    * Return Short Interframe Space (SIFS) of this MacLow.
    *
    * \return SIFS
@@ -225,12 +165,6 @@ public:
    * \return PIFS
    */
   Time GetPifs (void) const;
-  /**
-   * Return Reduced Interframe Space (RIFS) of this MacLow.
-   *
-   * \return RIFS
-   */
-  Time GetRifs (void) const;
   /**
    * \return the expected interval between two beacon transmissions.
    */
@@ -933,13 +867,6 @@ private:
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
   Mac48Address m_bssid;                     //!< BSSID address (Mac48Address)
-  Time m_ackTimeout;                        //!< Ack timeout duration
-  Time m_basicBlockAckTimeout;              //!< Basic BlockAck timeout duration
-  Time m_compressedBlockAckTimeout;         //!< Compressed BlockAck timeout duration
-  Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
-  Time m_slotTime;                          //!< Slot duration
-  Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration
-  Time m_rifs;                              //!< Reduced Interframe Space (RIFS) duration
 
   Time m_beaconInterval;   //!< Expected interval between two beacon transmissions
   Time m_cfpMaxDuration;   //!< CFP max duration

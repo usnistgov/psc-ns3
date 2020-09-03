@@ -391,8 +391,86 @@ During congestion avoidance, cwnd is incremented by roughly 1 full-sized
 segment per round-trip time (RTT), and for each congestion event, the slow
 start threshold is halved.
 
-HighSpeed
+Linux Reno
 ^^^^^^^^^^
+TCP Linux Reno (class :cpp:class:`TcpLinuxReno`) is designed to provide a
+Linux-like implementation of
+TCP NewReno. The implementation of class :cpp:class:`TcpNewReno1 in ns-3
+follows RFC standards, and increases cwnd more conservatively than does Linux Reno.
+Linux Reno modifies slow start and congestion avoidance algorithms to 
+increase cwnd based on the number of bytes being acknowledged by each 
+arriving ACK, rather than by the number of ACKs that arrive.  Another major
+difference in implementation is that Linux maintains the congestion window
+in units of segments, while the RFCs define the congestion window in units of
+bytes.
+
+In slow start phase, on each incoming ACK at the TCP sender side cwnd 
+is increased by the number of previously unacknowledged bytes ACKed by the
+incoming acknowledgment. In contrast, in ns-3 NewReno, cwnd is increased
+by one segment per acknowledgment.  In standards terminology, this
+difference is referred to as Appropriate Byte Counting (RFC 3465); Linux
+follows Appropriate Byte Counting while ns-3 NewReno does not.
+
+.. math:: cwnd += segAcked * segmentSize
+   :label: linuxrenoslowstart
+
+.. math:: cwnd += segmentSize
+   :label: newrenoslowstart
+
+In congestion avoidance phase, the number of bytes that have been ACKed at
+the TCP sender side are stored in a 'bytes_acked' variable in the TCP control
+block. When 'bytes_acked' becomes greater than or equal to the value of the
+cwnd, 'bytes_acked' is reduced by the value of cwnd. Next, cwnd is incremented
+by a full-sized segment (SMSS).  In contrast, in ns-3 NewReno, cwnd is increased
+by (1/cwnd) with a rounding off due to type casting into int.
+
+.. code-block:: c++
+
+   if (m_cWndCnt >= w)
+    {
+      uint32_t delta = m_cWndCnt / w;
+
+      m_cWndCnt -= delta * w;
+      tcb->m_cWnd += delta * tcb->m_segmentSize;
+      NS_LOG_DEBUG ("Subtracting delta * w from m_cWndCnt " << delta * w);
+    }
+
+   :label: linuxrenocongavoid
+
+.. code-block:: c++
+
+   if (segmentsAcked > 0)
+    {
+      double adder = static_cast<double> (tcb->m_segmentSize * tcb->m_segmentSize) / tcb->m_cWnd.Get ();
+      adder = std::max (1.0, adder);
+      tcb->m_cWnd += static_cast<uint32_t> (adder);
+      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd <<
+                   " ssthresh " << tcb->m_ssThresh);
+    }
+
+   :label: newrenocongavoid
+
+So, there are two main difference between the TCP Linux Reno and TCP NewReno
+in ns-3:
+1) In TCP Linux Reno, delayed acknowledgement configuration does not affect
+congestion window growth, while in TCP NewReno, delayed acknowledgments cause
+a slower congestion window growth.
+2) In congestion avoidance phase, the arithmetic for counting the number of 
+segments acked and deciding when to increment the cwnd is different for TCP
+Linux Reno and TCP NewReno.
+
+Following graphs shows the behavior of window growth in TCP Linux Reno and
+TCP NewReno with delayed acknowledgement of 2 segments:
+
+.. _fig-ns3-new-reno-vs-ns3-linux-reno:
+
+.. figure:: figures/ns3-new-reno-vs-ns3-linux-reno.*
+   :align: center
+
+   ns-3 TCP NewReno v/s ns-3 TCP Linux Reno
+
+HighSpeed
+^^^^^^^^^
 TCP HighSpeed is designed for high-capacity channels or, in general, for
 TCP connections with large congestion windows.
 Conceptually, with respect to the standard TCP, HighSpeed makes the
@@ -890,10 +968,11 @@ environment. Some differences were noted:
 * Linux maintains its congestion window in segments and not bytes, and
   the arithmetic is not floating point, so some differences in the
   evolution of congestion window have been observed.
-* Linux uses pacing, while ns-3 currently does not provide a dynamically
-  adjusting pacing implementation; segments are sent out at the line rate
-  unless the user has enabled pacing and set the maximum pacing rate to
-  less than the line rate.
+* Linux uses pacing, where packets to be sent are paced out at regular
+  intervals. However, if at any instant the number of segments that can 
+  be sent are less than two, Linux does not pace them and instead sends 
+  them back-to-back. Currently, ns-3 paces out all packets eligible to 
+  be sent in the same manner.
 * Linux implements a state called 'Congestion Window Reduced' (CWR) 
   immediately following a cwnd reduction, and performs proportional rate
   reduction similar to how a fast retransmit event is handled.  During
@@ -1072,6 +1151,81 @@ The following issues are yet to be addressed:
    outgoing TCP sessions (e.g. a TCP may perform ECN echoing but not set the
    ECT codepoints on its outbound data segments).
 
+Support for Dynamic Pacing
+++++++++++++++++++++++++++
+
+TCP pacing refers to the sender-side practice of scheduling the transmission
+of a burst of eligible TCP segments across a time interval such as
+a TCP RTT, to avoid or reduce bursts.  Historically,
+TCP used the natural ACK clocking mechanism to pace segments, but some
+network paths introduce aggregation (bursts of ACKs arriving) or ACK
+thinning, either of which disrupts ACK clocking.
+Some latency-sensitive congestion controls under development (Prague, BBR)
+require pacing to operate effectively.
+
+Until recently, the state of the art in Linux was to support pacing in one
+of two ways:
+
+1) fq/pacing with sch_fq
+2) TCP internal pacing
+
+The presentation by Dumazet and Cheng at IETF 88 summarizes:
+https://www.ietf.org/proceedings/88/slides/slides-88-tcpm-9.pdf
+
+The first option was most often used when offloading (TSO) was enabled and
+when the sch_fq scheduler was used at the traffic control (qdisc) sublayer.  In
+this case, TCP was responsible for setting the socket pacing rate, but
+the qdisc sublayer would enforce it.  When TSO was enabled, the kernel
+would break a large burst into smaller chunks, with dynamic sizing based
+on the pacing rate, and hand off the segments to the fq qdisc for
+pacing.
+
+The second option was used if sch_fq was not enabled; TCP would be
+responsible for internally pacing.
+
+In 2018, Linux switched to an Early Departure Model (EDM): https://lwn.net/Articles/766564/.
+
+TCP pacing in Linux was added in kernel 3.12, and authors chose to allow
+a pacing rate of 200% against the current rate, to allow probing for
+optimal throughput even during slow start phase.  Some refinements were
+added in https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=43e122b014c9, 
+in which Google reported that it was better to apply
+a different ratio (120%) in Congestion Avoidance phase.  Furthermore,
+authors found that after cwnd reduction, it was helpful to become more
+conservative and switch to the conservative ratio (120%) as soon as 
+cwnd >= ssthresh/2, as the initial ramp up (when ssthresh is infinite) still
+allows doubling cwnd every other RTT.  Linux also does not pace the initial
+window (IW), typically 10 segments in practice.
+
+Linux has also been observed to not pace if the number of eligible segments
+to be sent is exactly two; they will be sent back to back.  If three or
+more, the first two are sent immediately, and additional segments are paced
+at the current pacing rate.     
+
+In ns-3, the model is as follows.  There is no TSO/sch_fq model; only
+internal pacing according to current Linux policy.
+
+Pacing may be enabled for any TCP congestion control, and a maximum
+pacing rate can be set.  Furthermore, dynamic pacing is enabled for
+all TCP variants, according to the following guidelines.
+
+* Pacing of the initial window (IW) is not done by default but can be
+  separately enabled.
+
+* Pacing of the initial slow start, after IW, is done according to the
+  pacing rate of 200% of the current rate, to allow for window growth
+  This pacing rate can be configured to a different value than 200%.
+
+* Pacing of congestion avoidance phase is done at a pacing rate of 120% of
+  current rate.  This can be configured to a different value than 120%.
+
+* Pacing of subsequent slow start is done according to the following
+  heuristic.  If cwnd < ssthresh/2, such as after a timeout or idle period,
+  pace at the slow start rate (200%).  Otherwise, pace at the congestion
+  avoidance rate.
+
+Dynamic pacing is demonstrated by the example program ``examples/tcp/tcp-pacing.cc``. 
+
 Validation
 ++++++++++
 
@@ -1110,6 +1264,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-zero-window-test:** Unit test persist behavior for zero window conditions
 * **tcp-close-test:** Unit test on the socket closing: both receiver and sender have to close their socket when all bytes are transferred
 * **tcp-ecn-test:** Unit tests on Explicit Congestion Notification
+* **tcp-pacing-test:** Unit tests on dynamic TCP pacing rate
 
 Several tests have dependencies outside of the ``internet`` module, so they
 are located in a system test directory called ``src/test/ns3tcp``. Three
@@ -1127,6 +1282,37 @@ disabled if NSC is not enabled in the build.
 Several TCP validation test results can also be found in the
 `wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
+
+The ns-3 implementation of TCP Linux Reno was validated against the NewReno
+implementation of Linux kernel 4.4.0 using ns-3 Direct Code Execution (DCE).
+DCE is a framework which allows the users to run kernel space protocol inside
+ns-3 without changing the source code.
+
+In this validation, cwnd traces of DCE Linux Reno was compared to ns-3 Linux Reno
+and NewReno for delayed acknowledgement of 1 segment. And it was observed that
+cwnd traces for ns-3 Linux Reno was closely overlapping with DCE Linux Reno whereas
+for ns-3 NewReno there was deviation in congestion avoidance phase.
+
+.. _fig-dce-Linux-reno-vs-ns3-linux-reno:
+
+.. figure:: figures/dce-linux-reno-vs-ns3-linux-reno.*
+   :align: center
+
+   DCE Linux Reno v/s ns-3 Linux Reno
+
+.. _fig-dce-Linux-reno-vs-ns3-new-reno:
+
+.. figure:: figures/dce-linux-reno-vs-ns3-new-reno.*
+   :align: center
+
+   DCE Linux Reno v/s ns-3 Linux Reno
+
+The difference in the cwnd at very early stage of this flow is because of the
+way cwnd are plotted. As n-3 provides a trace source for cwnd, for ns-3 Linux
+Reno cwnd is obtained everytime cwnd value changes whereas for DCE Linux Reno
+we donot have trace source. So we use "ss" command of Linux kernel to obtain
+cwnd values. The "ss" runs at a interval of 0.5 seconds, so cwnd is obtained after
+every 0.5 seconds.
 
 TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
 module documentation.

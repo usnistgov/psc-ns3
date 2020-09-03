@@ -54,22 +54,10 @@ public:
   virtual ~RegularWifiMac ();
 
   // Implementations of pure virtual methods.
-  void SetSlot (Time slotTime);
-  void SetSifs (Time sifs);
-  void SetEifsNoDifs (Time eifsNoDifs);
-  void SetPifs (Time pifs);
-  void SetRifs (Time rifs);
-  void SetAckTimeout (Time ackTimeout);
   void SetShortSlotTimeSupported (bool enable);
   void SetSsid (Ssid ssid);
   void SetAddress (Mac48Address address);
   void SetPromisc (void);
-  Time GetRifs (void) const;
-  Time GetPifs (void) const;
-  Time GetSifs (void) const;
-  Time GetSlot (void) const;
-  Time GetEifsNoDifs (void) const;
-  Time GetAckTimeout (void) const;
   bool GetShortSlotTimeSupported (void) const;
   Ssid GetSsid (void) const;
   Mac48Address GetAddress (void) const;
@@ -80,6 +68,7 @@ public:
   Ptr<WifiPhy> GetWifiPhy (void) const;
   void ResetWifiPhy (void);
   virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
+  void ConfigureStandard (WifiPhyStandard standard);
 
   /**
    * This type defines the callback of a higher layer that a
@@ -95,14 +84,6 @@ public:
   void SetLinkUpCallback (Callback<void> linkUp);
   void SetLinkDownCallback (Callback<void> linkDown);
 
-  /* Next functions are not pure virtual so non-QoS WifiMacs are not
-   * forced to implement them.
-   */
-  void SetBasicBlockAckTimeout (Time blockAckTimeout);
-  Time GetBasicBlockAckTimeout (void) const;
-  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
-  Time GetCompressedBlockAckTimeout (void) const;
-
   // Should be implemented by child classes
   virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
 
@@ -113,22 +94,6 @@ public:
    *               false otherwise
    */
   void SetCtsToSelfSupported (bool enable);
-  /**
-   * Enable or disable RIFS feature.
-   *
-   * \param enable true if RIFS is to be supported,
-   *               false otherwise
-   * \deprecated
-   */
-  void SetRifsSupported (bool enable);
-  /**
-   * \return whether the device supports RIFS capability.
-   *
-   * \return true if short RIFS is supported,
-   *         false otherwise.
-   * \deprecated
-   */
-  bool GetRifsSupported (void) const;
   /**
    * \param bssid the BSSID of the network that this device belongs to.
    */
@@ -224,20 +189,6 @@ protected:
    * \return a smart pointer to QosTxop
    */
   Ptr<QosTxop> GetBKQueue (void) const;
-
-  /**
-   * \param standard the PHY standard to be used
-   *
-   * This method is called by ns3::WifiMac::ConfigureStandard to
-   * complete the configuration process for a requested PHY standard.
-   *
-   * This method may be overridden by a derived class (e.g., in order
-   * to apply DCF or EDCA parameters specific to the usage model it is
-   * dealing with), in which case the reimplementation may choose to
-   * deal with certain values in the WifiPhyStandard enumeration, and
-   * chain up to this implementation to deal with the remainder.
-   */
-  void FinishConfigureStandard (WifiPhyStandard standard);
 
   /**
    * \param cwMin the minimum contention window size
@@ -505,7 +456,6 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
-  bool m_rifsSupported; ///< flag whether RIFS is supported (deprecated)
 };
 
 } //namespace ns3
