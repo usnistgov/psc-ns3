@@ -79,7 +79,7 @@ McpttCallMachineGrpBroadcast::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallMachineGrpBroadcast::m_stateChangeTrace),
-                     "ns3::McpttCallMachineGrpBroadcast::StateChangeTrace")
+                     "ns3::McpttCallMachine::StateChangeTracedCallback")
    ;
 
   return tid;
@@ -158,6 +158,11 @@ McpttCallMachineGrpBroadcast::ChangeState (Ptr<McpttCallMachineGrpBroadcastState
       NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
+  std::string selected = "False";
+  if (GetCall ()->GetCallId () == GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
 
   McpttEntityId stateId = state->GetInstanceStateId ();
   Ptr<McpttCallMachineGrpBroadcastState> curr = GetState ();
@@ -173,7 +178,7 @@ McpttCallMachineGrpBroadcast::ChangeState (Ptr<McpttCallMachineGrpBroadcastState
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      m_stateChangeTrace (GetCall ()->GetOwner ()->GetUserId (), m_call->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (m_call->GetOwner ()->GetUserId (), m_call->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

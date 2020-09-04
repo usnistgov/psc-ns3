@@ -92,9 +92,9 @@ McpttStateMachineStats::GetInstanceTypeId (void) const
 }
 
 void
-McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
+McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
 {
-  NS_LOG_FUNCTION (this << userId << callId << typeId << oldStateName << newStateName);
+  NS_LOG_FUNCTION (this << userId << callId << selected << typeId << oldStateName << newStateName);
   if (m_firstCb == true)
     {
       m_firstCb = false;
@@ -103,6 +103,7 @@ McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const s
       m_outputFile << std::setw (9) << "time(s)";
       m_outputFile << std::setw (7) << "userid";
       m_outputFile << std::setw (7) << "callid";
+      m_outputFile << std::setw (9) << "selected";
       m_outputFile << std::setw (38) << "typeid";
       m_outputFile << std::setw (36) << "oldstate";
       m_outputFile << std::setw (36) << "newstate";
@@ -111,6 +112,7 @@ McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const s
   m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
   m_outputFile << std::setw (6) << userId;
   m_outputFile << std::setw (6) << callId;
+  m_outputFile << std::setw (9) << selected;
   m_outputFile << std::setw (40) << typeId.substr (5); // trim leading 'ns3::'
   m_outputFile << std::setw (36) << oldStateName;
   m_outputFile << std::setw (36)  << newStateName;

@@ -266,7 +266,7 @@ private:
  Ptr<McpttCallMachineGrpBasic> m_owner; //!< The owner of this call type machine
  uint8_t m_priority; //!< The ProSe per-packet priority.
  bool m_started; //!< The flag that indicates if the machine has been started.
- TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  McpttEntityId m_stateId; //!< The current state ID.
  Ptr<McpttTimer> m_tfg11; //!< The timer TFG11.
  Ptr<McpttTimer> m_tfg12; //!< The timer TFG12.

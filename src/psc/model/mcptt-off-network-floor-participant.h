@@ -373,7 +373,7 @@ private:
  bool m_started; //!< A flag that indicates whether or not the floor machine has started.
  Ptr<McpttOffNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change call back.
- TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  uint32_t m_candidateSsrc; //!< The SSRC of the candidate arbitrator.
  uint32_t m_currentSsrc; //!< The SSRC of the current arbitrator.
  Ptr<McpttTimer> m_t201; //!< The timer T201.

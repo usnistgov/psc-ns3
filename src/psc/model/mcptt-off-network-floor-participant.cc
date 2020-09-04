@@ -113,7 +113,7 @@ McpttOffNetworkFloorParticipant::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                       "The trace for capturing state changes.",
                       MakeTraceSourceAccessor (&McpttOffNetworkFloorParticipant::m_stateChangeTrace),
-                      "ns3::McpttOffNetworkFloorParticipant::StateChangeTrace")
+                      "ns3::McpttFloorParticipant::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -186,6 +186,11 @@ McpttOffNetworkFloorParticipant::ChangeState (Ptr<McpttOffNetworkFloorParticipan
       NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
+  std::string selected = "False";
+  if (GetCall ()->GetCallId () == GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
 
   McpttEntityId stateId = state->GetInstanceStateId ();
   Ptr<McpttOffNetworkFloorParticipantState> curr = GetState ();
@@ -218,7 +223,7 @@ McpttOffNetworkFloorParticipant::ChangeState (Ptr<McpttOffNetworkFloorParticipan
         {
           m_stateChangeCb (curr->GetInstanceStateId (), state->GetInstanceStateId ());
         }
-      m_stateChangeTrace (m_call->GetOwner ()->GetUserId (), m_call->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (m_call->GetOwner ()->GetUserId (), m_call->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

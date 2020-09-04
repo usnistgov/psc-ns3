@@ -755,7 +755,7 @@ the background.
 Traces
 ######
 
-There are currently only three traces that can be activated by using the
+There are currently four traces that can be activated by using the
 ``ns3::McpttHelper``, and this can be done by following the example given
 below, after all the applications have been created.
 
@@ -764,23 +764,26 @@ below, after all the applications have been created.
   NS_LOG_INFO ("Enabling MCPTT traces...");
   mcpttHelper.EnableMsgTraces (); // Enable message trace
   mcpttHelper.EnableStateMachineTraces (); // Enable state trace
-  mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt_m2e_latency.txt");
+  mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+  mcpttHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
 
 The ``ns3::McpttMsgStats`` class is used for tracing MCPTT messages at
 the application layer and produces a file with the default name
-"mcptt_msg_stats.txt" with the following file format.
+"mcptt-msg-stats.txt" with the following file format.
 
 .. sourcecode:: text
 
-  time(ms) nodeid callid  ssrc    rx/tx   bytes   message
+  time(s) nodeid callid ssrc selected  rx/tx bytes  message
 
 There may also be an additional field at the end of the row called "message"
 that will be included if the ``ns3::McpttMsgStats::IncludeMessageContent``
-attribute is set to "true". The "time(ms)" column describes the time (in
-milliseconds) at which a message was sent/received. The "nodeid" column
+attribute is set to "true". The "time(s)" column describes the time (in
+seconds) at which a message was sent/received. The "nodeid" column
 contains the ns3::Node ID value of the sender or receiver, and the 
 "callid" column contains the call ID for this message.  The "ssrc" field
-prints the RTP synchronization source (SSRC) field if available.  The  
+prints the RTP synchronization source (SSRC) field if available.  The
+"selected" column indicates whether the message was sent or received for
+the currently selected call on the client, or "N/A" for server messages. The  
 "rx/tx" column indicates if the message was sent or received, i.e. if "rx"
 is the value in the column then that means the message was received, while a
 value of "tx" indicates that the message was sent. The "bytes" columns
@@ -791,16 +794,19 @@ and values.
 
 The ``ns3::McpttStateMachineStats`` is used for tracing state machine state
 transitions and produces a file with the default name,
-"mcptt_state_machine_stats.txt", with the following format.
+"mcptt-state-machine-stats.txt", with the following format.
 
 .. sourcecode:: text
 
-  time(ms)	userid	callid	typeid	oldstate	newstate
+  time(s) userid callid selected     typeid     oldstate        newstate
 
-The "time(ms)" column describes the time (in milliseconds) at which the state
+The "time(s)" column describes the time (in seconds) at which the state
 transition took place. The "userid" column contains the user ID of the MCPTT
 user that the state machine is associated with. The "callid" column contains
-the ID of the call the state machine is associated with. The "typeid" column
+the ID of the call the state machine is associated with.  The 
+"selected" column indicates whether the message was sent or received for
+the currently selected call on the client, or "N/A" for server messages. The  
+"typeid" column
 contains the string representation of the state machine's ``ns3::TypeId``.
 The "oldstate" column contains the string representation of the
 ``ns3::McpttEntityId`` which gives the name of the state that the state
@@ -825,12 +831,12 @@ argument, the trace filename.  The output file is formatted as follows.
 
 .. sourcecode:: text
 
-  time(ms) nodeid callid  latency(ms)
-  5063    6       0       35
-  10134   7       0       35
+    time(s) ssrc nodeid callid latency(s)
+  3.727000    3      8      1   0.024010
+  3.727000    3      9      1   0.024010
 
-In the example, node ID 6 started to receive a talk spurt at time 5.063s, 
-on call ID 0, with a mouth-to-ear latency of 35 ms (see Figure 1 of 
+In the example, node ID 8 started to receive a talk spurt at time 3.727s, 
+on call ID 1, with a mouth-to-ear latency of 24 ms (see Figure 1 of 
 [NIST.IR.8206]_).
 
 The MCPTT Access time is defined as KPI1 in [TS22179]_, and measures the time

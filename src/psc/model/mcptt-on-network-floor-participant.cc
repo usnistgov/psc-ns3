@@ -114,7 +114,7 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                    "The trace for capturing state changes.",
                    MakeTraceSourceAccessor (&McpttOnNetworkFloorParticipant::m_stateChangeTrace),
-                   "ns3::McpttOnNetworkFloorParticipant::StateChangeTrace")
+                   "ns3::McpttFloorParticipant::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -215,13 +215,18 @@ McpttOnNetworkFloorParticipant::ChangeState (Ptr<McpttOnNetworkFloorParticipantS
 
   uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
   NS_LOG_LOGIC ("UserId " << userId << " moving from state " << m_state->GetName () << " to state " << state->GetName () << ".");
+  std::string selected = "False";
+  if (GetCall ()->GetCallId () == GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
   if (GetStateId () != state->GetInstanceStateId ())
     {
       McpttEntityId previousStateId = GetStateId ();
       m_state->Unselected (*this);
       SetState (state);
       state->Selected (*this);
-      m_stateChangeTrace (GetCall ()->GetOwner ()->GetUserId (), GetCall ()->GetCallId (), GetInstanceTypeId ().GetName (), previousStateId.GetName (), state->GetName ());
+      m_stateChangeTrace (GetCall ()->GetOwner ()->GetUserId (), GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), previousStateId.GetName (), state->GetName ());
     }
 }
 

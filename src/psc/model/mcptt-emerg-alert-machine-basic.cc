@@ -78,7 +78,7 @@ McpttEmergAlertMachineBasic::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttEmergAlertMachineBasic::m_stateChangeTrace),
-                     "ns3::McpttEmergAlertMachineBasic::StateChangeTrace")
+                     "ns3::McpttCallMachine::StateChangeTracedCallback")
    ;
 
   return tid;
@@ -114,6 +114,11 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
       NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
+  std::string selected = "False";
+  if (GetOwner ()->GetCall ()->GetCallId () == GetOwner ()->GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " canceling emergency alert.");
 
@@ -138,7 +143,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
         {
           m_stateChangeCb (false);
         }
-      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), McpttEmergAlertMachineBasic::GetTypeId ().GetName (), "'E2: Emergency State'", "'E1: Not in emergency state'");
+      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), "'E2: Emergency State'", "'E1: Not in emergency state'");
     }
 }
 
@@ -286,6 +291,11 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
       NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
+  std::string selected = "False";
+  if (GetOwner ()->GetCall ()->GetCallId () == GetOwner ()->GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " sending emergency alert.");
 
@@ -314,7 +324,7 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
         {
           m_stateChangeCb (true);
         }
-      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), GetInstanceTypeId ().GetName (), "'E1: Not in emergency state'", "'E2: Emergency State'");
+      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), "'E1: Not in emergency state'", "'E2: Emergency State'");
     }
 }
 

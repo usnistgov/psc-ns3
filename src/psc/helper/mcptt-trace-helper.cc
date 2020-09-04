@@ -199,9 +199,9 @@ McpttTraceHelper::DisableMouthToEarLatencyTrace (void)
 // Queued -> PTT button released : Abandoned ('A')
 //
 void
-McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const char* description)
+McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const char* description)
 {
-  NS_LOG_FUNCTION (userId << callId << description);
+  NS_LOG_FUNCTION (userId << callId << selected << description);
   std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
   auto it = m_accessTimeMap.find (key);
   if (it == m_accessTimeMap.end ())
@@ -339,9 +339,10 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
 // Section 6.2.4.2.2 (NOTE) is not traced for access time
 //
 void
-McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
+McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
 {
-  NS_LOG_FUNCTION (userId << callId << typeId << oldStateName << newStateName);
+  NS_LOG_FUNCTION (userId << callId << selected << typeId << oldStateName << newStateName);
+  // Note: 'selected' field is not used by this method
   std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
   auto it = m_accessTimeMap.find (key);
   if (it == m_accessTimeMap.end ())

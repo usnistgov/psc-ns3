@@ -69,7 +69,7 @@ McpttOnNetworkCallMachineClient::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttOnNetworkCallMachineClient::m_stateChangeTrace),
-                     "ns3::McpttOnNetworkCallMachineClient::StateChangeTrace")
+                     "ns3::McpttCallMachine::StateChangeTracedCallback")
    ;
   return tid;
 }
@@ -96,6 +96,11 @@ McpttOnNetworkCallMachineClient::SetState (Ptr<McpttOnNetworkCallMachineClientSt
   NS_LOG_FUNCTION (this << &state);
   McpttEntityId stateId = state->GetInstanceStateId ();
   McpttEntityId currStateId = m_state->GetInstanceStateId ();
+  std::string selected = "False";
+  if (GetCall ()->GetCallId () == GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
   if (m_started && (stateId != currStateId))
     {
       NS_LOG_LOGIC (GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *m_state << " to state " << *state << ".");
@@ -104,7 +109,7 @@ McpttOnNetworkCallMachineClient::SetState (Ptr<McpttOnNetworkCallMachineClientSt
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      m_stateChangeTrace (GetCall ()->GetOwner ()->GetUserId (), m_call->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (m_call->GetOwner ()->GetUserId (), m_call->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

@@ -259,7 +259,7 @@ private:
  McpttCallMsgFieldGrpId m_grpId; //!< The ID of the MCPTT group.
  uint32_t m_userId {0}; //!< The user ID for the server.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
 };
 
 } // namespace ns3

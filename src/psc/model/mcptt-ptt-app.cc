@@ -619,7 +619,12 @@ void
 McpttPttApp::ReportEvent (uint16_t callId, const char* reason)
 {
   NS_LOG_FUNCTION (this << callId << reason);
-  m_eventTrace (m_userId, callId, reason);
+  std::string selected = "True";
+  if (callId != GetSelectedCall ()->GetCallId ())
+    {
+      selected = "False";
+    }
+  m_eventTrace (m_userId, callId, selected, reason);
 }
 
 void

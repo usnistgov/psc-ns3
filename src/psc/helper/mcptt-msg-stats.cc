@@ -131,10 +131,25 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
       m_outputFile << std::setw (7) << "nodeid";
       m_outputFile << std::setw (7) << "callid";
       m_outputFile << std::setw (5) << "ssrc";
+      m_outputFile << std::setw (9) << "selected";
       m_outputFile << std::setw (7) << "rx/tx";
       m_outputFile << std::setw (6) << "bytes";
       m_outputFile << "  message";
       m_outputFile << std::endl;
+    }
+  // Determine if the message corresponds to the client's selected call
+  Ptr<const McpttPttApp> pttApp = DynamicCast<const McpttPttApp> (app);
+  std::string selected = "N/A";
+  if (pttApp)
+    {
+      if (callId == pttApp->GetSelectedCall ()->GetCallId ())
+        {
+          selected = "True";
+        }
+      else
+        {
+          selected = "False";
+        }
     }
   if (msg.GetInstanceTypeId () == SipHeader::GetTypeId () && m_callControl == true)
     {
@@ -142,6 +157,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
       m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
       m_outputFile << std::setw (6) << callId;
       m_outputFile << std::setw (6) << "N/A";  // ssrc not applicable
+      m_outputFile << std::setw (9) << selected;
       m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
       m_outputFile << std::setw (6) << msg.GetSerializedSize ();
       m_outputFile << "    SIP " << static_cast<const SipHeader&> (msg).GetMessageTypeName ();
@@ -180,6 +196,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
           m_outputFile << "  N/A";  // not applicable
         }
 
+      m_outputFile << std::setw (9) << selected;
       m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
       m_outputFile << std::setw (6) << msg.GetSerializedSize ();
 

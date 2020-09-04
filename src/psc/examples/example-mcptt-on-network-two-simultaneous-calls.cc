@@ -56,9 +56,9 @@ NS_LOG_COMPONENT_DEFINE ("ExampleMcpttOnNetworkTwoSimultaneousCalls");
 
 // Display floor control and application events observed on the connected UE
 // This is connected below to the first UE (MCPTT user ID 1) only
-void EventTrace (uint32_t userId, uint16_t callId, const char* description)
+void EventTrace (uint32_t userId, uint16_t callId, const std::string& selected, const char* description)
 {
-  std::cout << Simulator::Now ().GetSeconds () << " userId " << userId << " callId " << callId << " " << description << std::endl;
+  std::cout << Simulator::Now ().GetSeconds () << " userId " << userId << " callId " << callId << " selected " << selected << " : " << description << std::endl;
 }
 
 int

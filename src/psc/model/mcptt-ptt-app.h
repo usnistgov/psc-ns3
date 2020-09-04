@@ -301,9 +301,10 @@ protected:
   * TracedCallback signature for event reporting
   * \param [in] userId MCPTT user ID
   * \param [in] callId MCPTT call ID
+  * \param [in] selected Indicator of Whether the reported event is for the selected call
   * \param [in] event event description
   */
- typedef void (* EventTracedCallback) (uint32_t, uint16_t callId, const char*);
+ typedef void (* EventTracedCallback) (uint32_t, uint16_t callId, const std::string& selected, const char* event);
 private:
  static uint16_t s_portNumber; //!< A port number.
  bool m_isRunning; //!< Whether application is running or not
@@ -324,7 +325,7 @@ private:
  Callback<void, Ptr<McpttCall> , Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
  uint32_t m_userId; //!< The MCPTT user ID.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
- TracedCallback<uint32_t, uint16_t, const char* > m_eventTrace; //!< Event trace
+ TracedCallback<uint32_t, uint16_t, const std::string&, const char* > m_eventTrace; //!< Event trace
 public:
  /**
   * Open a call control channel to listen on the provided port, if not already open

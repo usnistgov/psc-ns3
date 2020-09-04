@@ -199,7 +199,7 @@ private:
  Ptr<McpttCallMachineGrp> m_owner; //!< The owner of the emergency alert machine.
  bool m_started; //!< A flag that indicates if the emergency alert machine has been started.
  Callback<void, bool> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  Ptr<McpttTimer> m_tfe2; //!< The emergency alert retransmission timer.
 protected:
  /**
@@ -264,7 +264,7 @@ public:
   */
  virtual void SetStarted (bool started);
  /**
-  * Sets the state change callback.
+  * Sets the state change callback, to track changes to the SetEmerg() flag.
   * \param stateChangeCb The state change callback.
   */
  virtual void SetStateChangeCb (const Callback<void, bool>  stateChangeCb);

@@ -107,8 +107,8 @@ private:
  std::ofstream m_accessTimeTraceFile; //!< file stream for the access time trace
 
   void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const Header& msg);
-  void TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
-  void TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const char* description);
+  void TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+  void TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const char* description);
 };
 
 } // namespace ns3

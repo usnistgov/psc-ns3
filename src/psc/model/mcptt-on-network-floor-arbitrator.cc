@@ -139,7 +139,7 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                    "The trace for capturing state changes.",
                    MakeTraceSourceAccessor (&McpttOnNetworkFloorArbitrator::m_stateChangeTrace),
-                   "ns3::McpttOnNetworkFloorArbitrator::StateChangeTrace")
+                   "ns3::McpttOnNetworkFloorArbitrator::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -258,8 +258,8 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
         {
           m_stateChangeCb (currStateId, stateId);
         }
-
-      m_stateChangeTrace (GetOwner ()->GetCallMachine ()->GetUserId (), GetOwner ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      std::string selected = "N/A"; // Selected call indicator not applicable
+      m_stateChangeTrace (GetOwner ()->GetCallMachine ()->GetUserId (), GetOwner ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

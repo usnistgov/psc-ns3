@@ -73,7 +73,7 @@ McpttServerCallMachineGroupPrearranged::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttServerCallMachineGroupPrearranged::m_stateChangeTrace),
-                     "ns3::McpttServerCallMachineGroupPrearranged::StateChangeTrace")
+                     "ns3::McpttServerCallMachine::StateChangeTracedCallback")
    ;
   return tid;
 }
@@ -110,7 +110,8 @@ McpttServerCallMachineGroupPrearranged::SetState (Ptr<McpttServerCallMachineGrou
         {
           m_stateChangeCb (currStateId, stateId);
         }
-      m_stateChangeTrace (GetUserId (), m_serverCall->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      std::string selected = "N/A"; // Selected call indicator not applicable
+      m_stateChangeTrace (GetUserId (), m_serverCall->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

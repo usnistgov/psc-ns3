@@ -134,6 +134,17 @@ public:
   */
  virtual void PttRelease (void) = 0;
 
+ /**
+  * TracedCallback signature for state change traces
+  * \param [in] userId User ID
+  * \param [in] callId Call ID
+  * \param [in] selected Indicator whether the call is selected by the client
+  * \param [in] typeId Type ID of the class reporting the change
+  * \param [in] oldStateName Name of the old state
+  * \param [in] newStateName Name of the new state
+  */
+ typedef void (* StateChangeTracedCallback) (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+
  // Events to report
  static constexpr const char* PTT_BUTTON_PUSHED = "PTT button pushed";
  static constexpr const char* PTT_BUTTON_RELEASED = "PTT button released";

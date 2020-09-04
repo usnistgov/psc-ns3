@@ -253,6 +253,16 @@ protected:
   * \param msg The message to send.
   */
  virtual void SendMedia (McpttMediaMsg& msg);
+ /**
+  * TracedCallback signature for state change traces
+  * \param [in] userId User ID
+  * \param [in] callId Call ID
+  * \param [in] selected Indicator whether the call is selected by the client
+  * \param [in] typeId Type ID of the class reporting the change
+  * \param [in] oldStateName Name of the old state
+  * \param [in] newStateName Name of the new state
+  */
+ typedef void (* StateChangeTracedCallback) (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
 private:
  bool m_dualFloor; //!< The flag that indicates if the associated participant is listenting to two sources.
  Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
@@ -272,7 +282,7 @@ private:
  Callback<void, Ptr<const McpttServerCall>, const Header&> m_rxCb; //!< The message received call back.
  Ptr<McpttOnNetworkFloorTowardsParticipantState> m_state; //!< The state of the floor machine.
  Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
- TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
+ TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
  uint32_t m_storedSsrc; //!< The SSRC of the floor participant with permission to transmit media.
  uint8_t m_storedPriority; //!< The stored priority the floor machine.
  McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.

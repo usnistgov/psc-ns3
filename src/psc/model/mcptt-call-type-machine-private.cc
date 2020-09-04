@@ -62,7 +62,7 @@ McpttCallTypeMachinePrivate::GetTypeId (void)
     .AddConstructor<McpttCallTypeMachinePrivate> ()
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallTypeMachinePrivate::m_stateChangeTrace),
-                     "ns3::McpttCallTypeMachinePrivate::StateChangeTrace")
+                     "ns3::McpttCallMachine::StateChangeTracedCallback")
    ;
 
   return tid;
@@ -94,6 +94,11 @@ McpttCallTypeMachinePrivate::ChangeState (Ptr<McpttCallTypeMachinePrivateState> 
       NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
+  std::string selected = "False";
+  if (GetOwner ()->GetCall ()->GetCallId () == GetOwner ()->GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
+    {
+      selected = "True";
+    }
 
   McpttEntityId stateId = state->GetInstanceStateId ();
   Ptr<McpttCallTypeMachinePrivateState> curr = GetState ();
@@ -105,7 +110,7 @@ McpttCallTypeMachinePrivate::ChangeState (Ptr<McpttCallTypeMachinePrivateState> 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetCall()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
 
       SetState (state);
-      m_stateChangeTrace (GetOwner ()->GetCall()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
+      m_stateChangeTrace (GetOwner ()->GetCall ()->GetOwner ()->GetUserId (), GetOwner ()->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), currStateId.GetName (), stateId.GetName ());
     }
 }
 

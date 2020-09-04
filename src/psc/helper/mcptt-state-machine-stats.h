@@ -70,11 +70,12 @@ public:
   * The callback for capturing state changes
   * \param userId The user ID of the state machine.
   * \param callId The call ID of the state machine.
+  * \param selected Indicator whether the call is selected on the client
   * \param typeId The type ID of the state machine.
   * \param oldStateName The name of the previous state.
   * \param newStateName THe name of the current state.
   */
- virtual void StateChangeCb (uint32_t userId, uint16_t callId, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+ virtual void StateChangeCb (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
 private:
  bool m_firstCb; //!< Flag that indicates if the callback has been fired yet.
  std::string m_outputFileName; //!< The file name of the trace file.
