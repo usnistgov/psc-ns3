@@ -28,7 +28,6 @@
 #include "mac-low.h"
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
-#include "wifi-utils.h"
 #include "mgt-headers.h"
 #include "amsdu-subframe-header.h"
 #include "wifi-net-device.h"
@@ -314,15 +313,15 @@ RegularWifiMac::GetHeCapabilities (void) const
       Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
       capabilities.SetHeSupported (1);
       uint8_t channelWidthSet = 0;
-      if (m_phy->GetChannelWidth () >= 40 && Is2_4Ghz (m_phy->GetFrequency ()))
+      if ((m_phy->GetChannelWidth () >= 40) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ))
         {
           channelWidthSet |= 0x01;
         }
-      if (m_phy->GetChannelWidth () >= 80 && Is5Ghz (m_phy->GetFrequency ()))
+      if ((m_phy->GetChannelWidth () >= 80) && ((m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
         {
           channelWidthSet |= 0x02;
         }
-      if (m_phy->GetChannelWidth () >= 160 && Is5Ghz (m_phy->GetFrequency ()))
+      if ((m_phy->GetChannelWidth () >= 160) && ((m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
         {
           channelWidthSet |= 0x04;
         }
@@ -624,112 +623,6 @@ RegularWifiMac::SetCtsToSelfSupported (bool enable)
 }
 
 void
-RegularWifiMac::SetSlot (Time slotTime)
-{
-  NS_LOG_FUNCTION (this << slotTime);
-  m_channelAccessManager->SetSlot (slotTime);
-  m_low->SetSlotTime (slotTime);
-}
-
-Time
-RegularWifiMac::GetSlot (void) const
-{
-  return m_low->GetSlotTime ();
-}
-
-void
-RegularWifiMac::SetSifs (Time sifs)
-{
-  NS_LOG_FUNCTION (this << sifs);
-  m_channelAccessManager->SetSifs (sifs);
-  m_low->SetSifs (sifs);
-}
-
-Time
-RegularWifiMac::GetSifs (void) const
-{
-  return m_low->GetSifs ();
-}
-
-void
-RegularWifiMac::SetEifsNoDifs (Time eifsNoDifs)
-{
-  NS_LOG_FUNCTION (this << eifsNoDifs);
-  m_channelAccessManager->SetEifsNoDifs (eifsNoDifs);
-}
-
-Time
-RegularWifiMac::GetEifsNoDifs (void) const
-{
-  return m_channelAccessManager->GetEifsNoDifs ();
-}
-
-void
-RegularWifiMac::SetRifs (Time rifs)
-{
-  NS_LOG_FUNCTION (this << rifs);
-  m_low->SetRifs (rifs);
-}
-
-Time
-RegularWifiMac::GetRifs (void) const
-{
-  return m_low->GetRifs ();
-}
-
-void
-RegularWifiMac::SetPifs (Time pifs)
-{
-  NS_LOG_FUNCTION (this << pifs);
-  m_low->SetPifs (pifs);
-}
-
-Time
-RegularWifiMac::GetPifs (void) const
-{
-  return m_low->GetPifs ();
-}
-
-void
-RegularWifiMac::SetAckTimeout (Time ackTimeout)
-{
-  NS_LOG_FUNCTION (this << ackTimeout);
-  m_low->SetAckTimeout (ackTimeout);
-}
-
-Time
-RegularWifiMac::GetAckTimeout (void) const
-{
-  return m_low->GetAckTimeout ();
-}
-
-void
-RegularWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
-{
-  NS_LOG_FUNCTION (this << blockAckTimeout);
-  m_low->SetBasicBlockAckTimeout (blockAckTimeout);
-}
-
-Time
-RegularWifiMac::GetBasicBlockAckTimeout (void) const
-{
-  return m_low->GetBasicBlockAckTimeout ();
-}
-
-void
-RegularWifiMac::SetCompressedBlockAckTimeout (Time blockAckTimeout)
-{
-  NS_LOG_FUNCTION (this << blockAckTimeout);
-  m_low->SetCompressedBlockAckTimeout (blockAckTimeout);
-}
-
-Time
-RegularWifiMac::GetCompressedBlockAckTimeout (void) const
-{
-  return m_low->GetCompressedBlockAckTimeout ();
-}
-
-void
 RegularWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
@@ -785,37 +678,6 @@ bool
 RegularWifiMac::GetShortSlotTimeSupported (void) const
 {
   return m_shortSlotTimeSupported;
-}
-
-void
-RegularWifiMac::SetRifsSupported (bool enable)
-{
-  NS_LOG_FUNCTION (this << enable);
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          htConfiguration->SetRifsSupported (enable);
-        }
-    }
-  m_rifsSupported = enable;
-}
-
-bool
-RegularWifiMac::GetRifsSupported (void) const
-{
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          return htConfiguration->GetRifsSupported ();
-        }
-    }
-  return m_rifsSupported;
 }
 
 void
@@ -1175,13 +1037,6 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetShortSlotTimeSupported,
                                         &RegularWifiMac::GetShortSlotTimeSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("RifsSupported",
-                   "Whether or not RIFS is supported (only used by HT APs or STAs).",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&RegularWifiMac::SetRifsSupported,
-                                        &RegularWifiMac::GetRifsSupported),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Use the HtConfiguration instead")
     .AddAttribute ("Txop",
                    "The Txop object.",
                    PointerValue (),
@@ -1220,47 +1075,44 @@ RegularWifiMac::GetTypeId (void)
 }
 
 void
-RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
+RegularWifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   uint32_t cwmin = 0;
   uint32_t cwmax = 0;
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211ax_5GHZ:
-    case WIFI_PHY_STANDARD_80211ac:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_STANDARD_80211n_5GHZ:
+    case WIFI_STANDARD_80211ac:
+    case WIFI_STANDARD_80211ax_5GHZ:
+    case WIFI_STANDARD_80211ax_6GHZ:
       {
         EnableAggregation ();
         //To be removed once deprecated attributes are removed
         Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
         NS_ASSERT (htConfiguration);
-        htConfiguration->SetRifsSupported (m_rifsSupported);
         SetQosSupported (true);
         cwmin = 15;
         cwmax = 1023;
         break;
       }
-    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+    case WIFI_STANDARD_80211ax_2_4GHZ:
+    case WIFI_STANDARD_80211n_2_4GHZ:
       {
         EnableAggregation ();
-        //To be removed once deprecated RifsSupported attribute is removed
         Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
         NS_ASSERT (htConfiguration);
-        htConfiguration->SetRifsSupported (m_rifsSupported);
         SetQosSupported (true);
       }
-    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_STANDARD_80211g:
       SetErpSupported (true);
-    case WIFI_PHY_STANDARD_holland:
-    case WIFI_PHY_STANDARD_80211a:
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-    case WIFI_PHY_STANDARD_80211_5MHZ:
+    case WIFI_STANDARD_holland:
+    case WIFI_STANDARD_80211a:
+    case WIFI_STANDARD_80211p:
       cwmin = 15;
       cwmax = 1023;
       break;
-    case WIFI_PHY_STANDARD_80211b:
+    case WIFI_STANDARD_80211b:
       SetDsssSupported (true);
       cwmin = 31;
       cwmax = 1023;

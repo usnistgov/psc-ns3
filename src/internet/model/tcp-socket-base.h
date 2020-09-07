@@ -318,6 +318,11 @@ public:
   uint32_t GetRetxThresh (void) const { return m_retxThresh; }
 
   /**
+   * \brief Callback pointer for pacing rate trace chaining
+   */
+  TracedCallback<DataRate, DataRate>  m_pacingRateTrace;
+
+  /**
    * \brief Callback pointer for cWnd trace chaining
    */
   TracedCallback<uint32_t, uint32_t> m_cWndTrace;
@@ -361,6 +366,13 @@ public:
    * \brief Callback pointer for RTT trace chaining
    */
   TracedCallback<Time, Time> m_lastRttTrace;
+
+  /**
+   * \brief Callback function to hook to TcpSocketState pacing rate
+   * \param oldValue old pacing rate value
+   * \param newValue new pacing rate value
+   */
+  void UpdatePacingRateTrace (DataRate oldValue, DataRate newValue);
 
   /**
    * \brief Callback function to hook to TcpSocketState congestion window
@@ -442,9 +454,10 @@ public:
   void SetRecoveryAlgorithm (Ptr<TcpRecoveryOps> recovery);
 
   /**
-   * \brief Mark ECT(0)
+   * \brief Mark ECT(0) codepoint
    *
-   * \return TOS with ECT(0)
+   * \param tos the TOS byte to modify
+   * \return TOS with ECT(0) codepoint set
    */
   inline uint8_t MarkEcnEct0 (uint8_t tos) const
     {
@@ -452,9 +465,10 @@ public:
     }
 
   /**
-   * \brief Mark ECT(1)
+   * \brief Mark ECT(1) codepoint
    *
-   * \return TOS with ECT(1)
+   * \param tos the TOS byte to modify
+   * \return TOS with ECT(1) codepoint set
    */
   inline uint8_t MarkEcnEct1 (uint8_t tos) const
     {
@@ -462,9 +476,10 @@ public:
     }
 
   /**
-   * \brief Mark CE
+   * \brief Mark CE codepoint
    *
-   * \return TOS with CE
+   * \param tos the TOS byte to modify
+   * \return TOS with CE codepoint set
    */
   inline uint8_t MarkEcnCe (uint8_t tos) const
     {
@@ -474,6 +489,7 @@ public:
   /**
    * \brief Clears ECN bits from TOS
    *
+   * \param tos the TOS byte to modify
    * \return TOS without ECN bits
    */
   inline uint8_t ClearEcnBits (uint8_t tos) const
@@ -482,48 +498,53 @@ public:
     }
 
   /**
-   * \brief Checks if TOS has no ECN bits
+   * \brief Checks if TOS has no ECN codepoints
    *
-   * \return true if TOS does not have any ECN bits set; otherwise false
+   * \param tos the TOS byte to check
+   * \return true if TOS does not have any ECN codepoints set; otherwise false
    */
   inline bool CheckNoEcn (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x00);
+      return ((tos & 0x03) == 0x00);
     }
 
   /**
-   * \brief Checks for ECT(0) bits
+   * \brief Checks for ECT(0) codepoint
    *
-   * \return true if TOS has ECT(0) bit set; otherwise false
+   * \param tos the TOS byte to check
+   * \return true if TOS has ECT(0) codepoint set; otherwise false
    */
   inline bool CheckEcnEct0 (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x02);
+      return ((tos & 0x03) == 0x02);
     }
 
   /**
-   * \brief Checks for ECT(1) bits
+   * \brief Checks for ECT(1) codepoint
    *
-   * \return true if TOS has ECT(1) bit set; otherwise false
+   * \param tos the TOS byte to check
+   * \return true if TOS has ECT(1) codepoint set; otherwise false
    */
   inline bool CheckEcnEct1 (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x01);
+      return ((tos & 0x03) == 0x01);
     }
 
   /**
-   * \brief Checks for CE bits
+   * \brief Checks for CE codepoint
    *
-   * \return true if TOS has CE bit set; otherwise false
+   * \return true if TOS has CE codepoint set; otherwise false
    */
   inline bool CheckEcnCe (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x03);
+      return ((tos & 0x03) == 0x03);
     }
 
   /**
    * \brief mark ECN code point
    *
+   * \param tos the TOS byte to modify
+   * \param codePoint the codepoint to use
    * \return TOS with specified ECN code point
    */
   inline uint8_t MarkEcnCodePoint (const uint8_t tos, const TcpSocketState::EcnCodePoint_t codePoint) const
@@ -532,11 +553,23 @@ public:
     }
 
   /**
-   * \brief Set use of ECN on the socket
+   * \brief Set ECN mode of use on the socket
    *
-   * \param useEcn Use of ECN. Currently Off and On are supported.
+   * \param useEcn Mode of ECN to use.
    */
   void SetUseEcn (TcpSocketState::UseEcn_t useEcn);
+
+  /**
+   * \brief Enable or disable pacing
+   * \param pacing Boolean to enable or disable pacing
+   */
+  void SetPacingStatus (bool pacing);
+
+  /**
+   * \brief Enable or disable pacing of the initial window
+   * \param pacing Boolean to enable or disable pacing of the initial window
+   */
+  void SetPaceInitialWindow (bool paceWindow);
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -1170,10 +1203,37 @@ protected:
   void NotifyPacingPerformed (void);
 
   /**
+   * \brief Return true if packets in the current window should be paced
+   * \return true if pacing is currently enabled
+   */
+  bool IsPacingEnabled (void) const;
+
+  /**
+   * \brief Dynamically update the pacing rate
+   *
+   * \param tcb internal congestion state
+   */
+  void UpdatePacingRate (void);
+
+  /**
    * \brief Add Tags for the Socket
    * \param p Packet
    */
   void AddSocketTags (const Ptr<Packet> &p) const;
+
+  /**
+   * Get the current value of the receiver's offered window (RCV.WND)
+   * \note This method exists to expose the value to the TcpTxBuffer
+   * \return value of receiver's offered window
+   */
+  uint32_t GetRWnd (void) const;
+
+  /**
+   * Get the current value of the receiver's highest (in-sequence) sequence number acked.
+   * \note This method exists to expose the value to the TcpTxBuffer
+   * \return value of receiver's highest sequence number acked.
+   */
+  SequenceNumber32 GetHighRxAck (void) const;
 
 protected:
   // Counters and events
@@ -1252,6 +1312,9 @@ protected:
 
   // Fast Retransmit and Recovery
   SequenceNumber32       m_recover    {0};   //!< Previous highest Tx seqnum for fast recovery (set it to initial seq number)
+  bool                   m_recoverActive {false}; //!< Whether "m_recover" has been set/activated
+                                                  //!< It is used to avoid comparing with the old m_recover value
+                                                  //!< which was set for handling previous congestion event.
   uint32_t               m_retxThresh {3};   //!< Fast Retransmit threshold
   bool                   m_limitedTx  {true}; //!< perform limited transmit
 
@@ -1272,7 +1335,7 @@ protected:
                  Ptr<const TcpSocketBase> > m_rxTrace; //!< Trace of received packets
 
   // Pacing related variable
-  Timer m_pacingTimer {Timer::REMOVE_ON_DESTROY}; //!< Pacing Event
+  Timer m_pacingTimer {Timer::CANCEL_ON_DESTROY}; //!< Pacing Event
 
   // Parameters related to Explicit Congestion Notification
   TracedValue<SequenceNumber32> m_ecnEchoSeq {0};      //!< Sequence number of the last received ECN Echo

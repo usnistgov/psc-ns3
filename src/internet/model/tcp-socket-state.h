@@ -165,6 +165,11 @@ public:
   uint32_t               m_initialCWnd      {0}; //!< Initial cWnd value
   uint32_t               m_initialSsThresh  {0}; //!< Initial Slow Start Threshold value
 
+  // Recovery
+  // This variable is used for implementing following flag of Linux: FLAG_RETRANS_DATA_ACKED
+  // and is used only during a recovery phase to keep track of acknowledgement of retransmitted packet.
+  bool                   m_isRetransDataAcked  {false}; //!< Retransmitted data is ACKed if true
+
   // Segment
   uint32_t               m_segmentSize   {0}; //!< Segment size
   SequenceNumber32       m_lastAckedSeq  {0}; //!< Last sequence ACKed
@@ -182,7 +187,10 @@ public:
   // Pacing related variables
   bool                   m_pacing            {false}; //!< Pacing status
   DataRate               m_maxPacingRate     {0};    //!< Max Pacing rate
-  DataRate               m_currentPacingRate {0};    //!< Current Pacing rate
+  TracedValue<DataRate>  m_pacingRate {0};           //!< Current Pacing rate
+  uint16_t               m_pacingSsRatio {0};        //!< SS pacing ratio
+  uint16_t               m_pacingCaRatio {0};        //!< CA pacing ratio
+  bool                   m_paceInitialWindow {false}; //!< Enable/Disable pacing for the initial window
 
   Time                   m_minRtt  {Time::Max ()};   //!< Minimum RTT observed throughout the connection
 

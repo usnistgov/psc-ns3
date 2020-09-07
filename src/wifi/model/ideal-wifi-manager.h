@@ -26,6 +26,8 @@
 
 namespace ns3 {
 
+struct IdealWifiRemoteStation;
+
 /**
  * \brief Ideal rate control algorithm
  * \ingroup wifi
@@ -65,21 +67,26 @@ private:
   void DoReportDataFailed (WifiRemoteStation *station);
   void DoReportRtsOk (WifiRemoteStation *station,
                       double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  void DoReportDataOk (WifiRemoteStation *station,
-                       double ackSnr, WifiMode ackMode, double dataSnr);
-  void DoReportAmpduTxStatus (WifiRemoteStation *station,
-                              uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                              double rxSnr, double dataSnr);
+  void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
+                       double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
+  void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+                              double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
   void DoReportFinalRtsFailed (WifiRemoteStation *station);
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  bool IsLowLatency (void) const;
 
   /**
    * Reset the station, invoked if the maximum amount of retries has failed.
    */
   void Reset (WifiRemoteStation *station) const;
+
+  /**
+   * Construct the vector of minimum SNRs needed to successfully transmit for
+   * all possible combinations (rate, channel width, nss) based on PHY capabilities.
+   * This is called at initialization and if PHY capabilities changed.
+   */
+  void BuildSnrThresholds (void);
 
   /**
    * Return the minimum SNR needed to successfully transmit
@@ -89,7 +96,7 @@ private:
    *
    * \return the minimum SNR for the given WifiTxVector in linear scale
    */
-  double GetSnrThreshold (WifiTxVector txVector) const;
+  double GetSnrThreshold (WifiTxVector txVector);
   /**
    * Adds a pair of WifiTxVector and the minimum SNR for that given vector
    * to the list.
@@ -105,6 +112,18 @@ private:
    * \return the channel width (MHz) for the selected mode
    */
   uint16_t GetChannelWidthForNonHtMode (WifiMode mode) const;
+
+  /**
+   * Convenience function to get the last observed SNR from a given station for a given channel width and a given NSS.
+   * Since the previously received SNR information might be related to a different channel width than the requested one,
+   * and/or a different NSS,  the function does some computations to get the corresponding SNR.
+   *
+   * \param station the station being queried
+   * \param channelWidth the channel width (in MHz)
+   * \param nss the number of spatial streams
+   * \return the SNR in linear scale
+   */
+  double GetLastObservedSnr (IdealWifiRemoteStation *station, uint16_t channelWidth, uint8_t nss) const;
 
   /**
    * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the

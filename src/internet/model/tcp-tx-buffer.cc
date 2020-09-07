@@ -60,6 +60,7 @@ TcpTxBuffer::GetTypeId (void)
 TcpTxBuffer::TcpTxBuffer (uint32_t n)
   : m_maxBuffer (32768), m_size (0), m_sentSize (0), m_firstByteSeq (n)
 {
+  m_rWndCallback = MakeNullCallback<uint32_t> ();
 }
 
 TcpTxBuffer::~TcpTxBuffer (void)
@@ -637,6 +638,23 @@ TcpTxBuffer::RemoveFromCounts (TcpTxItem *item, uint32_t size)
       m_lostOut -= size;
     }
 }
+
+bool
+TcpTxBuffer::IsRetransmittedDataAcked (const SequenceNumber32& ack) const
+{
+  NS_LOG_FUNCTION (this);
+  for (const auto &it : m_sentList)
+     {
+       TcpTxItem *item = it;
+       Ptr<Packet> p = item->m_packet;
+       if (item->m_startSeq + p->GetSize () == ack && !item->m_sacked && item->m_retrans)
+         {
+           return true;
+         }
+     }
+  return false;
+}
+
 void
 TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq,
                           const Callback<void, TcpTxItem *> &beforeDelCb)
@@ -940,9 +958,9 @@ TcpTxBuffer::IsLost (const SequenceNumber32 &seq) const
 }
 
 bool
-TcpTxBuffer::NextSeg (SequenceNumber32 *seq, bool isRecovery) const
+TcpTxBuffer::NextSeg (SequenceNumber32 *seq, SequenceNumber32 *seqHigh, bool isRecovery) const
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << isRecovery);
   /* RFC 6675, NextSeg definition.
    *
    * (1) If there exists a smallest unSACKed sequence number 'S2' that
@@ -974,6 +992,7 @@ TcpTxBuffer::NextSeg (SequenceNumber32 *seq, bool isRecovery) const
             {
               NS_LOG_INFO("IsLost, returning" << beginOfCurrentPkt);
               *seq = beginOfCurrentPkt;
+              *seqHigh = *seq + m_segmentSize;
               return true;
             }
           else if (seqPerRule3.GetValue () == 0 && isRecovery)
@@ -996,9 +1015,18 @@ TcpTxBuffer::NextSeg (SequenceNumber32 *seq, bool isRecovery) const
    */
   if (SizeFromSequence (m_firstByteSeq + m_sentSize) > 0)
     {
-      NS_LOG_INFO ("There is unsent data. Send it");
-      *seq = m_firstByteSeq + m_sentSize;
-      return true;
+      if (m_sentSize <= m_rWndCallback ())
+        {
+          NS_LOG_INFO ("There is unsent data. Send it");
+          *seq = m_firstByteSeq + m_sentSize;
+          *seqHigh = *seq + std::min<uint32_t> (m_segmentSize, (m_rWndCallback () - m_sentSize));
+          return true;
+        }
+      else
+        {
+          NS_LOG_INFO ("There is no available receiver window to send");
+          return false;
+        }
     }
   else
     {
@@ -1015,6 +1043,7 @@ TcpTxBuffer::NextSeg (SequenceNumber32 *seq, bool isRecovery) const
     {
       NS_LOG_INFO ("Rule3 valid. " << seqPerRule3);
       *seq = seqPerRule3;
+      *seqHigh = *seq + m_segmentSize;
       return true;
     }
 
@@ -1189,6 +1218,13 @@ TcpTxBuffer::ResetRenoSack ()
     }
 
   m_highestSack = std::make_pair (m_sentList.end (), SequenceNumber32 (0));
+}
+
+void
+TcpTxBuffer::SetRWndCallback (Callback<uint32_t> rWndCallback)
+{
+  NS_LOG_FUNCTION (this);
+  m_rWndCallback = rWndCallback;
 }
 
 void

@@ -200,6 +200,10 @@ def options(opt):
                          ' argument is the path to the python program, optionally followed'
                          ' by command-line options that are passed to the program.'),
                    type="string", default='', dest='pyrun_no_build')
+    opt.add_option('--gdb',
+                   help=('Change the default command template to run programs and unit tests with gdb'),
+                   action="store_true", default=False,
+                   dest='gdb')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
@@ -255,6 +259,14 @@ def options(opt):
     opt.add_option('--cxx-standard',
                    help=('Compile NS-3 with the given C++ standard'),
                    type='string', default='-std=c++11', dest='cxx_standard')
+    opt.add_option('--enable-asserts',
+                   help=('Enable the asserts regardless of the compile mode'),
+                   action="store_true", default=False,
+                   dest='enable_asserts')
+    opt.add_option('--enable-logs',
+                   help=('Enable the logs regardless of the compile mode'),
+                   action="store_true", default=False,
+                   dest='enable_logs')
 
     # options provided in subdirectories
     opt.recurse('src')
@@ -391,6 +403,11 @@ def configure(conf):
 
     if Options.options.build_profile == 'optimized':
         env.append_value('DEFINES', 'NS3_BUILD_PROFILE_OPTIMIZED')
+
+    if Options.options.enable_logs:
+        env.append_unique('DEFINES', 'NS3_LOG_ENABLE')
+    if Options.options.enable_asserts:
+        env.append_unique('DEFINES', 'NS3_ASSERT_ENABLE')
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile
@@ -550,8 +567,6 @@ def configure(conf):
                 raise WafError('Exiting because the ' + not_built + ' module can not be built and it was the only one enabled.')
         elif not_built_name in conf.env['NS3_ENABLED_CONTRIBUTED_MODULES']:
             conf.env['NS3_ENABLED_CONTRIBUTED_MODULES'].remove(not_built_name)
-
-    conf.recurse('src/mpi')
 
     # for suid bits
     try:
@@ -749,7 +764,8 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "#"
-    program.use = program.ns3_module_dependencies
+    #make a copy here to prevent additions to program.use from polluting program.ns3_module_dependencies
+    program.use = program.ns3_module_dependencies.copy()
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.STLIB_MARKER = '-Wl,-all_load'
@@ -771,6 +787,9 @@ def register_ns3_script(bld, name, dependencies=('core',)):
 def add_examples_programs(bld):
     env = bld.env
     if env['ENABLE_EXAMPLES']:
+        # Add a define, so this is testable from code
+        env.append_value('DEFINES', 'NS3_ENABLE_EXAMPLES')
+
         try:
             for dir in os.listdir('examples'):
                 if dir.startswith('.') or dir == 'CVS':
@@ -1005,6 +1024,14 @@ def build(bld):
             # disable pcfile taskgens for disabled modules
             if 'ns3pcfile' in getattr(obj, "features", []):
                 if obj.module not in bld.env.NS3_ENABLED_MODULES and obj.module not in bld.env.NS3_ENABLED_CONTRIBUTED_MODULES:
+                    bld.exclude_taskgen(obj)
+
+            # disable python bindings for disabled modules
+            if 'pybindgen' in obj.name:
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
+                    bld.exclude_taskgen(obj)
+            if 'pyext' in getattr(obj, "features", []):
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
                     bld.exclude_taskgen(obj)
 
 
@@ -1268,7 +1295,7 @@ def _print_introspected_doxygen(bld):
     # NS_COMMANDLINE_INTROSPECTION=".." test.py --nowaf --constrain=example
     Logs.info("Running CommandLine introspection")
     proc_env['NS_COMMANDLINE_INTROSPECTION'] = '..'
-    subprocess.run(["test.py", "--nowaf", "--constrain=example"],
+    subprocess.run(["./test.py", "--nowaf", "--constrain=example"],
                    env=proc_env, stdout=subprocess.DEVNULL)
     
     doxygen_out = os.path.join('doc', 'introspected-command-line.h')

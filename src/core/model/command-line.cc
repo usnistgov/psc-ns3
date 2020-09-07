@@ -27,6 +27,7 @@
 #include "system-path.h"
 #include "type-id.h"
 #include "string.h"
+#include "version.h"
 
 #include <algorithm>  // transform
 #include <cctype>     // tolower
@@ -64,7 +65,7 @@ CommandLine::CommandLine (const std::string filename)
   std::string basename = SystemPath::Split (filename).back ();
   m_shortName = basename.substr (0, basename.rfind (".cc"));
 }
-  
+
 CommandLine::CommandLine (const CommandLine &cmd)
 {
   Copy (cmd);
@@ -137,7 +138,7 @@ CommandLine::Parse (std::vector<std::string> args)
   NS_LOG_FUNCTION (this << args.size () << args);
 
   PrintDoxygenUsage ();
-  
+
   m_nonOptionCount = 0;
 
   if (args.size () > 0)
@@ -328,28 +329,35 @@ CommandLine::PrintHelp (std::ostream &os) const
     << "    --PrintGroup=[group]:        Print all TypeIds of group.\n"
     << "    --PrintTypeIds:              Print all TypeIds.\n"
     << "    --PrintAttributes=[typeid]:  Print all attributes of typeid.\n"
+    << "    --PrintVersion:              Print the ns-3 version.\n"
     << "    --PrintHelp:                 Print this help message.\n"
     << std::endl;
 }
 
 #include <unistd.h>  // getcwd
+std::string
+CommandLine::GetVersion () const
+{
+  return Version::LongVersion ();
+}
+
+void
+CommandLine::PrintVersion (std::ostream & os) const
+{
+  os << GetVersion () << std::endl;
+}
 
 void
 CommandLine::PrintDoxygenUsage (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  {
-    char buf[1024];
-    std::string cwd= getcwd (buf, 1024);
-  }
-  
   const char * envVar = std::getenv ("NS_COMMANDLINE_INTROSPECTION");
   if (envVar == 0 || std::strlen (envVar) == 0)
     {
       return;
     }
- 
+
   if (m_shortName.size () == 0)
     {
       NS_FATAL_ERROR ("No file name on example-to-run; forgot to use CommandLine var (__FILE__)?");
@@ -361,19 +369,19 @@ CommandLine::PrintDoxygenUsage (void) const
                     m_nonOptions.begin () + m_NNonOptions);
 
   std::string outf = SystemPath::Append (std::string (envVar), m_shortName + ".command-line");
-  
+
   NS_LOG_INFO ("Writing CommandLine doxy to " << outf);
-  
+
   std::fstream os (outf, std::fstream::out);
 
-  
+
   os << "/**\n \\file " << m_shortName << ".cc\n"
      << "<h3>Usage</h3>\n"
      << "<code>$ ./waf --run \"" << m_shortName
      << (m_options.size ()  ? " [Program Options]" : "")
      << (nonOptions.size () ? " [Program Arguments]" : "")
      << "\"</code>\n";
-    
+
   if (m_usage.length ())
     {
       os << m_usage << std::endl;
@@ -386,14 +394,14 @@ CommandLine::PrintDoxygenUsage (void) const
          << "<dl>\n";
       for (auto i : m_options)
         {
-          os << "  <dt>\\c --" << i->m_name << "</dt>\n"
+          os << "  <dt>\\c --" << i->m_name << " </dt>\n"
              << "    <dd>" << i->m_help;
 
           if ( i->HasDefault ())
             {
               os << " [" << i->GetDefault () << "]";
             }
-          os << "</dd>\n";
+          os << " </dd>\n";
         }
       os << "</dl>\n";
     }
@@ -405,14 +413,14 @@ CommandLine::PrintDoxygenUsage (void) const
          << "<dl>\n";
       for (auto i : nonOptions)
         {
-          os << "  <dt> \\c " << i->m_name << "</dt>\n"
+          os << "  <dt> \\c " << i->m_name << " </dt>\n"
              << "    <dd>" << i->m_help;
 
           if ( i->HasDefault ())
             {
               os << " [" << i->GetDefault () << "]";
             }
-          os << "</dd>\n";
+          os << " </dd>\n";
         }
       os << "</dl>\n";
     }
@@ -582,6 +590,12 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
       PrintHelp (std::cout);
       std::exit (0);
     }
+  if (name == "PrintVersion" || name == "version")
+    {
+      //Print the version, then exit the program
+      PrintVersion (std::cout);
+      std::exit (0);
+    }
   else if (name == "PrintGroups")
     {
       // method below never returns.
@@ -644,6 +658,18 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
 }
 
 bool
+CommandLine::CallbackItem::HasDefault (void) const
+{
+  return m_default != "";
+}
+
+std::string
+CommandLine::CallbackItem::GetDefault (void) const
+{
+  return m_default;
+}
+
+bool
 CommandLine::CallbackItem::Parse (const std::string value)
 {
   NS_LOG_FUNCTION (this);
@@ -654,13 +680,16 @@ CommandLine::CallbackItem::Parse (const std::string value)
 void
 CommandLine::AddValue (const std::string &name,
                        const std::string &help,
-                       ns3::Callback<bool, std::string> callback)
+                       ns3::Callback<bool, std::string> callback,
+                       std::string defaultValue /* = "" */)
+
 {
   NS_LOG_FUNCTION (this << &name << &help << &callback);
   CallbackItem *item = new CallbackItem ();
   item->m_name = name;
   item->m_help = help;
   item->m_callback = callback;
+  item->m_default = defaultValue;
   m_options.push_back (item);
 }
 

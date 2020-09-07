@@ -1084,6 +1084,10 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
         {
           NS_LOG_INFO ("haveMobilityControlInfo == true");
           SwitchToState (CONNECTED_HANDOVER);
+          if (m_radioLinkFailureDetected.IsRunning ())
+            {
+              ResetRlfParams ();
+            }
           const LteRrcSap::MobilityControlInfo& mci = msg.mobilityControlInfo;
           m_handoverStartTrace (m_imsi, m_cellId, m_rnti, mci.targetPhysCellId);
           //We should reset the MACs and PHYs for all the component carriers
@@ -2779,11 +2783,16 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
     }
 
   NS_ASSERT (!measReportIt->second.cellsTriggeredList.empty ());
-  measReportIt->second.numberOfReportsSent = 0;
-  measReportIt->second.periodicReportTimer
-    = Simulator::Schedule (UE_MEASUREMENT_REPORT_DELAY,
-                           &LteUeRrc::SendMeasurementReport,
-                           this, measId);
+
+  // #issue 224, schedule only when there is no periodic event scheduled already
+  if (!measReportIt->second.periodicReportTimer.IsRunning ())
+    {
+      measReportIt->second.numberOfReportsSent = 0;
+      measReportIt->second.periodicReportTimer
+        = Simulator::Schedule (UE_MEASUREMENT_REPORT_DELAY,
+                               &LteUeRrc::SendMeasurementReport,
+                               this, measId);
+    }
 
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     enteringTriggerIt = m_enteringTriggerQueue.find (measId);
@@ -3092,9 +3101,8 @@ LteUeRrc::LeaveConnectedMode ()
 {
   NS_LOG_FUNCTION (this << m_imsi);
   m_leaveConnectedMode = true;
-  m_radioLinkFailureDetected.Cancel ();
   m_storedMeasValues.clear ();
-  m_noOfSyncIndications = 0;
+  ResetRlfParams ();
 
   std::map<uint8_t, LteRrcSap::MeasIdToAddMod>::iterator measIdIt;
   for (measIdIt = m_varMeasConfig.measIdList.begin ();
@@ -3323,9 +3331,7 @@ LteUeRrc::DoNotifyInSync ()
   m_phySyncDetectionTrace (m_imsi, m_rnti, m_cellId, "Notify in sync", m_noOfSyncIndications);
   if (m_noOfSyncIndications == m_n311)
     {
-      m_radioLinkFailureDetected.Cancel ();
-      m_noOfSyncIndications = 0;
-      m_cphySapProvider.at (0)->ResetRlfParams ();
+      ResetRlfParams ();
     }
 }
 
@@ -3356,6 +3362,15 @@ LteUeRrc::DoResetSyncIndicationCounter ()
 
   NS_LOG_DEBUG ("The number of sync indication received by RRC from PHY: " << (uint16_t) m_noOfSyncIndications);
   m_noOfSyncIndications = 0;
+}
+
+void
+LteUeRrc::ResetRlfParams ()
+{
+  NS_LOG_FUNCTION (this << m_imsi);
+  m_radioLinkFailureDetected.Cancel ();
+  m_noOfSyncIndications = 0;
+  m_cphySapProvider.at (0)->ResetRlfParams ();
 }
 
 //Nr sidelink

@@ -120,7 +120,7 @@ MinstrelWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
       WifiTxVector txVector;
       txVector.SetMode (mode);
       txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
-      AddCalcTxTime (mode, phy->CalculateTxDuration (m_pktLen, txVector, phy->GetFrequency ()));
+      AddCalcTxTime (mode, phy->CalculateTxDuration (m_pktLen, txVector, phy->GetPhyBand ()));
     }
   WifiRemoteStationManager::SetupPhy (phy);
 }
@@ -756,10 +756,10 @@ MinstrelWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 }
 
 void
-MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                     double ackSnr, WifiMode ackMode, double dataSnr)
+MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                     double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
@@ -890,12 +890,6 @@ MinstrelWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Pack
     }
 }
 
-bool
-MinstrelWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 uint16_t
 MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
 {
@@ -968,17 +962,17 @@ MinstrelWifiManager::CalculateTimeUnicastPacket (Time dataTransmissionTime, uint
   //See rc80211_minstrel.c
 
   //First transmission (Data + Ack timeout)
-  Time tt = dataTransmissionTime + GetMac ()->GetAckTimeout ();
+  Time tt = dataTransmissionTime + GetPhy ()->GetSifs () + GetPhy ()->GetAckTxTime ();
 
   uint32_t cwMax = 1023;
   uint32_t cw = 31;
   for (uint32_t retry = 0; retry < longRetries; retry++)
     {
       //Add one re-transmission (Data + Ack timeout)
-      tt += dataTransmissionTime + GetMac ()->GetAckTimeout ();
+      tt += dataTransmissionTime + GetPhy ()->GetSifs () + GetPhy ()->GetAckTxTime ();
 
       //Add average back off (half the current contention window)
-      tt += (cw / 2.0) * GetMac ()->GetSlot ();
+      tt += (cw / 2.0) * GetPhy ()->GetSlot ();
 
       //Update contention window
       cw = std::min (cwMax, (cw + 1) * 2);

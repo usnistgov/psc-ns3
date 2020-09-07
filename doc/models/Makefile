@@ -121,6 +121,9 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/routing.dia \
 	$(SRC)/internet/doc/routing-specialization.dia \
 	$(SRC)/internet/doc/figures/tcp-state-machine.png \
+	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-linux-reno.png \
+	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-new-reno.png \
+	$(SRC)/internet/doc/figures/ns3-new-reno-vs-ns3-linux-reno.png \
 	$(SRC)/wifi/doc/source/figures/WifiArchitecture.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
@@ -128,6 +131,8 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-n.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ac.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ax.eps \
+	$(SRC)/wifi/doc/source/figures/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
+	$(SRC)/wifi/doc/source/figures/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
@@ -311,6 +316,8 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/spectrum-tv-cofdm.png \
 	$(SRC)/traffic-control/doc/classful-queue-disc.dia \
 	$(SRC)/traffic-control/doc/multi-queue-aware-queue-disc.dia \
+	$(SRC)/traffic-control/doc/figures/collision_prob.jpeg \
+	$(SRC)/traffic-control/doc/figures/overlapped.jpeg \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
@@ -413,6 +420,8 @@ IMAGES_EPS = \
 	$(FIGURES)/nist-frame-success-rate-n.eps \
 	$(FIGURES)/nist-frame-success-rate-ac.eps \
 	$(FIGURES)/nist-frame-success-rate-ax.eps \
+	$(FIGURES)/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
+	$(FIGURES)/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
 	$(FIGURES)/ca-rrc-reconf.eps \
 	$(FIGURES)/ca-lte-enb-net-device-changes.eps \
 	$(FIGURES)/ca-lte-ue-net-device-changes.eps \

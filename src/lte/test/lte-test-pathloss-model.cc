@@ -193,6 +193,10 @@ LtePathlossModelSystemTestCase::~LtePathlossModelSystemTestCase ()
 void
 LtePathlossModelSystemTestCase::DoRun (void)
 {
+  Config::SetDefault ("ns3::MacStatsCalculator::DlOutputFilename", StringValue (CreateTempDirFilename ("DlMacStats.txt")));
+  Config::SetDefault ("ns3::MacStatsCalculator::UlOutputFilename", StringValue (CreateTempDirFilename ("UlMacStats.txt")));
+  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
+  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
   /**
   * Simulation Topology
   */
@@ -201,8 +205,6 @@ LtePathlossModelSystemTestCase::DoRun (void)
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   //   lteHelper->EnableLogComponents ();
-  lteHelper->EnableMacTraces ();
-  lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
 
   // set frequency. This is important because it changes the behavior of the path loss model
@@ -270,6 +272,9 @@ LtePathlossModelSystemTestCase::DoRun (void)
    
 //   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
 //                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
+
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
                    
   Simulator::Stop (Seconds (0.035));
   Simulator::Run ();

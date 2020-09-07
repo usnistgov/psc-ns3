@@ -72,7 +72,7 @@ MeshWifiInterfaceMac::GetTypeId ()
   return tid;
 }
 MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
-  : m_standard (WIFI_PHY_STANDARD_80211a)
+  : m_standard (WIFI_STANDARD_80211a)
 {
   NS_LOG_FUNCTION (this);
 
@@ -176,17 +176,9 @@ MeshWifiInterfaceMac::GetFrequencyChannel () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_phy != 0); // need PHY to set/get channel
-
-  Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
-  if (phy != 0)
-    {
-      return phy->GetChannelNumber ();
-    }
-  else
-    {
-      return 0;
-    }
+  return m_phy->GetChannelNumber ();
 }
+
 void
 MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
 {
@@ -203,8 +195,7 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
    *
    * Now we use dirty channel switch -- just change frequency
    */
-  Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
-  phy->SetChannelNumber (new_id);
+  m_phy->SetChannelNumber (new_id);
   // Don't know NAV on new channel
   m_channelAccessManager->NotifyNavResetNow (Seconds (0));
 }
@@ -548,9 +539,9 @@ MeshWifiInterfaceMac::ResetStats ()
 }
 
 void
-MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
+MeshWifiInterfaceMac::ConfigureStandard (enum WifiStandard standard)
 {
-  RegularWifiMac::FinishConfigureStandard (standard);
+  RegularWifiMac::ConfigureStandard (standard);
   m_standard = standard;
 
   // We use the single DCF provided by WifiMac for the purpose of
@@ -559,11 +550,6 @@ MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
   m_txop->SetMinCw (0);
   m_txop->SetMaxCw (0);
   m_txop->SetAifsn (1);
-}
-WifiPhyStandard
-MeshWifiInterfaceMac::GetPhyStandard () const
-{
-  return m_standard;
 }
 } // namespace ns3
 

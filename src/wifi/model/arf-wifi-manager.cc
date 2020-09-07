@@ -189,10 +189,10 @@ void ArfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
   NS_LOG_DEBUG ("station=" << station << " rts ok");
 }
 
-void ArfWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                     double ackSnr, WifiMode ackMode, double dataSnr)
+void ArfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                     double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   ArfWifiRemoteStation *station = static_cast<ArfWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;
@@ -266,12 +266,6 @@ ArfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     }
   rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station), false);
   return rtsTxVector;
-}
-
-bool
-ArfWifiManager::IsLowLatency (void) const
-{
-  return true;
 }
 
 } //namespace ns3

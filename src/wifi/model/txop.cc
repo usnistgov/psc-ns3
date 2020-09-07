@@ -29,6 +29,7 @@
 #include "mac-tx-middle.h"
 #include "mac-low.h"
 #include "wifi-remote-station-manager.h"
+#include "wifi-mac-trailer.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
@@ -319,7 +320,6 @@ Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
   packet->RemovePacketTag (priorityTag);
-  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), packet);
   if (m_channelAccessManager->NeedBackoffUponAccess (this))
     {
       GenerateBackoff ();
@@ -533,7 +533,8 @@ Txop::NotifyAccessGranted (void)
         }
       else
         {
-          if (m_stationManager->NeedRts (&m_currentHdr, m_currentPacket) && !m_low->IsCfPeriod ())
+          uint32_t size = m_currentHdr.GetSize () + m_currentPacket->GetSize () + WIFI_MAC_FCS_LENGTH;
+          if (m_stationManager->NeedRts (m_currentHdr, size) && !m_low->IsCfPeriod ())
             {
               m_currentParams.EnableRts ();
             }
@@ -869,7 +870,7 @@ Txop::StartNextPacket (void)
 }
 
 void
-Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, WifiTxVector dataTxVector)
 {
   NS_LOG_WARN ("GotBlockAck should not be called for non QoS!");
 }

@@ -178,7 +178,7 @@ void DhcpServer::StopApplication ()
     }
 
   m_leasedAddresses.clear ();
-  Simulator::Remove (m_expiredEvent);
+  m_expiredEvent.Cancel ();
 }
 
 void DhcpServer::TimerHandler ()
@@ -197,7 +197,7 @@ void DhcpServer::TimerHandler ()
             {
               NS_LOG_INFO ("Address leased state expired, address removed - " <<
                            "chaddr: " << i->first <<
-                           "IP address " << i->second.first);
+                           " IP address " << i->second.first);
               i->second.second = 0;
               m_expiredAddresses.push_front (i->first);
             }

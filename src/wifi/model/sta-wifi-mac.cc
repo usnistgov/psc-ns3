@@ -776,12 +776,12 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
       if (capabilities.IsShortSlotTime () == true)
         {
           //enable short slot time
-          SetSlot (MicroSeconds (9));
+          m_phy->SetSlot (MicroSeconds (9));
         }
       else
         {
           //disable short slot time
-          SetSlot (MicroSeconds (20));
+          m_phy->SetSlot (MicroSeconds (20));
         }
     }
   if (GetQosSupported ())
@@ -817,14 +817,6 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
           else
             {
               m_stationManager->SetUseGreenfieldProtection (false);
-            }
-          if (!GetVhtSupported () && GetHtConfiguration ()->GetRifsSupported () && htOperation.GetRifsMode ())
-            {
-              m_stationManager->SetRifsPermitted (true);
-            }
-          else
-            {
-              m_stationManager->SetRifsPermitted (false);
             }
         }
     }
@@ -916,7 +908,7 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
       if (!isErpAllowed)
         {
           //disable short slot time and set cwMin to 31
-          SetSlot (MicroSeconds (20));
+          m_phy->SetSlot (MicroSeconds (20));
           ConfigureContentionWindow (31, 1023);
         }
       else
@@ -926,12 +918,12 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
           if (m_stationManager->GetShortSlotTimeEnabled ())
             {
               //enable short slot time
-              SetSlot (MicroSeconds (9));
+              m_phy->SetSlot (MicroSeconds (9));
             }
           else
             {
               //disable short slot time
-              SetSlot (MicroSeconds (20));
+              m_phy->SetSlot (MicroSeconds (20));
             }
           ConfigureContentionWindow (15, 1023);
         }
@@ -963,7 +955,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
       if (!isErpAllowed)
         {
           //disable short slot time and set cwMin to 31
-          SetSlot (MicroSeconds (20));
+          m_phy->SetSlot (MicroSeconds (20));
           ConfigureContentionWindow (31, 1023);
         }
       else
@@ -973,12 +965,12 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
           if (m_stationManager->GetShortSlotTimeEnabled ())
             {
               //enable short slot time
-              SetSlot (MicroSeconds (9));
+              m_phy->SetSlot (MicroSeconds (9));
             }
           else
             {
               //disable short slot time
-              SetSlot (MicroSeconds (20));
+              m_phy->SetSlot (MicroSeconds (20));
             }
           ConfigureContentionWindow (15, 1023);
         }
@@ -1018,14 +1010,6 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
           else
             {
               m_stationManager->SetUseGreenfieldProtection (false);
-            }
-          if (!GetVhtSupported () && GetHtConfiguration ()->GetRifsSupported () && htOperation.GetRifsMode ())
-            {
-              m_stationManager->SetRifsPermitted (true);
-            }
-          else
-            {
-              m_stationManager->SetRifsPermitted (false);
             }
         }
     }

@@ -175,12 +175,21 @@ ThreeGppChannelModel::~ThreeGppChannelModel ()
   NS_LOG_FUNCTION (this);
 }
 
+void
+ThreeGppChannelModel::DoDispose ()
+{
+  m_channelMap.clear ();
+  m_channelConditionModel->Dispose ();
+  m_channelConditionModel = nullptr;
+}
+
 TypeId
 ThreeGppChannelModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ThreeGppChannelModel")
     .SetParent<Object> ()
     .SetGroupName ("Spectrum")
+    .SetParent<MatrixBasedChannelModel> ()
     .AddConstructor<ThreeGppChannelModel> ()
     .AddAttribute ("Frequency",
                    "The operating Frequency in Hz",
@@ -730,7 +739,7 @@ ThreeGppChannelModel::ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix>
   return update;
 }
 
-Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix>
+Ptr<const MatrixBasedChannelModel::ChannelMatrix>
 ThreeGppChannelModel::GetChannel (Ptr<const MobilityModel> aMob,
                                   Ptr<const MobilityModel> bMob,
                                   Ptr<const ThreeGppAntennaArrayModel> aAntenna,
@@ -1577,8 +1586,8 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
   return channelParams;
 }
 
-ThreeGppChannelModel::DoubleVector
-ThreeGppChannelModel::CalcAttenuationOfBlockage (Ptr<ThreeGppChannelMatrix> params,
+MatrixBasedChannelModel::DoubleVector
+ThreeGppChannelModel::CalcAttenuationOfBlockage (Ptr<ThreeGppChannelModel::ThreeGppChannelMatrix> params,
                                                  const DoubleVector &clusterAOA,
                                                  const DoubleVector &clusterZOA) const
 {

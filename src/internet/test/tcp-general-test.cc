@@ -952,6 +952,22 @@ TcpGeneralTest::SetInitialCwnd (SocketWho who, uint32_t initialCwnd)
     }
 }
 void
+TcpGeneralTest::SetDelAckMaxCount (SocketWho who, uint32_t count)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetDelAckMaxCount (count);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetDelAckMaxCount (count);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+void
 TcpGeneralTest::SetUseEcn (SocketWho who, TcpSocketState::UseEcn_t useEcn)
 {
   if (who == SENDER)
@@ -961,6 +977,40 @@ TcpGeneralTest::SetUseEcn (SocketWho who, TcpSocketState::UseEcn_t useEcn)
    else if (who == RECEIVER)
     {
       m_receiverSocket->SetUseEcn (useEcn);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
+TcpGeneralTest::SetPacingStatus (SocketWho who, bool pacing)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetPacingStatus (pacing);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetPacingStatus (pacing);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
+TcpGeneralTest::SetPaceInitialWindow (SocketWho who, bool paceWindow)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetPaceInitialWindow (paceWindow);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetPaceInitialWindow (paceWindow);
     }
   else
     {
@@ -1183,11 +1233,14 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
 
       if (m_bytesLeftToBeAcked == 0 && m_tcb->m_rxBuffer->NextRxSequence () > m_lastAckedSeq)
         {
-          m_bytesLeftToBeAcked = m_tcb->m_rxBuffer->NextRxSequence ().GetValue () - 1 - m_bytesToAck;
+          m_bytesLeftToBeAcked = m_tcb->m_rxBuffer->NextRxSequence ().GetValue () - m_lastAckedSeq.GetValue ();
+          m_bytesLeftToBeAcked -= m_bytesToAck;
+          NS_LOG_DEBUG ("Setting m_bytesLeftToBeAcked to " << m_bytesLeftToBeAcked);
         }
       else if (m_bytesLeftToBeAcked > 0 && m_tcb->m_rxBuffer->NextRxSequence () > m_lastAckedSeq)
         {
           m_bytesLeftToBeAcked -= m_bytesToAck;
+          NS_LOG_DEBUG ("Decrementing m_bytesLeftToBeAcked to " << m_bytesLeftToBeAcked);
         }
 
       NS_LOG_LOGIC ("Acking up to " << ackSeq << " remaining bytes: " << m_bytesLeftToBeAcked);
@@ -1257,8 +1310,9 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
     }
 
   // send another ACK if bytes remain
-  if (m_bytesLeftToBeAcked > 0 && m_tcb->m_rxBuffer->NextRxSequence () > m_lastAckedSeq)
+  if (m_bytesLeftToBeAcked > m_bytesToAck && m_tcb->m_rxBuffer->NextRxSequence () > m_lastAckedSeq && !hasFin)
     {
+      NS_LOG_DEBUG ("Recursing to call SendEmptyPacket() again with m_bytesLeftToBeAcked = " << m_bytesLeftToBeAcked);
       SendEmptyPacket (flags);
     }
 }

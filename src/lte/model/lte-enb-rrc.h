@@ -559,7 +559,7 @@ private:
   /**
    * The `DrbCreated` trace source. Fired when DRB is created, i.e.
    * the RLC and PDCP entities are created for one logical channel.
-   * Exporting IMSI, cell ID, RNTI, and LCID
+   * Exporting IMSI, cell ID, RNTI, LCID.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
 

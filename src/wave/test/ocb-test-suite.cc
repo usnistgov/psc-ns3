@@ -28,6 +28,7 @@
 #include "ns3/packet-socket-address.h"
 #include "ns3/mobility-model.h"
 #include "ns3/yans-wifi-helper.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/position-allocator.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/mobility-helper.h"
@@ -259,7 +260,7 @@ OcbWifiMacTestCase::ConfigureApStaMode (Ptr<Node> static_node, Ptr<Node> mobile_
   wifiApMac.SetType ("ns3::ApWifiMac","Ssid", SsidValue (ssid));
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211p);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
                                 "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"));
@@ -278,7 +279,7 @@ OcbWifiMacTestCase::ConfigureAdhocMode (Ptr<Node> static_node, Ptr<Node> mobile_
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211p);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
                                 "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"));
@@ -353,7 +354,11 @@ OcbWifiMacTestCase::PostDeviceConfiguration (Ptr<Node> static_node, Ptr<Node> mo
   phytx_time = macassoc_time = phyrx_time = Time ();
   phytx_pos = macassoc_pos = phyrx_pos = Vector ();
 
-  Config::Connect ("/NodeList/1/DeviceList/*/Mac/Assoc", MakeCallback (&OcbWifiMacTestCase::MacAssoc, this));
+  if ( DynamicCast<StaWifiMac> (mobile_device->GetMac () ) )
+    {
+      // This trace is available only in a StaWifiMac
+      Config::Connect ("/NodeList/1/DeviceList/*/Mac/Assoc", MakeCallback (&OcbWifiMacTestCase::MacAssoc, this));
+    }
   Config::Connect ("/NodeList/1/DeviceList/*/Phy/State/RxOk", MakeCallback (&OcbWifiMacTestCase::PhyRxOkTrace, this));
   Config::Connect ("/NodeList/1/DeviceList/*/Phy/State/Tx", MakeCallback (&OcbWifiMacTestCase::PhyTxTrace, this));
 }
@@ -454,7 +459,7 @@ public:
 };
 
 OcbTestSuite::OcbTestSuite ()
-  : TestSuite ("wifi-80211p-ocb", UNIT)
+  : TestSuite ("wave-80211p-ocb", UNIT)
 {
   // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
   AddTestCase (new OcbWifiMacTestCase, TestCase::QUICK);

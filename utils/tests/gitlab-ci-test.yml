@@ -11,14 +11,14 @@
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
-    - ./test.py $VALGRIND $FULLNESS
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --disable-gtk --disable-python -d $MODE
+    - ./test.py $VALGRIND_FLAG $FULLNESS
   cache:
     paths:
       - $CCACHE_BASEDIR_VALUE/
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
-    VALGRIND: ""
+    VALGRIND_FLAG: ""
     FULLNESS: ""
 
 # Run the test.py script with files compiled in debug mode
@@ -71,12 +71,13 @@ weekly-test-debug:
   variables:
     COMPILER: g++
     MODE: debug
-    VALGRIND: -g
+    VALGRIND_FLAG: -g
   only:
     variables:
       - $RELEASE == "weekly"
   tags:
     - nsnam
+    - linux
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
@@ -88,12 +89,13 @@ weekly-test-release:
   variables:
     COMPILER: g++
     MODE: release
-    VALGRIND: -g
+    VALGRIND_FLAG: -g
   only:
     variables:
       - $RELEASE == "weekly"
   tags:
     - nsnam
+    - linux
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
@@ -105,12 +107,13 @@ weekly-test-optimized:
   variables:
     COMPILER: g++
     MODE: optimized
-    VALGRIND: -g
+    VALGRIND_FLAG: -g
   only:
     variables:
       - $RELEASE == "weekly"
   tags:
     - nsnam
+    - linux
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
@@ -128,6 +131,7 @@ weekly-test-takes-forever-optimized:
       - $RELEASE == "weekly"
   tags:
     - nsnam
+    - linux
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm

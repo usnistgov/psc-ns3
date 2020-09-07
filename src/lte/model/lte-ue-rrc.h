@@ -950,7 +950,7 @@ private:
   /**
    * The `DrbCreated` trace source. Fired when DRB is created, i.e.
    * the RLC and PDCP entities are created for one logical channel.
-   * Exporting IMSI, cell ID, RNTI, and LCID
+   * Exporting IMSI, cell ID, RNTI, LCID.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
   /**
@@ -1352,6 +1352,22 @@ private:
    * consecutive frames.
    */
   void DoResetSyncIndicationCounter ();
+
+  /**
+   * \brief Reset radio link failure parameters
+   *
+   * RLF timers and counters should be rest upon:
+   *
+   * - If the UE received N311 in Sync indications from the UE
+   *   PHY.
+   * - If the UE receives RRCConnectionReconfiguration including
+   *   the mobilityControlInfo (TS 36.331 sec 5.3.5.4)
+   *
+   * Inside this method the UE RRC also instructs the UE PHY to reset the
+   * RLF parameters so, it can start RLF detection again.
+   *
+   */
+  void ResetRlfParams ();
 
 public:
   /** 

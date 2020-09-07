@@ -106,6 +106,7 @@ sp_func_def_paren=Add
 sp_func_call_paren=Add
 sp_after_semi_for=Ignore
 sp_before_sparen=Ignore
+sp_before_ellipsis=Remove
 sp_type_func=Ignore
 sp_after_type=Ignore
 nl_class_leave_one_liners=True
@@ -448,7 +449,7 @@ def indent(source, debug, level):
                                    stdin = subprocess.PIPE,
                                    stdout = subprocess.PIPE,
                                    stderr = subprocess.PIPE,
-                                   text = True)
+                                   universal_newlines = True)
         (out, err) = uncrust.communicate('')
         if debug:
             sys.stderr.write(out)
@@ -489,7 +490,7 @@ def indent(source, debug, level):
                              stdin = subprocess.PIPE,
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE,
-                             text = True)
+                             universal_newlines = True)
     (out, err) = patch.communicate('')
     if debug:
         sys.stderr.write(out)

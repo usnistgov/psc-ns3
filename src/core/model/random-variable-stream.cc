@@ -36,6 +36,7 @@
 #include "unused.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>    // upper_bound
 
 /**
  * \file
@@ -481,21 +482,6 @@ ParetoRandomVariable::ParetoRandomVariable ()
   // by attributes
   NS_LOG_FUNCTION (this);
   NS_UNUSED (m_mean);
-}
-
-double
-ParetoRandomVariable::GetMean (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  double mean = std::numeric_limits<double>::infinity ();
-
-  if (m_shape > 1)
-    {
-      mean = m_shape * m_scale / (m_shape - 1);
-    }
-
-  return mean;
 }
 
 double
@@ -1532,12 +1518,13 @@ DeterministicRandomVariable::GetInteger (void)
 NS_OBJECT_ENSURE_REGISTERED (EmpiricalRandomVariable);
 
 // ValueCDF methods
-EmpiricalRandomVariable::ValueCDF::ValueCDF ()
+EmpiricalRandomVariable::ValueCDF::ValueCDF (void)
   : value (0.0),
     cdf (0.0)
 {
   NS_LOG_FUNCTION (this);
 }
+
 EmpiricalRandomVariable::ValueCDF::ValueCDF (double v, double c)
   : value (v),
     cdf (c)
@@ -1545,11 +1532,12 @@ EmpiricalRandomVariable::ValueCDF::ValueCDF (double v, double c)
   NS_LOG_FUNCTION (this << v << c);
   NS_ASSERT (c >= 0.0 && c <= 1.0);
 }
-EmpiricalRandomVariable::ValueCDF::ValueCDF (const ValueCDF& c)
-  : value (c.value),
-    cdf (c.cdf)
+
+bool
+operator < (EmpiricalRandomVariable::ValueCDF a,
+            EmpiricalRandomVariable::ValueCDF b)
 {
-  NS_LOG_FUNCTION (this << &c);
+  return a.cdf < b.cdf;
 }
 
 TypeId
@@ -1559,81 +1547,158 @@ EmpiricalRandomVariable::GetTypeId (void)
     .SetParent<RandomVariableStream>()
     .SetGroupName ("Core")
     .AddConstructor<EmpiricalRandomVariable> ()
+    .AddAttribute ("Interpolate",
+                   "Treat the CDF as a smooth distribution and interpolate, "
+                   "default is to treat the CDF as a histogram and sample.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&EmpiricalRandomVariable::m_interpolate),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
-EmpiricalRandomVariable::EmpiricalRandomVariable ()
-  :
-    m_validated (false)
+EmpiricalRandomVariable::EmpiricalRandomVariable (void)
+  : m_validated (false)
 {
   NS_LOG_FUNCTION (this);
 }
 
-double
-EmpiricalRandomVariable::GetValue (void)
+bool
+EmpiricalRandomVariable::SetInterpolate (bool interpolate)
 {
-  NS_LOG_FUNCTION (this);
-  // Return a value from the empirical distribution
-  // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
-  if (!m_validated)
-    {
-      Validate ();
-    }
-
-  // Get a uniform random variable in [0,1].
-  double r = Peek ()->RandU01 ();
-  if (IsAntithetic ())
-    {
-      r = (1 - r);
-    }
-
-  if (r <= m_emp.front ().cdf)
-    {
-      return m_emp.front ().value; // Less than first
-    }
-  if (r >= m_emp.back ().cdf)
-    {
-      return m_emp.back ().value;  // Greater than last
-    }
-  // Binary search
-  std::vector<ValueCDF>::size_type bottom = 0;
-  std::vector<ValueCDF>::size_type top = m_emp.size () - 1;
-  while (1)
-    {
-      std::vector<ValueCDF>::size_type c = (top + bottom) / 2;
-      if (r >= m_emp[c].cdf && r < m_emp[c + 1].cdf)
-        { // Found it
-          return Interpolate (m_emp[c].cdf, m_emp[c + 1].cdf,
-                              m_emp[c].value, m_emp[c + 1].value,
-                              r);
-        }
-      // Not here, adjust bounds
-      if (r < m_emp[c].cdf)
-        {
-          top    = c - 1;
-        }
-      else
-        {
-          bottom = c + 1;
-        }
-    }
+  NS_LOG_FUNCTION (this << interpolate);
+  bool prev = m_interpolate;
+  m_interpolate = interpolate;
+  return prev;
 }
 
 uint32_t
 EmpiricalRandomVariable::GetInteger (void)
 {
   NS_LOG_FUNCTION (this);
-  return (uint32_t)GetValue ();
+  return static_cast<uint32_t> (GetValue ());
 }
 
-void EmpiricalRandomVariable::CDF (double v, double c)
-{ // Add a new empirical datapoint to the empirical cdf
+bool
+EmpiricalRandomVariable::PreSample (double & value)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (!m_validated)
+    {
+      Validate ();
+    }
+ 
+  // Get a uniform random variable in [0, 1].
+  double r = Peek ()->RandU01 ();
+  if (IsAntithetic ())
+    {
+      r = (1 - r);
+    }
+ 
+  value = r;
+  bool valid = false;
+  // check extrema
+  if (r <= m_emp.front ().cdf)
+    {
+      value = m_emp.front ().value; // Less than first
+      valid = true;
+    }
+  else if (r >= m_emp.back ().cdf)
+    {
+      value = m_emp.back ().value;  // Greater than last
+      valid = true;
+    }
+  return valid;
+}
+
+double
+EmpiricalRandomVariable::GetValue (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  double value;
+  if (PreSample (value))
+    {
+      return value;
+    }
+  
+  // value now has the (unused) URNG selector
+  if (m_interpolate)
+    {
+      value = DoInterpolate (value);
+    }
+  else
+    {
+      value = DoSampleCDF (value);
+    }
+  return value;
+}
+
+double
+EmpiricalRandomVariable::DoSampleCDF (double r)
+{
+  NS_LOG_FUNCTION (this << r);
+  
+  ValueCDF selector (0, r);
+  auto bound = std::upper_bound (m_emp.begin (), m_emp.end (), selector);
+  
+  return bound->value;
+}
+
+double
+EmpiricalRandomVariable::Interpolate (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  double value;
+  if (PreSample (value))
+    {
+      return value;
+    }
+
+  // value now has the (unused) URNG selector
+  value = DoInterpolate (value);
+  return value;
+}
+
+double
+EmpiricalRandomVariable::DoInterpolate (double r)
+{
+  NS_LOG_FUNCTION (this << r);
+
+  // Return a value from the empirical distribution
+  // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
+
+  // search
+  ValueCDF selector (0, r);
+  auto upper = std::upper_bound (m_emp.begin (), m_emp.end (), selector);
+  auto lower = std::prev (upper, 1);
+  if (upper == m_emp.begin ())
+    {
+      lower = upper;
+    }
+
+  // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
+  double c1 = lower->cdf;
+  double c2 = upper->cdf;
+  double v1 = lower->value;
+  double v2 = upper->value;
+  
+  double value = (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
+  return value;
+}
+
+void
+EmpiricalRandomVariable::CDF (double v, double c)
+{
+  // Add a new empirical datapoint to the empirical cdf
   // NOTE.   These MUST be inserted in non-decreasing order
   NS_LOG_FUNCTION (this << v << c);
   m_emp.push_back (ValueCDF (v, c));
 }
 
-void EmpiricalRandomVariable::Validate ()
+void
+EmpiricalRandomVariable::Validate (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_emp.empty ())
@@ -1641,9 +1706,8 @@ void EmpiricalRandomVariable::Validate ()
       NS_FATAL_ERROR ("CDF is not initialized");
     }
   ValueCDF prior = m_emp[0];
-  for (std::vector<ValueCDF>::size_type i = 0; i < m_emp.size (); ++i)
+  for (auto current : m_emp)
     {
-      ValueCDF& current = m_emp[i];
       if (current.value < prior.value || current.cdf < prior.cdf)
         { // Error
           std::cerr << "Empirical Dist error,"
@@ -1660,13 +1724,6 @@ void EmpiricalRandomVariable::Validate ()
       NS_FATAL_ERROR ("CDF does not cover the whole distribution");
     }
   m_validated = true;
-}
-
-double EmpiricalRandomVariable::Interpolate (double c1, double c2,
-                                             double v1, double v2, double r)
-{ // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
-  NS_LOG_FUNCTION (this << c1 << c2 << v1 << v2 << r);
-  return (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
 }
 
 } // namespace ns3

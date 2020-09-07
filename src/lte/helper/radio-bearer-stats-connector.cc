@@ -309,10 +309,14 @@ RadioBearerStatsConnector::ConnectTracesDrbEnb (std::string context, uint64_t im
       arg->imsi = imsi;
       arg->cellId = cellId;
       arg->stats = m_pdcpStats;
-      Config::Connect (basePath + "/LtePdcp/TxPDU",
+      bool foundTxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/TxPDU",
                        MakeBoundCallback (&DlTxPduCallback, arg));
-      Config::Connect (basePath + "/LtePdcp/RxPDU",
+      bool foundRxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/RxPDU",
                        MakeBoundCallback (&UlRxPduCallback, arg));
+      if (!foundTxPdcp && !foundRxPdcp)
+        {
+          NS_LOG_WARN ("Unable to connect PDCP traces. This may happen if RlcSm is used");
+        }
     }
 }
 
@@ -341,10 +345,14 @@ RadioBearerStatsConnector::ConnectTracesDrbUe (std::string context, uint64_t ims
       arg->imsi = imsi;
       arg->cellId = cellId;
       arg->stats = m_pdcpStats;
-      Config::Connect (basePath + "/LtePdcp/TxPDU",
+      bool foundTxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/TxPDU",
                        MakeBoundCallback (&UlTxPduCallback, arg));
-      Config::Connect (basePath + "/LtePdcp/RxPDU",
+      bool foundRxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/RxPDU",
                        MakeBoundCallback (&DlRxPduCallback, arg));
+      if (!foundTxPdcp && !foundRxPdcp)
+        {
+          NS_LOG_WARN ("Unable to connect PDCP traces. This may happen if RlcSm is used");
+        }
     }
 }
 
