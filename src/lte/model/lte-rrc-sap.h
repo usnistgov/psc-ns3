@@ -1106,7 +1106,7 @@ public:
   {
     enum
     {
-      MS10, //!< Milliseconds
+      MS0, //!< Milliseconds
       MS50,
       MS100,
       MS150,
@@ -1120,10 +1120,26 @@ public:
       MS550,
       MS600,
       MS650,
+      MS700,
       MS750,
+      MS800,
+      MS850,
+      MS900,
+      MS950,
       MS1000,
       INVALID
     } period {INVALID};
+  };
+
+  struct SlMaxNumPerReserve
+  {
+    enum
+    {
+      N1, //Added for modeling
+      N2,
+      N3,
+      INVALID
+    } maxNumPerRes {INVALID};
   };
 
 
@@ -1272,7 +1288,7 @@ public:
    * \param subChSize The object of type LteRrcSap::SlSubchannelSize
    * \returns The unsigned integer representation of LteRrcSap::SlSubchannelSize
    */
-  static uint16_t GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize);
+  static uint16_t GetNrSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize);
 
   /**
    * \brief Get sidelink subchannel size enum.
@@ -1283,7 +1299,7 @@ public:
    * \param subChSize The sidelink subchannel size in PRBs
    * \returns The object of type LteRrcSap::SlSubchannelSize
    */
-  static LteRrcSap::SlSubchannelSize GetSlSubChSizeEnum (uint16_t subChSize);
+  static LteRrcSap::SlSubchannelSize GetNrSlSubChSizeEnum (uint16_t subChSize);
 
   /**
    * \brief Get sidelink sensing window value
@@ -1355,6 +1371,30 @@ public:
    */
   static LteRrcSap::SlResourceReservePeriod GetSlResoResvPrdEnum (uint16_t period);
 
+  /**
+   * \brief Get sidelink maximum number per reserve value
+   *
+   * This method converts the enum of type LteRrcSap::SlMaxNumPerReserve
+   * to its unsigned integer representation, such the, N2 is 2 slots,
+   * N3 is 3 slots, and so on. This value is a maximum number of reserved
+   * PSCCH/PSSCH resources that can be indicated by an SCI.
+   *
+   * \param slMaxReserve The object of type LteRrcSap::SlMaxNumPerReserve
+   * \returns The unsigned integer representation of LteRrcSap::SlMaxNumPerReserve
+   */
+  static uint8_t GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve);
+
+  /**
+   * \brief Get sidelink maximum number per reserve enum
+   *
+   * This method converts the sidelink maximum number per reserve value to
+   * an enum of type LteRrcSap::SlMaxNumPerReserve.
+   *
+   * \param slMaxReserveInt The sidelink maximum number per reserve value in number of slots
+   * \returns The object of type LteRrcSap::SlMaxNumPerReserve
+   */
+  static LteRrcSap::SlMaxNumPerReserve GetSlMaxNumPerReserveEnum (uint8_t slMaxReserveInt);
+
 
   /**
    * \brief SCS-SpecificCarrier information element
@@ -1386,7 +1426,7 @@ public:
     //UE in out-of-coverage scenarios
     uint16_t numerology {99}; //!< The numerology
     uint16_t symbolsPerSlots {0}; //!< Total number of symbols per slot
-    uint32_t rbPerRbg {0}; //!< Resource block per resource blok group
+    uint32_t rbPerRbg {0}; //!< Resource block per resource block group
     uint16_t bandwidth {0};
 
   };
@@ -1445,8 +1485,9 @@ public:
   {
     SlSensingWindow slSensingWindow; //!< Parameter that indicates the start of the sensing window.
     SlSelectionWindow slSelectionWindow; //!< Parameter that determines the end of the selection window in the resource selection for a TB with respect to priority indicated in SCI.
-    bool slMultiReserveResource; //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
+    bool slMultiReserveResource {false}; //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
     std::array <SlResourceReservePeriod, 16> slResourceReservePeriodList; //!< Set of possible resource reservation period allowed in the resource pool.
+    SlMaxNumPerReserve slMaxNumPerReserve; //!< Indicates the maximum number of reserved PSCCH/PSSCH resources that can be indicated by an SCI.
 
     //sl-CBR-Priority-TxConfigList-r16 //TODO
     //We probably going to simplify the RSRP threshold
@@ -1454,7 +1495,6 @@ public:
     //sl-ThresPSSCH-RSRP-List-r16 //TODO //!< Indicates a threshold used for sensing based UE autonomous resource selection.
 
     //sl-MultiReserveResource-r16 //TODO //!< Flag to enable the reservation of an initial transmission of a TB by an SCI associated with a different TB.
-    //sl-MaxNumPerReserve-r16 //TODO //!< Indicates the maximum number of reserved PSCCH/PSSCH resources that can be indicated by an SCI.
     //sl-ResourceReservePeriodList-r16 //TODO //!< Set of possible resource reservation period allowed in the resource pool.
 
      //since we do not support DMRS signals
@@ -1492,7 +1532,7 @@ public:
    */
   struct SlResourcePoolIdNr
   {
-    uint16_t id {333}; //!< Sidelink pool id. Valid range [1, 16]
+    uint16_t id {333}; //!< Sidelink pool id. Valid range [1, 16] by standard. In the simulator it is from [0, 15]
   };
 
   /**
@@ -1569,12 +1609,35 @@ public:
   };
 
   /**
+   * \brief SL-UE-SelectedConfig-r16
+   */
+  struct SlUeSelectedConfig
+  {
+    uint8_t SlProbResourceKeep {0}; /**< Indicates the probability with which
+                                         the UE keeps the current resource when
+                                         the resource reselection counter reaches
+                                         zero for sensing based UE autonomous
+                                         resource selection (see TS 38.321).
+                                         Standard values for this parameter are
+                                         0, 0.2, 0.4, 0.6, 0.8, however, in the
+                                         simulator we are not restricting it to
+                                         evaluate other values.
+                                         */
+
+    //slPrioritizationThres; //TODO
+    //slPsschTxConfigList; //TODO
+    //SlReselAfter; //TODO
+    //UlPrioritizationThres; //TODO
+  };
+
+  /**
    * \brief SL-PreconfigNR information element
    */
   struct SidelinkPreconfigNr
   {
     std::array <SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> slPreconfigFreqInfoList; //!< List containing per carrier configuration for NR sidelink communication
     SlPreconfigGeneralNr slPreconfigGeneral;
+    SlUeSelectedConfig slUeSelectedPreConfig;
     /*
     sl-PreconfigNR-AnchorCarrierFreqList-r16
     sl-PreconfigEUTRA-AnchorCarrierFreqList-r16

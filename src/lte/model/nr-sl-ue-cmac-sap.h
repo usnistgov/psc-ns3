@@ -90,27 +90,31 @@ public:
    *
    * Adds transmission pool for NR Sidelink communication
    *
-   * \param remoteL2Id The destination Layer 2 ID
    * \param pool The pointer to the NrSlCommResourcePool
    */
-  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool) = 0;
+  virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
    * \brief Add NR Sidelink communication reception pool
    *
    * Adds reception pool for NR Sidelink communication
    *
-   * \param remoteL2Id The destination Layer 2 ID
    * \param pool The pointer to the NrSlCommResourcePool
    */
-  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool) = 0;
+  virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**
-   * \brief Add NR Sidelink remote Layer 2 Id
+   * \brief Set Sidelink probability resource keep
    *
-   * Adds remote layer 2 id to list to destinations
-   *
-   * \param remoteL2Id The destination Layer 2 ID
+   * \param prob Indicates the probability with which the UE keeps the
+   *        current resource when the resource reselection counter reaches zero
+   *        for sensing based UE autonomous resource selection (see TS 38.321)
    */
-  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id) = 0;
+  virtual void SetSlProbResoKeep (uint8_t prob) = 0;
+  /**
+   * \brief Set Sidelink source layer 2 id
+   *
+   * \param srcL2Id The Sidelink layer 2 id of the source
+   */
+  virtual void SetSourceL2Id (uint32_t srcL2Id) = 0;
 };
 
 /**
@@ -138,9 +142,10 @@ public:
   virtual void AddNrSlLc (const SidelinkLogicalChannelInfo &slLcInfo, NrSlMacSapUser* msu);
   virtual void RemoveNrSlLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id);
   virtual void ResetNrSlLcMap ();
-  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool);
-  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool);
-  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id);
+  virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
+  virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
+  virtual void SetSlProbResoKeep (uint8_t prob);
+  virtual void SetSourceL2Id (uint32_t srcL2Id);
 
 private:
   C* m_mac; ///< the MAC class
@@ -173,24 +178,29 @@ void MemberNrSlUeCmacSapProvider<C>::ResetNrSlLcMap ()
 
 template <class C>
 void
-MemberNrSlUeCmacSapProvider<C>::AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool)
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool)
 {
-  m_mac->DoAddNrSlCommTxPool (remoteL2Id, txPool);
+  m_mac->DoAddNrSlCommTxPool (txPool);
 }
 
 template <class C>
 void
-MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool)
+MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool)
 {
-  m_mac->DoAddNrSlCommRxPool (remoteL2Id, rxPool);
+  m_mac->DoAddNrSlCommRxPool (rxPool);
 }
 
 template <class C>
-void MemberNrSlUeCmacSapProvider<C>::AddNrSlRemoteL2Id (uint32_t remoteL2Id)
+void MemberNrSlUeCmacSapProvider<C>::SetSlProbResoKeep (uint8_t prob)
 {
-  m_mac->DoAddNrSlRemoteL2Id (remoteL2Id);
+  m_mac->DoSetSlProbResoKeep (prob);
 }
 
+template <class C>
+void MemberNrSlUeCmacSapProvider<C>::SetSourceL2Id (uint32_t srcL2Id)
+{
+  m_mac->DoSetSourceL2Id (srcL2Id);
+}
 
 
 /**

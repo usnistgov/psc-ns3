@@ -51,27 +51,23 @@ public:
    *
    * Adds transmission pool for NR Sidelink communication
    *
-   * \param remoteL2Id The destination Layer 2 ID
    * \param pool The pointer to the NrSlCommResourcePool
    */
-  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool) = 0;
+  virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
    * \brief Add NR Sidelink communication reception pool
    *
    * Adds reception pool for NR Sidelink communication
    *
-   * \param remoteL2Id The destination Layer 2 ID
    * \param pool The pointer to the NrSlCommResourcePool
    */
-  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool) = 0;
+  virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**
-   * \brief Add NR Sidelink remote Layer 2 Id
+   * \brief Ask the PHY the bandwidth in RBs
    *
-   * Adds remote layer 2 id to list to destinations
-   *
-   * \param remoteL2Id The destination Layer 2 ID
+   * \return the bandwidth in RBs
    */
-  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id) = 0;
+  virtual uint32_t GetBwInRbs () const = 0;
 
 };
 
@@ -121,9 +117,9 @@ public:
 
   // methods inherited from NrSlUeCphySapProvider go here
   //NR Sidelink communication
-  virtual void AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool);
-  virtual void AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool);
-  virtual void AddNrSlRemoteL2Id (uint32_t remoteL2Id);
+  virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
+  virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
+  virtual uint32_t GetBwInRbs () const;
 
 private:
   MemberNrSlUeCphySapProvider ();
@@ -140,22 +136,23 @@ MemberNrSlUeCphySapProvider<C>::MemberNrSlUeCphySapProvider (C* owner)
 
 template <class C>
 void
-MemberNrSlUeCphySapProvider<C>::AddNrSlCommTxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> txPool)
+MemberNrSlUeCphySapProvider<C>::AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool)
 {
-  m_owner->DoAddNrSlCommTxPool (remoteL2Id, txPool);
+  m_owner->DoAddNrSlCommTxPool (txPool);
 }
 
 template <class C>
 void
-MemberNrSlUeCphySapProvider<C>::AddNrSlCommRxPool (uint32_t remoteL2Id, Ptr<const NrSlCommResourcePool> rxPool)
+MemberNrSlUeCphySapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool)
 {
-  m_owner->DoAddNrSlCommRxPool (remoteL2Id, rxPool);
+  m_owner->DoAddNrSlCommRxPool (rxPool);
 }
 
 template <class C>
-void MemberNrSlUeCphySapProvider<C>::AddNrSlRemoteL2Id (uint32_t remoteL2Id)
+uint32_t
+MemberNrSlUeCphySapProvider<C>::GetBwInRbs () const
 {
-  m_owner->DoAddNrSlRemoteL2Id (remoteL2Id);
+  return m_owner->DoGetBwInRbs ();
 }
 
 

@@ -98,6 +98,8 @@ NrSlUeRrc::SetSourceL2Id (uint32_t srcL2Id)
 {
   NS_LOG_FUNCTION (this);
   m_srcL2Id = srcL2Id;
+  //Set source L2 id in RCC
+  m_nrSlUeRrcSapProvider->SetSourceL2Id (srcL2Id);
 }
 
 uint32_t
@@ -113,6 +115,8 @@ NrSlUeRrc::SetNrSlPreconfiguration (const LteRrcSap::SidelinkPreconfigNr &precon
   NS_LOG_FUNCTION (this);
   m_preconfiguration = preconfiguration;
   SetTddPattern ();
+  //Tell RRC to populate pools
+  m_nrSlUeRrcSapProvider->PopulatePools ();
 }
 
 void
@@ -305,13 +309,13 @@ NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-NrSlUeRrc::GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
+NrSlUeRrc::GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id)
 {
   NS_LOG_FUNCTION (this);
   Ptr<NrSlDataRadioBearerInfo> slrb = nullptr;
-  NrSlDrbMapPerL2Id::iterator destIt = m_slDrbMap.find (remoteL2Id);
-  NS_ASSERT_MSG (destIt != m_slDrbMap.end (), "Unable to find DRB for destination L2 Id " << remoteL2Id);
-  NS_LOG_LOGIC ("Searching SL DRB " << srcL2Id << " -> " << remoteL2Id);
+  NrSlDrbMapPerL2Id::iterator destIt = m_slDrbMap.find (dstL2Id);
+  NS_ASSERT_MSG (destIt != m_slDrbMap.end (), "Unable to find DRB for destination L2 Id " << dstL2Id);
+  NS_LOG_LOGIC ("Searching SL DRB " << srcL2Id << " -> " << dstL2Id);
   // Since we do not support multiple bearers for a single destination,
   // the size of the LC map should be equal to 1, thus, we can just return
   // the NrSlDataRadioBearerInfo of the LC for the destination.
@@ -322,10 +326,10 @@ NrSlUeRrc::GetSidelinkRadioBearer (uint32_t srcL2Id, uint32_t remoteL2Id)
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-NrSlUeRrc::DoGetSidelinkRadioBearer (uint32_t remoteL2Id)
+NrSlUeRrc::DoGetSidelinkDataRadioBearer (uint32_t dstL2Id)
 {
   NS_LOG_FUNCTION (this);
-  return GetSidelinkRadioBearer (m_srcL2Id, remoteL2Id);
+  return GetSidelinkDataRadioBearer (m_srcL2Id, dstL2Id);
 }
 
 uint8_t

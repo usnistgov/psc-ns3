@@ -401,7 +401,7 @@ LteRrcSap::GetSlScalingEnum (float slScaling)
 }
 
 uint16_t
-LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
+LteRrcSap::GetNrSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
 {
   uint16_t subChSizeInt = 0;
   switch (subChSize.numPrbs)
@@ -435,7 +435,7 @@ LteRrcSap::GetSlSubChSizeValue (const LteRrcSap::SlSubchannelSize &subChSize)
 }
 
 LteRrcSap::SlSubchannelSize
-LteRrcSap::GetSlSubChSizeEnum (uint16_t subChSize)
+LteRrcSap::GetNrSlSubChSizeEnum (uint16_t subChSize)
 {
   SlSubchannelSize slSubchannelSizeEnum;
   switch (subChSize)
@@ -564,8 +564,8 @@ LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &peri
   uint16_t perodInt = 0;
   switch (period.period)
   {
-    case SlResourceReservePeriod::MS10:
-      perodInt = 10;
+    case SlResourceReservePeriod::MS0:
+      perodInt = 0;
       break;
     case SlResourceReservePeriod::MS50:
       perodInt = 50;
@@ -603,8 +603,23 @@ LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &peri
     case SlResourceReservePeriod::MS650:
       perodInt = 650;
       break;
-    case SlResourceReservePeriod::MS750:
+    case SlResourceReservePeriod::MS700:
       perodInt = 700;
+      break;
+    case SlResourceReservePeriod::MS750:
+      perodInt = 750;
+      break;
+    case SlResourceReservePeriod::MS800:
+      perodInt = 800;
+      break;
+    case SlResourceReservePeriod::MS850:
+      perodInt = 850;
+      break;
+    case SlResourceReservePeriod::MS900:
+      perodInt = 900;
+      break;
+    case SlResourceReservePeriod::MS950:
+      perodInt = 950;
       break;
     case SlResourceReservePeriod::MS1000:
       perodInt = 1000;
@@ -622,8 +637,8 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
   SlResourceReservePeriod periodEnum;
   switch (period)
   {
-    case 10:
-      periodEnum.period = SlResourceReservePeriod::MS10;
+    case 0:
+      periodEnum.period = SlResourceReservePeriod::MS0;
       break;
     case 50:
       periodEnum.period = SlResourceReservePeriod::MS50;
@@ -664,8 +679,23 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
     case 650:
       periodEnum.period = SlResourceReservePeriod::MS650;
       break;
+    case 700:
+      periodEnum.period = SlResourceReservePeriod::MS700;
+      break;
     case 750:
       periodEnum.period = SlResourceReservePeriod::MS750;
+      break;
+    case 800:
+      periodEnum.period = SlResourceReservePeriod::MS800;
+      break;
+    case 850:
+      periodEnum.period = SlResourceReservePeriod::MS850;
+      break;
+    case 900:
+      periodEnum.period = SlResourceReservePeriod::MS900;
+      break;
+    case 950:
+      periodEnum.period = SlResourceReservePeriod::MS950;
       break;
     case 1000:
       periodEnum.period = SlResourceReservePeriod::MS1000;
@@ -675,6 +705,50 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
   }
 
   return periodEnum;
+}
+
+uint8_t
+LteRrcSap::GetSlMaxNumPerReserveValue (const LteRrcSap::SlMaxNumPerReserve &slMaxReserve)
+{
+  uint8_t maxResInt = 0;
+  switch (slMaxReserve.maxNumPerRes)
+  {
+    case SlMaxNumPerReserve::N1:
+      maxResInt = 1;
+      break;
+    case SlMaxNumPerReserve::N2:
+      maxResInt = 2;
+      break;
+    case SlMaxNumPerReserve::N3:
+      maxResInt = 3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slMaxReserve.maxNumPerRes << " LteRrcSap::SlMaxNumPerReserve");
+  }
+
+  return maxResInt;
+}
+
+LteRrcSap::SlMaxNumPerReserve
+LteRrcSap::GetSlMaxNumPerReserveEnum (uint8_t slMaxReserveInt)
+{
+  SlMaxNumPerReserve maxResPerEnum;
+  switch (slMaxReserveInt)
+  {
+    case 1:
+      maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N1;
+      break;
+    case 2:
+      maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N2;
+      break;
+    case 3:
+      maxResPerEnum.maxNumPerRes = SlMaxNumPerReserve::N3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid sidelink value " << +slMaxReserveInt << " used for number SlMaxNumPerReserve");
+  }
+
+  return maxResPerEnum;
 }
 
 

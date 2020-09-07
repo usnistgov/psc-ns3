@@ -3473,23 +3473,23 @@ LteUeRrc::DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParamet
 }
 
 void
-LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id)
+LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
 {
-  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. Remote layer 2 id " << remoteL2Id);
+  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. destination layer 2 id " << dstL2Id);
   //Find the PDCP for NR Sidelink transmission
-  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkRadioBearer (remoteL2Id);
+  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (dstL2Id);
 
   //If there are multiple bearers, hence, multiple LCs, for a destination the
   //the NAS layer should be aware about this. That is, it should give RRC a
   //bearer id, and RRC should map it to a right LC.
-  NS_ASSERT_MSG (slDrb, "could not find Sidelink data radio bearer for remote = " << remoteL2Id);
+  NS_ASSERT_MSG (slDrb, "could not find Sidelink data radio bearer for remote = " << dstL2Id);
 
   auto params = NrSlPdcpSapProvider::NrSlTransmitPdcpSduParameters (packet, m_rnti,
                                                                     slDrb->m_logicalChannelIdentity,
                                                                     NrSlPdcpSapUser::IP_SDU);
 
   NS_LOG_LOGIC (this << " RNTI=" << m_rnti << " sending packet " << packet
-                     << " on NR SL DRB for destination " << remoteL2Id
+                     << " on NR SL DRB for destination " << dstL2Id
                      << " (LCID " << (uint32_t) params.lcId << ")"
                      << " (" << packet->GetSize () << " bytes)");
 
@@ -3497,19 +3497,37 @@ LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t remoteL2Id)
 }
 
 void
-LteUeRrc::DoActivateNrSlRadioBearer (uint32_t remoteL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+LteUeRrc::DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
 {
-  NS_LOG_FUNCTION (this << remoteL2Id << isTransmit << isReceive << isUnicast);
+  NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive << isUnicast);
   if (!isUnicast)
     {
-      ActivateNrSlDrb (remoteL2Id, isTransmit, isReceive);
+      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive);
     }
 }
 
 void
-LteUeRrc::ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive)
+LteUeRrc::DoPopulatePools ()
 {
-  NS_LOG_FUNCTION (this << remoteL2Id << isTransmit << isReceive);
+  NS_LOG_FUNCTION (this);
+  PopulateNrSlPools ();
+}
+
+void
+LteUeRrc::DoSetSourceL2Id (uint32_t srcL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  m_srcL2Id = srcL2Id;
+  for (const auto it : GetNrSlBwpIdContainer ())
+    {
+      m_nrSlUeCmacSapProvider.at (it)->SetSourceL2Id (srcL2Id);
+    }
+}
+
+void
+LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
+{
+  NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive);
 
   switch (m_state)
   {
@@ -3531,21 +3549,13 @@ LteUeRrc::ActivateNrSlDrb (uint32_t remoteL2Id, bool isTransmit, bool isReceive)
 
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_nrSlRrcSapUser->GetSourceL2Id (), remoteL2Id, m_nrSlRrcSapUser->GetNextLcid (remoteL2Id));
-          NS_LOG_INFO ("Created new TX SLRB for remote id " << remoteL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
-          NS_LOG_INFO ("Now Configuring Tx pool");
-          PopulateNrSlPools (remoteL2Id, isTransmit);
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
+          NS_LOG_INFO ("Created new TX SLRB for remote id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
-      if (isReceive) // only populate Rx pool info if rx == true
-        {
-          NS_LOG_INFO ("Configuring Rx pool");
-          //Configure receiving pool, we use the same tx pools for reception
-          PopulateNrSlPools (remoteL2Id, false); //false to indicate reception
-        }
       //Notify NAS
-      m_asSapUser->NotifyNrSlRadioBearerActivated (remoteL2Id);
-      //m_nrSlRrcSapUser->NotifyNrSlRadioBearerActivated (remoteL2Id); I dont see the need of for now
+      m_asSapUser->NotifyNrSlRadioBearerActivated (dstL2Id);
+      //m_nrSlRrcSapUser->NotifyNrSlRadioBearerActivated (dstL2Id); I dont see the need of for now
       break;
 /*
     case IDLE_WAIT_SIB2:
@@ -3600,15 +3610,15 @@ LteUeRrc::SetOutofCovrgUeRnti ()
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
+LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ABORT_MSG_IF ((srcL2Id == 0 || destL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
+  NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
 
   NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo lcInfo;
   lcInfo.srcL2Id = srcL2Id;
-  lcInfo.dstL2Id = destL2Id;
+  lcInfo.dstL2Id = dstL2Id;
   lcInfo.lcId = lcid;
   lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
   //following parameters have no impact at the moment
@@ -3629,7 +3639,7 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
   slDrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
   slDrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
 
-  if (m_nrSlRrcSapUser->GetSourceL2Id () == srcL2Id)
+  if (m_srcL2Id == srcL2Id)
     {
       //Bearer for transmission
       m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
@@ -3692,9 +3702,11 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t destL2Id, uint8_t lcid)
 }
 
 void
-LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
+LteUeRrc::PopulateNrSlPools ()
 {
   NS_LOG_FUNCTION (this);
+
+  NS_LOG_DEBUG ("Adding pool for IMSI " << m_imsi << " srcL2 Id " << m_srcL2Id);
 
   const LteRrcSap::SidelinkPreconfigNr preConfig = m_nrSlRrcSapUser->GetNrSlPreconfiguration ();
 
@@ -3704,13 +3716,13 @@ LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
   Ptr<NrSlCommResourcePool> slPool; // this pointer would be communicated to the MAC and PHY
 
   //UE RRC will set these maps in NrSlCommResourcePool
-  std::unordered_map<uint16_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > mapPerBwp;
+  std::unordered_map<uint8_t, std::unordered_map <uint16_t, std::vector <std::bitset<1>>> > mapPerBwp;
   std::unordered_map <uint16_t, std::vector <std::bitset<1>>> mapPerPool;
 
   //For sanity check
   std::set <uint8_t> bwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
 
-  for (uint16_t index = 0; index < slBwpList.size (); ++index)
+  for (uint8_t index = 0; index < slBwpList.size (); ++index)
     {
       //index of slBwpList is used as BWP id
       //send SL pool to only that BWP for which SlBwpGeneric and SlBwpPoolConfigCommonNr are configured.
@@ -3725,12 +3737,17 @@ LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
             {
               if (it.haveSlResourcePoolConfigNr) // if this true, it means pools are set
                 {
+                  //check if subchannel size in RBs is less or equal to the total
+                  //available BW is RBs
+                  uint16_t sbChSizeInRbs = LteRrcSap::GetNrSlSubChSizeValue (it.slResourcePool.slSubchannelSize);
+                  uint32_t bwInRbs = m_nrSlUeCphySapProvider.at (index)->GetBwInRbs ();
+                  NS_ASSERT_MSG (sbChSizeInRbs <= bwInRbs, "Incorrect Subchannel size of " << sbChSizeInRbs << " RBs. Must be less or equal to the available BW of " << bwInRbs << " RBs");
                   std::vector <std::bitset<1>> physicalPool = m_nrSlRrcSapUser->GetPhysicalSlPool (it.slResourcePool.slTimeResource);
                   mapPerPool.emplace (std::make_pair (it.slResourcePoolId.id, physicalPool));
                 }
             }
 
-          NS_ASSERT_MSG (mapPerPool.size () > 0, "No SL pool set for BWP " << index);
+          NS_ASSERT_MSG (mapPerPool.size () > 0, "No SL pool set for BWP " << +index);
 
           mapPerBwp.emplace (std::make_pair (index, mapPerPool));
         }
@@ -3739,25 +3756,19 @@ LteUeRrc::PopulateNrSlPools (uint32_t remoteL2Id, bool isTransmit)
         {
           slPool = CreateObject <NrSlCommResourcePool> ();
           //set the slPreconfigFreqInfoList
-          slPool->SetSlPreConfigFreqInfoList (preConfig.slPreconfigFreqInfoList);
+          slPool->SetNrSlPreConfigFreqInfoList (preConfig.slPreconfigFreqInfoList);
           //set the PhysicalSlPoolMap
-          slPool->SetPhysicalSlPoolMap (mapPerBwp);
-          if (isTransmit)
-            {
-              NS_LOG_INFO ("Configuring TX pool for BWP " << index << " IMSI " << m_imsi);
-              m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommTxPool (remoteL2Id, slPool);
-              m_nrSlUeCphySapProvider.at (index)->AddNrSlCommTxPool (remoteL2Id, slPool);
-            }
-          else
-            {
-              NS_LOG_INFO("Configuring RX pool for BWP " << index << " IMSI " << m_imsi);
-              m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommRxPool (remoteL2Id, slPool);
-              m_nrSlUeCphySapProvider.at (index)->AddNrSlCommRxPool (remoteL2Id, slPool);
-            }
+          slPool->SetNrSlPhysicalPoolMap (mapPerBwp);
+          slPool->SetNrSlSchedulingType (NrSlCommResourcePool::UE_SELECTED);
 
-          m_nrSlUeCmacSapProvider.at (index)->AddNrSlRemoteL2Id (remoteL2Id);
-          m_nrSlUeCphySapProvider.at (index)->AddNrSlRemoteL2Id (remoteL2Id);
+          NS_LOG_INFO ("Configuring TX pool for BWP " << +index << " IMSI " << m_imsi);
+          m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommTxPool (slPool);
+          m_nrSlUeCmacSapProvider.at (index)->SetSlProbResoKeep (preConfig.slUeSelectedPreConfig.SlProbResourceKeep);
+          m_nrSlUeCphySapProvider.at (index)->AddNrSlCommTxPool (slPool);
 
+          NS_LOG_INFO("Configuring RX pool for BWP " << +index << " IMSI " << m_imsi);
+          m_nrSlUeCmacSapProvider.at (index)->AddNrSlCommRxPool (slPool);
+          m_nrSlUeCphySapProvider.at (index)->AddNrSlCommRxPool (slPool);
           mapPerPool.clear ();
           mapPerBwp.clear ();
         }

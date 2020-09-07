@@ -264,6 +264,7 @@ public:
    * \brief Activate NR Sidelink bearer
    *
    * \param tft The bearer information
+   * \pram poolId The id of the pool used for TX and RX
    */
   void ActivateNrSlBearer (Ptr<LteSlTft> tft);
 
@@ -272,9 +273,9 @@ private:
   /**
    * \brief Notify Nr Sidelink radio bearer activated function
    *
-   * \param remoteL2Id The remote L2 id
+   * \param dstL2Id The destination L2 id
    */
-  void DoNotifyNrSlRadioBearerActivated (uint32_t remoteL2Id);
+  void DoNotifyNrSlRadioBearerActivated (uint32_t dstL2Id);
 
   std::list<Ptr<LteSlTft> > m_pendingSlBearersList; ///< pending NR Sidelink bearers list
 

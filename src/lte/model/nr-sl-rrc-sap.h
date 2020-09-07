@@ -84,16 +84,10 @@ public:
   /**
    * \brief Get NR Sidelink data radio bearer
    *
-   * \param remoteL2Id The remote/destination layer 2 id
+   * \param dstL2Id The remote/destination layer 2 id
    * \return The NrSlDataRadioBearerInfo
    */
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t remoteL2Id) = 0;
-  /**
-   * \brief Get Sidelink source layer 2 id
-   *
-   * \return The Sidelink layer 2 id of the source
-   */
-  virtual uint32_t GetSourceL2Id () = 0 ;
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id) = 0;
   /**
    * \brief Get next LCID for setting up NR SL DRB towards the given destination
    *
@@ -124,6 +118,21 @@ public:
    * \brief Destructor
    */
   virtual ~NrSlUeRrcSapProvider ();
+  /**
+   * \brief Populate NR Sidelink pools
+   *
+   * After getting the pre-configuration
+   * NrSlUeRrc instruct the LteUeRrc to
+   * populate the pools.
+   *
+   */
+  virtual void PopulatePools () = 0 ;
+  /**
+   * \brief Set Sidelink source layer 2 id
+   *
+   * \param srcL2Id The Sidelink layer 2 id of the source
+   */
+  virtual void SetSourceL2Id (uint32_t srcL2Id) = 0;
 
 
 };
@@ -156,8 +165,7 @@ public:
   virtual const std::set<uint8_t> GetBwpIdContainer ();
   virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRadioBearer (uint32_t remoteL2Id);
-  virtual uint32_t GetSourceL2Id ();
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
 
 
@@ -203,29 +211,22 @@ template <class C>
 void
 MemberNrSlUeRrcSapUser<C>::AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
 {
-  return m_owner->DoAddNrSlDataRadioBearer (slDrb);
+  m_owner->DoAddNrSlDataRadioBearer (slDrb);
 }
 
 template <class C>
 void
 MemberNrSlUeRrcSapUser<C>::AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
 {
-  return m_owner->DoAddNrSlRxDataRadioBearer (slRxDrb);
+  m_owner->DoAddNrSlRxDataRadioBearer (slRxDrb);
 }
 
 
 template <class C>
 Ptr<NrSlDataRadioBearerInfo>
-MemberNrSlUeRrcSapUser<C>::GetSidelinkRadioBearer (uint32_t remoteL2Id)
+MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t dstL2Id)
 {
-  return m_owner->DoGetSidelinkRadioBearer (remoteL2Id);
-}
-
-template <class C>
-uint32_t
-MemberNrSlUeRrcSapUser<C>::GetSourceL2Id ()
-{
-  return m_owner->DoGetSourceL2Id ();
+  return m_owner->DoGetSidelinkDataRadioBearer (dstL2Id);
 }
 
 template <class C>
@@ -252,8 +253,9 @@ public:
    */
   MemberNrSlUeRrcSapProvider (C* owner);
 
-  // inherited from NRSlUeRrcSapUser
-//  virtual void Setup (SetupParameters params);
+  // inherited from NRSlUeRrcSapProvider
+  virtual void PopulatePools ();
+  virtual void SetSourceL2Id (uint32_t srcL2Id);
 
 
 private:
@@ -272,14 +274,21 @@ MemberNrSlUeRrcSapProvider<C>::MemberNrSlUeRrcSapProvider ()
 {
 }
 
-/*
+
 template <class C>
 void
-MemberNrSlUeRrcSapProvider<C>::Setup (SetupParameters params)
+MemberNrSlUeRrcSapProvider<C>::PopulatePools ()
 {
-  m_owner->DoSetup (params);
+  m_owner->DoPopulatePools ();
 }
-*/
+
+template <class C>
+void
+MemberNrSlUeRrcSapProvider<C>::SetSourceL2Id (uint32_t srsL2Id)
+{
+  m_owner->DoSetSourceL2Id (srsL2Id);
+}
+
 
 
 
