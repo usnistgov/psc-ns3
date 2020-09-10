@@ -741,11 +741,20 @@ McpttOnNetworkFloorArbitrator::DoDispose (void)
   m_t4 = 0;
   m_t7 = 0;
   m_t20 = 0;
+  if (m_dualControl)
+    {
+      m_dualControl->Dispose ();
+      m_dualControl = 0;
+    }
 
   for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
   {
-    *it = 0;
+    (*it)->Dispose ();
   }
+  m_participants.clear ();
+  m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
+  m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
+  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
 void

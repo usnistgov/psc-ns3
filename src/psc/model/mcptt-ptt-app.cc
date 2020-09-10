@@ -638,6 +638,10 @@ McpttPttApp::DoDispose (void)
   m_selectedCall = 0;
   m_callChannels.clear ();
   m_callChannelReferenceCount.clear ();
+  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    {
+      it->second->Dispose ();
+    }
   m_calls.clear ();
   m_onNetworkCalls.clear ();
   m_offNetworkCalls.clear ();

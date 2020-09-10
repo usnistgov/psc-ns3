@@ -282,6 +282,9 @@ McpttOnNetworkFloorDualControl::DoDispose (void)
   m_state = 0;
   m_t11 = 0;
   m_t12 = 0;
+  m_rxCb = MakeNullCallback<void, const McpttFloorMsg&> ();
+  m_txCb = MakeNullCallback<void, const McpttFloorMsg&> ();
+  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
 void

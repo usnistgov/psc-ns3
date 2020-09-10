@@ -394,6 +394,8 @@ McpttServerCallMachineGroupPrearranged::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_serverCall = 0;
+  m_state = 0;
+  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
   McpttServerCallMachine::DoDispose ();
 }
 

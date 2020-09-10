@@ -3314,7 +3314,8 @@ McpttCallReleasePendingUserAction2::McpttCallReleasePendingUserAction2 (const st
     m_ueATfg5Exp (false),
     m_ueBRndVals (0),
     m_ueBTfg2Exp (false),
-    m_ueBTxAnnoun (false)
+    m_ueBTxAnnoun (false),
+    m_ueCRxAnnoun (false)
 { }
 
 McpttCallReleasePendingUserAction2::~McpttCallReleasePendingUserAction2 (void)

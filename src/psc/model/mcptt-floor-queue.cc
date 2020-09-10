@@ -204,21 +204,19 @@ McpttFloorQueue::Pull (uint32_t userId)
 {
   NS_LOG_FUNCTION (this << userId);
 
-  bool found = false;
-  for (std::list<McpttQueuedUserInfo>::iterator it = m_users.begin (); it != m_users.end () && !found; it++)
+  for (std::list<McpttQueuedUserInfo>::iterator it = m_users.begin (); it != m_users.end (); it++)
     {
       McpttFloorMsgFieldUserId idField = it->GetUserId ();
       uint32_t tempUserId = idField.GetUserId ();
 
-      found = (tempUserId == userId);
-
-      if (found == true)
+      if (tempUserId == userId)
         {
           m_users.erase (it);
+          return true;
         }
     }
 
-  return found;
+  return false;
 }
 
 void

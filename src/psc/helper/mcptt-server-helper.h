@@ -101,99 +101,6 @@ public:
                       std::string n5 = "", const AttributeValue& v5 = EmptyAttributeValue (),
                       std::string n6 = "", const AttributeValue& v6 = EmptyAttributeValue (),
                       std::string n7 = "", const AttributeValue& v7 = EmptyAttributeValue ());
- /**
-  * Configures the floor control arbitrator object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetDefaultArbitrator (std::string tid,
-                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
-  * Configures the dual floor control object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- void SetDefaultDualControl (std::string tid,
-                              std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                              std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                              std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                              std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                              std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                              std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                              std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                              std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
-  * Configures the floor towards participant object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetDefaultParticipant (std::string tid,
-                              std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                              std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                              std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                              std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                              std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                              std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                              std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                              std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
-  * Sets the server clients up for communication without the use of call control.
-  * \param server The server application.
-  * \param client The client applications.
-  */
- virtual void SetupFloorControl (const ApplicationContainer& server, const ApplicationContainer& clients);
 protected:
  /**
   * \brief Install an ns3::McpttServerApp on the node.
@@ -204,9 +111,6 @@ protected:
  Ptr<McpttServerApp> InstallPriv (Ptr<Node> node);
 private:
  ObjectFactory m_serverFactory; //!< The MCPTT server object factory.
- ObjectFactory m_arbitratorFac; //!< The floor arbitrator factory.
- ObjectFactory m_dualControlFac; //!< The dual floor control factory
- ObjectFactory m_participantFac; //!< The floor towards participant factory.
 };
 
 } // namespace ns3

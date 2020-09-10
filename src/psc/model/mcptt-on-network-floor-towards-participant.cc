@@ -425,11 +425,16 @@ McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
+  m_floorChan->Dispose ();
   m_floorChan = 0;
+  m_mediaChan->Dispose ();
   m_mediaChan = 0;
   m_owner = 0;
   m_state = 0;
   m_t8 = 0;
+  m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
+  m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
+  m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
 }
 
 void

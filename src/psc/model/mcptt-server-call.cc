@@ -264,10 +264,29 @@ McpttServerCall::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetFloorChan (0);
-  SetArbitrator (0);
-  SetMediaChan (0);
+  if (GetArbitrator ())
+    {
+      GetArbitrator ()->Dispose ();
+      SetArbitrator (0);
+    }
+  if (GetFloorChan ())
+    {
+      GetFloorChan ()->Dispose ();
+      SetFloorChan (0);
+    }
+  if (GetMediaChan ())
+    {
+      GetMediaChan ()->Dispose ();
+      SetMediaChan (0);
+    }
+  if (GetCallMachine ())
+    {
+      GetCallMachine ()->Dispose ();
+      SetCallMachine (0);
+    }
   SetOwner (0);
+  m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
+  m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
 
   Object::DoDispose ();
 }

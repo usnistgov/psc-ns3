@@ -206,7 +206,7 @@ public:
  virtual void Stop (void);
 protected:
  /**
-  * \brief Disposes of the McpttLfloorMachine.
+  * \brief Disposes of the McpttFloorMachine.
   */
  virtual void DoDispose (void);
  /**

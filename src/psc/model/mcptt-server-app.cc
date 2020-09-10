@@ -135,8 +135,16 @@ void
 McpttServerApp::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    {
+      it->second->Dispose ();
+    }
   m_calls.clear ();
-  m_callChan = 0;
+  if (m_callChan)
+    {
+      m_callChan->Dispose ();
+      m_callChan = 0;
+    }
   Object::DoDispose ();
 }
 

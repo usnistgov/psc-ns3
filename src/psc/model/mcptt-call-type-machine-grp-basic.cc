@@ -107,6 +107,7 @@ McpttCallTypeMachineGrpBasic::McpttCallTypeMachineGrpBasic (Ptr<McpttCallMachine
     m_lastChgUserId (McpttCallMsgFieldUserId ()),
     m_owner (owner),
     m_priority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::BASIC_GROUP)),
+    m_started (false),
     m_stateId (McpttCallTypeMachineGrpBasic::T0),
     m_tfg11 (CreateObject<McpttTimer> (McpttEntityId (11, "TFG11"))),
     m_tfg12 (CreateObject<McpttTimer> (McpttEntityId (12, "TFG12"))),

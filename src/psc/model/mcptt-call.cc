@@ -436,6 +436,7 @@ McpttCall::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
+  GetCallMachine ()->Dispose ();
   SetCallMachine (0);
   SetFloorChan (0);
   SetFloorMachine (0);

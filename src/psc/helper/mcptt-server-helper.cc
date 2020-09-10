@@ -47,9 +47,6 @@ namespace ns3 {
 McpttServerHelper::McpttServerHelper (void)
 { 
   m_serverFactory.SetTypeId (McpttServerApp::GetTypeId ());
-  m_arbitratorFac.SetTypeId (McpttOnNetworkFloorArbitrator::GetTypeId ());
-  m_dualControlFac.SetTypeId (McpttOnNetworkFloorDualControl::GetTypeId ());
-  m_participantFac.SetTypeId (McpttOnNetworkFloorTowardsParticipant::GetTypeId ());
 }
 
 McpttServerHelper::~McpttServerHelper ()
@@ -90,125 +87,11 @@ McpttServerHelper::SetServerAttributes (
   m_serverFactory.Set (n7, v7);
 }
 
-void
-McpttServerHelper::SetDefaultArbitrator (std::string name,
-                          std::string n0, const AttributeValue& v0,
-                          std::string n1, const AttributeValue& v1,
-                          std::string n2, const AttributeValue& v2,
-                          std::string n3, const AttributeValue& v3,
-                          std::string n4, const AttributeValue& v4,
-                          std::string n5, const AttributeValue& v5,
-                          std::string n6, const AttributeValue& v6,
-                          std::string n7, const AttributeValue& v7)
-{
-  ObjectFactory factory;
-  factory.SetTypeId (name);
-  factory.Set (n0, v0);
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  m_arbitratorFac = factory;
-}
-
-void
-McpttServerHelper::SetDefaultDualControl (std::string name,
-                        std::string n0, const AttributeValue& v0,
-                        std::string n1, const AttributeValue& v1,
-                        std::string n2, const AttributeValue& v2,
-                        std::string n3, const AttributeValue& v3,
-                        std::string n4, const AttributeValue& v4,
-                        std::string n5, const AttributeValue& v5,
-                        std::string n6, const AttributeValue& v6,
-                        std::string n7, const AttributeValue& v7)
-{
-  ObjectFactory factory;
-  factory.SetTypeId (name);
-  factory.Set (n0, v0);
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  m_dualControlFac = factory;
-}
-
-void
-McpttServerHelper::SetDefaultParticipant (std::string name,
-                                    std::string n0, const AttributeValue& v0,
-                                    std::string n1, const AttributeValue& v1,
-                                    std::string n2, const AttributeValue& v2,
-                                    std::string n3, const AttributeValue& v3,
-                                    std::string n4, const AttributeValue& v4,
-                                    std::string n5, const AttributeValue& v5,
-                                    std::string n6, const AttributeValue& v6,
-                                    std::string n7, const AttributeValue& v7)
-{
-  ObjectFactory factory;
-  factory.SetTypeId (name);
-  factory.Set (n0, v0);
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  m_participantFac = factory;
-}
-
-// XXX deprecate
-void
-McpttServerHelper::SetupFloorControl (const ApplicationContainer& server, const ApplicationContainer& clients)
-{
-  Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp, Application> (server.Get (0));
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = CreateObject<McpttOnNetworkFloorArbitrator> ();
-
-  for (uint32_t pidx = 0; pidx < clients.GetN (); pidx++)
-    {
-      BooleanValue mcImplicitRequest;
-      uint32_t callPort = McpttPttApp::AllocateNextPortNumber ();
-      uint32_t floorPort = McpttPttApp::AllocateNextPortNumber ();
-      uint32_t mediaPort = McpttPttApp::AllocateNextPortNumber ();
-      Ptr<McpttPttApp> clientApp = DynamicCast<McpttPttApp, Application> (clients.Get (pidx));
-      Ptr<McpttOnNetworkFloorTowardsParticipant> participant = m_participantFac.Create<McpttOnNetworkFloorTowardsParticipant> ();
-
-      Ptr<McpttCall> selectedCall = clientApp->GetSelectedCall ();
-      Ptr<McpttCallMachineNull> clientCallControl = DynamicCast<McpttCallMachineNull, McpttCallMachine> (selectedCall->GetCallMachine ());
-      Ptr<McpttOnNetworkFloorParticipant> clientFloorControl = DynamicCast<McpttOnNetworkFloorParticipant, McpttFloorParticipant> (selectedCall->GetFloorMachine ());
-
-      clientFloorControl->GetAttribute ("McImplicitRequest", mcImplicitRequest);
-
-      selectedCall->SetAttribute ("PeerAddress", AddressValue (serverApp->GetLocalAddress ()));
-      selectedCall->SetAttribute ("CallPort", UintegerValue (callPort));
-      clientCallControl->SetAttribute ("FloorPort", UintegerValue (floorPort));
-      clientCallControl->SetAttribute ("MediaPort", UintegerValue (mediaPort));
-      participant->SetAttribute ("PeerAddress", AddressValue (clientApp->GetLocalAddress ()));
-      participant->SetAttribute ("FloorPort", UintegerValue (floorPort));
-      participant->SetAttribute ("MediaPort", UintegerValue (mediaPort));
-      participant->SetAttribute ("McImplicitRequest", mcImplicitRequest);
-      participant->SetOriginator (clientFloorControl->IsOriginator ());
-      participant->SetStoredSsrc (clientFloorControl->GetTxSsrc ());
-      participant->SetStoredPriority (clientFloorControl->GetPriority ());
-
-      arbitrator->AddParticipant (participant);
-    }
-}
-
 Ptr<McpttServerApp>
 McpttServerHelper::InstallPriv (Ptr<Node> node)
 {
   Ptr<McpttServerApp> app = m_serverFactory.Create<McpttServerApp> ();
   node->AddApplication (app);
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = m_arbitratorFac.Create<McpttOnNetworkFloorArbitrator> ();
-  Ptr<McpttOnNetworkFloorDualControl> dualControl = m_dualControlFac.Create<McpttOnNetworkFloorDualControl> ();
-  arbitrator->SetDualControl (dualControl);
-
   return app;
 }
 
