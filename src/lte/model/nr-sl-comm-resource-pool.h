@@ -222,6 +222,13 @@ public:
    * \return The reservation period in slots
    */
   uint16_t GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
+  /**
+   * \brief Is Sidelink slot
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \return true if it is the Sidelink slot, false otherwise
+   */
+  bool IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
 
 
 

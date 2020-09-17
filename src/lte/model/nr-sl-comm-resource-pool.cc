@@ -307,6 +307,22 @@ NrSlCommResourcePool::GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time
   return static_cast <uint16_t> (numResvSlots);
 }
 
+bool
+NrSlCommResourcePool::IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << absSlotIndex);
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  std::vector <std::bitset<1>> phyPool = ret.itPool->second;
+  uint16_t absPoolIndex = absSlotIndex % phyPool.size ();
+  //trigger SL only when it is a SL slot
+  if (phyPool [absPoolIndex] == 1)
+    {
+      return true;
+    }
+
+  return false;
+}
+
 
 }
 
