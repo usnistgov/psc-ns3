@@ -255,6 +255,9 @@ LteRrcSap::GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPs
   uint16_t slTResoPscchInt = 0;
   switch (slTResoPscch.resources)
   {
+    case SlTimeResourcePscch::N1:
+      slTResoPscchInt = 1;
+      break;
     case SlTimeResourcePscch::N2:
       slTResoPscchInt = 2;
       break;
@@ -274,6 +277,9 @@ LteRrcSap::GetSlTResoPscchEnum (uint16_t slTResoPscch)
   SlTimeResourcePscch slTResoPscchEnum;
   switch (slTResoPscch)
   {
+    case 1:
+      slTResoPscchEnum.resources = SlTimeResourcePscch::N1;
+      break;
     case 2:
       slTResoPscchEnum.resources = SlTimeResourcePscch::N2;
       break;

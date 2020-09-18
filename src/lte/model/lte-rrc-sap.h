@@ -996,6 +996,7 @@ public:
   {
     enum
     {
+      N1, //!< 1 symbol //Added for modeling purpose
       N2, //!< 2 symbols
       N3, //!< 3 symbols
       INVALID
