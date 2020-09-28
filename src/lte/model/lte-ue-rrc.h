@@ -1563,7 +1563,7 @@ private:
 
   NrSlPdcpSapProvider *m_nrSlPdcpSapProvider {nullptr}; //!< SAP interface to call methods of PDCP instance
   NrSlPdcpSapUser *m_nrSlPdcpSapUser; //!< SAP interface to receive calls from PDCP instance
-  NrSlMacSapProvider *m_nrSlMacSapProvider; //!< SAP interface to be given to newly created RLC instance of RLC
+  NrSlMacSapProvider *m_nrSlMacSapProvider {nullptr}; //!< SAP interface to be given to newly created RLC instance of RLC
   uint32_t m_srcL2Id {std::numeric_limits <uint32_t>::max ()}; //!< The NR Sidelink Source L2 id;
 
 }; // end of class LteUeRrc

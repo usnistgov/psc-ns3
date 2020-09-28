@@ -1049,7 +1049,7 @@ public:
       N75,
       N100,
       INVALID
-    } numPrbs;
+    } numPrbs {INVALID};
   };
 
   /*
