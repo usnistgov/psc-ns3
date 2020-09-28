@@ -21,7 +21,8 @@
 #define NR_SL_COMM_RESOURCE_POOL
 
 #include <ns3/object.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-rrc-sap.h"
+#include "nr-sl-ue-rrc.h"
 
 #include <stdint.h>
 #include <list>
@@ -229,7 +230,25 @@ public:
    * \return true if it is the Sidelink slot, false otherwise
    */
   bool IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
-
+  /**
+   * \brief Set the TDD pattern.
+   *
+   * For example, a valid pattern would be "DL|DL|UL|UL|DL|DL|UL|UL|". The slot
+   * types allowed are:
+   *
+   * - "DL" for downlink only
+   * - "UL" for uplink only
+   * - "F" for flexible (dl and ul)
+   * - "S" for special slot (LTE-compatibility)
+   */
+  void SetTddPattern (std::vector<NrSlUeRrc::LteNrTddSlotType> tddPattern);
+  /**
+   * \brief Get Nr Sidelink PSSCH subchannel size in RBs
+   * \param bwpId bwpId The bandwidth part id
+   * \param poolId poolId The poolId The pool id
+   * \return PSSCH subchannel size in RBs
+   */
+  uint16_t GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const;
 
 
 private:
@@ -247,6 +266,7 @@ private:
   std::array <LteRrcSap::SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> m_slPreconfigFreqInfoList; //!< A list containing per carrier configuration for NR sidelink communication
   PhySlPoolMap m_phySlPoolMap; //!< A map to store the physical SL pool per BWP and per SL pool
   SchedulingType m_schType {SchedulingType::UNKNOWN}; //!< Type of the scheduling to be used for the pools hold by this class
+  std::vector<NrSlUeRrc::LteNrTddSlotType> m_tddPattern; //!< TDD pattern
 
 };
 

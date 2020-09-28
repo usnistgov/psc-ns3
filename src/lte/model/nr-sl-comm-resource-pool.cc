@@ -323,6 +323,22 @@ NrSlCommResourcePool::IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t a
   return false;
 }
 
+void
+NrSlCommResourcePool::SetTddPattern (std::vector<NrSlUeRrc::LteNrTddSlotType> tddPattern)
+{
+  NS_LOG_FUNCTION (this);
+  m_tddPattern = tddPattern;
+}
+
+uint16_t
+NrSlCommResourcePool::GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId);
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  NS_UNUSED (ret);
+  const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
+  return LteRrcSap::GetNrSlSubChSizeValue (pool.slSubchannelSize);
+}
 
 }
 
