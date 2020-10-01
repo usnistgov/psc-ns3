@@ -3756,7 +3756,11 @@ LteUeRrc::PopulateNrSlPools ()
                   //available BW is RBs
                   uint16_t sbChSizeInRbs = LteRrcSap::GetNrSlSubChSizeValue (it.slResourcePool.slSubchannelSize);
                   uint32_t bwInRbs = m_nrSlUeCphySapProvider.at (index)->GetBwInRbs ();
-                  NS_ASSERT_MSG (sbChSizeInRbs <= bwInRbs, "Incorrect Subchannel size of " << sbChSizeInRbs << " RBs. Must be less or equal to the available BW of " << bwInRbs << " RBs");
+                  NS_ASSERT_MSG (sbChSizeInRbs <= bwInRbs, "Incorrect Subchannel size of "
+                                   << sbChSizeInRbs << " RBs. Must be less or equal to the available BW of " << bwInRbs << " RBs");
+                  uint16_t numPscchRbs = LteRrcSap::GetSlFResoPscchValue (it.slResourcePool.slPscchConfig.slFreqResourcePscch);
+                  NS_ASSERT_MSG (numPscchRbs <= sbChSizeInRbs, "Incorrect number of PSCCH RBs : "
+                                 << numPscchRbs << " . Must be less or equal to the SL subchannel size of " << sbChSizeInRbs << " RBs");
                   std::vector <std::bitset<1>> physicalPool = m_nrSlRrcSapUser->GetPhysicalSlPool (it.slResourcePool.slTimeResource);
                   mapPerPool.emplace (std::make_pair (it.slResourcePoolId.id, physicalPool));
                 }
