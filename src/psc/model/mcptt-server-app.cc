@@ -35,6 +35,7 @@
 #include <ns3/uinteger.h>
 #include <ns3/object-map.h>
 #include <ns3/sip-header.h>
+#include <ns3/sip-proxy.h>
 
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-server-call.h"
@@ -91,11 +92,18 @@ McpttServerApp::McpttServerApp (void)
     m_callChannel (0)
 {  
   NS_LOG_FUNCTION (this);
+  m_sipProxy = CreateObject<sip::SipProxy> ();
 }
 
 McpttServerApp::~McpttServerApp (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+Ptr<sip::SipProxy>
+McpttServerApp::GetSipProxy (void) const
+{
+  return m_sipProxy;
 }
 
 uint16_t
@@ -145,6 +153,8 @@ McpttServerApp::DoDispose (void)
       m_callChannel->Dispose ();
       m_callChannel = 0;
     }
+  m_sipProxy->Dispose ();
+  m_sipProxy = 0;
   Object::DoDispose ();
 }
 
@@ -160,13 +170,18 @@ McpttServerApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
   m_callChannel = CreateObject<McpttChannel> ();
-  m_callChannel->SetRxPktCb (MakeCallback (&McpttServerApp::ReceiveCallPacket, this));
+  // Set the McpttChan object to deliver incoming packets to SipProxy::Receive
+  m_callChannel->SetRxPktCb (MakeCallback (&sip::SipProxy::Receive, m_sipProxy));
   NS_LOG_DEBUG ("Open socket for incoming call control on port " << m_callPort);
   m_callChannel->Open (GetNode (), m_callPort, m_localAddress, m_peerAddress);
   for (auto it = m_calls.begin (); it != m_calls.end (); it++)
     {
       NS_LOG_DEBUG ("Starting call for id " << it->first);
       it->second->GetCallMachine ()->Start ();
+      // Set the SipProxy to deliver received packets back to
+      // McpttServerCall::ReceiveSipMessage and events to
+      // McpttServerCall::ReceiveSipEvent
+      m_sipProxy->SetCallbacks (it->first, MakeCallback (&McpttServerCall::ReceiveSipMessage, it->second), MakeCallback (&McpttServerCall::ReceiveSipEvent, it->second));
     }
 }
 
@@ -179,26 +194,6 @@ McpttServerApp::StopApplication (void)
     {
       NS_LOG_DEBUG ("Stopping call for id " << it->first);
       it->second->GetCallMachine ()->Stop ();
-    }
-}
-
-void
-McpttServerApp::ReceiveCallPacket (Ptr<Packet> pkt)
-{
-  NS_LOG_FUNCTION (this << pkt);
-
-  NS_LOG_LOGIC ("ServerApp received " << pkt->GetSize () << " byte(s).");
-  SipHeader sipHeader;
-  pkt->RemoveHeader (sipHeader);
-  auto it = m_calls.find (sipHeader.GetCallId ());
-  if (it != m_calls.end ())
-    {
-      NS_LOG_DEBUG ("Received packet for call ID " << it->first);
-      it->second->ReceiveCallPacket (pkt, sipHeader);
-    }
-  else
-    {
-      NS_LOG_DEBUG ("No call found with call ID " << sipHeader.GetCallId ());
     }
 }
 

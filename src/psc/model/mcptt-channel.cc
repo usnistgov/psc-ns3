@@ -61,7 +61,7 @@ McpttChannel::GetTypeId (void)
 
 McpttChannel::McpttChannel (void)
   : Object (),
-    m_rxPktCb (MakeNullCallback<void, Ptr<Packet> > ()),
+    m_rxPktCb (MakeNullCallback<void, Ptr<Packet>, Address> ()),
     m_socket (0)
 {
   NS_LOG_FUNCTION (this);
@@ -222,13 +222,13 @@ McpttChannel::DoDispose (void)
 }
 
 void
-McpttChannel::ReceivePkt (Ptr<Packet>  pkt)
+McpttChannel::ReceivePkt (Ptr<Packet>  pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt);
+  NS_LOG_FUNCTION (this << &pkt << from);
 
   if (!m_rxPktCb.IsNull ())
     {
-      m_rxPktCb (pkt);
+      m_rxPktCb (pkt, from);
     }
 }
 
@@ -263,7 +263,7 @@ McpttChannel::ReceivePkts (Ptr<Socket> socket)
         }
 
       NS_LOG_INFO (Simulator::Now ().GetSeconds () << "s: McpttChannel received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
-      ReceivePkt (pkt);
+      ReceivePkt (pkt, from);
    }
 }
 
@@ -284,7 +284,7 @@ McpttChannel::SetSocket (Ptr<Socket>  socket)
 }
 
 void
-McpttChannel::SetRxPktCb (const Callback<void, Ptr<Packet> >  rxPktCb)
+McpttChannel::SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb)
 {
   NS_LOG_FUNCTION (this << &rxPktCb);
   

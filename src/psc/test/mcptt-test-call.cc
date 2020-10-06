@@ -74,7 +74,7 @@ McpttTestCall::ShouldDrop (const McpttMsg& msg)
 }
 
 void
-McpttTestCall::Receive (Ptr<Packet> pkt, const SipHeader& hdr)
+McpttTestCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt << hdr);
   NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");

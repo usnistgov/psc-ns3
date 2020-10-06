@@ -29,7 +29,7 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-// Ported from NIST ns-2.31 implementation
+// This ns-3 implementation is adapted from NIST ns-2.31 implementation
 
 #ifndef SIP_TRANSACTION_H
 #define SIP_TRANSACTION_H

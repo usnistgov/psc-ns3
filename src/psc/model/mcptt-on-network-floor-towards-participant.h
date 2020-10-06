@@ -216,13 +216,15 @@ protected:
  /**
   * Handles the receieved floor control packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet.
   */
- virtual void ReceiveFloorPkt (Ptr<Packet>  pkt);
+ virtual void ReceiveFloorPkt (Ptr<Packet>  pkt, Address from);
  /**
   * Handles the received media packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet.
   */
- virtual void ReceiveMediaPkt (Ptr<Packet>  pkt);
+ virtual void ReceiveMediaPkt (Ptr<Packet>  pkt, Address from);
  /**
   * Sends a floor deny message.
   * \param msg The message to send.

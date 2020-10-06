@@ -151,7 +151,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
           selected = "False";
         }
     }
-  if (msg.GetInstanceTypeId () == SipHeader::GetTypeId () && m_callControl == true)
+  if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId () && m_callControl == true)
     {
       m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
       m_outputFile << std::setw (6) << app->GetNode ()->GetId ();
@@ -160,14 +160,26 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
       m_outputFile << std::setw (9) << selected;
       m_outputFile << std::setw (6) << (rx ? "RX" : "TX");
       m_outputFile << std::setw (6) << msg.GetSerializedSize ();
-      m_outputFile << "    SIP " << static_cast<const SipHeader&> (msg).GetMessageTypeName ();
-      if (static_cast<const SipHeader&> (msg).GetMessageType () == SipHeader::SIP_REQUEST)
+      m_outputFile << "    SIP " << static_cast<const sip::SipHeader&> (msg).GetMessageTypeName ();
+      if (static_cast<const sip::SipHeader&> (msg).GetMessageType () == sip::SipHeader::SIP_REQUEST)
         {
-          m_outputFile << "  " << static_cast<const SipHeader&> (msg).GetMethodName ();
+          m_outputFile << "  " << static_cast<const sip::SipHeader&> (msg).GetMethodName ();
         }
-      else if (static_cast<const SipHeader&> (msg).GetMessageType () == SipHeader::SIP_RESPONSE)
+      else if (static_cast<const sip::SipHeader&> (msg).GetMessageType () == sip::SipHeader::SIP_RESPONSE)
         {
-          m_outputFile << " " << static_cast<const SipHeader&> (msg).GetStatusCode ();
+          uint16_t statusCode = static_cast<const sip::SipHeader&> (msg).GetStatusCode ();
+          if (statusCode == 100)
+            {
+              m_outputFile << " 100 Trying";
+            }
+          else if (statusCode == 200)
+            {
+              m_outputFile << " 200 OK";
+            }
+          else
+            {
+              m_outputFile << " " << statusCode;
+            }
         }
       else
         {

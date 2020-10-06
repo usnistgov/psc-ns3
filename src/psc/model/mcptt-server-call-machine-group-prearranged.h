@@ -86,18 +86,21 @@ public:
  virtual void SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb);
  /**
   * Forward the SIP request packet to an MCPTT user
+  * \param from the MCPTT UserId to send it from 
   * \param to the MCPTT UserId to send it to
-  * \param pkt The packet (already serialized with SIP header)
-  * \param hdr A reference to the SIP header that has been serialized
+  * \param pkt The packet (possibly with SDP header)
+  * \param hdr A reference to the SIP header that triggered the request
   */
- virtual void SendSipRequest (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void SendSipRequest (uint32_t from, uint32_t to, Ptr<Packet> pkt, const sip::SipHeader& hdr);
  /**
   * Forward the SIP response packet to an MCPTT user
+  * \param from the MCPTT UserId to send it from
   * \param to the MCPTT UserId to send it to
-  * \param pkt The packet (already serialized with SIP header)
-  * \param hdr A reference to the SIP header that has been serialized
+  * \param pkt The packet (possibly with SDP header)
+  * \param statusCode Status code to add
+  * \param hdr A reference to the SIP header that triggered the response
   */
- virtual void SendSipResponse (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void SendSipResponse (uint32_t from, uint32_t to, Ptr<Packet> pkt, uint16_t statusCode, const sip::SipHeader& hdr);
  /**
   * Accepts the call.
   */
@@ -166,7 +169,7 @@ public:
   * \param msg The packet to receive.
   * \param hdr The (deserialized) SIP header.
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr);
  /**
   * Receives a media message.
   * \param msg The message to receive.

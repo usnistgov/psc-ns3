@@ -112,22 +112,18 @@ protected:
  /**
   * The function used to receive a single packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet.
   */
- virtual void ReceivePkt (Ptr<Packet>  pkt);
+ virtual void ReceivePkt (Ptr<Packet>  pkt, Address from);
  /**
   * The sink for when packets are received.
   * \param socket The socket from which to receive packets.
   */
  virtual void ReceivePkts (Ptr<Socket> socket);
 private:
- Callback<void, Ptr<Packet> > m_rxPktCb; //!< The sink used for receiving received packets.
+ Callback<void, Ptr<Packet>, Address > m_rxPktCb; //!< The sink used for receiving received packets.
  Ptr<Socket> m_socket; //!< The underlying socket of the channel.
 protected:
- /**
-  * Gets the underlying socket of the channel.
-  * \returns The underlying socket.
-  */
- virtual Ptr<Socket> GetSocket (void) const;
  /**
   * Sets the underlying socket of the channel.
   * \param socket The underlying socket.
@@ -135,10 +131,15 @@ protected:
  virtual void SetSocket (Ptr<Socket>  socket);
 public:
  /**
+  * Gets the underlying socket of the channel.
+  * \returns The underlying socket.
+  */
+ virtual Ptr<Socket> GetSocket (void) const;
+ /**
   * Sets the sink used for receiving received packets.
   * \param rxPktCb The callback.
   */
- virtual void SetRxPktCb (const Callback<void, Ptr<Packet> >  rxPktCb);
+ virtual void SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb);
 };
 
 } // namespace ns3

@@ -172,15 +172,21 @@ McpttServerCall::OpenMediaChannel (const Address& peerAddr, const uint16_t port)
 }
 
 void
-McpttServerCall::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr)
+McpttServerCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state)
 {
-  NS_LOG_FUNCTION (this << pkt << hdr);
-  NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
+  NS_LOG_FUNCTION (this << pkt << hdr << state);
   if (!m_rxCb.IsNull ())
     {
       m_rxCb (this, hdr);
     }
   GetCallMachine ()->ReceiveCallPacket (pkt, hdr);
+}
+
+void
+McpttServerCall::ReceiveSipEvent (const char* event, sip::SipProxy::TransactionState state)
+{
+  NS_LOG_FUNCTION (this << event << state);
+  // Not yet defined
 }
 
 void
@@ -249,7 +255,7 @@ McpttServerCall::Send (const McpttMediaMsg& msg)
 }
 
 void
-McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const SipHeader &hdr)
+McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const sip::SipHeader &hdr)
 {
   NS_LOG_FUNCTION (this << pkt << toAddr << hdr);
   if (!m_txCb.IsNull ())
@@ -292,9 +298,9 @@ McpttServerCall::DoDispose (void)
 }
 
 void
-McpttServerCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
+McpttServerCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt);
+  NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttFloorMsg temp;
 
@@ -374,7 +380,7 @@ McpttServerCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttServerCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
+McpttServerCall::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
 {
   NS_LOG_FUNCTION (this << &pkt);
 

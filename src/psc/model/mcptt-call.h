@@ -36,6 +36,8 @@
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
+#include <ns3/sip-header.h>
+#include <ns3/sip-agent.h>
 
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
@@ -47,7 +49,6 @@
 namespace ns3 {
 
 class McpttPttApp;
-class SipHeader;
 
 /**
  * \ingroup mcptt
@@ -150,11 +151,24 @@ public:
   */
  void OpenMediaChannel (const Address& peerAddr, const uint16_t port);
  /**
-  * Receives a call message.
-  * \param pkt The packet (serialized with SIP header)
-  * \param hdr A reference to the SIP header that has been serialized
+  * Receive an on-network SIP call message.
+  * \param pkt The packet (without SIP header)
+  * \param hdr A reference to the SIP header that has been deserialized
+  * \param state The state of the transaction
   */
- virtual void Receive (Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state);
+ /**
+  * Receive notification of a SIP event
+  * \param event The event description
+  * \param state The state of the transaction
+  */
+ virtual void ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state);
+ /**
+  * Receive an on-network call message.
+  * \param pkt The packet (without SIP header)
+  * \param hdr A reference to the SIP header that has been deserialized
+  */
+ virtual void Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr);
  /**
   * Receives a call message.
   * \param msg The message that was received.
@@ -171,11 +185,22 @@ public:
   */
  virtual void Receive (const McpttMediaMsg& msg);
  /**
-  * Sends a call message.
+  * Return an InetSocketAddress or Inet6SocketAddress for the peer
+  * \return the peer address
+  */
+ Address GetPeerSocketAddress (void) const;
+ /**
+  * Return the peer user ID (applicable mainly to on-network calls for which
+  * it can be used as a SIP URI according to the ns-3 SIP model).
+  */
+ uint32_t GetPeerUserId (void) const;
+ /**
+  * Sends a SIP call control message.
   * \param pkt The packet (already serialized with SIP header)
+  * \param addr The peer address to send to
   * \param hdr A reference to the SIP header that has been serialized
   */
- void Send (Ptr<Packet> pkt, const SipHeader& hdr);
+ void SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr);
  /**
   * Sends a call message.
   * \param msg The message to send.
@@ -207,18 +232,21 @@ protected:
  /**
   * Handles the receieved call control packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet
   */
- void ReceiveCallPkt (Ptr<Packet>  pkt);
+ void ReceiveCallPkt (Ptr<Packet>  pkt, Address from);
  /**
   * Handles the receieved floor control packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet
   */
- void ReceiveFloorPkt (Ptr<Packet>  pkt);
+ void ReceiveFloorPkt (Ptr<Packet>  pkt, Address from);
  /**
   * Handles the received media packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet
   */
- void ReceiveMediaPkt (Ptr<Packet>  pkt);
+ void ReceiveMediaPkt (Ptr<Packet>  pkt, Address from);
  private:
  NetworkCallType m_networkCallType; //!< The network call type
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
@@ -231,6 +259,7 @@ protected:
  Ptr<McpttChannel> m_mediaChannel; //!< The channel to use for media messages.
  Ptr<McpttPttApp> m_owner; //!< The owner of this call.
  Address m_peerAddress; //!< The address of the node that the peer application is on.
+ uint32_t m_peerUserId; //!< The URI corresponding to the peer (on-network operation).
  bool m_pushOnSelect; //!< Whether to start pusher upon call select
  Time m_startTime; //!< The call start time.
  Time m_stopTime; //!< The call stop time.

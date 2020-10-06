@@ -46,7 +46,7 @@
 #include <ns3/udp-socket-factory.h>
 #include <ns3/uinteger.h>
 #include <ns3/vector.h>
-#include <ns3/sip-header.h>
+#include <ns3/sip-agent.h>
 
 #include "mcptt-call-msg.h"
 #include "mcptt-call-machine-grp-basic.h"
@@ -127,11 +127,18 @@ McpttPttApp::McpttPttApp (void)
     m_userId (0)
 {  
   NS_LOG_FUNCTION (this);
+  m_sipAgent = CreateObject<sip::SipAgent> ();
 }
 
 McpttPttApp::~McpttPttApp (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+Ptr<sip::SipAgent>
+McpttPttApp::GetSipAgent (void) const
+{
+  return m_sipAgent;
 }
 
 void
@@ -649,6 +656,8 @@ McpttPttApp::DoDispose (void)
   m_calls.clear ();
   m_onNetworkCalls.clear ();
   m_offNetworkCalls.clear ();
+  m_sipAgent->Dispose ();
+  m_sipAgent = 0;
 
   Object::DoDispose ();
 }
@@ -684,22 +693,9 @@ McpttPttApp::NewCallCb (uint16_t callId)
 }
 
 void
-McpttPttApp::ReceiveOnNetworkCallPacket (Ptr<Packet> pkt)
+McpttPttApp::ReceiveOffNetworkCallPacket (Ptr<Packet> pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << pkt);
-  NS_LOG_LOGIC ("PttApp received " << pkt->GetSize () << " byte(s).");
-  SipHeader sipHeader;
-  pkt->RemoveHeader (sipHeader);
-  for (auto it = m_onNetworkCalls.begin (); it != m_onNetworkCalls.end (); it++)
-    {
-      it->second->Receive (pkt, sipHeader);
-    }
-}
-
-void
-McpttPttApp::ReceiveOffNetworkCallPacket (Ptr<Packet> pkt)
-{
-  NS_LOG_FUNCTION (this << pkt);
+  NS_LOG_FUNCTION (this << pkt << from);
   NS_LOG_LOGIC ("PttApp received " << pkt->GetSize () << " byte(s).");
   McpttCallMsg temp;
   pkt->PeekHeader (temp);
@@ -927,7 +923,13 @@ McpttPttApp::OpenCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Net
       m_callChannels.emplace (port, channel);
       if (callType == McpttCall::NetworkCallType::ON_NETWORK)
         {
-          channel->SetRxPktCb (MakeCallback (&McpttPttApp::ReceiveOnNetworkCallPacket, this));
+          // The next two statements do the following.  The McpttChan
+          // object will send incoming packets to the SipAgent::Receive
+          // method.  The SIP agent, after processing (removing the
+          // header), will send the packet back to McpttCall::ReceiveSipMessage
+          // and any non-packet events to McpttCall::ReceiveSipEvent
+          channel->SetRxPktCb (MakeCallback (&sip::SipAgent::Receive, m_sipAgent));
+          m_sipAgent->SetCallbacks (call->GetCallId (), MakeCallback (&McpttCall::ReceiveSipMessage, call), MakeCallback (&McpttCall::ReceiveSipEvent, call));
         }
       else if (callType == McpttCall::NetworkCallType::OFF_NETWORK)
         {
@@ -962,7 +964,7 @@ McpttPttApp::CloseCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Ne
         {
           NS_LOG_DEBUG ("Closing call channel");
           it->second->Close ();
-          it->second->SetRxPktCb (MakeNullCallback<void, Ptr<Packet> > ());
+          it->second->SetRxPktCb (MakeNullCallback<void, Ptr<Packet>, Address> ());
           m_callChannelReferenceCount.erase (it->second);
           m_callChannels.erase (it);
         }

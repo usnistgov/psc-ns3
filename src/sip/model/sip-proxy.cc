@@ -16,56 +16,60 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <tuple>
+#include <utility>
 #include "ns3/object.h"
+#include "ns3/callback.h"
+#include "ns3/traced-callback.h"
 #include "ns3/log.h"
 #include "ns3/socket.h"
-#include "sip-agent.h"
+#include "sip-proxy.h"
 #include "sip-header.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("SipAgent");
+NS_LOG_COMPONENT_DEFINE ("SipProxy");
 
 namespace sip {
 
-NS_OBJECT_ENSURE_REGISTERED (SipAgent);
+NS_OBJECT_ENSURE_REGISTERED (SipProxy);
 
 TypeId
-SipAgent::GetTypeId (void)
+SipProxy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SipAgent")
+  static TypeId tid = TypeId ("ns3::SipProxy")
     .SetParent<Object> ()
     .SetGroupName ("Sip")
-    .AddConstructor<SipAgent> ()
+    .AddConstructor<SipProxy> ()
     .AddTraceSource ("TxTrace", "The trace for capturing transmitted messages",
-                     MakeTraceSourceAccessor (&SipAgent::m_txTrace),
-                     "ns3::sip::SipAgent::TxRxTracedCallback")
+                     MakeTraceSourceAccessor (&SipProxy::m_txTrace),
+                     "ns3::sip::SipProxy::TxRxTracedCallback")
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
-                     MakeTraceSourceAccessor (&SipAgent::m_rxTrace),
-                     "ns3::sip::SipAgent::TxRxTracedCallback")
+                     MakeTraceSourceAccessor (&SipProxy::m_rxTrace),
+                     "ns3::sip::SipProxy::TxRxTracedCallback")
     .AddTraceSource ("DialogState", "Trace of Dialog state changes",
-                     MakeTraceSourceAccessor (&SipAgent::m_dialogTrace),
-                     "ns3::sip::SipAgent::DialogStateTracedCallback")
+                     MakeTraceSourceAccessor (&SipProxy::m_dialogTrace),
+                     "ns3::sip::SipProxy::DialogStateTracedCallback")
     .AddTraceSource ("TransactionState", "Trace of Transaction state changes",
-                     MakeTraceSourceAccessor (&SipAgent::m_transactionTrace),
-                     "ns3::sip::SipAgent::TransactionStateTracedCallback")
+                     MakeTraceSourceAccessor (&SipProxy::m_transactionTrace),
+                     "ns3::sip::SipProxy::TransactionStateTracedCallback")
   ;
   return tid;
 }
 
-SipAgent::SipAgent ()
+SipProxy::SipProxy ()
   : m_defaultSendCallback (MakeNullCallback<void, Ptr<Packet>, const Address&, const SipHeader&> ())
 {
   NS_LOG_FUNCTION (this);
 }
 
-SipAgent::~SipAgent ()
+SipProxy::~SipProxy ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-SipAgent::DoDispose ()
+SipProxy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_receiveCallbacks.clear ();
@@ -75,25 +79,25 @@ SipAgent::DoDispose ()
 }
 
 std::string
-SipAgent::TransactionStateToString (TransactionState state)
+SipProxy::TransactionStateToString (TransactionState state)
 {
   switch (state)
     {
-      case TransactionState::IDLE:
+      case TransactionState:: IDLE:
         return "IDLE";
-      case TransactionState::CALLING:
+      case TransactionState:: CALLING:
         return "CALLING";
-      case TransactionState::TRYING:
+      case TransactionState:: TRYING:
         return "TRYING";
-      case TransactionState::PROCEEDING:
+      case TransactionState:: PROCEEDING:
         return "PROCEEDING";
-      case TransactionState::COMPLETED:
+      case TransactionState:: COMPLETED:
         return "COMPLETED";
-      case TransactionState::CONFIRMED:
+      case TransactionState:: CONFIRMED:
         return "CONFIRMED";
-      case TransactionState::TERMINATED:
+      case TransactionState:: TERMINATED:
         return "TERMINATED";
-      case TransactionState::FAILED:
+      case TransactionState:: FAILED:
         return "FAILED";
       default:
         return "Unrecognized state";
@@ -101,21 +105,21 @@ SipAgent::TransactionStateToString (TransactionState state)
 }
 
 std::string
-SipAgent::DialogStateToString (DialogState state)
+SipProxy::DialogStateToString (DialogState state)
 {
   switch (state)
     {
-      case DialogState::UNINITIALIZED:
+      case DialogState:: UNINITIALIZED:
         return "UNINITIALIZED";
-      case DialogState::TRYING:
+      case DialogState:: TRYING:
         return "TRYING";
-      case DialogState::PROCEEDING:
+      case DialogState:: PROCEEDING:
         return "PROCEEDING";
-      case DialogState::EARLY:
+      case DialogState:: EARLY:
         return "EARLY";
-      case DialogState::CONFIRMED:
+      case DialogState:: CONFIRMED:
         return "CONFIRMED";
-      case DialogState::TERMINATED:
+      case DialogState:: TERMINATED:
         return "TERMINATED";
       default:
         return "Unrecognized state";
@@ -123,12 +127,9 @@ SipAgent::DialogStateToString (DialogState state)
 }
 
 void
-SipAgent::SendInvite (Ptr<Packet> p, const Address& addr, uint32_t requestUri, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
+SipProxy::SendInvite (Ptr<Packet> p, const Address& addr, uint32_t requestUri, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
 {
   NS_LOG_FUNCTION (p << addr << requestUri << from << to << callId);
-
-  CreateDialog (callId, sendCallback);
-  SetDialogState (callId, DialogState::TRYING);
   CreateTransaction (callId, from, to);
   SetTransactionState (callId, from, to, TransactionState::CALLING);
   SipHeader header;
@@ -140,27 +141,24 @@ SipAgent::SendInvite (Ptr<Packet> p, const Address& addr, uint32_t requestUri, u
   header.SetCallId (callId);
   p->AddHeader (header);
   sendCallback (p, addr, header);
-  // Save the sendCallback in case retransmissions are needed
   m_txTrace (p, header);
-  // Start timers A and B
 }
 
 void
-SipAgent::SendBye (Ptr<Packet> p, const Address& addr, uint32_t requestUri, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
+SipProxy::SendBye (Ptr<Packet> p, const Address& addr, uint32_t requestUri, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
 {
   NS_LOG_FUNCTION (p << addr << requestUri << from << to << callId);
-  auto it = m_dialogs.find (callId);
-  it->second.m_sendCallback = sendCallback;
-  SetDialogState (callId, DialogState::TERMINATED);
-  if (TransactionExists (callId, from, to))
-    { 
-      SetTransactionState (callId, from, to, TransactionState::TRYING);
+  auto dialogIt = m_dialogs.find (callId);
+  if (dialogIt->second.m_state != DialogState::TERMINATED)
+    {
+      SetDialogState (callId, DialogState::TERMINATED);
     }
-  else
-    { 
+  dialogIt->second.m_sendCallback = sendCallback;
+  if (!TransactionExists (callId, from, to))
+    {
       CreateTransaction (callId, from, to);
-      SetTransactionState (callId, from, to, TransactionState::TRYING);
     }
+  SetTransactionState (callId, from, to, TransactionState::TRYING);
   SipHeader header;
   header.SetMessageType (SipHeader::SIP_REQUEST);
   header.SetMethod (SipHeader::BYE);
@@ -174,28 +172,47 @@ SipAgent::SendBye (Ptr<Packet> p, const Address& addr, uint32_t requestUri, uint
 }
 
 void
-SipAgent::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
+SipProxy::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
 {
-  NS_LOG_FUNCTION (p << addr << statusCode << from << to << callId);
-  auto it = m_dialogs.find (callId);
-  it->second.m_sendCallback = sendCallback;
+  NS_LOG_FUNCTION (p << statusCode << from << to << callId);
+  auto dialogIt = m_dialogs.find (callId);
+  if (dialogIt == m_dialogs.end ())
+    {
+      NS_FATAL_ERROR ("Dialog does not exist for callId");
+    }
+  // The send callback may have been set to the default send callback earlier
+  // upon receipt of a request.  Update it here with the provided callback.
+  dialogIt->second.m_sendCallback = sendCallback;
+  if (!TransactionExists (callId, from, to))
+    {
+      NS_FATAL_ERROR ("Transaction does not exist for callId");
+    }
   if (statusCode == 100)
     {
-      SetDialogState (callId, DialogState::PROCEEDING);
-      SetTransactionState (callId, from, to, TransactionState::PROCEEDING);
+      if (dialogIt->second.m_state == DialogState::TRYING)
+        {
+          NS_LOG_DEBUG ("Most likely responding to INVITE with a 100 Trying");
+          SetDialogState (callId, DialogState::PROCEEDING);
+          SetTransactionState (callId, from, to, TransactionState::PROCEEDING);
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Sending 100 from state other than TRYING is not implemented");
+        }
     }
   else if (statusCode == 200)
     {
-      auto dialogIt = m_dialogs.find (callId);
-      if (dialogIt->second.m_state == DialogState::TRYING)
+      if (dialogIt->second.m_state == DialogState::TRYING || dialogIt->second.m_state == DialogState::PROCEEDING)
         {
-          SetDialogState (callId, DialogState::CONFIRMED);
-          SetTransactionState (callId, from, to, TransactionState::COMPLETED);
+          NS_LOG_DEBUG ("200 Response could be in response to INVITE or BYE");
+          SetTransactionState (callId, from, to, TransactionState::PROCEEDING);
         }
-      else if (dialogIt->second.m_state == DialogState::TERMINATED)
+      std::tuple<uint16_t, uint32_t, uint32_t> key (callId, from, to);
+      auto transactionIt = m_transactions.find (key);
+      if (transactionIt->second == TransactionState::TRYING || transactionIt->second == TransactionState::PROCEEDING)
         {
           SetTransactionState (callId, from, to, TransactionState::COMPLETED);
-          // Set Timer
+          // Start Timer J
         }
     }
   SipHeader header;
@@ -210,7 +227,7 @@ SipAgent::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode,
 }
 
 void
-SipAgent::Receive (Ptr<Packet> p, Address from)
+SipProxy::Receive (Ptr<Packet> p, Address from)
 {
   NS_LOG_FUNCTION (this << p << from);
   SipHeader sipHeader;
@@ -233,35 +250,20 @@ SipAgent::Receive (Ptr<Packet> p, Address from)
           // Stop timer A
         }
       else if (sipHeader.GetStatusCode () == 200)
-        { 
+        {
           NS_LOG_DEBUG ("Received 200 OK for call ID " << sipHeader.GetCallId ());
           auto dialogIt = m_dialogs.find (sipHeader.GetCallId ());
-          if (dialogIt->second.m_state == DialogState::TRYING || dialogIt->second.m_state == DialogState::PROCEEDING)
+          NS_ABORT_MSG_IF (dialogIt == m_dialogs.end (), "Dialog not found");
+          if (dialogIt->second.m_state == DialogState::TRYING || dialogIt->second.m_state == DialogState::PROCEEDING || dialogIt->second.m_state == DialogState::CONFIRMED)
             {
-              SetDialogState (sipHeader.GetCallId (), DialogState::CONFIRMED);
+              if (dialogIt->second.m_state != DialogState::CONFIRMED)
+                {
+                  SetDialogState (sipHeader.GetCallId (), DialogState::CONFIRMED);
+                }
               SetTransactionState (sipHeader.GetCallId (), sipHeader.GetFrom (), sipHeader.GetTo (), TransactionState::TERMINATED);
               // Deliver the packet since the OK may have SDP information
               receiveIt->second (p, sipHeader, TransactionState::TERMINATED);
-              // Start Timer I
               NS_LOG_DEBUG ("Send ACK for call ID " << sipHeader.GetCallId ());
-              Ptr<Packet> packet = Create<Packet> ();
-              SipHeader header;
-              header.SetMessageType (SipHeader::SIP_REQUEST);
-              header.SetMethod (SipHeader::ACK);
-              header.SetRequestUri (sipHeader.GetRequestUri ());
-              header.SetFrom (sipHeader.GetFrom ());
-              header.SetTo (sipHeader.GetTo ());
-              header.SetCallId (sipHeader.GetCallId ());
-              packet->AddHeader (header);
-              // ACK to the source address of the incoming packet.
-              dialogIt->second.m_sendCallback (packet, from, header);
-              m_txTrace (packet, header);
-            }
-          else if (dialogIt->second.m_state == DialogState::CONFIRMED)
-            {
-              // The transaction should be already terminated, but possibly the
-              // ACK was lost.
-              NS_LOG_DEBUG ("Resend ACK for call ID " << sipHeader.GetCallId ());
               Ptr<Packet> packet = Create<Packet> ();
               SipHeader header;
               header.SetMessageType (SipHeader::SIP_REQUEST);
@@ -285,7 +287,7 @@ SipAgent::Receive (Ptr<Packet> p, Address from)
             }
           else
             {
-              NS_FATAL_ERROR ("Received 200 OK in unexpected state");
+              NS_FATAL_ERROR ("Received 200 OK in unexpected state " << SipProxy::DialogStateToString (dialogIt->second.m_state));
             }
         }
     }
@@ -294,8 +296,8 @@ SipAgent::Receive (Ptr<Packet> p, Address from)
       if (sipHeader.GetMethod () == SipHeader::INVITE)
         { 
           NS_LOG_DEBUG ("Received INVITE for call ID " << sipHeader.GetCallId ());
-          auto dialogIt = m_dialogs.find (sipHeader.GetCallId ());
-          if (dialogIt == m_dialogs.end ())
+          // The first INVITE for a call ID should create the Dialog for it
+          if (!DialogExists (sipHeader.GetCallId ()))
             {
               NS_LOG_DEBUG ("Creating dialog for call ID " << sipHeader.GetCallId ());
               CreateDialog (sipHeader.GetCallId (), m_defaultSendCallback);
@@ -306,7 +308,7 @@ SipAgent::Receive (Ptr<Packet> p, Address from)
             }
           else
             {
-              NS_LOG_DEBUG ("Dialog already exists; ignoring possible retransmission");
+              NS_FATAL_ERROR ("TODO:  Handle multiple INVITES at proxy");
             }
         }
       else if (sipHeader.GetMethod () == SipHeader::BYE)
@@ -323,8 +325,8 @@ SipAgent::Receive (Ptr<Packet> p, Address from)
       else if (sipHeader.GetMethod () == SipHeader::ACK)
         { 
           NS_LOG_DEBUG ("Received ACK for call ID " << sipHeader.GetCallId ());
-          eventIt->second (ACK_RECEIVED, TransactionState::CONFIRMED);
           SetTransactionState (sipHeader.GetCallId (), sipHeader.GetFrom (), sipHeader.GetTo (), TransactionState::CONFIRMED);
+          eventIt->second (ACK_RECEIVED, TransactionState::CONFIRMED);
           // Stop Timer H
           // Start Timer I (to absorb any acks)
         }
@@ -332,7 +334,7 @@ SipAgent::Receive (Ptr<Packet> p, Address from)
 }
 
 void
-SipAgent::SetClientCallbacks (uint16_t callId, Callback<void, Ptr<Packet>, const SipHeader&, TransactionState> receiveCallback, Callback<void, const char*, TransactionState> eventCallback)
+SipProxy::SetServerCallbacks (uint16_t callId, Callback<void, Ptr<Packet>, const SipHeader&, TransactionState> receiveCallback, Callback<void, const char*, TransactionState> eventCallback)
 {
   NS_LOG_FUNCTION (this << callId);
 
@@ -357,24 +359,24 @@ SipAgent::SetClientCallbacks (uint16_t callId, Callback<void, Ptr<Packet>, const
 }
 
 void
-SipAgent::SetDefaultSendCallback (Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
+SipProxy::SetDefaultSendCallback (Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
 {
   NS_LOG_FUNCTION (this);
   m_defaultSendCallback = sendCallback;
 }
 
 void
-SipAgent::CreateDialog (uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
+SipProxy::CreateDialog (uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
 {
   NS_LOG_FUNCTION (this << callId);
   Dialog dialog (callId, sendCallback, DialogState::UNINITIALIZED);
   std::pair<std::unordered_map<uint16_t, Dialog>::iterator, bool> returnValue;
   returnValue = m_dialogs.emplace (callId, dialog);
-  NS_ABORT_MSG_UNLESS (returnValue.second, "Emplace SipAgent Dialog failed");
+  NS_ABORT_MSG_UNLESS (returnValue.second, "Emplace SipProxy Dialog failed");
 }
 
 bool
-SipAgent::DialogExists (uint16_t callId) const
+SipProxy::DialogExists (uint16_t callId) const
 {
   auto dialogIt = m_dialogs.find (callId);
   if (dialogIt == m_dialogs.end ())
@@ -388,7 +390,7 @@ SipAgent::DialogExists (uint16_t callId) const
 }
 
 void
-SipAgent::SetDialogState (uint16_t callId, DialogState state)
+SipProxy::SetDialogState (uint16_t callId, DialogState state)
 {
   NS_LOG_FUNCTION (this << callId << DialogStateToString (state));
   auto dialogIt = m_dialogs.find (callId);
@@ -398,7 +400,7 @@ SipAgent::SetDialogState (uint16_t callId, DialogState state)
 }
 
 void
-SipAgent::CreateTransaction (uint16_t callId, uint32_t from, uint32_t to)
+SipProxy::CreateTransaction (uint16_t callId, uint32_t from, uint32_t to)
 {
   NS_LOG_FUNCTION (this << callId << from << to);
   std::tuple<uint16_t, uint32_t, uint32_t> key (callId, from, to);
@@ -407,7 +409,7 @@ SipAgent::CreateTransaction (uint16_t callId, uint32_t from, uint32_t to)
     {
       std::pair<std::unordered_map<std::tuple<uint16_t, uint32_t, uint32_t>, TransactionState, TupleHash>::iterator, bool> returnValue;
       returnValue = m_transactions.emplace (key, TransactionState::IDLE);
-      NS_ABORT_MSG_UNLESS (returnValue.second, "Emplace SipAgent Transaction failed");
+      NS_ABORT_MSG_UNLESS (returnValue.second, "Emplace SipProxy Transaction failed");
     }
   else
     {
@@ -416,7 +418,7 @@ SipAgent::CreateTransaction (uint16_t callId, uint32_t from, uint32_t to)
 }
 
 bool
-SipAgent::TransactionExists (uint16_t callId, uint32_t from, uint32_t to) const
+SipProxy::TransactionExists (uint16_t callId, uint32_t from, uint32_t to) const
 {
   std::tuple<uint16_t, uint32_t, uint32_t> key (callId, from, to);
   auto transactionIt = m_transactions.find (key);
@@ -431,7 +433,7 @@ SipAgent::TransactionExists (uint16_t callId, uint32_t from, uint32_t to) const
 }
 
 void
-SipAgent::SetTransactionState (uint16_t callId, uint32_t from, uint32_t to, TransactionState state)
+SipProxy::SetTransactionState (uint16_t callId, uint32_t from, uint32_t to, TransactionState state)
 {
   NS_LOG_FUNCTION (this << callId << from << to << TransactionStateToString (state));
   std::tuple<uint16_t, uint32_t, uint32_t> key (callId, from, to);
@@ -441,13 +443,13 @@ SipAgent::SetTransactionState (uint16_t callId, uint32_t from, uint32_t to, Tran
   m_transactionTrace (callId, from, to, state);
 }
 
-std::ostream& operator << (std::ostream& os, const SipAgent::DialogState& state)
+std::ostream& operator << (std::ostream& os, const SipProxy::DialogState& state)
 {
    os << static_cast<uint16_t> (state);
    return os;
 }
 
-std::ostream& operator << (std::ostream& os, const SipAgent::TransactionState& state)
+std::ostream& operator << (std::ostream& os, const SipProxy::TransactionState& state)
 {
    os << static_cast<uint16_t> (state);
    return os;

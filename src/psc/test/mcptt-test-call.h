@@ -33,6 +33,7 @@
 #define MCPTT_TEST_CALL_H
 
 #include <ns3/mcptt-call.h>
+#include <ns3/sip-header.h>
 #include "mcptt-msg-dropper.h"
 
 namespace ns3 {
@@ -65,7 +66,7 @@ public:
    * \param pkt The packet (serialized with SIP header)
    * \param hdr A reference to the SIP header that has been serialized
    */
-  virtual void Receive (Ptr<Packet> pkt, const SipHeader& hdr);
+  virtual void Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr);
   /**
    * Receives a call message.
    * \param msg The message that was received.

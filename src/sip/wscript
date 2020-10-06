@@ -10,17 +10,21 @@ def build(bld):
     module = bld.create_ns3_module('sip', ['core', 'network', 'internet'])
     module.source = [
         'model/sip-header.cc',
+        'model/sip-agent.cc',
+        'model/sip-proxy.cc',
         ]
 
-    #module_test = bld.create_ns3_module_test_library('sip')
-    #module_test.source = [
-    #    'test/sip-test-suite.cc',
-    #    ]
+    module_test = bld.create_ns3_module_test_library('sip')
+    module_test.source = [
+        'test/sip-test-suite.cc',
+        ]
 
     headers = bld(features='ns3header')
     headers.module = 'sip'
     headers.source = [
         'model/sip-header.h',
+        'model/sip-agent.h',
+        'model/sip-proxy.h',
         ]
 
     #if bld.env.ENABLE_EXAMPLES:

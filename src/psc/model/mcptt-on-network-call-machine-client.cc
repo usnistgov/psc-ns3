@@ -234,24 +234,24 @@ McpttOnNetworkCallMachineClient::IsPrivateCall (uint32_t userId) const
 }
 
 void
-McpttOnNetworkCallMachineClient::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& sipHeader)
+McpttOnNetworkCallMachineClient::ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& sipHeader)
 {
   NS_LOG_FUNCTION (this << pkt);
   uint16_t callId = sipHeader.GetCallId ();
   NS_ASSERT_MSG (callId == m_callId, "mismatch of call ID");
   uint32_t from = sipHeader.GetFrom ();
-  if (sipHeader.GetMessageType () == SipHeader::SIP_REQUEST)
+  if (sipHeader.GetMessageType () == sip::SipHeader::SIP_REQUEST)
     {
-      if (sipHeader.GetMethod () == SipHeader::INVITE)
+      if (sipHeader.GetMethod () == sip::SipHeader::INVITE)
         {
           m_state->ReceiveInvite (*this, from, pkt, sipHeader);
         }
-      else if (sipHeader.GetMethod () == SipHeader::BYE)
+      else if (sipHeader.GetMethod () == sip::SipHeader::BYE)
         {
           m_state->ReceiveBye (*this, from, pkt, sipHeader);
         }
     }
-  else if (sipHeader.GetMessageType () == SipHeader::SIP_RESPONSE)
+  else if (sipHeader.GetMessageType () == sip::SipHeader::SIP_RESPONSE)
     {
       m_state->ReceiveResponse (*this, from, pkt, sipHeader);
     }
@@ -286,14 +286,7 @@ void
 McpttOnNetworkCallMachineClient::Send (const McpttCallMsg& hdr)
 {
   NS_LOG_FUNCTION (this << hdr);
-  GetCall ()->Send (hdr);
-}
-
-void
-McpttOnNetworkCallMachineClient::Send (Ptr<Packet> pkt, const SipHeader& hdr)
-{
-  NS_LOG_FUNCTION (this << pkt << hdr);
-  GetCall ()->Send (pkt, hdr);
+  NS_FATAL_ERROR ("Unused in on-network operation");
 }
 
 void

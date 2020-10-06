@@ -156,7 +156,7 @@ public:
   * \param pkt The packet received.
   * \param hdr The SIP header received.
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr);
  /**
   * Receives a media message.
   * \param msg The message to receive.
@@ -176,13 +176,8 @@ public:
   */
  virtual void RejectCall (void);
  /**
-  * Sends a call control packet.
-  * \param pkt The packet (already serialized with SIP header)
-  * \param hdr A reference to the SIP header that has been serialized
-  */
- virtual void Send (Ptr<Packet> pkt, const SipHeader& hdr);
- /**
-  * Sends a call control packet.
+  * Sends a off-network call control packet.  Should be unused but is
+  * necessary to implement; it generates a fatal error.
   * \param hdr The McpttCallMsg header to send.
   */
  virtual void Send (const McpttCallMsg& hdr);

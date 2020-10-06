@@ -32,10 +32,13 @@
 #include <ns3/log.h>
 #include <ns3/object.h>
 #include <ns3/type-id.h>
+#include <ns3/callback.h>
 #include <ns3/sip-header.h>
+#include <ns3/sip-agent.h>
 
 #include "mcptt-on-network-call-machine-client.h"
 #include "mcptt-call-msg.h"
+#include "mcptt-call.h"
 #include "mcptt-on-network-floor-participant.h"
 #include "mcptt-ptt-app.h"
 #include "mcptt-sdp-fmtp-header.h"
@@ -71,21 +74,21 @@ McpttOnNetworkCallMachineClientState::IsCallOngoing (const McpttOnNetworkCallMac
 }
 
 void
-McpttOnNetworkCallMachineClientState::ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientState::ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   NS_LOG_LOGIC ("Ignoring INVITE");
 }
 
 void
-McpttOnNetworkCallMachineClientState::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientState::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   NS_LOG_LOGIC ("Ignoring BYE"); 
 }
 
 void
-McpttOnNetworkCallMachineClientState::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader &hdr)
+McpttOnNetworkCallMachineClientState::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader &hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   NS_LOG_LOGIC ("Ignoring response"); 
@@ -166,21 +169,20 @@ McpttOnNetworkCallMachineClientStateS1::InitiateCall (McpttOnNetworkCallMachineC
   fmtpHeader.SetMcQueueing (true); // No attribute for this; always enabled
   fmtpHeader.SetMcImplicitRequest (floorMachine->IsImplicitRequest ());
   pkt->AddHeader (fmtpHeader);
-  SipHeader sipHeader;
-  sipHeader.SetMessageType (SipHeader::SIP_REQUEST);
-  sipHeader.SetMethod (SipHeader::INVITE);
-  sipHeader.SetRequestUri (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
-  sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
-  pkt->AddHeader (sipHeader);
-  machine.Send (pkt, sipHeader);
+  Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
+  agent->SendInvite (pkt, // Packet including FMTP header
+                     machine.GetCall ()->GetPeerSocketAddress (), // peer addr
+                     machine.GetGrpId ().GetGrpId (),  // request URI
+                     machine.GetCall ()->GetOwner ()->GetUserId (), // from
+                     machine.GetCall ()->GetPeerUserId (), // to
+                     machine.GetCall ()->GetCallId (), // callId
+                     MakeCallback (&McpttCall::SendSipMessage, machine.GetCall ()));
 
   machine.SetState (McpttOnNetworkCallMachineClientStateS2::GetInstance ());
 }
 
 void
-McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
 
@@ -195,14 +197,14 @@ McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachine
   machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
 
   Ptr<Packet> newPkt = Create<Packet> ();
-  SipHeader sipHeader;
-  sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
-  sipHeader.SetStatusCode (200);
-  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
-  sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
-  newPkt->AddHeader (sipHeader);
-  machine.Send (newPkt, sipHeader);
+  Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
+  agent->SendResponse (newPkt, 
+                       machine.GetCall ()->GetPeerSocketAddress (), // peer addr
+                       200, // status code
+                       hdr.GetFrom (),
+                       hdr.GetTo (),
+                       hdr.GetCallId (),
+                       MakeCallback (&McpttCall::SendSipMessage, machine.GetCall ()));
 
   machine.SetState (McpttOnNetworkCallMachineClientStateS3::GetInstance ());
 }
@@ -240,7 +242,7 @@ McpttOnNetworkCallMachineClientStateS2::GetInstanceStateId (void) const
 }
 
 void
-McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << hdr);
   // This indicates a setup collision; this client's INVITE has beaten
@@ -258,22 +260,27 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachine
   machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
   
   Ptr<Packet> newPkt = Create<Packet> ();
-  SipHeader sipHeader;
-  sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
-  sipHeader.SetStatusCode (200);
-  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
-  sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
-  newPkt->AddHeader (sipHeader);
-  machine.Send (newPkt, sipHeader);
+  Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
+  agent->SendResponse (newPkt, 
+                       machine.GetCall ()->GetPeerSocketAddress (), // peer addr
+                       200, // status code
+                       hdr.GetFrom (),
+                       hdr.GetTo (),
+                       hdr.GetCallId (),
+                       MakeCallback (&McpttCall::SendSipMessage, machine.GetCall ()));
   machine.SetState (McpttOnNetworkCallMachineClientStateS3::GetInstance ());
 }
 
 void
-McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
 
+  if (hdr.GetStatusCode () == 100)
+    {
+      NS_LOG_DEBUG ("Received 100 Trying response; ignore");
+      return;
+    }
   McpttSdpFmtpHeader sdpHeader;
   pkt->RemoveHeader (sdpHeader);
 
@@ -287,7 +294,7 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachi
 }
 
 void
-McpttOnNetworkCallMachineClientStateS2::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS2::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   machine.SetState (McpttOnNetworkCallMachineClientStateS1::GetInstance ());
@@ -343,14 +350,14 @@ McpttOnNetworkCallMachineClientStateS3::IsCallOngoing (const McpttOnNetworkCallM
 }
 
 void
-McpttOnNetworkCallMachineClientStateS3::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS3::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   NS_LOG_LOGIC ("Ignoring response in established state"); 
 }
 
 void
-McpttOnNetworkCallMachineClientStateS3::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS3::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
 
@@ -362,14 +369,14 @@ McpttOnNetworkCallMachineClientStateS3::ReceiveBye (McpttOnNetworkCallMachineCli
   machine.GetCall ()->GetOwner ()->SessionReleaseRequest ();
 
   Ptr<Packet> newPkt = Create<Packet> ();
-  SipHeader sipHeader;
-  sipHeader.SetMessageType (SipHeader::SIP_RESPONSE);
-  sipHeader.SetStatusCode (200);
-  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
-  sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
-  newPkt->AddHeader (sipHeader);
-  machine.Send (newPkt, sipHeader);
+  Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
+  agent->SendResponse (newPkt,
+                       machine.GetCall ()->GetPeerSocketAddress (), // peer addr
+                       200, // status code
+                       hdr.GetFrom (),
+                       hdr.GetTo (),
+                       hdr.GetCallId (),
+                       MakeCallback (&McpttCall::SendSipMessage, machine.GetCall ()));
 
   machine.SetState (McpttOnNetworkCallMachineClientStateS1::GetInstance ());
 }
@@ -381,16 +388,15 @@ McpttOnNetworkCallMachineClientStateS3::ReleaseCall (McpttOnNetworkCallMachineCl
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->CallRelease1 ();
 
-  Ptr<Packet> newPkt = Create<Packet> ();
-  SipHeader sipHeader;
-  sipHeader.SetMessageType (SipHeader::SIP_REQUEST);
-  sipHeader.SetMethod (SipHeader::BYE);
-  sipHeader.SetRequestUri (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetFrom (machine.GetCall ()->GetOwner ()->GetUserId ());
-  sipHeader.SetTo (machine.GetGrpId ().GetGrpId ());
-  sipHeader.SetCallId (machine.GetCall ()->GetCallId ());
-  newPkt->AddHeader (sipHeader);
-  machine.Send (newPkt, sipHeader);
+  Ptr<Packet> pkt = Create<Packet> ();
+  Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
+  agent->SendBye (pkt, 
+                  machine.GetCall ()->GetPeerSocketAddress (), // peer addr
+                  machine.GetGrpId ().GetGrpId (),  // request URI
+                  machine.GetCall ()->GetOwner ()->GetUserId (), // from
+                  machine.GetCall ()->GetPeerUserId (), // to
+                  machine.GetCall ()->GetCallId (), // callId
+                  MakeCallback (&McpttCall::SendSipMessage, machine.GetCall ()));
 
   machine.SetState (McpttOnNetworkCallMachineClientStateS4::GetInstance ());
 }
@@ -429,7 +435,7 @@ McpttOnNetworkCallMachineClientStateS4::GetInstanceStateId (void) const
   return McpttOnNetworkCallMachineClientStateS4::GetStateId ();
 }
 void
-McpttOnNetworkCallMachineClientStateS4::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS4::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   // colliding BYEs
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
@@ -437,7 +443,7 @@ McpttOnNetworkCallMachineClientStateS4::ReceiveBye (McpttOnNetworkCallMachineCli
 }
 
 void
-McpttOnNetworkCallMachineClientStateS4::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttOnNetworkCallMachineClientStateS4::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();

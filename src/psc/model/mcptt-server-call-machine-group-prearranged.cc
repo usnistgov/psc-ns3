@@ -130,12 +130,11 @@ McpttServerCallMachineGroupPrearranged::SetStateChangeCb (const Callback<void, c
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t from, uint32_t to, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << to << pkt << hdr);
-  // TODO: Create a new SIP transaction to manage the sending
-  // of the request to user ID 'to'
+  NS_LOG_FUNCTION (this << from << to << pkt << hdr);
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (to);
+  Ptr<sip::SipProxy> proxy = GetServerCall ()->GetOwner ()->GetSipProxy ();
   NS_ASSERT_MSG (participant, "Participant " << to << " not found");
 
   Address addr = participant->GetPeerAddress ();
@@ -147,7 +146,22 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
       GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
       uint16_t callPort = portValue.Get ();
       InetSocketAddress inetAddr (ipv4Addr, callPort); 
-      GetServerCall ()->SendCallControlPacket (pkt, inetAddr, hdr);
+      if (hdr.GetMethod () == sip::SipHeader::INVITE)
+        {
+          proxy->SendInvite (pkt, inetAddr, hdr.GetRequestUri (),
+                             from, to, hdr.GetCallId (),
+                             MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+        }
+      else if (hdr.GetMethod () == sip::SipHeader::BYE)
+        {
+          proxy->SendBye (pkt, inetAddr, hdr.GetRequestUri (),
+                          from, to, hdr.GetCallId (),
+                          MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Unsupported SIP method type");
+        }
     }
   else if (Ipv6Address::IsMatchingType (addr))
     {
@@ -157,7 +171,22 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
       GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
       uint16_t callPort = portValue.Get ();
       Inet6SocketAddress inet6Addr (ipv6Addr, callPort); 
-      GetServerCall ()->SendCallControlPacket (pkt, inet6Addr, hdr);
+      if (hdr.GetMethod () == sip::SipHeader::INVITE)
+        {
+          proxy->SendInvite (pkt, inet6Addr, hdr.GetRequestUri (),
+                             from, to, hdr.GetCallId (),
+                             MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+        }
+      else if (hdr.GetMethod () == sip::SipHeader::BYE)
+        {
+          proxy->SendBye (pkt, inet6Addr, hdr.GetRequestUri (),
+                          from, to, hdr.GetCallId (),
+                          MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Unsupported SIP method type");
+        }
     }
   else
     {
@@ -166,16 +195,18 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t to, Ptr<Packet>
 }
 
 void
-McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet> pkt, const SipHeader& hdr)
+McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t from, uint32_t to, Ptr<Packet> pkt, uint16_t statusCode, const sip::SipHeader& hdr)
 {
-  NS_LOG_FUNCTION (this << to << pkt << hdr);
-  // TODO: Create a new SIP transaction to manage the sending
-  // of the request to user ID 'to'
+  NS_LOG_FUNCTION (this << from << to << pkt << statusCode << hdr);
   bool found = false;
+  Ptr<sip::SipProxy> proxy = GetServerCall ()->GetOwner ()->GetSipProxy ();
   for (uint32_t i = 0; i < GetServerCall ()->GetArbitrator ()->GetNParticipants (); i++)
     {
       Ptr<McpttOnNetworkFloorTowardsParticipant> participant = GetServerCall ()->GetArbitrator ()->GetParticipant (i);
-      if (participant->GetPeerUserId () == to)
+      // In SIP, if a response is needed, it means that this agent is
+      // in a UAS (server) role, and the 'from' field will be the originating
+      // (UAC) ID, and the 'to' field will be this agent's ID.
+      if (participant->GetPeerUserId () == from)
         {
           Address addr = participant->GetPeerAddress ();
           if (Ipv4Address::IsMatchingType (addr))
@@ -185,7 +216,9 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet
               GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
               uint16_t callPort = portValue.Get ();
               InetSocketAddress inetAddr (ipv4Addr, callPort); 
-              GetServerCall ()->SendCallControlPacket (pkt, inetAddr, hdr);
+              proxy->SendResponse (pkt, inetAddr, statusCode,
+                                   from, to, hdr.GetCallId (),
+                                   MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
               found = true;
             }
           else if (Ipv6Address::IsMatchingType (addr))
@@ -195,7 +228,9 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t to, Ptr<Packet
               GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
               uint16_t callPort = portValue.Get ();
               Inet6SocketAddress inet6Addr (ipv6Addr, callPort); 
-              GetServerCall ()->SendCallControlPacket (pkt, inet6Addr, hdr);
+              proxy->SendResponse (pkt, inet6Addr, statusCode,
+                                   from, to, hdr.GetCallId (),
+                                   MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
               found = true;
             }
           else
@@ -300,26 +335,25 @@ McpttServerCallMachineGroupPrearranged::IsPrivateCall (uint32_t userId) const
 }
 
 void
-McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& sipHeader)
+McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& sipHeader)
 {
   NS_LOG_FUNCTION (this << pkt << sipHeader);
   uint16_t callId = sipHeader.GetCallId ();
   NS_ASSERT_MSG (callId == m_serverCall->GetCallId (), "mismatch of call ID");
-  uint32_t from = sipHeader.GetFrom ();
-  if (sipHeader.GetMessageType () == SipHeader::SIP_REQUEST)
+  if (sipHeader.GetMessageType () == sip::SipHeader::SIP_REQUEST)
     {
-      if (sipHeader.GetMethod () == SipHeader::INVITE)
+      if (sipHeader.GetMethod () == sip::SipHeader::INVITE)
         {
-          m_state->ReceiveInvite (*this, from, pkt, sipHeader);
+          m_state->ReceiveInvite (*this, pkt, sipHeader);
         }
-      else if (sipHeader.GetMethod () == SipHeader::BYE)
+      else if (sipHeader.GetMethod () == sip::SipHeader::BYE)
         {
-          m_state->ReceiveBye (*this, from, pkt, sipHeader);
+          m_state->ReceiveBye (*this, pkt, sipHeader);
         }
     }
-  else if (sipHeader.GetMessageType () == SipHeader::SIP_RESPONSE)
+  else if (sipHeader.GetMessageType () == sip::SipHeader::SIP_RESPONSE)
     {
-      m_state->ReceiveResponse (*this, from, pkt, sipHeader);
+      m_state->ReceiveResponse (*this, pkt, sipHeader);
     }
 }
 

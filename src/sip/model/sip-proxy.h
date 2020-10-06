@@ -16,15 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// This ns-3 implementation is adapted from NIST ns-2.31 implementation
-
-#ifndef SIP_AGENT_H
-#define SIP_AGENT_H
+#ifndef SIP_PROXY_H
+#define SIP_PROXY_H
 
 #include <unordered_map>
+#include <functional>
 #include <tuple>
 #include <ns3/object.h>
-#include <ns3/address.h>
 #include <ns3/ptr.h>
 #include <ns3/packet.h>
 #include <ns3/type-id.h>
@@ -39,33 +37,34 @@ namespace sip {
 
 class SipHeader;
 
-
 /**
  * \ingroup sip
  *
- * A SipAgent notionally represents a SIP User Agent on a client endpoint.
- * SipAgents manage transactions and dialogs for one or more calls.
+ * A SipProxy notionally represents a SIP Proxy on a server.  The model
+ * does not distinguish between different variants of SIP proxies.
+ * The SipProxy is the peer to the client-based SipAgent, and exists
+ * primarily to manage transactions and dialogs for one or more calls.
  *
- * A SipAgent is not an ns3::Application but is instead owned by another
+ * A SipProxy is not an ns3::Application but is instead owned by another
  * application.  It is neither started nor initialized like an
- * ns3::Application.  Other applications can request the SipAgent
+ * ns3::Application.  Other applications can request the SipProxy
  * to initiate transactions (requests and responses) and when the
  * transaction is completed (or if it fails), the client is notified
- * via a callback.  The SipAgent also sends out its packets over
- * a callback provided by the client.   Finally, the SipAgent receives
+ * via a callback.  The SipProxy also sends out its packets over
+ * a callback provided by the client.   Finally, the SipProxy receives
  * packets from an underlying channel via the Receive() method.
  */
-class SipAgent : public Object
+class SipProxy : public Object
 {
 public:
   /**
-   * \brief Construct a SIP agent
+   * \brief Construct a SIP proxy
    */
-  SipAgent ();
+  SipProxy ();
   /**
    * \brief Destructor
    */
-  virtual ~SipAgent ();
+  virtual ~SipProxy ();
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -73,11 +72,13 @@ public:
   static TypeId GetTypeId (void);
   /**
    * The states representing the progression of a SIP transaction
-   * (based on Figure 5 of RFC 3261).
+   * (based on Figures 7 and 8 of RFC 3261).
+   * Invite-based:  IDLE->PROCEEDING->COMPLETED->CONFIRMED->TERMINATED
+   * non-Invite-based:  IDLE->TRYING->PROCEEDING->COMPLETED->TERMINATED
    */
   enum class TransactionState
   {
-    IDLE,
+    IDLE, // not in RFC 3261
     CALLING,
     TRYING,
     PROCEEDING,
@@ -93,11 +94,11 @@ public:
   enum class DialogState
   {
     UNINITIALIZED,  // not in RFC 4235
-    TRYING,  // entered before send or receipt of 100 Trying
-    PROCEEDING, // entered after send or receipt of 100 Trying
-    EARLY,  // not presently used
-    CONFIRMED, // entered after send or receipt of 200 OK
-    TERMINATED // entered after send or receipt of BYE
+    TRYING,
+    PROCEEDING,
+    EARLY,
+    CONFIRMED,
+    TERMINATED
   };
   /**
    * Return string corresponding to TransactionState value
@@ -111,9 +112,8 @@ public:
    * \return string value for the state
    */
   static std::string DialogStateToString (DialogState state);
-
   /**
-   * \brief Start a transaction to send a SIP INVITE
+   * \brief Start a transaction with a SIP INVITE
    *
    * \param p the packet to add a SIP header to
    * \param addr the address to send the packet to
@@ -125,7 +125,7 @@ public:
    */
   void SendInvite (Ptr<Packet> p, const Address& addr, uint32_t requestUri, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback);
   /**
-   * \brief Start a transaction to send a SIP BYE
+   * \brief Start a transaction with a SIP BYE
    *
    * \param p the packet to add a SIP header to
    * \param addr the address to send the packet to
@@ -150,14 +150,14 @@ public:
   void SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback);
   /**
    * Receive and process an inbound SIP packet.  The SIP header should be the
-   * next header ready to be deserialized.
+   * next header to be deserialized.
    * \param p Packet (with SIP header) received
    * \param from IPv4 or IPv6 source address of packet
    */
   void Receive (Ptr<Packet> p, Address from);
   /**
    * Set a receive callback for receiving a packet on a specific call ID
-   * and an event callback for notifying the user about events.
+   * and an event callback for notifying the server about events.
    *
    * This method can only be called once per call ID
    *
@@ -165,7 +165,7 @@ public:
    * \param receiveCallback the receive callback
    * \param eventCallback the event callback
    */
-  void SetClientCallbacks (uint16_t callId, Callback<void, Ptr<Packet>, const SipHeader&, TransactionState> receiveCallback, Callback<void, const char*, TransactionState> eventCallback);
+  void SetServerCallbacks (uint16_t callId, Callback<void, Ptr<Packet>, const SipHeader&, TransactionState> receiveCallback, Callback<void, const char*, TransactionState> eventCallback);
   /**
    * Set a default send callback.  This may be needed to respond to
    * incoming packets with a SIP response (such as 100 Trying) before
@@ -177,8 +177,8 @@ public:
   void SetDefaultSendCallback (Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback);
   /**
    * TracedCallback signature for transmission and reception events
-   * \param [in] p packet received (without SIP header)
-   * \param [in] s SIP header received
+   * \param [in] p packet (with SIP header)
+   * \param [in] s SIP header
    */
   typedef void (*TxRxTracedCallback)(Ptr<Packet> p, const SipHeader& s);
 
@@ -187,7 +187,8 @@ public:
    * \param [in] callId call ID
    * \param [in] state DialogState
    */
-  typedef void (*DialogStateTracedCallback)(uint16_t callId, DialogState state);
+  typedef void (*DialogStateTracedCallback)(uint16_t callId, DialogState state)
+;
 
   /**
    * TracedCallback signature for transaction state events
@@ -196,7 +197,8 @@ public:
    * \param [in] to To URI
    * \param [in] state DialogState
    */
-  typedef void (*TransactionStateTracedCallback)(uint16_t callId, uint32_t from, uint32_t to, TransactionState state);
+  typedef void (*TransactionStateTracedCallback)(uint16_t callId, uint32_t from
+, uint32_t to, TransactionState state);
 
   /**
    * Events to report; defined as C-style string literals
@@ -219,7 +221,7 @@ private:
         m_state (state)
     {}
     uint16_t m_callId;
-    Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_sendCallback; 
+    Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_sendCallback;
     DialogState m_state;
   };
   /**
@@ -303,12 +305,12 @@ private:
   TracedCallback<uint16_t, uint32_t, uint32_t, TransactionState> m_transactionTrace;
 };
 
-std::ostream& operator << (std::ostream& os, const SipAgent::DialogState& state);
+std::ostream& operator << (std::ostream& os, const SipProxy::DialogState& state);
 
-std::ostream& operator << (std::ostream& os, const SipAgent::TransactionState& state);
+std::ostream& operator << (std::ostream& os, const SipProxy::TransactionState& state);
 
 } // namespace sip
 
 } // namespace ns3
 
-#endif /* SIP_AGENT_H */
+#endif /* SIP_PROXY_H */

@@ -41,6 +41,8 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 #include <ns3/vector.h>
+#include <ns3/sip-proxy.h>
+#include <ns3/sip-header.h>
 
 namespace ns3 {
 
@@ -70,6 +72,11 @@ public:
   * The destructor of the McpttServerApp class.
   */
  virtual ~McpttServerApp (void);
+ /**
+  * Get the SipProxy associated with this application.
+  * \return pointer to SipProxy
+  */
+ Ptr<sip::SipProxy> GetSipProxy (void) const;
   /**
    * Return a new call ID value
    * \return new call ID value
@@ -126,11 +133,6 @@ protected:
   */
  virtual void StopApplication (void);
  /**
-  * Receive a call control packet.
-  * \param pkt The call control packet that was received.
-  */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt);
- /**
   * The callback to fire when a message is sent.
   * \param call The call associated with the message.
   * \param msg The message that was sent.
@@ -150,6 +152,7 @@ private:
  Address m_peerAddress; //!< The peer IP address.
  uint16_t m_callPort; //!< The port on which call control messages will flow.
  Ptr<McpttChannel> m_callChannel; //!< The channel for call control messages.
+ Ptr<sip::SipProxy> m_sipProxy; //!< The SIP proxy agent
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
 };

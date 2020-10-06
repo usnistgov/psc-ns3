@@ -41,6 +41,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 #include <ns3/vector.h>
+#include <ns3/sip-agent.h>
 
 #include "mcptt-call.h"
 #include "mcptt-call-msg.h"
@@ -92,6 +93,11 @@ public:
   * The destructor of the McpttPttApp class.
   */
  virtual ~McpttPttApp (void);
+ /**
+  * Get the SipAgent associated with this application.
+  * \return pointer to SipAgent
+  */
+ Ptr<sip::SipAgent> GetSipAgent (void) const;
  /**
   * Gets the current port number
   * \returns The current port number.
@@ -255,15 +261,11 @@ protected:
   */
  virtual void NewCallCb (uint16_t callId);
  /**
-  * Receives an on-network call control packet.
-  * \param pkt The call control packet that was received.
-  */
- virtual void ReceiveOnNetworkCallPacket (Ptr<Packet>  pkt);
- /**
   * Receives an off-network call control packet.
   * \param pkt The call control packet that was received.
+  * \param from The source address of the packet.
   */
- virtual void ReceiveOffNetworkCallPacket (Ptr<Packet>  pkt);
+ virtual void ReceiveOffNetworkCallPacket (Ptr<Packet>  pkt, Address from);
  /**
   * Receives a call control message.
   * \param msg The message that was received.
@@ -315,6 +317,7 @@ private:
  std::map<uint16_t, Ptr<McpttCall> > m_offNetworkCalls; //!< The container of off-network calls.
  Callback<void> m_floorGrantedCb; //!< The floor granted callback.
  Address m_localAddress; //!< The local IP address.
+ Ptr<sip::SipAgent> m_sipAgent; //!< SIP user agent
  Ptr<McpttMediaSrc> m_mediaSrc; //!< The media source.
  Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
  bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.

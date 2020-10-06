@@ -285,7 +285,7 @@ McpttServerCallMachineNull::IsPrivateCall (uint32_t userId) const
 }
 
 void
-McpttServerCallMachineNull::ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr)
+McpttServerCallMachineNull::ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt << hdr);
 }

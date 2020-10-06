@@ -36,6 +36,8 @@
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
+#include <ns3/sip-header.h>
+#include <ns3/sip-proxy.h>
 
 #include "mcptt-call-msg.h"
 #include "mcptt-channel.h"
@@ -48,7 +50,6 @@ namespace ns3 {
 class McpttServerApp;
 class McpttOnNetworkFloorArbitrator;
 class McpttServerCallMachine;
-class SipHeader;
 
 /**
  * \ingroup mcptt
@@ -122,11 +123,18 @@ public:
   */
  void OpenMediaChannel (const Address& peerAddr, const uint16_t port);
  /**
-  * Receives a call control packet.
-  * \param pkt The packet (without SIP header) that was received.
-  * \param hdr The (deserialized) SIP header.
+  * Receive an on-network SIP call message
+  * \param pkt The packet (without SIP header)
+  * \param hdr A reference to the SIP header that has been deserialized
+  * \param state The state of The (deserialized) SIP header.
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state);
+ /**
+  * Receive notification of a SIP event
+  * \param event The event description
+  * \param state The state of the transaction
+  */
+ virtual void ReceiveSipEvent (const char* event, sip::SipProxy::TransactionState state);
  /**
   * Receives a floor message.
   * \param msg The message that was received.
@@ -153,7 +161,7 @@ public:
   * \param toAddr The address to send to
   * \param hdr A reference to the SIP header that has been serialized
   */
- virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const SipHeader &hdr);
+ virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const sip::SipHeader &hdr);
 protected:
  /**
   * Disposes of the McpttServerCall instance.
@@ -162,13 +170,15 @@ protected:
  /**
   * Handles the receieved floor control packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet.
   */
- void ReceiveFloorPkt (Ptr<Packet>  pkt);
+ void ReceiveFloorPkt (Ptr<Packet>  pkt, Address from);
  /**
   * Handles the received media packet.
   * \param pkt The packet that was received.
+  * \param from The source address of the packet.
   */
- void ReceiveMediaPkt (Ptr<Packet>  pkt);
+ void ReceiveMediaPkt (Ptr<Packet>  pkt, Address from);
  private:
  uint16_t m_callId;  //!< Call ID of the call.
  std::vector<uint32_t> m_clientUserIds; //!< Client user IDs

@@ -34,6 +34,7 @@
 
 #include <ns3/object.h>
 #include <ns3/type-id.h>
+#include <ns3/sip-header.h>
 
 #include "mcptt-call-msg.h"
 #include "mcptt-call-msg-field.h"
@@ -44,7 +45,6 @@
 namespace ns3 {
 
 class McpttServerCall;
-class SipHeader;
 
 /**
  * \ingroup mcptt
@@ -141,7 +141,7 @@ public:
   * \param pkt The packet received (without SIP header).
   * \param hdr The (deserialized) SIP header
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr) = 0;
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr) = 0;
  /**
   * Receives a media message.
   * \param msg The message to receive.
@@ -340,7 +340,7 @@ public:
   * \param pkt The packet received (without SIP header).
   * \param hdr The (deserialized) SIP header
   */
- virtual void ReceiveCallPacket (Ptr<Packet> pkt, const SipHeader& hdr);
+ virtual void ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr);
  /**
   * Receives a media message.
   * \param msg The message to receive.

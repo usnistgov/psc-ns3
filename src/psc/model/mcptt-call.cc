@@ -37,6 +37,7 @@
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
 #include <ns3/sip-header.h>
+#include <ns3/sip-agent.h>
 
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
@@ -86,6 +87,10 @@ McpttCall::GetTypeId (void)
                    AddressValue (Ipv4Address ("255.255.255.255")),
                    MakeAddressAccessor (&McpttCall::m_peerAddress),
                    MakeAddressChecker ())
+    .AddAttribute ("PeerUserId", "The user ID of the peer (or server) application (for on-network operation).",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&McpttCall::m_peerUserId),
+                   MakeUintegerChecker<uint32_t> ())
    ;
   return tid;
 }
@@ -236,7 +241,25 @@ McpttCall::OpenMediaChannel (const Address& peerAddr, const uint16_t port)
 }
 
 void
-McpttCall::Receive (Ptr<Packet> pkt, const SipHeader& hdr)
+McpttCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state)
+{
+  NS_LOG_FUNCTION (this << pkt << hdr << state);
+  if (!m_rxCb.IsNull ())
+    {
+      m_rxCb (this, hdr);
+    }
+  GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
+}
+
+void
+McpttCall::ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state)
+{
+  NS_LOG_FUNCTION (this << event << state);
+  // Not yet defined
+}
+
+void
+McpttCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt);
   if (hdr.GetCallId () != GetCallId ())
@@ -297,25 +320,41 @@ McpttCall::Receive (const McpttMediaMsg& msg)
   floorMachine->Receive (msg);
 }
 
-// on-network sends SIP-based messages
-void
-McpttCall::Send (Ptr<Packet> pkt, const SipHeader& hdr)
+Address
+McpttCall::GetPeerSocketAddress (void) const
 {
-  NS_LOG_FUNCTION (this << pkt);
-  NS_LOG_LOGIC ("PttApp sending " << hdr << ".");
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
       Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
-      GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
-      if (!m_txCb.IsNull ())
-        {
-          m_txCb (this, hdr);
-        }
+      return InetSocketAddress (peer, m_callPort);
     }
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
-      GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
+      return Inet6SocketAddress (peer, m_callPort);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Address type unsupported");
+    }
+  return Address (); // unreachable
+}
+
+uint32_t
+McpttCall::GetPeerUserId (void) const
+{
+  return m_peerUserId; 
+}
+
+// on-network sends SIP-based messages
+void
+McpttCall::SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr)
+{
+  NS_LOG_FUNCTION (this << pkt << hdr);
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
+    {
+      Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
+      GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
       if (!m_txCb.IsNull ())
         {
           m_txCb (this, hdr);
@@ -332,8 +371,6 @@ McpttCall::Send (const McpttCallMsg& msg)
   Ptr<Packet> pkt = Create<Packet> ();
 
   pkt->AddHeader (msg);
-
-  NS_LOG_LOGIC ("PttApp sending " << msg << ".");
 
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
@@ -447,29 +484,11 @@ McpttCall::DoDispose (void)
 }
 
 void
-McpttCall::ReceiveCallPkt (Ptr<Packet> pkt)
+McpttCall::ReceiveCallPkt (Ptr<Packet> pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << pkt);
+  NS_LOG_FUNCTION (this << pkt << from);
 
   NS_LOG_LOGIC ("Call received " << pkt->GetSize () << " byte(s).");
-
-  if (GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ())
-    {
-      NS_LOG_LOGIC ("Handling on-network call control packet");
-      SipHeader sipHeader;
-      pkt->PeekHeader (sipHeader);
-      if (GetCallId () == sipHeader.GetCallId ())
-        {
-          NS_LOG_DEBUG ("Received packet for call ID " << GetCallId ());
-          pkt->RemoveHeader (sipHeader);
-          Receive (pkt, sipHeader);
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Call ID " << GetCallId () << " does not match " << sipHeader.GetCallId ());
-        }
-      return;
-    }
 
   NS_LOG_LOGIC ("Handling off-network call control packet");
   McpttCallMsg temp;
@@ -605,9 +624,9 @@ McpttCall::ReceiveCallPkt (Ptr<Packet> pkt)
 }
 
 void
-McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
+McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt);
+  NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttFloorMsg temp;
 
@@ -687,9 +706,9 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
+McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt);
+  NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttMediaMsg msg;
 

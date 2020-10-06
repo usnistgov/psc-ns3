@@ -1,5 +1,21 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /**
+ * Copyright 2020 University of Washington
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+/**
  * NIST-developed software is provided by NIST as a public service. You may
  * use, copy and distribute copies of the software in any medium, provided that
  * you keep intact this entire notice. You may improve, modify and create
@@ -8,7 +24,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +34,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -32,8 +48,13 @@
 // Some elements ported from NIST ns-2.31 SIP implementation
 
 #include "sip-header.h"
+#include "ns3/log.h"
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("SipHeader");
+
+namespace sip {
 
 NS_OBJECT_ENSURE_REGISTERED (SipHeader);
 
@@ -42,12 +63,12 @@ SipMessageTypeToString (SipHeader::SipMessageType messageType)
 {
   switch (messageType)
     {
-    case SipHeader::SIP_REQUEST:
-      return "Request";
-    case SipHeader::SIP_RESPONSE:
-      return "Response";
-    default:
-      return "Unknown";
+      case SipHeader::SIP_REQUEST:
+        return "Request";
+      case SipHeader::SIP_RESPONSE:
+        return "Response";
+      default:
+        return "Unknown";
     }
   return "Unknown";
 }
@@ -57,38 +78,49 @@ SipMethodToString (SipHeader::SipMethod method)
 {
   switch (method)
     {
-    case SipHeader::INVITE:
-      return "INVITE";
-    case SipHeader::BYE:
-      return "BYE";
-    case SipHeader::INVALID_METHOD:
-      return "Invalid";
-    default:
-      return "Unknown";
+      case SipHeader::INVITE:
+        return "INVITE";
+      case SipHeader::BYE:
+        return "BYE";
+      case SipHeader::INVALID_METHOD:
+        return "Invalid";
+      default:
+        return "Unknown";
+    }
+  return "Unknown";
+}
+
+std::string
+SipStatusCodeToString (uint16_t statusCode)
+{
+  switch (statusCode)
+    {
+      case 100:
+        return "100 Trying";
+      case 200:
+        return "200 OK";
+      default:
+        return "Unknown";
     }
   return "Unknown";
 }
 
 SipHeader::SipHeader ()
-{
-}
+{}
 
 SipHeader::~SipHeader ()
-{
-}
+{}
 
-TypeId 
+TypeId
 SipHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::SipHeader")
     .SetParent<Header> ()
-    .SetGroupName ("Mcptt")
+    .SetGroupName ("Sip")
     .AddConstructor<SipHeader> ()
   ;
   return tid;
 }
-
-  // These eight methods need doxygen
 
 void
 SipHeader::SetMessageType (SipHeader::SipMessageType messageType)
@@ -186,13 +218,13 @@ SipHeader::GetCallId (void) const
   return m_callId;
 }
 
-TypeId 
+TypeId
 SipHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
-void 
+void
 SipHeader::Print (std::ostream &os) const
 {
   if (m_messageType == SipHeader::SIP_REQUEST)
@@ -205,8 +237,7 @@ SipHeader::Print (std::ostream &os) const
   else if (m_messageType == SipHeader::SIP_RESPONSE)
     {
       os << SipMessageTypeToString (SipHeader::SipMessageType (m_messageType)) << " "
-         << "Status Code: " << m_statusCode << " "
-         << SipMethodToString (SipHeader::SipMethod (m_method)) << " "
+         << SipStatusCodeToString (m_statusCode) << " "
       ;
     }
   os << "From=" << m_from << " "
@@ -215,7 +246,7 @@ SipHeader::Print (std::ostream &os) const
   ;
 }
 
-uint32_t 
+uint32_t
 SipHeader::GetSerializedSize (void) const
 {
   return 1 + 1 + 2 + 4 + 4 + 4 + 2;
@@ -240,12 +271,14 @@ SipHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   m_messageType = i.ReadU8 ();
   m_method = i.ReadU8 ();
-  m_statusCode = i.ReadNtohU16 (); 
+  m_statusCode = i.ReadNtohU16 ();
   m_requestUri = i.ReadNtohU32 ();
   m_from = i.ReadNtohU32 ();
   m_to = i.ReadNtohU32 ();
   m_callId = i.ReadNtohU16 ();
   return GetSerializedSize ();
 }
+
+} // namespace sip
 
 } // namespace ns3

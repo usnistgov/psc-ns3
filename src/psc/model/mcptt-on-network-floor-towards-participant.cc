@@ -438,9 +438,9 @@ McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt)
+McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt);
+  NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttFloorMsg temp;
 
@@ -507,9 +507,9 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt (Ptr<Packet>  pkt)
+McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
 {
-  NS_LOG_FUNCTION (this << &pkt);
+  NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttMediaMsg msg;
 
