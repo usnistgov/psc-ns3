@@ -3624,6 +3624,15 @@ LteUeRrc::SetOutofCovrgUeRnti ()
     }
 }
 
+void
+LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id);
+  //add LC
+  Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlDrb (srcL2Id, dstL2Id, lcId);
+  NS_LOG_INFO ("Created new RX SLRB for group " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
+}
+
 Ptr<NrSlDataRadioBearerInfo>
 LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
 {
