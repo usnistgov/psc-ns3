@@ -313,8 +313,16 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-ue-procedures-after-rlf.png \
 	$(SRC)/lte/doc/source/figures/lte-sl-pssch-bitmap.dia \
 	$(SRC)/lte/doc/source/figures/prose-non-roaming-arch.dia \
-	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1c.dia \
 	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1a.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1b.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1c.dia \
+	$(SRC)/lte/doc/source/figures/sidelink-scenarios-1d.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-o2o-comm-message-exchange.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-o2o-comm-state-machine-relay.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-o2o-comm-state-machine-remote.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-relay-selection.png \
+	$(SRC)/lte/doc/source/figures/lte-sl-ue-arch-data-plane.dia \
+	$(SRC)/lte/doc/source/figures/lte-sl-ue-arch-ctrl-plane.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-ue-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-sl-enb-rrc.png \
 	$(SRC)/lte/doc/source/figures/lte-sl-ue-rrc.png \
@@ -446,8 +454,16 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-epc-x2-entity-saps.eps \
 	$(FIGURES)/lte-sl-pssch-bitmap.eps \
 	$(FIGURES)/prose-non-roaming-arch.eps \
-	$(FIGURES)/sidelink-scenarios-1c.eps \
 	$(FIGURES)/sidelink-scenarios-1a.eps \
+	$(FIGURES)/sidelink-scenarios-1b.eps \
+	$(FIGURES)/sidelink-scenarios-1c.eps \
+	$(FIGURES)/sidelink-scenarios-1d.eps \
+	$(FIGURES)/lte-sl-ue-arch-data-plane.eps \
+	$(FIGURES)/lte-sl-ue-arch-ctrl-plane.eps \
+	$(FIGURES)/lte-sl-o2o-comm-message-exchange.eps \
+	$(FIGURES)/lte-sl-o2o-comm-state-machine-relay.eps \
+	$(FIGURES)/lte-sl-o2o-comm-state-machine-remote.eps \
+	$(FIGURES)/lte-sl-relay-selection.png \
 	$(FIGURES)/lte-sl-ue-phy.eps \
 	$(FIGURES)/lte-sl-in-coverage-tx.png \
 	$(FIGURES)/lte-sl-in-coverage-rx.png \
