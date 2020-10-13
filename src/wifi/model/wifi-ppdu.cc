@@ -29,12 +29,12 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiPpdu");
 
-WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint16_t frequency)
+WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode ().GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_psdu (psdu),
     m_truncatedTx (false),
-    m_frequency (frequency),
+    m_band (band),
     m_channelWidth (txVector.GetChannelWidth ()),
     m_txPowerLevel (txVector.GetTxPowerLevel ())
 {
@@ -42,7 +42,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
     {
       return;
     }
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
+  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << band);
   switch (m_modulation)
     {
       case WIFI_MOD_CLASS_DSSS:
@@ -63,7 +63,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_HT:
         {
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (frequency))
+          if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
               sigExtension = 6;
             }
@@ -95,7 +95,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_HE:
         {
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (frequency))
+          if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
               sigExtension = 6;
             }
@@ -290,110 +290,7 @@ WifiPpdu::GetTxVector (void) const
         }
       case WIFI_MOD_CLASS_HT:
         {
-          WifiMode mode;
-          switch (m_htSig.GetMcs ())
-            {
-              case 0:
-                mode = WifiPhy::GetHtMcs0 ();
-                break;
-              case 1:
-                mode = WifiPhy::GetHtMcs1 ();
-                break;
-              case 2:
-                mode = WifiPhy::GetHtMcs2 ();
-                break;
-              case 3:
-                mode = WifiPhy::GetHtMcs3 ();
-                break;
-              case 4:
-                mode = WifiPhy::GetHtMcs4 ();
-                break;
-              case 5:
-                mode = WifiPhy::GetHtMcs5 ();
-                break;
-              case 6:
-                mode = WifiPhy::GetHtMcs6 ();
-                break;
-              case 7:
-                mode = WifiPhy::GetHtMcs7 ();
-                break;
-              case 8:
-                mode = WifiPhy::GetHtMcs8 ();
-                break;
-              case 9:
-                mode = WifiPhy::GetHtMcs9 ();
-                break;
-              case 10:
-                mode = WifiPhy::GetHtMcs10 ();
-                break;
-              case 11:
-                mode = WifiPhy::GetHtMcs11 ();
-                break;
-              case 12:
-                mode = WifiPhy::GetHtMcs12 ();
-                break;
-              case 13:
-                mode = WifiPhy::GetHtMcs13 ();
-                break;
-              case 14:
-                mode = WifiPhy::GetHtMcs14 ();
-                break;
-              case 15:
-                mode = WifiPhy::GetHtMcs15 ();
-                break;
-              case 16:
-                mode = WifiPhy::GetHtMcs16 ();
-                break;
-              case 17:
-                mode = WifiPhy::GetHtMcs17 ();
-                break;
-              case 18:
-                mode = WifiPhy::GetHtMcs18 ();
-                break;
-              case 19:
-                mode = WifiPhy::GetHtMcs19 ();
-                break;
-              case 20:
-                mode = WifiPhy::GetHtMcs20 ();
-                break;
-              case 21:
-                mode = WifiPhy::GetHtMcs21 ();
-                break;
-              case 22:
-                mode = WifiPhy::GetHtMcs22 ();
-                break;
-              case 23:
-                mode = WifiPhy::GetHtMcs23 ();
-                break;
-              case 24:
-                mode = WifiPhy::GetHtMcs24 ();
-                break;
-              case 25:
-                mode = WifiPhy::GetHtMcs25 ();
-                break;
-              case 26:
-                mode = WifiPhy::GetHtMcs26 ();
-                break;
-              case 27:
-                mode = WifiPhy::GetHtMcs27 ();
-                break;
-              case 28:
-                mode = WifiPhy::GetHtMcs28 ();
-                break;
-              case 29:
-                mode = WifiPhy::GetHtMcs29 ();
-                break;
-              case 30:
-                mode = WifiPhy::GetHtMcs30 ();
-                break;
-              case 31:
-                mode = WifiPhy::GetHtMcs31 ();
-                break;
-              default:
-                NS_ASSERT_MSG (false, "Invalid MCS encoded in HT-SIG header");
-                break;
-            }
-          txVector.SetMode (mode);
+          txVector.SetMode (WifiPhy::GetHtMcs (m_htSig.GetMcs ()));
           txVector.SetChannelWidth (m_htSig.GetChannelWidth ());
           txVector.SetNss (1 + (m_htSig.GetMcs () / 8));
           txVector.SetGuardInterval(m_htSig.GetShortGuardInterval () ? 400 : 800);
@@ -402,44 +299,7 @@ WifiPpdu::GetTxVector (void) const
         }
       case WIFI_MOD_CLASS_VHT:
         {
-          WifiMode mode;
-          switch (m_vhtSig.GetSuMcs ())
-            {
-              case 0:
-                mode = WifiPhy::GetVhtMcs0 ();
-                break;
-              case 1:
-                mode = WifiPhy::GetVhtMcs1 ();
-                break;
-              case 2:
-                mode = WifiPhy::GetVhtMcs2 ();
-                break;
-              case 3:
-                mode = WifiPhy::GetVhtMcs3 ();
-                break;
-              case 4:
-                mode = WifiPhy::GetVhtMcs4 ();
-                break;
-              case 5:
-                mode = WifiPhy::GetVhtMcs5 ();
-                break;
-              case 6:
-                mode = WifiPhy::GetVhtMcs6 ();
-                break;
-              case 7:
-                mode = WifiPhy::GetVhtMcs7 ();
-                break;
-              case 8:
-                mode = WifiPhy::GetVhtMcs8 ();
-                break;
-              case 9:
-                mode = WifiPhy::GetVhtMcs9 ();
-                break;
-              default:
-                NS_ASSERT_MSG (false, "Invalid MCS encoded in VHT-SIG header");
-                break;
-            }
-          txVector.SetMode (mode);
+          txVector.SetMode (WifiPhy::GetVhtMcs (m_vhtSig.GetSuMcs ()));
           txVector.SetChannelWidth (m_vhtSig.GetChannelWidth ());
           txVector.SetNss (m_vhtSig.GetNStreams ());
           txVector.SetGuardInterval (m_vhtSig.GetShortGuardInterval () ? 400 : 800);
@@ -448,50 +308,7 @@ WifiPpdu::GetTxVector (void) const
         }
       case WIFI_MOD_CLASS_HE:
         {
-          WifiMode mode;
-          switch (m_heSig.GetMcs ())
-            {
-              case 0:
-                mode = WifiPhy::GetHeMcs0 ();
-                break;
-              case 1:
-                mode = WifiPhy::GetHeMcs1 ();
-                break;
-              case 2:
-                mode = WifiPhy::GetHeMcs2 ();
-                break;
-              case 3:
-                mode = WifiPhy::GetHeMcs3 ();
-                break;
-              case 4:
-                mode = WifiPhy::GetHeMcs4 ();
-                break;
-              case 5:
-                mode = WifiPhy::GetHeMcs5 ();
-                break;
-              case 6:
-                mode = WifiPhy::GetHeMcs6 ();
-                break;
-              case 7:
-                mode = WifiPhy::GetHeMcs7 ();
-                break;
-              case 8:
-                mode = WifiPhy::GetHeMcs8 ();
-                break;
-              case 9:
-                mode = WifiPhy::GetHeMcs9 ();
-                break;
-              case 10:
-                mode = WifiPhy::GetHeMcs10 ();
-                break;
-              case 11:
-                mode = WifiPhy::GetHeMcs11 ();
-                break;
-              default:
-                NS_ASSERT_MSG (false, "Invalid MCS encoded in HE-SIG header");
-                break;
-            }
-          txVector.SetMode (mode);
+          txVector.SetMode (WifiPhy::GetHeMcs (m_heSig.GetMcs ()));
           txVector.SetChannelWidth (m_heSig.GetChannelWidth ());
           txVector.SetNss (m_heSig.GetNStreams ());
           txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
@@ -539,10 +356,10 @@ WifiPpdu::GetTxDuration (void) const
           break;
       case WIFI_MOD_CLASS_OFDM:
       case WIFI_MOD_CLASS_ERP_OFDM:
-          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, m_frequency);
+          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, m_band);
           break;
       case WIFI_MOD_CLASS_HT:
-          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, m_frequency);
+          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, m_band);
           break;
       case WIFI_MOD_CLASS_VHT:
         {
@@ -562,7 +379,7 @@ WifiPpdu::GetTxDuration (void) const
           Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
           Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (m_frequency))
+          if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
               sigExtension = 6;
             }

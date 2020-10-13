@@ -68,7 +68,7 @@ You may want to take this opportunity to explore the |ns3| wiki
 a bit, or the main web site at https://www.nsnam.org, since there is a 
 wealth of information there. 
 
-As of the most recent |ns3| release (ns-3.31), the following tools
+As of the most recent |ns3| release (ns-3.32), the following tools
 are needed to get started with |ns3|:
 
 ============  ===========================================================
@@ -112,21 +112,21 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget https://www.nsnam.org/release/ns-allinone-3.31.tar.bz2
-  $ tar xjf ns-allinone-3.31.tar.bz2
+  $ wget https://www.nsnam.org/release/ns-allinone-3.32.tar.bz2
+  $ tar xjf ns-allinone-3.32.tar.bz2
 
 Notice the use above of the ``wget`` utility, which is a command-line
 tool to fetch objects from the web; if you do not have this installed,
 you can use a browser for this step.
  
 Following these steps, if you change into the directory 
-``ns-allinone-3.31``, you should see a number of files and directories
+``ns-allinone-3.32``, you should see a number of files and directories
 
 .. sourcecode:: text
 
-  $ cd ns-allinone-3.31
+  $ cd ns-allinone-3.32
   $ ls
-  bake      constants.py   ns-3.31                            README
+  bake      constants.py   ns-3.32                            README
   build.py  netanim-3.108  pybindgen-0.21.0                   util.py
 
 You are now ready to build the base |ns3| distribution and may skip ahead
@@ -177,7 +177,7 @@ release number:
 
 .. sourcecode:: bash
 
-  $ python3 download.py -n ns-3.31
+  $ python3 download.py -n ns-3.32
 
 After this step, the additional repositories of |ns3|, bake, pybindgen,
 and netanim will be downloaded to the ``ns-3-allinone`` directory.
@@ -246,10 +246,10 @@ distribution of your choice.
 
 There are a few configuration targets available:
 
-1.  ``ns-3.31``:  the module corresponding to the release; it will download
+1.  ``ns-3.32``:  the module corresponding to the release; it will download
     components similar to the release tarball.
 2.  ``ns-3-dev``:  a similar module but using the development code tree
-3.  ``ns-allinone-3.31``:  the module that includes other optional features
+3.  ``ns-allinone-3.32``:  the module that includes other optional features
     such as Click routing, Openflow for |ns3|, and the Network Simulation
     Cradle
 4.  ``ns-3-allinone``:  similar to the released version of the allinone
@@ -267,7 +267,7 @@ code either by inspection of the repository list or by going to the
 `"ns-3 Releases"
 <https://www.nsnam.org/releases>`_
 web page and clicking on the latest release link.  We'll proceed in
-this tutorial example with ``ns-3.31``.
+this tutorial example with ``ns-3.32``.
 
 We are now going to use the bake tool to pull down the various pieces of 
 |ns3| you will be using.  First, we'll say a word about running bake.
@@ -295,7 +295,7 @@ Step into the workspace directory and type the following into your shell:
 
 .. sourcecode:: bash
 
-  $ ./bake.py configure -e ns-3.31
+  $ ./bake.py configure -e ns-3.32
 
 Next, we'll ask bake to check whether we have enough tools to download
 various components.  Type:
@@ -345,7 +345,7 @@ should yield something like:
   >> Searching for system dependency g++ - OK
   >> Downloading pybindgen-0.21.0 (target directory:pybindgen) - OK
   >> Downloading netanim-3.108 - OK
-  >> Downloading ns-3.31 - OK
+  >> Downloading ns-3.32 - OK
 
 The above suggests that three sources have been downloaded.  Check the
 ``source`` directory now and type ``ls``; one should see:
@@ -354,7 +354,7 @@ The above suggests that three sources have been downloaded.  Check the
 
   $ cd source
   $ ls
-  netanim-3.108  ns-3.31  pybindgen
+  netanim-3.108  ns-3.32  pybindgen
 
 You are now ready to build the |ns3| distribution.
 
@@ -385,7 +385,7 @@ native |ns3| build system, Waf, to be introduced later in this tutorial.
 
 If you downloaded
 using a tarball you should have a directory called something like 
-``ns-allinone-3.31`` under your ``~/workspace`` directory.  
+``ns-allinone-3.32`` under your ``~/workspace`` directory.  
 Type the following:
 
 .. sourcecode:: bash
@@ -404,7 +404,7 @@ script builds the various pieces you downloaded.  First, the script will
 attempt to build the netanim animator, then the pybindgen bindings generator,
 and finally |ns3|.  Eventually you should see the following::
 
-   Waf: Leaving directory '/path/to/workspace/ns-allinone-3.31/ns-3.31/build'
+   Waf: Leaving directory '/path/to/workspace/ns-allinone-3.32/ns-3.32/build'
    'build' finished successfully (6m25.032s)
   
    Modules built:
@@ -426,7 +426,7 @@ and finally |ns3|.  Eventually you should see the following::
    Modules not built (see ns-3 tutorial for explanation):
    brite                  click                     openflow                  
 
-   Leaving directory ./ns-3.31
+   Leaving directory ./ns-3.32
 
 Regarding the portion about modules not built::
 
@@ -455,7 +455,7 @@ and you should see something like:
 
   >> Building pybindgen-0.21.0 - OK
   >> Building netanim-3.108 - OK
-  >> Building ns-3.31 - OK
+  >> Building ns-3.32 - OK
 
 *Hint:  you can also perform both steps, download and build, by calling ``bake.py deploy``.*
 
@@ -657,7 +657,7 @@ for an already configured project:
 .. sourcecode:: bash
 
   $ ./waf --check-profile
-  Waf: Entering directory \`/path/to/ns-3-allinone/ns-3.31/build\'
+  Waf: Entering directory \`/path/to/ns-3-allinone/ns-3.32/build\'
   Build profile: debug
 
 The build.py script discussed above supports also the ``--enable-examples``
@@ -772,7 +772,10 @@ The build profile controls the use of logging, assertions, and compiler optimiza
     |          |                                 |                               | ``-march=native``               |
     +----------+---------------------------------+-------------------------------+---------------------------------+
     
-As you can see, logging and assertions are only available in debug builds.
+As you can see, logging and assertions are only configured
+by default in debug builds, although they can be selectively enabled
+in other build profiles by using the ``--enable-logs`` and 
+``--enable-asserts`` flags during Waf configuration time.
 Recommended practice is to develop your scenario in debug mode, then
 conduct repetitive runs (for statistics or changing parameters) in
 optimized build profile.
@@ -1159,8 +1162,25 @@ except that the program and ns-3 libraries will not be rebuilt.
 Build version
 +++++++++++++
 
-As of the ns-3.32 release, a new Waf option was introduced to print out the
-version of the ns-3 build
+As of the ns-3.32 release, a new Waf configure option ``--enable-build-version`` 
+was introduced which inspects the local ns3 git repository during builds and adds 
+version metadata to the core module. 
+
+This configuration option has the following prerequisites:
+
+- The ns-3 directory must be part of a local git repository
+- The local git repository must have at least one ns-3 release tag
+
+or
+
+- A file named version.cache, containing version information, is located in the
+  src/core directory
+
+If these prerequisites are not met, the configuration will fail.
+
+When these prerequisites are met and ns-3 is configured with the 
+``--enable-build-version`` option, the waf command ``--check-version`` can be 
+used to query the local git repository and display the current version metadata. 
 
 .. sourcecode:: bash
 
@@ -1173,16 +1193,16 @@ to the output below.
 
   ns-3.31+26@g82e7f5d-debug
 
-The output of ``--check-version`` depends on how ns-3 was installed.  If ns-3
-was installed from a tarball, the build information is included in one
-of the files in the tarball.  In this case, the output of ``--check-version``
-will always be the same, except for the profile value which is based 
-on the ``--build-profile`` option passed to ``waf configure``.
+If ``--check-version`` is run when ``-enable-build-version`` was not configured,
+an error message indicating that the option is disabled will be displayed instead.
 
-If ns-3 was downloaded using git, the build information is generated by
-examining the current state of the git repository.  The output of 
-``--check-version`` will change whenever the state of the active branch 
-changes.
+.. sourcecode:: text
+
+  Build version support is not enabled, reconfigure with --enable-build-version flag 
+
+The build information is generated by examining the current state of the git 
+repository.  The output of  ``--check-version`` will change whenever the state 
+of the active branch changes.
 
 The output of ``--check-version`` has the following format:
 
@@ -1229,6 +1249,10 @@ the Version class to retrieve the various build version fields.  See the
 documentation for the Version class for specifics on the output of the Version
 class functions.
 
+The version information stored in the Version class is updated every time the
+git repository changes.  This may lead to frequent recompilations/linking of
+the core module when the ``--enable-build-version`` option is configured.
+
 .. sourcecode:: text
 
   build-version-example:
@@ -1258,13 +1282,27 @@ option which will print the full build version and exit.
   Waf: Entering directory `/g/g14/mdb/gitlab/mdb/ns-3-dev/build/debug'
   ns-3.31+28@gce1eb40-dirty-debug
 
-If information about the build version is absent from the ns-3 directory,
-the build system will print out a dummy build version such as follows:
+If the ``--enable-build-version`` option was not configured, ``--version``
+will print out a message similar to ``--check-version`` indicating that the build
+version option is not enabled.
 
-.. sourcecode:: text
+Source version
+++++++++++++++
 
-  $ ./waf --check-version
-  ns-3.xx@gxxxxxxx-debug
+An alternative to storing build version information in the |ns3| libraries
+is to track the source code version used to build the code.  When using
+Git, the following recipe can be added to Bash shell scripts to
+create a ``version.txt`` file with Git revision information, appended
+with a patch of any changes to that revision if the repository is dirty.
+The resulting text file can then be saved with any corresponding
+|ns3| simulation results.
 
-An example situation that may lead to the lack of version information is
-if the ns-3 repository is cloned as a git shallow clone.
+.. sourcecode:: bash
+
+  echo `git describe` > version.txt
+  gitDiff=`git diff`
+  if [[ $gitDiff ]]
+  then
+      echo "$gitDiff" >> version.txt
+  fi
+

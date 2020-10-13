@@ -47,7 +47,6 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    psc
    spectrum
    sixlowpan
-   tap
    topology
    traffic-control
    uan

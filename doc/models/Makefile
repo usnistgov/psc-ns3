@@ -42,6 +42,8 @@ SOURCES = \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \
+	$(SRC)/fd-net-device/doc/dpdk-net-device.rst \
+	$(SRC)/fd-net-device/doc/netmap-net-device.rst \
 	$(SRC)/tap-bridge/doc/tap.rst \
 	$(SRC)/mesh/doc/source/mesh.rst \
 	$(SRC)/mesh/doc/source/mesh-user.rst \
