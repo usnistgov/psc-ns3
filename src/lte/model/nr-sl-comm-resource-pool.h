@@ -212,8 +212,9 @@ public:
    * \param bwpId The bandwidth part id
    * \param poolId The poolId The pool id
    * \param resvPeriod The resource reservation period
+   * \param slotLength The slot length in time
    */
-  void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod) const;
+  void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
   /**
    * \brief Get the reservation period in slots
    * \param bwpId The bandwidth part id
@@ -250,18 +251,31 @@ public:
    */
   uint16_t GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const;
 
-
 private:
   /**
    * \brief Get SlResourcePoolNr
    *
    * \param bwpId The BWP id
    * \param pooI The pool id
-   * \return The LteRrcSap::SlResourcePoolNr, which holds the SL pool related configuration
+   * \return The \link LteRrcSap::SlResourcePoolNr \endlink, which holds the
+   *         SL pool related configuration.
    */
   const LteRrcSap::SlResourcePoolNr GetSlResourcePoolNr (uint8_t bwpId, uint16_t poolId) const;
-
+  /**
+   * \brief Validate if the pool id is configured for the given bandwidthpart id.
+   * \param bwpId The BWP id
+   * \param poolId The pool id
+   * \return
+   */
   BwpAndPoolIt ValidateBwpAndPoolId (uint8_t bwpId, uint16_t poolId) const;
+  /**
+   * \brief Is Sidelink resource reservation period multiple of physical
+   *        Sidelink pool length.
+   * \param bwpId The BWP id
+   * \param poolId The pool id
+   * \param rsvpInSlots The resource reservation period in slots
+   */
+  void IsRsvpMultipOfPoolLen (uint8_t bwpId, uint16_t poolId, uint16_t rsvpInSlots) const;
 
   std::array <LteRrcSap::SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> m_slPreconfigFreqInfoList; //!< A list containing per carrier configuration for NR sidelink communication
   PhySlPoolMap m_phySlPoolMap; //!< A map to store the physical SL pool per BWP and per SL pool

@@ -274,7 +274,7 @@ NrSlCommResourcePool::ValidateBwpAndPoolId (uint8_t bwpId, uint16_t poolId) cons
 }
 
 void
-NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod) const
+NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId << resvPeriod.GetMilliSeconds ());
   NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
@@ -289,6 +289,8 @@ NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time r
       if (it.period == resvPeriodEnum.period)
         {
           found = true;
+          uint16_t rsvpInSlots = GetResvPeriodInSlots (bwpId, poolId, resvPeriod, slotLength);
+          IsRsvpMultipOfPoolLen (bwpId, poolId, rsvpInSlots);
         }
     }
   NS_ABORT_MSG_IF (!found, "The given reservation period is not in the user specified list");
@@ -304,7 +306,9 @@ NrSlCommResourcePool::GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time
 
   double numResvSlots = (periodInt / static_cast <double>(1000)) / slotLength.GetSeconds ();
 
-  return static_cast <uint16_t> (numResvSlots);
+  uint16_t rsvpInSlots = static_cast <uint16_t> (numResvSlots);
+  IsRsvpMultipOfPoolLen (bwpId, poolId, rsvpInSlots);
+  return rsvpInSlots;
 }
 
 bool
@@ -338,6 +342,16 @@ NrSlCommResourcePool::GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const
   NS_UNUSED (ret);
   const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
   return LteRrcSap::GetNrSlSubChSizeValue (pool.slSubchannelSize);
+}
+
+void
+NrSlCommResourcePool::IsRsvpMultipOfPoolLen (uint8_t bwpId, uint16_t poolId, uint16_t rsvpInSlots) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << rsvpInSlots);
+  std::vector <std::bitset<1>> phyPool = GetNrSlPhyPool (bwpId, poolId);
+  NS_ABORT_MSG_IF (rsvpInSlots % phyPool.size () != 0, "Resource reservation period in slots "
+                   << rsvpInSlots << " should be multiple of physical sidelink pool length of "
+                   << phyPool.size ());
 }
 
 }
