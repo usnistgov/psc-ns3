@@ -1108,7 +1108,15 @@ public:
     enum
     {
       MS0, //!< Milliseconds
+      MS10,
+      MS20,
+      MS30,
+      MS40,
       MS50,
+      MS60,
+      MS70,
+      MS80,
+      MS90,
       MS100,
       MS150,
       MS200,
