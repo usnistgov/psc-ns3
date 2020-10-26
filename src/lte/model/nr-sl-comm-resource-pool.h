@@ -228,9 +228,18 @@ public:
    * \brief Is Sidelink slot
    * \param bwpId The bandwidth part id
    * \param poolId The poolId The pool id
+   * \param absSlotIndex The current absolute slot index
    * \return true if it is the Sidelink slot, false otherwise
    */
   bool IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
+  /**
+   * \brief Get Absolute index of the pool slot as pet the current absolute slot
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \param absSlotIndex The current absolute slot index
+   * \return The absolute index of the pool slot
+   */
+  uint16_t GetAbsPoolIndex (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
   /**
    * \brief Set the TDD pattern.
    *

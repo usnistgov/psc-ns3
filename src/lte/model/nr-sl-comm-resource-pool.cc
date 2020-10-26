@@ -315,16 +315,26 @@ bool
 NrSlCommResourcePool::IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId << absSlotIndex);
-  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
-  std::vector <std::bitset<1>> phyPool = ret.itPool->second;
-  uint16_t absPoolIndex = absSlotIndex % phyPool.size ();
+
+  uint16_t absPoolIndex = GetAbsPoolIndex (bwpId, poolId, absSlotIndex);
+  std::vector <std::bitset<1>> phyPool = GetNrSlPhyPool (bwpId, poolId);
   //trigger SL only when it is a SL slot
-  if (phyPool [absPoolIndex] == 1)
+  if (phyPool.at (absPoolIndex) == 1)
     {
       return true;
     }
 
   return false;
+}
+
+uint16_t
+NrSlCommResourcePool::GetAbsPoolIndex (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << absSlotIndex);
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  std::vector <std::bitset<1>> phyPool = ret.itPool->second;
+  uint16_t absPoolIndex = absSlotIndex % phyPool.size ();
+  return absPoolIndex;
 }
 
 void
