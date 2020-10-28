@@ -133,6 +133,15 @@ McpttHelper::~McpttHelper ()
 {
 }
 
+void
+McpttHelper::AddPushersToOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator, const ApplicationContainer& apps)
+{
+  for (uint32_t i = 0; i < apps.GetN (); i++)
+    {
+      orchestrator->AddPusher (apps.Get (i)->GetObject<McpttPttApp> ()->GetPusher ());
+    }
+}
+
 ApplicationContainer
 McpttHelper::Install (const Ptr<Node>& node)
 {

@@ -347,7 +347,7 @@ The ``ns3::McpttFloorQueue`` class is a wrapper around the ``std::vector``
 class that provides an interface for the floor queue that is described in TS
 24.380 [TS24380]_. This class is only associated with a floor machine for 
 use when
-queueing is enabled in floor control. One can enable queueing in floor control
+queuing is enabled in floor control. One can enable queuing in floor control
 for a particular call, simply by setting the capacity of this queue to a size
 greater than zero.
 
@@ -355,6 +355,135 @@ The ``ns3::McpttQueuedUserInfo`` class is used by the ``ns3::McpttFloorQueue``
 class to represent the structure of information needed to store for a user
 when they are placed in the queue, and made to wait to transmit during floor
 control.
+
+Pusher Behavior
+~~~~~~~~~~~~~~~
+
+Supplement to the MCPTT application, a pusher model exists to simulate the
+PTT behavior for a group of MCPTT users on a call. This model consists of a
+centralized entity derived from the ``ns3::McpttPusherOrchestrator`` class
+that determines the interarrival time (IAT) and duration of PTT events for
+a set of ``ns3::McpttPusher`` objects. The value of this model comes from its
+ability to simulate the PTT behavior for a group based on data that was
+collected and generalized from real public safety call logs. Using the data
+from the call logs two main elements were extracted and realized by the model,
+and they are, PTT and session durations. In essence, a session is a time span
+when users (i.e. instances of the ``ns3::McpttPusher`` class) are actively
+being scheduled to push and release the PTT button, while the PTT duration
+determines how long a PTT push will last. These durations are generated using
+instances of the ``ns3::EmpiricalRandomVariable`` class that interpolate bins
+taken from the Cumulative Distribution Function (CDF) curves that were
+computed after parsing the call log data to determine PTT and session
+durations. While the durations of PTTs and sessions will resemble the actual
+data more precisely, the IATs of both PTTs and sessions are based on an
+activity factor that is set by the user. They are computed using instances of
+the ``ns3::ExponentialRandomVariable``, which is assumed to be the
+distribution of IATs. This means that the following sequence of
+non-overlapping steps is typical for generating PTT and session events: IAT,
+duration, IAT, duration, and so on.
+
+The ``ns3::McpttPusherOrchestrator`` is a base class to the
+``ns3::McpttPusherOrchestratorSimple``, ``ns3::McpttPusherOrchestratorCdf``,
+``ns3::McpttPusherOrchestratorSessionCdf``, and
+``ns3::McpttPusherOrchestratorContention``. The class
+``ns3::McpttPusherOrchestratorSimple`` simply selects a random pusher from
+the set of pushers being orchestrated and uses two instances of an
+``ns3::RandomVariableStream``. One for deciding push durations and another for
+deciding the IAT of push events. The ``ns3::McpttPusherOrchestratorCdf`` is a
+wrapper around the ``ns3::McpttPusherOrchestratorSimple`` class that
+initializes the random variables used by ``ns3::McpttPusherOrchestratorSimple``
+to match CDFS from the call logs based on the activity factor that was
+provided. The ``ns3::McpttPusherOrchestratorSessionCdf`` class is a decorator
+that simply starts and stops an underlying orchestrator to create sessions
+based on the CDFs from the call log and the activity factor set by the user.
+Finally, the ``ns3::McpttPusherOrchestratorContention`` class is also a
+decorator that can be used to introduce contention, by using a threshold and
+an instance of the ``ns3::UniformRandomVariable`` class to determine if and
+when an additional PTT event should occur to collide with another active PTT
+event.
+
+.. _fig-mcptt-ptt-duration-cdf:
+
+.. figure:: figures/mcptt-ptt-duration-cdf.*
+   :scale: 75 %
+
+   PTT Duration CDF
+
+.. _fig-mcptt-session-duration-cdf:
+
+.. figure:: figures/mcptt-session-duration-cdf.*
+   :scale: 75 %
+
+   Session Duration CDF
+
+For ``ns3::McpttPusherOrchestratorCdf`` the PTT duration is based on the CDF
+of PTT durations in figure :ref:`fig-mcptt-ptt-duration-cdf`, while the mean
+value given to the exponential random variable responsible for generating the
+IAT is computed as:
+
+Average PTT IAT = (Average PTT Duration) * ((1 / Voice Activity Factor) - 1)
+
+Here, "Average PTT IAT" is the mean value given to the exponential random
+variable, "Average PTT Duration" is 4.69 (which is the average PTT duration
+computed from the CDF data), and "Voice Activity Factory" is a value between
+(0, 1] that is set by the user.
+
+For ``ns3::McpttPusherOrchestratorSessionCdf`` the session duration is based
+on the CDF in figure :ref:`fig-mcptt-session-duration-cdf`, while the mean
+value given to the exponential random variable responsible for generating
+session IAT is computed as:
+
+Average Session IAT = (Average Session Duration) * ((1 / Session Activity Factor) - 1)
+
+Here, "Average Session IAT" is the mean value given to the exponential random
+variable, "Average Session Duration" is 8.58 (which is the average session
+duration computed from the CDF data), and "Session Activity Factory" is a
+value between (0, 1] that is set by the user.
+
+Note that the ``ns3::McpttPusherOrchestratorContention`` class can affect the
+overall activity factor since it can create additional PTT requests, but how
+it will affect the activity factor depends on the protocol configuration
+(e.g. queuing, preemption, etc.). However, based on a configurable Contention
+Probability (CP) threshold, the probability that a single pusher's request
+will occur at the same time as another pusher's request is:
+
+Probability of Experiencing Contention = 2 * CP / (1 + CP)
+
+The following code snippet gives an example of how the pusher model is
+configured and attached to a set of applications. In this case the voice
+activity factor during a session is 0.5, which means that there will be a PTT
+event about 50 % of the time in each session, while the session activity
+factor is 1.0, which means that there will be active sessions during the
+entire simulation. The timeline in figure
+:ref:`fig-mcptt-pusher-model-example` captures the activity of both pushers
+and sessions for this configuration.
+
+.. sourcecode:: cpp
+
+  Ptr<McpttPusherOrchestratorCdf> cdfOrchestrator = CreateObject<McpttPusherOrchestratorCdf> ();
+  cdfOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (1.0));
+
+  Ptr<McpttPusherOrchestratorSessionCdf> sessionOrchestrator = CreateObject<McpttPusherOrchestratorSessionCdf> ();
+  sessionOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (0.5));
+  sessionOrchestrator->SetAttribute ("Orchestrator", PointerValue (cdfOrchestrator));
+
+  sessionOrchestrator->StartAt (Seconds (2.0));
+  sessionOrchestrator->StopAt (Seconds (82.0);
+
+  mcpttHelper.Associate (sessionOrchestrator, clientApps);
+
+It is also worth mentioning that if the Voice Activity Factor is less than
+1.0, then depending on the combination of Voice Activity Factor and session
+duration, it is possible to have a session that does not have any PTT events.
+This is due to the fact that an active session only determines when PTT events
+are possible but it does not guarantee that a PTT event will occur.
+
+.. _fig-mcptt-pusher-model-example:
+
+.. figure:: figures/mcptt-pusher-model-example.*
+   :scale: 75 %
+
+   Pusher Model Example
 
 Helpers
 ~~~~~~~
@@ -514,6 +643,36 @@ remains to be configured.  For a basic group call type, using the
 basic floor machine, the helper provides a single statement to configure
 the call, as follows.
  
+One could also use the following snippet to configure an
+``ns3::McpttPusherOrchestrator`` to control when push and release events
+occur for a set of ``ns3::McpttPttApp`` applications.
+.. sourcecode:: cpp
+
+   ApplicationContainer clientApps;
+   McpttHelper mcpttHelper;
+   if (enableNsLogs)
+     {
+       mcpttHelper.EnableLogComponents ();
+     }
+   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+                          "PeerAddress", Ipv4AddressValue (peerAddress),
+                          "PushOnStart", BooleanValue (true));
+   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+                          "Bytes", UintegerValue (msgSize),
+                          "DataRate", DataRateValue (dataRate));
+   mcpttHelper.SetPusher ("ns3::McpttPusher",
+                          "Automatic", BooleanValue (false));
+ 
+   clientApps.Add (mcpttHelper.Install (ueNodes));
+   clientApps.Start (startTime);
+   clientApps.Stop (stopTime);
+
+   Ptr<McpttPusherOrchestratorCdf> orchestrator = CreateObject<McpttPusherOrchestratorCdf> ();
+   orchestrator->SetAttribute ("ActivityFactor", DoubleValue (0.5));
+   orchestrator->StartAt (startTime);
+
+   mcpttHelper.Associate (orchestrator, clientApps);
+
 .. sourcecode:: cpp
 
    mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);

@@ -367,6 +367,9 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/RoutingTables.pdf \
 	$(SRC)/netanim/doc/figures/PacketTimeline.png \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
+	$(SRC)/psc/doc/source/figures/mcptt-ptt-duration-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-session-duration-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-pusher-model-example.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.pdf \
 	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps \

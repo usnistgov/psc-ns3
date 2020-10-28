@@ -43,6 +43,7 @@
 #include <ns3/attribute.h>
 #include <ns3/data-rate.h>
 #include <ns3/ipv4-address.h>
+#include <ns3/mcptt-pusher-orchestrator.h>
 #include <ns3/node-container.h>
 #include <ns3/object-factory.h>
 #include <ns3/ptr.h>
@@ -76,6 +77,12 @@ public:
   * \brief Destructor of the McpttHelper class.
   */
  virtual ~McpttHelper (void);
+ /**
+  * \brief Associate an ns3::McpttPusherOrchestrator with the pushers from a set of ns3::McpttPttApp objects.
+  * \param orchestrator The orchestrator.
+  * \param apps The set of applications.
+  */
+ virtual void AddPushersToOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator, const ApplicationContainer& apps);
  /**
   * \brief Install an ns3::McpttPttApp on each node of the input container.
   *
