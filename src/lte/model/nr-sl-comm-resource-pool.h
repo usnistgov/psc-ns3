@@ -117,8 +117,8 @@ public:
    */
   struct BwpAndPoolIt
   {
-    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp {nullptr};
-    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool {nullptr};
+    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp;
+    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool;
   };
 
   /**
