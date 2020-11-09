@@ -255,6 +255,9 @@ LteRrcSap::GetSlTResoPscchValue (const LteRrcSap::SlTimeResourcePscch &slTResoPs
   uint16_t slTResoPscchInt = 0;
   switch (slTResoPscch.resources)
   {
+    case SlTimeResourcePscch::N1:
+      slTResoPscchInt = 1;
+      break;
     case SlTimeResourcePscch::N2:
       slTResoPscchInt = 2;
       break;
@@ -274,6 +277,9 @@ LteRrcSap::GetSlTResoPscchEnum (uint16_t slTResoPscch)
   SlTimeResourcePscch slTResoPscchEnum;
   switch (slTResoPscch)
   {
+    case 1:
+      slTResoPscchEnum.resources = SlTimeResourcePscch::N1;
+      break;
     case 2:
       slTResoPscchEnum.resources = SlTimeResourcePscch::N2;
       break;
@@ -567,8 +573,32 @@ LteRrcSap::GetSlResoResvPrdValue (const LteRrcSap::SlResourceReservePeriod &peri
     case SlResourceReservePeriod::MS0:
       perodInt = 0;
       break;
+    case SlResourceReservePeriod::MS10:
+      perodInt = 10;
+      break;
+    case SlResourceReservePeriod::MS20:
+      perodInt = 20;
+      break;
+    case SlResourceReservePeriod::MS30:
+      perodInt = 30;
+      break;
+    case SlResourceReservePeriod::MS40:
+      perodInt = 40;
+      break;
     case SlResourceReservePeriod::MS50:
       perodInt = 50;
+      break;
+    case SlResourceReservePeriod::MS60:
+      perodInt = 60;
+      break;
+    case SlResourceReservePeriod::MS70:
+      perodInt = 70;
+      break;
+    case SlResourceReservePeriod::MS80:
+      perodInt = 80;
+      break;
+    case SlResourceReservePeriod::MS90:
+      perodInt = 90;
       break;
     case SlResourceReservePeriod::MS100:
       perodInt = 100;
@@ -640,8 +670,32 @@ LteRrcSap::GetSlResoResvPrdEnum (uint16_t period)
     case 0:
       periodEnum.period = SlResourceReservePeriod::MS0;
       break;
+    case 10:
+      periodEnum.period = SlResourceReservePeriod::MS10;
+      break;
+    case 20:
+      periodEnum.period = SlResourceReservePeriod::MS20;
+      break;
+    case 30:
+      periodEnum.period = SlResourceReservePeriod::MS30;
+      break;
+    case 40:
+      periodEnum.period = SlResourceReservePeriod::MS40;
+      break;
     case 50:
       periodEnum.period = SlResourceReservePeriod::MS50;
+      break;
+    case 60:
+      periodEnum.period = SlResourceReservePeriod::MS60;
+      break;
+    case 70:
+      periodEnum.period = SlResourceReservePeriod::MS70;
+      break;
+    case 80:
+      periodEnum.period = SlResourceReservePeriod::MS80;
+      break;
+    case 90:
+      periodEnum.period = SlResourceReservePeriod::MS90;
       break;
     case 100:
       periodEnum.period = SlResourceReservePeriod::MS100;

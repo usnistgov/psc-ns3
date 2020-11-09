@@ -996,6 +996,7 @@ public:
   {
     enum
     {
+      N1, //!< 1 symbol //Added for modeling purpose
       N2, //!< 2 symbols
       N3, //!< 3 symbols
       INVALID
@@ -1048,7 +1049,7 @@ public:
       N75,
       N100,
       INVALID
-    } numPrbs;
+    } numPrbs {INVALID};
   };
 
   /*
@@ -1107,7 +1108,15 @@ public:
     enum
     {
       MS0, //!< Milliseconds
+      MS10,
+      MS20,
+      MS30,
+      MS40,
       MS50,
+      MS60,
+      MS70,
+      MS80,
+      MS90,
       MS100,
       MS150,
       MS200,

@@ -214,13 +214,13 @@ public:
   virtual ~NrSlUeCmacSapUser ();
 
   /**
-   * Notify the RRC that the MAC has detected a new incoming flow for Sidelink reception
+   * \brief Notify the RRC that the MAC has detected a new incoming flow for Sidelink reception
    *
    * \param lcId The logical channel id
    * \param srcL2Id Sidelink source L2 id
    * \param dstL2Id Sidelink destination L2 id
    */
- // virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
+  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
 
   /**
    * Notify the RRC that the MAC has data to send in the PSSCH
@@ -261,6 +261,7 @@ public:
   MemberNrSlUeCmacSapUser (C* rrc);
 
   // inherited from NrSlUeCmacSapUser
+  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
 
 private:
   C* m_rrc; ///< the MAC class
@@ -272,7 +273,11 @@ MemberNrSlUeCmacSapUser<C>::MemberNrSlUeCmacSapUser (C* rrc)
 {
 }
 
-
+template <class C>
+void MemberNrSlUeCmacSapUser<C>::NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  m_rrc->DoNotifySidelinkReception (lcId, srcL2Id, dstL2Id);
+}
 
 } // namespace ns3
 

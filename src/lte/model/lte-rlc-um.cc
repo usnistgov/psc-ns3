@@ -1588,7 +1588,7 @@ LteRlcUm::DoNotifyNrSlTxOpportunity (const NrSlMacSapUser::NrSlTxOpportunityPara
   if (!m_txBuffer.empty ())
     {
       m_rbsTimer.Cancel ();
-      m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcUm::ExpireRbsTimer, this);
+      m_rbsTimer = Simulator::Schedule (MilliSeconds (10), &LteRlcUm::ExpireNrSlRbsTimer, this);
     }
 }
 

@@ -163,6 +163,7 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
 
 
   //t2_min as a function of numerology. Discussed in 3GPP meeting R1-2003807
+  //also see 3GPP TS 38.214 V16.3.0 sec 8.1.4
   uint16_t t2min = LteRrcSap::GetSlSelWindowValue (pool.slUeSelectedConfigRp.slSelectionWindow);
   uint16_t multiplier = static_cast <uint16_t> (std::pow (2, numerology));
   t2min = t2min * multiplier;
@@ -179,7 +180,11 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
   uint16_t absPoolIndex = firstAbsSlotIndex % phyPool.size ();
   NS_LOG_DEBUG ("Absolute pool index = " << absPoolIndex);
 
-  for (uint64_t i = firstAbsSlotIndex; i < lastAbsSlotIndex; ++i)
+
+  uint64_t i = firstAbsSlotIndex;
+  //total number of slots in the list should be equal to the number of
+  //slots in the selection window, i.e., t2Final.
+  while (list.size () != t2Final)
     {
       if (phyPool [absPoolIndex] == 1)
         {
@@ -201,7 +206,10 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
                                                slMaxNumPerReserve, absSlotIndex, slotOffset);
           list.emplace_back (info);
         }
+
       absPoolIndex = (absPoolIndex + 1) % phyPool.size ();
+
+      i++;
     }
 
   return list;
@@ -274,7 +282,7 @@ NrSlCommResourcePool::ValidateBwpAndPoolId (uint8_t bwpId, uint16_t poolId) cons
 }
 
 void
-NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod) const
+NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId << resvPeriod.GetMilliSeconds ());
   NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
@@ -289,6 +297,8 @@ NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time r
       if (it.period == resvPeriodEnum.period)
         {
           found = true;
+          uint16_t rsvpInSlots = GetResvPeriodInSlots (bwpId, poolId, resvPeriod, slotLength);
+          IsRsvpMultipOfPoolLen (bwpId, poolId, rsvpInSlots);
         }
     }
   NS_ABORT_MSG_IF (!found, "The given reservation period is not in the user specified list");
@@ -304,9 +314,63 @@ NrSlCommResourcePool::GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time
 
   double numResvSlots = (periodInt / static_cast <double>(1000)) / slotLength.GetSeconds ();
 
-  return static_cast <uint16_t> (numResvSlots);
+  uint16_t rsvpInSlots = static_cast <uint16_t> (numResvSlots);
+  IsRsvpMultipOfPoolLen (bwpId, poolId, rsvpInSlots);
+  return rsvpInSlots;
 }
 
+bool
+NrSlCommResourcePool::IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << absSlotIndex);
+
+  uint16_t absPoolIndex = GetAbsPoolIndex (bwpId, poolId, absSlotIndex);
+  std::vector <std::bitset<1>> phyPool = GetNrSlPhyPool (bwpId, poolId);
+  //trigger SL only when it is a SL slot
+  if (phyPool.at (absPoolIndex) == 1)
+    {
+      return true;
+    }
+
+  return false;
+}
+
+uint16_t
+NrSlCommResourcePool::GetAbsPoolIndex (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << absSlotIndex);
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  std::vector <std::bitset<1>> phyPool = ret.itPool->second;
+  uint16_t absPoolIndex = absSlotIndex % phyPool.size ();
+  return absPoolIndex;
+}
+
+void
+NrSlCommResourcePool::SetTddPattern (std::vector<NrSlUeRrc::LteNrTddSlotType> tddPattern)
+{
+  NS_LOG_FUNCTION (this);
+  m_tddPattern = tddPattern;
+}
+
+uint16_t
+NrSlCommResourcePool::GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId);
+  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
+  NS_UNUSED (ret);
+  const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
+  return LteRrcSap::GetNrSlSubChSizeValue (pool.slSubchannelSize);
+}
+
+void
+NrSlCommResourcePool::IsRsvpMultipOfPoolLen (uint8_t bwpId, uint16_t poolId, uint16_t rsvpInSlots) const
+{
+  NS_LOG_FUNCTION (this << +bwpId << poolId << rsvpInSlots);
+  std::vector <std::bitset<1>> phyPool = GetNrSlPhyPool (bwpId, poolId);
+  NS_ABORT_MSG_IF (rsvpInSlots % phyPool.size () != 0, "Resource reservation period in slots "
+                   << rsvpInSlots << " should be multiple of physical sidelink pool length of "
+                   << phyPool.size ());
+}
 
 }
 

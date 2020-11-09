@@ -1548,6 +1548,19 @@ private:
    */
   void PopulateNrSlPools ();
 
+  /**
+   * \brief Notify Sidelink reception function
+   *
+   * This function is called by UE MAC to notify UE RRC about the reception of
+   * Sidelink communication data upon which UE RRC creates a new Sidelink
+   * data radio bearer for reception.
+   *
+   * \param lcId logical channel id
+   * \param srcL2Id source layer 2 id
+   * \param dstL2Id destination layer 2 id
+   */
+  void DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
+
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc
   NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; //!< NR SL UE RRC SAP provider
@@ -1563,7 +1576,7 @@ private:
 
   NrSlPdcpSapProvider *m_nrSlPdcpSapProvider {nullptr}; //!< SAP interface to call methods of PDCP instance
   NrSlPdcpSapUser *m_nrSlPdcpSapUser; //!< SAP interface to receive calls from PDCP instance
-  NrSlMacSapProvider *m_nrSlMacSapProvider; //!< SAP interface to be given to newly created RLC instance of RLC
+  NrSlMacSapProvider *m_nrSlMacSapProvider {nullptr}; //!< SAP interface to be given to newly created RLC instance of RLC
   uint32_t m_srcL2Id {std::numeric_limits <uint32_t>::max ()}; //!< The NR Sidelink Source L2 id;
 
 }; // end of class LteUeRrc

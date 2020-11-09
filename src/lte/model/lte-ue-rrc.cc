@@ -3624,6 +3624,15 @@ LteUeRrc::SetOutofCovrgUeRnti ()
     }
 }
 
+void
+LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id);
+  //add LC
+  Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlDrb (srcL2Id, dstL2Id, lcId);
+  NS_LOG_INFO ("Created new RX SLRB for group " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
+}
+
 Ptr<NrSlDataRadioBearerInfo>
 LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
 {
@@ -3756,7 +3765,11 @@ LteUeRrc::PopulateNrSlPools ()
                   //available BW is RBs
                   uint16_t sbChSizeInRbs = LteRrcSap::GetNrSlSubChSizeValue (it.slResourcePool.slSubchannelSize);
                   uint32_t bwInRbs = m_nrSlUeCphySapProvider.at (index)->GetBwInRbs ();
-                  NS_ASSERT_MSG (sbChSizeInRbs <= bwInRbs, "Incorrect Subchannel size of " << sbChSizeInRbs << " RBs. Must be less or equal to the available BW of " << bwInRbs << " RBs");
+                  NS_ASSERT_MSG (sbChSizeInRbs <= bwInRbs, "Incorrect Subchannel size of "
+                                   << sbChSizeInRbs << " RBs. Must be less or equal to the available BW of " << bwInRbs << " RBs");
+                  uint16_t numPscchRbs = LteRrcSap::GetSlFResoPscchValue (it.slResourcePool.slPscchConfig.slFreqResourcePscch);
+                  NS_ASSERT_MSG (numPscchRbs <= sbChSizeInRbs, "Incorrect number of PSCCH RBs : "
+                                 << numPscchRbs << " . Must be less or equal to the SL subchannel size of " << sbChSizeInRbs << " RBs");
                   std::vector <std::bitset<1>> physicalPool = m_nrSlRrcSapUser->GetPhysicalSlPool (it.slResourcePool.slTimeResource);
                   mapPerPool.emplace (std::make_pair (it.slResourcePoolId.id, physicalPool));
                 }

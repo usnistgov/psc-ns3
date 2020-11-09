@@ -21,7 +21,8 @@
 #define NR_SL_COMM_RESOURCE_POOL
 
 #include <ns3/object.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-rrc-sap.h"
+#include "nr-sl-ue-rrc.h"
 
 #include <stdint.h>
 #include <list>
@@ -116,8 +117,8 @@ public:
    */
   struct BwpAndPoolIt
   {
-    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp {nullptr};
-    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool {nullptr};
+    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp;
+    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool;
   };
 
   /**
@@ -211,8 +212,9 @@ public:
    * \param bwpId The bandwidth part id
    * \param poolId The poolId The pool id
    * \param resvPeriod The resource reservation period
+   * \param slotLength The slot length in time
    */
-  void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod) const;
+  void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
   /**
    * \brief Get the reservation period in slots
    * \param bwpId The bandwidth part id
@@ -222,8 +224,41 @@ public:
    * \return The reservation period in slots
    */
   uint16_t GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
-
-
+  /**
+   * \brief Is Sidelink slot
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \param absSlotIndex The current absolute slot index
+   * \return true if it is the Sidelink slot, false otherwise
+   */
+  bool IsSidelinkSlot (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
+  /**
+   * \brief Get Absolute index of the pool slot as pet the current absolute slot
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \param absSlotIndex The current absolute slot index
+   * \return The absolute index of the pool slot
+   */
+  uint16_t GetAbsPoolIndex (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
+  /**
+   * \brief Set the TDD pattern.
+   *
+   * For example, a valid pattern would be "DL|DL|UL|UL|DL|DL|UL|UL|". The slot
+   * types allowed are:
+   *
+   * - "DL" for downlink only
+   * - "UL" for uplink only
+   * - "F" for flexible (dl and ul)
+   * - "S" for special slot (LTE-compatibility)
+   */
+  void SetTddPattern (std::vector<NrSlUeRrc::LteNrTddSlotType> tddPattern);
+  /**
+   * \brief Get Nr Sidelink PSSCH subchannel size in RBs
+   * \param bwpId bwpId The bandwidth part id
+   * \param poolId poolId The poolId The pool id
+   * \return PSSCH subchannel size in RBs
+   */
+  uint16_t GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const;
 
 private:
   /**
@@ -231,15 +266,30 @@ private:
    *
    * \param bwpId The BWP id
    * \param pooI The pool id
-   * \return The LteRrcSap::SlResourcePoolNr, which holds the SL pool related configuration
+   * \return The \link LteRrcSap::SlResourcePoolNr \endlink, which holds the
+   *         SL pool related configuration.
    */
   const LteRrcSap::SlResourcePoolNr GetSlResourcePoolNr (uint8_t bwpId, uint16_t poolId) const;
-
+  /**
+   * \brief Validate if the pool id is configured for the given bandwidthpart id.
+   * \param bwpId The BWP id
+   * \param poolId The pool id
+   * \return
+   */
   BwpAndPoolIt ValidateBwpAndPoolId (uint8_t bwpId, uint16_t poolId) const;
+  /**
+   * \brief Is Sidelink resource reservation period multiple of physical
+   *        Sidelink pool length.
+   * \param bwpId The BWP id
+   * \param poolId The pool id
+   * \param rsvpInSlots The resource reservation period in slots
+   */
+  void IsRsvpMultipOfPoolLen (uint8_t bwpId, uint16_t poolId, uint16_t rsvpInSlots) const;
 
   std::array <LteRrcSap::SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> m_slPreconfigFreqInfoList; //!< A list containing per carrier configuration for NR sidelink communication
   PhySlPoolMap m_phySlPoolMap; //!< A map to store the physical SL pool per BWP and per SL pool
   SchedulingType m_schType {SchedulingType::UNKNOWN}; //!< Type of the scheduling to be used for the pools hold by this class
+  std::vector<NrSlUeRrc::LteNrTddSlotType> m_tddPattern; //!< TDD pattern
 
 };
 
