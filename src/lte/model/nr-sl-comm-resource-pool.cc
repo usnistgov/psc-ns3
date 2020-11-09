@@ -163,6 +163,7 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
 
 
   //t2_min as a function of numerology. Discussed in 3GPP meeting R1-2003807
+  //also see 3GPP TS 38.214 V16.3.0 sec 8.1.4
   uint16_t t2min = LteRrcSap::GetSlSelWindowValue (pool.slUeSelectedConfigRp.slSelectionWindow);
   uint16_t multiplier = static_cast <uint16_t> (std::pow (2, numerology));
   t2min = t2min * multiplier;
@@ -179,7 +180,11 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
   uint16_t absPoolIndex = firstAbsSlotIndex % phyPool.size ();
   NS_LOG_DEBUG ("Absolute pool index = " << absPoolIndex);
 
-  for (uint64_t i = firstAbsSlotIndex; i < lastAbsSlotIndex; ++i)
+
+  uint64_t i = firstAbsSlotIndex;
+  //total number of slots in the list should be equal to the number of
+  //slots in the selection window, i.e., t2Final.
+  while (list.size () != t2Final)
     {
       if (phyPool [absPoolIndex] == 1)
         {
@@ -201,7 +206,10 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
                                                slMaxNumPerReserve, absSlotIndex, slotOffset);
           list.emplace_back (info);
         }
+
       absPoolIndex = (absPoolIndex + 1) % phyPool.size ();
+
+      i++;
     }
 
   return list;
