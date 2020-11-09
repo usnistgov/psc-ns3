@@ -40,7 +40,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("InterBssTestSuite");
 
-uint32_t
+static uint32_t
 ConvertContextToNodeId (std::string context)
 {
   std::string sub = context.substr (10);
@@ -422,7 +422,7 @@ TestInterBssConstantObssPdAlgo::RunOne (void)
   Ptr<MatrixPropagationLossModel> lossModel = CreateObject<MatrixPropagationLossModel> ();
   lossModel->SetDefaultLoss (m_txPowerDbm - m_obssRxPowerDbm); //Force received RSSI to be equal to m_obssRxPowerDbm
 
-  SpectrumWifiPhyHelper phy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper phy;
   phy.DisablePreambleDetectionModel ();
   Ptr<MultiModelSpectrumChannel> channel = CreateObject<MultiModelSpectrumChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());

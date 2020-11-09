@@ -51,6 +51,28 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
+<h1>Changes from ns-3.32 to ns-3.33</h1>
+<h2>New API:</h2>
+<ul>
+<li></li>
+</ul>
+<h2>Changes to existing API:</h2>
+<ul>
+<li>A new <b>TableBasedErrorRateModel</b> has been added for Wi-Fi, and the default values are aligned with link-simulation results from MATLAB WLAN Toolbox and IEEE 802.11 TGn.
+</li>
+<li>A new <b>LdpcSupported</b> attribute has been added for Wi-Fi in <b>HtConfiguration</b>, in order to select LDPC FEC encoding instead of the default BCC FEC encoding.
+</li>
+</ul>
+<h2>Changes to build system:</h2>
+<ul>
+<li></li>
+</ul>
+<h2>Changed behavior:</h2>
+<ul>
+<li>The <b>default Wi-Fi ErrorRateModel</b> for the 802.11n/ac/ax standards has been changed from the NistErrorRateModel to a new TableBasedErrorRateModel.  Users may experience a shift in Wi-Fi link range due to the new default error model, as <b>the new model is more optimistic</b> (the PER for a given MCS will degrade at a lower SNR value). The Wi-Fi module documentation provides plots that compare the performance of the NIST and new table-based model.</li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.31 to ns-3.32</h1>
 <h2>New API:</h2>
 <ul>
@@ -58,6 +80,12 @@ us a note on ns-developers mailing list.</p>
 <li>Added, to <b>PIE queue disc</b>, <b>queue delay calculation using timestamp</b> feature (Linux default behavior), <b>cap drop adjustment</b> feature (Section 5.5 of RFC 8033), <b>ECN</b> (Section 5.1 of RFC 8033) and <b>derandomization</b> feature (Section 5.4 of RFC 8033).</li>
 <li>Added <b>L4S Mode</b> to FqCoDel and CoDel queue discs</li>
 <li> A model for <b>dynamic pacing</b> has been added to TCP.</li>
+<li>Added <b>Active/Inactive feature</b> to PIE queue disc</li>
+<li>Added <b>netmap</b> and <b>DPDK</b> emulation device variants</li>
+<li>Added capability to configure <b>STL pair and containers as attributes</b></li>
+<li> Added <b>CartesianToGeographic</b> coordinate conversion capability
+<li> Added <b>LollipopCounter</b>, a sequence number counter type 
+<li> Added <b>6 GHz band</b> support for Wi-Fi 802.11ax
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -70,20 +98,24 @@ by including flow-monitor.h you will need to change that to stats-module.h.
 longer takes a WifiPhyStandard enum, but instead takes a similarly named 
 WifiStandard enum.  If before you specified a value such as WIFI_PHY_STANDARD_xxx, now you must specify WIFI_STANDARD_xxx.
 </li>
+<li> <b>PIE</b> queue disc now uses <b>Timestamp</b> for queue delay calculation as default instead of <b>Dequeue Rate Estimator</b></li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
 <li>Added "--enable-asserts" and "--enable-logs" to waf configure, to selectively enable asserts and/or logs in release and optimized builds.</li>
 <li>A build version reporting system has been added by extracting data from the 
-local git repository (or a standalone file if a git repository is not present).
-</li>
+local git repository (or a standalone file if a git repository is not present).  </li>
+<li>Added support for EditorConfig</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
 <li>Support for <b>RIFS</b> has been dropped from wifi. RIFS has been obsoleted by the 802.11 standard and support for it was not implemented according to the standard.</li>
+<li>The default loss recovery algorithm for TCP has been changed from Classic Recovery to Proportional Rate Reduction (PRR).</li>
 <li>The behavior of <b>TcpPrrRecovery</b> algorithm was aligned to that of Linux.</li>
 <li> <b>PIE</b> queue disc now uses <b>Timestamp</b> for queue delay calculation as default instead of <b>Dequeue Rate Estimator</b></li>
 <li>TCP pacing, when enabled, now adjusts the rate dynamically based on the window size, rather than just enforcing a constant rate.</li>
+<li>WifiPhy forwards up MPDUs from an A-MPDU under reception as long as they arrive at the PHY, instead of forwarding up the whole A-MPDU once its reception is completed.</li>
+<li>The ns-3 TCP model was changed to set the initial congestion window to 10 segments instead of 1 segment (to align with default Linux configuration).</li>
 </ul>
 
 <hr>

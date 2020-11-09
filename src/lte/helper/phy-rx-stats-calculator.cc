@@ -49,7 +49,7 @@ PhyRxStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PhyRxStatsCalculator")
     .SetParent<LteStatsCalculator> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<PhyRxStatsCalculator> ()
     .AddAttribute ("DlRxOutputFilename",
                    "Name of the file where the downlink results will be saved.",
@@ -118,7 +118,6 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
         }
     }
 
-//   outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
@@ -163,7 +162,6 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
         }
     }
 
-//   outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
@@ -174,13 +172,13 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
   outFile << (uint32_t) params.m_rv << "\t";
   outFile << (uint32_t) params.m_ndi << "\t";
   outFile << (uint32_t) params.m_correctness << "\t";
-  outFile << (uint32_t) params.m_ccId <<std::endl;
+  outFile << (uint32_t) params.m_ccId << std::endl;
   outFile.close ();
 }
 
 void
 PhyRxStatsCalculator::DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
-                      std::string path, PhyReceptionStatParameters params)
+                                              std::string path, PhyReceptionStatParameters params)
 {
   NS_LOG_FUNCTION (phyRxStats << path);
   uint64_t imsi = 0;
@@ -203,7 +201,7 @@ PhyRxStatsCalculator::DlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxSta
 
 void
 PhyRxStatsCalculator::UlPhyReceptionCallback (Ptr<PhyRxStatsCalculator> phyRxStats,
-                      std::string path, PhyReceptionStatParameters params)
+                                              std::string path, PhyReceptionStatParameters params)
 {
   NS_LOG_FUNCTION (phyRxStats << path);
   uint64_t imsi = 0;

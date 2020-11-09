@@ -1315,6 +1315,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       else
         {
           m_sackEnabled = false;
+          m_txBuffer->SetSackEnabled (false);
         }
 
       // When receiving a <SYN> or <SYN-ACK> we should adapt TS to the other end
@@ -1735,6 +1736,9 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   NS_ASSERT (0 != (tcpHeader.GetFlags () & TcpHeader::ACK));
   NS_ASSERT (m_tcb->m_segmentSize > 0);
 
+  uint32_t previousLost = m_txBuffer->GetLost ();
+  uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
+
   // RFC 6675, Section 5, 1st paragraph:
   // Upon the receipt of any ACK containing SACK information, the
   // scoreboard MUST be updated via the Update () routine (done in ReadOptions)
@@ -1800,8 +1804,6 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   if (m_congestionControl->HasCongControl ())
     {
-      uint32_t previousLost = m_txBuffer->GetLost ();
-      uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
       uint32_t currentLost = m_txBuffer->GetLost ();
       uint32_t lost = (currentLost > previousLost) ?
             currentLost - previousLost :

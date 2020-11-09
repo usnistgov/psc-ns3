@@ -242,7 +242,8 @@ WifiPhyHelper::PcapSniffTxEvent (
     case PcapHelper::DLT_IEEE802_11_RADIO:
       {
         Ptr<Packet> p = packet->Copy ();
-        RadiotapHeader header = GetRadiotapHeader (p, channelFreqMhz, txVector, aMpdu);
+        RadiotapHeader header;
+        GetRadiotapHeader (header, p, channelFreqMhz, txVector, aMpdu);
         p->AddHeader (header);
         file->Write (Simulator::Now (), p);
         return;
@@ -275,9 +276,8 @@ WifiPhyHelper::PcapSniffRxEvent (
     case PcapHelper::DLT_IEEE802_11_RADIO:
       {
         Ptr<Packet> p = packet->Copy ();
-        RadiotapHeader header = GetRadiotapHeader (p, channelFreqMhz, txVector, aMpdu);
-        header.SetAntennaSignalPower (signalNoise.signal);
-        header.SetAntennaNoisePower (signalNoise.noise);
+        RadiotapHeader header;
+        GetRadiotapHeader (header, p, channelFreqMhz, txVector, aMpdu, signalNoise);
         p->AddHeader (header);
         file->Write (Simulator::Now (), p);
         return;
@@ -287,14 +287,28 @@ WifiPhyHelper::PcapSniffRxEvent (
     }
 }
 
-RadiotapHeader
+void
 WifiPhyHelper::GetRadiotapHeader (
+  RadiotapHeader       &header,
+  Ptr<Packet>          packet,
+  uint16_t             channelFreqMhz,
+  WifiTxVector         txVector,
+  MpduInfo             aMpdu,
+  SignalNoiseDbm       signalNoise)
+{
+  header.SetAntennaSignalPower (signalNoise.signal);
+  header.SetAntennaNoisePower (signalNoise.noise);
+  GetRadiotapHeader (header, packet, channelFreqMhz, txVector, aMpdu);
+}
+
+void
+WifiPhyHelper::GetRadiotapHeader (
+  RadiotapHeader       &header,
   Ptr<Packet>          packet,
   uint16_t             channelFreqMhz,
   WifiTxVector         txVector,
   MpduInfo             aMpdu)
 {
-  RadiotapHeader header;
   WifiPreamble preamble = txVector.GetPreambleType ();
 
   uint8_t frameFlags = RadiotapHeader::FRAME_FLAG_NONE;
@@ -506,8 +520,6 @@ WifiPhyHelper::GetRadiotapHeader (
 
       header.SetHeFields (data1, data2, data3, data5);
     }
-
-  return header;
 }
 
 void
@@ -737,6 +749,40 @@ WifiHelper::SetStandard (WifiStandard standard)
   m_standard = standard;
 }
 
+// NS_DEPRECATED_3_32
+void
+WifiHelper::SetStandard (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211a:
+      m_standard = WIFI_STANDARD_80211a;
+      return;
+    case WIFI_PHY_STANDARD_80211b:
+      m_standard = WIFI_STANDARD_80211b;
+      return;
+    case WIFI_PHY_STANDARD_80211g:
+      m_standard = WIFI_STANDARD_80211g;
+      return;
+    case WIFI_PHY_STANDARD_holland:
+      m_standard = WIFI_STANDARD_holland;
+      return;
+    // remove the next value from WifiPhyStandard when deprecation ends
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      m_standard = WIFI_STANDARD_80211n_2_4GHZ;
+      return;
+    // remove the next value from WifiPhyStandard when deprecation ends
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+      m_standard = WIFI_STANDARD_80211n_5GHZ;
+      return;
+    case WIFI_PHY_STANDARD_80211ac:
+      m_standard = WIFI_STANDARD_80211ac;
+      return;
+    default:
+      NS_FATAL_ERROR ("Unsupported value of WifiPhyStandard");
+    }
+}
+
 void
 WifiHelper::SetSelectQueueCallback (SelectQueueCallback f)
 {
@@ -918,6 +964,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("SpectrumWifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("StaWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("SupportedRates", LOG_LEVEL_ALL);
+  LogComponentEnable ("TableBasedErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ThresholdPreambleDetectionModel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMacQueueItem", LOG_LEVEL_ALL);

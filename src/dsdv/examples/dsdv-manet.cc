@@ -197,7 +197,7 @@ DsdvManetExample::DsdvManetExample ()
 void
 DsdvManetExample::ReceivePacket (Ptr <Socket> socket)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << " Received one packet!");
+  NS_LOG_UNCOND (Simulator::Now ().As (Time::S) << " Received one packet!");
   Ptr <Packet> packet;
   while ((packet = socket->Recv ()))
     {
@@ -311,7 +311,7 @@ DsdvManetExample::CreateDevices (std::string tr_name)
 {
   WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel");

@@ -23,12 +23,12 @@
 #define WIFI_PHY_H
 
 #include "ns3/event-id.h"
-#include "ns3/deprecated.h"
 #include "ns3/error-model.h"
 #include "wifi-mpdu-type.h"
 #include "wifi-standards.h"
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
+#include "wifi-ppdu.h"
 
 namespace ns3 {
 
@@ -45,7 +45,6 @@ class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
 class WifiPsdu;
-class WifiPpdu;
 
 /**
  * Enumeration of the possible reception failure reasons.
@@ -322,10 +321,20 @@ public:
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param band the frequency band being used
+   * \param staId the STA-ID of the recipient (only used for MU)
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band);
+  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band,
+                                   uint16_t staId = SU_STA_ID);
+  /**
+   * \param psduMap the PSDU(s) to transmit indexed by STA-ID
+   * \param txVector the TXVECTOR used for the transmission of the PPDU
+   * \param band the frequency band being used
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
+   */
+  static Time CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band);
 
   /**
    * \param txVector the transmission parameters used for this packet
@@ -404,10 +413,12 @@ public:
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param band the frequency band
    * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
+   * \param staId the STA-ID of the PSDU (only used for MU PPDUs)
    *
-   * \return the duration of the payload
+   * \return the duration of the PSDU
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype = NORMAL_MPDU);
+  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype = NORMAL_MPDU,
+                                  uint16_t staId = SU_STA_ID);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -420,10 +431,13 @@ public:
    * \param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the concerned A-MPDU,
    * used for the computation of the number of symbols needed for the last MPDU.
    * If incFlag is set, this parameter will be updated.
+   * \param staId the STA-ID of the PSDU (only used for MU PPDUs)
    *
-   * \return the duration of the payload
+   * \return the duration of the PSDU
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype, bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols);
+  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+                                  bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
+                                  uint16_t staId);
   /**
    * \param txVector the transmission parameters used for this packet
    *
@@ -620,7 +634,7 @@ public:
    * \return the WifiMode object corresponding to the given MCS of the
    *         HT modulation class
    */
-  WifiMode GetHtMcs (uint8_t mcs) const;
+  static WifiMode GetHtMcs (uint8_t mcs);
   /**
    * Get the WifiMode object corresponding to the given MCS of the
    * VHT modulation class.
@@ -630,7 +644,7 @@ public:
    * \return the WifiMode object corresponding to the given MCS of the
    *         VHT modulation class
    */
-  WifiMode GetVhtMcs (uint8_t mcs) const;
+  static WifiMode GetVhtMcs (uint8_t mcs);
   /**
    * Get the WifiMode object corresponding to the given MCS of the
    * HE modulation class.
@@ -640,7 +654,7 @@ public:
    * \return the WifiMode object corresponding to the given MCS of the
    *         HE modulation class
    */
-  WifiMode GetHeMcs (uint8_t mcs) const;
+  static WifiMode GetHeMcs (uint8_t mcs);
 
   /**
    * \brief Set channel number.
@@ -1441,16 +1455,6 @@ public:
   virtual int64_t AssignStreams (int64_t stream);
 
   /**
-   * Sets the energy detection threshold (dBm).
-   * The energy of a received signal should be higher than
-   * this threshold (dBm) to allow the PHY layer to detect the signal.
-   *
-   * \param threshold the energy detection threshold in dBm
-   *
-   * \deprecated
-   */
-  void SetEdThreshold (double threshold);
-  /**
    * Sets the receive sensitivity threshold (dBm).
    * The energy of a received signal should be higher than
    * this threshold to allow the PHY layer to detect the signal.
@@ -1613,50 +1617,6 @@ public:
    * \return the maximum number of supported RX spatial streams
    */
   uint8_t GetMaxSupportedRxSpatialStreams (void) const;
-  /**
-   * Enable or disable support for HT/VHT short guard interval.
-   *
-   * \param shortGuardInterval Enable or disable support for short guard interval
-   *
-   * \deprecated
-   */
-  void SetShortGuardInterval (bool shortGuardInterval);
-  /**
-   * Return whether short guard interval is supported.
-   *
-   * \return true if short guard interval is supported, false otherwise
-   *
-   * \deprecated
-   */
-  bool GetShortGuardInterval (void) const;
-  /**
-   * \param guardInterval the supported HE guard interval
-   *
-   * \deprecated
-   */
-  void SetGuardInterval (Time guardInterval);
-  /**
-   * \return the supported HE guard interval
-   *
-   * \deprecated
-   */
-  Time GetGuardInterval (void) const;
-  /**
-   * Enable or disable Greenfield support.
-   *
-   * \param greenfield Enable or disable Greenfield
-   *
-   * \deprecated
-   */
-  void SetGreenfield (bool greenfield);
-  /**
-   * Return whether Greenfield is supported.
-   *
-   * \return true if Greenfield is supported, false otherwise
-   *
-   * \deprecated
-   */
-  bool GetGreenfield (void) const;
   /**
    * Enable or disable short PHY preamble.
    *
@@ -1927,15 +1887,33 @@ private:
    *
    * \param psdu the arriving MPDU formatted as a PSDU
    * \param event the event holding incoming PPDU's information
+   * \param staId the station ID of the PSDU (only used for MU)
    * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU. 0 for normal MPDUs
    * \param mpduDuration the duration of the MPDU
    *
    * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
    */
   std::pair<bool, SignalNoiseDbm> GetReceptionStatus (Ptr<const WifiPsdu> psdu,
-                                                      Ptr<Event> event,
+                                                      Ptr<Event> event, uint16_t staId,
                                                       Time relativeMpduStart,
                                                       Time mpduDuration);
+  /**
+   * The last symbol of an MPDU in an A-MPDU has arrived.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \param psdu the arriving MPDU formatted as a PSDU containing a normal MPDU
+   * \param mpduIndex the index of the MPDU within the A-MPDU
+   * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU.
+   * \param mpduDuration the duration of the MPDU
+   */  
+  void EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex, Time relativeStart, Time mpduDuration);
+
+  /**
+   * Schedule end of MPDUs events.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void ScheduleEndOfMpdus (Ptr<Event> event);
 
   /**
    * The trace source fired when a packet begins the transmission process on
@@ -2112,12 +2090,7 @@ private:
   double m_txPowerMaxMimo;       //!< MIMO maximum transmit power due to OBSS PD SR power restriction (dBm)
   bool m_channelAccessRequested; //!< Flag if channels access has been requested (used for OBSS_PD SR)
 
-  bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
-  bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)
-  bool     m_shortPreamble;      //!< Flag if short PHY preamble is supported
-
-  Time m_guardInterval; //!< Supported HE guard interval (deprecated)
-
+  bool m_shortPreamble;        //!< Flag if short PHY preamble is supported
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
@@ -2140,6 +2113,11 @@ private:
   Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel;     //!< Wifi radio energy model
   Ptr<ErrorModel> m_postReceptionErrorModel;            //!< Error model for receive packet events
   Time m_timeLastPreambleDetected;                      //!< Record the time the last preamble was detected
+
+  std::vector <EventId> m_endOfMpduEvents; //!< the end of MPDU events (only used for A-MPDUs)
+
+  std::vector<bool> m_statusPerMpdu; //!<  current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
+  SignalNoiseDbm m_signalNoise;      //!< latest signal power and noise power in dBm (noise power includes the noise figure)
 
   Callback<void> m_capabilitiesChangedCallback;         //!< Callback when PHY capabilities changed
 };

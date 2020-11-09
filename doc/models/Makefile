@@ -38,6 +38,8 @@ SOURCES = \
 	$(SRC)/mpi/doc/distributed.rst \
 	$(SRC)/energy/doc/energy.rst \
 	$(SRC)/fd-net-device/doc/fd-net-device.rst \
+	$(SRC)/fd-net-device/doc/dpdk-net-device.rst \
+	$(SRC)/fd-net-device/doc/netmap-net-device.rst \
 	$(SRC)/tap-bridge/doc/tap.rst \
 	$(SRC)/mesh/doc/source/mesh.rst \
 	$(SRC)/mesh/doc/source/mesh-user.rst \
@@ -133,6 +135,8 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ax.eps \
 	$(SRC)/wifi/doc/source/figures/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
 	$(SRC)/wifi/doc/source/figures/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
+	$(SRC)/wifi/doc/source/figures/default-table-based-error-model-validation.eps \
+	$(SRC)/wifi/doc/source/figures/error-models-comparison.eps \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
@@ -422,6 +426,8 @@ IMAGES_EPS = \
 	$(FIGURES)/nist-frame-success-rate-ax.eps \
 	$(FIGURES)/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
 	$(FIGURES)/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
+	$(FIGURES)/default-table-based-error-model-validation.eps \
+	$(FIGURES)/error-models-comparison.eps \
 	$(FIGURES)/ca-rrc-reconf.eps \
 	$(FIGURES)/ca-lte-enb-net-device-changes.eps \
 	$(FIGURES)/ca-lte-ue-net-device-changes.eps \

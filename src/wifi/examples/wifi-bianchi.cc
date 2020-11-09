@@ -712,6 +712,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
     }
 
   YansWifiPhyHelper phy = wifiPhy;
+  phy.SetErrorRateModel ("ns3::NistErrorRateModel");
   phy.SetChannel (wifiChannel.Create ());
   phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
@@ -1001,7 +1002,7 @@ int main (int argc, char *argv[])
       NS_FATAL_ERROR ("Unsupported standard: " << standard);
     }
 
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel");

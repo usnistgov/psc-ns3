@@ -1376,7 +1376,7 @@ MacLow::GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const
   v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), m_stationManager->GetShortPreambleEnabled (), m_stationManager->UseGreenfieldForDestination (to)));
   v.SetTxPowerLevel (m_stationManager->GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (ctsMode, m_phy->GetChannelWidth ()));
-   uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+   uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
   v.SetGuardInterval (ctsTxGuardInterval);
   v.SetNss (1);
   return v;
@@ -1392,7 +1392,7 @@ MacLow::GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const
   v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), m_stationManager->GetShortPreambleEnabled (), m_stationManager->UseGreenfieldForDestination (to)));
   v.SetTxPowerLevel (m_stationManager->GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (ackMode, m_phy->GetChannelWidth ()));
-   uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+   uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
   v.SetGuardInterval (ackTxGuardInterval);
   v.SetNss (1);
   return v;
@@ -1408,7 +1408,7 @@ MacLow::GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const
   v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), m_stationManager->GetShortPreambleEnabled (), m_stationManager->UseGreenfieldForDestination (to)));
   v.SetTxPowerLevel (m_stationManager->GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (blockAckMode, m_phy->GetChannelWidth ()));
-uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
   v.SetGuardInterval (blockAckTxGuardInterval);
   v.SetNss (1);
   return v;
@@ -2467,9 +2467,14 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
 {
   NS_LOG_FUNCTION (this);
   bool normalAck = false;
-  bool ampduSubframe = false; //flag indicating the packet belongs to an A-MPDU and is not a VHT/HE single MPDU
-  if (txVector.IsAggregation ())
+  bool ampduSubframe = txVector.IsAggregation (); //flag indicating the packet belongs to an A-MPDU and is not a VHT/HE single MPDU
+  //statusPerMpdu is empty for intermediate MPDU forwarding.
+  //This function is called also once the PPDU has been fully received by the PHY,
+  //in that case statusPerMpdu carries the information about the received MPDUs.
+  if (ampduSubframe && !statusPerMpdu.empty ())
     {
+      //We are here if a S-MPDU is received or if all MPDUs of an A-MPDU have been
+      //received (but have been already forwarded up, so ReceiveOk won't be called)
       NS_ASSERT (psdu->IsAggregate ());
       ampduSubframe = true;
       auto n = psdu->begin ();
@@ -2477,9 +2482,6 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
       NS_ABORT_MSG_IF (psdu->GetNMpdus () != statusPerMpdu.size (), "Should have one receive status per MPDU");
 
       WifiMacHeader firsthdr = (*n)->GetHeader ();
-      NS_LOG_DEBUG ("duration/id=" << firsthdr.GetDuration ());
-      NotifyNav ((*n)->GetPacket (), firsthdr);
-
       if (firsthdr.GetAddr1 () == m_self)
         {
           //Iterate over all MPDUs and notify reception only if status OK
@@ -2512,7 +2514,10 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
                   else if (firsthdr.IsData () || firsthdr.IsQosData ())
                     {
                       NS_LOG_DEBUG ("Deaggregate packet from " << firsthdr.GetAddr2 () << " with sequence=" << firsthdr.GetSequenceNumber ());
-                      ReceiveOk ((*n), rxSnr, txVector, ampduSubframe);
+                      if (psdu->IsSingle ())
+                        {
+                          ReceiveOk ((*n), rxSnr, txVector, ampduSubframe);
+                        }
                       if (firsthdr.IsQosAck ())
                         {
                           NS_LOG_DEBUG ("Normal Ack");
@@ -2554,7 +2559,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
     }
   else
     {
-      /* Simple MPDU */
+      /* An MPDU has been received */
       NS_ASSERT (!psdu->IsAggregate ());
       ReceiveOk ((*psdu->begin ()), rxSnr, txVector, ampduSubframe);
     }

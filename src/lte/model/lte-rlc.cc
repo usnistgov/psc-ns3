@@ -56,12 +56,10 @@ private:
 
 LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser (LteRlc* rlc)
   : m_rlc (rlc)
-{
-}
+{}
 
 LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser ()
-{
-}
+{}
 
 void
 LteRlcSpecificLteMacSapUser::NotifyTxOpportunity (TxOpportunityParameters params)
@@ -261,7 +259,7 @@ LteRlcSm::GetTypeId (void)
     .SetParent<LteRlc> ()
     .SetGroupName ("Lte")
     .AddConstructor<LteRlcSm> ()
-    ;
+  ;
   return tid;
 }
 
@@ -296,9 +294,9 @@ LteRlcSm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   NS_ASSERT_MSG (ret, "RlcTag is missing");
   delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
   NS_LOG_LOGIC (" RNTI=" << m_rnti
-                << " LCID=" << (uint32_t) m_lcid
-                << " size=" << rxPduParams.p->GetSize ()
-                << " delay=" << delay.GetNanoSeconds ());
+                         << " LCID=" << (uint32_t) m_lcid
+                         << " size=" << rxPduParams.p->GetSize ()
+                         << " delay=" << delay.As (Time::NS));
   m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds () );
 }
 
@@ -325,8 +323,8 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 
   // RLC Performance evaluation
   NS_LOG_LOGIC (" RNTI=" << m_rnti
-                << " LCID=" << (uint32_t) m_lcid
-                << " size=" << txOpParams.bytes);
+                         << " LCID=" << (uint32_t) m_lcid
+                         << " size=" << txOpParams.bytes);
   m_txPdu (m_rnti, m_lcid, txOpParams.bytes);
 
   m_macSapProvider->TransmitPdu (params);
