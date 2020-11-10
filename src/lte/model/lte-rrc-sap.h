@@ -1618,11 +1618,35 @@ public:
   };
 
   /**
+   * \brief SL-PSSCH-TxParameters information element
+   */
+  struct SlPsschTxParameters
+  {
+    uint8_t slMaxTxTransNumPssch; /**< Indicates the maximum transmission number
+                                       (including new transmission and
+                                       retransmission) for PSSCH.
+                                       */
+    //sl-MinMCS-PSSCH-r16  INTEGER (0..27); /TODO
+    //sl-MaxMCS-PSSCH-r16  INTEGER (0..31); /TODO
+    //sl-MinSubChannelNumPSSCH-r16 INTEGER (1..27); /TODO
+    //sl-MaxSubchannelNumPSSCH-r16 INTEGER (1..27); /TODO
+    //sl-MaxTxPower-r16 SL-TxPower-r16; /TODO
+  };
+
+  /**
+   * \brief SL-PSSCH-TxConfigList information element
+   */
+  struct SlPsschTxConfigList
+  {
+    std::array <SlPsschTxParameters, 1> slPsschTxParameters; //!< List of SlPsschTxParameters
+  };
+
+  /**
    * \brief SL-UE-SelectedConfig-r16
    */
   struct SlUeSelectedConfig
   {
-    uint8_t SlProbResourceKeep {0}; /**< Indicates the probability with which
+    uint8_t slProbResourceKeep {0}; /**< Indicates the probability with which
                                          the UE keeps the current resource when
                                          the resource reselection counter reaches
                                          zero for sensing based UE autonomous
@@ -1633,8 +1657,9 @@ public:
                                          evaluate other values.
                                          */
 
+    SlPsschTxConfigList slPsschTxConfigList; //!< Indicates PSSCH TX parameters
+
     //slPrioritizationThres; //TODO
-    //slPsschTxConfigList; //TODO
     //SlReselAfter; //TODO
     //UlPrioritizationThres; //TODO
   };
