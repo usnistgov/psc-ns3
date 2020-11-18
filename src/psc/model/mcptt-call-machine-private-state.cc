@@ -418,8 +418,8 @@ McpttCallMachinePrivateStateP0::ReceiveSetupRequest (McpttCallMachinePrivate& ma
 
                   machine.Send (acceptMsg);
 
-                  call->OpenFloorChan (grpAddress, floorPort);
-                  call->OpenMediaChan (grpAddress, speechPort);
+                  call->OpenFloorChannel (grpAddress, floorPort);
+                  call->OpenMediaChannel (grpAddress, speechPort);
 
                   if (tfp7->IsRunning ())
                     {
@@ -725,8 +725,8 @@ McpttCallMachinePrivateStateP2::ReceiveAccept (McpttCallMachinePrivate& machine,
           tfp2->Stop ();
         }
 
-      call->OpenFloorChan (grpAddress, floorPort);
-      call->OpenMediaChan (grpAddress, speechPort);
+      call->OpenFloorChannel (grpAddress, floorPort);
+      call->OpenMediaChannel (grpAddress, speechPort);
 
       floorMachine->SetOriginator (true);
       floorMachine->Start ();
@@ -855,8 +855,8 @@ McpttCallMachinePrivateStateP3::ExpiryOfTfp3 (McpttCallMachinePrivate& machine)
 
   if (cfp3->IsLimitReached ())
     {
-      call->CloseMediaChan ();
-      call->CloseFloorChan ();
+      call->CloseMediaChannel ();
+      call->CloseFloorChannel ();
 
       tfp7->Start ();
 
@@ -904,13 +904,13 @@ McpttCallMachinePrivateStateP3::ReceiveReleaseAck (McpttCallMachinePrivate& mach
     {
       tfp3->Stop ();
 
-      if (call->IsMediaChanOpen ())
+      if (call->IsMediaChannelOpen ())
         {
-          call->CloseMediaChan ();
+          call->CloseMediaChannel ();
         }
-      if (call->IsFloorChanOpen ())
+      if (call->IsFloorChannelOpen ())
         {
-          call->CloseFloorChan ();
+          call->CloseFloorChannel ();
         }
 
       tfp7->Start ();
@@ -983,8 +983,8 @@ McpttCallMachinePrivateStateP4::ExpiryOfTfp5 (McpttCallMachinePrivate& machine)
   Ptr<McpttTimer> tfp7 = machine.GetTfp7 ();
   Ptr<McpttCallTypeMachinePrivate> typeMachine = machine.GetTypeMachine ();
 
-  call->CloseMediaChan ();
-  call->CloseFloorChan ();
+  call->CloseMediaChannel ();
+  call->CloseFloorChannel ();
 
   tfp7->Start ();
 
@@ -1055,8 +1055,8 @@ McpttCallMachinePrivateStateP4::ReceiveRelease (McpttCallMachinePrivate& machine
 
       machine.Send (releaseAckMsg);
 
-      call->CloseMediaChan ();
-      call->CloseFloorChan ();
+      call->CloseMediaChannel ();
+      call->CloseFloorChannel ();
 
       tfp7->Start ();
 
@@ -1155,8 +1155,8 @@ McpttCallMachinePrivateStateP5::AcceptCall (McpttCallMachinePrivate& machine)
 
   machine.Send (acceptMsg);
 
-  call->OpenFloorChan (grpAddress, floorPort);
-  call->OpenMediaChan (grpAddress, speechPort);
+  call->OpenFloorChannel (grpAddress, floorPort);
+  call->OpenMediaChannel (grpAddress, speechPort);
 
   tfp2->Stop ();
 

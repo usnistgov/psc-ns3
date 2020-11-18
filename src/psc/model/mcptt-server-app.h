@@ -46,7 +46,7 @@ namespace ns3 {
 
 class McpttServerCall;
 class McpttCallMsg;
-class McpttChan;
+class McpttChannel;
 
 /**
  * \ingroup mcptt
@@ -149,7 +149,7 @@ private:
  Address m_localAddress; //!< The local IP address.
  Address m_peerAddress; //!< The peer IP address.
  uint16_t m_callPort; //!< The port on which call control messages will flow.
- Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
+ Ptr<McpttChannel> m_callChannel; //!< The channel for call control messages.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
 };

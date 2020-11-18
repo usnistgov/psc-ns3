@@ -39,7 +39,7 @@
 
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
@@ -92,11 +92,11 @@ public:
  /**
   * Closes the floor channel.
   */
- void CloseFloorChan (void);
+ void CloseFloorChannel (void);
  /**
   * Closes the media channel.
   */
- void CloseMediaChan (void);
+ void CloseMediaChannel (void);
  /**
   * Sets the ID of the call.
   * \param callId The call ID.
@@ -131,24 +131,24 @@ public:
   * Indicates if the floor channel is open.
   * \returns True, if the channel is open.
   */
- bool IsFloorChanOpen (void) const;
+ bool IsFloorChannelOpen (void) const;
  /**
   * Indicates if the media channel is open.
   * \returns True, if the channel is open.
   */
- bool IsMediaChanOpen (void) const;
+ bool IsMediaChannelOpen (void) const;
  /**
   * Opens the floor channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- void OpenFloorChan (const Address& peerAddr, const uint16_t port);
+ void OpenFloorChannel (const Address& peerAddr, const uint16_t port);
  /**
   * Opens the media channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- void OpenMediaChan (const Address& peerAddr, const uint16_t port);
+ void OpenMediaChannel (const Address& peerAddr, const uint16_t port);
  /**
   * Receives a call message.
   * \param pkt The packet (serialized with SIP header)
@@ -222,13 +222,13 @@ protected:
  private:
  NetworkCallType m_networkCallType; //!< The network call type
  Ptr<McpttCallMachine> m_callMachine; //!< The call control state machine.
- Ptr<McpttChan> m_callChan; //!< The channel for call control messages.
+ Ptr<McpttChannel> m_callChannel; //!< The channel for call control messages.
  uint16_t m_defaultOnNetworkCallPort; //!< The default port for on-network call channels
  uint16_t m_defaultOffNetworkCallPort; //!< The default port for off-network call channels
  uint16_t m_callPort; //!< The port on which call control messages will flow.
- Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
+ Ptr<McpttChannel> m_floorChannel; //!< The channel to use for floor control messages.
  Ptr<McpttFloorParticipant> m_floorMachine; //!< The floor state machine.
- Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
+ Ptr<McpttChannel> m_mediaChannel; //!< The channel to use for media messages.
  Ptr<McpttPttApp> m_owner; //!< The owner of this call.
  Address m_peerAddress; //!< The address of the node that the peer application is on.
  bool m_pushOnSelect; //!< Whether to start pusher upon call select
@@ -242,7 +242,7 @@ public:
   * Gets the channel used for call control messages.
   * \returns The channel.
   */
- virtual Ptr<McpttChan> GetCallChan (void) const;
+ virtual Ptr<McpttChannel> GetCallChannel (void) const;
  /**
   * Gets the call control state machine.
   * \returns The call machine.
@@ -252,7 +252,7 @@ public:
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- Ptr<McpttChan> GetFloorChan (void) const;
+ Ptr<McpttChannel> GetFloorChannel (void) const;
  /**
   * Gets the floor machine.
   * \returns The floor machine.
@@ -262,7 +262,7 @@ public:
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- Ptr<McpttChan> GetMediaChan (void) const;
+ Ptr<McpttChannel> GetMediaChannel (void) const;
  /**
   * Gets the owner of this call.
   * \returns The owner.
@@ -285,9 +285,9 @@ public:
  void SetCallMachine (Ptr<McpttCallMachine>  callMachine);
  /**
   * Sets the channel to use for floor control messages.
-  * \param floorChan The channel.
+  * \param floorChannel The channel.
   */
- void SetFloorChan (Ptr<McpttChan>  floorChan);
+ void SetFloorChannel (Ptr<McpttChannel>  floorChannel);
  /**
   * Sets the floor machine.
   * \param floorMachine The floor machine.
@@ -295,9 +295,9 @@ public:
  void SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine);
  /**
   * Sets the channel to use for media messages.
-  * \param mediaChan The channel.
+  * \param mediaChannel The channel.
   */
- void SetMediaChan (Ptr<McpttChan>  mediaChan);
+ void SetMediaChannel (Ptr<McpttChannel>  mediaChannel);
  /**
   * Sets the owner of this call.
   * \param owner The owner.

@@ -444,8 +444,8 @@ McpttCallMachineGrpBroadcast::Stop (void)
     {
       floorMachine->Stop ();
 
-      GetCall ()->CloseFloorChan ();
-      GetCall ()->CloseMediaChan ();
+      GetCall ()->CloseFloorChannel ();
+      GetCall ()->CloseMediaChannel ();
     }
 
   if (tfb1->IsRunning ())

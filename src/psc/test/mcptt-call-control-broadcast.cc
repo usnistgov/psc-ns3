@@ -1115,12 +1115,12 @@ BroadcastCallScenario3::Configure (void)
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueATfb2);
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueBTfb1);
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueCTfb1);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::ReleaseCall, ueAPttApp);
 }
 
@@ -1433,12 +1433,12 @@ BroadcastCallScenario4::Configure (void)
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueATfb2);
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueBTfb1);
   Simulator::Schedule (Seconds (2.1), &McpttTimer::Start, ueCTfb1);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (Seconds (2.15), &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (Seconds (2.2), &McpttPttApp::ReleaseCall, ueBPttApp);
 }
 

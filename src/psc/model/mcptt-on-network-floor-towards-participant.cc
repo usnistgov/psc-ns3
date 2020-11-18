@@ -41,7 +41,7 @@
 
 #include "mcptt-server-call.h"
 #include "mcptt-server-call-machine.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
@@ -105,9 +105,9 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
 McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (void)
   : Object (),
     m_dualFloor (false),
-    m_floorChan (CreateObject<McpttChan> ()),
+    m_floorChannel (CreateObject<McpttChannel> ()),
     m_implicitRequest (false),
-    m_mediaChan (CreateObject<McpttChan> ()),
+    m_mediaChannel (CreateObject<McpttChannel> ()),
     m_originator (false),
     m_overridden (false),
     m_overriding (false),
@@ -121,8 +121,8 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
 {
   NS_LOG_FUNCTION (this);
 
-  m_floorChan->SetRxPktCb (MakeCallback (&McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt, this));
-  m_mediaChan->SetRxPktCb (MakeCallback (&McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt, this));
+  m_floorChannel->SetRxPktCb (MakeCallback (&McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt, this));
+  m_mediaChannel->SetRxPktCb (MakeCallback (&McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt, this));
 
   m_t8->Link (&McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8, this);
 }
@@ -201,12 +201,12 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
     {
       NS_LOG_DEBUG ("Send floor msg towards participant " << GetPeerUserId ());
-      GetFloorChan ()->Send (pkt);
+      GetFloorChannel ()->Send (pkt);
     }
   else if (msg.IsA (McpttMediaMsg::GetTypeId ()))
     {
       NS_LOG_DEBUG ("Send media msg towards participant " << GetPeerUserId ());
-      GetMediaChan ()->Send (pkt);
+      GetMediaChannel ()->Send (pkt);
     }
 }
 
@@ -389,18 +389,18 @@ McpttOnNetworkFloorTowardsParticipant::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttChan> floorChan = GetFloorChan ();
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
   Ptr<McpttServerApp> app = GetOwner ()->GetOwner ()->GetOwner ();
 
-  if (!floorChan->IsOpen ())
+  if (!floorChannel->IsOpen ())
     {
-      floorChan->Open (app->GetNode (), GetFloorPort (), app->GetLocalAddress (), GetPeerAddress ());
+      floorChannel->Open (app->GetNode (), GetFloorPort (), app->GetLocalAddress (), GetPeerAddress ());
     }
 
-  if (!mediaChan->IsOpen ())
+  if (!mediaChannel->IsOpen ())
     {
-      mediaChan->Open (app->GetNode (), GetMediaPort (), app->GetLocalAddress (), GetPeerAddress ());
+      mediaChannel->Open (app->GetNode (), GetMediaPort (), app->GetLocalAddress (), GetPeerAddress ());
     }
 }
 
@@ -409,14 +409,14 @@ McpttOnNetworkFloorTowardsParticipant::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (GetFloorChan ()->IsOpen ())
+  if (GetFloorChannel ()->IsOpen ())
     {
-      GetFloorChan ()->Close ();
+      GetFloorChannel ()->Close ();
     }
 
-  if (GetMediaChan ()->IsOpen ())
+  if (GetMediaChannel ()->IsOpen ())
     {
-      GetMediaChan ()->Close ();
+      GetMediaChannel ()->Close ();
     }
 }
 
@@ -425,10 +425,10 @@ McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_floorChan->Dispose ();
-  m_floorChan = 0;
-  m_mediaChan->Dispose ();
-  m_mediaChan = 0;
+  m_floorChannel->Dispose ();
+  m_floorChannel = 0;
+  m_mediaChannel->Dispose ();
+  m_mediaChannel = 0;
   m_owner = 0;
   m_state = 0;
   m_t8 = 0;
@@ -588,10 +588,10 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
   m_state->SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
 
-Ptr<McpttChan>
-McpttOnNetworkFloorTowardsParticipant::GetFloorChan (void) const
+Ptr<McpttChannel>
+McpttOnNetworkFloorTowardsParticipant::GetFloorChannel (void) const
 {
-  return m_floorChan;
+  return m_floorChannel;
 }
 
 uint16_t
@@ -600,10 +600,10 @@ McpttOnNetworkFloorTowardsParticipant::GetFloorPort (void) const
   return m_floorPort;
 }
 
-Ptr<McpttChan>
-McpttOnNetworkFloorTowardsParticipant::GetMediaChan (void) const
+Ptr<McpttChannel>
+McpttOnNetworkFloorTowardsParticipant::GetMediaChannel (void) const
 {
-  return m_mediaChan;
+  return m_mediaChannel;
 }
 
 uint16_t
@@ -669,11 +669,11 @@ McpttOnNetworkFloorTowardsParticipant::SetDualFloor (const bool dualFloor)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetFloorChan (const Ptr<McpttChan> floorChan)
+McpttOnNetworkFloorTowardsParticipant::SetFloorChannel (const Ptr<McpttChannel> floorChannel)
 {
   NS_LOG_FUNCTION (this);
 
-  m_floorChan = floorChan;
+  m_floorChannel = floorChannel;
 }
 
 void
@@ -685,11 +685,11 @@ McpttOnNetworkFloorTowardsParticipant::SetFloorPort (const uint16_t floorPort)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetMediaChan (const Ptr<McpttChan> mediaChan)
+McpttOnNetworkFloorTowardsParticipant::SetMediaChannel (const Ptr<McpttChannel> mediaChannel)
 {
   NS_LOG_FUNCTION (this);
 
-  m_mediaChan = mediaChan;
+  m_mediaChannel = mediaChannel;
 }
 
 void

@@ -29,8 +29,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_CHAN_H
-#define MCPTT_CHAN_H
+#ifndef MCPTT_CHANNEL_H
+#define MCPTT_CHANNEL_H
 
 #include <ns3/ipv4-address.h>
 #include <ns3/node.h>
@@ -49,28 +49,28 @@ namespace ns3 {
  * simply a wrapper around a socket so that this channel can be opened and
  * closed throughout the simulation.
  */
-class McpttChan : public Object
+class McpttChannel : public Object
 {
 public:
  /**
-  * Gets the type ID of the McpttChan class.
+  * Gets the type ID of the McpttChannel class.
   * \returns The type ID.
   */
  static TypeId GetTypeId (void);
  /**
-  * Creates an instance of the McpttChan class.
+  * Creates an instance of the McpttChannel class.
   */
- McpttChan(void);
+ McpttChannel(void);
  /**
-  * \brief The destructor of the McpttChan class.
+  * \brief The destructor of the McpttChannel class.
   */
- virtual ~McpttChan (void);
+ virtual ~McpttChannel (void);
  /**
   * Closes the channel.
   */
  virtual void Close (void);
  /**
-  * Gets the type ID of this McpttChan instance.
+  * Gets the type ID of this McpttChannel instance.
   * \returns The type ID.
   */
  virtual TypeId GetInstanceTypeId (void) const;
@@ -106,7 +106,7 @@ public:
  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
 protected:
  /**
-  * Disposes of this McpttChan instance.
+  * Disposes of this McpttChannel instance.
   */
  virtual void DoDispose (void);
  /**
@@ -143,5 +143,5 @@ public:
 
 } // namespace ns3
 
-#endif /* MCPTT_CHAN_H */
+#endif /* MCPTT_CHANNEL_H */
 

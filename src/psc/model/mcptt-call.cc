@@ -40,7 +40,7 @@
 
 #include "mcptt-call-machine.h"
 #include "mcptt-call-msg.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
@@ -93,8 +93,8 @@ McpttCall::GetTypeId (void)
 McpttCall::McpttCall (void)
   : Object (),
     m_networkCallType (NetworkCallType::INVALID), // type must be set later
-    m_floorChan (0),
-    m_mediaChan (0),
+    m_floorChannel (0),
+    m_mediaChannel (0),
     m_owner (0),
     m_pushOnSelect (false),
     m_startTime (Seconds (0)),
@@ -108,8 +108,8 @@ McpttCall::McpttCall (void)
 McpttCall::McpttCall (NetworkCallType callType)
   : Object (),
     m_networkCallType (callType),
-    m_floorChan (0),
-    m_mediaChan (0),
+    m_floorChannel (0),
+    m_mediaChannel (0),
     m_owner (0),
     m_pushOnSelect (false),
     m_startTime (Seconds (0)),
@@ -126,21 +126,21 @@ McpttCall::~McpttCall (void)
 }
 
 void
-McpttCall::CloseFloorChan (void)
+McpttCall::CloseFloorChannel (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttChan> floorChan = GetFloorChan ();
-  floorChan->Close ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
+  floorChannel->Close ();
 }
 
 void
-McpttCall::CloseMediaChan (void)
+McpttCall::CloseMediaChannel (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
-  mediaChan->Close ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
+  mediaChannel->Close ();
 }
 
 void
@@ -190,48 +190,48 @@ McpttCall::SetPushOnSelect (bool pushOnSelect)
 }
 
 bool
-McpttCall::IsFloorChanOpen (void) const
+McpttCall::IsFloorChannelOpen (void) const
 {
-  Ptr<McpttChan> floorChan = GetFloorChan ();
-  bool isOpen = floorChan->IsOpen ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
+  bool isOpen = floorChannel->IsOpen ();
 
   return isOpen;
 }
 
 bool
-McpttCall::IsMediaChanOpen (void) const
+McpttCall::IsMediaChannelOpen (void) const
 {
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
-  bool isOpen = mediaChan->IsOpen ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
+  bool isOpen = mediaChannel->IsOpen ();
 
   return isOpen;
 }
 
 void
-McpttCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
+McpttCall::OpenFloorChannel (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
   Ptr<McpttPttApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
-  Ptr<McpttChan> floorChan = GetFloorChan ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
   Address localAddr = owner->GetLocalAddress ();
 
-  int result = floorChan->Open (node, port, localAddr, peerAddr);
+  int result = floorChannel->Open (node, port, localAddr, peerAddr);
   NS_ABORT_MSG_UNLESS (result == 0, "Unable to open floor channel on node " << GetOwner ()->GetNode ()->GetId ());
 }
 
 void
-McpttCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
+McpttCall::OpenMediaChannel (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
   Ptr<McpttPttApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
   Address localAddr = owner->GetLocalAddress ();
 
-  int result = mediaChan->Open (node, port, localAddr, peerAddr);
+  int result = mediaChannel->Open (node, port, localAddr, peerAddr);
   NS_ABORT_MSG_UNLESS (result == 0, "Unable to open media channel on node " << GetOwner ()->GetNode ()->GetId ());
 }
 
@@ -306,7 +306,7 @@ McpttCall::Send (Ptr<Packet> pkt, const SipHeader& hdr)
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
       Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
-      GetCallChan ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
+      GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
       if (!m_txCb.IsNull ())
         {
           m_txCb (this, hdr);
@@ -315,7 +315,7 @@ McpttCall::Send (Ptr<Packet> pkt, const SipHeader& hdr)
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
-      GetCallChan ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
+      GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
       if (!m_txCb.IsNull ())
         {
           m_txCb (this, hdr);
@@ -338,7 +338,7 @@ McpttCall::Send (const McpttCallMsg& msg)
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
       Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
-      GetCallChan ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
+      GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
       if (!m_txCb.IsNull ())
         {
           m_txCb (this, msg);
@@ -347,7 +347,7 @@ McpttCall::Send (const McpttCallMsg& msg)
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
-      GetCallChan ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
+      GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
       if (!m_txCb.IsNull ())
         {
           m_txCb (this, msg);
@@ -366,11 +366,11 @@ McpttCall::Send (const McpttFloorMsg& msg)
     }
 
   Ptr<Packet> pkt = Create<Packet> ();
-  Ptr<McpttChan> floorChan = GetFloorChan ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
 
   pkt->AddHeader (msg);
 
-  floorChan->Send (pkt);
+  floorChannel->Send (pkt);
 }
 
 void
@@ -379,7 +379,7 @@ McpttCall::Send (const McpttMediaMsg& msg)
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<Packet> pkt = Create<Packet> ();
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
   Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
 
   McpttMediaMsg txMsg (msg);
@@ -393,7 +393,7 @@ McpttCall::Send (const McpttMediaMsg& msg)
 
   pkt->AddHeader (txMsg);
 
-  mediaChan->Send (pkt);
+  mediaChannel->Send (pkt);
 }
 
 void
@@ -438,9 +438,9 @@ McpttCall::DoDispose (void)
 
   GetCallMachine ()->Dispose ();
   SetCallMachine (0);
-  SetFloorChan (0);
+  SetFloorChannel (0);
   SetFloorMachine (0);
-  SetMediaChan (0);
+  SetMediaChannel (0);
   SetOwner (0);
 
   Object::DoDispose ();
@@ -698,8 +698,8 @@ McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt)
   Receive (msg);
 }
 
-Ptr<McpttChan>
-McpttCall::GetCallChan (void) const
+Ptr<McpttChannel>
+McpttCall::GetCallChannel (void) const
 {
   return GetOwner ()->GetCallChannel (m_callPort);
 }
@@ -710,10 +710,10 @@ McpttCall::GetCallMachine (void) const
   return m_callMachine;
 }
 
-Ptr<McpttChan>
-McpttCall::GetFloorChan (void) const
+Ptr<McpttChannel>
+McpttCall::GetFloorChannel (void) const
 {
-  return m_floorChan;
+  return m_floorChannel;
 }
 
 Ptr<McpttFloorParticipant>
@@ -722,10 +722,10 @@ McpttCall::GetFloorMachine (void) const
   return m_floorMachine;
 }
 
-Ptr<McpttChan>
-McpttCall::GetMediaChan (void) const
+Ptr<McpttChannel>
+McpttCall::GetMediaChannel (void) const
 {
-  return m_mediaChan;
+  return m_mediaChannel;
 }
 
 Ptr<McpttPttApp>
@@ -760,16 +760,16 @@ McpttCall::SetCallMachine (Ptr<McpttCallMachine>  callMachine)
 }
 
 void
-McpttCall::SetFloorChan (Ptr<McpttChan>  floorChan)
+McpttCall::SetFloorChannel (Ptr<McpttChannel>  floorChannel)
 {
-  NS_LOG_FUNCTION (this << &floorChan);
+  NS_LOG_FUNCTION (this << &floorChannel);
 
-  if (floorChan != 0)
+  if (floorChannel != 0)
     {
-      floorChan->SetRxPktCb (MakeCallback (&McpttCall::ReceiveFloorPkt, this));
+      floorChannel->SetRxPktCb (MakeCallback (&McpttCall::ReceiveFloorPkt, this));
     }
 
-  m_floorChan = floorChan;
+  m_floorChannel = floorChannel;
 }
 
 void
@@ -786,16 +786,16 @@ McpttCall::SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine)
 }
 
 void
-McpttCall::SetMediaChan (Ptr<McpttChan>  mediaChan)
+McpttCall::SetMediaChannel (Ptr<McpttChannel>  mediaChannel)
 {
-  NS_LOG_FUNCTION (this << &mediaChan);
+  NS_LOG_FUNCTION (this << &mediaChannel);
 
-  if (mediaChan != 0)
+  if (mediaChannel != 0)
     {
-      mediaChan->SetRxPktCb (MakeCallback (&McpttCall::ReceiveMediaPkt, this));
+      mediaChannel->SetRxPktCb (MakeCallback (&McpttCall::ReceiveMediaPkt, this));
     }
 
-  m_mediaChan = mediaChan;
+  m_mediaChannel = mediaChannel;
 }
 
 void

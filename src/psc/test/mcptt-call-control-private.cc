@@ -2779,10 +2779,10 @@ PrivateCallCancel1::Configure (void)
 
   Simulator::Schedule (startTime, &McpttTimer::Start, ueATfp5);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfp5);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (cancelTime, &McpttPttApp::ReleaseCall, ueAPttApp);
 }
 
@@ -3189,10 +3189,10 @@ PrivateCallCancel2::Configure (void)
 
   Simulator::Schedule (startTime, &McpttTimer::Start, ueATfp5);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfp5);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (cancelTime, &McpttPttApp::ReleaseCall, ueAPttApp);
 }
 
@@ -3466,10 +3466,10 @@ PrivateCallExpiration::Configure (void)
 
   Simulator::Schedule (startTime, &McpttTimer::Start, ueATfp5);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfp5);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (joinTime, &McpttPttApp::InitiateCall, ueAPttApp);
 }
 

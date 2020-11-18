@@ -421,11 +421,11 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveAccept (McpttCallTypeMachinePrivate& 
         }
 
       //TODO: Not in standard - does not require closing previous session.
-      call->CloseFloorChan ();
-      call->CloseMediaChan ();
+      call->CloseFloorChannel ();
+      call->CloseMediaChannel ();
     
-      call->OpenFloorChan (grpAddress, floorPort);
-      call->OpenMediaChan (grpAddress, speechPort);
+      call->OpenFloorChannel (grpAddress, floorPort);
+      call->OpenMediaChannel (grpAddress, speechPort);
     }
 }
 
@@ -461,11 +461,11 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancel (McpttCallTypeMachine
       tfp8->Stop ();
 
       //TODO: Not in standard - does not say to close media session
-      call->CloseFloorChan ();
-      call->CloseMediaChan ();
+      call->CloseFloorChannel ();
+      call->CloseMediaChannel ();
 
-      call->OpenFloorChan (grpAddress, floorPort);
-      call->OpenMediaChan (grpAddress, speechPort);
+      call->OpenFloorChannel (grpAddress, floorPort);
+      call->OpenMediaChannel (grpAddress, speechPort);
 
       machine.SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::PRIVATE));
 
@@ -500,11 +500,11 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveEmergencyCancelAck (McpttCallTypeMach
       tfp6->Stop ();
 
       //TODO: Not in standard - does not close open media session
-      call->CloseFloorChan ();
-      call->CloseMediaChan ();
+      call->CloseFloorChannel ();
+      call->CloseMediaChannel ();
 
-      call->OpenFloorChan (grpAddress, floorPort);
-      call->OpenMediaChan (grpAddress, speechPort);
+      call->OpenFloorChannel (grpAddress, floorPort);
+      call->OpenMediaChannel (grpAddress, speechPort);
 
       machine.SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::PRIVATE));
     }
@@ -770,11 +770,11 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp8 (McpttCallTypeMachinePrivate& m
   Address grpAddress = mySdp.GetGrpAddr ();
 
   //TODO: Not in standard - does not require closing previous session
-  call->CloseFloorChan ();
-  call->CloseMediaChan ();
+  call->CloseFloorChannel ();
+  call->CloseMediaChannel ();
 
-  call->OpenFloorChan (grpAddress, floorPort);
-  call->OpenMediaChan (grpAddress, speechPort);
+  call->OpenFloorChannel (grpAddress, floorPort);
+  call->OpenMediaChannel (grpAddress, speechPort);
 
   machine.SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::PRIVATE));
   machine.SetCallType (McpttCallMsgFieldCallType (McpttCallMsgFieldCallType::PRIVATE));

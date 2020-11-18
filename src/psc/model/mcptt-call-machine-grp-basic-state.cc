@@ -289,8 +289,8 @@ McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
           Address grpAddr = mySdp.GetGrpAddr ();
           uint16_t speechPort = mySdp.GetSpeechPort ();
 
-          call->OpenFloorChan (grpAddr, floorPort);
-          call->OpenMediaChan (grpAddr, speechPort);
+          call->OpenFloorChannel (grpAddr, floorPort);
+          call->OpenMediaChannel (grpAddr, speechPort);
 
           floorMachine->SetOriginator (false);
           floorMachine->Start ();
@@ -418,8 +418,8 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
 
   machine.Send (msg);
 
-  call->OpenFloorChan (grpAddress.Get (), floorPort);
-  call->OpenMediaChan (grpAddress.Get (), speechPort);
+  call->OpenFloorChannel (grpAddress.Get (), floorPort);
+  call->OpenMediaChannel (grpAddress.Get (), speechPort);
 
   floorMachine->SetOriginator (true);
   floorMachine->Start ();
@@ -499,8 +499,8 @@ McpttCallMachineGrpBasicStateS2::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
       machine.SetRefInt (theirRefInt);
       machine.SetStartTime (theirStartTime);
 
-      parent->OpenFloorChan (grpAddr, floorPort);
-      parent->OpenMediaChan (grpAddr, speechPort);
+      parent->OpenFloorChannel (grpAddr, floorPort);
+      parent->OpenMediaChannel (grpAddr, speechPort);
 
       floorMachine->SetOriginator (false);
       floorMachine->Start ();
@@ -613,8 +613,8 @@ McpttCallMachineGrpBasicStateS3::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine
 
   floorMachine->Stop ();
 
-  parent->CloseFloorChan ();
-  parent->CloseMediaChan ();
+  parent->CloseFloorChannel ();
+  parent->CloseMediaChannel ();
 
   tfg2->Stop ();
 
@@ -733,11 +733,11 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
           
           floorMachine->Stop ();
 
-          parent->CloseFloorChan ();
-          parent->CloseMediaChan ();
+          parent->CloseFloorChannel ();
+          parent->CloseMediaChannel ();
 
-          parent->OpenFloorChan (grpAddr, floorPort);
-          parent->OpenMediaChan (grpAddr, speechPort);
+          parent->OpenFloorChannel (grpAddr, floorPort);
+          parent->OpenMediaChannel (grpAddr, speechPort);
 
           floorMachine->SetOriginator (false);
           floorMachine->Start ();
@@ -791,8 +791,8 @@ McpttCallMachineGrpBasicStateS3::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
   floorMachine->Stop ();
 
-  parent->CloseFloorChan ();
-  parent->CloseMediaChan ();
+  parent->CloseFloorChannel ();
+  parent->CloseMediaChannel ();
 
   if (tfg4->IsRunning ())
     {
@@ -858,8 +858,8 @@ McpttCallMachineGrpBasicStateS4::AcceptCall (McpttCallMachineGrpBasic& machine)
   Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
-  parent->OpenFloorChan (grpAddr, floorPort);
-  parent->OpenMediaChan (grpAddr, speechPort);
+  parent->OpenFloorChannel (grpAddr, floorPort);
+  parent->OpenMediaChannel (grpAddr, speechPort);
 
   floorMachine->SetOriginator (false);
   floorMachine->Start ();
@@ -928,8 +928,8 @@ McpttCallMachineGrpBasicStateS4::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
   floorMachine->Stop ();
 
-  parent->CloseFloorChan ();
-  parent->CloseMediaChan ();
+  parent->CloseFloorChannel ();
+  parent->CloseMediaChannel ();
 
   if (tfg4->IsRunning ())
     {
@@ -997,8 +997,8 @@ McpttCallMachineGrpBasicStateS5::AcceptCall (McpttCallMachineGrpBasic& machine)
   Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
-  parent->OpenFloorChan (grpAddr, floorPort);
-  parent->OpenMediaChan (grpAddr, speechPort);
+  parent->OpenFloorChannel (grpAddr, floorPort);
+  parent->OpenMediaChannel (grpAddr, speechPort);
 
   floorMachine->SetOriginator (false);
   floorMachine->Start ();
@@ -1075,14 +1075,14 @@ McpttCallMachineGrpBasicStateS5::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
   floorMachine->Stop ();
 
-  if (parent->IsMediaChanOpen ())
+  if (parent->IsMediaChannelOpen ())
     {
-      parent->CloseMediaChan ();
+      parent->CloseMediaChannel ();
     }
 
-  if (parent->IsFloorChanOpen ())
+  if (parent->IsFloorChannelOpen ())
     {
-      parent->CloseFloorChan ();
+      parent->CloseFloorChannel ();
     }
 
   if (tfg4->IsRunning ())
@@ -1179,8 +1179,8 @@ McpttCallMachineGrpBasicStateS6::InitiateCall (McpttCallMachineGrpBasic& machine
 
   tfg5->Stop ();
 
-  parent->OpenFloorChan (grpAddr, floorPort);
-  parent->OpenMediaChan (grpAddr, speechPort);
+  parent->OpenFloorChannel (grpAddr, floorPort);
+  parent->OpenMediaChannel (grpAddr, speechPort);
 
   floorMachine->SetOriginator (false);
   floorMachine->Start ();

@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   if (logging)
     {
       LogComponentEnableAll (LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC));
-      LogComponentEnable ("McpttChan", LOG_LEVEL_ALL);
+      LogComponentEnable ("McpttChannel", LOG_LEVEL_ALL);
       LogComponentEnable ("McpttPttApp", LOG_LEVEL_ALL);
       LogComponentEnable ("McpttServerApp", LOG_LEVEL_ALL);
       LogComponentEnable ("McpttCall", LOG_LEVEL_ALL);

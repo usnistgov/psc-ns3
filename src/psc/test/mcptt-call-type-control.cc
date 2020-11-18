@@ -1095,10 +1095,10 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg13);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (joinTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
@@ -1382,10 +1382,10 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg14);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (joinTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
@@ -1662,10 +1662,10 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (joinTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
@@ -1948,10 +1948,10 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg13);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
 void 
@@ -2240,10 +2240,10 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg13);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
 void 
@@ -2542,12 +2542,12 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (upgradeTime, &McpttPttApp::UpgradeCallType, ueAPttApp, McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP);
 }
 
@@ -2954,12 +2954,12 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg14);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (upgradeTime, &McpttPttApp::UpgradeCallType, ueAPttApp, McpttCallMsgFieldCallType::EMERGENCY_GROUP);
 }
 
@@ -3373,12 +3373,12 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg13);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (upgradeTime, &McpttPttApp::DowngradeCallType, ueAPttApp);
 }
 
@@ -3792,12 +3792,12 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg14);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (upgradeTime, &McpttPttApp::DowngradeCallType, ueAPttApp);
 }
 
@@ -4206,12 +4206,12 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg13);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
 void 
@@ -4509,12 +4509,12 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg14);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
 void 
@@ -4804,12 +4804,12 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
   Simulator::Schedule (exitTime, &McpttPttApp::ReleaseCall, ueAPttApp);
 }
 
@@ -5073,12 +5073,12 @@ McpttCallTypeMerge::Configure (void)
   Simulator::Schedule (startTime, &McpttTimer::Start, ueBTfg6);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg2);
   Simulator::Schedule (startTime, &McpttTimer::Start, ueCTfg6);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueACall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueACall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueBCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueBCall, grpAddress.Get (), speechPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenFloorChan, ueCCall, grpAddress.Get (), floorPort);
-  Simulator::Schedule (startTime, &McpttCall::OpenMediaChan, ueCCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueACall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueACall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueBCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueBCall, grpAddress.Get (), speechPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenFloorChannel, ueCCall, grpAddress.Get (), floorPort);
+  Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
 void 

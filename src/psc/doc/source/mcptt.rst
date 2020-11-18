@@ -255,7 +255,7 @@ The ``ns3::McpttCall`` class simply aggregates the components needed to have an
 MCPTT call. This includes a channel for both floor control and media messages,
 and state machines for call control and floor control.
 
-The ``ns3::McpttChan`` class is a wrapper around the ``ns3:Socket`` class to
+The ``ns3::McpttChannel`` class is a wrapper around the ``ns3:Socket`` class to
 provide an interface similar to the functions required by the specifications,
 as well as handle opening and closing sockets on the fly. This class is used
 by the ``ns3::McpttCall`` and ``ns3::McpttPttApp`` classes.

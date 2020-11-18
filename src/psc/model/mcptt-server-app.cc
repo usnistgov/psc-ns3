@@ -40,7 +40,7 @@
 #include "mcptt-server-call.h"
 #include "mcptt-call-msg.h"
 #include "mcptt-server-call-machine.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 
 #include "mcptt-server-app.h"
 
@@ -88,7 +88,7 @@ McpttServerApp::GetTypeId (void)
 
 McpttServerApp::McpttServerApp (void)
   : Application (),
-    m_callChan (0)
+    m_callChannel (0)
 {  
   NS_LOG_FUNCTION (this);
 }
@@ -140,10 +140,10 @@ McpttServerApp::DoDispose (void)
       it->second->Dispose ();
     }
   m_calls.clear ();
-  if (m_callChan)
+  if (m_callChannel)
     {
-      m_callChan->Dispose ();
-      m_callChan = 0;
+      m_callChannel->Dispose ();
+      m_callChannel = 0;
     }
   Object::DoDispose ();
 }
@@ -159,10 +159,10 @@ void
 McpttServerApp::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  m_callChan = CreateObject<McpttChan> ();
-  m_callChan->SetRxPktCb (MakeCallback (&McpttServerApp::ReceiveCallPacket, this));
+  m_callChannel = CreateObject<McpttChannel> ();
+  m_callChannel->SetRxPktCb (MakeCallback (&McpttServerApp::ReceiveCallPacket, this));
   NS_LOG_DEBUG ("Open socket for incoming call control on port " << m_callPort);
-  m_callChan->Open (GetNode (), m_callPort, m_localAddress, m_peerAddress);
+  m_callChannel->Open (GetNode (), m_callPort, m_localAddress, m_peerAddress);
   for (auto it = m_calls.begin (); it != m_calls.end (); it++)
     {
       NS_LOG_DEBUG ("Starting call for id " << it->first);
@@ -206,7 +206,7 @@ void
 McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr)
 {
   NS_LOG_FUNCTION (this << pkt << toAddr);
-  m_callChan->SendTo (pkt, 0, toAddr);
+  m_callChannel->SendTo (pkt, 0, toAddr);
 }
 
 void

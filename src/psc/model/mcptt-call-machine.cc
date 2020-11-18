@@ -353,8 +353,8 @@ McpttCallMachineNull::Start (void)
 
   Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
-  GetCall ()->OpenFloorChan (grpAddr.Get (), m_floorPort);
-  GetCall ()->OpenMediaChan (grpAddr.Get (), m_mediaPort);
+  GetCall ()->OpenFloorChannel (grpAddr.Get (), m_floorPort);
+  GetCall ()->OpenMediaChannel (grpAddr.Get (), m_mediaPort);
 
   floorMachine->Start ();
 }
@@ -366,8 +366,8 @@ McpttCallMachineNull::Stop (void)
 
   Ptr<McpttFloorParticipant> floorMachine = GetCall ()->GetFloorMachine ();
 
-  GetCall ()->CloseFloorChan ();
-  GetCall ()->CloseMediaChan ();
+  GetCall ()->CloseFloorChannel ();
+  GetCall ()->CloseMediaChannel ();
 
   floorMachine->Stop ();
 }

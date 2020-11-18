@@ -38,7 +38,7 @@
 #include <ns3/type-id.h>
 
 #include "mcptt-call-msg.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-floor-participant.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
@@ -103,24 +103,24 @@ public:
   * Indicates if the floor channel is open.
   * \returns True, if the channel is open.
   */
- bool IsFloorChanOpen (void) const;
+ bool IsFloorChannelOpen (void) const;
  /**
   * Indicates if the media channel is open.
   * \returns True, if the channel is open.
   */
- bool IsMediaChanOpen (void) const;
+ bool IsMediaChannelOpen (void) const;
  /**
   * Opens the floor channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- void OpenFloorChan (const Address& peerAddr, const uint16_t port);
+ void OpenFloorChannel (const Address& peerAddr, const uint16_t port);
  /**
   * Opens the media channel.
   * \param peerAddr The peer address.
   * \param port The peer port.
   */
- void OpenMediaChan (const Address& peerAddr, const uint16_t port);
+ void OpenMediaChannel (const Address& peerAddr, const uint16_t port);
  /**
   * Receives a call control packet.
   * \param pkt The packet (without SIP header) that was received.
@@ -175,10 +175,10 @@ protected:
  uint32_t m_originator;  //!< Originating UE user ID
  bool m_ambientListening; //!< The flag that indicates if the call is configured for ambient listening.
  bool m_temporaryGroup; //!< The flag that indicates if the call is configured for a temporary group.
- Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
+ Ptr<McpttChannel> m_floorChannel; //!< The channel to use for floor control messages.
  Ptr<McpttServerCallMachine> m_callMachine; //!< The call control machine.
  Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The floor control machine.
- Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
+ Ptr<McpttChannel> m_mediaChannel; //!< The channel to use for media messages.
  Ptr<McpttServerApp> m_owner; //!< The owner of this call.
  Callback<void, Ptr<const McpttServerCall>, const Header&> m_rxCb; //!< The received message callback.
  Callback<void, Ptr<const McpttServerCall>, const Header&> m_txCb; //!< The transmitted message callback.
@@ -192,7 +192,7 @@ public:
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- Ptr<McpttChan> GetFloorChan (void) const;
+ Ptr<McpttChannel> GetFloorChannel (void) const;
  /**
   * Gets the arbitrator.
   * \returns The arbitrator
@@ -202,7 +202,7 @@ public:
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- Ptr<McpttChan> GetMediaChan (void) const;
+ Ptr<McpttChannel> GetMediaChannel (void) const;
  /**
   * Gets the owner of this call.
   * \returns The owner.
@@ -215,9 +215,9 @@ public:
  void SetCallMachine (Ptr<McpttServerCallMachine> callMachine);
  /**
   * Sets the channel to use for floor control messages.
-  * \param floorChan The channel.
+  * \param floorChannel The channel.
   */
- void SetFloorChan (Ptr<McpttChan>  floorChan);
+ void SetFloorChannel (Ptr<McpttChannel>  floorChannel);
  /**
   * Sets the arbitrator.
   * \param arbitrator The arbitrator
@@ -225,9 +225,9 @@ public:
  void SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator);
  /**
   * Sets the channel to use for media messages.
-  * \param mediaChan The channel.
+  * \param mediaChannel The channel.
   */
- void SetMediaChan (Ptr<McpttChan>  mediaChan);
+ void SetMediaChannel (Ptr<McpttChannel>  mediaChannel);
  /**
   * Sets the owner of this call.
   * \param owner The owner.

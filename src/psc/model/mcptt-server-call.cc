@@ -42,7 +42,7 @@
 #include <ns3/sip-header.h>
 
 #include "mcptt-call-msg.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-on-network-floor-arbitrator.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-media-msg.h"
@@ -88,8 +88,8 @@ McpttServerCall::McpttServerCall (void)
   : Object (),
     m_callId (std::numeric_limits<uint16_t>::max ()),
     m_originator (std::numeric_limits<uint32_t>::max ()),
-    m_floorChan (0),
-    m_mediaChan (0),
+    m_floorChannel (0),
+    m_mediaChannel (0),
     m_owner (0),
     m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
     m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
@@ -128,47 +128,47 @@ McpttServerCall::IsTemporaryGroup (void) const
 }
 
 bool
-McpttServerCall::IsFloorChanOpen (void) const
+McpttServerCall::IsFloorChannelOpen (void) const
 {
-  Ptr<McpttChan> floorChan = GetFloorChan ();
-  bool isOpen = floorChan->IsOpen ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
+  bool isOpen = floorChannel->IsOpen ();
 
   return isOpen;
 }
 
 bool
-McpttServerCall::IsMediaChanOpen (void) const
+McpttServerCall::IsMediaChannelOpen (void) const
 {
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
-  bool isOpen = mediaChan->IsOpen ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
+  bool isOpen = mediaChannel->IsOpen ();
 
   return isOpen;
 }
 
 void
-McpttServerCall::OpenFloorChan (const Address& peerAddr, const uint16_t port)
+McpttServerCall::OpenFloorChannel (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
   Ptr<McpttServerApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
-  Ptr<McpttChan> floorChan = GetFloorChan ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
   Address localAddr = owner->GetLocalAddress ();
 
-  floorChan->Open (node, port, localAddr, peerAddr);
+  floorChannel->Open (node, port, localAddr, peerAddr);
 }
 
 void
-McpttServerCall::OpenMediaChan (const Address& peerAddr, const uint16_t port)
+McpttServerCall::OpenMediaChannel (const Address& peerAddr, const uint16_t port)
 {
   NS_LOG_FUNCTION (this << peerAddr << port);
 
   Ptr<McpttServerApp> owner = GetOwner ();
   Ptr<Node> node = owner->GetNode ();
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
   Address localAddr = owner->GetLocalAddress ();
 
-  mediaChan->Open (node, port, localAddr, peerAddr);
+  mediaChannel->Open (node, port, localAddr, peerAddr);
 }
 
 void
@@ -218,11 +218,11 @@ McpttServerCall::Send (const McpttFloorMsg& msg)
     }
 
   Ptr<Packet> pkt = Create<Packet> ();
-  Ptr<McpttChan> floorChan = GetFloorChan ();
+  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
 
   pkt->AddHeader (msg);
 
-  floorChan->Send (pkt);
+  floorChannel->Send (pkt);
 }
 
 void
@@ -231,7 +231,7 @@ McpttServerCall::Send (const McpttMediaMsg& msg)
   NS_LOG_FUNCTION (this << &msg);
 
   Ptr<Packet> pkt = Create<Packet> ();
-  Ptr<McpttChan> mediaChan = GetMediaChan ();
+  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = GetArbitrator ();
 
   McpttMediaMsg txMsg (msg);
@@ -245,7 +245,7 @@ McpttServerCall::Send (const McpttMediaMsg& msg)
 
   pkt->AddHeader (txMsg);
 
-  mediaChan->Send (pkt);
+  mediaChannel->Send (pkt);
 }
 
 void
@@ -269,15 +269,15 @@ McpttServerCall::DoDispose (void)
       GetArbitrator ()->Dispose ();
       SetArbitrator (0);
     }
-  if (GetFloorChan ())
+  if (GetFloorChannel ())
     {
-      GetFloorChan ()->Dispose ();
-      SetFloorChan (0);
+      GetFloorChannel ()->Dispose ();
+      SetFloorChannel (0);
     }
-  if (GetMediaChan ())
+  if (GetMediaChannel ())
     {
-      GetMediaChan ()->Dispose ();
-      SetMediaChan (0);
+      GetMediaChannel ()->Dispose ();
+      SetMediaChannel (0);
     }
   if (GetCallMachine ())
     {
@@ -391,10 +391,10 @@ McpttServerCall::GetCallMachine (void) const
   return m_callMachine;
 }
 
-Ptr<McpttChan>
-McpttServerCall::GetFloorChan (void) const
+Ptr<McpttChannel>
+McpttServerCall::GetFloorChannel (void) const
 {
-  return m_floorChan;
+  return m_floorChannel;
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
@@ -403,10 +403,10 @@ McpttServerCall::GetArbitrator (void) const
   return m_arbitrator;
 }
 
-Ptr<McpttChan>
-McpttServerCall::GetMediaChan (void) const
+Ptr<McpttChannel>
+McpttServerCall::GetMediaChannel (void) const
 {
-  return m_mediaChan;
+  return m_mediaChannel;
 }
 
 Ptr<McpttServerApp>
@@ -429,16 +429,16 @@ McpttServerCall::SetCallMachine (Ptr<McpttServerCallMachine>  callMachine)
 }
 
 void
-McpttServerCall::SetFloorChan (Ptr<McpttChan>  floorChan)
+McpttServerCall::SetFloorChannel (Ptr<McpttChannel>  floorChannel)
 {
-  NS_LOG_FUNCTION (this << &floorChan);
+  NS_LOG_FUNCTION (this << &floorChannel);
 
-  if (floorChan != 0)
+  if (floorChannel != 0)
     {
-      floorChan->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveFloorPkt, this));
+      floorChannel->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveFloorPkt, this));
     }
 
-  m_floorChan = floorChan;
+  m_floorChannel = floorChannel;
 }
 
 void
@@ -455,16 +455,16 @@ McpttServerCall::SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator)
 }
 
 void
-McpttServerCall::SetMediaChan (Ptr<McpttChan>  mediaChan)
+McpttServerCall::SetMediaChannel (Ptr<McpttChannel>  mediaChannel)
 {
-  NS_LOG_FUNCTION (this << &mediaChan);
+  NS_LOG_FUNCTION (this << &mediaChannel);
 
-  if (mediaChan != 0)
+  if (mediaChannel != 0)
     {
-      mediaChan->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveMediaPkt, this));
+      mediaChannel->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveMediaPkt, this));
     }
 
-  m_mediaChan = mediaChan;
+  m_mediaChannel = mediaChannel;
 }
 
 void

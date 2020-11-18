@@ -73,7 +73,7 @@ McpttHelper::EnableLogComponents (void)
   LogComponentEnable ("McpttCallTypeMachineGrpBasic", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallTypeMachinePrivate", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCallTypeMachinePrivateState", LOG_LEVEL_ALL);
-  LogComponentEnable ("McpttChan", LOG_LEVEL_ALL);
+  LogComponentEnable ("McpttChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttCounter", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttEmergAlertMachineBasic", LOG_LEVEL_ALL);
   LogComponentEnable ("McpttEmergAlertMachine", LOG_LEVEL_ALL);

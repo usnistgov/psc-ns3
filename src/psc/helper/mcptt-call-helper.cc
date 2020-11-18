@@ -27,7 +27,7 @@
 #include "ns3/mcptt-call.h"
 #include "ns3/mcptt-server-call.h"
 #include "ns3/mcptt-ptt-app.h"
-#include "ns3/mcptt-chan.h"
+#include "ns3/mcptt-channel.h"
 #include "ns3/mcptt-server-call-machine.h"
 #include "ns3/mcptt-server-call-machine-group-prearranged.h"
 #include "ns3/mcptt-on-network-call-machine-client.h"
@@ -179,11 +179,11 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
         CreateObjectWithAttributes<McpttOnNetworkCallMachineClient> ("GroupId", UintegerValue (groupId));
       call->SetCallMachine (callMachine);
       call->SetCallId (callId);
-      Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
-      call->SetFloorChan (floorChan);
+      Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel> ();
+      call->SetFloorChannel (floorChannel);
       call->GetCallMachine ()->SetAttribute ("FloorPort", UintegerValue (floorPort));
-      Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
-      call->SetMediaChan (mediaChan);
+      Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel> ();
+      call->SetMediaChannel (mediaChannel);
       call->GetCallMachine ()->SetAttribute ("MediaPort", UintegerValue (mediaPort));
       Ptr<McpttOnNetworkFloorParticipant> clientFloorControl =
         m_participantFactory.Create<McpttOnNetworkFloorParticipant> ();
@@ -246,8 +246,8 @@ McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callI
       Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clients.Get (idx));
         
       Ptr<McpttCall> call = CreateObject<McpttCall> (McpttCall::NetworkCallType::OFF_NETWORK);
-      Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
-      Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
+      Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel> ();
+      Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel> ();
       Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
       Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
 
@@ -255,9 +255,9 @@ McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callI
 
       call->SetAttribute ("PeerAddress", AddressValue (peerAddress));
       call->SetCallMachine (callMachine);
-      call->SetFloorChan (floorChan);
+      call->SetFloorChannel (floorChannel);
       call->SetFloorMachine (floorMachine);
-      call->SetMediaChan (mediaChan);
+      call->SetMediaChannel (mediaChannel);
       call->SetCallId (callId);
       call->SetStartTime (startTime);
       call->SetStopTime (stopTime);

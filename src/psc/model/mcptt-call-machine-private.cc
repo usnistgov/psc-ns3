@@ -892,14 +892,14 @@ McpttCallMachinePrivate::Stop (void)
       floorMachine->Stop ();
     }
 
-  if (call->IsFloorChanOpen ())
+  if (call->IsFloorChannelOpen ())
     {
-      call->CloseFloorChan ();
+      call->CloseFloorChannel ();
     }
 
-  if (call->IsMediaChanOpen ())
+  if (call->IsMediaChannelOpen ())
     {
-      call->CloseMediaChan ();
+      call->CloseMediaChannel ();
     }
 
   if (emergMachine->IsStarted ())

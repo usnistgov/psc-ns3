@@ -215,15 +215,15 @@ Ptr<McpttTestCall>
 McpttTestCaseConfig::CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const
 {
   Ptr<McpttTestCall> call = CreateObject<McpttTestCall> (McpttCall::NetworkCallType::OFF_NETWORK);
-  Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
-  Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
+  Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel> ();
+  Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel> ();
   Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
   Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
 
   call->SetCallMachine (callMachine);
-  call->SetFloorChan (floorChan);
+  call->SetFloorChannel (floorChannel);
   call->SetFloorMachine (floorMachine);
-  call->SetMediaChan (mediaChan);
+  call->SetMediaChannel (mediaChannel);
   call->SetCallId (callId);
   return call;
 }

@@ -52,7 +52,7 @@
 #include "mcptt-call-machine-grp-basic.h"
 #include "mcptt-on-network-call-machine-client.h"
 #include "mcptt-call-machine-grp-broadcast.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-floor-participant.h"
 #include "mcptt-off-network-floor-participant.h"
 #include "mcptt-floor-msg.h"
@@ -214,15 +214,15 @@ McpttPttApp::CreateCall (ObjectFactory& callFac, ObjectFactory& floorFac, McpttC
   NS_LOG_FUNCTION (this << callId << callType);
 
   Ptr<McpttCall> call = CreateObject<McpttCall> (callType);
-  Ptr<McpttChan> floorChan = CreateObject<McpttChan> ();
-  Ptr<McpttChan> mediaChan = CreateObject<McpttChan> ();
+  Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel> ();
+  Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel> ();
   Ptr<McpttCallMachine> callMachine = callFac.Create<McpttCallMachine> ();
   Ptr<McpttFloorParticipant> floorMachine = floorFac.Create<McpttFloorParticipant> ();
 
   call->SetCallMachine (callMachine);
-  call->SetFloorChan (floorChan);
+  call->SetFloorChannel (floorChannel);
   call->SetFloorMachine (floorMachine);
-  call->SetMediaChan (mediaChan);
+  call->SetMediaChannel (mediaChannel);
   call->SetCallId (callId);
   AddCall (call);
   return call;
@@ -917,7 +917,7 @@ McpttPttApp::OpenCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Net
   else
     {
       NS_LOG_DEBUG ("Call channel does not exist for port " << port << "; create it");
-      Ptr<McpttChan> channel = CreateObject<McpttChan> ();
+      Ptr<McpttChannel> channel = CreateObject<McpttChannel> ();
       int result = channel->Open (GetNode (), port, GetLocalAddress (), Ipv4Address::GetAny ());
       NS_ABORT_MSG_UNLESS (result == 0, "Unable to open call channel on node " << GetNode ()->GetId ());
       m_callChannels.emplace (port, channel);
@@ -979,7 +979,7 @@ McpttPttApp::CloseCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Ne
     }
 }
 
-Ptr<McpttChan>
+Ptr<McpttChannel>
 McpttPttApp::GetCallChannel (uint16_t port) const
 {
   auto it = m_callChannels.find (port);  

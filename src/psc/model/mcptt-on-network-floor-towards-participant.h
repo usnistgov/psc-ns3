@@ -38,7 +38,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/type-id.h>
 
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-counter.h"
 #include "mcptt-floor-msg.h"
 #include "mcptt-floor-msg-sink.h"
@@ -265,11 +265,11 @@ protected:
  typedef void (* StateChangeTracedCallback) (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
 private:
  bool m_dualFloor; //!< The flag that indicates if the associated participant is listenting to two sources.
- Ptr<McpttChan> m_floorChan; //!< The channel to use for floor control messages.
+ Ptr<McpttChannel> m_floorChannel; //!< The channel to use for floor control messages.
  uint16_t m_floorPort; //!< The port to use for the floor control channel.
  bool m_implicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
  bool m_queueing; //!< The flag that indicates if SDP offer contains the "mc_queueing" fmtp attribute.
- Ptr<McpttChan> m_mediaChan; //!< The channel to use for media messages.
+ Ptr<McpttChannel> m_mediaChannel; //!< The channel to use for media messages.
  uint16_t m_mediaPort; //!< The port to use for media messages.
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.
  bool m_overridden; //!< Flag that indicates if associated participant is overridden without revoke.
@@ -293,7 +293,7 @@ public:
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- virtual Ptr<McpttChan> GetFloorChan (void) const;
+ virtual Ptr<McpttChannel> GetFloorChannel (void) const;
  /**
   * Gets the port to use for the floor control channel.
   * \returns The port number.
@@ -303,7 +303,7 @@ public:
   * Gets the channel to use for floor control messages.
   * \returns The channel.
   */
- virtual Ptr<McpttChan> GetMediaChan (void) const;
+ virtual Ptr<McpttChannel> GetMediaChannel (void) const;
  /**
   * Gets the port to use for the media channel.
   * \returns The port number.
@@ -356,9 +356,9 @@ public:
  virtual void SetDualFloor (const bool);
  /**
   * Sets the channel to use for floor control messages.
-  * \param floorChan The channel.
+  * \param floorChannel The channel.
   */
- virtual void SetFloorChan (const Ptr<McpttChan> floorChan);
+ virtual void SetFloorChannel (const Ptr<McpttChannel> floorChannel);
  /**
   * Sets the port to use for the floor control channel.
   * \param floorPort The port number.
@@ -366,9 +366,9 @@ public:
  virtual void SetFloorPort (const uint16_t floorPort);
  /**
   * Sets the channel to use for media messages.
-  * \param mediaChan The channel.
+  * \param mediaChannel The channel.
   */
- virtual void SetMediaChan (const Ptr<McpttChan> mediaChan);
+ virtual void SetMediaChannel (const Ptr<McpttChannel> mediaChannel);
  /**
   * Sets the port to use for the media channel.
   * \param mediaPort The port number.

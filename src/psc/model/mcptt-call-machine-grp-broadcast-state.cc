@@ -204,8 +204,8 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
 
   machine.Send (msg);
 
-  call->OpenFloorChan (grpAddress.Get (), floorPort);
-  call->OpenMediaChan (grpAddress.Get (), speechPort);
+  call->OpenFloorChannel (grpAddress.Get (), floorPort);
+  call->OpenMediaChannel (grpAddress.Get (), speechPort);
 
   floorMachine->SetOriginator (true);
   floorMachine->Start ();
@@ -257,8 +257,8 @@ McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast (McpttCallMachineGr
           Address grpAddr = mySdp.GetGrpAddr ();
           uint16_t speechPort = mySdp.GetSpeechPort ();
 
-          call->OpenFloorChan (grpAddr, floorPort);
-          call->OpenMediaChan (grpAddr, speechPort);
+          call->OpenFloorChannel (grpAddr, floorPort);
+          call->OpenMediaChannel (grpAddr, speechPort);
 
           floorMachine->SetOriginator (false);
           floorMachine->Start ();
@@ -316,13 +316,13 @@ McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast&
     {
       floorMachine->Stop ();
     }
-  if (call->IsFloorChanOpen ())
+  if (call->IsFloorChannelOpen ())
     {
-      call->CloseFloorChan ();
+      call->CloseFloorChannel ();
     }
-  if (call->IsMediaChanOpen ())
+  if (call->IsMediaChannelOpen ())
     {
-      call->CloseMediaChan ();
+      call->CloseMediaChannel ();
     }
 
   if (tfb2->IsRunning ())
@@ -392,13 +392,13 @@ McpttCallMachineGrpBroadcastStateB2::ReceiveGrpCallBroadcastEnd (McpttCallMachin
         {
           floorMachine->Stop ();
         }
-      if (call->IsFloorChanOpen ())
+      if (call->IsFloorChannelOpen ())
         {
-          call->CloseFloorChan ();
+          call->CloseFloorChannel ();
         }
-      if (call->IsMediaChanOpen ())
+      if (call->IsMediaChannelOpen ())
         {
-          call->CloseMediaChan ();
+          call->CloseMediaChannel ();
         }
 
       tfb1->Stop ();
@@ -426,8 +426,8 @@ McpttCallMachineGrpBroadcastStateB2::ReleaseCall (McpttCallMachineGrpBroadcast& 
     {
       floorMachine->Stop ();
 
-      call->CloseFloorChan ();
-      call->CloseMediaChan ();
+      call->CloseFloorChannel ();
+      call->CloseMediaChannel ();
 
       McpttCallMsgGrpBroadcastEnd msg;
       msg.SetCallId (myCallId);
@@ -446,8 +446,8 @@ McpttCallMachineGrpBroadcastStateB2::ReleaseCall (McpttCallMachineGrpBroadcast& 
     {
       floorMachine->Stop ();
 
-      call->CloseFloorChan ();
-      call->CloseMediaChan ();
+      call->CloseFloorChannel ();
+      call->CloseMediaChannel ();
 
       machine.ChangeState (McpttCallMachineGrpBroadcastStateB4::GetInstance ());
     }
@@ -501,8 +501,8 @@ McpttCallMachineGrpBroadcastStateB3::AcceptCall (McpttCallMachineGrpBroadcast& m
   Address grpAddr = mySdp.GetGrpAddr ();
   uint16_t speechPort = mySdp.GetSpeechPort ();
 
-  call->OpenFloorChan (grpAddr, floorPort);
-  call->OpenMediaChan (grpAddr, speechPort);
+  call->OpenFloorChannel (grpAddr, floorPort);
+  call->OpenMediaChannel (grpAddr, speechPort);
 
   floorMachine->SetOriginator (false);
   floorMachine->Start ();
@@ -590,13 +590,13 @@ McpttCallMachineGrpBroadcastStateB4::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast&
     {
       floorMachine->Stop ();
     }
-  if (call->IsFloorChanOpen ())
+  if (call->IsFloorChannelOpen ())
     {
-      call->CloseFloorChan ();
+      call->CloseFloorChannel ();
     }
-  if (call->IsMediaChanOpen ())
+  if (call->IsMediaChannelOpen ())
     {
-      call->CloseMediaChan ();
+      call->CloseMediaChannel ();
     }
 
   machine.SetCallId (McpttCallMsgFieldCallId (0));
@@ -644,13 +644,13 @@ McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcastEnd (McpttCallMachin
         {
           floorMachine->Stop ();
         }
-      if (call->IsFloorChanOpen ())
+      if (call->IsFloorChannelOpen ())
         {
-          call->CloseFloorChan ();
+          call->CloseFloorChannel ();
         }
-      if (call->IsMediaChanOpen ())
+      if (call->IsMediaChannelOpen ())
         {
-          call->CloseMediaChan ();
+          call->CloseMediaChannel ();
         }
 
       if (tfb1->IsRunning ())

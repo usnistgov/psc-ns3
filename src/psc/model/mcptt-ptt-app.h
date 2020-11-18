@@ -44,7 +44,7 @@
 
 #include "mcptt-call.h"
 #include "mcptt-call-msg.h"
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 #include "mcptt-media-sink.h"
 #include "mcptt-pushable.h"
 #include "mcptt-pusher.h"
@@ -309,8 +309,8 @@ private:
  static uint16_t s_portNumber; //!< A port number.
  bool m_isRunning; //!< Whether application is running or not
  uint16_t m_callIdAllocator; //!< Counter to allocate call IDs
- std::map<uint16_t, Ptr<McpttChan> > m_callChannels; //!< Map of call channels
- std::map<Ptr<McpttChan>, uint32_t> m_callChannelReferenceCount; //!< Reference count for call channels
+ std::map<uint16_t, Ptr<McpttChannel> > m_callChannels; //!< Map of call channels
+ std::map<Ptr<McpttChannel>, uint32_t> m_callChannelReferenceCount; //!< Reference count for call channels
  std::map<uint16_t, Ptr<McpttCall> > m_calls; //!< The container of all calls.
  std::map<uint16_t, Ptr<McpttCall> > m_onNetworkCalls; //!< The container of on-network calls.
  std::map<uint16_t, Ptr<McpttCall> > m_offNetworkCalls; //!< The container of off-network calls.
@@ -348,7 +348,7 @@ public:
   * \param port local port for the socket
   * \returns The channel.
   */
- virtual Ptr<McpttChan> GetCallChannel (uint16_t port) const;
+ virtual Ptr<McpttChannel> GetCallChannel (uint16_t port) const;
  /**
   * Gets the container of calls.
   * \returns The container of calls.

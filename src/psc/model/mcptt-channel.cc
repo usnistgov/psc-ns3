@@ -40,26 +40,26 @@
 #include <ns3/type-id.h>
 #include <ns3/udp-socket-factory.h>
 
-#include "mcptt-chan.h"
+#include "mcptt-channel.h"
 
 namespace ns3
 {
-NS_LOG_COMPONENT_DEFINE ("McpttChan");
+NS_LOG_COMPONENT_DEFINE ("McpttChannel");
 
-NS_OBJECT_ENSURE_REGISTERED (McpttChan);
+NS_OBJECT_ENSURE_REGISTERED (McpttChannel);
 
 TypeId
-McpttChan::GetTypeId (void)
+McpttChannel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttChan")
+  static TypeId tid = TypeId ("ns3::McpttChannel")
     .SetParent<Object> ()
-    .AddConstructor<McpttChan> ()
+    .AddConstructor<McpttChannel> ()
   ;
 
   return tid;
 }
 
-McpttChan::McpttChan (void)
+McpttChannel::McpttChannel (void)
   : Object (),
     m_rxPktCb (MakeNullCallback<void, Ptr<Packet> > ()),
     m_socket (0)
@@ -67,13 +67,13 @@ McpttChan::McpttChan (void)
   NS_LOG_FUNCTION (this);
 }
 
-McpttChan::~McpttChan (void)
+McpttChannel::~McpttChannel (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttChan::Close (void)
+McpttChannel::Close (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -86,13 +86,13 @@ McpttChan::Close (void)
 }
 
 TypeId
-McpttChan::GetInstanceTypeId (void) const
+McpttChannel::GetInstanceTypeId (void) const
 {
-  return McpttChan::GetTypeId ();
+  return McpttChannel::GetTypeId ();
 }
 
 bool
-McpttChan::IsOpen (void) const
+McpttChannel::IsOpen (void) const
 {
   NS_LOG_FUNCTION (this);
   
@@ -104,7 +104,7 @@ McpttChan::IsOpen (void) const
 }
 
 int
-McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer)
+McpttChannel::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer)
 {
   NS_LOG_FUNCTION (this << node << port << local << peer);
 
@@ -135,7 +135,7 @@ McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Add
     }
 
   socket->SetAllowBroadcast (true);
-  socket->SetRecvCallback (MakeCallback (&McpttChan::ReceivePkts, this));
+  socket->SetRecvCallback (MakeCallback (&McpttChannel::ReceivePkts, this));
 
   bool success = false;
   if (Ipv4Address::IsMatchingType (peer))
@@ -190,7 +190,7 @@ McpttChan::Open (Ptr<Node>  node, uint16_t port, const Address& local, const Add
 }
 
 int
-McpttChan::Send (Ptr<Packet>  pkt)
+McpttChannel::Send (Ptr<Packet>  pkt)
 {
   NS_LOG_FUNCTION (this << pkt);
 
@@ -202,14 +202,14 @@ McpttChan::Send (Ptr<Packet>  pkt)
 }
 
 int
-McpttChan::SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress)
+McpttChannel::SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress)
 {
   NS_LOG_FUNCTION (this << p << flags << toAddress);
   return GetSocket ()->SendTo (p, flags, toAddress);
 }
 
 void
-McpttChan::DoDispose (void)
+McpttChannel::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -222,7 +222,7 @@ McpttChan::DoDispose (void)
 }
 
 void
-McpttChan::ReceivePkt (Ptr<Packet>  pkt)
+McpttChannel::ReceivePkt (Ptr<Packet>  pkt)
 {
   NS_LOG_FUNCTION (this << &pkt);
 
@@ -233,7 +233,7 @@ McpttChan::ReceivePkt (Ptr<Packet>  pkt)
 }
 
 void
-McpttChan::ReceivePkts (Ptr<Socket> socket)
+McpttChannel::ReceivePkts (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << &socket);
 
@@ -262,13 +262,13 @@ McpttChan::ReceivePkts (Ptr<Socket> socket)
           NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
         }
 
-      NS_LOG_INFO (Simulator::Now ().GetSeconds () << "s: McpttChan received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
+      NS_LOG_INFO (Simulator::Now ().GetSeconds () << "s: McpttChannel received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
       ReceivePkt (pkt);
    }
 }
 
 Ptr<Socket>
-McpttChan::GetSocket (void) const
+McpttChannel::GetSocket (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -276,7 +276,7 @@ McpttChan::GetSocket (void) const
 }
 
 void
-McpttChan::SetSocket (Ptr<Socket>  socket)
+McpttChannel::SetSocket (Ptr<Socket>  socket)
 {
   NS_LOG_FUNCTION (this << &socket);
 
@@ -284,7 +284,7 @@ McpttChan::SetSocket (Ptr<Socket>  socket)
 }
 
 void
-McpttChan::SetRxPktCb (const Callback<void, Ptr<Packet> >  rxPktCb)
+McpttChannel::SetRxPktCb (const Callback<void, Ptr<Packet> >  rxPktCb)
 {
   NS_LOG_FUNCTION (this << &rxPktCb);
   
