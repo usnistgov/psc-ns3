@@ -1378,6 +1378,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorDeny (McpttOffNetworkFl
               //Provide floor deny notification to user.
               t203->Restart ();
               //Display floor deny reason to the user.
+              floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
               floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
             }
         }
@@ -1391,6 +1392,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorDeny (McpttOffNetworkFl
               t203->Restart ();
               //Provide floor deny notification to user.
               //Display floor deny reason to the user.
+              floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
               floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
             }
          }
@@ -1400,7 +1402,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorDeny (McpttOffNetworkFl
           t203->Restart ();
 
           floorMachine.SetCurrentSsrc (rxSsrc);
-
+          floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
           floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
         }
     }
@@ -1444,6 +1446,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorGranted (McpttOffNetwor
                   //Provide a notification to the user indicating the type of call.
                 }
               
+              floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
               floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
             }
         }
@@ -1465,6 +1468,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorGranted (McpttOffNetwor
                   //Provide a notification to the user indicating the type of call.
                 }
               
+              floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
               floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
              }
         }
@@ -1486,6 +1490,7 @@ McpttOffNetworkFloorParticipantStatePendReq::ReceiveFloorGranted (McpttOffNetwor
               //Provide a notification to the user indicating the type of call.
             }
  
+          floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
           floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
         }
       //TODO: Not in standard - update local queue of floor requests when a 'Floor Granted' message is received.
@@ -1705,7 +1710,7 @@ McpttOffNetworkFloorParticipantStatePendReq::PttRelease (McpttOffNetworkFloorPar
   floorMachine.ClearCurrentSsrc ();
 
   floorMachine.Send (releaseMsg);
-
+  floorMachine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_RELEASED);
   floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
 }
 /** McpttOffNetworkFloorParticipantStatePendReq - end **/
@@ -1761,6 +1766,8 @@ McpttOffNetworkFloorParticipantStateQueued::AcceptGrant (McpttOffNetworkFloorPar
       queue->UpdateUsers (users);
     }
 
+  floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
+
   floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateHasPerm::GetInstance ());
 }
 
@@ -1788,6 +1795,8 @@ McpttOffNetworkFloorParticipantStateQueued::ExpiryOfT203 (McpttOffNetworkFloorPa
 
   floorMachine.Send (requestMsg);
 
+  floorMachine.ReportEvent (McpttFloorParticipant::TIMER_T203_EXPIRED);
+
   floorMachine.ChangeState (McpttOffNetworkFloorParticipantStatePendReq::GetInstance ());
 }
 
@@ -1811,6 +1820,8 @@ McpttOffNetworkFloorParticipantStateQueued::ExpiryOfT204 (McpttOffNetworkFloorPa
       t230->Start ();
 
       floorMachine.ClearCurrentSsrc ();
+
+      floorMachine.ReportEvent (McpttFloorParticipant::TIMER_T204_EXPIRED_N_TIMES);
 
       floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
     }
@@ -1836,6 +1847,8 @@ McpttOffNetworkFloorParticipantStateQueued::ExpiryOfT233 (McpttOffNetworkFloorPa
 
   t203->Stop ();
   t230->Start ();
+
+  floorMachine.ReportEvent (McpttFloorParticipant::TIMER_T233_EXPIRED);
 
   floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateSilence::GetInstance ());
 }
@@ -1872,6 +1885,8 @@ McpttOffNetworkFloorParticipantStateQueued::ReceiveFloorDeny (McpttOffNetworkFlo
           //Provide floor deny notification to the user.
           //Display floor deny reason.
 
+          floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
+
           floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
         }
       else if (candidateSsrc == rxSsrc)
@@ -1886,6 +1901,8 @@ McpttOffNetworkFloorParticipantStateQueued::ReceiveFloorDeny (McpttOffNetworkFlo
 
           //Provide floor deny notification to the user.
           //Display floor deny reason.
+
+          floorMachine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
 
           floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
          }
@@ -2055,6 +2072,8 @@ McpttOffNetworkFloorParticipantStateQueued::ReleaseRequest (McpttOffNetworkFloor
     }
 
   floorMachine.Send (releaseMsg);
+
+  floorMachine.ReportEvent (McpttFloorParticipant::PTT_BUTTON_RELEASED);
 
   floorMachine.ChangeState (McpttOffNetworkFloorParticipantStateNoPerm::GetInstance ());
 }

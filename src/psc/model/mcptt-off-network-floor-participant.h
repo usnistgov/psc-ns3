@@ -222,6 +222,10 @@ public:
   */
  virtual void ResetCounters (void);
  /**
+  * Reports an MCPTT event.
+  */
+ virtual void ReportEvent (const char* reason) const;
+ /**
   * \brief Sends a message using the message sender.
   * \param msg The message to send.
   */

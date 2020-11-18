@@ -622,6 +622,12 @@ McpttOffNetworkFloorParticipant::ResetCounters (void)
 }
 
 void
+McpttOffNetworkFloorParticipant::ReportEvent (const char* reason) const
+{
+  GetCall ()->GetOwner ()->ReportEvent (GetCall ()->GetCallId (), reason);
+}
+
+void
 McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);

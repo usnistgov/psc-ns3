@@ -159,9 +159,13 @@ public:
  static constexpr const char* TIMER_T101_EXPIRED = "Timer T101 expired";
  static constexpr const char* TIMER_T101_EXPIRED_N_TIMES = "Timer T101 expired N times";
  static constexpr const char* TIMER_T103_EXPIRED = "Timer T103 expired";
+ static constexpr const char* TIMER_T203_EXPIRED = "Timer T203 expired";
  static constexpr const char* TIMER_T104_EXPIRED = "Timer T104 expired";
  static constexpr const char* TIMER_T104_EXPIRED_N_TIMES = "Timer T104 expired N times";
+ static constexpr const char* TIMER_T204_EXPIRED = "Timer T204 expired";
+ static constexpr const char* TIMER_T204_EXPIRED_N_TIMES = "Timer T204 expired N times";
  static constexpr const char* TIMER_T132_EXPIRED = "Timer T132 expired";
+ static constexpr const char* TIMER_T233_EXPIRED = "Timer T233 expired";
 };
 
 /**
