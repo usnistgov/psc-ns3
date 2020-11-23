@@ -406,7 +406,7 @@ int main (int argc, char *argv[])
                                &ConstantVelocityMobilityModel::SetVelocity,
                                remoteUeNodes.Get (0)->GetObject<ConstantVelocityMobilityModel> (), Vector (rm_vel_x, rm_vel_y, 0.0));
         }
-      mobilityRemotes.EnableAsciiAll (ascii.CreateFileStream ("MobilityTrace.txt"));
+      mobilityRemotes.EnableAscii (ascii.CreateFileStream ("MobilityTrace.txt"), remoteUeNodes);
 
     }
 
