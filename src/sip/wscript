@@ -11,6 +11,7 @@ def build(bld):
     module.source = [
         'model/sip-header.cc',
         'model/sip-agent.cc',
+        'model/sip-element.cc',
         'model/sip-proxy.cc',
         ]
 
@@ -24,6 +25,7 @@ def build(bld):
     headers.source = [
         'model/sip-header.h',
         'model/sip-agent.h',
+        'model/sip-element.h',
         'model/sip-proxy.h',
         ]
 
