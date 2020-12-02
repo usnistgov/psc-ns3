@@ -2025,16 +2025,25 @@ LteSlUeRrc::RelayUeSelection (std::map < std::pair<uint64_t,uint32_t>, double> v
               std::map< LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams> >::iterator it;
               for (it = m_o2oCommContexts.begin (); it != m_o2oCommContexts.end (); ++it)
                 {
-                  if (it->second->GetState () == LteSlO2oCommParams::REMOTE_SECURE_ESTABLISHED
-                      &&
-                      it->second->GetDcrqRetrans ().GetRelayServiceCode () == serviceCode)
+                  if (it->second->GetDcrqRetrans ().GetRelayServiceCode () == serviceCode)
                     {
-                      currentRelayId = it->first.peerL2Id;
-                      currentRelayIdContext = it->second;
-                      NS_LOG_LOGIC (this << " UE L2ID " << m_sourceL2Id
-                                         << " Connected to Relay UE ID " << currentRelayId
-                                         << " for Service Code " << serviceCode);
-                      break;
+                      if (it->second->GetState () == LteSlO2oCommParams::REMOTE_SECURE_ESTABLISHED)
+                        {
+                          currentRelayId = it->first.peerL2Id;
+                          currentRelayIdContext = it->second;
+                          NS_LOG_LOGIC (this << " UE L2ID " << m_sourceL2Id
+                                             << " Connected to Relay UE ID " << currentRelayId
+                                             << " for Service Code " << serviceCode);
+                          break;
+                        }
+                      else if (it->second->GetState () == LteSlO2oCommParams::REMOTE_INIT_RELEASE)
+                        {
+                          NS_LOG_LOGIC (this << " UE L2ID " << m_sourceL2Id
+                                             << " is in a direct communication release procedure with Relay UE ID " << it->first.peerL2Id
+                                             << " for Service Code " << serviceCode << "."
+                                             << " Skipping Selection... ");
+                          return;
+                        }
                     }
                 }
             }

@@ -317,120 +317,117 @@ LteSlBasicUeController::DoRelayUeSelection (std::map <uint64_t, double> validRel
   else
     {
       //No: evaluate Relay UE (re)selection
-      if (validRelays.size () == 0)
-        {
-          NS_LOG_DEBUG ("No valid Relay UEs available.");
-          selectedRelayId = 0;
-        }
-      else
-        {
-          std::map <uint64_t, double>::iterator vaReIt;
 
-          switch (m_relayUeSelectionAlgorithm)
+      std::map <uint64_t, double>::iterator vaReIt;
+      switch (m_relayUeSelectionAlgorithm)
+        {
+          case LteSlBasicUeController::RelayUeSelectionAlgorithm::RANDOM_NO_RESELECTION:
+            // This algorithm will return
+            // - The Relay UE ID of a randomly selected valid Relay UE if not connected
+            //   to any Relay UE, or
+            // - The Relay UE ID of the Relay UE to which the UE is already connected
             {
-            case LteSlBasicUeController::RelayUeSelectionAlgorithm::RANDOM_NO_RESELECTION:
-              // This algorithm will return
-              // - The Relay UE ID of a randomly selected valid Relay UE if not connected
-              //   to any Relay UE, or
-              // - The Relay UE ID of the Relay UE to which the UE is already connected
-              {
-                NS_LOG_DEBUG ("Selection algorithm: RandomNoReselection");
+              NS_LOG_DEBUG ("Selection algorithm: RandomNoReselection");
 
-                if (currentRelayId == 0)
-                  {
-                    //Select a random entry in the validRelays map
-                    //(advance iterator a random number of positions)
-                    vaReIt = validRelays.begin ();
-                    uint32_t pos = m_relayDiscProbRndVar->GetInteger (0, (validRelays.size () - 1));
-                    std::advance (vaReIt, pos);
+              if (currentRelayId == 0 && validRelays.size () > 0)
+                {
+                  //Select a random entry in the validRelays map
+                  //(advance iterator a random number of positions)
+                  vaReIt = validRelays.begin ();
+                  uint32_t pos = m_relayDiscProbRndVar->GetInteger (0, (validRelays.size () - 1));
+                  std::advance (vaReIt, pos);
 
-                    NS_ASSERT_MSG (vaReIt->first != 0, "Unable to find a valid Relay UE ID");
+                  NS_ASSERT_MSG (vaReIt->first != 0, "Unable to find a valid Relay UE ID");
 
-                    selectedRelayId = vaReIt->first;
-                    NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
-                                             << " selected Relay UE ID " << selectedRelayId << " for SC " << serviceCode);
-                  }
-                else
-                  {
-                    selectedRelayId = currentRelayId;
-                    NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
-                                             << " did not select a new Relay UE"
-                                             << " (this algorithm does not support reselection)");
-                  }
+                  selectedRelayId = vaReIt->first;
+                  NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
+                                           << " selected Relay UE ID " << selectedRelayId << " for SC " << serviceCode);
+                }
+              else
+                {
+                  selectedRelayId = currentRelayId;
+                  NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
+                                           << " did not select a new Relay UE");
+                }
 
-                break;
-              }
-            case LteSlBasicUeController::RelayUeSelectionAlgorithm::MAX_SDRSRP_NO_RESELECTION:
-              // This algorithm will return
-              // - The Relay UE ID of the valid Relay UE with the strongest SD-RSRP
-              //   if not connected to any Relay UE, or
-              // - The Relay UE ID of the Relay UE to which the UE is already connected
-              {
-                NS_LOG_DEBUG ("Selection algorithm: MaxSDRsrpNoReselection");
-
-                if (currentRelayId == 0)
-                  {
-                    uint64_t maxSDRsrpRelayId = 0;
-                    double maxSDRsrp = -std::numeric_limits<double>::infinity ();
-
-                    for (vaReIt = validRelays.begin (); vaReIt != validRelays.end (); vaReIt++)
-                      {
-                        NS_LOG_DEBUG ("  Relay UE ID " << vaReIt->first << " SD-RSRP " << vaReIt->second);
-
-                        if (maxSDRsrp < vaReIt->second)
-                          {
-                            maxSDRsrpRelayId = vaReIt->first;
-                            maxSDRsrp = vaReIt->second;
-                          }
-                      }
-                    NS_ASSERT_MSG (maxSDRsrpRelayId != 0, "Unable to find a valid Relay UE ID");
-
-                    selectedRelayId = maxSDRsrpRelayId;
-                    NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
-                                             << " selected Relay UE ID " << selectedRelayId << " for SC " << serviceCode);
-                  }
-                else
-                  {
-                    selectedRelayId = currentRelayId;
-                    NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
-                                             << " did not select a new Relay UE"
-                                             << " (this algorithm does not support reselection)");
-                  }
-                break;
-              }
-            case LteSlBasicUeController::RelayUeSelectionAlgorithm::MAX_SDRSRP:
-
-              // This algorithm will return
-              // - The Relay UE ID of the valid Relay UE with the strongest SD-RSRP
-              {
-                NS_LOG_DEBUG ("Selection algorithm: MaxSDRsrp");
-
-                uint64_t maxSDRsrpRelayId = 0;
-                double maxSDRsrp = -std::numeric_limits<double>::infinity ();
-
-                for (vaReIt = validRelays.begin (); vaReIt != validRelays.end (); vaReIt++)
-                  {
-                    NS_LOG_DEBUG ("  Relay UE ID " << vaReIt->first << " SD-RSRP " << vaReIt->second);
-
-                    if (maxSDRsrp < vaReIt->second)
-                      {
-                        maxSDRsrpRelayId = vaReIt->first;
-                        maxSDRsrp = vaReIt->second;
-                      }
-                  }
-
-                NS_ASSERT_MSG (maxSDRsrpRelayId != 0, "Unable to find a valid Relay UE ID");
-
-                selectedRelayId = maxSDRsrpRelayId;
-                NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
-                                         << " selected Relay UE ID " << selectedRelayId << " for SC " << serviceCode);
-                break;
-              }
-            default:
-              NS_FATAL_ERROR (" Relay UE (re)selection algorithm not recognized ");
+              break;
             }
+          case LteSlBasicUeController::RelayUeSelectionAlgorithm::MAX_SDRSRP_NO_RESELECTION:
+            // This algorithm will return
+            // - The Relay UE ID of the valid Relay UE with the strongest SD-RSRP
+            //   if not connected to any Relay UE, or
+            // - The Relay UE ID of the Relay UE to which the UE is already connected
+            {
+              NS_LOG_DEBUG ("Selection algorithm: MaxSDRsrpNoReselection");
 
-        }//validRelays.size () != 0
+              if (currentRelayId == 0 && validRelays.size () > 0)
+                {
+                  uint64_t maxSDRsrpRelayId = 0;
+                  double maxSDRsrp = -std::numeric_limits<double>::infinity ();
+
+                  for (vaReIt = validRelays.begin (); vaReIt != validRelays.end (); vaReIt++)
+                    {
+                      NS_LOG_DEBUG ("  Relay UE ID " << vaReIt->first << " SD-RSRP " << vaReIt->second);
+
+                      if (maxSDRsrp < vaReIt->second)
+                        {
+                          maxSDRsrpRelayId = vaReIt->first;
+                          maxSDRsrp = vaReIt->second;
+                        }
+                    }
+                  NS_ASSERT_MSG (maxSDRsrpRelayId != 0, "Unable to find a valid Relay UE ID");
+
+                  selectedRelayId = maxSDRsrpRelayId;
+                  NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
+                                           << " selected Relay UE ID " << selectedRelayId << " for SC " << serviceCode);
+                }
+              else
+                {
+                  selectedRelayId = currentRelayId;
+                  NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
+                                           << " did not select a new Relay UE");
+                }
+              break;
+            }
+          case LteSlBasicUeController::RelayUeSelectionAlgorithm::MAX_SDRSRP:
+
+            // This algorithm will return
+            // - The Relay UE ID of the valid Relay UE with the strongest SD-RSRP
+            {
+              NS_LOG_DEBUG ("Selection algorithm: MaxSDRsrp");
+
+              if (validRelays.size () == 0)
+                {
+                  NS_LOG_DEBUG ("No valid Relay UEs available.");
+                  selectedRelayId = 0;
+                  break;
+                }
+              else
+                {
+                  uint64_t maxSDRsrpRelayId = 0;
+                  double maxSDRsrp = -std::numeric_limits<double>::infinity ();
+                  for (vaReIt = validRelays.begin (); vaReIt != validRelays.end (); vaReIt++)
+                    {
+                      NS_LOG_DEBUG ("  Relay UE ID " << vaReIt->first << " SD-RSRP " << vaReIt->second);
+
+                      if (maxSDRsrp < vaReIt->second)
+                        {
+                          maxSDRsrpRelayId = vaReIt->first;
+                          maxSDRsrp = vaReIt->second;
+                        }
+                    }
+
+                  NS_ASSERT_MSG (maxSDRsrpRelayId != 0, "Unable to find a valid Relay UE ID");
+
+                  selectedRelayId = maxSDRsrpRelayId;
+                  NS_LOG_DEBUG ("UE IMSI " << m_netDevice->GetRrc ()->GetImsi ()
+                                           << " selected Relay UE ID " << selectedRelayId << " for SC " << serviceCode);
+                  break;
+                }
+            }
+          default:
+            NS_FATAL_ERROR (" Relay UE (re)selection algorithm not recognized ");
+        }
 
       if (selectedRelayId != currentRelayId)
         {
