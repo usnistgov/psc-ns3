@@ -651,22 +651,19 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (Ptr<McpttOnNetwork
 
           McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ()->Enter (machine);
 
-          if (machine->GetQueue ()->IsEnabled ())
-            { 
-              McpttFloorMsgFieldQueuedUserId queuedUserId;
-              queuedUserId.SetUserId (msg.GetSsrc ());
-              McpttFloorMsgFieldQueuePositionInfo queueInfo (0, msg.GetPriority ().GetPriority ());
-              McpttQueuedUserInfo userInfo (msg.GetSsrc (), queuedUserId, queueInfo);
+          McpttFloorMsgFieldQueuedUserId queuedUserId;
+          queuedUserId.SetUserId (msg.GetSsrc ());
+          McpttFloorMsgFieldQueuePositionInfo queueInfo (0, msg.GetPriority ().GetPriority ());
+          McpttQueuedUserInfo userInfo (msg.GetSsrc (), queuedUserId, queueInfo);
  
-              machine->GetQueue ()->Pull (msg.GetSsrc ());
-              machine->GetQueue ()->Enqueue (userInfo);
+          machine->GetQueue ()->Pull (msg.GetSsrc ());
+          machine->GetQueue ()->Enqueue (userInfo);
           
-              McpttFloorMsgQueuePositionInfo queuedMsg;
-              queuedMsg.SetSsrc (machine->GetTxSsrc ());
-              queuedMsg.SetQueuePositionInfo (queueInfo);
-              queuedMsg.UpdateTrackInfo (msg.GetTrackInfo ());
-              machine->SendTo (queuedMsg, msg.GetSsrc ());
-            }
+          McpttFloorMsgQueuePositionInfo queuedMsg;
+          queuedMsg.SetSsrc (machine->GetTxSsrc ());
+          queuedMsg.SetQueuePositionInfo (queueInfo);
+          queuedMsg.UpdateTrackInfo (msg.GetTrackInfo ());
+          machine->SendTo (queuedMsg, msg.GetSsrc ());
         }
     }
 }
