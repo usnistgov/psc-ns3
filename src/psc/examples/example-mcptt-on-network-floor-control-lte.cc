@@ -211,7 +211,7 @@ main (int argc, char *argv[])
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
-                         "QueueCapacity", UintegerValue (1));
+                         "QueueingSupported", BooleanValue (true));
   // Dual control not yet in the refactoring
   // callHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",

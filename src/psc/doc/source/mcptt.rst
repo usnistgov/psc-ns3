@@ -810,7 +810,7 @@ and properties of the call configurations on the server.
                           "AudioCutIn", BooleanValue (false),
                           "DualFloorSupported", BooleanValue (false),
                           "TxSsrc", UintegerValue (100),
-                          "QueueCapacity", UintegerValue (1));
+                          "QueueingSupported", BooleanValue (true));
    callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                           "ReceiveOnly", BooleanValue (false));
    callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",

@@ -290,7 +290,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
       << " IsStarted: " << machine->GetOwner ()->IsStarted ()
       << " IsImplicitRequest: " << machine->IsImplicitRequest ()
       << " IsFloorOccupied: " << machine->GetOwner ()->IsFloorOccupied ()
-      << " IsEnabled: " << machine->GetOwner ()->GetQueue ()->IsEnabled ()
+      << " IsEnabled: " << machine->GetOwner ()->IsQueueingSupported ()
       << " IsQueueing: " <<  machine->IsQueueing () 
       << " IsDualFloor: " <<  machine->IsDualFloor ()); 
   if (!machine->GetOwner ()->GetOwner ()->IsTemporaryGroup ()
@@ -351,7 +351,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
               machine->GetOwner ()->ReceiveFloorRequest (reqMsg);
               McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
             }
-          else if (machine->GetOwner ()->GetQueue ()->IsEnabled ()
+          else if (machine->GetOwner ()->IsQueueingSupported ()
               && machine->IsQueueing ())
             {
               //TODO: shall set the priority level to the negotated maximum priority level
@@ -666,7 +666,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
     }
   else if (!msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL)
       && !msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
-      && (!machine->GetOwner ()->GetQueue ()->IsEnabled () || !machine->IsQueueing ())
+      && (!machine->GetOwner ()->IsQueueingSupported () || !machine->IsQueueing ())
       && msg.GetPriority ().GetPriority () == 0)
     {
       McpttFloorMsgDeny denyMsg;
@@ -710,7 +710,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
             }
           machine->DoSend (denyMsg);
         }
-      else if (!machine->GetOwner ()->GetQueue ()->IsEnabled ()
+      else if (!machine->GetOwner ()->IsQueueingSupported ()
           || !machine->IsQueueing ())
         {
           McpttFloorMsgDeny denyMsg;
@@ -766,7 +766,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if ((!machine->GetOwner ()->GetQueue ()->IsEnabled ()
+  if ((!machine->GetOwner ()->IsQueueingSupported ()
       || !machine->IsQueueing ()))
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
@@ -1484,7 +1484,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRe
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  if (machine->GetOwner ()->GetQueue ()->IsEnabled ()
+  if (machine->GetOwner ()->IsQueueingSupported ()
       && machine->IsQueueing ())
     {
       McpttQueuedUserInfo queueInfo;

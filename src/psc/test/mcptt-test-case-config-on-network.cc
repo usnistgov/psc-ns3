@@ -59,7 +59,7 @@ McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork (void)
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
-                         "QueueCapacity", UintegerValue (1));
+                         "QueueingSupported", BooleanValue (true));
   m_callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
   m_callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",

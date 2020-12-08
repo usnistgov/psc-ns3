@@ -295,7 +295,7 @@ McpttTestCaseOnNetworkFloorRelease::Configure (void)
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
-                            "QueueCapacity", UintegerValue (1));
+                            "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
@@ -411,7 +411,7 @@ McpttTestCaseOnNetworkFloorGranted::Configure (void)
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
-                            "QueueCapacity", UintegerValue (1));
+                            "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
@@ -593,7 +593,7 @@ McpttTestCaseOnNetworkFloorRevoke::Configure (void)
                             "AudioCutIn", BooleanValue (true),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
-                            "QueueCapacity", UintegerValue (1));
+                            "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
@@ -763,7 +763,7 @@ McpttTestCaseOnNetworkFloorDeny::Configure (void)
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
-                            "QueueCapacity", UintegerValue (0));
+                            "QueueingSupported", BooleanValue (false));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
@@ -870,7 +870,7 @@ McpttTestCaseOnNetworkFloorQueueAndCancel::Configure (void)
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
-                            "QueueCapacity", UintegerValue (1));
+                            "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
@@ -1038,7 +1038,7 @@ McpttTestCaseOnNetworkFloorQueueAndGranted::Configure (void)
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
-                            "QueueCapacity", UintegerValue (1));
+                            "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
@@ -1224,7 +1224,7 @@ McpttTestCaseOnNetworkDualFloorControl::Configure (void)
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (true),
                          "TxSsrc", UintegerValue (100),
-                         "QueueCapacity", UintegerValue (0));
+                         "QueueingSupported", BooleanValue (false));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",

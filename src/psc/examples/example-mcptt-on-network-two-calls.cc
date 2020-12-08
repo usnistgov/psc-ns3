@@ -237,7 +237,7 @@ main (int argc, char *argv[])
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
-                         "QueueCapacity", UintegerValue (1));
+                         "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",

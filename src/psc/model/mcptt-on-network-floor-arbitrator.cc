@@ -101,13 +101,9 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    MakeObjectVectorAccessor (&McpttOnNetworkFloorArbitrator::m_participants),
                    MakeObjectVectorChecker<McpttOnNetworkFloorTowardsParticipant> ())
    .AddAttribute ("QueueingSupported", "Whether queueing of floor requests is supported.",
-                   BooleanValue (true),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_queueingSupported),
                    MakeBooleanChecker ())
-   .AddAttribute ("QueueCapacity", "The capacity of the queue.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::SetQueueCapacity),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("TxSsrc", "The SSRC to use when transmitting a message.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&McpttOnNetworkFloorArbitrator::m_txSsrc),
@@ -659,14 +655,6 @@ McpttOnNetworkFloorArbitrator::SetLimitC20 (uint32_t limitC20)
   NS_LOG_FUNCTION (this << limitC20);
 
   GetC20 ()->SetLimit (limitC20);
-}
-
-void
-McpttOnNetworkFloorArbitrator::SetQueueCapacity (const uint32_t capacity)
-{
-  NS_LOG_FUNCTION (this << capacity);
-
-  GetQueue ()->SetAttribute ("Capacity", UintegerValue (capacity));
 }
 
 void
