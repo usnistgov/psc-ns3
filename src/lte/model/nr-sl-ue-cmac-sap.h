@@ -110,6 +110,13 @@ public:
    */
   virtual void SetSlProbResoKeep (uint8_t prob) = 0;
   /**
+   * \brief Set the maximum transmission number (including new transmission and
+   *        retransmission) for PSSCH.
+   *
+   * \param maxTxPssch The max number of PSSCH transmissions
+   */
+  virtual void SetSlMaxTxTransNumPssch (uint8_t maxTxPssch) = 0;
+  /**
    * \brief Set Sidelink source layer 2 id
    *
    * \param srcL2Id The Sidelink layer 2 id of the source
@@ -145,6 +152,7 @@ public:
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
   virtual void SetSlProbResoKeep (uint8_t prob);
+  virtual void SetSlMaxTxTransNumPssch (uint8_t maxTxPssch);
   virtual void SetSourceL2Id (uint32_t srcL2Id);
 
 private:
@@ -194,6 +202,12 @@ template <class C>
 void MemberNrSlUeCmacSapProvider<C>::SetSlProbResoKeep (uint8_t prob)
 {
   m_mac->DoSetSlProbResoKeep (prob);
+}
+
+template <class C>
+void MemberNrSlUeCmacSapProvider<C>::SetSlMaxTxTransNumPssch (uint8_t maxTxPssch)
+{
+  m_mac->DoSetSlMaxTxTransNumPssch (maxTxPssch);
 }
 
 template <class C>
