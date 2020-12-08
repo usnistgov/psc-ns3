@@ -234,7 +234,7 @@ public:
       }
   }
   explicit inline Time (const int64x64_t & v)
-    : m_data (v.GetHigh ())
+    : m_data (v.Round ())
   {
     if (g_markingTimes)
       {
@@ -545,6 +545,16 @@ public:
     return retval;
   }
   /**@}*/  // Get Times as Numbers in Specified Units
+
+  /**
+   * Round a Time to a specific unit.
+   * Rounding is to nearest integer.
+   * \return The Time rounded to the specific unit.
+   */
+  Time RoundTo (enum Unit unit) const
+  {
+    return From (this->To (unit).Round (), unit);
+  }
 
   /**
    * Attach a unit to a Time, to facilitate output in a specific unit.

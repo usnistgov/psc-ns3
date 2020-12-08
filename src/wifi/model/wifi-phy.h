@@ -64,7 +64,8 @@ enum WifiPhyRxfailureReason
   SIG_A_FAILURE,
   PREAMBLE_DETECTION_PACKET_SWITCH,
   FRAME_CAPTURE_PACKET_SWITCH,
-  OBSS_PD_CCA_RESET
+  OBSS_PD_CCA_RESET,
+  FILTERED
 };
 
 /**
@@ -104,6 +105,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyRxfailureReason reason
       return (os << "FRAME_CAPTURE_PACKET_SWITCH");
     case OBSS_PD_CCA_RESET:
       return (os << "OBSS_PD_CCA_RESET");
+    case FILTERED:
+      return (os << "FILTERED");
     case UNKNOWN:
     default:
       NS_FATAL_ERROR ("Unknown reason");
@@ -151,6 +154,19 @@ public:
   virtual ~WifiPhy ();
 
   /**
+   * A pair of a channel number and a WifiPhyBand
+   */
+  typedef std::pair<uint8_t, WifiPhyBand> ChannelNumberBandPair;
+  /**
+   * A pair of a ChannelNumberBandPair and a WifiPhyStandard
+   */
+  typedef std::pair<ChannelNumberBandPair, WifiPhyStandard> ChannelNumberStandardPair;
+  /**
+   * A pair of a center frequency (MHz) and a channel width (MHz)
+   */
+  typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
+  
+  /**
    * Return the WifiPhyStateHelper of this PHY
    *
    * \return the WifiPhyStateHelper of this PHY
@@ -192,9 +208,9 @@ public:
    * Start receiving the PHY preamble of a PPDU (i.e. the first bit of the preamble has arrived).
    *
    * \param ppdu the arriving PPDU
-   * \param rxPowerW the receive power in W
+   * \param rxPowersW the receive power in W per 20 MHz channel band
    */
-  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW);
+  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW);
 
   /**
    * Start receiving the PHY header of a PPDU (i.e. after the end of receiving the preamble).
@@ -220,7 +236,7 @@ public:
   /**
    * The last symbol of the PPDU has arrived.
    *
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
+   * \param event the event holding incoming PPDU's information
    */
   void EndReceive (Ptr<Event> event);
 
@@ -244,6 +260,13 @@ public:
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
   void Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
+  /**
+   * \param psdus the PSDUs to send
+   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
+   *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
+   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
+   */
+  void Send (WifiConstPsduMap psdus, WifiTxVector txVector);
 
   /**
    * \param ppdu the PPDU to send
@@ -719,19 +742,6 @@ public:
    * \return true if the channel definition succeeded
    */
   bool DefineChannelNumber (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth);
-
-  /**
-   * A pair of a channel number and a WifiPhyBand
-   */
-  typedef std::pair<uint8_t, WifiPhyBand> ChannelNumberBandPair;
-  /**
-   * A pair of a ChannelNumberBandPair and a WifiPhyStandard
-   */
-  typedef std::pair<ChannelNumberBandPair, WifiPhyStandard> ChannelNumberStandardPair;
-  /**
-   * A pair of a center frequency (MHz) and a channel width (MHz)
-   */
-  typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
 
   /**
    * Return the Channel this WifiPhy is connected to.
@@ -1288,17 +1298,17 @@ public:
    * Public method used to fire a PhyTxBegin trace.
    * Implemented for encapsulation purposes.
    *
-   * \param psdu the PSDU being transmitted
+   * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
    * \param txPowerW the transmit power in Watts
    */
-  void NotifyTxBegin (Ptr<const WifiPsdu> psdu, double txPowerW);
+  void NotifyTxBegin (WifiConstPsduMap psdus, double txPowerW);
   /**
    * Public method used to fire a PhyTxEnd trace.
    * Implemented for encapsulation purposes.
    *
-   * \param psdu the PSDU being transmitted
+   * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
    */
-  void NotifyTxEnd (Ptr<const WifiPsdu> psdu);
+  void NotifyTxEnd (WifiConstPsduMap psdus);
   /**
    * Public method used to fire a PhyTxDrop trace.
    * Implemented for encapsulation purposes.
@@ -1311,8 +1321,9 @@ public:
    * Implemented for encapsulation purposes.
    *
    * \param psdu the PSDU being transmitted
+   * \param rxPowersW the receive power per channel band in Watts
    */
-  void NotifyRxBegin (Ptr<const WifiPsdu> psdu);
+  void NotifyRxBegin (Ptr<const WifiPsdu> psdu, RxPowerWattPerChannelBand rxPowersW);
   /**
    * Public method used to fire a PhyRxEnd trace.
    * Implemented for encapsulation purposes.
@@ -1347,12 +1358,14 @@ public:
    * \param txVector the TXVECTOR that holds RX parameters
    * \param signalNoise signal power and noise power in dBm (noise power includes the noise figure)
    * \param statusPerMpdu reception status per MPDU
+   * \param staId the STA-ID
    */
   void NotifyMonitorSniffRx (Ptr<const WifiPsdu> psdu,
                              uint16_t channelFreqMhz,
                              WifiTxVector txVector,
                              SignalNoiseDbm signalNoise,
-                             std::vector<bool> statusPerMpdu);
+                             std::vector<bool> statusPerMpdu,
+                             uint16_t staId = SU_STA_ID);
 
   /**
    * TracedCallback signature for monitor mode receive events.
@@ -1370,6 +1383,7 @@ public:
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param signalNoise signal power and noise power in dBm
+   * \param staId the STA-ID
    * \todo WifiTxVector should be passed by const reference because
    * of its size.
    */
@@ -1377,7 +1391,8 @@ public:
                                             uint16_t channelFreqMhz,
                                             WifiTxVector txVector,
                                             MpduInfo aMpdu,
-                                            SignalNoiseDbm signalNoise);
+                                            SignalNoiseDbm signalNoise,
+                                            uint16_t staId);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi PSDU being transmitted.
@@ -1390,10 +1405,12 @@ public:
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        transmitted.
    * \param txVector the TXVECTOR that holds TX parameters
+   * \param staId the STA-ID
    */
   void NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu,
                              uint16_t channelFreqMhz,
-                             WifiTxVector txVector);
+                             WifiTxVector txVector,
+                             uint16_t staId = SU_STA_ID);
 
   /**
    * TracedCallback signature for monitor mode transmit events.
@@ -1404,22 +1421,24 @@ public:
    * \param txVector the TXVECTOR that holds TX parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
+   * \param staId the STA-ID
    * \todo WifiTxVector should be passed by const reference because
    * of its size.
    */
   typedef void (* MonitorSnifferTxCallback)(const Ptr<const Packet> packet,
                                             uint16_t channelFreqMhz,
                                             WifiTxVector txVector,
-                                            MpduInfo aMpdu);
+                                            MpduInfo aMpdu,
+                                            uint16_t staId);
 
   /**
    * TracedCallback signature for PSDU transmit events.
    *
-   * \param psdu the PSDU being transmitted
+   * \param psduMap the PSDU map being transmitted
    * \param txVector the TXVECTOR holding the TX parameters
    * \param txPowerW the transmit power in Watts
    */
-  typedef void (* PsduTxBeginCallback)(Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  typedef void (* PsduTxBeginCallback)(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
 
   /**
    * Public method used to fire a EndOfHePreamble trace once both HE SIG fields have been received, as well as training fields.
@@ -1753,6 +1772,33 @@ protected:
    */
   void SwitchMaybeToCcaBusy (void);
 
+  /**
+   * Return the STA ID that has been assigned to the station this PHY belongs to.
+   * This is typically called for MU PPDUs, in order to pick the correct PSDU.
+   *
+   * \return the STA ID
+   */
+  virtual uint16_t GetStaId (void) const;
+
+  /**
+   * Get the start band index and the stop band index for a given band
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   * \param bandIndex the index of the band to be returned
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
+
+  /**
+   * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
+   * \param range the subcarrier range of the HE RU
+   * \return the converted subcarriers
+   *
+   * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
+   */
+  virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
+
   InterferenceHelper m_interference;   //!< Pointer to InterferenceHelper
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper
@@ -1879,9 +1925,8 @@ private:
    * Starting receiving the PPDU after having detected the medium is idle or after a reception switch.
    *
    * \param event the event holding incoming PPDU's information
-   * \param rxPowerW the receive power in W
    */
-  void StartRx (Ptr<Event> event, double rxPowerW);
+  void StartRx (Ptr<Event> event);
   /**
    * Get the reception status for the provided MPDU and notify.
    *
@@ -1916,6 +1961,24 @@ private:
   void ScheduleEndOfMpdus (Ptr<Event> event);
 
   /**
+   * Get the PSDU addressed to that PHY in a PPDU (useful for MU PPDU).
+   *
+   * \param ppdu the PPDU to extract the PSDU from
+   * \return the PSDU addressed to that PHY
+   */
+  Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const;
+
+  /**
+   * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the recipient
+   *
+   * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   */
+  WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId);
+
+  /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
@@ -1923,12 +1986,12 @@ private:
    */
   TracedCallback<Ptr<const Packet>, double > m_phyTxBeginTrace;
   /**
-   * The trace source fired when a PSDU begins the transmission process on
+   * The trace source fired when a PSDU map begins the transmission process on
    * the medium.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const WifiPsdu>, WifiTxVector, double /* TX power (W) */> m_phyTxPsduBeginTrace;
+  TracedCallback<WifiConstPsduMap, WifiTxVector, double /* TX power (W) */> m_phyTxPsduBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
@@ -1952,7 +2015,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
+  TracedCallback<Ptr<const Packet>, RxPowerWattPerChannelBand > m_phyRxBeginTrace;
 
   /**
    * The trace source fired when the reception of the PHY payload (PSDU) begins.
@@ -1997,7 +2060,7 @@ private:
    * \todo WifiTxVector and signalNoiseDbm should be be passed as
    *       const references because of their sizes.
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo, SignalNoiseDbm> m_phyMonitorSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t /* frequency (MHz) */, WifiTxVector, MpduInfo, SignalNoiseDbm, uint16_t /* STA-ID*/> m_phyMonitorSniffRxTrace;
 
   /**
    * A trace source that emulates a Wi-Fi device in monitor mode
@@ -2011,7 +2074,7 @@ private:
    * \todo WifiTxVector should be passed by const reference because
    * of its size.
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo> m_phyMonitorSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t /* frequency (MHz) */, WifiTxVector, MpduInfo, uint16_t /* STA-ID*/> m_phyMonitorSniffTxTrace;
 
   /**
    * A trace source that indicates the end of both HE SIG fields as well as training fields for received 802.11ax packets

@@ -256,6 +256,14 @@ WifiTxVector::SetNss (uint8_t nss)
 }
 
 void
+WifiTxVector::SetNss (uint8_t nss, uint16_t staId)
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "Not an HE MU transmission");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  m_muUserInfos[staId].nss = nss;
+}
+
+void
 WifiTxVector::SetNess (uint8_t ness)
 {
   m_ness = ness;
@@ -369,13 +377,16 @@ WifiTxVector::GetHeMuUserInfoMap (void) const
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
-  os << "mode: " << v.GetMode ()
-     << " txpwrlvl: " << +v.GetTxPowerLevel ()
+  if (!v.IsValid ())
+    {
+      os << "TXVECTOR not valid";
+      return os;
+    }
+  os << "txpwrlvl: " << +v.GetTxPowerLevel ()
      << " preamble: " << v.GetPreambleType ()
      << " channel width: " << v.GetChannelWidth ()
      << " GI: " << v.GetGuardInterval ()
      << " NTx: " << +v.GetNTx ()
-     << " Nss: " << +v.GetNss ()
      << " Ness: " << +v.GetNess ()
      << " MPDU aggregation: " << v.IsAggregation ()
      << " STBC: " << v.IsStbc ()
@@ -391,6 +402,11 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
              << ", MCS: " << ui.second.mcs
              << ", Nss: " << +ui.second.nss << "}";
         }
+    }
+  else
+    {
+      os << " mode: " << v.GetMode ()
+         << " Nss: " << +v.GetNss ();
     }
   return os;
 }
