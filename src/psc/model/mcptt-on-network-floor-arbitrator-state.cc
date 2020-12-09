@@ -754,6 +754,10 @@ McpttOnNetworkFloorArbitratorStateRevoke::Enter (Ptr<McpttOnNetworkFloorArbitrat
     {
       machine->GetT3 ()->StartWith (Seconds (0));
     }
+  else
+    {
+      machine->GetT3 ()->Start ();
+    }
 
   machine->ChangeState (McpttOnNetworkFloorArbitratorStateRevoke::GetInstance ());
 }
