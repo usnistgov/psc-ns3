@@ -46,13 +46,12 @@
 #include "mcptt-call-msg.h"
 #include "mcptt-channel.h"
 #include "mcptt-media-sink.h"
-#include "mcptt-pushable.h"
-#include "mcptt-pusher.h"
 #include "mcptt-media-src.h"
 
 namespace ns3 {
 
 class SipHeader;
+class McpttPusher;
 
 /**
  * \defgroup psc  
@@ -77,7 +76,7 @@ class SipHeader;
  * a call notionally being in the foreground of the user's app and will allow
  * user actions such as push-to-talk to be applied to a particular call.
  */
-class McpttPttApp : public Application, public McpttMediaSink, public McpttPushable
+class McpttPttApp : public Application, public McpttMediaSink
 {
 public:
  /**

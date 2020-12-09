@@ -113,11 +113,11 @@ public:
   */
  virtual Time NextPttDuration (void);
  /**
-  * \brief Starts pushing and releasing the pushables button.
+  * \brief Starts generating push and release events.
   */
  virtual void Start (void);
  /**
-  * \brief Stops pushing and releasing the pushables button.
+  * \brief Stops generating push and release events.
   * This method may be called multiple times consecutively without side effect.
   */
  virtual void Stop (void);
@@ -128,14 +128,16 @@ protected:
  virtual void DoDispose (void);
  /**
   * \brief The PTT duration callback for the underlying orchestrator.
+  * \param userId The MCPTT user ID of the pusher.
   * \param duration The PTT duration.
   */
- virtual void PttDurationTrace (Time duration);
+ virtual void PttDurationTrace (uint32_t userId, Time duration);
  /**
   * \brief The PTT interarrival time callback for the underlying orchestrator.
+  * \param userId The MCPTT user ID of the pusher.
   * \param iat The PTT interarrival time.
   */
- virtual void PttIatTrace (Time iat);
+ virtual void PttIatTrace (uint32_t userId, Time iat);
  /**
   * Updates the PTT interarrival variable.
   */

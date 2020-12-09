@@ -634,6 +634,10 @@ McpttPttApp::DoDispose (void)
 
   SetMediaSrc (0);
   SetLocalAddress (Address ());
+  if (m_pusher)
+    {
+      m_pusher->Dispose ();
+    }
   SetPusher (0);
   m_selectedCall = 0;
   m_callChannels.clear ();
@@ -1070,7 +1074,7 @@ McpttPttApp::SetPusher (Ptr<McpttPusher>  pusher)
 
   if (pusher != 0)
     {
-      pusher->SetPushable (this);
+      pusher->SetPttApp (GetObject<McpttPttApp> ());
     }
 
   m_pusher = pusher;

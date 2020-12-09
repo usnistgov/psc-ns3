@@ -37,6 +37,7 @@
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"
 #include <ns3/mcptt-ptt-app.h>
+#include <ns3/mcptt-pusher.h>
 #include <ns3/mcptt-queued-user-info.h>
 
 using namespace ns3;
@@ -2149,7 +2150,7 @@ void McpttFloorRequestQueued::Configure (void)
   ueBQueue->SetAttribute ("Capacity", UintegerValue (1));
 
   ueAPusher->SchedulePush (Seconds (2.04179));
-  ueBPusher->SetAttribute ("ReleaseVariable", StringValue ("ns3::ConstantRandomVariable[Constant=0.90]"));
+  ueBPusher->SetAttribute ("PttDurationVariable", StringValue ("ns3::ConstantRandomVariable[Constant=0.90]"));
 
   ueAMediaSrc->SetAttribute ("DataRate", DataRateValue (DataRate ("200b/s")));
   ueAMediaSrc->SetAttribute ("Bytes", UintegerValue (8));

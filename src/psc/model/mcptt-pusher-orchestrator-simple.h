@@ -104,11 +104,11 @@ public:
   */
  virtual bool IsActive (void) const;
  /**
-  * \brief Starts pushing and releasing the pushables button.
+  * \brief Starts generating push and release events.
   */
  virtual void Start (void);
  /**
-  * \brief Stops pushing and releasing the pushables button.
+  * \brief Stops generating push and release events.
   * This method may be called multiple times consecutively without side effect.
   */
  virtual void Stop (void);
@@ -138,6 +138,7 @@ private:
  bool m_active; //!< Indicates if the orchestrator is active.
  Ptr<McpttPusher> m_activePusher; //!< Currently selected pusher.
  EventId m_nextEvent; //!< The next event.
+ Ptr<McpttPusher> m_nextPusher; //!< The next pusher to be selected.
  std::vector<Ptr<McpttPusher> > m_pushers; //!< Set of pushers to orchestrate.
  Ptr<RandomVariableStream> m_pttDurationVariable; //!< For switching pushers.
  Ptr<RandomVariableStream> m_pttIatVariable; //!< PTT interarrival time variable.

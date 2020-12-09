@@ -52,40 +52,40 @@ Time s_totalSessionDurationTime = Seconds (0);
 std::map<std::string, Time> s_eventSpans;
 
 void
-PttDurationCallback (Time duration)
+PttDurationCallback (uint32_t userId, Time duration)
 {
   if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - PTT Duration: " << duration.GetSeconds () << std::endl;
+      std::cout << Simulator::Now ().GetSeconds () << "s - User " << userId << " PTT Duration: " << duration.GetSeconds () << std::endl;
     }
   s_totalPtts++;
 }
 
 void
-PttIatCallback (Time iat)
+PttIatCallback (uint32_t userId, Time iat)
 {
   if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - PTT IAT: " << iat.GetSeconds () << std::endl;
+      std::cout << Simulator::Now ().GetSeconds () << "s - User " << userId << " PTT IAT: " << iat.GetSeconds () << std::endl;
     }
 }
 
 void
-ContentionPttDurationCallback (Time duration)
+ContentionPttDurationCallback (uint32_t userId, Time duration)
 {
   if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - Contention PTT Duration: " << duration.GetSeconds () << std::endl;
+      std::cout << Simulator::Now ().GetSeconds () << "s - User " << userId << " Contention PTT Duration: " << duration.GetSeconds () << std::endl;
     }
   s_totalContentions++;
 }
 
 void
-ContentionPttIatCallback (Time iat)
+ContentionPttIatCallback (uint32_t userId, Time iat)
 {
   if (s_verbose)
     {
-      std::cout << Simulator::Now ().GetSeconds () << "s - Contention PTT IAT: " << iat.GetSeconds () << std::endl;
+      std::cout << Simulator::Now ().GetSeconds () << "s - User " << userId << " Contention PTT IAT: " << iat.GetSeconds () << std::endl;
     }
 }
 

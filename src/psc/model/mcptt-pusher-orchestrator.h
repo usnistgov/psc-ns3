@@ -120,19 +120,21 @@ protected:
  virtual void DoDispose (void);
  /**
   * Traces the interarrival time.
+  * \param userId The MCPTT user ID of the pusher.
   * \param iat The interarrival time.
   */
- virtual void TracePttIat (const Time& iat);
+ virtual void TracePttIat (const uint32_t userId, const Time& iat);
  /**
   * Traces the duration.
+  * \param userId The MCPTT user ID of the pusher.
   * \param duration The duration.
   */
- virtual void TracePttDuration (const Time& duration);
+ virtual void TracePttDuration (const uint32_t userId, const Time& duration);
 private:
  EventId m_startEvent; //!< The start event.
  EventId m_stopEvent; //!< The stop event.
- TracedCallback<Time> m_pttIatTrace; //!< The interarrival time trace.
- TracedCallback<Time> m_pttDurationTrace; //!< The duration trace.
+ TracedCallback<uint32_t, Time> m_pttIatTrace; //!< The interarrival time trace.
+ TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
 };
  
 } // namespace ns3

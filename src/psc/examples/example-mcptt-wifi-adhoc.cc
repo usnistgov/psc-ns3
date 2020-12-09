@@ -158,10 +158,10 @@ int main (int argc, char *argv[])
                          "DataRate", DataRateValue (dataRate));
   mcpttHelper.SetPusher ("ns3::McpttPusher",
                          "Automatic", BooleanValue (true));
-  mcpttHelper.SetPusherPushVariable ("ns3::NormalRandomVariable",
+  mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                          "Mean", DoubleValue (onOffMean),
                          "Variance", DoubleValue (2.0));
-  mcpttHelper.SetPusherReleaseVariable ("ns3::NormalRandomVariable",
+  mcpttHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
                          "Mean", DoubleValue (onOffMean),
                          "Variance", DoubleValue (2.0));
 

@@ -104,11 +104,11 @@ public:
   */
  virtual Time NextPttDuration (void);
  /**
-  * \brief Starts pushing and releasing the pushables button.
+  * \brief Starts generating push and release events.
   */
  virtual void Start (void);
  /**
-  * \brief Stops pushing and releasing the pushables button.
+  * \brief Stops generating push and release events.
   * This method may be called multiple times consecutively without side effect.
   */
  virtual void Stop (void);
@@ -136,13 +136,15 @@ protected:
  virtual void PttRelease (void);
  /**
   * The trace to keep track of the underlying orchestrator PTT durations.
+  * \param userId The MCPTT user ID of the pusher.
   * \param pttDuration the PTT duration.
   */
- virtual void PttDurationTraceCallback (Time pttDuration);
+ virtual void PttDurationTraceCallback (uint32_t userId, Time pttDuration);
 private:
  Ptr<McpttPusher> m_activePusher; //!< The active pusher.
  double m_cp; //!< The probability of contention.
  EventId m_nextEvent; //!< The next event.
+ Ptr<McpttPusher> m_nextPusher; //!< The next pusher to activate.
  Ptr<McpttPusherOrchestrator> m_orchestrator; //!< The underlying orchestrator.
  Ptr<UniformRandomVariable> m_rv; //!< A random variable.
 public:

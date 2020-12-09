@@ -422,19 +422,19 @@ McpttPusherOrchestratorCdf::DoDispose (void)
 }
 
 void
-McpttPusherOrchestratorCdf::PttDurationTrace (Time duration)
+McpttPusherOrchestratorCdf::PttDurationTrace (uint32_t userId, Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
 
-  TracePttDuration (duration);
+  TracePttDuration (userId, duration);
 }
 
 void
-McpttPusherOrchestratorCdf::PttIatTrace (Time iat)
+McpttPusherOrchestratorCdf::PttIatTrace (uint32_t userId, Time iat)
 {
   NS_LOG_FUNCTION (this << iat);
   
-  TracePttIat (iat);
+  TracePttIat (userId, iat);
 }
 
 void

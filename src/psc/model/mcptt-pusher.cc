@@ -41,7 +41,7 @@
 #include <ns3/type-id.h>
 #include <ns3/uinteger.h>
 
-#include "mcptt-pushable.h"
+#include "mcptt-ptt-app.h"
 #include "mcptt-pusher.h"
 
 namespace ns3 {
@@ -60,24 +60,32 @@ McpttPusher::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttPusher::m_automatic),
                    MakeBooleanChecker ())
-    .AddAttribute ("PushVariable", "The variable used for automatic pushes.",
+    .AddAttribute ("PttInterarrivalTimeVariable", "The variable used for automatic pushes.",
                    StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
-                   MakePointerAccessor (&McpttPusher::m_pushVariable),
+                   MakePointerAccessor (&McpttPusher::m_pttIatVariable),
                    MakePointerChecker<RandomVariableStream> ())
-    .AddAttribute ("ReleaseVariable", "The variable used for automatic releases.",
+    .AddAttribute ("PttDurationVariable", "The variable used for automatic releases.",
                    StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
-                   MakePointerAccessor (&McpttPusher::m_releaseVariable),
+                   MakePointerAccessor (&McpttPusher::m_pttDurationVariable),
                    MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("PushingState", "Trace state changes of 'pushing' state",
                      MakeTraceSourceAccessor (&McpttPusher::m_pushing),
                      "ns3::TracedValueCallback::Boolean")
+    .AddTraceSource ("PttInterarrivalTimeTrace",
+                     "The trace for capturing PTT interarrival times.",
+                     MakeTraceSourceAccessor (&McpttPusher::m_pttIatTrace),
+                     "ns3::Time::TracedCallback")
+    .AddTraceSource ("PttDurationTrace",
+                     "The trace for capturing PTT durations.",
+                     MakeTraceSourceAccessor (&McpttPusher::m_pttDurationTrace),
+                     "ns3::Time::TracedCallback")
     ;
 
   return tid;
 }
 
 McpttPusher::McpttPusher (void)
-  : m_pushable (0),
+  : m_pttApp (0),
     m_pushing (false)
 {
   NS_LOG_FUNCTION (this);
@@ -100,10 +108,10 @@ void
 McpttPusher::Push (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
-  NS_LOG_LOGIC ("Pusher about to push pushable.");
+  NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
+  NS_LOG_LOGIC ("Pusher about to push PTT button.");
   SetPushing (true);
-  m_pushable->TakePushNotification ();
+  m_pttApp->TakePushNotification ();
   if (m_automatic == true)
     {
       ScheduleRelease ();
@@ -128,10 +136,10 @@ void
 McpttPusher::Release (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pushable, "There is no pushable.");
-  NS_LOG_LOGIC ("Pusher about to release pushable.");
+  NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
+  NS_LOG_LOGIC ("Pusher about to release PTT button.");
   SetPushing (false);
-  m_pushable->TakeReleaseNotification ();
+  m_pttApp->TakeReleaseNotification ();
   if (m_automatic == true)
     {
       SchedulePush ();
@@ -156,7 +164,7 @@ bool
 McpttPusher::SchedulePush (void)
 {
   NS_LOG_FUNCTION (this);
-  double rv = m_pushVariable->GetValue ();
+  double rv = m_pttIatVariable->GetValue ();
   if (rv < 0)
     {
       rv = 0;
@@ -173,6 +181,7 @@ McpttPusher::SchedulePush (const Time& delay)
     {
       NS_LOG_LOGIC ("Pusher scheduling to push button in " << delay.GetSeconds () << "s.");
       m_pushEvent = Simulator::Schedule (delay, &McpttPusher::Push, this);
+      m_pttIatTrace (GetPttApp ()->GetUserId (), delay);
       return true;
     }
   else
@@ -203,7 +212,7 @@ bool
 McpttPusher::ScheduleRelease (void)
 {
   NS_LOG_FUNCTION (this);
-  double rv = m_releaseVariable->GetValue ();
+  double rv = m_pttDurationVariable->GetValue ();
   if (rv < 0)
     {
       rv = 0;
@@ -220,6 +229,7 @@ McpttPusher::ScheduleRelease (const Time& delay)
     {
       NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds() << "s.");
       m_releaseEvent = Simulator::Schedule (delay, &McpttPusher::Release, this);
+      m_pttDurationTrace (GetPttApp ()->GetUserId (), delay);
       return true;
     }
   else
@@ -280,24 +290,24 @@ void
 McpttPusher::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPushable (0);
-  m_pushVariable = 0;
-  m_releaseVariable = 0;
+  SetPttApp (0);
+  m_pttIatVariable = 0;
+  m_pttDurationVariable = 0;
   Object::DoDispose ();
 }
 
-McpttPushable*
-McpttPusher::GetPushable (void) const
+Ptr<McpttPttApp>
+McpttPusher::GetPttApp (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_pushable;
+  return m_pttApp;
 }
 
 void
-McpttPusher::SetPushable (McpttPushable* pushable)
+McpttPusher::SetPttApp (Ptr<McpttPttApp> pttApp)
 {
-  NS_LOG_FUNCTION (this << pushable);
-  m_pushable = pushable;
+  NS_LOG_FUNCTION (this << pttApp);
+  m_pttApp = pttApp;
 }
 
 bool

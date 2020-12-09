@@ -194,6 +194,7 @@ McpttPusherOrchestratorContention::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   m_nextEvent.Cancel ();
+  m_nextPusher = 0;
   m_orchestrator = 0;
   m_rv = 0;
 
@@ -205,43 +206,17 @@ McpttPusherOrchestratorContention::PttPush (void)
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector<Ptr<McpttPusher> > contenders;
-  std::vector<Ptr<McpttPusher> > pushers = GetPushers ();
-  std::vector<Ptr<McpttPusher> > activePushers = GetActivePushers ();
-
-  for (std::vector<Ptr<McpttPusher> >::iterator pit = pushers.begin ();
-       pit != pushers.end ();
-       pit++)
+  if (m_nextPusher)
     {
-      bool found = false;
-      for (std::vector<Ptr<McpttPusher> >::iterator apit = activePushers.begin ();
-          apit != activePushers.end ();
-          apit++)
-        {
-          if (*pit == *apit)
-            {
-              found = true;
-            }
-        }
-
-      if (!found)
-        {
-          contenders.push_back (*pit);
-        }
-    }
-
-  if (contenders.size () > 0)
-    {
-      uint32_t rv = m_rv->GetInteger (0, contenders.size () - 1);
-      Ptr<McpttPusher> pusher = contenders[rv];
-      ActivatePusher (pusher);
+      ActivatePusher (m_nextPusher);
+      m_nextPusher = 0;
     }
 
   Time pttDuration = NextPttDuration ();
 
   m_nextEvent = Simulator::Schedule (pttDuration, &McpttPusherOrchestratorContention::PttRelease, this);
 
-  TracePttDuration (pttDuration);
+  TracePttDuration (m_activePusher ? m_activePusher->GetPttApp ()->GetUserId () : 0, pttDuration);
 }
 
 void
@@ -253,16 +228,47 @@ McpttPusherOrchestratorContention::PttRelease (void)
 }
 
 void
-McpttPusherOrchestratorContention::PttDurationTraceCallback (Time pttDuration)
+McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Time pttDuration)
 {
   NS_LOG_FUNCTION (this);
 
   if (m_rv->GetValue (0.0, 1.0) < m_cp)
     {
+      std::vector<Ptr<McpttPusher> > contenders;
+      std::vector<Ptr<McpttPusher> > pushers = GetPushers ();
+      std::vector<Ptr<McpttPusher> > activePushers = GetActivePushers ();
+
+      for (std::vector<Ptr<McpttPusher> >::iterator pit = pushers.begin ();
+          pit != pushers.end ();
+          pit++)
+        {
+          bool found = false;
+          for (std::vector<Ptr<McpttPusher> >::iterator apit = activePushers.begin ();
+              apit != activePushers.end ();
+              apit++)
+            {
+              if (*pit == *apit)
+                {
+                  found = true;
+                }
+            }
+
+          if (!found)
+            {
+              contenders.push_back (*pit);
+            }
+        }
+
+      if (contenders.size () > 0)
+        {
+          uint32_t rv = m_rv->GetInteger (0, contenders.size () - 1);
+          m_nextPusher = contenders[rv];
+        }
+
       double rv = m_rv->GetValue (0.0, pttDuration.GetSeconds ());
       Time pttIat = Seconds (rv);
       m_nextEvent = Simulator::Schedule (pttIat, &McpttPusherOrchestratorContention::PttPush, this);
-      TracePttIat (pttIat);
+      TracePttIat (m_nextPusher ? m_nextPusher->GetPttApp ()->GetUserId () : 0, pttIat);
     }
 }
 

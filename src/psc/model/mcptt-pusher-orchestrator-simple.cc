@@ -215,6 +215,7 @@ McpttPusherOrchestratorSimple::DoDispose (void)
 
   DeactivatePusher ();
 
+  m_nextPusher = 0;
   m_pttIatVariable = 0;
   m_pttDurationVariable = 0;
   m_selectionVariable = 0;
@@ -225,28 +226,33 @@ McpttPusherOrchestratorSimple::PttPush (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_pushers.size () > 0)
+  if (m_nextPusher)
     {
-      uint32_t rv = m_selectionVariable->GetInteger (0, m_pushers.size () - 1);
-      Ptr<McpttPusher> pusher = m_pushers[rv];
-      ActivatePusher (pusher);
+      ActivatePusher (m_nextPusher);
+      m_nextPusher = 0;
     }
 
   Time pttDuration = NextPttDuration ();
   m_nextEvent = Simulator::Schedule (pttDuration, &McpttPusherOrchestratorSimple::PttRelease, this);
 
-  TracePttDuration (pttDuration);
+  TracePttDuration (m_activePusher ? m_activePusher->GetPttApp ()->GetUserId () : 0, pttDuration);
 }
 
 void
 McpttPusherOrchestratorSimple::PttRelease (void)
 {
   DeactivatePusher ();
-  
+
+  if (m_pushers.size () > 0)
+    {
+      uint32_t rv = m_selectionVariable->GetInteger (0, m_pushers.size () - 1);
+      m_nextPusher = m_pushers[rv];
+    }
+
   Time pttIat = NextPttIat ();
   m_nextEvent = Simulator::Schedule (pttIat, &McpttPusherOrchestratorSimple::PttPush, this);
 
-  TracePttIat (pttIat);
+  TracePttIat (m_nextPusher ? m_nextPusher->GetPttApp ()->GetUserId () : 0, pttIat);
 }
 
 } // namespace ns3

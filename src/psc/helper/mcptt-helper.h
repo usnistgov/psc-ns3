@@ -212,7 +212,7 @@ public:
   * \param n7 the name of the attribute to set
   * \param v7 the value of the attribute to set
   */
- virtual void SetPusherPushVariable (std::string tid,
+ virtual void SetPusherPttInterarrivalTimeVariable (std::string tid,
                                      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                                      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                                      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -241,7 +241,7 @@ public:
   * \param n7 the name of the attribute to set
   * \param v7 the value of the attribute to set
   */
- virtual void SetPusherReleaseVariable (std::string tid,
+ virtual void SetPusherPttDurationVariable (std::string tid,
                                         std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                                         std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                                         std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),

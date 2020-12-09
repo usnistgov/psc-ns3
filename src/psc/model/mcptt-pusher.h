@@ -41,7 +41,7 @@
 #include <ns3/type-id.h>
 #include <set>
 
-#include "mcptt-pushable.h"
+#include "mcptt-ptt-app.h"
 
 namespace ns3 {
  
@@ -51,7 +51,7 @@ namespace ns3 {
  * This class is used to simulate the action of pushing and releasing a
  * button. An instance of this class schedules events using a random number
  * generator to simulate "pushing" and "releasing" the button of an
- * ns3::McpttPushable.
+ * ns3::McpttPttApp.
  */
 class McpttPusher : public Object 
 {
@@ -75,7 +75,7 @@ public:
   */
  virtual bool IsPushing (void) const;
  /**
-  * Pushes the pushable's button and enters the pushed state.
+  * Pushes the PTT app's button and enters the pushed state.
   */
  virtual void Push (void);
  /**
@@ -83,7 +83,7 @@ public:
   */
  virtual void NotifyPushed (void);
  /**
-  * Releases the pushable's button and enters the released state.
+  * Releases the PTT app's button and enters the released state.
   */
  virtual void Release (void);
  /**
@@ -129,11 +129,11 @@ public:
   */
  virtual bool CancelRelease (void);
  /**
-  * \brief Starts pushing and releasing the pushables button.
+  * \brief Starts pushing and releasing the PTT app's button.
   */
  virtual void Start (void);
  /**
-  * \brief Stops pushing and releasing the pushables button.
+  * \brief Stops pushing and releasing the PTT app's button.
   * This method may be called multiple times consecutively without side effect.
   */
  virtual void Stop (void);
@@ -147,32 +147,25 @@ private:
   * The flag that indicates if the button should automatically be pushed/released.
   */
  bool m_automatic;
- Ptr<RandomVariableStream> m_pushVariable; //!< The random variable used for automatic pushes.
- Ptr<RandomVariableStream> m_releaseVariable; //!< The random variable used for automatic releases.
- /* NOTE:
-  * Using a raw pointer here because this type represents
-  * an interface that does not inherit from any of the ns3
-  * base classes. Therefore, this class should not allocate
-  * or dispose of the memory referenced by this pointer, and
-  * it is up to the user to provide a valid object and manage
-  * its lifecycle. This pointer's sole purpose is to provide access to the
-  * object that the user has provided.
-  */
- McpttPushable* m_pushable; //!< A pointer to the pushable.
+ Ptr<RandomVariableStream> m_pttIatVariable; //!< The random variable used for automatic pushes.
+ Ptr<RandomVariableStream> m_pttDurationVariable; //!< The random variable used for automatic releases.
+ Ptr<McpttPttApp> m_pttApp; //!< A pointer to the PTT app.
  TracedValue <bool> m_pushing; //!< A flag used to indicate if the pusher is in the "pushing" state.
  EventId m_pushEvent; //!< EventId of most recently scheduled push event
  EventId m_releaseEvent; //!< EventId of most recently scheduled release event
+ TracedCallback<uint32_t, Time> m_pttIatTrace; //!< The interarrival time trace.
+ TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
 public:
  /**
   * \brief Gets the object with the button to push.
   * \return The object with the button to push.
   */
- virtual McpttPushable* GetPushable (void) const;
+ virtual Ptr<McpttPttApp> GetPttApp (void) const;
  /**
   * Sets the object with the button to push.
-  * \param pushable The object with the button to push.
+  * \param pttApp The object with the button to push.
   */
- virtual void SetPushable (McpttPushable* pushable);
+ virtual void SetPttApp (Ptr<McpttPttApp> pttApp);
 protected:
  /**
   * \brief Sets the flag that indicates if the object is in the "push" state.

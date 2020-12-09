@@ -233,8 +233,7 @@ emergency alert, etc. It also houses a few entities to help simulate the
 behavior of how an MCPTT application may be used. This class also implements
 the ``ns3::McpttMediaSink`` interface, which allows for an instance of the
 ``ns3::McpttMediaSrc`` class to generate and pass media messages for
-transmission, and the ``ns3::McpttPushable`` interface, which can be attached
-to by an ``ns3::McpttPusher`` to simulate button push and release events.
+transmission.
 
 The ``ns3::McpttMediaSrc`` is simply a class that generates RTP media messages
 to be sent. It is used by the application to help model data traffic in the
@@ -627,10 +626,10 @@ followed.
                           "DataRate", DataRateValue (dataRate));
    mcpttHelper.SetPusher ("ns3::McpttPusher",
                           "Automatic", BooleanValue (true));
-   mcpttHelper.SetPusherPushVariable ("ns3::NormalRandomVariable",
+   mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                           "Mean", DoubleValue (pushTimeMean),
                           "Variance", DoubleValue (pushTimeVariance));
-   mcpttHelper.SetPusherReleaseVariable ("ns3::NormalRandomVariable",
+   mcpttHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
                           "Mean", DoubleValue (releaseTimeMean),
                           "Variance", DoubleValue (releaseTimeVariance));
  

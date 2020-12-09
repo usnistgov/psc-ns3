@@ -241,7 +241,7 @@ McpttHelper::SetPusher (std::string name,
 }
 
 void
-McpttHelper::SetPusherPushVariable (std::string name,
+McpttHelper::SetPusherPttInterarrivalTimeVariable (std::string name,
                                     std::string n0, const AttributeValue& v0,
                                     std::string n1, const AttributeValue& v1,
                                     std::string n2, const AttributeValue& v2,
@@ -266,7 +266,7 @@ McpttHelper::SetPusherPushVariable (std::string name,
 }
 
 void
-McpttHelper::SetPusherReleaseVariable (std::string name,
+McpttHelper::SetPusherPttDurationVariable (std::string name,
                                        std::string n0, const AttributeValue& v0,
                                        std::string n1, const AttributeValue& v1,
                                        std::string n2, const AttributeValue& v2,
@@ -301,12 +301,12 @@ McpttHelper::InstallPriv (const Ptr<Node>& node)
 
   if (m_pushConfigured == true)
     {
-      pusher->SetAttribute ("PushVariable", PointerValue (m_pusherPushFac.Create<RandomVariableStream> ()));
+      pusher->SetAttribute ("PttInterarrivalTimeVariable", PointerValue (m_pusherPushFac.Create<RandomVariableStream> ()));
     }
 
   if (m_releaseConfigured == true)
     {
-      pusher->SetAttribute ("ReleaseVariable", PointerValue (m_pusherReleaseFac.Create<RandomVariableStream> ()));
+      pusher->SetAttribute ("PttDurationVariable", PointerValue (m_pusherReleaseFac.Create<RandomVariableStream> ()));
     }
 
   app->SetUserId (userId);

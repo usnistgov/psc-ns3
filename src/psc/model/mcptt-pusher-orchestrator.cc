@@ -99,19 +99,19 @@ McpttPusherOrchestrator::DoDispose (void)
 }
 
 void
-McpttPusherOrchestrator::TracePttIat (const Time& iat)
+McpttPusherOrchestrator::TracePttIat (const uint32_t userId, const Time& iat)
 {
   NS_LOG_FUNCTION (this);
 
-  m_pttIatTrace (iat);
+  m_pttIatTrace (userId, iat);
 }
 
 void
-McpttPusherOrchestrator::TracePttDuration (const Time& duration)
+McpttPusherOrchestrator::TracePttDuration (const uint32_t userId, const Time& duration)
 {
   NS_LOG_FUNCTION (this);
 
-  m_pttDurationTrace (duration);
+  m_pttDurationTrace (userId, duration);
 }
 
 } // namespace ns3
