@@ -163,28 +163,24 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
 
 
   //t2_min as a function of numerology. Discussed in 3GPP meeting R1-2003807
-  //also see 3GPP TS 38.214 V16.3.0 sec 8.1.4
+  //also in TS 38.331 in SL-UE-SelectedConfigRP field descriptions
   uint16_t t2min = LteRrcSap::GetSlSelWindowValue (pool.slUeSelectedConfigRp.slSelectionWindow);
   uint16_t multiplier = static_cast <uint16_t> (std::pow (2, numerology));
   t2min = t2min * multiplier;
-  uint16_t t2Final = std::max(t2min, t2);
+  uint16_t t2Final = std::max (t2min, t2);
 
   uint64_t firstAbsSlotIndex = absIndexCurretSlot + t1;
   uint64_t lastAbsSlotIndex =  absIndexCurretSlot + t2Final;
 
   NS_LOG_DEBUG ("Starting absolute slot number of the selection window = " << firstAbsSlotIndex);
   NS_LOG_DEBUG ("Last absolute slot number of the selection window =  " << lastAbsSlotIndex);
-  NS_LOG_DEBUG ("Final selection Window Length = " << lastAbsSlotIndex - firstAbsSlotIndex);
+  NS_LOG_DEBUG ("Final selection Window Length in physical slots = " << (lastAbsSlotIndex - firstAbsSlotIndex) + 1);
 
   std::list <NrSlCommResourcePool::SlotInfo> list;
   uint16_t absPoolIndex = firstAbsSlotIndex % phyPool.size ();
   NS_LOG_DEBUG ("Absolute pool index = " << absPoolIndex);
 
-
-  uint64_t i = firstAbsSlotIndex;
-  //total number of slots in the list should be equal to the number of
-  //slots in the selection window, i.e., t2Final.
-  while (list.size () != t2Final)
+  for (uint64_t i = firstAbsSlotIndex; i <= lastAbsSlotIndex; ++i)
     {
       if (phyPool [absPoolIndex] == 1)
         {
@@ -206,10 +202,14 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
                                                slMaxNumPerReserve, absSlotIndex, slotOffset);
           list.emplace_back (info);
         }
-
       absPoolIndex = (absPoolIndex + 1) % phyPool.size ();
+    }
 
-      i++;
+  NS_LOG_DEBUG ("Total number of slots available for Sidelink in the selection window = " << list.size ());
+
+  for (const auto & it : list)
+    {
+      NS_LOG_DEBUG ("Absolute slot number of the Sidelink slot in the selection window = " << it.slotOffset + absIndexCurretSlot);
     }
 
   return list;

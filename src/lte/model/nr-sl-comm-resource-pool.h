@@ -171,8 +171,8 @@ public:
    * \param bwpId The bandwidth part id
    * \param numerology The numerology
    * \param poolId The pool id
-   * \param t1 The physical layer processing delay in slots
-   * \param t2 The UE specific length of the selection window in slots
+   * \param t1 The start of the selection window in physical slots, accounting for physical layer processing delay
+   * \param t2 The end of the selection window in physical slots
    * \return A list of sidelink communication opportunities for each available slot in a selection window
    */
   std::list <NrSlCommResourcePool::SlotInfo> GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uint8_t bwpId, uint16_t numerology, uint16_t poolId, uint8_t t1, uint16_t t2) const;
