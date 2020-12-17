@@ -253,7 +253,8 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeMap.erase (key);
         }
     }
-  else if (it->second.second == "'U: queued'")
+  else if (it->second.second == "'U: queued'"
+      || it->second.second == "'O: queued'")
     {
       if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_GRANTED) == 0)
         {
