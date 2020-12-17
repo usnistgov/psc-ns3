@@ -107,9 +107,9 @@ McpttCallMachineGrpBasic::GetTypeId (void)
                    MakeTimeAccessor (&McpttCallMachineGrpBasic::SetDelayTfg5),
                    MakeTimeChecker ())
     .AddAttribute ("TFG6-X", "The X value to use when calculating the delay for TFG6 (Time value).",
-                   TimeValue (Seconds (255)),
+                   TimeValue (Seconds (65535)),
                    MakeTimeAccessor (&McpttCallMachineGrpBasic::m_delayTfg6X),
-                   MakeTimeChecker ())
+                   MakeTimeChecker (Seconds (1), Seconds (65535)))
     .AddAttribute ("UserAckRequired", "The flag that indicates if user acknowledgements are required.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttCallMachineGrpBasic::m_userAckReq),
