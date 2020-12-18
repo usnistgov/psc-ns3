@@ -565,6 +565,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::PttPush (McpttOnNetworkFloor
   reqMsg.SetIndicator (machine.GetIndicator ());
   machine.Send (reqMsg);
 
+  machine.GetC101 ()->Reset ();
   machine.GetT101 ()->Start ();
 
   machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance ());
