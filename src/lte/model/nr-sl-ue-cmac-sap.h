@@ -122,6 +122,12 @@ public:
    * \param srcL2Id The Sidelink layer 2 id of the source
    */
   virtual void SetSourceL2Id (uint32_t srcL2Id) = 0;
+  /**
+   * \brief Add NR Sidelink destination layer 2 id for reception
+   *
+   * \param dstL2Id The Sidelink layer 2 id of the destination to listen to.
+   */
+  virtual void AddNrSlRxDstL2Id (uint32_t dstL2Id) = 0;
 };
 
 /**
@@ -154,6 +160,7 @@ public:
   virtual void SetSlProbResoKeep (uint8_t prob);
   virtual void SetSlMaxTxTransNumPssch (uint8_t maxTxPssch);
   virtual void SetSourceL2Id (uint32_t srcL2Id);
+  virtual void AddNrSlRxDstL2Id (uint32_t dstL2Id);
 
 private:
   C* m_mac; ///< the MAC class
@@ -214,6 +221,12 @@ template <class C>
 void MemberNrSlUeCmacSapProvider<C>::SetSourceL2Id (uint32_t srcL2Id)
 {
   m_mac->DoSetSourceL2Id (srcL2Id);
+}
+
+template <class C>
+void MemberNrSlUeCmacSapProvider<C>::AddNrSlRxDstL2Id (uint32_t dstL2Id)
+{
+  m_mac->DoAddNrSlRxDstL2Id (dstL2Id);
 }
 
 
