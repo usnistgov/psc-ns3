@@ -133,6 +133,11 @@ TcpSocketBase::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&TcpSocketBase::GetRxBuffer),
                    MakePointerChecker<TcpRxBuffer> ())
+    .AddAttribute ("CongestionOps",
+                   "Pointer to TcpCongestionOps object",
+                   PointerValue (),
+                   MakePointerAccessor (&TcpSocketBase::m_congestionControl),
+                   MakePointerChecker<TcpCongestionOps> ())
     .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
                    UintegerValue (3),
                    MakeUintegerAccessor (&TcpSocketBase::SetRetxThresh,
@@ -1563,6 +1568,35 @@ TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader, uint32_t *bytesSacked)
     }
 }
 
+// Sender should reduce the Congestion Window as a response to receiver's
+// ECN Echo notification only once per window
+void
+TcpSocketBase::EnterCwr (uint32_t currentDelivered)
+{
+  NS_LOG_FUNCTION (this << currentDelivered);
+  m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
+  NS_LOG_DEBUG ("Reduce ssThresh to " << m_tcb->m_ssThresh);
+  // Do not update m_cWnd, under assumption that recovery process will
+  // gradually bring it down to m_ssThresh.  Update the 'inflated' value of
+  // cWnd used for tracing, however.
+  m_tcb->m_cWndInfl = m_tcb->m_ssThresh;
+  NS_ASSERT (m_tcb->m_congState != TcpSocketState::CA_CWR);
+  NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_CWR");
+  m_tcb->m_congState = TcpSocketState::CA_CWR;
+  // CWR state will be exited when the ack exceeds the m_recover variable.
+  // Do not set m_recoverActive (which applies to a loss-based recovery)
+  // m_recover corresponds to Linux tp->high_seq
+  m_recover = m_tcb->m_highTxMark;
+  if (!m_congestionControl->HasCongControl ())
+    {
+      // If there is a recovery algorithm, invoke it.
+      m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
+      NS_LOG_INFO ("Enter CWR recovery mode; set cwnd to " << m_tcb->m_cWnd
+                    << ", ssthresh to " << m_tcb->m_ssThresh
+                    << ", recover to " << m_recover);
+    }
+}
+
 void
 TcpSocketBase::EnterRecovery (uint32_t currentDelivered)
 {
@@ -1778,6 +1812,20 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   uint32_t currentDelivered = static_cast<uint32_t> (m_rateOps->GetConnectionRate ().m_delivered - previousDelivered);
 
+  if (m_tcb->m_congState == TcpSocketState::CA_CWR && (ackNumber > m_recover))
+    {
+      // Recovery is over after the window exceeds m_recover
+      // (although it may be re-entered below if ECE is still set)
+      NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_OPEN");
+      m_tcb->m_congState = TcpSocketState::CA_OPEN;
+      if (!m_congestionControl->HasCongControl ())
+        {
+           m_tcb->m_cWnd = m_tcb->m_ssThresh.Get ();
+           m_recoveryOps->ExitRecovery (m_tcb);
+           m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
+        }
+    }
+
   if (ackNumber > oldHeadSequence && (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED) && (tcpHeader.GetFlags () & TcpHeader::ECE))
     {
       if (m_ecnEchoSeq < ackNumber)
@@ -1786,6 +1834,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_ecnEchoSeq = ackNumber;
           NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_ECE_RCVD");
           m_tcb->m_ecnState = TcpSocketState::ECN_ECE_RCVD;
+          if (m_tcb->m_congState != TcpSocketState::CA_CWR)
+            {
+              EnterCwr (currentDelivered);
+            }
         }
     }
   else if (m_tcb->m_ecnState == TcpSocketState::ECN_ECE_RCVD && !(tcpHeader.GetFlags () & TcpHeader::ECE))
@@ -2002,6 +2054,17 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
             }
           NewAck (ackNumber, true);
         }
+      else if (m_tcb->m_congState == TcpSocketState::CA_CWR)
+        {
+          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
+          // TODO: need to check behavior if marking is compounded by loss
+          // and/or packet reordering
+          if (!m_congestionControl->HasCongControl () && segsAcked >= 1)
+            {
+              m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
+            }
+          NewAck (ackNumber, true);
+        }
       else
         {
           if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
@@ -2086,6 +2149,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
           if (exitedFastRecovery)
             {
               NewAck (ackNumber, true);
+              m_tcb->m_cWnd = m_tcb->m_ssThresh.Get ();
               m_recoveryOps->ExitRecovery (m_tcb);
               NS_LOG_DEBUG ("Leaving Fast Recovery; BytesInFlight() = " <<
                             BytesInFlight () << "; cWnd = " << m_tcb->m_cWnd);
@@ -3014,18 +3078,12 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       m_delAckCount = 0;
     }
 
-  // Sender should reduce the Congestion Window as a response to receiver's ECN Echo notification only once per window
   if (m_tcb->m_ecnState == TcpSocketState::ECN_ECE_RCVD && m_ecnEchoSeq.Get() > m_ecnCWRSeq.Get () && !isRetransmission)
     {
-      NS_LOG_INFO ("Backoff mechanism by reducing CWND  by half because we've received ECN Echo");
-      m_congestionControl->ReduceCwnd (m_tcb);
-      m_tcb->m_ssThresh = m_tcb->m_cWnd;
-      m_tcb->m_cWndInfl = m_tcb->m_cWnd;
-      UpdatePacingRate ();
-      flags |= TcpHeader::CWR;
-      m_ecnCWRSeq = seq;
       NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_CWR_SENT");
       m_tcb->m_ecnState = TcpSocketState::ECN_CWR_SENT;
+      m_ecnCWRSeq = seq;
+      flags |= TcpHeader::CWR;
       NS_LOG_INFO ("CWR flags set");
     }
 
@@ -3094,7 +3152,7 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   UpdateRttHistory (seq, sz, isRetransmission);
 
   // Update bytes sent during recovery phase
-  if(m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
+  if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY || m_tcb->m_congState == TcpSocketState::CA_CWR)
     {
       m_recoveryOps->UpdateBytesSent (sz);
     }

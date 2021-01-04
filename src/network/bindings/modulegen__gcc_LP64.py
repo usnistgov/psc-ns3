@@ -247,7 +247,7 @@ def register_types(module):
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST', 'AUTO'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
     typehandlers.add_type_alias('void ( * ) ( ns3::Time )', 'ns3::Time::TracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Time )*', 'ns3::Time::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Time )&', 'ns3::Time::TracedCallback&')
@@ -4366,10 +4366,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('ns3::int64x64_t const &', 'v')])
     ## nstime.h (module 'core'): ns3::Time::Time(std::string const & s) [constructor]
     cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit) const [member function]
+    ## nstime.h (module 'core'): ns3::TimeWithUnit ns3::Time::As(ns3::Time::Unit const unit=::ns3::Time::Unit::AUTO) const [member function]
     cls.add_method('As', 
                    'ns3::TimeWithUnit', 
-                   [param('ns3::Time::Unit const', 'unit')], 
+                   [param('ns3::Time::Unit const', 'unit', default_value='::ns3::Time::Unit::AUTO')], 
                    is_const=True)
     ## nstime.h (module 'core'): int ns3::Time::Compare(ns3::Time const & o) const [member function]
     cls.add_method('Compare', 
@@ -4501,6 +4501,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_static=True)
+    ## nstime.h (module 'core'): ns3::Time ns3::Time::RoundTo(ns3::Time::Unit unit) const [member function]
+    cls.add_method('RoundTo', 
+                   'ns3::Time', 
+                   [param('ns3::Time::Unit', 'unit')], 
+                   is_const=True)
     ## nstime.h (module 'core'): static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
     cls.add_method('SetResolution', 
                    'void', 
@@ -4853,6 +4858,11 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
                    'int64_t', 
                    [], 
                    is_const=True)
+    ## int64x64-128.h (module 'core'): int64_t ns3::int64x64_t::GetInt() const [member function]
+    cls.add_method('GetInt', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
     ## int64x64-128.h (module 'core'): uint64_t ns3::int64x64_t::GetLow() const [member function]
     cls.add_method('GetLow', 
                    'uint64_t', 
@@ -4867,6 +4877,11 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_method('MulByInvert', 
                    'void', 
                    [param('ns3::int64x64_t const &', 'o')])
+    ## int64x64-128.h (module 'core'): int64_t ns3::int64x64_t::Round() const [member function]
+    cls.add_method('Round', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::implementation [variable]
     cls.add_static_attribute('implementation', 'ns3::int64x64_t::impl_type const', is_const=True)
     return

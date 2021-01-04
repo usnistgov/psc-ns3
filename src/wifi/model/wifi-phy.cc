@@ -2872,7 +2872,7 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
   InterferenceHelper::SnrPer snrPer = m_interference.CalculateNonHtPhyHeaderSnrPer (event, GetBand (channelWidth));
 
   NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per);
-  if (m_random->GetValue () > snrPer.per) //legacy PHY header reception succeeded
+  if (m_random->GetValue () > snrPer.per) //non-HT PHY header reception succeeded
     {
       NS_LOG_DEBUG ("Received non-HT PHY header");
       WifiTxVector txVector = event->GetTxVector ();
@@ -3189,7 +3189,7 @@ WifiPhy::ScheduleEndOfMpdus (Ptr<Event> event)
         }
 
       endOfMpduDuration += mpduDuration;
-      m_endOfMpduEvents.push_back (Simulator::Schedule (endOfMpduDuration, &WifiPhy::EndOfMpdu, this, event, Create<WifiPsdu> (*mpdu, false), i, relativeStart, mpduDuration));
+      Simulator::Schedule (endOfMpduDuration, &WifiPhy::EndOfMpdu, this, event, Create<WifiPsdu> (*mpdu, false), i, relativeStart, mpduDuration);
 
       //Prepare next iteration
       ++i;

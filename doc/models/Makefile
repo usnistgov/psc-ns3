@@ -123,6 +123,14 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/routing.dia \
 	$(SRC)/internet/doc/routing-specialization.dia \
 	$(SRC)/internet/doc/figures/tcp-state-machine.png \
+	$(SRC)/internet/doc/figures/dctcp-10ms-50mbps-tcp-throughput.pdf \
+	$(SRC)/internet/doc/figures/dctcp-10ms-50mbps-tcp-throughput.png \
+	$(SRC)/internet/doc/figures/dctcp-80ms-50mbps-tcp-throughput.pdf \
+	$(SRC)/internet/doc/figures/dctcp-80ms-50mbps-tcp-throughput.png \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-no-ecn.pdf \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-no-ecn.png \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-ecn.pdf \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-ecn.png \
 	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-linux-reno.png \
 	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-new-reno.png \
 	$(SRC)/internet/doc/figures/ns3-new-reno-vs-ns3-linux-reno.png \
