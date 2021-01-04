@@ -59,7 +59,7 @@ RlcTag::GetInstanceTypeId (void) const
 uint32_t
 RlcTag::GetSerializedSize (void) const
 {
-  return sizeof(Time);
+  return sizeof(Time) + 16;
 }
 
 void
@@ -67,6 +67,7 @@ RlcTag::Serialize (TagBuffer i) const
 {
   int64_t senderTimestamp = m_senderTimestamp.GetNanoSeconds ();
   i.Write ((const uint8_t *)&senderTimestamp, sizeof(int64_t));
+  i.WriteU16 (m_txRnti);
 }
 
 void
@@ -75,13 +76,14 @@ RlcTag::Deserialize (TagBuffer i)
   int64_t senderTimestamp;
   i.Read ((uint8_t *)&senderTimestamp, 8);
   m_senderTimestamp   = NanoSeconds (senderTimestamp);
-
+  m_txRnti = i.ReadU16 ();
 }
 
 void
 RlcTag::Print (std::ostream &os) const
 {
   os << m_senderTimestamp;
+  os << " " << m_txRnti;
 }
 
 } // namespace ns3

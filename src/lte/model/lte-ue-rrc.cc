@@ -3563,6 +3563,16 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
           NS_LOG_INFO ("Created new TX SLRB for remote id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
+      if ((isTransmit && isReceive) || isReceive)
+        {
+          std::set <uint8_t> bwpIdsSl = m_nrSlRrcSapUser->GetBwpIdContainer ();
+          for (const auto &it:bwpIdsSl)
+            {
+              NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (dstL2Id);
+            }
+        }
+
       //Notify NAS
       m_asSapUser->NotifyNrSlRadioBearerActivated (dstL2Id);
       //m_nrSlRrcSapUser->NotifyNrSlRadioBearerActivated (dstL2Id); I dont see the need of for now

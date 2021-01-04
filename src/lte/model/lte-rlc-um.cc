@@ -1574,6 +1574,7 @@ LteRlcUm::DoNotifyNrSlTxOpportunity (const NrSlMacSapUser::NrSlTxOpportunityPara
 
   // Sender timestamp
   RlcTag rlcTag (Simulator::Now ());
+  rlcTag.SetTxRnti (m_rnti);
   packet->AddByteTag (rlcTag, 1, rlcHeader.GetSerializedSize ());
   m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 

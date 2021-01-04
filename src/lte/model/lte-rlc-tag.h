@@ -62,7 +62,7 @@ public:
    * Get the instant when the RLC delivers the PDU to the MAC SAP provider
    * @return the sender timestamp
    */
-  Time  GetSenderTimestamp (void) const
+  Time GetSenderTimestamp (void) const
   {
     return m_senderTimestamp;
   }
@@ -71,13 +71,32 @@ public:
    * Set the sender timestamp
    * @param senderTimestamp time stamp of the instant when the RLC delivers the PDU to the MAC SAP provider
    */
-  void  SetSenderTimestamp (Time senderTimestamp)
+  void SetSenderTimestamp (Time senderTimestamp)
   {
     this->m_senderTimestamp = senderTimestamp;
   }
 
+  /**
+   * Get the RNTI of the transmitting UE
+   * @return the RNTI of the transmitting UE
+   */
+  uint16_t GetTxRnti (void) const
+  {
+    return m_txRnti;
+  }
+
+  /**
+   * Set the RNTI of the transmitting UE
+   * @param rnti the RNTI of the transmitting UE
+   */
+  void SetTxRnti (uint16_t rnti)
+  {
+    this->m_txRnti = rnti;
+  }
+
 private:
   Time m_senderTimestamp; ///< sender timestamp
+  uint16_t m_txRnti {0}; ///< rnti of transmiting UE
 
 };
 
