@@ -202,12 +202,27 @@ void
 McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const char* description)
 {
   NS_LOG_FUNCTION (userId << callId << selected << description);
+
+  if (!m_accessTimeTraceFile.is_open ())
+    {
+      return;
+    }
+
   std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
   auto it = m_accessTimeMap.find (key);
   if (it == m_accessTimeMap.end ())
     {
-      NS_LOG_DEBUG ("Event key not found for " << userId  << " " << callId);
-      return;
+      if (strcmp (description, McpttCallMachine::CALL_INITIATED) == 0)
+        {
+          std::pair<Time, std::string> item = std::make_pair (Simulator::Now (), description);
+          m_accessTimeMap.insert (std::make_pair (key, item));
+          return;
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Event key not found for " << userId  << " " << callId);
+          return;
+        }
     }
   if (it->second.second == "'U: pending Request'"
       || it->second.second == "'O: pending request'")
@@ -374,6 +389,12 @@ void
 McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
 {
   NS_LOG_FUNCTION (userId << callId << selected << typeId << oldStateName << newStateName);
+
+  if (!m_accessTimeTraceFile.is_open ())
+    {
+      return;
+    }
+
   // Note: 'selected' field is not used by this method
   std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
   auto it = m_accessTimeMap.find (key);
@@ -391,8 +412,7 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeMap.insert (std::make_pair (key, item));
         }
       else if (oldStateName == "'Start-stop'"
-          && (newStateName == "'U: has permission'"
-            || newStateName == "'O: has permission'"))
+          && newStateName == "'U: has permission'")
         {
           NS_LOG_DEBUG ("start stop, received event CALL_ORIGINATOR " << userId << " " << callId);
           m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
@@ -401,9 +421,34 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "I"; // immediate
           m_accessTimeTraceFile << std::fixed << std::setw (11) << Seconds (0).GetSeconds () << std::endl;
         }
-      return;
+     return;
     }
 
+  if (it->second.second == McpttCallMachine::CALL_INITIATED)
+    {
+      if (oldStateName == "'Start-stop'"
+        && newStateName == "'O: has permission'")
+        {
+          NS_LOG_DEBUG ("start stop, received event CALL_ORIGINATOR " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "I"; // immediate
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("call initiated, received event CALL_ORIGINATOR " << userId << " " << callId);
+          m_accessTimeTraceFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
+          m_accessTimeTraceFile << std::setw (7) << userId;
+          m_accessTimeTraceFile << std::setw (7) << callId;
+          m_accessTimeTraceFile << std::setw (6) << "F"; // failed
+          m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
+          m_accessTimeMap.erase (key);
+        }
+    }
+ 
   if (it->second.second == "'U: pending Request'"
       || it->second.second == "'O: pending request'")
     {

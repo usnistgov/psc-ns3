@@ -640,6 +640,12 @@ McpttCallMachinePrivate::ReceiveRelease (const McpttCallMsgPrivateRelease& msg)
 }
 
 void
+McpttCallMachinePrivate::ReportEvent (const char* reason) const
+{
+  GetCall ()->GetOwner ()->ReportEvent (GetCall ()->GetCallId (), reason);
+}
+
+void
 McpttCallMachinePrivate::ReceiveReleaseAck (const McpttCallMsgPrivateReleaseAck& msg)
 {
   NS_LOG_FUNCTION (this << msg);

@@ -368,6 +368,12 @@ McpttCallMachineGrpBroadcast::RejectCall (void)
 }
 
 void
+McpttCallMachineGrpBroadcast::ReportEvent (const char* reason) const
+{
+  GetCall ()->GetOwner ()->ReportEvent (GetCall ()->GetCallId (), reason);
+}
+
+void
 McpttCallMachineGrpBroadcast::Send (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this);

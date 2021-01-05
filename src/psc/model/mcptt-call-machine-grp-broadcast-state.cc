@@ -213,6 +213,8 @@ McpttCallMachineGrpBroadcastStateB1::InitiateCall (McpttCallMachineGrpBroadcast&
   tfb1->Start ();
   tfb2->Start ();
 
+  machine.ReportEvent (McpttCallMachine::CALL_INITIATED);
+
   machine.ChangeState (McpttCallMachineGrpBroadcastStateB2::GetInstance ());
 }
 

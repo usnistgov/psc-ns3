@@ -197,6 +197,9 @@ public:
   * \param [in] newStateName Name of the new state
   */
  typedef void (* StateChangeTracedCallback) (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
+ 
+ // Events to report
+ static constexpr const char* CALL_INITIATED = "Call initiated";
 };
 /**
  * \ingroup mcptt

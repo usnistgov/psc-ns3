@@ -212,8 +212,11 @@ McpttCallMachineGrpBasicStateS1::InitiateCall (McpttCallMachineGrpBasic& machine
   Ptr<McpttCallTypeMachineGrpBasic> typeMachine = machine.GetTypeMachine ();
 
   uint32_t grpId = machine.GetGrpId ().GetGrpId ();
+  uint16_t callId = machine.GenerateRandomCallId ();
 
+  machine.SetCallId (callId);
   machine.SetGrpId (grpId);
+
   typeMachine->Start ();
 
   McpttCallMsgGrpProbe msg;
@@ -223,6 +226,8 @@ McpttCallMachineGrpBasicStateS1::InitiateCall (McpttCallMachineGrpBasic& machine
   tfg1->Start ();
 
   machine.Send (msg);
+
+  machine.ReportEvent (McpttCallMachine::CALL_INITIATED);
 
   machine.ChangeState (McpttCallMachineGrpBasicStateS2::GetInstance ());
 }
@@ -364,7 +369,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   Ptr<McpttCallTypeMachineGrpBasic> typeMachine = machine.GetTypeMachine ();
 
   uint32_t myUserId = machine.GetCall ()->GetOwner ()->GetUserId ();
-  uint16_t callId = machine.GenerateRandomCallId ();
+  uint16_t callId = machine.GetCallId ().GetCallId ();
   NS_LOG_DEBUG ("Generate call ID of " << callId);
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
@@ -390,7 +395,6 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
   sdp.SetSpeechPort (speechPort);
 
   machine.SetSdp (sdp);
-
   machine.SetCallId (callId);
   machine.SetRefInt (selectedRefInt);
   machine.SetOrigId (myUserId);

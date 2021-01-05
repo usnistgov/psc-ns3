@@ -234,6 +234,11 @@ public:
   */
  virtual void ReleaseCall (void);
  /**
+  * \brief Report an event to the McpttPttApp.
+  * \param reason the reason to report.
+  */
+ virtual void ReportEvent (const char* reason) const;
+ /**
   * Sends a call control message.
   * \param msg The message to send.
   */

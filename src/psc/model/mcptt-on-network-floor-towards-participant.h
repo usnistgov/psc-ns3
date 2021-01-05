@@ -268,7 +268,6 @@ private:
  Ptr<McpttChannel> m_floorChannel; //!< The channel to use for floor control messages.
  uint16_t m_floorPort; //!< The port to use for the floor control channel.
  bool m_implicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
- bool m_queueing; //!< The flag that indicates if SDP offer contains the "mc_queueing" fmtp attribute.
  Ptr<McpttChannel> m_mediaChannel; //!< The channel to use for media messages.
  uint16_t m_mediaPort; //!< The port to use for media messages.
  bool m_originator; //!< Flag that indicates if the associated floor participant is the originator.

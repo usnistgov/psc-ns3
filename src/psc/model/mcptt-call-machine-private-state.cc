@@ -344,6 +344,8 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
       tfp7->Stop ();
     }
 
+  machine.ReportEvent (McpttCallMachine::CALL_INITIATED);
+
   machine.ChangeState (McpttCallMachinePrivateStateP2::GetInstance ());
 }
 
