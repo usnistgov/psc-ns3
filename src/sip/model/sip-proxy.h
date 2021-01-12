@@ -61,9 +61,25 @@ public:
    */
   static TypeId GetTypeId (void);
 
+  /**
+   * Schedule Timer C (proxy INVITE transaction timeout)
+   * \param id Transaction ID
+   */
+  virtual void ScheduleTimerC (TransactionId id);
+  /**
+   * \brief Cancel Timer C 
+   * \param id Transaction ID
+   */
+  virtual void CancelTimerC (TransactionId id);
+  /**
+   * Handle Timer C expiry (proxy INVITE transaction timeout)
+   * \param id Transaction ID
+   */
+  virtual void HandleTimerC (TransactionId id);
+
 protected:
   void DoDispose (void);
-
+  Time m_proxyInviteTransactionTimeout; //!< Timeout value for Timer C
 };
 
 } // namespace sip

@@ -36,6 +36,11 @@ SipProxy::GetTypeId (void)
     .SetParent<SipElement> ()
     .SetGroupName ("Sip")
     .AddConstructor<SipProxy> ()
+    .AddAttribute ("ProxyInviteTransactionTimeout",
+                   "Timer C timeout value",
+                   TimeValue (Minutes (5)), // > 3 minutes
+                   MakeTimeAccessor (&SipProxy::m_proxyInviteTransactionTimeout),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -56,6 +61,43 @@ SipProxy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   SipElement::DoDispose ();
+}
+
+void
+SipProxy::ScheduleTimerC (TransactionId id)
+{
+  NS_LOG_FUNCTION (this << TransactionIdToString (id));
+  auto transIt = m_transactions.find (id);
+  NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
+  transIt->second.m_timerC.SetFunction (&SipProxy::HandleTimerC, this);
+  transIt->second.m_timerC.SetArguments (id);
+  transIt->second.m_timerC.Schedule (m_proxyInviteTransactionTimeout);
+}
+
+void
+SipProxy::CancelTimerC (TransactionId id)
+{
+  NS_LOG_FUNCTION (this << TransactionIdToString (id));
+  auto transIt = m_transactions.find (id);
+  NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
+  transIt->second.m_timerC.Cancel ();
+}
+
+void
+SipProxy::HandleTimerC (TransactionId id)
+{
+  NS_LOG_FUNCTION (this << TransactionIdToString (id));
+  DialogId did = GetDialogId (std::get<0> (id), std::get<1> (id), std::get<2> (id));
+  auto eventIt = m_eventCallbacks.find (std::get<0> (id));
+  NS_ASSERT_MSG (eventIt != m_eventCallbacks.end (), "CallID not found");
+  auto transIt = m_transactions.find (id);
+  NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
+  NS_ASSERT_MSG (transIt->second.m_state == TransactionState::PROCEEDING, "Transaction not in PROCEEDING");
+  eventIt->second (TIMER_C_EXPIRED, transIt->second.m_state);
+  // Send CANCEL to client
+  // Fail the transaction
+  SetTransactionState (id, TransactionState::FAILED);
+  SetDialogState (did, DialogState::TERMINATED);
 }
 
 } // namespace sip

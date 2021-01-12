@@ -77,9 +77,9 @@ public:
   enum class TransactionState
   {
     IDLE,
-    CALLING,
-    TRYING,
-    PROCEEDING,
+    CALLING, // Initial client state for INVITE transaction
+    TRYING,  // Initial client and server state, non-INVITE transaction
+    PROCEEDING, // Server send 100, client receipt of 100
     COMPLETED,
     CONFIRMED,
     TERMINATED,
@@ -205,6 +205,12 @@ public:
  static constexpr const char* TRYING_RECEIVED = "Trying received";
  static constexpr const char* TIMER_A_EXPIRED = "Timer A expired";
  static constexpr const char* TIMER_B_EXPIRED = "Timer B expired";
+ static constexpr const char* TIMER_C_EXPIRED = "Timer C expired";
+ static constexpr const char* TIMER_E_EXPIRED = "Timer E expired";
+ static constexpr const char* TIMER_F_EXPIRED = "Timer F expired";
+ static constexpr const char* TIMER_I_EXPIRED = "Timer I expired";
+ static constexpr const char* TIMER_J_EXPIRED = "Timer J expired";
+ static constexpr const char* TIMER_K_EXPIRED = "Timer K expired";
 
 protected:
   void DoDispose (void);
@@ -230,7 +236,7 @@ protected:
    */
   DialogId GetDialogId (uint16_t callId, uint32_t uriA, uint32_t uriB) const;
   /**
-   * Structure to hold agent state regarding a dialog
+   * Structure to hold state regarding a dialog
    */
   struct Dialog
   {
@@ -263,7 +269,7 @@ protected:
    */
   TransactionId GetTransactionId (uint16_t callId, uint32_t from, uint32_t to) const;
   /**
-   * Structure to hold agent state regarding a transaction
+   * Structure to hold state regarding a transaction
    */
   struct Transaction
   {
@@ -282,6 +288,12 @@ protected:
     SipHeader m_sipHeader;
     Timer m_timerA {Timer::CANCEL_ON_DESTROY}; //!< Timer A
     Timer m_timerB {Timer::CANCEL_ON_DESTROY}; //!< Timer B
+    Timer m_timerC {Timer::CANCEL_ON_DESTROY}; //!< Timer C 
+    Timer m_timerE {Timer::CANCEL_ON_DESTROY}; //!< Timer E
+    Timer m_timerF {Timer::CANCEL_ON_DESTROY}; //!< Timer F
+    Timer m_timerI {Timer::CANCEL_ON_DESTROY}; //!< Timer I
+    Timer m_timerJ {Timer::CANCEL_ON_DESTROY}; //!< Timer J
+    Timer m_timerK {Timer::CANCEL_ON_DESTROY}; //!< Timer K
   };
   /**
    * Create a new Dialog object and store it in the internal map, with call ID
@@ -390,6 +402,40 @@ protected:
    */
   void ScheduleTimerB (TransactionId id);
   /**
+   * Schedule Timer C (proxy INVITE transaction timeout)
+   * 
+   * The default implementation does nothing; the proxy subclass implements it
+   *
+   * \param id Transaction ID
+   */
+  virtual void ScheduleTimerC (TransactionId id);
+  /**
+   * Schedule Timer E (retransmit the non-INVITE)
+   * \param id TransactionId
+   * \param backoff Value to use for the T1 multiplier
+   */
+  void ScheduleTimerE (TransactionId id, uint32_t backoff);
+  /**
+   * Schedule Timer F (failure of non-INVITE to complete)
+   * \param id Transaction ID
+   */
+  void ScheduleTimerF (TransactionId id);
+  /**
+   * Schedule Timer I (INVITE server transaction, absorb further ACKs)
+   * \param id Transaction ID
+   */
+  void ScheduleTimerI (TransactionId id);
+  /**
+   * Schedule Timer J (non-INVITE server transaction)
+   * \param id Transaction ID
+   */
+  void ScheduleTimerJ (TransactionId id);
+  /**
+   * Schedule Timer K (non-INVITE client transaction)
+   * \param id Transaction ID
+   */
+  void ScheduleTimerK (TransactionId id);
+  /**
    * \brief Cancel Timer A
    * \param id Transaction ID
    */
@@ -399,6 +445,24 @@ protected:
    * \param id Transaction ID
    */
   void CancelTimerB (TransactionId id);
+  /**
+   * \brief Cancel Timer C 
+   *
+   * The default implementation does nothing; the proxy subclass implements it
+   *
+   * \param id Transaction ID
+   */
+  virtual void CancelTimerC (TransactionId id);
+  /**
+   * \brief Cancel Timer E 
+   * \param id Transaction ID
+   */
+  void CancelTimerE (TransactionId id);
+  /**
+   * \brief Cancel Timer F 
+   * \param id Transaction ID
+   */
+  void CancelTimerF (TransactionId id);
   /**
    * Handle Timer A expiry (retransmit the INVITE)
    * \param id Transaction ID
@@ -410,6 +474,32 @@ protected:
    * \param id Transaction ID
    */
   void HandleTimerB (TransactionId id);
+  /**
+   * Handle Timer E expiry (retransmit the non-INVITE)
+   * \param id Transaction ID
+   * \param backoff Last value used for the T1 multiplier
+   */
+  void HandleTimerE (TransactionId id, uint32_t backoff);
+  /**
+   * Handle Timer F expiry (failure of non-INVITE transaction)
+   * \param id Transaction ID
+   */
+  void HandleTimerF (TransactionId id);
+  /**
+   * Handle Timer I expiry (move state from CONFIRMED to TERMINATED)
+   * \param id Transaction ID
+   */
+  void HandleTimerI (TransactionId id);
+  /**
+   * Handle Timer J expiry (server move state from COMPLETED to TERMINATED)
+   * \param id Transaction ID
+   */
+  void HandleTimerJ (TransactionId id);
+  /**
+   * Handle Timer K expiry (client move state from COMPLETED to TERMINATED)
+   * \param id Transaction ID
+   */
+  void HandleTimerK (TransactionId id);
 
   std::unordered_map<DialogId, Dialog, TupleHash> m_dialogs;
   std::unordered_map<TransactionId, Transaction, TupleHash> m_transactions;

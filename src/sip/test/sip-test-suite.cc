@@ -505,13 +505,21 @@ SipTestCase::Client1ReceiveSipEvent (const char* event, sip::SipAgent::Transacti
   else if (strcmp (event, SipAgent::TIMER_A_EXPIRED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer A expired"));
-      std::cout << Simulator::Now ().GetSeconds () << " Timer A expired " << SipAgent::TransactionStateToString (state) << std::endl;
       m_step++;
     }
   else if (strcmp (event, SipAgent::TIMER_B_EXPIRED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer B expired"));
-      std::cout << Simulator::Now ().GetSeconds () << " Timer B expired" << std::endl;
+      m_step++;
+    }
+  else if (strcmp (event, SipAgent::TIMER_E_EXPIRED) == 0)
+    {
+      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer E expired"));
+      m_step++;
+    }
+  else if (strcmp (event, SipAgent::TIMER_F_EXPIRED) == 0)
+    {
+      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer F expired"));
       m_step++;
     }
 }
@@ -810,7 +818,7 @@ SipDialogTest::DoRun ()
   Simulator::Schedule (Seconds (1), &SipTestCase::Client1SendSipInvite, this);
 
   // The final events are triggered by client 1 sending a SIP BYE
-  Simulator::Schedule (Seconds (3), &SipTestCase::Client1SendSipBye, this);
+  Simulator::Schedule (Seconds (10), &SipTestCase::Client1SendSipBye, this);
 
   // Define the expected events
   // Client 1 sends INVITE
@@ -905,6 +913,9 @@ SipDialogTest::DoRun ()
   m_client1ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,1) enter TERMINATED"));
   m_client1ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,1,0) enter TRYING"));
   m_client1ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,1,0) enter COMPLETED"));
+  // After Timer K expires, move to TERMINATED
+  m_client1ExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,1,0) enter TERMINATED"));
+
   // Clients 2  and 3 plays the UAS role in receiving both INVITE and BYE
   // Client 2 receives INVITE, and the transaction ends in CONFIRMED upon ACK
   m_client2ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,2) enter TRYING"));
@@ -912,10 +923,14 @@ SipDialogTest::DoRun ()
   m_client2ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,2) enter CONFIRMED"));
   m_client2ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,0,2) enter COMPLETED"));
   m_client2ExpectedStateChanges.push_back (TestEvent (4, 0, "Transaction (1000,0,2) enter CONFIRMED"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (5, 0, "Dialog (1000,0,2) enter TERMINATED"));
-  // Client 2 later receives BYE, and the transaction ends up in COMPLETED
-  m_client2ExpectedStateChanges.push_back (TestEvent (6, 0, "Transaction (1000,0,2) enter TRYING"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,2) enter COMPLETED"));
+  // After Timer I expires, move to TERMINATED
+  m_client2ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,0,2) enter TERMINATED"));
+  // Client 2 later receives BYE, and the transaction ends up in TERMINATED
+  // after Timer J expires
+  m_client2ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,2) enter TERMINATED"));
+  m_client2ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,2) enter TRYING"));
+  m_client2ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,0,2) enter COMPLETED"));
+  m_client2ExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,0,2) enter TERMINATED"));
 
   // Client 3's transitions should be identical to Client 2's transitions
   m_client3ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,3) enter TRYING"));
@@ -923,9 +938,11 @@ SipDialogTest::DoRun ()
   m_client3ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,3) enter CONFIRMED"));
   m_client3ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,0,3) enter COMPLETED"));
   m_client3ExpectedStateChanges.push_back (TestEvent (4, 0, "Transaction (1000,0,3) enter CONFIRMED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (5, 0, "Dialog (1000,0,3) enter TERMINATED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (6, 0, "Transaction (1000,0,3) enter TRYING"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,3) enter COMPLETED"));
+  m_client3ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,0,3) enter TERMINATED"));
+  m_client3ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,3) enter TERMINATED"));
+  m_client3ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,3) enter TRYING"));
+  m_client3ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,0,3) enter COMPLETED"));
+  m_client3ExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,0,3) enter TERMINATED"));
 
   // The proxy plays the role of UAS towards Client 1 and UAC towards 2 and 3
   // Handle the INVITE from client 1
@@ -940,28 +957,39 @@ SipDialogTest::DoRun ()
   m_proxyExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,3) enter CALLING"));
   m_proxyExpectedStateChanges.push_back (TestEvent (8, 0, "Dialog (1000,0,2) enter CONFIRMED"));
   m_proxyExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,0,2) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (10, 0, "Dialog (1000,0,3) enter CONFIRMED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (11, 0, "Transaction (1000,0,3) enter TERMINATED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (10, 0, "Dialog (1000,0,1) enter CONFIRMED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (11, 0, "Transaction (1000,1,0) enter COMPLETED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (12, 0, "Dialog (1000,0,3) enter CONFIRMED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (13, 0, "Transaction (1000,0,3) enter TERMINATED"));
   // upon ACK from 1, enter CONFIRMED state
   // send the 200 OK towards Client 1
-  m_proxyExpectedStateChanges.push_back (TestEvent (12, 0, "Transaction (1000,1,0) enter CONFIRMED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (14, 0, "Transaction (1000,1,0) enter CONFIRMED"));
+  // Timer I expires towards UAC (node 1).  This ends INVITE state changes
+  m_proxyExpectedStateChanges.push_back (TestEvent (15, 0, "Transaction (1000,1,0) enter TERMINATED"));
   // upon receipt of BYE, the Dialog goes to TERMINATED
-  m_proxyExpectedStateChanges.push_back (TestEvent (13, 0, "Dialog (1000,0,1) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (14, 0, "Transaction (1000,1,0) enter TRYING"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (16, 0, "Dialog (1000,0,1) enter TERMINATED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (17, 0, "Transaction (1000,1,0) enter TRYING"));
   // send OK to client 1 and enter COMPLETED
-  m_proxyExpectedStateChanges.push_back (TestEvent (15, 0, "Transaction (1000,1,0) enter COMPLETED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (18, 0, "Transaction (1000,1,0) enter COMPLETED"));
   // close the Dialog from 0 to 2 and 0 to 3
-  m_proxyExpectedStateChanges.push_back (TestEvent (16, 0, "Dialog (1000,0,2) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (17, 0, "Transaction (1000,0,2) enter TRYING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (18, 0, "Dialog (1000,0,3) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (19, 0, "Transaction (1000,0,3) enter TRYING"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (19, 0, "Dialog (1000,0,2) enter TERMINATED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (20, 0, "Transaction (1000,0,2) enter TRYING"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (21, 0, "Dialog (1000,0,3) enter TERMINATED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (22, 0, "Transaction (1000,0,3) enter TRYING"));
   // Non-INVITE client transaction moves to COMPLETED upon 200 OK
-  m_proxyExpectedStateChanges.push_back (TestEvent (20, 0, "Transaction (1000,0,2) enter COMPLETED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (21, 0, "Transaction (1000,0,3) enter COMPLETED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (23, 0, "Transaction (1000,0,2) enter COMPLETED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (24, 0, "Transaction (1000,0,3) enter COMPLETED"));
+  // After timers J (towards client 1) and K (towards clients 2 and 3) expire,
+  // transactions move to TERMINATED
+  m_proxyExpectedStateChanges.push_back (TestEvent (25, 0, "Transaction (1000,0,2) enter TERMINATED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (26, 0, "Transaction (1000,0,3) enter TERMINATED"));
+  m_proxyExpectedStateChanges.push_back (TestEvent (27, 0, "Transaction (1000,1,0) enter TERMINATED"));
 
+  Simulator::Stop (Seconds (60));  // greater than 45 seconds to cover Timer J
   Simulator::Run ();
   Simulator::Destroy ();
 
+//#define VERBOSE_DIALOG 1
 #ifdef VERBOSE_DIALOG
   // Define this to print out the observed events, if needed for debugging
   // or to generate new expected events.
@@ -1202,7 +1230,7 @@ SipInitiatorInviteLossTest::DoRun ()
 
 /**
  * \ingroup tests
- * Test the outcome from the failure of initial INVITE from Client 1
+ * Test the outcome from the failure of INVITE (all attempts) from Client 1
  */
 class SipInitiatorInviteFailureTest : public SipTestCase
 {
@@ -1318,10 +1346,324 @@ SipInitiatorInviteFailureTest::DoRun ()
 }
 
 /**
+ * \ingroup tests
+ * Test the recovery from the loss of initial BYE from Client 1
+ */
+class SipInitiatorByeLossTest : public SipTestCase
+{
+public:
+  SipInitiatorByeLossTest (void);
+private:
+  virtual void DoRun (void);
+};
+
+SipInitiatorByeLossTest::SipInitiatorByeLossTest (void)
+  : SipTestCase ("SIP initiator BYE loss test") 
+{
+}
+
+void
+SipInitiatorByeLossTest::DoRun ()
+{
+  // Add an error model to force the loss of the first BYE from client 1
+  // to the server
+  Ptr<ReceiveListErrorModel> em = CreateObject<ReceiveListErrorModel> ();
+  std::list<uint32_t> errorList;
+  errorList.push_back (2); // 0 is INVITE, 1 is ACK of 200
+  em->SetList (errorList);
+  m_serverDeviceTowardsClient1->SetReceiveErrorModel (em);
+
+  // The event is triggered by client 1 sending a SIP INVITE then later a BYE
+  Simulator::Schedule (Seconds (1), &SipTestCase::Client1SendSipInvite, this);
+  Simulator::Schedule (Seconds (10), &SipTestCase::Client1SendSipBye, this);
+
+  // Expected events
+  // Client 1 sends INVITE
+  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
+  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  m_expectedEvents.push_back (TestEvent (12, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (13, 2, "Client2 receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (16, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (17, 3, "Client3 receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (20, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (21, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (22, 0, "Server send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (24, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (25, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (26, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (27, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (29, 1, "Client1 receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (31, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (32, 2, "Client2 receive ACK"));
+  m_expectedEvents.push_back (TestEvent (33, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
+  m_expectedEvents.push_back (TestEvent (35, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (36, 0, "Server receive ACK"));
+  m_expectedEvents.push_back (TestEvent (37, 1, "Client1 send SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (38, 1, "Client1 send SIP message"));
+  // The message is lost; Timer E expires, and the BYE is sent again
+  m_expectedEvents.push_back (TestEvent (39, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (40, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (41, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (42, 0, "Server receive SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (43, 0, "Server send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (44, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (45, 0, "Server send SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (46, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (47, 0, "Server send SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (48, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (49, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (50, 1, "Client1 receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (51, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (52, 2, "Client2 receive SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (53, 2, "Client2 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (54, 2, "Client2 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (55, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (56, 3, "Client3 receive SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (57, 3, "Client3 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (58, 3, "Client3 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (59, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (60, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (61, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (62, 0, "Server receive 200 OK"));
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+//#define VERBOSE_INITIATOR_BYE_LOSS 1
+#ifdef VERBOSE_INITIATOR_BYE_LOSS
+  // Define this to print out the observed events, if needed for debugging
+  // or to generate new expected events.
+  for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
+    {
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client1 state changes:" << std::endl;
+  for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client2 state changes:" << std::endl;
+  for (auto it = m_client2ObservedStateChanges.begin (); it != m_client2ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client3 state changes:" << std::endl;
+  for (auto it = m_client3ObservedStateChanges.begin (); it != m_client3ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Proxy state changes:" << std::endl;
+  for (auto it = m_proxyObservedStateChanges.begin (); it != m_proxyObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+#endif
+
+  NS_TEST_ASSERT_MSG_EQ (m_observedEvents.size (), m_expectedEvents.size (), "Did not observe all expected events");
+  auto it1 = m_observedEvents.begin ();
+  auto it2 = m_expectedEvents.begin ();
+  while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
+    { 
+      if (*it1 != *it2)
+        { 
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        }
+      it1++;
+      it2++;
+    }
+
+  // Do not replicate DialogTestCase checks on per-client state transitions
+}
+
+/**
+ * \ingroup tests
+ * Test the outcome from the failure of BYE (all attempts) from Client 1
+ */
+class SipInitiatorByeFailureTest : public SipTestCase
+{
+public:
+  SipInitiatorByeFailureTest (void);
+private:
+  virtual void DoRun (void);
+};
+
+SipInitiatorByeFailureTest::SipInitiatorByeFailureTest (void)
+  : SipTestCase ("SIP initiator BYE failure test") 
+{
+}
+
+void
+SipInitiatorByeFailureTest::DoRun ()
+{
+  // Add an error model to force the failure of all BYEs from client 1
+  // to the server
+  Ptr<ReceiveListErrorModel> em = CreateObject<ReceiveListErrorModel> ();
+  std::list<uint32_t> errorList;
+  // 7 losses from message 2 onward (the first BYE) will lead to a Timer F 
+  errorList.push_back (2);
+  errorList.push_back (3);
+  errorList.push_back (4);
+  errorList.push_back (5);
+  errorList.push_back (6);
+  errorList.push_back (7);
+  errorList.push_back (8);
+  em->SetList (errorList);
+  m_serverDeviceTowardsClient1->SetReceiveErrorModel (em);
+
+  // The event is triggered by client 1 sending a SIP INVITE then later a BYE
+  Simulator::Schedule (Seconds (1), &SipTestCase::Client1SendSipInvite, this);
+  Simulator::Schedule (Seconds (10), &SipTestCase::Client1SendSipBye, this);
+
+
+  // Expected events
+  // Client 1 sends INVITE at time 1 second, and first transaction completes
+  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
+  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  m_expectedEvents.push_back (TestEvent (12, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (13, 2, "Client2 receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (16, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (17, 3, "Client3 receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (20, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (21, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (22, 0, "Server send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (24, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (25, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (26, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (27, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (29, 1, "Client1 receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (31, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (32, 2, "Client2 receive ACK"));
+  m_expectedEvents.push_back (TestEvent (33, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
+  m_expectedEvents.push_back (TestEvent (35, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (36, 0, "Server receive ACK"));
+  // Client 1 sends BYE at 10 seconds
+  // all retransmissions are lost (sent at 10.5, 11.5, 13.5, 17.5, 25.5, 41.5s)
+  m_expectedEvents.push_back (TestEvent (37, 1, "Client1 send SIP BYE"));
+  m_expectedEvents.push_back (TestEvent (38, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (39, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (40, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (41, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (42, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (43, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (44, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (45, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (46, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (47, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (48, 1, "Client1 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (49, 1, "Client1 Timer E expired"));
+  m_expectedEvents.push_back (TestEvent (50, 1, "Client1 send SIP message"));
+  // After 6th retransmission, Timer F fires
+  m_expectedEvents.push_back (TestEvent (51, 1, "Client1 Timer F expired"));
+  // No further timer E expiry
+
+  // We expect at time 1s for the dialog to enter TRYING and transaction to
+  // enter CALLING
+  m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,1) enter PROCEEDING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,1,0) enter PROCEEDING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (4, 0, "Dialog (1000,0,1) enter CONFIRMED"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,1,0) enter TERMINATED"));
+  // We expect at time 10s for the dialog to enter TERMINATED and transaction to
+  // enter TRYING, then later to FAILED
+  m_client1ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,1) enter TERMINATED"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,1,0) enter TRYING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,1,0) enter FAILED"));
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+//#define VERBOSE_INITIATOR_BYE_FAILURE 1
+#ifdef VERBOSE_INITIATOR_BYE_FAILURE
+  // Define this to print out the observed events, if needed for debugging
+  // or to generate new expected events.
+  for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
+    {
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client1 state changes:" << std::endl;
+  for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+#endif
+
+  NS_TEST_ASSERT_MSG_EQ (m_observedEvents.size (), m_expectedEvents.size (), "Did not observe all expected events");
+  auto it1 = m_observedEvents.begin ();
+  auto it2 = m_expectedEvents.begin ();
+  while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
+    { 
+      if (*it1 != *it2)
+        { 
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        }
+      it1++;
+      it2++;
+    }
+  // Check that client observed state transitions match expected transitions
+  NS_TEST_ASSERT_MSG_EQ (m_client1ExpectedStateChanges.size (), m_client1ObservedStateChanges.size (), "Did not observe all expected state changes");
+  auto it3 = m_client1ExpectedStateChanges.begin ();
+  auto it4 = m_client1ObservedStateChanges.begin ();
+  while (it3 != m_client1ExpectedStateChanges.end () && it4 != m_client1ObservedStateChanges.end ())
+    { 
+      if (*it3 != *it4)
+        { 
+          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");  
+        }
+      it3++;
+      it4++;
+    }
+}
+
+/**
  * \ingroup sip
  * \ingroup tests
  *
- * \brief SIP test suite
+ * \brief SIP test suite.  The emphasis of these tests is checking a full
+ * dialog in a group call setting, without any message loss, and then
+ * checking various message loss cases and how timers handle the losses
  */
 class SipTestSuite : public TestSuite
 {
@@ -1332,8 +1674,12 @@ public:
     AddTestCase (new SipDialogTest, TestCase::QUICK);
     // Test the recovery from the loss of initial INVITE from Client 1
     AddTestCase (new SipInitiatorInviteLossTest, TestCase::QUICK);
-    // Test the outcome from the failure of initial INVITE from Client 1
+    // Test the outcome from the failure of INVITE from Client 1
     AddTestCase (new SipInitiatorInviteFailureTest, TestCase::QUICK);
+    // Test the recovery from the loss of initial BYE from Client 1
+    AddTestCase (new SipInitiatorByeLossTest, TestCase::QUICK);
+    // Test the outcome from the failure of BYE from Client 1
+    AddTestCase (new SipInitiatorByeFailureTest, TestCase::QUICK);
   }
 };
 
