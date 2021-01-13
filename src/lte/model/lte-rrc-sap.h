@@ -1646,7 +1646,7 @@ public:
    */
   struct SlUeSelectedConfig
   {
-    uint8_t slProbResourceKeep {0}; /**< Indicates the probability with which
+    double slProbResourceKeep {0.0}; /**< Indicates the probability with which
                                          the UE keeps the current resource when
                                          the resource reselection counter reaches
                                          zero for sensing based UE autonomous

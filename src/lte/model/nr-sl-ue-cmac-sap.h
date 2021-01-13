@@ -108,7 +108,7 @@ public:
    *        current resource when the resource reselection counter reaches zero
    *        for sensing based UE autonomous resource selection (see TS 38.321)
    */
-  virtual void SetSlProbResoKeep (uint8_t prob) = 0;
+  virtual void SetSlProbResoKeep (double prob) = 0;
   /**
    * \brief Set the maximum transmission number (including new transmission and
    *        retransmission) for PSSCH.
@@ -157,7 +157,7 @@ public:
   virtual void ResetNrSlLcMap ();
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool);
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool);
-  virtual void SetSlProbResoKeep (uint8_t prob);
+  virtual void SetSlProbResoKeep (double prob);
   virtual void SetSlMaxTxTransNumPssch (uint8_t maxTxPssch);
   virtual void SetSourceL2Id (uint32_t srcL2Id);
   virtual void AddNrSlRxDstL2Id (uint32_t dstL2Id);
@@ -206,7 +206,7 @@ MemberNrSlUeCmacSapProvider<C>::AddNrSlCommRxPool (Ptr<const NrSlCommResourcePoo
 }
 
 template <class C>
-void MemberNrSlUeCmacSapProvider<C>::SetSlProbResoKeep (uint8_t prob)
+void MemberNrSlUeCmacSapProvider<C>::SetSlProbResoKeep (double prob)
 {
   m_mac->DoSetSlProbResoKeep (prob);
 }
