@@ -397,6 +397,16 @@ McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachin
       machine.GetServerCall ()->GetArbitrator ()->CallRelease1 ();
       NS_ASSERT_MSG (pending.size (), "Error, no responses added to pending list");
       machine.SetPendingTransactionList (pending);
+      NS_LOG_DEBUG ("Reply to BYE with 200 OK");
+      Ptr<Packet> response = Create<Packet> ();
+      SipHeader newHeader;
+      newHeader.SetMessageType (SipHeader::SIP_RESPONSE);
+      newHeader.SetStatusCode (200);
+      newHeader.SetFrom (sipHeader.GetFrom ());
+      newHeader.SetTo (sipHeader.GetTo ());
+      newHeader.SetCallId (sipHeader.GetCallId ());
+      response->AddHeader (newHeader);
+      machine.SendSipResponse (machine.GetServerCall ()->GetOriginator (), response, newHeader);
     }
   else
     {
