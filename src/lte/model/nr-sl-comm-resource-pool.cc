@@ -167,7 +167,14 @@ NrSlCommResourcePool::GetNrSlCommOpportunities (uint64_t absIndexCurretSlot, uin
   uint16_t t2min = LteRrcSap::GetSlSelWindowValue (pool.slUeSelectedConfigRp.slSelectionWindow);
   uint16_t multiplier = static_cast <uint16_t> (std::pow (2, numerology));
   t2min = t2min * multiplier;
-  uint16_t t2Final = std::max (t2min, t2);
+  NS_ABORT_MSG_IF (t2min > t2, "T2min(" << t2min << ")" << " should be less than or equal to T2(" << t2 << ") in physical slots");
+  //38.214 sec 8.1.4 says, if T2min is shorter than the remaining packet delay
+  //budget (in slots) then T2 is up to UE implementation subject to
+  //T2min ≤ T 2 ≤ remaining packet budget (in slots); otherwise T 2 is set
+  //to the remaining packet delay budget (in slots).
+  //In the current implementation, we do not consider packet budget, thus, we
+  //take t2 as it is without checking if it is lower than packet budget or not
+  uint16_t t2Final = t2;
 
   uint64_t firstAbsSlotIndex = absIndexCurretSlot + t1;
   uint64_t lastAbsSlotIndex =  absIndexCurretSlot + t2Final;
