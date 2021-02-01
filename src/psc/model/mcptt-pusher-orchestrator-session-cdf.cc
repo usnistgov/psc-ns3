@@ -382,7 +382,7 @@ TypeId
 McpttPusherOrchestratorSessionCdf::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorSessionCdf")
-    .SetParent<McpttPusherOrchestrator> ()
+    .SetParent<McpttPusherOrchestratorInterface> ()
     .AddConstructor<McpttPusherOrchestratorSessionCdf>()
     .AddAttribute ("ActivityFactor", "The desired activity factor.",
                    DoubleValue (.50),
@@ -393,7 +393,7 @@ McpttPusherOrchestratorSessionCdf::GetTypeId (void)
                    PointerValue (0),
                    MakePointerAccessor (&McpttPusherOrchestratorSessionCdf::GetOrchestrator,
                                         &McpttPusherOrchestratorSessionCdf::SetOrchestrator),
-                   MakePointerChecker<McpttPusherOrchestrator> ())
+                   MakePointerChecker<McpttPusherOrchestratorInterface> ())
     .AddTraceSource ("SessionInterarrivalTimeTrace",
                      "The trace for capturing session interarrival times.",
                      MakeTraceSourceAccessor (&McpttPusherOrchestratorSessionCdf::m_sessionIatTrace),
@@ -411,7 +411,7 @@ McpttPusherOrchestratorSessionCdf::GetTypeId (void)
 }
 
 McpttPusherOrchestratorSessionCdf::McpttPusherOrchestratorSessionCdf (void)
-  : McpttPusherOrchestrator (),
+  : McpttPusherOrchestratorInterface (),
     m_avgSessionDuration (CDF_POINTS_AVG),
     m_nextEvent (EventId ()),
     m_sessionDurationVariable (CreateObject<EmpiricalRandomVariable> ()),
@@ -589,7 +589,7 @@ McpttPusherOrchestratorSessionCdf::GetActivityFactor (void) const
   return m_af;
 }
 
-Ptr<McpttPusherOrchestrator>
+Ptr<McpttPusherOrchestratorInterface>
 McpttPusherOrchestratorSessionCdf::GetOrchestrator (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -608,7 +608,7 @@ McpttPusherOrchestratorSessionCdf::SetActivityFactor (double af)
 }
 
 void
-McpttPusherOrchestratorSessionCdf::SetOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator)
+McpttPusherOrchestratorSessionCdf::SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator)
 {
   NS_LOG_FUNCTION (this << orchestrator);
 

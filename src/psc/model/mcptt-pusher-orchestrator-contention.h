@@ -38,7 +38,7 @@
 #include <ns3/random-variable-stream.h>
 
 #include "mcptt-pusher.h"
-#include "mcptt-pusher-orchestrator.h"
+#include "mcptt-pusher-orchestrator-interface.h"
 
 namespace ns3 {
  
@@ -56,7 +56,7 @@ namespace ns3 {
  * two pushers being orchestrated, and one of the pushers must not already be
  * actively pushing the PTT button.
  */
-class McpttPusherOrchestratorContention : public McpttPusherOrchestrator 
+class McpttPusherOrchestratorContention : public McpttPusherOrchestratorInterface
 {
 public:
  /**
@@ -145,19 +145,19 @@ private:
  double m_cp; //!< The probability of contention.
  EventId m_nextEvent; //!< The next event.
  Ptr<McpttPusher> m_nextPusher; //!< The next pusher to activate.
- Ptr<McpttPusherOrchestrator> m_orchestrator; //!< The underlying orchestrator.
+ Ptr<McpttPusherOrchestratorInterface> m_orchestrator; //!< The underlying orchestrator.
  Ptr<UniformRandomVariable> m_rv; //!< A random variable.
 public:
  /**
   * Gets the underlying orchestrator.
   * \returns The underlying orchestrator.
   */
- virtual Ptr<McpttPusherOrchestrator> GetOrchestrator (void) const;
+ virtual Ptr<McpttPusherOrchestratorInterface> GetOrchestrator (void) const;
  /**
   * Sets the underlying orchestrator.
   * \param orchestrator The underlying orchestrator.
   */
- virtual void SetOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator);
+ virtual void SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator);
 };
  
 } // namespace ns3

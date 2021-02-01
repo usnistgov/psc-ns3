@@ -37,18 +37,21 @@
 #include <ns3/type-id.h>
 
 #include "mcptt-pusher.h"
+#include "mcptt-pusher-orchestrator-interface.h"
 
 namespace ns3 {
  
 /**
  * \ingroup mcptt
  *
- * This class defines the interface of objects used to orchestrate the
- * behavior of a collection of ns3::McpttPusher objects. In general, objects
- * derived from this abstract base class will decide when the pusher objects
- * will schedule push and release events.
+ * This class is used to orchestrate the behavior of a collection of
+ * ns3::McpttPusher objects. This class uses a random variable for
+ * determining when a PTT event will occur, and another random variable for
+ * determining for how long. When pushers are orchestrated by this object
+ * each pusher has equal opportunity for being selected go generate a PTT
+ * push and release.
  */
-class McpttPusherOrchestrator : public Object 
+class McpttPusherOrchestrator : public McpttPusherOrchestratorInterface
 {
 public:
  /**
@@ -68,73 +71,78 @@ public:
   * \brief Adds a pusher to the orchestrated set.
   * \param pusher The pusher to add.
   */
- virtual void AddPusher (Ptr<McpttPusher> pusher) = 0;
+ virtual void AddPusher (Ptr<McpttPusher> pusher);
  /**
   * \brief Set the stream for each random variable.
   * \param stream The starting stream number.
   * \returns The number of streams that were set.
   */
- virtual int64_t AssignStreams (int64_t stream) = 0;
+ virtual int64_t AssignStreams (int64_t stream);
  /**
   * \brief Gets the set of orchestrated pushers.
   * \returns The set of pushers.
   */
- virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const = 0;
+ virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const;
  /**
   * \brief Gets the set of pushers that are currently pushing the button.
   * \returns The set of pushers.
   */
- virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const = 0;
+ virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const;
  /**
   * \brief Generates an interarrival time.
   * \returns The interarrival time.
   */
- virtual Time NextPttIat (void) = 0;
+ virtual Time NextPttIat (void);
  /**
   * \brief Generates a PTT duration.
   * \returns The PTT duration.
   */
- virtual Time NextPttDuration (void) = 0;
+ virtual Time NextPttDuration (void);
  /**
-  * \brief Starts orchestrating the pushers.
+  * \brief Indicates if the orchestrator is active.
+  * \return True, if the orchestrator is scheduling pushes and releases.
   */
- virtual void Start (void) = 0;
+ virtual bool IsActive (void) const;
  /**
-  * \brief Schedules the orchestrator to start at the given time.
-  * \brief t The time at which to start.
+  * \brief Starts generating push and release events.
   */
- virtual void StartAt (const Time& t);
+ virtual void Start (void);
  /**
-  * \brief Stops orchestrating the pushers.
+  * \brief Stops generating push and release events.
+  * This method may be called multiple times consecutively without side effect.
   */
- virtual void Stop (void) = 0;
- /**
-  * \brief Schedules the orchestrator to stop at the given time.
-  * \brief t The time at which to stop the orchestrator.
-  */
- virtual void StopAt (const Time& t);
+ virtual void Stop (void);
 protected:
  /**
-  * \brief Disposes of Object resources.
+  * Activates the given pusher.
+  * \param pusher The given pusher.
+  */
+ virtual void ActivatePusher (Ptr<McpttPusher> pusher);
+ /**
+  * Deactivates the pusher.
+  */
+ virtual void DeactivatePusher (void);
+ /**
+  * Disposes of Object resources.
   */
  virtual void DoDispose (void);
  /**
-  * Traces the interarrival time.
-  * \param userId The MCPTT user ID of the pusher.
-  * \param iat The interarrival time.
+  * Initiates a PTT push.
   */
- virtual void TracePttIat (const uint32_t userId, const Time& iat);
+ virtual void PttPush (void);
  /**
-  * Traces the duration.
-  * \param userId The MCPTT user ID of the pusher.
-  * \param duration The duration.
+  * Initiates a PTT release.
   */
- virtual void TracePttDuration (const uint32_t userId, const Time& duration);
+ virtual void PttRelease (void);
 private:
- EventId m_startEvent; //!< The start event.
- EventId m_stopEvent; //!< The stop event.
- TracedCallback<uint32_t, Time> m_pttIatTrace; //!< The interarrival time trace.
- TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
+ bool m_active; //!< Indicates if the orchestrator is active.
+ Ptr<McpttPusher> m_activePusher; //!< Currently selected pusher.
+ EventId m_nextEvent; //!< The next event.
+ Ptr<McpttPusher> m_nextPusher; //!< The next pusher to be selected.
+ std::vector<Ptr<McpttPusher> > m_pushers; //!< Set of pushers to orchestrate.
+ Ptr<RandomVariableStream> m_pttDurationVariable; //!< For switching pushers.
+ Ptr<RandomVariableStream> m_pttIatVariable; //!< PTT interarrival time variable.
+ Ptr<UniformRandomVariable> m_selectionVariable; //!< For selecting pushers.
 };
  
 } // namespace ns3

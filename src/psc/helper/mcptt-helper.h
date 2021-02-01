@@ -78,11 +78,11 @@ public:
   */
  virtual ~McpttHelper (void);
  /**
-  * \brief Associate an ns3::McpttPusherOrchestrator with the pushers from a set of ns3::McpttPttApp objects.
+  * \brief Associate an ns3::McpttPusherOrchestratorInterface with the pushers from a set of ns3::McpttPttApp objects.
   * \param orchestrator The orchestrator.
   * \param apps The set of applications.
   */
- virtual void AddPushersToOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator, const ApplicationContainer& apps);
+ virtual void AddPushersToOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator, const ApplicationContainer& apps);
  /**
   * \brief Install an ns3::McpttPttApp on each node of the input container.
   *

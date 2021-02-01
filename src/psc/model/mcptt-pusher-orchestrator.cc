@@ -29,12 +29,15 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#include <ns3/simulator.h>
 #include <ns3/log.h>
+#include <ns3/pointer.h>
 #include <ns3/ptr.h>
+#include <ns3/simulator.h>
+#include <ns3/string.h>
 #include <ns3/type-id.h>
 
 #include "mcptt-pusher.h"
+#include "mcptt-pusher-orchestrator-interface.h"
 
 #include "mcptt-pusher-orchestrator.h"
 
@@ -48,22 +51,28 @@ TypeId
 McpttPusherOrchestrator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::McpttPusherOrchestrator")
-    .SetParent<Object> ()
-    .AddTraceSource ("PttInterarrivalTimeTrace",
-                     "The trace for capturing PTT interarrival times.",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestrator::m_pttIatTrace),
-                     "ns3::Time::TracedCallback")
-    .AddTraceSource ("PttDurationTrace",
-                     "The trace for capturing PTT durations.",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestrator::m_pttDurationTrace),
-                     "ns3::Time::TracedCallback")
-   ;
+    .SetParent<McpttPusherOrchestratorInterface> ()
+    .AddConstructor<McpttPusherOrchestrator>()
+    .AddAttribute ("PttDurationVariable", "The variable used for PTT durations.",
+                   StringValue ("ns3::NormalRandomVariable[Mean=5.0|Variance=2.0]"),
+                   MakePointerAccessor (&McpttPusherOrchestrator::m_pttDurationVariable),
+                   MakePointerChecker<RandomVariableStream> ())
+     .AddAttribute ("PttInterarrivalTimeVariable", "The variable used for PTT occurrences.",
+                   StringValue ("ns3::ExponentialRandomVariable[Mean=5.0]"),
+                   MakePointerAccessor (&McpttPusherOrchestrator::m_pttIatVariable),
+                   MakePointerChecker<RandomVariableStream> ())
+      ;
 
   return tid;
 }
 
 McpttPusherOrchestrator::McpttPusherOrchestrator (void)
-  : Object ()
+  : McpttPusherOrchestratorInterface (),
+    m_active (false),
+    m_activePusher (0),
+    m_nextEvent (EventId ()),
+    m_pushers (std::vector<Ptr<McpttPusher> > ()),
+    m_selectionVariable (CreateObject<UniformRandomVariable> ())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -74,19 +83,119 @@ McpttPusherOrchestrator::~McpttPusherOrchestrator (void)
 }
 
 void
-McpttPusherOrchestrator::StartAt (const Time& t)
+McpttPusherOrchestrator::AddPusher (Ptr<McpttPusher> pusher)
 {
-  NS_LOG_FUNCTION (this << t);
+  NS_LOG_FUNCTION (this << pusher);
 
-  m_startEvent = Simulator::Schedule (t, &McpttPusherOrchestrator::Start, this);
+  pusher->SetAttribute ("Automatic", BooleanValue (false));
+  m_pushers.push_back (pusher);
+}
+
+int64_t 
+McpttPusherOrchestrator::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+
+  int64_t streams = 0;
+  streams++;
+  m_pttDurationVariable->SetStream (stream + streams);
+  streams++;
+  m_pttIatVariable->SetStream (stream + streams);
+  streams++;
+  m_selectionVariable->SetStream (stream + streams);
+
+  return streams;
+}
+
+std::vector<Ptr<McpttPusher> >
+McpttPusherOrchestrator::GetPushers (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_pushers;
+}
+
+std::vector<Ptr<McpttPusher> >
+McpttPusherOrchestrator::GetActivePushers (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return std::vector<Ptr<McpttPusher> > { m_activePusher };
+}
+
+Time
+McpttPusherOrchestrator::NextPttIat (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  return Seconds (m_pttIatVariable->GetValue ());
+}
+
+Time
+McpttPusherOrchestrator::NextPttDuration (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  return Seconds (m_pttDurationVariable->GetValue ());
+}
+
+bool
+McpttPusherOrchestrator::IsActive (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  return m_active;
 }
 
 void
-McpttPusherOrchestrator::StopAt (const Time& t)
+McpttPusherOrchestrator::Start (void)
 {
-  NS_LOG_FUNCTION (this << t);
+  NS_LOG_FUNCTION (this);
 
-  m_stopEvent = Simulator::Schedule (t, &McpttPusherOrchestrator::Stop, this);
+  if (!IsActive ())
+    {
+      m_active = true;
+      PttRelease ();
+    }
+}
+
+void
+McpttPusherOrchestrator::Stop (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_active = false;
+
+  m_nextEvent.Cancel ();
+
+  DeactivatePusher ();
+}
+
+void
+McpttPusherOrchestrator::ActivatePusher (Ptr<McpttPusher> pusher)
+{
+  NS_LOG_FUNCTION (this << pusher);
+
+  if (m_activePusher)
+    {
+      DeactivatePusher ();
+    }
+
+  m_activePusher = pusher;
+  m_activePusher->Push ();
+}
+
+void
+McpttPusherOrchestrator::DeactivatePusher (void)
+{
+  if (m_activePusher)
+    {
+      if (m_activePusher->IsPushing ())
+        {
+          m_activePusher->Release ();
+        }
+      m_activePusher = 0;
+    }
 }
 
 void
@@ -94,24 +203,56 @@ McpttPusherOrchestrator::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_startEvent.Cancel ();
-  m_stopEvent.Cancel ();
+  std::vector<Ptr<McpttPusher> >::iterator it;
+  for (it = m_pushers.begin (); it != m_pushers.end (); it++)
+    {
+      *it = 0;
+    }
+
+  m_nextEvent.Cancel ();
+
+  m_pushers.clear ();
+
+  DeactivatePusher ();
+
+  m_nextPusher = 0;
+  m_pttIatVariable = 0;
+  m_pttDurationVariable = 0;
+  m_selectionVariable = 0;
 }
 
 void
-McpttPusherOrchestrator::TracePttIat (const uint32_t userId, const Time& iat)
+McpttPusherOrchestrator::PttPush (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_pttIatTrace (userId, iat);
+  if (m_nextPusher)
+    {
+      ActivatePusher (m_nextPusher);
+      m_nextPusher = 0;
+    }
+
+  Time pttDuration = NextPttDuration ();
+  m_nextEvent = Simulator::Schedule (pttDuration, &McpttPusherOrchestrator::PttRelease, this);
+
+  TracePttDuration (m_activePusher ? m_activePusher->GetPttApp ()->GetUserId () : 0, pttDuration);
 }
 
 void
-McpttPusherOrchestrator::TracePttDuration (const uint32_t userId, const Time& duration)
+McpttPusherOrchestrator::PttRelease (void)
 {
-  NS_LOG_FUNCTION (this);
+  DeactivatePusher ();
 
-  m_pttDurationTrace (userId, duration);
+  if (m_pushers.size () > 0)
+    {
+      uint32_t rv = m_selectionVariable->GetInteger (0, m_pushers.size () - 1);
+      m_nextPusher = m_pushers[rv];
+    }
+
+  Time pttIat = NextPttIat ();
+  m_nextEvent = Simulator::Schedule (pttIat, &McpttPusherOrchestrator::PttPush, this);
+
+  TracePttIat (m_nextPusher ? m_nextPusher->GetPttApp ()->GetUserId () : 0, pttIat);
 }
 
 } // namespace ns3

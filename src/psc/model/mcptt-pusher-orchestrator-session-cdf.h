@@ -38,7 +38,7 @@
 #include <ns3/random-variable-stream.h>
 
 #include "mcptt-pusher.h"
-#include "mcptt-pusher-orchestrator.h"
+#include "mcptt-pusher-orchestrator-interface.h"
 
 namespace ns3 {
  
@@ -54,7 +54,7 @@ namespace ns3 {
  * so that sessions are activite for the desired ratio of total simulation
  * time.
  */
-class McpttPusherOrchestratorSessionCdf : public McpttPusherOrchestrator 
+class McpttPusherOrchestratorSessionCdf : public McpttPusherOrchestratorInterface 
 {
 public:
  /**
@@ -144,7 +144,7 @@ private:
  double m_af; //!< The session activity factor.
  double m_avgSessionDuration; //!< The average duration of a session.
  EventId m_nextEvent; //!< The next event.
- Ptr<McpttPusherOrchestrator> m_orchestrator; //!< The underlying orchestrator.
+ Ptr<McpttPusherOrchestratorInterface> m_orchestrator; //!< The underlying orchestrator.
  Ptr<EmpiricalRandomVariable> m_sessionDurationVariable; //!< Duration of a session.
  Ptr<ExponentialRandomVariable> m_sessionIatVariable; //!< Interarrival time of sesssions.
  TracedCallback<Time> m_sessionIatTrace; //!< The session interarrival time trace.
@@ -160,7 +160,7 @@ public:
   * Gets the underlying orchestrator.
   * \returns The underlying orchestrator.
   */
- virtual Ptr<McpttPusherOrchestrator> GetOrchestrator (void) const;
+ virtual Ptr<McpttPusherOrchestratorInterface> GetOrchestrator (void) const;
  /**
   * Sets the activity factory.
   * \param af The activity factor.
@@ -170,7 +170,7 @@ public:
   * Sets the underlying orchestrator.
   * \param orchestrator The underlying orchestrator.
   */
- virtual void SetOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator);
+ virtual void SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator);
 };
 
 } // namespace ns3

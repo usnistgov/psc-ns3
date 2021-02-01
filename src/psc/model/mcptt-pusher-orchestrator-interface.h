@@ -29,136 +29,114 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_PUSHER_ORCHESTRATOR_CDF_H
-#define MCPTT_PUSHER_ORCHESTRATOR_CDF_H
+#ifndef MCPTT_PUSHER_ORCHESTRATOR_INTERFACE_H
+#define MCPTT_PUSHER_ORCHESTRATOR_INTERFACE_H
 
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 #include <ns3/type-id.h>
-#include <ns3/random-variable-stream.h>
 
 #include "mcptt-pusher.h"
-#include "mcptt-pusher-orchestrator-simple.h"
 
 namespace ns3 {
  
 /**
  * \ingroup mcptt
  *
- * This class is used to orchestrate the behavior of a collection of
- * ns3::McpttPusher objects. This particular orchestrator uses a CDF
- * generated from call public safety call logs in addition to an
- * activity factor to generate push and release events for a group
- * of ns3::McpttPusher objects.
+ * This class defines the interface of objects used to orchestrate the
+ * behavior of a collection of ns3::McpttPusher objects. In general, objects
+ * derived from this abstract base class will decide when the pusher objects
+ * will schedule push and release events.
  */
-class McpttPusherOrchestratorCdf : public McpttPusherOrchestrator 
+class McpttPusherOrchestratorInterface : public Object 
 {
 public:
- /**
-  * \brief The collection of CDF points.
-  */
- static const std::vector<std::pair<double, double> > CDF_POINTS;
- /**
-  * The average of the CDF points.
-  */
- static const double CDF_POINTS_AVG;
  /**
   * \brief Get the type ID.
   * \return the object TypeId
   */
  static TypeId GetTypeId (void);
  /**
-  * \brief Creates an instance of the McpttPusherOrchestratorCdf class.
+  * \brief Creates an instance of the McpttPusherOrchestratorInterface class.
   */
- McpttPusherOrchestratorCdf (void);
+ McpttPusherOrchestratorInterface (void);
  /**
-  * \brief The destructor of the McpttPusherOrchestratorCdf class.
+  * \brief The destructor of the McpttPusherOrchestratorInterface class.
   */
- virtual ~McpttPusherOrchestratorCdf (void);
+ virtual ~McpttPusherOrchestratorInterface (void);
  /**
   * \brief Adds a pusher to the orchestrated set.
   * \param pusher The pusher to add.
   */
- virtual void AddPusher (Ptr<McpttPusher> pusher);
+ virtual void AddPusher (Ptr<McpttPusher> pusher) = 0;
  /**
   * \brief Set the stream for each random variable.
   * \param stream The starting stream number.
   * \returns The number of streams that were set.
   */
- virtual int64_t AssignStreams (int64_t stream);
- /**
-  * \brief Changes the ECDF and updates the average obtained with that CDF.
-  * \param pttDurationVariable The new variable to use for selecting PTT durations.
-  * \param average The average value of the PTT durations obtained from the ECDF being provided.
-  */
- virtual void ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVaraible, double avgPttDuration);
+ virtual int64_t AssignStreams (int64_t stream) = 0;
  /**
   * \brief Gets the set of orchestrated pushers.
   * \returns The set of pushers.
   */
- virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const;
+ virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const = 0;
  /**
   * \brief Gets the set of pushers that are currently pushing the button.
   * \returns The set of pushers.
   */
- virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const;
+ virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const = 0;
  /**
   * \brief Generates an interarrival time.
   * \returns The interarrival time.
   */
- virtual Time NextPttIat (void);
+ virtual Time NextPttIat (void) = 0;
  /**
   * \brief Generates a PTT duration.
   * \returns The PTT duration.
   */
- virtual Time NextPttDuration (void);
+ virtual Time NextPttDuration (void) = 0;
  /**
-  * \brief Starts generating push and release events.
+  * \brief Starts orchestrating the pushers.
   */
- virtual void Start (void);
+ virtual void Start (void) = 0;
  /**
-  * \brief Stops generating push and release events.
-  * This method may be called multiple times consecutively without side effect.
+  * \brief Schedules the orchestrator to start at the given time.
+  * \brief t The time at which to start.
   */
- virtual void Stop (void);
+ virtual void StartAt (const Time& t);
+ /**
+  * \brief Stops orchestrating the pushers.
+  */
+ virtual void Stop (void) = 0;
+ /**
+  * \brief Schedules the orchestrator to stop at the given time.
+  * \brief t The time at which to stop the orchestrator.
+  */
+ virtual void StopAt (const Time& t);
 protected:
  /**
-  * Destructor implementation.
+  * \brief Disposes of Object resources.
   */
  virtual void DoDispose (void);
  /**
-  * \brief The PTT duration callback for the underlying orchestrator.
+  * Traces the interarrival time.
   * \param userId The MCPTT user ID of the pusher.
-  * \param duration The PTT duration.
+  * \param iat The interarrival time.
   */
- virtual void PttDurationTrace (uint32_t userId, Time duration);
+ virtual void TracePttIat (const uint32_t userId, const Time& iat);
  /**
-  * \brief The PTT interarrival time callback for the underlying orchestrator.
+  * Traces the duration.
   * \param userId The MCPTT user ID of the pusher.
-  * \param iat The PTT interarrival time.
+  * \param duration The duration.
   */
- virtual void PttIatTrace (uint32_t userId, Time iat);
- /**
-  * Updates the PTT interarrival variable.
-  */
- virtual void UpdatePttIatVariable (void);
+ virtual void TracePttDuration (const uint32_t userId, const Time& duration);
 private:
- double m_af; //!< The activity factor per user.
- double m_avgPttDuration; //!< The average duration of PTT event.
- Ptr<McpttPusherOrchestratorSimple> m_orchestrator; //!< The underlying orchestrator.
-public:
- /**
-  * Gets the activity factor.
-  * \returns The activity factor.
-  */
- virtual double GetActivityFactor (void) const;
- /**
-  * Sets the activity factory.
-  * \param af The activity factor.
-  */
- virtual void SetActivityFactor (double af);
+ EventId m_startEvent; //!< The start event.
+ EventId m_stopEvent; //!< The stop event.
+ TracedCallback<uint32_t, Time> m_pttIatTrace; //!< The interarrival time trace.
+ TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
 };
  
 } // namespace ns3
 
-#endif /* MCPTT_PUSHER_ORCHESTRATOR_CDF_H */
+#endif /* MCPTT_PUSHER_ORCHESTRATOR_INTERFACE_H */

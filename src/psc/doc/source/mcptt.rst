@@ -381,17 +381,17 @@ distribution of IATs. This means that the following sequence of
 non-overlapping steps is typical for generating PTT and session events: IAT,
 duration, IAT, duration, and so on.
 
-The ``ns3::McpttPusherOrchestrator`` is a base class to the
-``ns3::McpttPusherOrchestratorSimple``, ``ns3::McpttPusherOrchestratorCdf``,
+The ``ns3::McpttPusherOrchestratorInterface`` is a base class to the
+``ns3::McpttPusherOrchestrator``, ``ns3::McpttPusherOrchestratorSpurtCdf``,
 ``ns3::McpttPusherOrchestratorSessionCdf``, and
 ``ns3::McpttPusherOrchestratorContention``. The class
-``ns3::McpttPusherOrchestratorSimple`` simply selects a random pusher from
+``ns3::McpttPusherOrchestrator`` simply selects a random pusher from
 the set of pushers being orchestrated and uses two instances of an
 ``ns3::RandomVariableStream``. One for deciding push durations and another for
-deciding the IAT of push events. The ``ns3::McpttPusherOrchestratorCdf`` is a
-wrapper around the ``ns3::McpttPusherOrchestratorSimple`` class that
-initializes the random variables used by ``ns3::McpttPusherOrchestratorSimple``
-to match CDFS from the call logs based on the activity factor that was
+deciding the IAT of push events. The ``ns3::McpttPusherOrchestratorSpurtCdf``
+is a wrapper around the ``ns3::McpttPusherOrchestrator`` class that
+initializes the random variables used by ``ns3::McpttPusherOrchestrator``
+to match CDFs from the call logs based on the activity factor that was
 provided. The ``ns3::McpttPusherOrchestratorSessionCdf`` class is a decorator
 that simply starts and stops an underlying orchestrator to create sessions
 based on the CDFs from the call log and the activity factor set by the user.
@@ -415,7 +415,7 @@ event.
 
    Session Duration CDF
 
-For ``ns3::McpttPusherOrchestratorCdf`` the PTT duration is based on the CDF
+For ``ns3::McpttPusherOrchestratorSpurtCdf`` the PTT duration is based on the CDF
 of PTT durations in figure :ref:`fig-mcptt-ptt-duration-cdf`, while the mean
 value given to the exponential random variable responsible for generating the
 IAT is computed as:
@@ -459,12 +459,12 @@ and sessions for this configuration.
 
 .. sourcecode:: cpp
 
-  Ptr<McpttPusherOrchestratorCdf> cdfOrchestrator = CreateObject<McpttPusherOrchestratorCdf> ();
-  cdfOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (1.0));
+  Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
+  spurtOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (1.0));
 
   Ptr<McpttPusherOrchestratorSessionCdf> sessionOrchestrator = CreateObject<McpttPusherOrchestratorSessionCdf> ();
   sessionOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (0.5));
-  sessionOrchestrator->SetAttribute ("Orchestrator", PointerValue (cdfOrchestrator));
+  sessionOrchestrator->SetAttribute ("Orchestrator", PointerValue (spurtOrchestrator));
 
   sessionOrchestrator->StartAt (Seconds (2.0));
   sessionOrchestrator->StopAt (Seconds (82.0);
@@ -666,7 +666,7 @@ occur for a set of ``ns3::McpttPttApp`` applications.
    clientApps.Start (startTime);
    clientApps.Stop (stopTime);
 
-   Ptr<McpttPusherOrchestratorCdf> orchestrator = CreateObject<McpttPusherOrchestratorCdf> ();
+   Ptr<McpttPusherOrchestratorSpurtCdf> orchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
    orchestrator->SetAttribute ("ActivityFactor", DoubleValue (0.5));
    orchestrator->StartAt (startTime);
 

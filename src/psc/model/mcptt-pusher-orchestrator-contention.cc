@@ -50,7 +50,7 @@ TypeId
 McpttPusherOrchestratorContention::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorContention")
-    .SetParent<McpttPusherOrchestrator> ()
+    .SetParent<McpttPusherOrchestratorInterface> ()
     .AddConstructor<McpttPusherOrchestratorContention>()
     .AddAttribute ("ContentionProbability", "Probability that there will be contention.",
                    DoubleValue (0.0),
@@ -60,14 +60,14 @@ McpttPusherOrchestratorContention::GetTypeId (void)
                    PointerValue (0),
                    MakePointerAccessor (&McpttPusherOrchestratorContention::GetOrchestrator,
                                         &McpttPusherOrchestratorContention::SetOrchestrator),
-                   MakePointerChecker<McpttPusherOrchestrator> ())
+                   MakePointerChecker<McpttPusherOrchestratorInterface> ())
   ;
 
   return tid;
 }
 
 McpttPusherOrchestratorContention::McpttPusherOrchestratorContention (void)
-  : McpttPusherOrchestrator (),
+  : McpttPusherOrchestratorInterface (),
     m_activePusher (0),
     m_nextEvent (EventId ()),
     m_rv (CreateObject<UniformRandomVariable> ())
@@ -272,7 +272,7 @@ McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Ti
     }
 }
 
-Ptr<McpttPusherOrchestrator>
+Ptr<McpttPusherOrchestratorInterface>
 McpttPusherOrchestratorContention::GetOrchestrator (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -281,7 +281,7 @@ McpttPusherOrchestratorContention::GetOrchestrator (void) const
 }
 
 void
-McpttPusherOrchestratorContention::SetOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator)
+McpttPusherOrchestratorContention::SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator)
 {
   NS_LOG_FUNCTION (this << orchestrator);
 

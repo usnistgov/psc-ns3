@@ -48,20 +48,21 @@ using namespace ns3;
  *
  * This scenario conists of N users participating in a single off-network
  * MCPTT group call over Wi-Fi. The activity of the users, or "pushers", in
- * this call are controlled by several instances of McpttPusherOrchestrator
- * sub-classes. Each sub-class enables a particular feature, which, in this
- * example, includes talk-spurts, talk-sessions, and contention. The duration
- * of talk-spurts and talk-sessions are controlled by the orchestrator using
+ * this call are controlled by several instances of
+ * McpttPusherOrchestratorInterface sub-classes. Each sub-class enables a 
+ * articular feature, which, in this example, includes talk spurts,
+ * talk sessions, and contention. The duration of talk spurts and
+ * talk sessions are controlled by the orchestrator using
  * statistics gathered from public safety call logs. However, the interarrival
- * time of talk-spurts and talk-sessions are determined by the values of the
- * "vaf" and "saf" parameters, respectively. A talk-session is simply a time
+ * time of talk spurts and talk sessions are determined by the values of the
+ * "vaf" and "saf" parameters, respectively. A talk session is simply a time
  * span when pushers become active, thus, resulting in the pushers pushing
- * and releasing the PTT buton on their device. A talk-spurt is simply the
+ * and releasing the PTT buton on their device. A talk spurt is simply the
  * time from when a PTT button is pushed until that PTT button is released.
  * Contention occurs when a PTT push is made during an already ongoing
- * talk-spurt. The amount of contention for the group is controlled by the
+ * talk spurt. The amount of contention for the group is controlled by the
  * "cp" parameter, which indicates uniformly how often contention will occur
- * relative to the total number of talk-spurts.
+ * relative to the total number of talk spurts.
  *
  * Executing this scenario with "--verbose=true" will output all orchestrator
  * events and a summary of statistics once the scenario is over. Including the
@@ -72,7 +73,7 @@ using namespace ns3;
  * included with this example to show the timeline of events.
  *
  * The user can also control the number of users (N) using the "--users"
- * argument, the size of data packets that are sent during a talk-spurt with
+ * argument, the size of data packets that are sent during a talk spurt with
  * "--media-size", the rate at which the data packets are sent with
  * "--data-rate", the x and y boundaries in which the users can be placed
  * using "--max-x" and "--max-y", and the duration of the simulation with
@@ -224,12 +225,12 @@ int main (int argc, char *argv[])
   McpttCallHelper callHelper;
   callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, peerAddress, appCount);
 
-  Ptr<McpttPusherOrchestrator> orchestrator = 0;
-  Ptr<McpttPusherOrchestratorCdf> cdfOrchestrator = CreateObject<McpttPusherOrchestratorCdf> ();
-  cdfOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (vaf));
-  cdfOrchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback(&PttDurationCallback));
-  cdfOrchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback(&PttIatCallback));
-  orchestrator = cdfOrchestrator;
+  Ptr<McpttPusherOrchestratorInterface> orchestrator = 0;
+  Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
+  spurtOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (vaf));
+  spurtOrchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback(&PttDurationCallback));
+  spurtOrchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback(&PttIatCallback));
+  orchestrator = spurtOrchestrator;
 
   Ptr<McpttPusherOrchestratorContention> contentionOrchestrator = CreateObject<McpttPusherOrchestratorContention> ();
   contentionOrchestrator->SetAttribute ("ContentionProbability", DoubleValue (cp));

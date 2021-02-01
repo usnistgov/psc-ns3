@@ -134,7 +134,7 @@ McpttHelper::~McpttHelper ()
 }
 
 void
-McpttHelper::AddPushersToOrchestrator (Ptr<McpttPusherOrchestrator> orchestrator, const ApplicationContainer& apps)
+McpttHelper::AddPushersToOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator, const ApplicationContainer& apps)
 {
   for (uint32_t i = 0; i < apps.GetN (); i++)
     {

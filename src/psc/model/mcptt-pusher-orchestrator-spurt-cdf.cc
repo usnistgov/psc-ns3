@@ -38,15 +38,15 @@
 
 #include "mcptt-pusher.h"
 
-#include "mcptt-pusher-orchestrator-cdf.h"
+#include "mcptt-pusher-orchestrator-spurt-cdf.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorCdf");
+NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorSpurtCdf");
 
-NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorCdf);
+NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorSpurtCdf);
 
-const std::vector<std::pair<double, double> > McpttPusherOrchestratorCdf::CDF_POINTS = {
+const std::vector<std::pair<double, double> > McpttPusherOrchestratorSpurtCdf::CDF_POINTS = {
   std::pair<double, double> (0, 0.0),
   std::pair<double, double> (0.1, 0.000955338),
   std::pair<double, double> (0.2, 0.002030093),
@@ -286,28 +286,28 @@ const std::vector<std::pair<double, double> > McpttPusherOrchestratorCdf::CDF_PO
   std::pair<double, double> (60.8, 1.0)
 };
 
-const double McpttPusherOrchestratorCdf::CDF_POINTS_AVG = 4.69;
+const double McpttPusherOrchestratorSpurtCdf::CDF_POINTS_AVG = 4.69;
 
 TypeId
-McpttPusherOrchestratorCdf::GetTypeId (void)
+McpttPusherOrchestratorSpurtCdf::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorCdf")
-    .SetParent<McpttPusherOrchestrator> ()
-    .AddConstructor<McpttPusherOrchestratorCdf>()
+  static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorSpurtCdf")
+    .SetParent<McpttPusherOrchestratorInterface> ()
+    .AddConstructor<McpttPusherOrchestratorSpurtCdf>()
     .AddAttribute ("ActivityFactor", "The desired activity factor.",
                    DoubleValue (.50),
-                   MakeDoubleAccessor (&McpttPusherOrchestratorCdf::GetActivityFactor,
-                                       &McpttPusherOrchestratorCdf::SetActivityFactor),
+                   MakeDoubleAccessor (&McpttPusherOrchestratorSpurtCdf::GetActivityFactor,
+                                       &McpttPusherOrchestratorSpurtCdf::SetActivityFactor),
                    MakeDoubleChecker<double> ())
  ;
 
   return tid;
 }
 
-McpttPusherOrchestratorCdf::McpttPusherOrchestratorCdf (void)
-  : McpttPusherOrchestrator (),
+McpttPusherOrchestratorSpurtCdf::McpttPusherOrchestratorSpurtCdf (void)
+  : McpttPusherOrchestratorInterface (),
     m_avgPttDuration (CDF_POINTS_AVG),
-    m_orchestrator (CreateObject<McpttPusherOrchestratorSimple> ())
+    m_orchestrator (CreateObject<McpttPusherOrchestrator> ())
 {
   NS_LOG_FUNCTION (this);
 
@@ -323,17 +323,17 @@ McpttPusherOrchestratorCdf::McpttPusherOrchestratorCdf (void)
 
   m_orchestrator->SetAttribute ("PttDurationVariable", PointerValue (pttDurationVariable));
   m_orchestrator->SetAttribute ("PttInterarrivalTimeVariable", PointerValue (pttIatVariable));
-  m_orchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorCdf::PttDurationTrace, this));
-  m_orchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&McpttPusherOrchestratorCdf::PttIatTrace, this));
+  m_orchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttDurationTrace, this));
+  m_orchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttIatTrace, this));
 }
 
-McpttPusherOrchestratorCdf::~McpttPusherOrchestratorCdf (void)
+McpttPusherOrchestratorSpurtCdf::~McpttPusherOrchestratorSpurtCdf (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttPusherOrchestratorCdf::AddPusher (Ptr<McpttPusher> pusher)
+McpttPusherOrchestratorSpurtCdf::AddPusher (Ptr<McpttPusher> pusher)
 {
   NS_LOG_FUNCTION (this << pusher);
 
@@ -341,7 +341,7 @@ McpttPusherOrchestratorCdf::AddPusher (Ptr<McpttPusher> pusher)
 }
 
 int64_t 
-McpttPusherOrchestratorCdf::AssignStreams (int64_t stream)
+McpttPusherOrchestratorSpurtCdf::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
 
@@ -349,7 +349,7 @@ McpttPusherOrchestratorCdf::AssignStreams (int64_t stream)
 }
 
 void
-McpttPusherOrchestratorCdf::ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVariable, double avgPttDuration)
+McpttPusherOrchestratorSpurtCdf::ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVariable, double avgPttDuration)
 {
   NS_LOG_FUNCTION (this << pttDurationVariable << avgPttDuration);
 
@@ -361,7 +361,7 @@ McpttPusherOrchestratorCdf::ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationV
 }
 
 std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorCdf::GetPushers (void) const
+McpttPusherOrchestratorSpurtCdf::GetPushers (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -369,7 +369,7 @@ McpttPusherOrchestratorCdf::GetPushers (void) const
 }
 
 std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorCdf::GetActivePushers (void) const
+McpttPusherOrchestratorSpurtCdf::GetActivePushers (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -377,7 +377,7 @@ McpttPusherOrchestratorCdf::GetActivePushers (void) const
 }
 
 Time
-McpttPusherOrchestratorCdf::NextPttIat (void)
+McpttPusherOrchestratorSpurtCdf::NextPttIat (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -385,7 +385,7 @@ McpttPusherOrchestratorCdf::NextPttIat (void)
 }
 
 Time
-McpttPusherOrchestratorCdf::NextPttDuration (void)
+McpttPusherOrchestratorSpurtCdf::NextPttDuration (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -393,7 +393,7 @@ McpttPusherOrchestratorCdf::NextPttDuration (void)
 }
 
 void
-McpttPusherOrchestratorCdf::Start (void)
+McpttPusherOrchestratorSpurtCdf::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -403,7 +403,7 @@ McpttPusherOrchestratorCdf::Start (void)
 }
 
 void
-McpttPusherOrchestratorCdf::Stop (void)
+McpttPusherOrchestratorSpurtCdf::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -411,18 +411,18 @@ McpttPusherOrchestratorCdf::Stop (void)
 }
 
 void
-McpttPusherOrchestratorCdf::DoDispose (void)
+McpttPusherOrchestratorSpurtCdf::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_orchestrator->TraceDisconnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorCdf::PttDurationTrace, this));
-  m_orchestrator->TraceDisconnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&McpttPusherOrchestratorCdf::PttIatTrace, this));
+  m_orchestrator->TraceDisconnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttDurationTrace, this));
+  m_orchestrator->TraceDisconnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttIatTrace, this));
 
   m_orchestrator = 0;
 }
 
 void
-McpttPusherOrchestratorCdf::PttDurationTrace (uint32_t userId, Time duration)
+McpttPusherOrchestratorSpurtCdf::PttDurationTrace (uint32_t userId, Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
 
@@ -430,7 +430,7 @@ McpttPusherOrchestratorCdf::PttDurationTrace (uint32_t userId, Time duration)
 }
 
 void
-McpttPusherOrchestratorCdf::PttIatTrace (uint32_t userId, Time iat)
+McpttPusherOrchestratorSpurtCdf::PttIatTrace (uint32_t userId, Time iat)
 {
   NS_LOG_FUNCTION (this << iat);
   
@@ -438,7 +438,7 @@ McpttPusherOrchestratorCdf::PttIatTrace (uint32_t userId, Time iat)
 }
 
 void
-McpttPusherOrchestratorCdf::UpdatePttIatVariable (void)
+McpttPusherOrchestratorSpurtCdf::UpdatePttIatVariable (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -467,7 +467,7 @@ McpttPusherOrchestratorCdf::UpdatePttIatVariable (void)
 }
 
 double
-McpttPusherOrchestratorCdf::GetActivityFactor (void) const
+McpttPusherOrchestratorSpurtCdf::GetActivityFactor (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -475,7 +475,7 @@ McpttPusherOrchestratorCdf::GetActivityFactor (void) const
 }
 
 void
-McpttPusherOrchestratorCdf::SetActivityFactor (double af)
+McpttPusherOrchestratorSpurtCdf::SetActivityFactor (double af)
 {
   NS_LOG_FUNCTION (this << af);
 
