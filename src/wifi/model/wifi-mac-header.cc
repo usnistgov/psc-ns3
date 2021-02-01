@@ -51,9 +51,16 @@ enum
 };
 
 WifiMacHeader::WifiMacHeader ()
-  : m_ctrlMoreData (0),
+  : m_ctrlMoreFrag (0),
+    m_ctrlRetry (0),
+    m_ctrlMoreData (0),
     m_ctrlWep (0),
     m_ctrlOrder (0),
+    m_duration (0),
+    m_seqFrag (0),
+    m_seqSeq (0),
+    m_qosEosp (0),
+    m_qosAckPolicy (0),  // Normal Ack
     m_amsduPresent (0)
 {
 }
@@ -374,6 +381,13 @@ void WifiMacHeader::SetQosNoAmsdu (void)
 void WifiMacHeader::SetQosTxopLimit (uint8_t txop)
 {
   m_qosStuff = txop;
+}
+
+void
+WifiMacHeader::SetQosQueueSize (uint8_t size)
+{
+  m_qosEosp = 1;
+  m_qosStuff = size;
 }
 
 void WifiMacHeader::SetQosMeshControlPresent (void)
@@ -826,6 +840,13 @@ WifiMacHeader::GetQosTid (void) const
 {
   NS_ASSERT (IsQosData ());
   return m_qosTid;
+}
+
+uint8_t
+WifiMacHeader::GetQosQueueSize (void) const
+{
+  NS_ASSERT (m_qosEosp == 1);
+  return m_qosStuff;
 }
 
 uint16_t

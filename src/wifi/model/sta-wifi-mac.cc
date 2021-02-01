@@ -25,7 +25,6 @@
 #include "ns3/simulator.h"
 #include "sta-wifi-mac.h"
 #include "wifi-phy.h"
-#include "mac-low.h"
 #include "mgt-headers.h"
 #include "snr-tag.h"
 #include "wifi-net-device.h"
@@ -264,14 +263,6 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
 }
 
 void
-StaWifiMac::SendCfPollResponse (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetPcfSupported ());
-  m_txop->SendCfFrame (WIFI_MAC_DATA_NULL, GetBssid ());
-}
-
-void
 StaWifiMac::TryToEnsureAssociated (void)
 {
   NS_LOG_FUNCTION (this);
@@ -484,7 +475,7 @@ StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
     }
 
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (m_low->GetAddress ());
+  hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
@@ -519,10 +510,6 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
       NS_LOG_LOGIC ("packet is not for us");
       NotifyRxDrop (packet);
       return;
-    }
-  else if ((hdr->GetAddr1 () == GetAddress ()) && (hdr->GetAddr2 () == GetBssid ()) && hdr->IsCfPoll ())
-    {
-      SendCfPollResponse ();
     }
   if (hdr->IsData ())
     {
@@ -585,19 +572,6 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
         {
           NS_LOG_LOGIC ("Beacon is for our SSID");
           goodBeacon = true;
-        }
-      CfParameterSet cfParameterSet = beacon.GetCfParameterSet ();
-      if (cfParameterSet.GetCFPCount () == 0)
-        {
-          //see section 9.3.2.2 802.11-1999
-          if (GetPcfSupported ())
-            {
-              m_low->DoNavStartNow (MicroSeconds (cfParameterSet.GetCFPMaxDurationUs ()));
-            }
-          else
-            {
-              m_low->DoNavStartNow (MicroSeconds (cfParameterSet.GetCFPDurRemainingUs ()));
-            }
         }
       SupportedRates rates = beacon.GetSupportedRates ();
       bool bssMembershipSelectorMatch = false;

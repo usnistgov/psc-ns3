@@ -21,6 +21,7 @@
 #ifndef CTRL_HEADERS_H
 #define CTRL_HEADERS_H
 
+#include <vector>
 #include "ns3/header.h"
 #include "block-ack-type.h"
 
@@ -61,11 +62,11 @@ public:
    */
   void SetHtImmediateAck (bool immediateAck);
   /**
-   * Set the block ack type.
+   * Set the BlockAckRequest type.
    *
-   * \param type the BA type
+   * \param type the BlockAckRequest type
    */
-  void SetType (BlockAckType type);
+  void SetType (BlockAckReqType type);
   /**
    * Set Traffic ID (TID).
    *
@@ -88,11 +89,11 @@ public:
    */
   bool MustSendHtImmediateAck (void) const;
   /**
-   * Return the Block Ack type ID.
+   * Return the BlockAckRequest type.
    *
-   * \return the BA type
+   * \return the type of the BlockAckRequest
    */
-  BlockAckType GetType (void) const;
+  BlockAckReqType GetType (void) const;
   /**
    * Return the Traffic ID (TID).
    *
@@ -171,10 +172,10 @@ private:
    * For now only non HT immediate BlockAck is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_barAckPolicy;    ///< BAR Ack Policy
-  BlockAckType m_baType;  ///< BA type
-  uint16_t m_tidInfo;     ///< TID info
-  uint16_t m_startingSeq; ///< starting sequence number
+  bool m_barAckPolicy;       ///< bar ack policy
+  BlockAckReqType m_barType; ///< BAR type
+  uint16_t m_tidInfo;        ///< TID info
+  uint16_t m_startingSeq;    ///< starting seq
 };
 
 
@@ -336,23 +337,11 @@ public:
    */
   void SetStartingSequenceControl (uint16_t seqControl);
   /**
-   * Return the bitmap from the BlockAck response header.
+   * Return a const reference to the bitmap from the BlockAck response header.
    *
-   * \return the bitmap from the BlockAck response header
+   * \return a const reference to the bitmap from the BlockAck response header
    */
-  const uint16_t* GetBitmap (void) const;
-  /**
-   * Return the compressed bitmap from the BlockAck response header.
-   *
-   * \return the compressed bitmap from the BlockAck response header
-   */
-  uint64_t GetCompressedBitmap (void) const;
-  /**
-   * Return the extended compressed bitmap from the BlockAck response header.
-   *
-   * \return the extended compressed bitmap from the BlockAck response header
-   */
-  const uint64_t* GetExtendedCompressedBitmap (void) const;
+  const std::vector<uint8_t>& GetBitmap (void) const;
 
   /**
    * Reset the bitmap to 0.
@@ -420,17 +409,11 @@ private:
    * For now only non HT immediate block ack is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_baAckPolicy;     ///< BA Ack Policy
-  BlockAckType m_baType;  ///< BA type
-  uint16_t m_tidInfo;     ///< TID info
-  uint16_t m_startingSeq; ///< starting sequence number
-
-  union
-  {
-    uint16_t m_bitmap[64]; ///< the basic BlockAck bitmap
-    uint64_t m_compressedBitmap; ///< the compressed BlockAck bitmap
-    uint64_t m_extendedCompressedBitmap[4]; ///< the extended compressed BlockAck bitmap
-  } bitmap; ///< bitmap union type
+  bool m_baAckPolicy;             ///< BA Ack Policy
+  BlockAckType m_baType;          ///< BA type
+  uint16_t m_tidInfo;             ///< TID info
+  uint16_t m_startingSeq;         ///< starting seq
+  std::vector<uint8_t> m_bitmap;  ///< block ack bitmap
 };
 
 } //namespace ns3

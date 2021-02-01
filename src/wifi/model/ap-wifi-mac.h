@@ -24,6 +24,7 @@
 #define AP_WIFI_MAC_H
 
 #include "infrastructure-wifi-mac.h"
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -73,14 +74,6 @@ public:
    */
   Time GetBeaconInterval (void) const;
   /**
-   * \param duration the maximum duration for the CF period.
-   */
-  void SetCfpMaxDuration (Time duration);
-  /**
-   * \return the maximum duration for the CF period.
-   */
-  Time GetCfpMaxDuration (void) const;
-  /**
    * Determine whether short slot time should be enabled or not in the BSS.
    * Typically, true is returned only when there is no non-ERP stations associated
    * to the AP, and that short slot time is supported by the AP and by all other
@@ -121,6 +114,42 @@ public:
    */
   int64_t AssignStreams (int64_t stream);
 
+  /**
+   * Return the value of the Queue Size subfield of the last QoS Data or QoS Null
+   * frame received from the station with the given MAC address and belonging to
+   * the given TID.
+   *
+   * The Queue Size value is the total size, rounded up to the nearest multiple
+   * of 256 octets and expressed in units of 256 octets, of all  MSDUs and A-MSDUs
+   * buffered at the STA (excluding the MSDU or A-MSDU of the present QoS Data frame).
+   * A queue size value of 254 is used for all sizes greater than 64 768 octets.
+   * A queue size value of 255 is used to indicate an unspecified or unknown size.
+   * See Section 9.2.4.5.6 of 802.11-2016
+   *
+   * \param tid the given TID
+   * \param address the given MAC address
+   * \return the value of the Queue Size subfield
+   */
+  uint8_t GetBufferStatus (uint8_t tid, Mac48Address address) const;
+  /**
+   * Store the value of the Queue Size subfield of the last QoS Data or QoS Null
+   * frame received from the station with the given MAC address and belonging to
+   * the given TID.
+   *
+   * \param tid the given TID
+   * \param address the given MAC address
+   * \param size the value of the Queue Size subfield
+   */
+  void SetBufferStatus (uint8_t tid, Mac48Address address, uint8_t size);
+  /**
+   * Return the maximum among the values of the Queue Size subfield of the last
+   * QoS Data or QoS Null frames received from the station with the given MAC address
+   * and belonging to any TID.
+   *
+   * \param address the given MAC address
+   * \return the maximum among the values of the Queue Size subfields
+   */
+  uint8_t GetMaxBufferStatus (Mac48Address address) const;
 
 private:
   void Receive (Ptr<WifiMacQueueItem> mpdu);
@@ -191,18 +220,6 @@ private:
    * Forward a beacon packet to the beacon special DCF.
    */
   void SendOneBeacon (void);
-  /**
-   * Determine what is the next PCF frame and trigger its transmission.
-   */
-  void SendNextCfFrame (void);
-  /**
-   * Send a CF-Poll packet to the next polling STA.
-   */
-  void SendCfPoll (void);
-  /**
-   * Send a CF-End packet.
-   */
-  void SendCfEnd (void);
 
   /**
    * Return the Capability information of the current AP.
@@ -222,12 +239,6 @@ private:
    * \return the EDCA Parameter Set that we support
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
-  /**
-   * Return the CF parameter set of the current AP.
-   *
-   * \return the CF parameter set that we support
-   */
-  CfParameterSet GetCfParameterSet (void) const;
   /**
    * Return the HT operation of the current AP.
    *
@@ -272,11 +283,6 @@ private:
    *         false otherwise
    */
   bool GetUseNonErpProtection (void) const;
-  /**
-   * Increment the PCF polling list iterator to indicate
-   * that the next polling station can be polled.
-   */
-  void IncrementPollingListIterator (void);
 
   void DoDispose (void);
   void DoInitialize (void);
@@ -288,6 +294,7 @@ private:
 
   Ptr<Txop> m_beaconTxop;                    //!< Dedicated Txop for beacons
   bool m_enableBeaconGeneration;             //!< Flag whether beacons are being generated
+  Time m_beaconInterval;                     //!< Beacon interval
   EventId m_beaconEvent;                     //!< Event to generate one beacon
   EventId m_cfpEvent;                        //!< Event to generate one PCF frame
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
@@ -298,6 +305,11 @@ private:
   std::list<Mac48Address> m_cfPollingList;   //!< List of all PCF stations currently associated to the AP
   std::list<Mac48Address>::iterator m_itCfPollingList; //!< Iterator to the list of all PCF stations currently associated to the AP
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
+  Time m_bsrLifetime;                        //!< Lifetime of Buffer Status Reports
+  //!< store value and timestamp for each Buffer Status Report
+  typedef struct { uint8_t value; Time timestamp; } bsrType;
+  //!< Per (MAC address, TID) buffer status reports
+  std::unordered_map<WifiAddressTidPair, bsrType, WifiAddressTidHash> m_bufferStatus;
 };
 
 } //namespace ns3

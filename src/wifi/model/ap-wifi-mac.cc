@@ -27,7 +27,7 @@
 #include "ns3/string.h"
 #include "ns3/random-variable-stream.h"
 #include "ap-wifi-mac.h"
-#include "mac-low.h"
+#include "channel-access-manager.h"
 #include "mac-tx-middle.h"
 #include "mac-rx-middle.h"
 #include "mgt-headers.h"
@@ -57,11 +57,6 @@ ApWifiMac::GetTypeId (void)
                    MakeTimeAccessor (&ApWifiMac::GetBeaconInterval,
                                      &ApWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
-    .AddAttribute ("CfpMaxDuration", "The maximum size of the CFP (used when AP supports PCF)",
-                   TimeValue (MicroSeconds (51200)),
-                   MakeTimeAccessor (&ApWifiMac::GetCfpMaxDuration,
-                                     &ApWifiMac::SetCfpMaxDuration),
-                   MakeTimeChecker ())
     .AddAttribute ("BeaconJitter",
                    "A uniform random variable to cause the initial beacon starting time (after simulation time 0) "
                    "to be distributed between 0 and the BeaconInterval.",
@@ -83,6 +78,11 @@ ApWifiMac::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::m_enableNonErpProtection),
                    MakeBooleanChecker ())
+    .AddAttribute ("BsrLifetime",
+                   "Lifetime of Buffer Status Reports received from stations.",
+                   TimeValue (MilliSeconds (20)),
+                   MakeTimeAccessor (&ApWifiMac::m_bsrLifetime),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -95,11 +95,9 @@ ApWifiMac::ApWifiMac ()
   m_beaconTxop->SetAifsn (1);
   m_beaconTxop->SetMinCw (0);
   m_beaconTxop->SetMaxCw (0);
-  m_beaconTxop->SetMacLow (m_low);
   m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
   m_beaconTxop->SetTxMiddle (m_txMiddle);
   m_beaconTxop->SetTxOkCallback (MakeCallback (&ApWifiMac::TxOk, this));
-  m_rxMiddle->SetPcfCallback (MakeCallback (&ApWifiMac::SendNextCfFrame, this));
 
   //Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);
@@ -157,14 +155,7 @@ Time
 ApWifiMac::GetBeaconInterval (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_low->GetBeaconInterval ();
-}
-
-Time
-ApWifiMac::GetCfpMaxDuration (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_low->GetCfpMaxDuration ();
+  return m_beaconInterval;
 }
 
 void
@@ -200,18 +191,7 @@ ApWifiMac::SetBeaconInterval (Time interval)
     {
       NS_FATAL_ERROR ("beacon interval should be smaller then or equal to 65535 * 1024us (802.11 time unit)");
     }
-  m_low->SetBeaconInterval (interval);
-}
-
-void
-ApWifiMac::SetCfpMaxDuration (Time duration)
-{
-  NS_LOG_FUNCTION (this << duration);
-  if ((duration.GetMicroSeconds () % 1024) != 0)
-    {
-      NS_LOG_WARN ("CFP max duration should be multiple of 1024us (802.11 time unit)");
-    }
-  m_low->SetCfpMaxDuration (duration);
+  m_beaconInterval = interval;
 }
 
 int64_t
@@ -390,7 +370,7 @@ ApWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
   //We're sending this packet with a from address that is our own. We
   //get that address from the lower MAC and make use of the
   //from-spoofing Enqueue() method to avoid duplicated code.
-  Enqueue (packet, to, m_low->GetAddress ());
+  Enqueue (packet, to, GetAddress ());
 }
 
 bool
@@ -540,21 +520,6 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetQosInfo (0);
     }
   return edcaParameters;
-}
-
-CfParameterSet
-ApWifiMac::GetCfParameterSet (void) const
-{
-  CfParameterSet cfParameterSet;
-  if (GetPcfSupported () && !m_cfPollingList.empty ())
-    {
-      cfParameterSet.SetPcfSupported (1);
-      cfParameterSet.SetCFPCount (0);
-      cfParameterSet.SetCFPPeriod (1);
-      cfParameterSet.SetCFPMaxDurationUs (GetCfpMaxDuration ().GetMicroSeconds ());
-      cfParameterSet.SetCFPDurRemainingUs (GetCfpMaxDuration ().GetMicroSeconds ());
-    }
-  return cfParameterSet;
 }
 
 HtOperation
@@ -876,10 +841,6 @@ ApWifiMac::SendOneBeacon (void)
   beacon.SetCapabilities (GetCapabilities ());
   m_stationManager->SetShortPreambleEnabled (GetShortPreambleEnabled ());
   m_stationManager->SetShortSlotTimeEnabled (GetShortSlotTimeEnabled ());
-  if (GetPcfSupported ())
-    {
-      beacon.SetCfParameterSet (GetCfParameterSet ());
-    }
   if (GetDsssSupported ())
     {
       beacon.SetDsssParameterSet (GetDsssParameterSet ());
@@ -933,39 +894,6 @@ ApWifiMac::SendOneBeacon (void)
 }
 
 void
-ApWifiMac::SendNextCfFrame (void)
-{
-  if (!GetPcfSupported ())
-    {
-      return;
-    }
-  if (m_txop->CanStartNextPolling ())
-    {
-      SendCfPoll ();
-    }
-  else if (m_low->IsCfPeriod ())
-    {
-      SendCfEnd ();
-    }
-}
-
-void
-ApWifiMac::SendCfPoll (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetPcfSupported ());
-  m_txop->SendCfFrame (WIFI_MAC_DATA_NULL_CFPOLL, *m_itCfPollingList);
-}
-
-void
-ApWifiMac::SendCfEnd (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetPcfSupported ());
-  m_txop->SendCfFrame (WIFI_MAC_CTL_END, Mac48Address::GetBroadcast ());
-}
-
-void
 ApWifiMac::TxOk (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
@@ -975,21 +903,6 @@ ApWifiMac::TxOk (const WifiMacHeader &hdr)
     {
       NS_LOG_DEBUG ("associated with sta=" << hdr.GetAddr1 ());
       m_stationManager->RecordGotAssocTxOk (hdr.GetAddr1 ());
-    }
-  else if (hdr.IsBeacon () && GetPcfSupported ())
-    {
-      if (!m_cfPollingList.empty ())
-        {
-          SendCfPoll ();
-        }
-      else
-        {
-          SendCfEnd ();
-        }
-    }
-  else if (hdr.IsCfPoll ())
-    {
-      IncrementPollingListIterator ();
     }
 }
 
@@ -1004,11 +917,6 @@ ApWifiMac::TxFailed (const WifiMacHeader &hdr)
     {
       NS_LOG_DEBUG ("association failed with sta=" << hdr.GetAddr1 ());
       m_stationManager->RecordGotAssocTxFailed (hdr.GetAddr1 ());
-    }
-  else if (hdr.IsCfPoll ())
-    {
-      IncrementPollingListIterator ();
-      SendNextCfFrame ();
     }
 }
 
@@ -1227,14 +1135,6 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                       if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                         {
                           m_stationManager->AddSupportedMode (from, mode);
-                        }
-                    }
-                  if (GetPcfSupported () && capabilities.IsCfPollable ())
-                    {
-                      m_cfPollingList.push_back (from);
-                      if (m_itCfPollingList == m_cfPollingList.end ())
-                        {
-                          IncrementPollingListIterator ();
                         }
                     }
                   if (GetHtSupported ())
@@ -1603,15 +1503,53 @@ ApWifiMac::GetNextAssociationId (void)
   return 0;
 }
 
-void
-ApWifiMac::IncrementPollingListIterator (void)
+uint8_t
+ApWifiMac::GetBufferStatus (uint8_t tid, Mac48Address address) const
 {
-  NS_LOG_FUNCTION (this);
-  m_itCfPollingList++;
-  if (m_itCfPollingList == m_cfPollingList.end ())
+  auto it = m_bufferStatus.find (WifiAddressTidPair (address, tid));
+  if (it == m_bufferStatus.end ()
+      || it->second.timestamp + m_bsrLifetime < Simulator::Now ())
     {
-      m_itCfPollingList = m_cfPollingList.begin ();
+      return 255;
     }
+  return it->second.value;
+}
+
+void
+ApWifiMac::SetBufferStatus (uint8_t tid, Mac48Address address, uint8_t size)
+{
+  if (size == 255)
+    {
+      // no point in storing an unspecified size
+      m_bufferStatus.erase (WifiAddressTidPair (address, tid));
+    }
+  else
+    {
+      m_bufferStatus[WifiAddressTidPair (address, tid)] = {size, Simulator::Now ()};
+    }
+}
+
+uint8_t
+ApWifiMac::GetMaxBufferStatus (Mac48Address address) const
+{
+  uint8_t maxSize = 0;
+  bool found = false;
+
+  for (uint8_t tid = 0; tid < 8; tid++)
+    {
+      uint8_t size = GetBufferStatus (tid, address);
+      if (size != 255)
+        {
+          maxSize = std::max (maxSize, size);
+          found = true;
+        }
+    }
+
+  if (found)
+    {
+      return maxSize;
+    }
+  return 255;
 }
 
 } //namespace ns3

@@ -23,6 +23,7 @@
 
 #include "ns3/mac48-address.h"
 #include "ns3/event-id.h"
+#include "block-ack-type.h"
 
 namespace ns3 {
 /**
@@ -33,7 +34,7 @@ class BlockAckAgreement
 {
   /// Provide access to MacLow class
   friend class MacLow;
-
+  friend class HtFrameExchangeManager;
 
 public:
   /**
@@ -151,6 +152,27 @@ public:
    *         false otherwise
    */
   bool IsHtSupported (void) const;
+  /**
+   * Get the type of the Block Acks sent by the recipient of this agreement.
+   *
+   * \return the type of the Block Acks sent by the recipient of this agreement
+   */
+  BlockAckType GetBlockAckType (void) const;
+  /**
+   * Get the type of the Block Ack Requests sent by the originator of this agreement.
+   *
+   * \return the type of the Block Ack Requests sent by the originator of this agreement
+   */
+  BlockAckReqType GetBlockAckReqType (void) const;
+  /**
+   * Get the distance between the given starting sequence number and the
+   * given sequence number.
+   *
+   * \param seqNumber the given sequence number
+   * \param startingSeqNumber the given starting sequence number
+   * \return the distance of the given sequence number from the given starting sequence number
+   */
+  static std::size_t GetDistance (uint16_t seqNumber, uint16_t startingSeqNumber);
 
 
 protected:

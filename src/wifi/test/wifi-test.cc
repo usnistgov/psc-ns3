@@ -48,6 +48,9 @@
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/waypoint-mobility-model.h"
+#include "ns3/frame-exchange-manager.h"
+#include "ns3/wifi-default-protection-manager.h"
+#include "ns3/wifi-default-ack-manager.h"
 
 using namespace ns3;
 
@@ -135,9 +138,18 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
-  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> mac = m_mac.Create<RegularWifiMac> ();
   mac->SetDevice (dev);
+  mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (mac);
+  fem->SetProtectionManager (protectionManager);
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (mac);
+  fem->SetAckManager (ackManager);
+
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
@@ -149,7 +161,6 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
 
   mobility->SetPosition (pos);
   node->AggregateObject (mobility);
-  mac->SetAddress (Mac48Address::Allocate ());
   dev->SetMac (mac);
   dev->SetPhy (phy);
   dev->SetRemoteStationManager (manager);
@@ -303,9 +314,18 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
-  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> mac = m_mac.Create<RegularWifiMac> ();
   mac->SetDevice (dev);
+  mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (mac);
+  fem->SetProtectionManager (protectionManager);
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (mac);
+  fem->SetAckManager (ackManager);
+
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
@@ -318,7 +338,6 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
 
   mobility->SetPosition (pos);
   node->AggregateObject (mobility);
-  mac->SetAddress (Mac48Address::Allocate ());
   dev->SetMac (mac);
   dev->SetPhy (phy);
   dev->SetRemoteStationManager (manager);
@@ -497,9 +516,18 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
 
   Ptr<Node> txNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
-  Ptr<WifiMac> txMac = m_mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> txMac = m_mac.Create<RegularWifiMac> ();
   txMac->SetDevice (txDev);
   txMac->ConfigureStandard (WIFI_STANDARD_80211a);
+  Ptr<FrameExchangeManager> fem = txMac->GetFrameExchangeManager ();
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (txMac);
+  fem->SetProtectionManager (protectionManager);
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (txMac);
+  fem->SetAckManager (ackManager);
+
+
   //Fix the stream assignment to the Dcf Txop objects (backoffs)
   //The below stream assignment will result in the Txop object
   //using a backoff value of zero for this test when the
@@ -1580,10 +1608,10 @@ private:
   Ptr<YansWifiPhy> m_apPhy; ///< AP PHY
   Ptr<YansWifiPhy> m_staPhy; ///< STA PHY
 
-  uint8_t m_reassocReqCount; ///< count number of reassociation requests
-  uint8_t m_reassocRespCount; ///< count number of reassociation responses
-  uint8_t m_countOperationalChannelWidth20; ///< count number of beacon frames announcing a 20 MHz operating channel width
-  uint8_t m_countOperationalChannelWidth40; ///< count number of beacon frames announcing a 40 MHz operating channel width
+  uint16_t m_reassocReqCount; ///< count number of reassociation requests
+  uint16_t m_reassocRespCount; ///< count number of reassociation responses
+  uint16_t m_countOperationalChannelWidth20; ///< count number of beacon frames announcing a 20 MHz operating channel width
+  uint16_t m_countOperationalChannelWidth40; ///< count number of beacon frames announcing a 40 MHz operating channel width
 };
 
 Bug2831TestCase::Bug2831TestCase ()
@@ -1656,18 +1684,34 @@ Bug2831TestCase::DoRun (void)
   ObjectFactory mac;
   mac.SetTypeId ("ns3::ApWifiMac");
   mac.Set ("EnableBeaconJitter", BooleanValue (false));
-  Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> apMac = mac.Create<RegularWifiMac> ();
   apMac->SetDevice (apDev);
+  apMac->SetAddress (Mac48Address::Allocate ());
   apMac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
+  Ptr<FrameExchangeManager> fem = apMac->GetFrameExchangeManager ();
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (apMac);
+  fem->SetProtectionManager (protectionManager);
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (apMac);
+  fem->SetAckManager (ackManager);
 
   Ptr<Node> staNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice> ();
   Ptr<HtConfiguration> staHtConfiguration = CreateObject<HtConfiguration> ();
   staDev->SetHtConfiguration (staHtConfiguration);
   mac.SetTypeId ("ns3::StaWifiMac");
-  Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> staMac = mac.Create<RegularWifiMac> ();
   staMac->SetDevice (staDev);
+  staMac->SetAddress (Mac48Address::Allocate ());
   staMac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
+  fem = staMac->GetFrameExchangeManager ();
+  protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (staMac);
+  fem->SetProtectionManager (protectionManager);
+  ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (staMac);
+  fem->SetAckManager (ackManager);
 
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
   apMobility->SetPosition (Vector (0.0, 0.0, 0.0));
@@ -1696,7 +1740,6 @@ Bug2831TestCase::DoRun (void)
   m_staPhy->SetChannelNumber (36);
   m_staPhy->SetChannelWidth (20);
 
-  apMac->SetAddress (Mac48Address::Allocate ());
   apDev->SetMac (apMac);
   apDev->SetPhy (m_apPhy);
   ObjectFactory manager;
@@ -1704,7 +1747,6 @@ Bug2831TestCase::DoRun (void)
   apDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
   apNode->AddDevice (apDev);
 
-  staMac->SetAddress (Mac48Address::Allocate ());
   staDev->SetMac (staMac);
   staDev->SetPhy (m_staPhy);
   staDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
