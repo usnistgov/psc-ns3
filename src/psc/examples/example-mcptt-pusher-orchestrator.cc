@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
   nodes.Create (appCount);
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211g); //2.4Ghz
+  wifi.SetStandard (WIFI_STANDARD_80211g); //2.4Ghz
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("ErpOfdmRate6Mbps"));
  
