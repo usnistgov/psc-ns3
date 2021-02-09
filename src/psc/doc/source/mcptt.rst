@@ -587,6 +587,15 @@ There are several on-network MCTT examples in the 'psc/examples' folder:
   * ``example-mcptt-on-network-two-simultaneous-calls.cc`` demonstrates two
     concurrent calls in the same LTE network, each with different MCPTT
     server nodes, and an MCPTT user participating in both calls
+  * ``mcptt-operational-modes-static.cc`` demonstrates how different modes of
+    MCPTT (on-network, off-network, and on-network using UE-to-network relay)
+    operate in parallel, with some support for plotting access time and
+    mouth-to-ear latency KPIs.
+  * ``mcptt-operational-modes-mobility.cc`` is similar in initial configuration
+    to the static program above, but demonstrates mobility of three teams
+    of four UEs into a building, and the relative performance impact of the
+    three different modes of operation (on-network, off-network, and on-network
+    with UE-to-network relay).
 
 mcptt-lte-sl-out-of-covrg-comm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -909,6 +918,77 @@ The program output of this program shows application and floor control
 events traced on userId 1, illustrating that as one call is selected
 (sent to the foreground), the other call machine still evolves in
 the background.
+
+mcptt-operational-modes-static
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The program ``mcptt-operational-modes-static.cc`` demonstrates how
+different modes of MCPTT (on-network, off-network, and on-network using
+UE-to-network relay) operate in parallel, with some support for plotting
+access time and mouth-to-ear latency KPIs from the resulting traces.
+
+The program creates three teams of UEs (default of 4 UEs per team)
+with one team in each of the three modes.  The off-network and
+on-network using relay teams are positioned within a building, preventing
+full on-network operation for those teams.  Each team creates an MCPTT
+call and uses the automatic pusher model to drive an MCPTT call for the
+duration of the call (default of 1000 seconds duration).  
+
+.. _fig-mcptt-operational-modes-scenario:
+
+.. figure:: figures/mcptt-operational-modes-scenario.*
+   :scale: 75 %
+
+   MCPTT operational modes scenario
+
+A number of traces are generated:
+
+  * ``mcptt-operational-modes-static-access-time.dat``:  Floor access time trace
+  * ``mcptt-operational-modes-static-m2e-latency.dat``:  Talk-spurt mouth-to-ear latency tracing
+  * ``mcptt-operational-modes-static-msg-stats.dat``:  MCPTT message trace
+  * ``mcptt-operational-modes-static-pc5-signaling.dat``:  Relay PC5 interface trace
+  * ``mcptt-operational-modes-static-positions.dat``:  UE position trace
+  * ``mcptt-operational-modes-static-rsrp-measurement.dat``:  LTE RSRP measurement trace
+  * ``mcptt-operational-modes-static-state-machine-stats.dat``:  MCPTT state machine trace
+
+At the end of the program execution, some output is printed on the terminal
+regarding the number of packets sent and received by each node.
+
+The call duration, whether floor control queueing is enabled or not (disabled
+by default), and the number of UEs per team are configurable as command-line
+options.  A simulation progress display is also optionally enabled by 
+the ``--showProgress`` option.
+
+Finally, some plotting programs (requiring Python Matplotlib) are available
+to create CDF plots of the access time and mouth-to-ear latencies of the three
+teams.  The programs are named ``mcptt-operational-modes-plot-access-time.py``
+and ``mcptt-operational-modes-plot-m2e-latency.py``.  The programs output,
+by default, an EPS file showing the CDF of access time and mouth-to-ear
+latency, respectively.  They should be run from the same directory
+as the traces (or the optional program argument can be used to point
+to the applicable trace file).  The following figures show the output produced
+using the default configuration of ``mcptt-operational-modes-static.cc``.
+
+.. _fig-mcptt-operational-modes-static-access-cdf:
+
+.. figure:: figures/mcptt-operational-modes-static-access-cdf.*
+   :scale: 75 %
+
+   MCPTT operational modes static access time
+
+.. _fig-mcptt-operational-modes-static-m2e-cdf:
+
+.. figure:: figures/mcptt-operational-modes-static-m2e-cdf.*
+   :scale: 75 %
+
+   MCPTT operational modes static mouth-to-ear latency
+
+mcptt-operational-modes-mobility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  * ``mcptt-operational-modes-mobility.cc`` is similar in initial configuration
+    to the static program above, but demonstrates mobility of three teams
+    of four UEs into a building, and the relative performance impact of the
+    three different modes of operation (on-network, off-network, and on-network
+    with UE-to-network relay).
 
 Traces
 ######

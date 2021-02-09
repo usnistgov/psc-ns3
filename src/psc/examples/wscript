@@ -12,7 +12,6 @@ def build(bld):
                                  ['core', 'energy', 'mobility', 'psc'])
     obj.source = 'uav-mobility-energy-example.cc'
 
-
     obj = bld.create_ns3_program('example-intel-http',
                                  ['psc'])
     obj.source = 'example-intel-http.cc'
@@ -69,3 +68,12 @@ def build(bld):
     obj = bld.create_ns3_program('example-mcptt-on-network-two-simultaneous-calls',
                                  ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc'])
     obj.source = 'example-mcptt-on-network-two-simultaneous-calls.cc'
+
+    obj = bld.create_ns3_program('mcptt-operational-modes-static',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc', 'buildings'])
+    obj.source = 'mcptt-operational-modes-static.cc'
+
+    obj = bld.create_ns3_program('mcptt-operational-modes-mobility',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc', 'buildings'])
+    obj.source = 'mcptt-operational-modes-mobility.cc'
+

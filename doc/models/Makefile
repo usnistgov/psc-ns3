@@ -367,6 +367,10 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/RoutingTables.pdf \
 	$(SRC)/netanim/doc/figures/PacketTimeline.png \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
+	$(SRC)/psc/doc/source/figures/intel-http.png \
+	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-scenario.png \
+	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-access-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-m2e-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-ptt-duration-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-session-duration-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-pusher-model-example.png \
