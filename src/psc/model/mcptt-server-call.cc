@@ -258,11 +258,18 @@ void
 McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const sip::SipHeader &hdr)
 {
   NS_LOG_FUNCTION (this << pkt << toAddr << hdr);
-  if (!m_txCb.IsNull ())
+  if (m_owner->IsRunning ())
     {
-      m_txCb (this, hdr);
+      m_owner->SendCallControlPacket (pkt, toAddr);
+      if (!m_txCb.IsNull ())
+        {
+          m_txCb (this, hdr);
+        }
     }
-  m_owner->SendCallControlPacket (pkt, toAddr);
+  else
+    {
+      NS_LOG_DEBUG ("Not sending message because McpttServerApp is not running");
+    }
 }
 
 void

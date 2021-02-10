@@ -179,6 +179,11 @@ public:
   */
  virtual void SessionInitiateRequest (void);
  /**
+  * Indicates whether or not the application is running
+  * \returns True, if the application is running.
+  */
+ virtual bool IsRunning (void) const;
+ /**
   * Indicates whether or not the PTT button is pushed.
   * \returns True, if the PTT button is pushed.
   */

@@ -354,10 +354,17 @@ McpttCall::SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipH
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
       Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
-      GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
-      if (!m_txCb.IsNull ())
+      if (GetOwner ()->IsRunning ())
         {
-          m_txCb (this, hdr);
+          GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
+          if (!m_txCb.IsNull ())
+            {
+              m_txCb (this, hdr);
+            }
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Not sending message because McpttPttApp is not running");
         }
     }
 }

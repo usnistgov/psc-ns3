@@ -346,6 +346,12 @@ McpttPttApp::SessionInitiateRequest (void)
 }
 
 bool
+McpttPttApp::IsRunning (void) const
+{
+  return m_isRunning;
+}
+
+bool
 McpttPttApp::IsPushed (void) const
 {
   return m_pusher->IsPushing ();

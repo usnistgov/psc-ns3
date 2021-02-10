@@ -183,6 +183,7 @@ McpttServerApp::StartApplication (void)
       // McpttServerCall::ReceiveSipEvent
       m_sipProxy->SetCallbacks (it->first, MakeCallback (&McpttServerCall::ReceiveSipMessage, it->second), MakeCallback (&McpttServerCall::ReceiveSipEvent, it->second));
     }
+  m_isRunning = true;
 }
 
 void
@@ -195,6 +196,7 @@ McpttServerApp::StopApplication (void)
       NS_LOG_DEBUG ("Stopping call for id " << it->first);
       it->second->GetCallMachine ()->Stop ();
     }
+  m_isRunning = false;
 }
 
 void
@@ -234,5 +236,10 @@ McpttServerApp::SetLocalAddress (const Address& localAddress)
   m_localAddress = localAddress;
 }
 
-} // namespace ns3
+bool
+McpttServerApp::IsRunning (void) const
+{
+  return m_isRunning;
+}
 
+} // namespace ns3

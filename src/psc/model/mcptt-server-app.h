@@ -113,6 +113,12 @@ public:
   * \param localAddress The address.
   */
  void SetLocalAddress (const Address& localAddress);
+ /**
+  * Indicates whether or not the application is running
+  * \returns True, if the application is running.
+  */
+ virtual bool IsRunning (void) const;
+
 protected:
  /**
   * The callback to fire when a message is received.
@@ -155,6 +161,7 @@ private:
  Ptr<sip::SipProxy> m_sipProxy; //!< The SIP proxy agent
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
+ bool m_isRunning; //!< Flag to mark if the application is running
 };
 
 } // namespace ns3
