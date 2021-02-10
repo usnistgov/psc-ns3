@@ -224,4 +224,6 @@ The following tests are written:
 
 5. **SipInitiatorByeFailureTest:** Test the outcome from the failure of BYE (all retransmissions) from Client 1.  This tests the operation of Timer F.
 
-6. (to be completed) **SipProxyInviteFailureTest:** Test the outcome from the failure of INVITEs from proxy to Clients 2 and 3.  This tests the operation of Timer C and sending CANCEL.
+6. **SipProxyInviteLossTest:** Test the outcome from the loss of first INVITEs from proxy to Clients 2 and 3, testing the proxy Timer A handling.
+
+7. **SipProxyInviteFailureTest:** Test the outcome from the failure of INVITEs from proxy to Clients 2 and 3.  This generates a 408 Request Timeout back to the Client 1.

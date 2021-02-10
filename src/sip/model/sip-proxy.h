@@ -62,6 +62,19 @@ public:
   static TypeId GetTypeId (void);
 
   /**
+   * \brief Send a SIP response with status code
+   *
+   * \param p the packet to add a SIP header to
+   * \param addr the address to send the packet to
+   * \param statusCode the status code
+   * \param from the from field
+   * \param to the to field
+   * \param callId the callId
+   * \param sendCallback the callback to use to send the messages
+   */
+  virtual void SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback);
+
+  /**
    * Schedule Timer C (proxy INVITE transaction timeout)
    * \param id Transaction ID
    */

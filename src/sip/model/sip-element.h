@@ -145,7 +145,7 @@ public:
    * \param callId the callId
    * \param sendCallback the callback to use to send the messages
    */
-  void SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback);
+  virtual void SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback);
   /**
    * Receive and process an inbound SIP packet.  The SIP header should be the
    * next header ready to be deserialized.
@@ -203,6 +203,7 @@ public:
    */
  static constexpr const char* ACK_RECEIVED = "ACK received";
  static constexpr const char* TRYING_RECEIVED = "Trying received";
+ static constexpr const char* REQUEST_TIMEOUT = "Request timeout";
  static constexpr const char* TIMER_A_EXPIRED = "Timer A expired";
  static constexpr const char* TIMER_B_EXPIRED = "Timer B expired";
  static constexpr const char* TIMER_C_EXPIRED = "Timer C expired";
@@ -402,14 +403,6 @@ protected:
    */
   void ScheduleTimerB (TransactionId id);
   /**
-   * Schedule Timer C (proxy INVITE transaction timeout)
-   * 
-   * The default implementation does nothing; the proxy subclass implements it
-   *
-   * \param id Transaction ID
-   */
-  virtual void ScheduleTimerC (TransactionId id);
-  /**
    * Schedule Timer E (retransmit the non-INVITE)
    * \param id TransactionId
    * \param backoff Value to use for the T1 multiplier
@@ -445,14 +438,6 @@ protected:
    * \param id Transaction ID
    */
   void CancelTimerB (TransactionId id);
-  /**
-   * \brief Cancel Timer C 
-   *
-   * The default implementation does nothing; the proxy subclass implements it
-   *
-   * \param id Transaction ID
-   */
-  virtual void CancelTimerC (TransactionId id);
   /**
    * \brief Cancel Timer E 
    * \param id Transaction ID

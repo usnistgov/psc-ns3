@@ -38,7 +38,7 @@ SipProxy::GetTypeId (void)
     .AddConstructor<SipProxy> ()
     .AddAttribute ("ProxyInviteTransactionTimeout",
                    "Timer C timeout value",
-                   TimeValue (Minutes (5)), // > 3 minutes
+                   TimeValue (Minutes (4)), // > 3 minutes per RFC 3261
                    MakeTimeAccessor (&SipProxy::m_proxyInviteTransactionTimeout),
                    MakeTimeChecker ())
   ;
@@ -61,6 +61,56 @@ SipProxy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   SipElement::DoDispose ();
+}
+
+void
+SipProxy::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode, uint32_t from, uint32_t to, uint16_t callId, Callback<void, Ptr<Packet>, const Address&, const SipHeader&> sendCallback)
+{
+  NS_LOG_FUNCTION (p << addr << statusCode << from << to << callId);
+  TransactionId tid = GetTransactionId (callId, from, to);
+  DialogId did = GetDialogId (callId, from, to);
+  auto it = m_dialogs.find (did);
+  NS_ASSERT_MSG (it != m_dialogs.end (), "Dialog not found");
+  it->second.m_sendCallback = sendCallback;
+  if (statusCode == 100)
+    {
+      SetDialogState (did, DialogState::PROCEEDING);
+      SetTransactionState (tid, TransactionState::PROCEEDING);
+      ScheduleTimerC (tid);
+    }
+  else if (statusCode == 200)
+    {
+      if (it->second.m_state == DialogState::TRYING || it->second.m_state == DialogState::PROCEEDING)
+        {
+          SetDialogState (did, DialogState::CONFIRMED);
+          SetTransactionState (tid, TransactionState::COMPLETED);
+          CancelTimerC (tid);
+        }
+      else if (it->second.m_state == DialogState::TERMINATED)
+        {
+          SetTransactionState (tid, TransactionState::COMPLETED);
+          ScheduleTimerJ (tid);  // Start Timer J (to transition to TERMINATED)
+        }
+      else
+        {
+          NS_FATAL_ERROR ("SendResponse 200 unsupported from state " << DialogStateToString (it->second.m_state));
+        }
+    }
+ else if (statusCode == 408)
+    {
+      SetDialogState (did, DialogState::TERMINATED);
+      SetTransactionState (tid, TransactionState::FAILED);
+      CancelTimerC (tid);
+    }
+  SipHeader header;
+  header.SetMessageType (SipHeader::SIP_RESPONSE);
+  header.SetStatusCode (statusCode);
+  header.SetFrom (from);
+  header.SetTo (to);
+  header.SetCallId (callId);
+  p->AddHeader (header);
+  sendCallback (p, addr, header);
+  m_txTrace (p, header);
 }
 
 void
@@ -87,17 +137,13 @@ void
 SipProxy::HandleTimerC (TransactionId id)
 {
   NS_LOG_FUNCTION (this << TransactionIdToString (id));
-  DialogId did = GetDialogId (std::get<0> (id), std::get<1> (id), std::get<2> (id));
   auto eventIt = m_eventCallbacks.find (std::get<0> (id));
   NS_ASSERT_MSG (eventIt != m_eventCallbacks.end (), "CallID not found");
   auto transIt = m_transactions.find (id);
   NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
   NS_ASSERT_MSG (transIt->second.m_state == TransactionState::PROCEEDING, "Transaction not in PROCEEDING");
+  // Notify user and let user handle this event
   eventIt->second (TIMER_C_EXPIRED, transIt->second.m_state);
-  // Send CANCEL to client
-  // Fail the transaction
-  SetTransactionState (id, TransactionState::FAILED);
-  SetDialogState (did, DialogState::TERMINATED);
 }
 
 } // namespace sip

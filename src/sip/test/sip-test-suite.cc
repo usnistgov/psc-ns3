@@ -70,6 +70,9 @@ protected:
   Ptr<SimpleNetDevice> m_serverDeviceTowardsClient1;
   Ptr<SimpleNetDevice> m_serverDeviceTowardsClient2;
   Ptr<SimpleNetDevice> m_serverDeviceTowardsClient3;
+  Ptr<SimpleNetDevice> m_client1DeviceTowardsServer;
+  Ptr<SimpleNetDevice> m_client2DeviceTowardsServer;
+  Ptr<SimpleNetDevice> m_client3DeviceTowardsServer;
   // Test event recording
   struct TestEvent {
     uint32_t m_step;
@@ -102,6 +105,7 @@ protected:
   uint32_t m_proxyStep {0};
   std::list<TestEvent> m_proxyExpectedStateChanges; //!< Expected state changes
   std::list<TestEvent> m_proxyObservedStateChanges; //!< Observed state changes
+  uint32_t m_proxyTimerBCount {0};                  //!< Count Timer B expiry
 
   InetSocketAddress m_client1Address;
   InetSocketAddress m_client2Address;
@@ -111,30 +115,31 @@ protected:
   InetSocketAddress m_client3ServerAddress;
   uint16_t m_callId;
   bool m_receivedTerminatingReply;
+  sip::SipHeader m_proxiedInviteHeader;
 
   // Callbacks for SIP proxy
-  void ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state);
-  virtual void ServerReceiveSipEvent (const char* event, sip::SipProxy::TransactionState state);
+  void ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state);
+  virtual void ServerReceiveSipEvent (const char* event, sip::SipElement::TransactionState state);
   virtual void ServerReceive (Ptr<Socket> socket);
   void ServerSendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr);
   // Callbacks for SIP agents
-  void Client1ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state);
-  virtual void Client1ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state);
+  void Client1ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state);
+  virtual void Client1ReceiveSipEvent (const char* event, sip::SipElement::TransactionState state);
   virtual void Client1Receive (Ptr<Socket> socket);
   void Client1SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr);
-  void Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state);
-  virtual void Client2ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state);
+  void Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state);
+  virtual void Client2ReceiveSipEvent (const char* event, sip::SipElement::TransactionState state);
   virtual void Client2Receive (Ptr<Socket> socket);
   void Client2SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr);
-  void Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state);
-  virtual void Client3ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state);
+  void Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state);
+  virtual void Client3ReceiveSipEvent (const char* event, sip::SipElement::TransactionState state);
   virtual void Client3Receive (Ptr<Socket> socket);
   void Client3SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr);
   // Traces for state change events
-  void ProxyDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipProxy::DialogState state);
-  void AgentDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipAgent::DialogState state);
-  void ProxyTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipProxy::TransactionState state);
-  void AgentTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipAgent::TransactionState state);
+  void ProxyDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipElement::DialogState state);
+  void AgentDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipElement::DialogState state);
+  void ProxyTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipElement::TransactionState state);
+  void AgentTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipElement::TransactionState state);
   // Traces for IPv4 TX/RX events
   // These are just used for debug logging
   void ServerRxTrace (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
@@ -192,12 +197,15 @@ SipTestCase::DoSetup (void)
   helper.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
   NetDeviceContainer nd1 = helper.Install (n1);
   m_serverDeviceTowardsClient1 = nd1.Get (0)->GetObject<SimpleNetDevice> ();
+  m_client1DeviceTowardsServer = nd1.Get (1)->GetObject<SimpleNetDevice> ();
   helper.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (11)));
   NetDeviceContainer nd2 = helper.Install (n2);
   m_serverDeviceTowardsClient2 = nd2.Get (0)->GetObject<SimpleNetDevice> ();
+  m_client2DeviceTowardsServer = nd2.Get (1)->GetObject<SimpleNetDevice> ();
   helper.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (12)));
   NetDeviceContainer nd3 = helper.Install (n3);
   m_serverDeviceTowardsClient3 = nd3.Get (0)->GetObject<SimpleNetDevice> ();
+  m_client3DeviceTowardsServer = nd3.Get (1)->GetObject<SimpleNetDevice> ();
 
   InternetStackHelper internet;
   internet.Install (n);
@@ -334,9 +342,9 @@ SipTestCase::Client3TxTrace (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t 
 }
 
 void
-SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state)
+SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Server received SIP message: " << hdr << " state: " << SipProxy::TransactionStateToString (state));
+  NS_LOG_DEBUG ("Server received SIP message: " << hdr << " state: " << SipElement::TransactionStateToString (state));
   if (hdr.GetMessageType () == sip::SipHeader::SIP_REQUEST)
     {
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
@@ -354,6 +362,8 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
               // From: and To: fields remain the same in the response
               m_sipProxy->SendResponse (p1, m_client1Address, 100, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
                      MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+              // Save header for later responses
+              m_proxiedInviteHeader = hdr;
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP INVITE"));
               m_step++;
               Ptr<Packet> p2 = Create<Packet> ();
@@ -418,7 +428,7 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 200 OK"));
               m_step++;
               Ptr<Packet> p1 = Create<Packet> ();
-              m_sipProxy->SendResponse (p1, m_client1Address, 200, 1, 0, hdr.GetCallId (), 
+              m_sipProxy->SendResponse (p1, m_client1Address, 200, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), hdr.GetCallId (), 
                  MakeCallback (&SipTestCase::ServerSendSipMessage, this));
             }
         }
@@ -426,19 +436,33 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
 }
 
 void
-SipTestCase::ServerReceiveSipEvent (const char* event, sip::SipProxy::TransactionState state)
+SipTestCase::ServerReceiveSipEvent (const char* event, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Server received SIP event: " << event << "; state: " << SipProxy::
+  NS_LOG_DEBUG ("Server received SIP event: " << event << "; state: " << SipElement::
 TransactionStateToString (state));
-  if (strcmp (event, SipProxy::ACK_RECEIVED) == 0)
+  if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive ACK"));
       m_step++;
     }
-  else if (strcmp (event, SipProxy::TRYING_RECEIVED) == 0)
+  else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive 100 Trying"));
       m_step++;
+    }
+  else if (strcmp (event, SipElement::TIMER_B_EXPIRED) == 0)
+    {
+      m_observedEvents.push_back (TestEvent (m_step, 0, "Server Timer B expired"));
+      m_step++;
+      m_proxyTimerBCount++;
+      if (m_proxyTimerBCount == 2)
+        {
+          // Both clients 2 and 3 failed; send 408 Request Timeout to client 1
+          Ptr<Packet> p1 = Create<Packet> ();
+          m_sipProxy->SendResponse (p1, m_client1Address, 408, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), m_proxiedInviteHeader.GetCallId (), 
+                 MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+          m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 408 Request Timeout"));
+        }
     }
 }
 
@@ -470,9 +494,9 @@ SipTestCase::ServerSendSipMessage (Ptr<Packet> pkt, const Address& addr, const s
 }
 
 void
-SipTestCase::Client1ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state)
+SipTestCase::Client1ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Client1 received SIP message: " << hdr << " state: " << SipAgent::TransactionStateToString (state));
+  NS_LOG_DEBUG ("Client1 received SIP message: " << hdr << " state: " << SipElement::TransactionStateToString (state));
   if (hdr.GetMessageType () == sip::SipHeader::SIP_RESPONSE)
     {
       if (hdr.GetStatusCode () == 100)
@@ -485,39 +509,44 @@ SipTestCase::Client1ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
           m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 200 OK"));
           m_step++;
         }
+      else if (hdr.GetStatusCode () == 408)
+        {
+          m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 408 Request Timeout"));
+          m_step++;
+        }
     }
 }
 
 void
-SipTestCase::Client1ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state)
+SipTestCase::Client1ReceiveSipEvent (const char* event, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Client1 received SIP event: " << event << "; state: " << SipAgent::TransactionStateToString (state));
-  if (strcmp (event, SipAgent::ACK_RECEIVED) == 0)
+  NS_LOG_DEBUG ("Client1 received SIP event: " << event << "; state: " << SipElement::TransactionStateToString (state));
+  if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive ACK"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TRYING_RECEIVED) == 0)
+  else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 100 Trying"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TIMER_A_EXPIRED) == 0)
+  else if (strcmp (event, SipElement::TIMER_A_EXPIRED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer A expired"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TIMER_B_EXPIRED) == 0)
+  else if (strcmp (event, SipElement::TIMER_B_EXPIRED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer B expired"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TIMER_E_EXPIRED) == 0)
+  else if (strcmp (event, SipElement::TIMER_E_EXPIRED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer E expired"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TIMER_F_EXPIRED) == 0)
+  else if (strcmp (event, SipElement::TIMER_F_EXPIRED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer F expired"));
       m_step++;
@@ -552,9 +581,9 @@ SipTestCase::Client1SendSipMessage (Ptr<Packet> pkt, const Address& addr, const 
 }
 
 void
-SipTestCase::Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state)
+SipTestCase::Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Client2 received SIP message: " << hdr << " state: " << SipAgent::TransactionStateToString (state));
+  NS_LOG_DEBUG ("Client2 received SIP message: " << hdr << " state: " << SipElement::TransactionStateToString (state));
   if (hdr.GetMessageType () == sip::SipHeader::SIP_REQUEST)
     {
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
@@ -581,15 +610,15 @@ SipTestCase::Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
 }
 
 void
-SipTestCase::Client2ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state)
+SipTestCase::Client2ReceiveSipEvent (const char* event, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Client2 received SIP event: " << event << "; state: " << SipAgent::TransactionStateToString (state));
-  if (strcmp (event, SipAgent::ACK_RECEIVED) == 0)
+  NS_LOG_DEBUG ("Client2 received SIP event: " << event << "; state: " << SipElement::TransactionStateToString (state));
+  if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive ACK"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TRYING_RECEIVED) == 0)
+  else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive 100 Trying"));
       m_step++;
@@ -624,9 +653,9 @@ SipTestCase::Client2SendSipMessage (Ptr<Packet> pkt, const Address& addr, const 
 }
 
 void
-SipTestCase::Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state)
+SipTestCase::Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Client3 received SIP message: " << hdr << " state: " << SipAgent::TransactionStateToString (state));
+  NS_LOG_DEBUG ("Client3 received SIP message: " << hdr << " state: " << SipElement::TransactionStateToString (state));
   if (hdr.GetMessageType () == sip::SipHeader::SIP_REQUEST)
     {
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
@@ -653,15 +682,15 @@ SipTestCase::Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
 }
 
 void
-SipTestCase::Client3ReceiveSipEvent (const char* event, sip::SipAgent::TransactionState state)
+SipTestCase::Client3ReceiveSipEvent (const char* event, sip::SipElement::TransactionState state)
 {
-  NS_LOG_DEBUG ("Client3 received SIP event: " << event << "; state: " << SipAgent::TransactionStateToString (state));
-  if (strcmp (event, SipAgent::ACK_RECEIVED) == 0)
+  NS_LOG_DEBUG ("Client3 received SIP event: " << event << "; state: " << SipElement::TransactionStateToString (state));
+  if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive ACK"));
       m_step++;
     }
-  else if (strcmp (event, SipAgent::TRYING_RECEIVED) == 0)
+  else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive 100 Trying"));
       m_step++;
@@ -733,19 +762,19 @@ SipTestCase::Client1SendSipBye (void)
 }
 
 void
-SipTestCase::ProxyDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipProxy::DialogState state)
+SipTestCase::ProxyDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipElement::DialogState state)
 {
   std::stringstream message;
-  message << "Dialog (" << callId << "," << lowerUri << "," << higherUri << ") enter " << SipProxy::DialogStateToString (state);
+  message << "Dialog (" << callId << "," << lowerUri << "," << higherUri << ") enter " << SipElement::DialogStateToString (state);
   m_proxyObservedStateChanges.push_back (TestEvent (m_proxyStep, 0, message.str ()));
   m_proxyStep++;
 }
 
 void
-SipTestCase::AgentDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipAgent::DialogState state)
+SipTestCase::AgentDialogStateTrace (std::string context, uint16_t callId, uint32_t lowerUri, uint32_t higherUri, SipElement::DialogState state)
 {
   std::stringstream message;
-  message << "Dialog (" << callId << "," << lowerUri << "," << higherUri << ") enter " << SipAgent::DialogStateToString (state);
+  message << "Dialog (" << callId << "," << lowerUri << "," << higherUri << ") enter " << SipElement::DialogStateToString (state);
   if (context.compare ("1") == 0)
     {
       m_client1ObservedStateChanges.push_back (TestEvent (m_client1Step, 0, message.str ()));
@@ -764,19 +793,19 @@ SipTestCase::AgentDialogStateTrace (std::string context, uint16_t callId, uint32
 }
 
 void
-SipTestCase::ProxyTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipProxy::TransactionState state)
+SipTestCase::ProxyTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipElement::TransactionState state)
 {
   std::stringstream message;
-  message << "Transaction (" << callId << "," << from << "," << to << ") enter " << SipProxy::TransactionStateToString (state);
+  message << "Transaction (" << callId << "," << from << "," << to << ") enter " << SipElement::TransactionStateToString (state);
   m_proxyObservedStateChanges.push_back (TestEvent (m_proxyStep, 0, message.str ()));
   m_proxyStep++;
 }
 
 void
-SipTestCase::AgentTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipAgent::TransactionState state)
+SipTestCase::AgentTransactionStateTrace (std::string context, uint16_t callId, uint32_t from, uint32_t to, SipElement::TransactionState state)
 {
   std::stringstream message;
-  message << "Transaction (" << callId << "," << from << "," << to << ") enter " << SipAgent::TransactionStateToString (state);
+  message << "Transaction (" << callId << "," << from << "," << to << ") enter " << SipElement::TransactionStateToString (state);
   if (context.compare ("1") == 0)
     {
       m_client1ObservedStateChanges.push_back (TestEvent (m_client1Step, 0, message.str ()));
@@ -1658,6 +1687,280 @@ SipInitiatorByeFailureTest::DoRun ()
 }
 
 /**
+ * \ingroup tests
+ * Test the recovery from the loss of initial INVITE to Clients 2 and 3
+ */
+class SipProxyInviteLossTest : public SipTestCase
+{
+public:
+  SipProxyInviteLossTest (void);
+private:
+  virtual void DoRun (void);
+};
+
+SipProxyInviteLossTest::SipProxyInviteLossTest (void)
+  : SipTestCase ("SIP proxy INVITE loss test") 
+{
+}
+
+void
+SipProxyInviteLossTest::DoRun ()
+{
+  // Add error models to force the loss of the first INVITE from proxy
+  // to clients 2 and 3
+  Ptr<ReceiveListErrorModel> em2 = CreateObject<ReceiveListErrorModel> ();
+  std::list<uint32_t> errorList;
+  errorList.push_back (0);
+  em2->SetList (errorList);
+  m_client2DeviceTowardsServer->SetReceiveErrorModel (em2);
+  Ptr<ReceiveListErrorModel> em3 = CreateObject<ReceiveListErrorModel> ();
+  em3->SetList (errorList);
+  m_client3DeviceTowardsServer->SetReceiveErrorModel (em3);
+
+  // The event is triggered by client 1 sending a SIP INVITE
+  Simulator::Schedule (Seconds (1), &SipTestCase::Client1SendSipInvite, this);
+
+  // Expected events
+  // Client 1 sends INVITE
+  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  // Server receives invite, sends trying to client 1, sends INVITE to others
+  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
+  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
+  // Client 1 receives Trying
+  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  // Retransmissions occur towards both client 2 and 3 after Timer A
+  m_expectedEvents.push_back (TestEvent (12, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (13, 0, "Server send SIP message"));
+  // Clients 2 and 3 receive INVITE and automatically commence
+  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (16, 2, "Client2 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (17, 2, "Client2 send SIP message"));
+  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (20, 3, "Client3 send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (21, 3, "Client3 send SIP message"));
+  // Server receives the first OK (from client 2), and returns an OK
+  // to the originating client
+  m_expectedEvents.push_back (TestEvent (22, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (23, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (24, 0, "Server send 200 OK"));
+  m_expectedEvents.push_back (TestEvent (25, 0, "Server send SIP message"));
+  // Server sends ACK for 200 OK
+  m_expectedEvents.push_back (TestEvent (26, 0, "Server send SIP message"));
+  // Server receives the second OK from client 3, and returns an ACK
+  m_expectedEvents.push_back (TestEvent (27, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (28, 0, "Server receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (29, 0, "Server send SIP message"));
+  // Client 1 receives OK and sends ACK
+  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (31, 1, "Client1 receive 200 OK"));
+  m_expectedEvents.push_back (TestEvent (32, 1, "Client1 send SIP message"));
+  // Clients 2 and 3 receive ACK
+  m_expectedEvents.push_back (TestEvent (33, 2, "Client2 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
+  m_expectedEvents.push_back (TestEvent (35, 3, "Client3 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (36, 2, "Client2 receive ACK"));
+  // Server receives ACK
+  m_expectedEvents.push_back (TestEvent (37, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (38, 0, "Server receive ACK"));
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+//#define VERBOSE_PROXY_INVITE_LOSS 1
+#ifdef VERBOSE_PROXY_INVITE_LOSS
+  // Define this to print out the observed events, if needed for debugging
+  // or to generate new expected events.
+  for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
+    {
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client1 state changes:" << std::endl;
+  for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client2 state changes:" << std::endl;
+  for (auto it = m_client2ObservedStateChanges.begin (); it != m_client2ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client3 state changes:" << std::endl;
+  for (auto it = m_client3ObservedStateChanges.begin (); it != m_client3ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Proxy state changes:" << std::endl;
+  for (auto it = m_proxyObservedStateChanges.begin (); it != m_proxyObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+#endif
+
+  NS_TEST_ASSERT_MSG_EQ (m_observedEvents.size (), m_expectedEvents.size (), "Did not observe all expected events");
+  auto it1 = m_observedEvents.begin ();
+  auto it2 = m_expectedEvents.begin ();
+  while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
+    { 
+      if (*it1 != *it2)
+        { 
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        }
+      it1++;
+      it2++;
+    }
+
+  // Do not replicate DialogTestCase checks on state transitions
+}
+
+/**
+ * \ingroup tests
+ * Test the outcome from the failure of INVITE (all attempts) to clients 2 and 3
+ */
+class SipProxyInviteFailureTest : public SipTestCase
+{
+public:
+  SipProxyInviteFailureTest (void);
+private:
+  virtual void DoRun (void);
+};
+
+SipProxyInviteFailureTest::SipProxyInviteFailureTest (void)
+  : SipTestCase ("SIP proxy INVITE failure test") 
+{
+}
+
+void
+SipProxyInviteFailureTest::DoRun ()
+{
+  // Add an error model to force the failure of all INVITEs from client 1
+  // to the server
+  Ptr<ReceiveListErrorModel> em2 = CreateObject<ReceiveListErrorModel> ();
+  std::list<uint32_t> errorList;
+  // 7 losses will lead to a Timer B 
+  errorList.push_back (0);
+  errorList.push_back (1);
+  errorList.push_back (2);
+  errorList.push_back (3);
+  errorList.push_back (4);
+  errorList.push_back (5);
+  errorList.push_back (6);
+  em2->SetList (errorList);
+  m_client2DeviceTowardsServer->SetReceiveErrorModel (em2);
+  Ptr<ReceiveListErrorModel> em3 = CreateObject<ReceiveListErrorModel> ();
+  em3->SetList (errorList);
+  m_client3DeviceTowardsServer->SetReceiveErrorModel (em3);
+
+  // The event is triggered by client 1 sending a SIP INVITE
+  Simulator::Schedule (Seconds (1), &SipTestCase::Client1SendSipInvite, this);
+
+  // Expected events
+  // Client 1 sends INVITE at time 1 second
+  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  // Server sends 100 Trying back to client 1, and INVITE to clients 2 and 3
+  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
+  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
+  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  // Server retransmits until Timer B expires (towards both client 2 and 3)
+  m_expectedEvents.push_back (TestEvent (12, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (13, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (14, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (15, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (16, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (17, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (18, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (19, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (20, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (21, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (22, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (24, 0, "Server Timer B expired"));
+  m_expectedEvents.push_back (TestEvent (25, 0, "Server Timer B expired"));
+  // At this point, we have failed transactions towards client 2 and client 3
+  // and the server has issued a 100 TRYING towards client 1
+  // In this model, the server should send a 408 (Request Timeout), not a
+  // CANCEL, back to client 1
+  m_expectedEvents.push_back (TestEvent (26, 0, "Server send SIP message"));
+  m_expectedEvents.push_back (TestEvent (27, 0, "Server send 408 Request Timeout"));
+  m_expectedEvents.push_back (TestEvent (27, 1, "Client1 receive SIP message"));
+  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive 408 Request Timeout"));
+  // Corresponding client 1 state transitions
+  m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,1) enter PROCEEDING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,1,0) enter PROCEEDING"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (4, 0, "Dialog (1000,0,1) enter TERMINATED"));
+  m_client1ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,1,0) enter FAILED"));
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+//#define VERBOSE_PROXY_INVITE_FAILURE 1
+#ifdef VERBOSE_PROXY_INVITE_FAILURE
+  // Define this to print out the observed events, if needed for debugging
+  // or to generate new expected events.
+  for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
+    {
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+  std::cout << "Client1 state changes:" << std::endl;
+  for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
+    {
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+    }
+#endif
+
+  NS_TEST_ASSERT_MSG_EQ (m_observedEvents.size (), m_expectedEvents.size (), "Did not observe all expected events");
+  auto it1 = m_observedEvents.begin ();
+  auto it2 = m_expectedEvents.begin ();
+  while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
+    { 
+      if (*it1 != *it2)
+        { 
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        }
+      it1++;
+      it2++;
+    }
+  // Check that client 1 observed state transitions match expected transitions
+  NS_TEST_ASSERT_MSG_EQ (m_client1ExpectedStateChanges.size (), m_client1ObservedStateChanges.size (), "Did not observe all expected state changes");
+  auto it3 = m_client1ExpectedStateChanges.begin ();
+  auto it4 = m_client1ObservedStateChanges.begin ();
+  while (it3 != m_client1ExpectedStateChanges.end () && it4 != m_client1ObservedStateChanges.end ())
+    { 
+      if (*it3 != *it4)
+        { 
+          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");      
+          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");  
+        }
+      it3++;
+      it4++;
+    }
+}
+
+/**
  * \ingroup sip
  * \ingroup tests
  *
@@ -1672,14 +1975,18 @@ public:
   {
     // Test a full dialog with no message losses (normal operation)
     AddTestCase (new SipDialogTest, TestCase::QUICK);
-    // Test the recovery from the loss of initial INVITE from Client 1
+    // Test the recovery from the loss of initial INVITE from client 1
     AddTestCase (new SipInitiatorInviteLossTest, TestCase::QUICK);
-    // Test the outcome from the failure of INVITE from Client 1
+    // Test the outcome from the failure of INVITE from client 1
     AddTestCase (new SipInitiatorInviteFailureTest, TestCase::QUICK);
-    // Test the recovery from the loss of initial BYE from Client 1
+    // Test the recovery from the loss of initial BYE from client 1
     AddTestCase (new SipInitiatorByeLossTest, TestCase::QUICK);
-    // Test the outcome from the failure of BYE from Client 1
+    // Test the outcome from the failure of BYE from client 1
     AddTestCase (new SipInitiatorByeFailureTest, TestCase::QUICK);
+    // Test the outcome from the loss of INVITEs from proxy to clients 2, 3
+    AddTestCase (new SipProxyInviteLossTest, TestCase::QUICK);
+    // Test the outcome from the failure of INVITEs from proxy to clients 2, 3
+    AddTestCase (new SipProxyInviteFailureTest, TestCase::QUICK);
   }
 };
 

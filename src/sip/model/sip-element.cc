@@ -221,7 +221,6 @@ SipElement::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCod
     {
       SetDialogState (did, DialogState::PROCEEDING);
       SetTransactionState (tid, TransactionState::PROCEEDING);
-      ScheduleTimerC (tid);
     }
   else if (statusCode == 200)
     {
@@ -229,7 +228,6 @@ SipElement::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCod
         {
           SetDialogState (did, DialogState::CONFIRMED);
           SetTransactionState (tid, TransactionState::COMPLETED);
-          CancelTimerC (tid);
         }
       else if (it->second.m_state == DialogState::TERMINATED)
         {
@@ -339,6 +337,21 @@ SipElement::Receive (Ptr<Packet> p, Address from)
             {
               NS_FATAL_ERROR ("Received 200 OK in unexpected state");
             }
+        }
+      else if (sipHeader.GetStatusCode () == 408)
+        { 
+          NS_LOG_DEBUG ("Received 408 Request Timeout for call ID " << sipHeader.GetCallId ());
+          CancelTimerA (tid);
+          CancelTimerB (tid);
+          FreeTransactionPacket (tid);
+          SetDialogState (did, DialogState::TERMINATED);
+          SetTransactionState (tid, TransactionState::FAILED);
+          // Deliver the packet in case SDP information is present
+          receiveIt->second (p, sipHeader, TransactionState::FAILED);
+        }
+      else
+        { 
+          NS_LOG_DEBUG ("Received unknown response " << sipHeader.GetStatusCode () << " for call ID " << sipHeader.GetCallId ());
         }
     }
   else if (sipHeader.GetMessageType () == SipHeader::SIP_REQUEST)
@@ -625,18 +638,6 @@ SipElement::CancelTimerB (TransactionId id)
 }
 
 void
-SipElement::ScheduleTimerC (TransactionId id)
-{
-  NS_LOG_FUNCTION (this << TransactionIdToString (id));
-}
-
-void
-SipElement::CancelTimerC (TransactionId id)
-{
-  NS_LOG_FUNCTION (this << TransactionIdToString (id));
-}
-
-void
 SipElement::ScheduleTimerE (TransactionId id, uint32_t backoff)
 {
   NS_LOG_FUNCTION (this << TransactionIdToString (id) << backoff);
@@ -760,11 +761,12 @@ SipElement::HandleTimerB (TransactionId id)
   auto transIt = m_transactions.find (id);
   NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
   NS_ASSERT_MSG (transIt->second.m_state == TransactionState::CALLING, "Transaction not in CALLING");
-  eventIt->second (TIMER_B_EXPIRED, transIt->second.m_state);
   // Cancel timer A and fail the transaction 
   CancelTimerA (id);
   SetTransactionState (id, TransactionState::FAILED);
   SetDialogState (did, DialogState::TERMINATED);
+  // Notify user that Timer B expired
+  eventIt->second (TIMER_B_EXPIRED, transIt->second.m_state);
 }
 
 void
