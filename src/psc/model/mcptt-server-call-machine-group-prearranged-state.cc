@@ -145,7 +145,7 @@ McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMac
   NS_LOG_FUNCTION (this << &machine << pkt << sipHeader);
   std::vector<uint32_t> pending;
   NS_ASSERT_MSG (machine.GetServerCall ()->GetOriginator () == std::numeric_limits<uint32_t>::max (), "Originator set in state S1");
-  Ptr<Packet> p = Create<Packet> ();
+  Ptr<Packet> p = Create<Packet> (machine.GetResponsePayloadSize ());
   machine.SendSipResponse (sipHeader.GetFrom (), sipHeader.GetTo (), p, 100, sipHeader); // Send '100 Trying'
   machine.GetServerCall ()->SetOriginator (sipHeader.GetFrom ());
   McpttSdpFmtpHeader sdpHeader;
@@ -162,7 +162,7 @@ McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMac
       if (userId != sipHeader.GetFrom ())
         {
           NS_LOG_DEBUG ("Forwarding invite to user ID: " << userId);
-          Ptr<Packet> p = Create<Packet> ();
+          Ptr<Packet> p = Create<Packet> (machine.GetInvitePayloadSize ());
           p->AddHeader (sdpHeader);
           machine.SendSipRequest (machine.GetUserId (), userId, p, sipHeader);
           pending.push_back (userId);
@@ -212,7 +212,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
   if (machine.GetServerCall ()->GetOriginator () == sipHeader.GetFrom ())
     {
       NS_LOG_LOGIC ("Possible retransmission of INVITE from same originator");
-      Ptr<Packet> response = Create<Packet> ();
+      Ptr<Packet> response = Create<Packet> (machine.GetResponsePayloadSize ());
       McpttSdpFmtpHeader sdpHeader;
       Ptr<McpttOnNetworkFloorTowardsParticipant> participant;
       participant = machine.GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (sipHeader.GetFrom ());
@@ -240,7 +240,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveInvite (McpttServerCallMac
       McpttSdpFmtpHeader sdpHeader;
       pkt->RemoveHeader (sdpHeader);
       machine.GetServerCall ()->GetArbitrator ()->CallInitialized (participant, sdpHeader.GetMcImplicitRequest ());
-      Ptr<Packet> response = Create<Packet> ();
+      Ptr<Packet> response = Create<Packet> (machine.GetResponsePayloadSize ());
       sdpHeader.SetMcQueueing (machine.GetServerCall ()->GetArbitrator ()->IsQueueingSupported ());
       sdpHeader.SetMcGranted (participant->IsImplicitRequest ());
       sdpHeader.SetMcPriority (participant->GetStoredPriority ());
@@ -276,7 +276,7 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveResponse (McpttServerCallM
     {
       NS_LOG_DEBUG ("Processed last pending response; send response to originator");
       participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
-      Ptr<Packet> response = Create<Packet> ();
+      Ptr<Packet> response = Create<Packet> (machine.GetResponsePayloadSize ());
       McpttSdpFmtpHeader sdpHeader;
       sdpHeader.SetMcQueueing (machine.GetServerCall ()->GetArbitrator ()->IsQueueingSupported ());
       sdpHeader.SetMcGranted (participant->IsImplicitRequest ());
@@ -456,7 +456,7 @@ McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallM
       NS_LOG_DEBUG ("Processed last pending response; send response to originator");
       participant = machine.GetServerCall ()->GetArbitrator ()->GetOriginatingParticipant ();
       participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ());
-      Ptr<Packet> response = Create<Packet> ();
+      Ptr<Packet> response = Create<Packet> (machine.GetResponsePayloadSize ());
       McpttSdpFmtpHeader sdpHeader;
       sdpHeader.SetMcQueueing (machine.GetServerCall ()->GetArbitrator ()->IsQueueingSupported ());
       sdpHeader.SetMcGranted (participant->IsImplicitRequest ());

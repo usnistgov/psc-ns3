@@ -35,7 +35,9 @@
 #include <ns3/uinteger.h>
 #include <ns3/vector.h>
 #include <ns3/sip-header.h>
-
+#include <ns3/string.h>
+#include <ns3/pointer.h>
+#include <ns3/random-variable-stream.h>
 #include "mcptt-server-app.h"
 #include "mcptt-server-call.h"
 #include "mcptt-on-network-floor-arbitrator.h"
@@ -71,6 +73,24 @@ McpttServerCallMachineGroupPrearranged::GetTypeId (void)
                    UintegerValue (McpttCallMsgFieldCallType::BASIC_GROUP),
                    MakeUintegerAccessor (&McpttServerCallMachineGroupPrearranged::m_callType),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("InvitePayloadSize",
+                   "Random variable to fill out the INVITE packet to a typical size",
+                   // Nemergent 1750 bytes on wire, minus headers
+                   StringValue ("ns3::ConstantRandomVariable[Constant=1700]"),
+                   MakePointerAccessor (&McpttServerCallMachineGroupPrearranged::m_invitePayloadSize),
+                   MakePointerChecker<RandomVariableStream> ())
+    .AddAttribute ("ByePayloadSize",
+                   "Random variable to fill out the BYE packet to a typical size",
+                   // Nemergent 868 bytes on wire, minus headers
+                   StringValue ("ns3::ConstantRandomVariable[Constant=800]"),
+                   MakePointerAccessor (&McpttServerCallMachineGroupPrearranged::m_byePayloadSize),
+                   MakePointerChecker<RandomVariableStream> ())
+    .AddAttribute ("ResponsePayloadSize",
+                   "Random variable to fill out the 200 OK packet to a typical size",
+                   // Nemergent 1305 bytes on wire, minus headers
+                   StringValue ("ns3::ConstantRandomVariable[Constant=1250]"),
+                   MakePointerAccessor (&McpttServerCallMachineGroupPrearranged::m_responsePayloadSize),
+                   MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttServerCallMachineGroupPrearranged::m_stateChangeTrace),
                      "ns3::McpttServerCallMachine::StateChangeTracedCallback")
@@ -421,6 +441,44 @@ McpttServerCallMachineGroupPrearranged::UpgradeCallType (uint8_t callType)
 {
   NS_LOG_FUNCTION (this << (uint32_t)callType);
   m_callType = callType;
+}
+
+uint32_t
+McpttServerCallMachineGroupPrearranged::GetInvitePayloadSize (void)
+{
+  double value = m_invitePayloadSize->GetValue ();
+  NS_ASSERT_MSG (value > 0, "Invalid random variate");
+  return (static_cast<uint32_t> (value));
+}
+
+uint32_t
+McpttServerCallMachineGroupPrearranged::GetByePayloadSize (void)
+{
+  double value = m_byePayloadSize->GetValue ();
+  NS_ASSERT_MSG (value > 0, "Invalid random variate");
+  return (static_cast<uint32_t> (value));
+}
+
+uint32_t
+McpttServerCallMachineGroupPrearranged::GetResponsePayloadSize (void)
+{
+  double value = m_responsePayloadSize->GetValue ();
+  NS_ASSERT_MSG (value > 0, "Invalid random variate");
+  return (static_cast<uint32_t> (value));
+}
+
+int64_t
+McpttServerCallMachineGroupPrearranged::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  int64_t streamsUsed = 0;
+  m_invitePayloadSize->SetStream (stream + streamsUsed);
+  streamsUsed++;
+  m_responsePayloadSize->SetStream (stream + streamsUsed);
+  streamsUsed++;
+  m_byePayloadSize->SetStream (stream + streamsUsed);
+  streamsUsed++;
+  return streamsUsed;
 }
 
 void

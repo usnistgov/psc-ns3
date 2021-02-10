@@ -162,7 +162,7 @@ McpttOnNetworkCallMachineClientStateS1::InitiateCall (McpttOnNetworkCallMachineC
   floorMachine->SetOriginator (true);
   floorMachine->CallInitiated ();
 
-  Ptr<Packet> pkt = Create<Packet> ();
+  Ptr<Packet> pkt = Create<Packet> (machine.GetInvitePayloadSize ());
   McpttSdpFmtpHeader fmtpHeader;
   fmtpHeader.SetMcGranted (true); // No attribute for this; always enabled
   fmtpHeader.SetMcPriority (floorMachine->GetPriority ());
@@ -196,7 +196,7 @@ McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachine
   // Notify McpttPttApp of session initiation
   machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
 
-  Ptr<Packet> newPkt = Create<Packet> ();
+  Ptr<Packet> newPkt = Create<Packet> (machine.GetResponsePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
   agent->SendResponse (newPkt, 
                        machine.GetCall ()->GetPeerSocketAddress (), // peer addr
@@ -259,7 +259,7 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachine
   // Notify McpttPttApp of session initiation
   machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
   
-  Ptr<Packet> newPkt = Create<Packet> ();
+  Ptr<Packet> newPkt = Create<Packet> (machine.GetResponsePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
   agent->SendResponse (newPkt, 
                        machine.GetCall ()->GetPeerSocketAddress (), // peer addr
@@ -368,7 +368,7 @@ McpttOnNetworkCallMachineClientStateS3::ReceiveBye (McpttOnNetworkCallMachineCli
   // Notify McpttPttApp of session release
   machine.GetCall ()->GetOwner ()->SessionReleaseRequest ();
 
-  Ptr<Packet> newPkt = Create<Packet> ();
+  Ptr<Packet> newPkt = Create<Packet> (machine.GetResponsePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
   agent->SendResponse (newPkt,
                        machine.GetCall ()->GetPeerSocketAddress (), // peer addr
@@ -388,7 +388,7 @@ McpttOnNetworkCallMachineClientStateS3::ReleaseCall (McpttOnNetworkCallMachineCl
   Ptr<McpttOnNetworkFloorParticipant> floorMachine = machine.GetCall ()->GetFloorMachine ()->GetObject<McpttOnNetworkFloorParticipant> ();
   floorMachine->CallRelease1 ();
 
-  Ptr<Packet> pkt = Create<Packet> ();
+  Ptr<Packet> pkt = Create<Packet> (machine.GetByePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
   agent->SendBye (pkt, 
                   machine.GetCall ()->GetPeerSocketAddress (), // peer addr

@@ -47,6 +47,7 @@ namespace ns3 {
 
 class McpttServerCall;
 class McpttServerCallMachineGroupPrearrangedState;
+class RandomVariableStream;
 
 /**
  * \ingroup mcptt
@@ -245,6 +246,27 @@ public:
   * \param callType The call type value.
   */
  virtual void UpgradeCallType (uint8_t callType);
+ /**
+  * Get the notional SIP INVITE payload size
+  * \return The notional payload size, in bytes
+  */
+ uint32_t GetInvitePayloadSize (void);
+ /**
+  * Get the notional SIP BYE payload size
+  * \return The notional payload size, in bytes
+  */
+ uint32_t GetByePayloadSize (void);
+ /**
+  * Get the notional SIP 200 OK payload size
+  * \return The notional payload size, in bytes
+  */
+ uint32_t GetResponsePayloadSize (void);
+ /**
+  * \brief Set the stream for each random variable.
+  * \param stream The starting stream number.
+  * \returns The number of streams that were set.
+  */
+ virtual int64_t AssignStreams (int64_t stream);
 protected:
  /**
   * Disposes of this McpttServerCallMachineGroupPrearranged instance.
@@ -258,6 +280,9 @@ private:
  uint8_t m_callType; //!< The call type.
  bool m_started;    //!< Whether the call is started
  std::vector<uint32_t> m_pending; //!< pending transactions
+ Ptr<RandomVariableStream> m_invitePayloadSize;  //!< Used for padding the notional SIP INVITE
+ Ptr<RandomVariableStream> m_byePayloadSize; //!< Used for padding the notional SIP BYE
+ Ptr<RandomVariableStream> m_responsePayloadSize;  //!< Used for padding the notional SIP 200 OK
  Ptr<McpttServerCallMachineGroupPrearrangedState> m_state; //!< The current state of the machine.
  McpttCallMsgFieldGrpId m_grpId; //!< The ID of the MCPTT group.
  uint32_t m_userId {0}; //!< The user ID for the server.
