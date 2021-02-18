@@ -369,7 +369,6 @@ InterferenceHelperSequenceTest::DoRun (void)
   Simulator::Destroy ();
 }
 
-
 //-----------------------------------------------------------------------------
 /**
  * Make sure that when multiple broadcast packets are queued on the same
@@ -552,7 +551,6 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_secondTransmissionTime, expectedSecondTransmissionTime, "The second transmission time not correct!");
 }
 
-
 //-----------------------------------------------------------------------------
 /**
  * Make sure that when changing the fragmentation threshold during the simulation,
@@ -620,7 +618,7 @@ Bug730TestCase::DoRun (void)
   wifiApNode.Create (1);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
@@ -775,7 +773,7 @@ QosFragmentationTestCase::DoRun (void)
   wifiApNode.Create (1);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
@@ -904,7 +902,7 @@ SetChannelFrequencyTest::DoRun ()
   wifiApNode.Create (1);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   // Configure and declare other generic components of this example
@@ -1258,8 +1256,6 @@ public:
 private:
   uint32_t m_countInternalCollisions; ///< count internal collisions
 
-  /// Populate ARP cache function
-  void PopulateArpCache ();
   /**
    * Transmit data failed function
    * \param context the context
@@ -1300,7 +1296,7 @@ Bug2222TestCase::DoRun (void)
   wifiNodes.Create (2);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
@@ -1481,7 +1477,7 @@ Bug2843TestCase::DoRun (void)
   NodeContainer wifiApNode;
   wifiApNode.Create (1);
 
-  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper spectrumPhy;
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
   lossModel->SetFrequency (5.180e9);
@@ -1577,8 +1573,9 @@ private:
    * Callback triggered when a packet is received by the PHYs
    * \param context the context
    * \param p the received packet
+   * \param rxPowersW the received power per channel band in watts
    */
-  void RxCallback (std::string context, Ptr<const Packet> p);
+  void RxCallback (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW);
 
   Ptr<YansWifiPhy> m_apPhy; ///< AP PHY
   Ptr<YansWifiPhy> m_staPhy; ///< STA PHY
@@ -1612,7 +1609,7 @@ Bug2831TestCase::ChangeSupportedChannelWidth ()
 }
 
 void
-Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p)
+Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW)
 {
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;
@@ -1822,7 +1819,7 @@ StaWifiMacScanningTestCase::Setup (bool nearestApBeaconGeneration, bool staActiv
   Ptr<Node> apNodeNearest = CreateObject<Node> ();
   Ptr<Node> staNode = CreateObject<Node> ();
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -1960,8 +1957,9 @@ private:
    * \param txVector the TX vector
    * \param aMpdu the A-MPDU info
    * \param signalNoise the signal noise in dBm
+   * \param staId the STA-ID
    */
-  void RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise);
+  void RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId);
   /**
    * Callback when packet is dropped
    * \param context node context
@@ -2034,7 +2032,7 @@ Bug2470TestCase::AddbaStateChangedCallback (std::string context, Time t, Mac48Ad
 }
 
 void
-Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise)
+Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
 {
   Ptr<Packet> packet = p->Copy ();
   if (aMpdu.type != MpduType::NORMAL_MPDU)
@@ -2086,7 +2084,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2205,7 +2203,6 @@ Bug2470TestCase::DoRun (void)
   // but before it does not enter RESET state. More tests should be written to verify all possible scenarios.
 }
 
-
 //-----------------------------------------------------------------------------
 /**
  * Make sure that Ideal rate manager recovers when the station is moving away from the access point.
@@ -2310,7 +2307,7 @@ Issue40TestCase::RunOne (bool useAmpdu)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2427,11 +2424,11 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psdu the PSDU to transmit
+   * \param psduMap the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
-  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW);
 };
 
 Issue169TestCase::Issue169TestCase ()
@@ -2457,9 +2454,9 @@ Issue169TestCase::SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, 
 }
 
 void
-Issue169TestCase::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+Issue169TestCase::TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW)
 {
-  if (psdu->GetSize () >= 1000)
+  if (psdus.begin()->second->GetSize () >= 1000)
     {
       NS_TEST_ASSERT_MSG_EQ (txVector.GetMode ().GetModulationClass (), WifiModulationClass::WIFI_MOD_CLASS_VHT, "Ideal rate manager selected incorrect modulation class");
     }
@@ -2476,7 +2473,7 @@ Issue169TestCase::DoRun (void)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2561,11 +2558,11 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psdu the PSDU to transmit
+   * \param psduMap the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
-  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void TxCallback (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
 
   /**
    * Check if the selected WifiMode is correct
@@ -2599,9 +2596,9 @@ IdealRateManagerChannelWidthTest::SendPacket (Ptr<NetDevice> sourceDevice, Addre
 }
 
 void
-IdealRateManagerChannelWidthTest::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+IdealRateManagerChannelWidthTest::TxCallback (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
 {
-  if (psdu->GetSize () >= 1000)
+  if (psduMap.begin ()->second->GetSize () >= 1000)
     {
       m_txMode = txVector.GetMode ();
     }
@@ -2624,7 +2621,7 @@ IdealRateManagerChannelWidthTest::DoRun (void)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2660,20 +2657,20 @@ IdealRateManagerChannelWidthTest::DoRun (void)
   //Set channel width to 80 MHz & send packet
   Simulator::Schedule (Seconds (0.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 80);
   Simulator::Schedule (Seconds (1.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
-  //Selected rate should be VHT-MCS 0
-  Simulator::Schedule (Seconds (1.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs0 ());
+  //Selected rate should be VHT-MCS 1
+  Simulator::Schedule (Seconds (1.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
 
   //Set channel width to 20 MHz & send packet
   Simulator::Schedule (Seconds (1.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 20);
   Simulator::Schedule (Seconds (2.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
-  //Selected rate should be VHT-MCS 2 since SNR should be 6 dB higher than previously
-  Simulator::Schedule (Seconds (2.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  //Selected rate should be VHT-MCS 3 since SNR should be 6 dB higher than previously
+  Simulator::Schedule (Seconds (2.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
 
   //Set channel width to 40 MHz & send packet
   Simulator::Schedule (Seconds (2.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 40);
   Simulator::Schedule (Seconds (3.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
-  //Selected rate should be VHT-MCS 1 since SNR should be 3 dB lower than previously
-  Simulator::Schedule (Seconds (3.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  //Selected rate should be VHT-MCS 2 since SNR should be 3 dB lower than previously
+  Simulator::Schedule (Seconds (3.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
 
   Simulator::Stop (Seconds (3.2));
   Simulator::Run ();
@@ -2720,11 +2717,11 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psdu the PSDU to transmit
+   * \param psduMap the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
-  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW);
 
   /**
    * Check if the selected WifiMode is correct
@@ -2773,9 +2770,9 @@ IdealRateManagerMimoTest::SendPacket (Ptr<NetDevice> sourceDevice, Address& dest
 }
 
 void
-IdealRateManagerMimoTest::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+IdealRateManagerMimoTest::TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW)
 {
-  if (psdu->GetSize () >= 1000)
+  if (psdus.begin ()->second->GetSize () >= 1000)
     {
       m_txVector = txVector;
     }
@@ -2804,7 +2801,7 @@ IdealRateManagerMimoTest::DoRun (void)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2847,8 +2844,8 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (1.1), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (1.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  // Selected rate should be VHT-MCS1 because of settings and distance between TX and RX
-  Simulator::Schedule (Seconds (1.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  // Selected rate should be VHT-MCS 2 because of settings and distance between TX and RX
+  Simulator::Schedule (Seconds (1.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
 
 
   // TX: 1 antenna
@@ -2860,8 +2857,8 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (2.1), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (2.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  // Selected rate should be increased to VHT-MCS2 because of RX diversity resulting in SNR improvement of about 3dB
-  Simulator::Schedule (Seconds (2.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  // Selected rate should be increased to VHT-MCS 3 because of RX diversity resulting in SNR improvement of about 3dB
+  Simulator::Schedule (Seconds (2.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
 
 
   // TX: 1 antenna
@@ -2874,7 +2871,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since TX supports a single antenna
   Simulator::Schedule (Seconds (3.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be as previously
-  Simulator::Schedule (Seconds (3.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (3.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, but only supports 1 spatial stream
@@ -2886,8 +2883,8 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (4.1), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (4.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  // Selected rate should be VHT-MCS1 because we do no longer have diversity in this scenario (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (4.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  // Selected rate should be VHT-MCS 2 because we do no longer have diversity in this scenario (more antennas at TX does not result in SNR improvement in AWGN channel)
+  Simulator::Schedule (Seconds (4.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
 
 
   // TX: 2 antennas, but only supports 1 spatial stream
@@ -2899,8 +2896,8 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (5.1), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (5.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  // Selected rate should be increased to VHT-MCS2 because of RX diversity resulting in SNR improvement of about 3dB (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (5.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  // Selected rate should be increased to VHT-MCS 3 because of RX diversity resulting in SNR improvement of about 3dB (more antennas at TX does not result in SNR improvement in AWGN channel)
+  Simulator::Schedule (Seconds (5.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, but only supports 1 spatial stream
@@ -2913,7 +2910,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since TX supports a single antenna
   Simulator::Schedule (Seconds (6.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be as previously
-  Simulator::Schedule (Seconds (6.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (6.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, and supports 2 spatial streams
@@ -2925,8 +2922,8 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (7.1), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   // Selected NSS should be 1 since RX supports a single antenna
   Simulator::Schedule (Seconds (7.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  // Selected rate should be VHT-MCS1 because we do no longer have diversity in this scenario (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (7.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  // Selected rate should be VHT-MCS 2 because we do no longer have diversity in this scenario (more antennas at TX does not result in SNR improvement in AWGN channel)
+  Simulator::Schedule (Seconds (7.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
 
 
   // TX: 2 antennas, and supports 2 spatial streams
@@ -2938,8 +2935,8 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (8.1), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   // Selected NSS should be 1 since RX supports a single antenna
   Simulator::Schedule (Seconds (8.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  // Selected rate should be increased to VHT-MCS2 because of RX diversity resulting in SNR improvement of about 3dB (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (8.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  // Selected rate should be increased to VHT-MCS 3 because of RX diversity resulting in SNR improvement of about 3dB (more antennas at TX does not result in SNR improvement in AWGN channel)
+  Simulator::Schedule (Seconds (8.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, and supports 2 spatial streams
@@ -2952,7 +2949,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 2 since both TX and RX support 2 antennas
   Simulator::Schedule (Seconds (9.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 2);
   // Selecte rate should be the same as without diversity, as it uses 2 spatial streams so there is no more benefits from diversity in AWGN channels
-  Simulator::Schedule (Seconds (9.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  Simulator::Schedule (Seconds (9.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
 
 
   // Verify we can go back to initial situation
@@ -2960,11 +2957,97 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (9.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 1, 1);
   Simulator::Schedule (Seconds (10.0), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   Simulator::Schedule (Seconds (10.1), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  Simulator::Schedule (Seconds (10.1), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  Simulator::Schedule (Seconds (10.1), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
 
   Simulator::Stop (Seconds (10.2));
   Simulator::Run ();
   Simulator::Destroy ();
+}
+
+//-----------------------------------------------------------------------------
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Data rate verification test for MCSs of different RU sizes
+ */
+class HeRuMcsDataRateTestCase : public TestCase
+{
+public:
+  HeRuMcsDataRateTestCase ();
+
+private:
+  /**
+   * Compare the data rate computed for the provided combination with standard defined one.
+   * \param ruType the RU type
+   * \param mcs the modulation and coding scheme (as a string, e.g. HeMcs0)
+   * \param nss the number of spatial streams
+   * \param guardInterval the guard interval to use
+   * \param expectedDataRate the expected data rate in 100 kbps units (minimum granularity in standard tables)
+   * \returns true if data rates are the same, false otherwise
+   */
+  bool CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate);
+  virtual void DoRun (void);
+};
+
+HeRuMcsDataRateTestCase::HeRuMcsDataRateTestCase ()
+  : TestCase ("Check data rates for different RU types.")
+{
+}
+
+bool
+HeRuMcsDataRateTestCase::CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate)
+{
+  uint16_t approxWidth = HeRu::GetBandwidth (ruType);
+  WifiMode mode (mcs);
+  uint64_t dataRate = round (mode.GetDataRate (approxWidth, guardInterval, nss) / 100000.0);
+  NS_ABORT_MSG_IF (dataRate > 65535, "Rate is way too high");
+  if (static_cast<uint16_t> (dataRate) != expectedDataRate)
+    {
+      std::cerr << "RU=" << ruType
+                << " mode=" << mode
+                << " Nss=" << +nss
+                << " guardInterval=" << guardInterval
+                << " expected=" << expectedDataRate << " x100kbps"
+                << " computed=" << static_cast<uint16_t> (dataRate) << " x100kbps"
+                << std::endl;
+      return false;
+    }
+  return true;
+}
+
+void
+HeRuMcsDataRateTestCase::DoRun (void)
+{
+  bool retval = true;
+
+  //26-tone RU, browse over all MCSs, GIs and Nss's (up to 4, current max)
+  retval = retval
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs0", 1,  800,   9)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs1", 1, 1600,  17)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs2", 1, 3200,  23)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs3", 1, 3200,  30)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs4", 2, 1600, 100)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs5", 3, 1600, 200)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs6", 4, 1600, 300)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs7", 4, 3200, 300)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs8", 4, 1600, 400)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs9", 4, 3200, 400)
+      && CheckDataRate (HeRu::RU_26_TONE, "HeMcs10", 4, 1600, 500)
+      && CheckDataRate (HeRu::RU_26_TONE, "HeMcs11", 4, 3200, 500);
+
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "26-tone RU  data rate verification for different MCSs, GIs, and Nss's failed");
+
+  //Check other RU sizes
+  retval = retval
+      && CheckDataRate (   HeRu::RU_52_TONE, "HeMcs2", 1, 1600,   50)
+      && CheckDataRate (  HeRu::RU_106_TONE, "HeMcs9", 1,  800,  500)
+      && CheckDataRate (  HeRu::RU_242_TONE, "HeMcs5", 1, 1600,  650)
+      && CheckDataRate (  HeRu::RU_484_TONE, "HeMcs3", 1, 1600,  650)
+      && CheckDataRate (  HeRu::RU_996_TONE, "HeMcs5", 1, 3200, 2450)
+      && CheckDataRate (HeRu::RU_2x996_TONE, "HeMcs3", 1, 3200, 2450);
+
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "Data rate verification for RUs above 52-tone RU (included) failed");
 }
 
 /**
@@ -2998,6 +3081,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new Issue169TestCase, TestCase::QUICK); //Issue #169
   AddTestCase (new IdealRateManagerChannelWidthTest, TestCase::QUICK);
   AddTestCase (new IdealRateManagerMimoTest, TestCase::QUICK);
+  AddTestCase (new HeRuMcsDataRateTestCase, TestCase::QUICK);
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite

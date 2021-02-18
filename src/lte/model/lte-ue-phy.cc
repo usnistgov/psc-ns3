@@ -101,9 +101,7 @@ private:
 };
 
 UeMemberLteUePhySapProvider::UeMemberLteUePhySapProvider (LteUePhy* phy) : m_phy (phy)
-{
-
-}
+{}
 
 void
 UeMemberLteUePhySapProvider::SendMacPdu (Ptr<Packet> p)
@@ -598,7 +596,7 @@ LteUePhy::SetNumQoutEvalSf (uint16_t numSubframes)
 {
   NS_LOG_FUNCTION (this << numSubframes);
   NS_ABORT_MSG_IF (numSubframes % 10 != 0, "Number of subframes used for Qout "
-                                           "evaluation must be multiple of 10");
+                   "evaluation must be multiple of 10");
   m_numOfQoutEvalSf = numSubframes;
 }
 
@@ -607,7 +605,7 @@ LteUePhy::SetNumQinEvalSf (uint16_t numSubframes)
 {
   NS_LOG_FUNCTION (this << numSubframes);
   NS_ABORT_MSG_IF (numSubframes % 10 != 0, "Number of subframes used for Qin "
-                                           "evaluation must be multiple of 10");
+                   "evaluation must be multiple of 10");
   m_numOfQinEvalSf = numSubframes;
 }
 
@@ -860,8 +858,8 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       // check periodic wideband CQI
       if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriodicity)
         {
-          NS_LOG_DEBUG ("Reporting P10 CQI at : " << Simulator::Now ().GetMilliSeconds ()
-                                                  << " ms. Last reported at : " << m_p10CqiLast.GetMilliSeconds () << " ms");
+          NS_LOG_DEBUG ("Reporting P10 CQI at : " << Simulator::Now ().As (Time::MS)
+                                                  << ". Last reported at : " << m_p10CqiLast.As (Time::MS));
           Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
           Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
           if (msg)
@@ -874,8 +872,8 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       // check aperiodic high-layer configured subband CQI
       if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriodicity)
         {
-          NS_LOG_DEBUG ("Reporting A30 CQI at : " << Simulator::Now ().GetMilliSeconds ()
-                                                  << " ms. Last reported at : " << m_a30CqiLast.GetMilliSeconds () << " ms");
+          NS_LOG_DEBUG ("Reporting A30 CQI at : " << Simulator::Now ().As (Time::MS)
+                                                  << ". Last reported at : " << m_a30CqiLast.As (Time::MS));
           Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
           Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
           if (msg)
@@ -2045,7 +2043,7 @@ LteUePhy::DoSetDlBandwidth (uint16_t dlBandwidth)
 }
 
 
-void 
+void
 LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth)
 {
   NS_LOG_FUNCTION (this << " Uplink : EARFCN = " << ulEarfcn
@@ -2206,8 +2204,8 @@ LteUePhy::RlfDetection (double sinrDb)
    */
   if (m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQoutEvalSf)
     {
-      NS_LOG_LOGIC ("At " << Simulator::Now ().GetMilliSeconds()
-               << " ms UE PHY sending out of snyc indication to UE RRC layer");
+      NS_LOG_LOGIC ("At " << Simulator::Now ().As (Time::MS)
+                          << " ms UE PHY sending out of snyc indication to UE RRC layer");
       m_ueCphySapUser->NotifyOutOfSync ();
       m_numOfFrames = 0;
     }
@@ -2245,8 +2243,8 @@ LteUePhy::RlfDetection (double sinrDb)
    */
   if (!m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQinEvalSf)
     {
-      NS_LOG_LOGIC ("At " << Simulator::Now ().GetMilliSeconds()
-                   << " ms UE PHY sending in snyc indication to UE RRC layer");
+      NS_LOG_LOGIC ("At " << Simulator::Now ().As (Time::MS)
+                          << " ms UE PHY sending in snyc indication to UE RRC layer");
       m_ueCphySapUser->NotifyInSync ();
       m_numOfFrames = 0;
     }

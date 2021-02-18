@@ -139,6 +139,14 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/routing.dia \
 	$(SRC)/internet/doc/routing-specialization.dia \
 	$(SRC)/internet/doc/figures/tcp-state-machine.png \
+	$(SRC)/internet/doc/figures/dctcp-10ms-50mbps-tcp-throughput.pdf \
+	$(SRC)/internet/doc/figures/dctcp-10ms-50mbps-tcp-throughput.png \
+	$(SRC)/internet/doc/figures/dctcp-80ms-50mbps-tcp-throughput.pdf \
+	$(SRC)/internet/doc/figures/dctcp-80ms-50mbps-tcp-throughput.png \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-no-ecn.pdf \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-no-ecn.png \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-ecn.pdf \
+	$(SRC)/internet/doc/figures/cubic-50ms-50mbps-tcp-cwnd-ecn.png \
 	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-linux-reno.png \
 	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-new-reno.png \
 	$(SRC)/internet/doc/figures/ns3-new-reno-vs-ns3-linux-reno.png \
@@ -151,6 +159,8 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ax.eps \
 	$(SRC)/wifi/doc/source/figures/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
 	$(SRC)/wifi/doc/source/figures/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
+	$(SRC)/wifi/doc/source/figures/default-table-based-error-model-validation.eps \
+	$(SRC)/wifi/doc/source/figures/error-models-comparison.eps \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
@@ -499,6 +509,8 @@ IMAGES_EPS = \
 	$(FIGURES)/nist-frame-success-rate-ax.eps \
 	$(FIGURES)/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
 	$(FIGURES)/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
+	$(FIGURES)/default-table-based-error-model-validation.eps \
+	$(FIGURES)/error-models-comparison.eps \
 	$(FIGURES)/ca-rrc-reconf.eps \
 	$(FIGURES)/ca-lte-enb-net-device-changes.eps \
 	$(FIGURES)/ca-lte-ue-net-device-changes.eps \

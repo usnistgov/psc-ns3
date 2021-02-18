@@ -33,7 +33,6 @@
 #include "ns3/wifi-utils.h"
 #include "ns3/threshold-preamble-detection-model.h"
 #include "ns3/simple-frame-capture-model.h"
-#include "ns3/wifi-psdu.h"
 #include "ns3/wifi-mac-queue-item.h"
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/wifi-psdu.h"
@@ -115,7 +114,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::TestThresholdPreambleDetectio
 void
 TestThresholdPreambleDetectionWithoutFrameCapture::SendPacket (double rxPowerDbm)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
 
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
@@ -467,7 +466,7 @@ m_countRxFailure (0)
 void
 TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double rxPowerDbm)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
   
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
@@ -972,7 +971,7 @@ TestSimpleFrameCaptureModel::TestSimpleFrameCaptureModel ()
 void
 TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
   
   Ptr<Packet> pkt = Create<Packet> (packetSize);
   WifiMacHeader hdr;
@@ -1176,7 +1175,7 @@ TestPhyHeadersReception::TestPhyHeadersReception ()
 void
 TestPhyHeadersReception::SendPacket (double rxPowerDbm)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
 
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
@@ -1681,7 +1680,7 @@ TestAmpduReception::CheckPhyState (WifiPhyState expectedState)
 void
 TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referencePacketSize)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, true, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, true);
 
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);

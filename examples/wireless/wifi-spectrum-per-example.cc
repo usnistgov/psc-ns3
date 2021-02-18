@@ -101,7 +101,8 @@ void MonitorSniffRx (Ptr<const Packet> packet,
                      uint16_t channelFreqMhz,
                      WifiTxVector txVector,
                      MpduInfo aMpdu,
-                     SignalNoiseDbm signalNoise)
+                     SignalNoiseDbm signalNoise,
+                     uint16_t staId)
 
 {
   g_samples++;
@@ -168,8 +169,8 @@ int main (int argc, char *argv[])
       NodeContainer wifiApNode;
       wifiApNode.Create (1);
 
-      YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
-      SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+      YansWifiPhyHelper phy;
+      SpectrumWifiPhyHelper spectrumPhy;
       if (wifiType == "ns3::YansWifiPhy")
         {
           YansWifiChannelHelper channel;

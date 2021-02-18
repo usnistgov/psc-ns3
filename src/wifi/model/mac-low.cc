@@ -650,6 +650,11 @@ MacLow::RxStartIndication (WifiTxVector txVector, Time psduDuration)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("PSDU reception started for " << psduDuration.ToDouble (Time::US)
                 << " us (txVector: " << txVector << ")");
+  if (psduDuration.IsZero ())
+    {
+      //PHY-RXEND immediately follows PHY-RXSTART (e.g. when PPDU has been filtered), no need to reschedule timeouts (CCA will take over)
+      return;
+    }
   NS_ASSERT (psduDuration.IsStrictlyPositive ());
 
   if (m_normalAckTimeoutEvent.IsRunning ())
@@ -889,6 +894,8 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
     {
+      m_stationManager->ReportRxOk (hdr.GetAddr2 (), rxSnr, txVector.GetMode ());
+
       CtrlBAckRequestHeader blockAckReq;
       packet->RemoveHeader (blockAckReq);
       if (!blockAckReq.IsMultiTid ())

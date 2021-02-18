@@ -118,7 +118,8 @@ public:
     NS  = 7,   //!< nanosecond
     PS  = 8,   //!< picosecond
     FS  = 9,   //!< femtosecond
-    LAST = 10
+    LAST = 10, //!< marker for last normal value
+    AUTO = 11  //!< auto-scale output when using Time::As()
   };
 
   /**
@@ -234,7 +235,7 @@ public:
       }
   }
   explicit inline Time (const int64x64_t & v)
-    : m_data (v.GetHigh ())
+    : m_data (v.Round ())
   {
     if (g_markingTimes)
       {
@@ -547,6 +548,16 @@ public:
   /**@}*/  // Get Times as Numbers in Specified Units
 
   /**
+   * Round a Time to a specific unit.
+   * Rounding is to nearest integer.
+   * \return The Time rounded to the specific unit.
+   */
+  Time RoundTo (enum Unit unit) const
+  {
+    return From (this->To (unit).Round (), unit);
+  }
+
+  /**
    * Attach a unit to a Time, to facilitate output in a specific unit.
    *
    * For example,
@@ -559,7 +570,7 @@ public:
    * \param [in] unit The unit to use.
    * \return The Time with embedded unit.
    */
-  TimeWithUnit As (const enum Unit unit) const;
+  TimeWithUnit As (const enum Unit unit = Time::AUTO) const;
 
   /**
    * TracedCallback signature for Time

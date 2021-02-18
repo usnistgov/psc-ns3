@@ -32,22 +32,51 @@ NS_LOG_COMPONENT_DEFINE ("WifiPpdu");
 WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode ().GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
-    m_psdu (psdu),
     m_truncatedTx (false),
     m_band (band),
     m_channelWidth (txVector.GetChannelWidth ()),
     m_txPowerLevel (txVector.GetTxPowerLevel ())
 {
+  NS_LOG_FUNCTION (this << *psdu << txVector << ppduDuration << band);
+  m_psdus.insert (std::make_pair (SU_STA_ID, psdu));
+  SetPhyHeaders (txVector, ppduDuration, band);
+}
+
+WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
+  : m_preamble (txVector.GetPreambleType ()),
+    m_modulation (txVector.IsValid () ? txVector.GetMode (psdus.begin()->first).GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
+    m_psdus (psdus),
+    m_truncatedTx (false),
+    m_band (band),
+    m_channelWidth (txVector.GetChannelWidth ()),
+    m_txPowerLevel (txVector.GetTxPowerLevel ())
+{
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band);
+  if (m_preamble == WIFI_PREAMBLE_HE_MU)
+    {
+      m_muUserInfos = txVector.GetHeMuUserInfoMap ();
+    }
+  SetPhyHeaders (txVector, ppduDuration, band);
+}
+
+WifiPpdu::~WifiPpdu ()
+{
+}
+
+void
+WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
+{
   if (!txVector.IsValid ())
     {
       return;
     }
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << band);
+  NS_LOG_FUNCTION (this << txVector << ppduDuration << band);
   switch (m_modulation)
     {
       case WIFI_MOD_CLASS_DSSS:
       case WIFI_MOD_CLASS_HR_DSSS:
         {
+          NS_ASSERT (m_psdus.size () == 1);
           m_dsssSig.SetRate (txVector.GetMode ().GetDataRate (22));
           Time psduDuration = ppduDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           m_dsssSig.SetLength (psduDuration.GetMicroSeconds ());
@@ -56,12 +85,14 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_OFDM:
       case WIFI_MOD_CLASS_ERP_OFDM:
         {
+          NS_ASSERT (m_psdus.size () == 1);
           m_lSig.SetRate (txVector.GetMode ().GetDataRate (txVector), m_channelWidth);
-          m_lSig.SetLength (psdu->GetSize ());
+          m_lSig.SetLength (m_psdus.at (SU_STA_ID)->GetSize ());
           break;
         }
       case WIFI_MOD_CLASS_HT:
         {
+          NS_ASSERT (m_psdus.size () == 1);
           uint8_t sigExtension = 0;
           if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
@@ -71,9 +102,10 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
           m_lSig.SetLength (length);
           m_htSig.SetMcs (txVector.GetMode ().GetMcsValue ());
           m_htSig.SetChannelWidth (m_channelWidth);
-          m_htSig.SetHtLength (psdu->GetSize ());
+          m_htSig.SetHtLength (m_psdus.at (SU_STA_ID)->GetSize ());
           m_htSig.SetAggregation (txVector.IsAggregation ());
           m_htSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
+          m_htSig.SetFecCoding (txVector.IsLdpc ());
           break;
         }
       case WIFI_MOD_CLASS_VHT:
@@ -90,6 +122,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
             }
           m_vhtSig.SetSuMcs (txVector.GetMode ().GetMcsValue ());
           m_vhtSig.SetNStreams (txVector.GetNss ());
+          m_vhtSig.SetCoding (txVector.IsLdpc ());
           break;
         }
       case WIFI_MOD_CLASS_HE:
@@ -100,7 +133,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
               sigExtension = 6;
             }
           uint8_t m = 0;
-          if (m_preamble == WIFI_PREAMBLE_HE_SU)
+          if ((m_preamble == WIFI_PREAMBLE_HE_SU) || (m_preamble == WIFI_PREAMBLE_HE_TB))
             {
               m = 2;
             }
@@ -108,24 +141,31 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
             {
               m = 1;
             }
+          else
+            {
+              NS_ASSERT_MSG (false, "Unsupported preamble type");
+            }
           uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
           m_lSig.SetLength (length);
-          m_heSig.SetMuFlag (m_preamble == WIFI_PREAMBLE_HE_MU);
-          m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+          if (m_preamble == WIFI_PREAMBLE_HE_MU)
+            {
+              m_heSig.SetMuFlag (true);
+            }
+          else if (m_preamble != WIFI_PREAMBLE_HE_TB)
+            {
+              m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+              m_heSig.SetNStreams (txVector.GetNss ());
+            }
           m_heSig.SetBssColor (txVector.GetBssColor ());
           m_heSig.SetChannelWidth (m_channelWidth);
           m_heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
-          m_heSig.SetNStreams (txVector.GetNss ());
+          m_heSig.SetCoding (txVector.IsLdpc ());
           break;
         }
         default:
-        NS_FATAL_ERROR ("unsupported modulation class");
-        break;
+          NS_FATAL_ERROR ("unsupported modulation class");
+          break;
     }
-}
-
-WifiPpdu::~WifiPpdu ()
-{
 }
 
 WifiTxVector
@@ -294,7 +334,7 @@ WifiPpdu::GetTxVector (void) const
           txVector.SetChannelWidth (m_htSig.GetChannelWidth ());
           txVector.SetNss (1 + (m_htSig.GetMcs () / 8));
           txVector.SetGuardInterval(m_htSig.GetShortGuardInterval () ? 400 : 800);
-          txVector.SetAggregation (m_htSig.GetAggregation ());
+          txVector.SetLdpc (m_htSig.IsLdpcFecCoding ());
           break;
         }
       case WIFI_MOD_CLASS_VHT:
@@ -303,7 +343,7 @@ WifiPpdu::GetTxVector (void) const
           txVector.SetChannelWidth (m_vhtSig.GetChannelWidth ());
           txVector.SetNss (m_vhtSig.GetNStreams ());
           txVector.SetGuardInterval (m_vhtSig.GetShortGuardInterval () ? 400 : 800);
-          txVector.SetAggregation (m_psdu->IsAggregate ());
+          txVector.SetLdpc (m_vhtSig.IsLdpcCoding ());
           break;
         }
       case WIFI_MOD_CLASS_HE:
@@ -313,7 +353,7 @@ WifiPpdu::GetTxVector (void) const
           txVector.SetNss (m_heSig.GetNStreams ());
           txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
           txVector.SetBssColor (m_heSig.GetBssColor ());
-          txVector.SetAggregation (m_psdu->IsAggregate ());
+          txVector.SetLdpc (m_heSig.IsLdpcCoding ());
           break;
         }
       default:
@@ -321,13 +361,34 @@ WifiPpdu::GetTxVector (void) const
         break;
     }
   txVector.SetTxPowerLevel (m_txPowerLevel);
+  txVector.SetAggregation (m_psdus.size () > 1 || m_psdus.begin ()->second->IsAggregate ());
+  for (auto const& muUserInfo : m_muUserInfos)
+    {
+      txVector.SetHeMuUserInfo (muUserInfo.first, muUserInfo.second);
+    }
   return txVector;
 }
 
 Ptr<const WifiPsdu>
-WifiPpdu::GetPsdu (void) const
+WifiPpdu::GetPsdu (uint8_t bssColor, uint16_t staId) const
 {
-  return m_psdu;
+  if (!IsMu ())
+    {
+      NS_ASSERT (m_psdus.size () == 1);
+      return m_psdus.at (SU_STA_ID);
+    }
+  else
+    {
+      if (bssColor == m_heSig.GetBssColor ())
+        {
+          auto it = m_psdus.find (staId);
+          if (it != m_psdus.end ())
+            {
+              return it->second;
+            }
+        }
+    }
+  return nullptr;
 }
 
 bool
@@ -384,7 +445,7 @@ WifiPpdu::GetTxDuration (void) const
               sigExtension = 6;
             }
           uint8_t m = 0;
-          if (m_preamble == WIFI_PREAMBLE_HE_SU)
+          if ((m_preamble == WIFI_PREAMBLE_HE_SU) || (m_preamble == WIFI_PREAMBLE_HE_TB))
             {
               m = 2;
             }
@@ -405,18 +466,40 @@ WifiPpdu::GetTxDuration (void) const
   return ppduDuration;
 }
 
+bool
+WifiPpdu::IsMu (void) const
+{
+  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU) || (m_preamble == WIFI_PREAMBLE_HE_TB));
+}
+
+WifiModulationClass
+WifiPpdu::GetModulation (void) const
+{
+  return m_modulation;
+}
+
 void
 WifiPpdu::Print (std::ostream& os) const
 {
   os << "preamble=" << m_preamble
      << ", modulation=" << m_modulation
-     << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N")
-     << ", PSDU=" << m_psdu;
+     << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N");
+  IsMu () ? (os << ", " << m_psdus) : (os << ", PSDU=" << m_psdus.at (SU_STA_ID));
 }
 
 std::ostream & operator << (std::ostream &os, const WifiPpdu &ppdu)
 {
   ppdu.Print (os);
+  return os;
+}
+
+std::ostream & operator << (std::ostream &os, const WifiConstPsduMap &psdus)
+{
+  for (auto const& psdu : psdus)
+    {
+      os << "PSDU for STA_ID=" << psdu.first
+         << " (" << *psdu.second << ") ";
+    }
   return os;
 }
 
