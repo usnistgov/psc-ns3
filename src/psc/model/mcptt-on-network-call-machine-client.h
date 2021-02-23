@@ -177,7 +177,7 @@ public:
   */
  virtual void RejectCall (void);
  /**
-  * Sends a off-network call control packet.  Should be unused but is
+  * Sends an off-network call control packet.  Should be unused but is
   * necessary to implement; it generates a fatal error.
   * \param hdr The McpttCallMsg header to send.
   */
