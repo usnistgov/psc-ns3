@@ -42,9 +42,11 @@
 
 namespace ns3 {
 
-/** McpttCallMachineGrpBasicState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBasicState");
 
+namespace psc {
+
+/** McpttCallMachineGrpBasicState - begin **/
 McpttCallMachineGrpBasicState::~McpttCallMachineGrpBasicState (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1333,4 +1335,5 @@ McpttCallMachineGrpBasicStateS7::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 }
 /** McpttCallMachineGrpBasicStateS7 - end **/
 
+} // namespace psc
 } // namespace ns3

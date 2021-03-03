@@ -38,9 +38,11 @@
 
 #include "mcptt-timer.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttTimer");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttTimer);
 
@@ -49,7 +51,7 @@ McpttTimer::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttTimer")
+  static TypeId tid = TypeId ("ns3::psc::McpttTimer")
     .SetParent<Object> ()
     .AddConstructor<McpttTimer> ()
   ;
@@ -289,4 +291,5 @@ operator<< (std::ostream& os, const McpttTimer& timer)
   return os;
 }
 
+} // namespace psc
 } // namespace ns3

@@ -44,6 +44,8 @@
 #include "mcptt-ptt-app.h"
 
 namespace ns3 {
+
+namespace psc {
  
 /**
  * \ingroup mcptt
@@ -51,7 +53,7 @@ namespace ns3 {
  * This class is used to simulate the action of pushing and releasing a
  * button. An instance of this class schedules events using a random number
  * generator to simulate "pushing" and "releasing" the button of an
- * ns3::McpttPttApp.
+ * McpttPttApp.
  */
 class McpttPusher : public Object 
 {
@@ -178,6 +180,7 @@ protected:
  virtual void CancelEvents (void);
 };
  
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_PUSHER_H */

@@ -43,6 +43,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttOnNetworkFloorParticipant;
 
 /**
@@ -246,12 +248,12 @@ protected:
  McpttOnNetworkFloorParticipantState (void);
 };
 /**
- * Overloaded output operator for the ns3::McpttOnNetworkFloorParticipantState class.
+ * Overloaded output operator for the McpttOnNetworkFloorParticipantState class.
  * \param os The output stream to write to.
  * \param state The state to write to the output stream.
  * \returns The output stream that was written to.
  */
-std::ostream& operator<< (std::ostream& os, const ns3::McpttOnNetworkFloorParticipantState& state);
+std::ostream& operator<< (std::ostream& os, const McpttOnNetworkFloorParticipantState& state);
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'Start-stop' state.
@@ -775,6 +777,7 @@ public:
  virtual void ExpiryOfT132 (McpttOnNetworkFloorParticipant& machine) const;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_ON_NETWORK_FLOOR_PARTICIPANT_STATE_H */

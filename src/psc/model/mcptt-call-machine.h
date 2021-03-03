@@ -43,6 +43,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCall;
 
 /**
@@ -407,6 +409,7 @@ private:
  uint8_t m_callType; //!< The call type.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MACHINE_H */

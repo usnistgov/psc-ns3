@@ -44,12 +44,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorContention");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorContention);
 
 TypeId
 McpttPusherOrchestratorContention::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorContention")
+  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorContention")
     .SetParent<McpttPusherOrchestratorInterface> ()
     .AddConstructor<McpttPusherOrchestratorContention>()
     .AddAttribute ("ContentionProbability", "Probability that there will be contention.",
@@ -298,4 +300,5 @@ McpttPusherOrchestratorContention::SetOrchestrator (Ptr<McpttPusherOrchestratorI
   m_orchestrator = orchestrator;
 }
 
+} // namespace psc
 } // namespace ns3

@@ -36,10 +36,11 @@
 
 #include "mcptt-counter.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttCounter");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttCounter);
 
@@ -48,7 +49,7 @@ McpttCounter::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttCounter")
+  static TypeId tid = TypeId ("ns3::psc::McpttCounter")
     .SetParent<Object> ()
     .AddConstructor<McpttCounter> ()
   ;
@@ -237,4 +238,5 @@ std::ostream& operator<< (std::ostream& os, const McpttCounter& counter)
   return os;
 }
 
+} // namespace psc
 } // namespace ns3

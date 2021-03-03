@@ -43,11 +43,13 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
  * This class is cable of generating MCPTT media messages that will then be
- * requested to be sent by an ns3::McpttMediaSink for sending. This class was
+ * requested to be sent by a McpttMediaSink for sending. This class was
  * created to provide a simple traffic model of MCPTT media for an MCPTT
  * application.
  */
@@ -170,6 +172,7 @@ protected:
  virtual void SetTotalBytes (uint16_t totalBytes);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_MEDIA_SRC_H */

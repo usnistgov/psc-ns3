@@ -39,6 +39,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttCallHelper");
 
+namespace psc {
+
 McpttCallHelper::McpttCallHelper (void)
 {
   m_arbitratorFactory.SetTypeId (McpttOnNetworkFloorArbitrator::GetTypeId ());
@@ -232,8 +234,8 @@ McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callI
 
   if (callType.GetType () == McpttCallMsgFieldCallType::BASIC_GROUP)
     {
-      callFac.SetTypeId ("ns3::McpttCallMachineGrpBasic");
-      floorFac.SetTypeId ("ns3::McpttOffNetworkFloorParticipant");
+      callFac.SetTypeId ("ns3::psc::McpttCallMachineGrpBasic");
+      floorFac.SetTypeId ("ns3::psc::McpttOffNetworkFloorParticipant");
     }
   else
     {
@@ -273,10 +275,10 @@ McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Ad
   uint32_t groupId = baseGroupId;
 
   ObjectFactory callFac;
-  callFac.SetTypeId ("ns3::McpttCallMachineGrpBasic");
+  callFac.SetTypeId ("ns3::psc::McpttCallMachineGrpBasic");
 
   ObjectFactory floorFac;
-  floorFac.SetTypeId ("ns3::McpttOffNetworkFloorParticipant");
+  floorFac.SetTypeId ("ns3::psc::McpttOffNetworkFloorParticipant");
 
   for (uint32_t idx = 0; idx < apps.GetN (); idx++)
     {
@@ -295,5 +297,6 @@ McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Ad
     }
 }
 
+} // namespace psc
 } // namespace ns3
 

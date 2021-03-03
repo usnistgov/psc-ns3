@@ -40,12 +40,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttTestCall");
 
+namespace psc {
+namespace tests {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttTestCall);
 
 TypeId
 McpttTestCall::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttTestCall")
+  static TypeId tid = TypeId ("ns3::psc::McpttTestCall")
     .SetParent<McpttCall> ()
   ;
   return tid;
@@ -157,5 +160,7 @@ McpttTestCall::AddDropper (Ptr<McpttMsgDropper>  dropper)
   m_droppers.push_back (dropper);
 }
 
+} // namespace tests
+} // namespace psc
 } // namespace ns3
 

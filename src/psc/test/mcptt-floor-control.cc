@@ -40,9 +40,12 @@
 #include <ns3/mcptt-pusher.h>
 #include <ns3/mcptt-queued-user-info.h>
 
-using namespace ns3;
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttFloorControlTest");
+
+namespace psc {
+namespace tests {
 
 class TestFloorMachine : public McpttOffNetworkFloorParticipant
 {
@@ -1612,7 +1615,7 @@ McpttFloorRequestPreemptive::Configure (void)
   config->SetStart (Seconds (2.0));
   config->SetStop (Seconds (2.5));
 
-  Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::T201", TimeValue (Time ("120ms")));
+  Config::SetDefault ("ns3::psc::McpttOffNetworkFloorParticipant::T201", TimeValue (Time ("120ms")));
 
   McpttTestCase::Configure ();
 
@@ -5850,3 +5853,6 @@ McpttFloorControlTestSuite::McpttFloorControlTestSuite (void)
   AddTestCase (new McpttFloorReleasePreemptedFloorArbitrator (), TestCase::QUICK);
 }
 
+} // namespace tests
+} // namespace psc
+} // namespace ns3

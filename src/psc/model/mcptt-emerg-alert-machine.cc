@@ -42,9 +42,11 @@
 
 #include "mcptt-emerg-alert-machine.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttEmergAlertMachine");
+
+namespace psc {
 
 /** McpttEmergAlertMachine - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachine);
@@ -54,7 +56,7 @@ McpttEmergAlertMachine::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttEmergAlertMachine")
+  static TypeId tid = TypeId ("ns3::psc::McpttEmergAlertMachine")
     .SetParent<Object> ()
    ;
 
@@ -89,7 +91,7 @@ McpttEmergAlertMachineNull::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttEmergAlertMachineNull")
+  static TypeId tid = TypeId ("ns3::psc::McpttEmergAlertMachineNull")
     .SetParent<McpttEmergAlertMachine> ()
     .AddConstructor<McpttEmergAlertMachineNull> ()
   ;
@@ -169,5 +171,6 @@ McpttEmergAlertMachineNull::Stop (void)
 }
 /** McpttCallMachineNull - end **/
 
+} // namespace psc
 } // namespace ns3
 

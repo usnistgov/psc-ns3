@@ -44,10 +44,13 @@
 
 namespace ns3 {
 
+class ApplicationContainer;
+
+namespace psc {
+
 class McpttMsg;
 class McpttMsgStats;
 class McpttStateMachineStats;
-class ApplicationContainer;
 
 /**
  * \ingroup psc
@@ -111,6 +114,7 @@ private:
   void TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const char* description);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_TRACE_HELPER_H */

@@ -40,6 +40,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup psc
  *
@@ -82,6 +84,7 @@ private:
  std::ofstream m_outputFile;  //!< The file stream object of trace file
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_STATE_MACHINE_STATS_H */

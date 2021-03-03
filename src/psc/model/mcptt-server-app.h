@@ -46,6 +46,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttServerCall;
 class McpttCallMsg;
 class McpttChannel;
@@ -164,6 +166,7 @@ private:
  bool m_isRunning; //!< Flag to mark if the application is running
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SERVER_APP_H */

@@ -42,6 +42,8 @@
 #include <ns3/test.h>
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 class McpttTestCall;
 
@@ -78,6 +80,8 @@ public:
  virtual Ptr<McpttTestCall> CreateTestCall (ObjectFactory& callFac, ObjectFactory& floorFac, uint16_t callId) const;
 };
 
+} //namespace tests
+} //namespace psc
 } //namespace ns3
 
 #endif

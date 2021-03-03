@@ -41,6 +41,8 @@
 #include "mcptt-pusher-orchestrator-interface.h"
 
 namespace ns3 {
+
+namespace psc {
  
 /**
  * \ingroup mcptt
@@ -173,6 +175,7 @@ public:
  virtual void SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_PUSHER_ORCHESTRATOR_SESSION_CDF_H */

@@ -51,6 +51,7 @@
 #include "ns3/psc-module.h"
 
 using namespace ns3;
+using namespace psc;
 
 NS_LOG_COMPONENT_DEFINE ("ExampleMcpttOnNetworkTwoSimultaneousCalls");
 
@@ -79,11 +80,11 @@ main (int argc, char *argv[])
   Time simTime = Seconds (60.1);
   bool logging = false;
 
-  Config::SetDefault ("ns3::McpttMsgStats::CallControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::FloorControl", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::Media", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
 
   // Command line arguments
   CommandLine cmd;
@@ -226,11 +227,11 @@ main (int argc, char *argv[])
   ApplicationContainer clientAppContainer1;
   ApplicationContainer clientAppContainer2;
   McpttHelper mcpttClientHelper;
-  mcpttClientHelper.SetPttApp ("ns3::McpttPttApp");
-  mcpttClientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
                          "DataRate", DataRateValue (dataRate));
-  mcpttClientHelper.SetPusher ("ns3::McpttPusher",
+  mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                          "Mean", DoubleValue (onOffMean),
@@ -268,17 +269,17 @@ main (int argc, char *argv[])
 
   McpttCallHelper callHelper;
   // Optional statements to tailor the configurable attributes
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 

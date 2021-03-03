@@ -44,6 +44,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorSpurtCdf");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorSpurtCdf);
 
 const std::vector<std::pair<double, double> > McpttPusherOrchestratorSpurtCdf::CDF_POINTS = {
@@ -291,7 +293,7 @@ const double McpttPusherOrchestratorSpurtCdf::CDF_POINTS_AVG = 4.69;
 TypeId
 McpttPusherOrchestratorSpurtCdf::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorSpurtCdf")
+  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorSpurtCdf")
     .SetParent<McpttPusherOrchestratorInterface> ()
     .AddConstructor<McpttPusherOrchestratorSpurtCdf>()
     .AddAttribute ("ActivityFactor", "The desired activity factor.",
@@ -484,4 +486,5 @@ McpttPusherOrchestratorSpurtCdf::SetActivityFactor (double af)
   UpdatePttIatVariable ();
 }
 
+} // namespace psc
 } // namespace ns3

@@ -48,6 +48,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCall;
 
 /**
@@ -628,6 +630,7 @@ public:
  virtual void SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_H */

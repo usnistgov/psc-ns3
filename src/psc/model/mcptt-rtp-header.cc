@@ -42,6 +42,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttRtpHeader");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttRtpHeader);
 
 TypeId
@@ -49,7 +51,7 @@ McpttRtpHeader::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttRtpHeader")
+  static TypeId tid = TypeId ("ns3::psc::McpttRtpHeader")
     .SetParent<Header> ()
     .AddConstructor<McpttRtpHeader> ()
   ;
@@ -486,5 +488,6 @@ McpttRtpHeader::SetVersion (uint8_t version)
   m_version = version;
 }
 
+} // namespace psc
 } // namespace ns3
 

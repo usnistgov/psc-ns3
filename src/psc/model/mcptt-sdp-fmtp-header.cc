@@ -33,6 +33,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttSdpFmtpHeader);
 
 
@@ -47,7 +49,7 @@ McpttSdpFmtpHeader::~McpttSdpFmtpHeader ()
 TypeId 
 McpttSdpFmtpHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttSdpFmtpHeader")
+  static TypeId tid = TypeId ("ns3::psc::McpttSdpFmtpHeader")
     .SetParent<Header> ()
     .SetGroupName ("Mcptt")
     .AddConstructor<McpttSdpFmtpHeader> ()
@@ -145,4 +147,5 @@ McpttSdpFmtpHeader::Deserialize (Buffer::Iterator start)
   return GetSerializedSize ();
 }
 
+} // namespace psc
 } // namespace ns3

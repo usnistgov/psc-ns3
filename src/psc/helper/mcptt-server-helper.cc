@@ -43,6 +43,7 @@
 #include "mcptt-server-helper.h"
 
 namespace ns3 {
+namespace psc {
 
 McpttServerHelper::McpttServerHelper (void)
 { 
@@ -95,5 +96,6 @@ McpttServerHelper::InstallPriv (Ptr<Node> node)
   return app;
 }
 
+} // namespace psc
 } // namespace ns3
 

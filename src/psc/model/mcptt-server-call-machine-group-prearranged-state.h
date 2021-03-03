@@ -43,6 +43,8 @@ namespace ns3 {
 
 class McpttServerCallMachineGroupPrearranged;
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -259,6 +261,8 @@ public:
  virtual void ReceiveBye (McpttServerCallMachineGroupPrearranged& machine, Ptr<Packet> pkt, const sip::SipHeader& hdr);
  virtual void ReceiveResponse (McpttServerCallMachineGroupPrearranged& machine, Ptr<Packet> pkt, const sip::SipHeader& hdr);
 };
+
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SERVER_CALL_MACHINE_GROUP_PREARRANGED_STATE_H */

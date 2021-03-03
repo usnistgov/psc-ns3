@@ -48,6 +48,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttPttApp;
 
 /**
@@ -361,6 +363,7 @@ public:
   */
 std::ostream& operator<< (std::ostream& os, const McpttCall::NetworkCallType& obj);
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_H */

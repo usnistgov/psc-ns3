@@ -54,6 +54,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorTowardsParticipant");
 
 /** McpttOnNetworkFloorTowardsParticipant - begin **/
@@ -62,7 +64,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorTowardsParticipant);
 TypeId
 McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorTowardsParticipant")
+  static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorTowardsParticipant")
     .SetParent<Object> ()
     .AddConstructor<McpttOnNetworkFloorTowardsParticipant>()
     .AddAttribute ("FloorPort", "The port to use for floor control messages.",
@@ -96,7 +98,7 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                    "The trace for capturing state changes.",
                    MakeTraceSourceAccessor (&McpttOnNetworkFloorTowardsParticipant::m_stateChangeTrace),
-                   "ns3::McpttOnNetworkFloorTowardsParticipant::StateChangeTracedCallback")
+                   "ns3::psc::McpttOnNetworkFloorTowardsParticipant::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -812,5 +814,6 @@ McpttOnNetworkFloorTowardsParticipant::SetTxCb (const Callback<void, Ptr<const M
 }
 /** McpttOnNetworkFloorTowardsParticipant - end **/
 
+} // namespace psc
 } // namespace ns3
 

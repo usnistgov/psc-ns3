@@ -51,17 +51,18 @@
 #include "mcptt-server-call.h"
 #include "mcptt-server-call-machine.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttServerCall");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCall);
 
 TypeId
 McpttServerCall::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttServerCall")
+  static TypeId tid = TypeId ("ns3::psc::McpttServerCall")
     .SetParent<Object> ()
     .AddConstructor<McpttServerCall> ()
     .AddAttribute ("CallMachine", "The call machine of the call.",
@@ -530,5 +531,6 @@ McpttServerCall::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const
   m_txCb = txCb;
 }
 
+} // namespace psc
 } // namespace ns3
 

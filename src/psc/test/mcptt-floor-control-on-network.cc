@@ -36,7 +36,9 @@
 #include "mcptt-test-case.h"
 #include "mcptt-test-case-config-on-network.h"
 
-using namespace ns3;
+namespace ns3 {
+namespace psc {
+namespace tests {
 
 NS_LOG_COMPONENT_DEFINE ("McpttTestSuiteFloorControlOnNetwork");
 
@@ -282,26 +284,26 @@ void
 McpttTestCaseOnNetworkFloorRelease::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                             "Bytes", UintegerValue (60),
                             "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                             "AckRequired", BooleanValue (true),
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
                             "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                              "AckRequired", BooleanValue (true),
                              "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                             "AmbientListening", BooleanValue (false),
                             "TemporaryGroup", BooleanValue (false));
 
@@ -398,26 +400,26 @@ void
 McpttTestCaseOnNetworkFloorGranted::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                             "Bytes", UintegerValue (60),
                             "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                             "AckRequired", BooleanValue (true),
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
                             "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                              "AckRequired", BooleanValue (true),
                              "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                             "AmbientListening", BooleanValue (false),
                             "TemporaryGroup", BooleanValue (false));
 
@@ -580,26 +582,26 @@ void
 McpttTestCaseOnNetworkFloorRevoke::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                             "Bytes", UintegerValue (60),
                             "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                             "AckRequired", BooleanValue (true),
                             "AudioCutIn", BooleanValue (true),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
                             "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                              "AckRequired", BooleanValue (true),
                              "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                             "AmbientListening", BooleanValue (false),
                             "TemporaryGroup", BooleanValue (false));
 
@@ -750,26 +752,26 @@ void
 McpttTestCaseOnNetworkFloorDeny::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                             "Bytes", UintegerValue (60),
                             "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                             "AckRequired", BooleanValue (true),
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
                             "QueueingSupported", BooleanValue (false));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                              "AckRequired", BooleanValue (true),
                              "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                             "AmbientListening", BooleanValue (false),
                             "TemporaryGroup", BooleanValue (false));
 
@@ -857,26 +859,26 @@ void
 McpttTestCaseOnNetworkFloorQueueAndCancel::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                             "Bytes", UintegerValue (60),
                             "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                             "AckRequired", BooleanValue (true),
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
                             "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                              "AckRequired", BooleanValue (true),
                              "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                             "AmbientListening", BooleanValue (false),
                             "TemporaryGroup", BooleanValue (false));
 
@@ -1025,26 +1027,26 @@ void
 McpttTestCaseOnNetworkFloorQueueAndGranted::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                             "Bytes", UintegerValue (60),
                             "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                             "AckRequired", BooleanValue (true),
                             "AudioCutIn", BooleanValue (false),
                             "DualFloorSupported", BooleanValue (false),
                             "TxSsrc", UintegerValue (100),
                             "QueueingSupported", BooleanValue (true));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                                     "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                              "AckRequired", BooleanValue (true),
                              "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                             "AmbientListening", BooleanValue (false),
                             "TemporaryGroup", BooleanValue (false));
 
@@ -1211,26 +1213,26 @@ void
 McpttTestCaseOnNetworkDualFloorControl::Configure (void)
 {
   McpttHelper clientHelper;
-  clientHelper.SetPttApp ("ns3::McpttPttApp");
-  clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (6),
                          "DataRate", DataRateValue (DataRate ("24kb/s")));
-  clientHelper.SetPusher ("ns3::McpttPusher",
+  clientHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (false));
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (true),
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (true),
                          "TxSsrc", UintegerValue (100),
                          "QueueingSupported", BooleanValue (false));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                          "AckRequired", BooleanValue (true),
                          "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 
@@ -2086,3 +2088,6 @@ McpttTestSuiteFloorControlOnNetwork::McpttTestSuiteFloorControlOnNetwork (void)
   AddTestCase (new McpttTestCaseOnNetworkDualFloorControl (), TestCase::QUICK);
 }
 
+} // namespace tests
+} // namespace psc
+} // namespace ns3

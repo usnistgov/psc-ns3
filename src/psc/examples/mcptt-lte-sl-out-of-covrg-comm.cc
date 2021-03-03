@@ -44,6 +44,7 @@
 #include <sstream>
 
 using namespace ns3;
+using namespace psc;
 
 /*
  * The topology is the following:
@@ -253,13 +254,13 @@ int main (int argc, char *argv[])
       mcpttHelper.EnableLogComponents ();
     }
 
-  mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+  mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
                          "LocalAddress", AddressValue (localIp),
                          "PushOnStart", BooleanValue (true));
-  mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
                          "DataRate", DataRateValue (dataRate));
-  mcpttHelper.SetPusher ("ns3::McpttPusher",
+  mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (true));
   mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                          "Mean", DoubleValue (pushTimeMean),

@@ -39,9 +39,12 @@
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"
 
-using namespace ns3;
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttBroadcastCallControlTest");
+
+namespace psc {
+namespace tests {
 
 class BroadcastTestCallMachine : public McpttCallMachineGrpBroadcast
 {
@@ -1745,3 +1748,6 @@ McpttBroadcastCallControlTestSuite::McpttBroadcastCallControlTestSuite (void)
   AddTestCase (new BroadcastCallScenario4 (), TestCase::QUICK);
 }
 
+} // namespace tests
+} // namespace psc
+} // namespace ns3

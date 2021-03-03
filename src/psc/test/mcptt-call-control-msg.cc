@@ -38,9 +38,12 @@
 #include <ns3/mcptt-call-msg.h>
 #include <ns3/mcptt-call-msg-field.h>
 
-using namespace ns3;
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttCallControlMsgTest");
+
+namespace psc {
+namespace tests {
 
 class McpttCallMsgGrpProbeTest : public TestCase
 {
@@ -531,3 +534,6 @@ McpttCallControlMsgTestSuite::McpttCallControlMsgTestSuite (void)
   AddTestCase (new McpttCallMsgGrpEmergAlertCancelAckTest (), TestCase::QUICK);
 }
 
+} // namespace tests
+} // namespace psc
+} // namespace ns3

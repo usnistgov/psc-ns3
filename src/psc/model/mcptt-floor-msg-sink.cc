@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc { 
+
 NS_LOG_COMPONENT_DEFINE ("McpttFloorMsgSink");
 
 /** McpttFloorMsgSink - begin **/
@@ -121,5 +123,6 @@ McpttFloorMsgSink::ReceiveMedia (const McpttMediaMsg& msg)
 
 /** McpttFloorMsgSink - end **/
 
+} // namespace psc
 } // namespace ns3
 

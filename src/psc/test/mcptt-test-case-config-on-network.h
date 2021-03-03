@@ -45,6 +45,8 @@
 #include "mcptt-test-case-config.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 /**
  * Test case configuration framework for on-network MCPTT tests
@@ -65,7 +67,9 @@ public:
  virtual void SetServerHelper (const McpttServerHelper& serverHelper);
 };
 
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 
 #endif
 

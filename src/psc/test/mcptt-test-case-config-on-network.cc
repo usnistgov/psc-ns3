@@ -42,30 +42,32 @@
 #include "mcptt-test-case-config-on-network.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork (void)
   : McpttTestCaseConfig ()
 {
-  m_clientHelper.SetPttApp ("ns3::McpttPttApp",
+  m_clientHelper.SetPttApp ("ns3::psc::McpttPttApp",
                          "PushOnStart", BooleanValue (false));
-  m_clientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  m_clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (60),
                          "DataRate", DataRateValue (DataRate ("24kb/s")));
-  m_clientHelper.SetPusher ("ns3::McpttPusher",
+  m_clientHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (false));
 
-  m_callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  m_callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
                          "QueueingSupported", BooleanValue (true));
-  m_callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  m_callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
-  m_callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  m_callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
-  m_callHelper.SetServerCall ("ns3::McpttServerCall",
+  m_callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 }
@@ -165,5 +167,7 @@ McpttTestCaseConfigOnNetwork::SetServerHelper (const McpttServerHelper& serverHe
   m_serverHelper = serverHelper;
 }
 
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 

@@ -42,6 +42,7 @@
 #include <ns3/ptr.h>
 
 namespace ns3 {
+namespace psc {
 
 class McpttServerApp;
 /**
@@ -60,14 +61,14 @@ public:
   */
  virtual ~McpttServerHelper (void);
  /**
-  * \brief Install an ns3::McpttServerApp on the node. 
+  * \brief Install an ns3::psc::McpttServerApp on the node. 
   *
   * \param node The node on which an McpttServerApp will be installed.
   * \returns Ptr to the McpttServerApp app
   */
  Ptr<McpttServerApp> Install (Ptr<Node> node);
  /**
-  * \brief Install an ns3::McpttServerApp on the node.
+  * \brief Install an ns3::psc::McpttServerApp on the node.
   *
   * \param nodeName The node on which an McpttServerApp will be installed.
   * \returns Ptr to the McpttServerApp app 
@@ -103,7 +104,7 @@ public:
                       std::string n7 = "", const AttributeValue& v7 = EmptyAttributeValue ());
 protected:
  /**
-  * \brief Install an ns3::McpttServerApp on the node.
+  * \brief Install an ns3::psc::McpttServerApp on the node.
   *
   * \param node The node on which an McpttServerApp will be installed.
   * \returns Ptr to the application installed.
@@ -113,6 +114,7 @@ private:
  ObjectFactory m_serverFactory; //!< The MCPTT server object factory.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SERVER_HELPER */

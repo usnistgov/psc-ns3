@@ -38,10 +38,12 @@
 #include <ns3/mcptt-floor-msg.h>
 #include <ns3/mcptt-floor-msg-field.h>
 
-using namespace ns3;
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttFloorControlMsgTest");
 
+namespace psc {
+namespace tests {
 
 class FloorMsgRequestTest : public TestCase
 {
@@ -443,3 +445,6 @@ McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite (void)
   AddTestCase (new FloorMsgQueuePositionInfoTest (), TestCase::QUICK);
 }
 
+} // namespace tests
+} // namespace psc
+} // namespace ns3

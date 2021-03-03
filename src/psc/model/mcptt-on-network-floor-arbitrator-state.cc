@@ -49,9 +49,11 @@
 
 namespace ns3 {
 
-/** McpttOnNetworkFloorArbitratorState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorArbitratorState");
 
+namespace psc {
+
+/** McpttOnNetworkFloorArbitratorState - begin **/
 McpttOnNetworkFloorArbitratorState::~McpttOnNetworkFloorArbitratorState (void)
 {
   NS_LOG_FUNCTION (this);
@@ -204,7 +206,7 @@ McpttOnNetworkFloorArbitratorState::McpttOnNetworkFloorArbitratorState (void)
 /** McpttOnNetworkFloorArbitratorState - end **/
 
 std::ostream&
-operator<< (std::ostream& os, const ns3::McpttOnNetworkFloorArbitratorState& state)
+operator<< (std::ostream& os, const McpttOnNetworkFloorArbitratorState& state)
 {
   return os << state.GetInstanceStateId ();
 }
@@ -913,5 +915,6 @@ McpttOnNetworkFloorArbitratorStateInitialising::Enter (Ptr<McpttOnNetworkFloorAr
   //        - 6.3.4.8.4 All final SIP responses received (R: final SIP responses)
 }
 
+} //namespace psc
 } //namespace ns3
 

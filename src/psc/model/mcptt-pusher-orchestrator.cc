@@ -45,12 +45,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestrator");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestrator);
 
 TypeId
 McpttPusherOrchestrator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPusherOrchestrator")
+  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestrator")
     .SetParent<McpttPusherOrchestratorInterface> ()
     .AddConstructor<McpttPusherOrchestrator>()
     .AddAttribute ("PttDurationVariable", "The variable used for PTT durations.",
@@ -255,4 +257,5 @@ McpttPusherOrchestrator::PttRelease (void)
   TracePttIat (m_nextPusher ? m_nextPusher->GetPttApp ()->GetUserId () : 0, pttIat);
 }
 
+} // namespace psc
 } // namespace ns3

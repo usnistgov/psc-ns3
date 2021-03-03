@@ -50,6 +50,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCall;
 
 /**
@@ -638,6 +640,7 @@ public:
  virtual void SetTypeMachine (Ptr<McpttCallTypeMachinePrivate>  typeMachine);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MACHINE_PRIVATE_H */

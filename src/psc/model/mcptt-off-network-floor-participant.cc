@@ -53,13 +53,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttOffNetworkFloorParticipant");
 
+namespace psc {
+
 /** McpttOffNetworkFloorParticipant - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttOffNetworkFloorParticipant);
 
 TypeId
 McpttOffNetworkFloorParticipant::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOffNetworkFloorParticipant")
+  static TypeId tid = TypeId ("ns3::psc::McpttOffNetworkFloorParticipant")
     .SetParent<McpttFloorParticipant> ()
     .AddConstructor<McpttOffNetworkFloorParticipant>()
     .AddAttribute ("C201", "The initial limit of counter C201.",
@@ -113,7 +115,7 @@ McpttOffNetworkFloorParticipant::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                       "The trace for capturing state changes.",
                       MakeTraceSourceAccessor (&McpttOffNetworkFloorParticipant::m_stateChangeTrace),
-                      "ns3::McpttFloorParticipant::StateChangeTracedCallback")
+                      "ns3::psc::McpttFloorParticipant::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -1425,5 +1427,6 @@ McpttOffNetworkFloorParticipant::SetTxCb (const Callback<void, const McpttFloorM
 }
 /** McpttOffNetworkFloorParticipant - end **/
 
+} // namespace psc
 } // namespace ns3
 

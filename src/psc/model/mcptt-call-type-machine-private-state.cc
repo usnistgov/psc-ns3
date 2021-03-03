@@ -43,6 +43,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /** McpttCallTypeMachinePrivateState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttCallTypeMachinePrivateState");
 
@@ -855,5 +857,5 @@ McpttCallTypeMachinePrivateStateQ2::ReleaseCall (McpttCallTypeMachinePrivate& ma
 }
 /** McpttCallTypeMachinePrivateStateQ2 - end **/
 
+} // namespace psc
 } // namespace ns3
-

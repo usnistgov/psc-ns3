@@ -41,10 +41,11 @@
 
 #include "mcptt-server-call-machine.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttServerCallMachine");
+
+namespace psc {
 
 /** McpttServerCallMachine - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachine);
@@ -54,7 +55,7 @@ McpttServerCallMachine::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttServerCallMachine")
+  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachine")
     .SetParent<Object> ()
   ;
 
@@ -85,7 +86,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGrp);
 TypeId
 McpttServerCallMachineGrp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttServerCallMachineGrp")
+  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineGrp")
     .SetParent<McpttServerCallMachine> ()
     .AddAttribute ("GroupId",
                    "The group ID of the call.",
@@ -152,7 +153,7 @@ McpttServerCallMachineNull::GetNullStateId (void)
 TypeId
 McpttServerCallMachineNull::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttServerCallMachineNull")
+  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineNull")
     .SetParent<McpttServerCallMachine> ()
     .AddConstructor<McpttServerCallMachineNull> ()
     .AddAttribute ("FloorPort", "The port to use for floor control messages.",
@@ -358,5 +359,6 @@ McpttServerCallMachineNull::DoDispose (void)
 }
 /** McpttServerCallMachineNull - end **/
 
+} // namespace psc
 } // namespace ns3
 

@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /** McpttFloorMsgField - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttFloorMsgField");
 
@@ -51,7 +53,7 @@ McpttFloorMsgField::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgField")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgField")
     .SetParent<ObjectBase> ()
     .AddConstructor<McpttFloorMsgField> ()
   ;
@@ -204,7 +206,7 @@ McpttFloorMsgFieldPriority::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldPriority")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldPriority")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldPriority> ()
   ;
@@ -321,7 +323,7 @@ McpttFloorMsgFieldDuration::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldDuration")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldDuration")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldDuration> ()
   ;
@@ -441,7 +443,7 @@ McpttFloorMsgFieldRejectCause::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldRejectCause")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldRejectCause")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldRejectCause> ()
   ;
@@ -553,7 +555,7 @@ McpttFloorMsgFieldQueuePositionInfo::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldQueuePositionInfo")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldQueuePositionInfo")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldQueuePositionInfo> ()
   ;
@@ -690,7 +692,7 @@ McpttFloorMsgFieldGrantedPartyId::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldGrantedPartyId")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldGrantedPartyId")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldGrantedPartyId> ()
   ;
@@ -801,7 +803,7 @@ McpttFloorMsgFieldPermToReq::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldPermToReq")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldPermToReq")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldPermToReq> ()
   ;
@@ -914,7 +916,7 @@ McpttFloorMsgFieldUserId::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldUserId")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldUserId")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldUserId> ()
   ;
@@ -1034,7 +1036,7 @@ McpttFloorMsgFieldQueueSize::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldQueueSize")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldQueueSize")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldQueueSize> ()
   ;
@@ -1145,7 +1147,7 @@ McpttFloorMsgFieldSeqNum::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttSeqNumField")
+  static TypeId tid = TypeId ("ns3::psc::McpttSeqNumField")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldSeqNum> ()
   ;
@@ -1258,7 +1260,7 @@ McpttFloorMsgFieldQueuedUserId::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldQueuedUserId")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldQueuedUserId")
     .SetParent<McpttFloorMsgFieldUserId> ()
     .AddConstructor<McpttFloorMsgFieldQueuedUserId> ()
   ;
@@ -1339,7 +1341,7 @@ McpttFloorMsgFieldSource::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldSource")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldSource")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldSource> ()
   ;
@@ -1452,7 +1454,7 @@ McpttFloorMsgFieldTrackInfo::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldTrackInfo")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldTrackInfo")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldTrackInfo> ()
   ;
@@ -1772,7 +1774,7 @@ McpttFloorMsgFieldType::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldType")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldType")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldType> ()
   ;
@@ -1896,7 +1898,7 @@ McpttFloorMsgFieldIndic::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldIndic")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldIndic")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldIndic> ()
   ;
@@ -2036,7 +2038,7 @@ McpttFloorMsgFieldSsrc::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgFieldSsrc")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgFieldSsrc")
     .SetParent<McpttFloorMsgField> ()
     .AddConstructor<McpttFloorMsgFieldSsrc> ()
   ;
@@ -2151,5 +2153,6 @@ McpttFloorMsgFieldSsrc::SetSsrc (uint32_t ssrc)
 /** McpttFloorMsgFieldSsrc - end **/
 
 
+} // namespace psc
 } // namespace ns3
 

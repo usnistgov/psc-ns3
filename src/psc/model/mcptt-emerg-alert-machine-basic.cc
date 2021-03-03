@@ -43,9 +43,11 @@
 
 #include "mcptt-emerg-alert-machine-basic.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttEmergAlertMachineBasic");
+
+namespace psc {
 
 /** McpttEmergAlertMachineBasic - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachineBasic);
@@ -65,7 +67,7 @@ McpttEmergAlertMachineBasic::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttEmergAlertMachineBasic")
+  static TypeId tid = TypeId ("ns3::psc::McpttEmergAlertMachineBasic")
     .SetParent<McpttEmergAlertMachine> ()
     .AddConstructor<McpttEmergAlertMachineBasic> ()
     .AddAttribute ("TFE1", "The initial delay to use for timer TFE1 (Time value)",
@@ -78,7 +80,7 @@ McpttEmergAlertMachineBasic::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttEmergAlertMachineBasic::m_stateChangeTrace),
-                     "ns3::McpttCallMachine::StateChangeTracedCallback")
+                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
    ;
 
   return tid;
@@ -606,5 +608,6 @@ McpttEmergAlertMachineBasic::SetStateChangeCb (const Callback<void, bool>  state
 }
 /** McpttEmergAlertMachineBasic - end **/
 
+} // namespace psc
 } // namespace ns3
 

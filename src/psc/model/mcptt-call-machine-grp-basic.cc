@@ -56,10 +56,11 @@
 
 #include "mcptt-call-machine-grp-basic.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBasic");
 
+namespace psc {
 /** McpttCallMachineGrpBasic - begin **/
 
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMachineGrpBasic);
@@ -67,7 +68,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMachineGrpBasic);
 TypeId
 McpttCallMachineGrpBasic::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMachineGrpBasic")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMachineGrpBasic")
     .SetParent<McpttCallMachineGrp> ()
     .AddConstructor<McpttCallMachineGrpBasic> ()
     .AddAttribute ("CallTypeMachine", "The call type machine.",
@@ -116,7 +117,7 @@ McpttCallMachineGrpBasic::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallMachineGrpBasic::m_stateChangeTrace),
-                     "ns3::McpttCallMachine::StateChangeTracedCallback")
+                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
     ;
 
   return tid;
@@ -1331,5 +1332,6 @@ McpttCallMachineGrpBasic::SetTypeMachine (Ptr<McpttCallTypeMachineGrpBasic>  typ
 }
 /** McpttCallMachineGrpBasic - end **/
 
+} // namespace psc
 } // namespace ns3
 

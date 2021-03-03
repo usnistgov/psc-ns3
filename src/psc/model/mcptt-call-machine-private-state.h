@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachinePrivate;
 
 /**
@@ -553,6 +555,7 @@ public:
  virtual void RejectCall (McpttCallMachinePrivate& machine);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MACHINE_PRIVATE_STATE_H */

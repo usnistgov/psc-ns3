@@ -40,8 +40,10 @@
 #include "mcptt-floor-queue.h"
 #include "mcptt-queued-user-info.h"
 
-namespace ns3
-{
+namespace ns3 {
+
+namespace psc {
+
 NS_LOG_COMPONENT_DEFINE ("McpttFloorQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorQueue);
@@ -49,7 +51,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttFloorQueue);
 TypeId
 McpttFloorQueue::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttFloorQueue")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorQueue")
     .SetParent<Object> ()
     .AddConstructor<McpttFloorQueue> ()
     .AddAttribute ("Capacity", "The maximum number of users that can be queued.",
@@ -271,5 +273,6 @@ McpttFloorQueue::DoDispose (void)
   m_users.clear ();
 }
 
+} // namespace psc
 } // namespace ns3
 

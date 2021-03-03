@@ -44,6 +44,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -1277,6 +1279,7 @@ public:
  virtual void Serialize (Buffer::Iterator& buff) const;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MSG_FIELD_H */

@@ -46,12 +46,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttFloorMsg");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsg);
 
 TypeId
 McpttFloorMsg::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttFloorMsg")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsg")
     .SetParent<McpttMsg> ()
   ;
 
@@ -421,7 +423,7 @@ McpttFloorMsgRequest::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgRequest")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgRequest")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgRequest> ()
   ;
@@ -635,7 +637,7 @@ McpttFloorMsgGranted::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgGranted")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgGranted")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgGranted> ()
   ;
@@ -1033,7 +1035,7 @@ McpttFloorMsgDeny::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgDeny")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgDeny")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgDeny> ()
   ;
@@ -1247,7 +1249,7 @@ McpttFloorMsgRelease::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgRelease")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgRelease")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgRelease> ()
   ;
@@ -1433,7 +1435,7 @@ McpttFloorMsgRevoke::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgRevoke")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgRevoke")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgRevoke> ()
   ;
@@ -1620,7 +1622,7 @@ McpttFloorMsgIdle::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgIdle")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgIdle")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgIdle> ()
   ;
@@ -1806,7 +1808,7 @@ McpttFloorMsgTaken::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgTaken")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgTaken")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgTaken> ()
   ;
@@ -2068,7 +2070,7 @@ McpttFloorMsgQueuePositionRequest::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgQueuePositionRequest")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgQueuePositionRequest")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgQueuePositionRequest> ()
   ;
@@ -2228,7 +2230,7 @@ McpttFloorMsgQueuePositionInfo::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgQueuePositionInfo")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgQueuePositionInfo")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgQueuePositionInfo> ()
   ;
@@ -2502,7 +2504,7 @@ McpttFloorMsgAck::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttFloorMsgAck")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorMsgAck")
     .SetParent<McpttFloorMsg> ()
     .AddConstructor<McpttFloorMsgAck> ()
   ;
@@ -2676,5 +2678,5 @@ McpttFloorMsgAck::SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo)
 }
 /** McpttFloorMsgIdle - end **/
 
+} // namespace psc
 } // namespace ns3
-

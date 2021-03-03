@@ -40,6 +40,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttFloorMsgSink;
 class McpttCallMachinePrivate;
 
@@ -183,6 +185,7 @@ public:
  virtual void SetTalkSpurtStart (Time talkSpurtStart);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif // MCPTT_MEDIA_H

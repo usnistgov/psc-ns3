@@ -37,6 +37,8 @@
 #include <ns3/type-id.h>
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 class McpttMsgDropper : public SimpleRefCount<McpttMsgDropper>
 {
@@ -69,7 +71,9 @@ protected:
  virtual void SetReceived (const uint32_t& receieved);
 };
 
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 
 #endif
 

@@ -42,6 +42,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttOnNetworkFloorTowardsParticipant;
 
 /**
@@ -209,12 +211,12 @@ protected:
  McpttOnNetworkFloorTowardsParticipantState (void);
 };
 /**
- * Overloaded output operator for the ns3::McpttOnNetworkFloorTowardsParticipantState class.
+ * Overloaded output operator for the McpttOnNetworkFloorTowardsParticipantState class.
  * \param os The output stream to write to.
  * \param state The state to write to the output stream.
  * \returns The output stream that was written to.
  */
-std::ostream& operator<< (std::ostream& os, const ns3::McpttOnNetworkFloorTowardsParticipantState& state);
+std::ostream& operator<< (std::ostream& os, const McpttOnNetworkFloorTowardsParticipantState& state);
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'Start-stop' state.
@@ -694,6 +696,7 @@ public:
  virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorTowardsParticipant> machine, const McpttFloorMsgRelease& msg) const;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_ON_NETWORK_FLOOR_DUAL_CONTROL_STATE_H */

@@ -45,10 +45,11 @@
 
 #include "mcptt-server-app.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttServerApp");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttServerApp);
 
@@ -57,7 +58,7 @@ uint16_t McpttServerApp::s_callId = 1;
 TypeId
 McpttServerApp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttServerApp")
+  static TypeId tid = TypeId ("ns3::psc::McpttServerApp")
     .SetParent<Application> ()
     .AddConstructor<McpttServerApp>()
     .AddAttribute ("CallPort", "The port that the application will use for call control messages.",
@@ -78,10 +79,10 @@ McpttServerApp::GetTypeId (void)
                    MakeAddressChecker ())
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
                      MakeTraceSourceAccessor (&McpttServerApp::m_rxTrace),
-                     "ns3::McpttServerApp::RxTrace")
+                     "ns3::psc::McpttServerApp::RxTrace")
     .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
                      MakeTraceSourceAccessor (&McpttServerApp::m_txTrace),
-                     "ns3::McpttServerApp::TxTrace")
+                     "ns3::psc::McpttServerApp::TxTrace")
   ;
 
     return tid;
@@ -242,4 +243,5 @@ McpttServerApp::IsRunning (void) const
   return m_isRunning;
 }
 
+} // namespace psc
 } // namespace ns3

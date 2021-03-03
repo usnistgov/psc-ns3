@@ -28,10 +28,13 @@
 
 namespace ns3 {
 
+class Time;
+class ApplicationContainer;
+
+namespace psc {
+
 class McpttServerApp;
 class McpttPttApp;
-class ApplicationContainer;
-class Time;
 class McpttCallMsgFieldCallType;
 
 /**
@@ -203,6 +206,7 @@ private:
   ObjectFactory m_serverCallFactory; //!< The server call factory
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_HELPER */

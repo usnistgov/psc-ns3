@@ -47,9 +47,11 @@
 
 namespace ns3 {
 
-/** McpttServerCallMachineGroupPrearrangedState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttServerCallMachineGroupPrearrangedState");
 
+namespace psc {
+
+/** McpttServerCallMachineGroupPrearrangedState - begin **/
 McpttServerCallMachineGroupPrearrangedState::McpttServerCallMachineGroupPrearrangedState (void)
   : SimpleRefCount<McpttServerCallMachineGroupPrearrangedState> ()
 {
@@ -472,4 +474,5 @@ McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallM
 
 /** McpttServerCallMachineGroupPrearrangedStateS4 - end **/
 
+} // namespace psc
 } // namespace ns3

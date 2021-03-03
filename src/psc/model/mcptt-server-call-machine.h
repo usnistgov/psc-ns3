@@ -44,6 +44,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttServerCall;
 
 /**
@@ -393,6 +395,7 @@ private:
  uint32_t m_userId; //!< The user ID.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SERVER_CALL_MACHINE_H */

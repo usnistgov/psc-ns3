@@ -40,12 +40,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttMsg");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttMsg);
 
 TypeId
 McpttMsg::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttMsg")
+  static TypeId tid = TypeId ("ns3::psc::McpttMsg")
     .SetParent<Header> ()
   ;
 
@@ -80,5 +82,6 @@ McpttMsg::McpttMsg (void)
   NS_LOG_FUNCTION (this);
 }
 
+} // namespace psc
 } // namespace ns3
 

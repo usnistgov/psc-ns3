@@ -44,6 +44,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachineGrp;
 
 /**
@@ -270,6 +272,7 @@ public:
  virtual void SetStateChangeCb (const Callback<void, bool>  stateChangeCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_EMERG_ALERT_MACHINE_BASIC_H */

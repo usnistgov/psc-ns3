@@ -40,11 +40,13 @@
 
 namespace ns3 {
  
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
  * This class defines the interface of objects used to orchestrate the
- * behavior of a collection of ns3::McpttPusher objects. In general, objects
+ * behavior of a collection of McpttPusher objects. In general, objects
  * derived from this abstract base class will decide when the pusher objects
  * will schedule push and release events.
  */
@@ -137,6 +139,7 @@ private:
  TracedCallback<uint32_t, Time> m_pttDurationTrace; //!< The duration trace.
 };
  
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_PUSHER_ORCHESTRATOR_INTERFACE_H */

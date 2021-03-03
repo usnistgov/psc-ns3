@@ -50,17 +50,18 @@
 
 #include "mcptt-call.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttCall");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttCall);
 
 TypeId
 McpttCall::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCall")
+  static TypeId tid = TypeId ("ns3::psc::McpttCall")
     .SetParent<Object> ()
     .AddConstructor<McpttCall> ()
     .AddAttribute ("CallMachine", "The call machine of the call.",
@@ -867,6 +868,8 @@ std::ostream& operator << (std::ostream& os, const McpttCall::NetworkCallType& o
    os << static_cast<std::underlying_type<McpttCall::NetworkCallType>::type> (obj);
    return os;
 }
+
+} // namespace psc
 
 } // namespace ns3
 

@@ -40,6 +40,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -155,6 +157,8 @@ public:
  * \returns The outputstream that was written to.
  */
 std::ostream& operator<< (std::ostream& os, const McpttCounter& counter);
+
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_COUNTER_H */

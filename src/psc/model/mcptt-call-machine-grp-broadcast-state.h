@@ -38,6 +38,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachineGrpBroadcast;
 
 /**
@@ -340,6 +342,7 @@ public:
   virtual void ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MACHINE_GRP_BROADCAST_STATE_H */

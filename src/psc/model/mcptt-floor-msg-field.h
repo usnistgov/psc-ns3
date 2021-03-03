@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * MCPTT Floor field information.
  *
@@ -1438,6 +1440,7 @@ public:
  virtual void SetSsrc (uint32_t ssrc);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_FLOOR_MSG_FIELD_H */

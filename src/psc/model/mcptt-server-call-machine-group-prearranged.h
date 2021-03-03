@@ -45,9 +45,12 @@
 
 namespace ns3 {
 
+class RandomVariableStream;
+
+namespace psc {
+
 class McpttServerCall;
 class McpttServerCallMachineGroupPrearrangedState;
-class RandomVariableStream;
 
 /**
  * \ingroup mcptt
@@ -290,6 +293,7 @@ private:
  TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SERVER_CALL_MACHINE_GROUP_PREARRANGED_H */

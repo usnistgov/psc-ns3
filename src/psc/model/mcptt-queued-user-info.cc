@@ -40,14 +40,17 @@
 #include "mcptt-queued-user-info.h"
 
 namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttQueuedUserInfo");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttQueuedUserInfo);
 
 TypeId
 McpttQueuedUserInfo::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttQueuedUserInfo")
+  static TypeId tid = TypeId ("ns3::psc::McpttQueuedUserInfo")
     .SetParent<ObjectBase> ()
     .AddConstructor<McpttQueuedUserInfo> ()
   ;
@@ -228,5 +231,6 @@ operator<< (std::ostream& os, const McpttQueuedUserInfo& info)
   return os;
 }
 
+} // namespace psc
 } // namespace ns3
 

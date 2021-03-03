@@ -40,6 +40,8 @@
 #include "mcptt-test-case-config.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 /**
  * Test case framework for off-network MCPTT tests
@@ -67,7 +69,9 @@ protected:
  virtual void SetConfig (Ptr<McpttTestCaseConfig>  config);
 };
 
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 
 #endif
 

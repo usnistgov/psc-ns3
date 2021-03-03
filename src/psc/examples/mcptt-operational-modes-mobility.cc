@@ -161,6 +161,7 @@
 #endif
 
 using namespace ns3;
+using namespace psc;
 
 NS_LOG_COMPONENT_DEFINE ("McpttOperationalModesMobility");
 
@@ -534,10 +535,10 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // Set on-network queueing behavior
-  Config::SetDefault ("ns3::McpttOnNetworkFloorArbitrator::QueueingSupported", BooleanValue (queueing));
+  Config::SetDefault ("ns3::psc::McpttOnNetworkFloorArbitrator::QueueingSupported", BooleanValue (queueing));
   if (queueing)
     {
-      Config::SetDefault ("ns3::McpttFloorQueue::Capacity", UintegerValue (3));
+      Config::SetDefault ("ns3::psc::McpttFloorQueue::Capacity", UintegerValue (3));
     }
 
 #ifndef HAS_NETSIMULYZER
@@ -647,12 +648,12 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::WaypointMobilityModel::InitialPositionIsWaypoint", BooleanValue (true));
 
   // Keep file names consistent
-  Config::SetDefault ("ns3::McpttStateMachineStats::OutputFileName", StringValue ("mcptt-operational-modes-mobility-state-machine-stats.dat"));
-  Config::SetDefault ("ns3::McpttMsgStats::OutputFileName", StringValue ("mcptt-operational-modes-mobility-msg-stats.dat"));
+  Config::SetDefault ("ns3::psc::McpttStateMachineStats::OutputFileName", StringValue ("mcptt-operational-modes-mobility-state-machine-stats.dat"));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::OutputFileName", StringValue ("mcptt-operational-modes-mobility-msg-stats.dat"));
 
   //Disable control messages in MCPTT message trace
-  Config::SetDefault ("ns3::McpttMsgStats::CallControl", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::FloorControl", BooleanValue (false));
 
   //TODO: We need to deactivate RLF. Otherwise we run into problems with RNTI mismatch for PC5 signaling for Remote UEs
   Config::SetDefault ("ns3::LteUePhy::EnableRlfDetection", BooleanValue (false));
@@ -1034,11 +1035,11 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("server IP address = " << serverAddr);
 
   McpttHelper mcpttClientHelper;
-  mcpttClientHelper.SetPttApp ("ns3::McpttPttApp");
-  mcpttClientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
+  mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                           "Bytes", UintegerValue (60),
                           "DataRate", DataRateValue (DataRate ("24kb/s")));
-  mcpttClientHelper.SetPusher ("ns3::McpttPusher",
+  mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                           "Mean", DoubleValue (10.0),
@@ -1082,17 +1083,17 @@ int main (int argc, char *argv[])
 
   McpttCallHelper callHelper;
   // Optional statements to tailor the configurable attributes
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100));
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 

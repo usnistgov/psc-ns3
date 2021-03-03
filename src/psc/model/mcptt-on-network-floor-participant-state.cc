@@ -47,6 +47,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /** McpttOnNetworkFloorParticipantState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorParticipantState");
 
@@ -280,7 +282,7 @@ McpttOnNetworkFloorParticipantState::McpttOnNetworkFloorParticipantState (void)
 /** McpttOnNetworkFloorParticipantState - end **/
 
 std::ostream&
-operator<< (std::ostream& os, const ns3::McpttOnNetworkFloorParticipantState& state)
+operator<< (std::ostream& os, const McpttOnNetworkFloorParticipantState& state)
 {
   return os << state.GetInstanceStateId ();
 }
@@ -1687,5 +1689,6 @@ McpttOnNetworkFloorParticipantStateQueued::ExpiryOfT132 (McpttOnNetworkFloorPart
 
 /** McpttOnNetworkFloorParticipantStateQueued - end **/
 
+} //namespace psc
 } //namespace ns3
 

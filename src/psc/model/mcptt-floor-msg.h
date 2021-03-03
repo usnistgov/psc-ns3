@@ -46,6 +46,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttFloorMsgSink;
 
 /**
@@ -1627,6 +1629,7 @@ protected:
  virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_FLOOR_MSG_H */

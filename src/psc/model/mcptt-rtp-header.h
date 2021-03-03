@@ -40,6 +40,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  * 
@@ -243,6 +245,7 @@ public:
  virtual void SetVersion (uint8_t version);
 };
 
+} // namepace psc
 } // namepace ns3
 
 #endif // NIST_RTP_HEADER_H

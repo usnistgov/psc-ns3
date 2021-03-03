@@ -45,6 +45,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachinePrivate;
 
 /**
@@ -253,6 +255,7 @@ public:
  virtual void SetUpgradeCb (const Callback<void, uint8_t>  upgradeCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_TYPE_MACHINE_PRIVATE_H */

@@ -43,6 +43,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttOnNetworkFloorArbitrator;
 class McpttOnNetworkFloorTowardsParticipant;
 
@@ -186,12 +188,12 @@ protected:
  McpttOnNetworkFloorArbitratorState (void);
 };
 /**
- * Overloaded output operator for the ns3::McpttOnNetworkFloorArbitratorState class.
+ * Overloaded output operator for the McpttOnNetworkFloorArbitratorState class.
  * \param os The output stream to write to.
  * \param state The state to write to the output stream.
  * \returns The output stream that was written to.
  */
-std::ostream& operator<< (std::ostream& os, const ns3::McpttOnNetworkFloorArbitratorState& state);
+std::ostream& operator<< (std::ostream& os, const McpttOnNetworkFloorArbitratorState& state);
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'Start-stop' state.
@@ -499,6 +501,7 @@ public:
  virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_ON_NETWORK_FLOOR_ARBITRATOR_STATE_H */

@@ -40,6 +40,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace psc;
 
 NS_LOG_COMPONENT_DEFINE ("Main");
 
@@ -77,11 +78,11 @@ int main (int argc, char *argv[])
   cmd.AddValue ("stop-time", "The number of seconds into the simulation that the applications should stop.", stopSec);
   cmd.Parse (argc, argv);
 
-  Config::SetDefault ("ns3::McpttMsgStats::CallControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::FloorControl", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::Media", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200")); //Disable fragmentation in wifi
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200")); //Disable fragmentation in wifi
  
@@ -151,12 +152,12 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Creating applications...");
   ApplicationContainer clientApps;
   McpttHelper mcpttHelper;
-  mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+  mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
                          "PushOnStart", BooleanValue (true));
-  mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
                          "DataRate", DataRateValue (dataRate));
-  mcpttHelper.SetPusher ("ns3::McpttPusher",
+  mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (true));
   mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                          "Mean", DoubleValue (onOffMean),

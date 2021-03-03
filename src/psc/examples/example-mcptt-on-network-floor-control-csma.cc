@@ -42,6 +42,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace psc;
 
 NS_LOG_COMPONENT_DEFINE ("Main");
 
@@ -74,11 +75,11 @@ int main (int argc, char *argv[])
   cmd.AddValue ("stop-time", "The number of seconds into the simulation that the applications should stop.", stopSec);
   cmd.Parse (argc, argv);
 
-  Config::SetDefault ("ns3::McpttMsgStats::CallControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::FloorControl", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::Media", BooleanValue (true));
-  Config::SetDefault ("ns3::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
-  Config::SetDefault ("ns3::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::FloorControl", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::Media", BooleanValue (true));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
  
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
@@ -143,12 +144,12 @@ int main (int argc, char *argv[])
 
   ApplicationContainer clientApps;
   McpttHelper mcpttClientHelper;
-  mcpttClientHelper.SetPttApp ("ns3::McpttPttApp",
+  mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp",
                          "PushOnStart", BooleanValue (true));
-  mcpttClientHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
                          "DataRate", DataRateValue (dataRate));
-  mcpttClientHelper.SetPusher ("ns3::McpttPusher",
+  mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                          "Mean", DoubleValue (onOffMean),
@@ -181,20 +182,20 @@ int main (int argc, char *argv[])
 
 
   McpttCallHelper callHelper;
-  callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+  callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                          "AckRequired", BooleanValue (false),
                          "AudioCutIn", BooleanValue (false),
                          "DualFloorSupported", BooleanValue (false),
                          "TxSsrc", UintegerValue (100),
                          "QueueingSupported", BooleanValue (true));
   // Dual control not yet in the refactoring
-  // callHelper.SetDualControl ("ns3::McpttOnNetworkFloorDualControl");
-  callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+  // callHelper.SetDualControl ("ns3::psc::McpttOnNetworkFloorDualControl");
+  callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                          "ReceiveOnly", BooleanValue (false));
-  callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+  callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                          "AckRequired", BooleanValue (false),
                          "GenMedia", BooleanValue (true));
-  callHelper.SetServerCall ("ns3::McpttServerCall",
+  callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                          "AmbientListening", BooleanValue (false),
                          "TemporaryGroup", BooleanValue (false));
 

@@ -40,9 +40,12 @@
 #include "mcptt-test-case-config.h"
 #include "mcptt-msg-dropper.h"
 
-using namespace ns3;
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPrivateCallControlTest");
+
+namespace psc {
+namespace tests {
 
 class PrivateTestCallMachine : public McpttCallMachinePrivate
 {
@@ -3905,3 +3908,6 @@ McpttPrivateCallControlTestSuite::McpttPrivateCallControlTestSuite (void)
   AddTestCase (new PrivateCallExpiration (), TestCase::QUICK);
 }
 
+} // namespace tests
+} // namespace psc
+} // namespace ns3

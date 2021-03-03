@@ -40,6 +40,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -119,6 +121,7 @@ public:
  virtual void Stop (void) = 0;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_TYPE_MACHINE_H */

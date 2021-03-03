@@ -146,7 +146,7 @@ is no support in ProSe for this feature and, thus, it is not used.
 Design
 ######
 
-In |ns3|, the ``ns3::McpttHelper`` is the main class that a user should use to
+In |ns3|, the ``ns3::psc::McpttHelper`` is the main class that a user should use to
 initialize and install applications to an ``ns3::Node``. This helper can be used
 to initially configure some of the components that are associated with an MCPTT
 application, such as the application's data rate when generating media,
@@ -156,7 +156,7 @@ it is up to the user to setup calls. This can be done before or after the
 application is started but not "dynamically" by the application itself. So if
 a user wanted a scenario with three UE's that will eventually take part in the
 same on-going group call, the user will have to first query the
-``ns3::McpttPttApplication`` objects of the three ``ns3::Node``'s to create
+``ns3::psc::McpttPttApplication`` objects of the three ``ns3::Node``'s to create
 those calls. Once the calls are created, the user will also have to query the
 application to select the current call to reflect things such as a PTT or call
 release at any given time throughout the simulation.
@@ -194,19 +194,19 @@ Several MCPTT identifiers are used throughout the code, as follows.
 
   * ``MCPTT User ID`` The MCPTT User ID is, in practice, a SIP URI (i.e.
     a string value).  In this ns-3 model, for simplicity, it is stored as a
-    32-bit unsigned integer.  Clients for which the ``ns3::McpttHelper``
-    installs an instance of the ``ns3::McpttPttApp`` will be assigned a
+    32-bit unsigned integer.  Clients for which the ``ns3::psc::McpttHelper``
+    installs an instance of the ``ns3::psc::McpttPttApp`` will be assigned a
     unique user ID value, starting from the initial value of 1.  In addition,
     the MCPTT server is separately assigned a user ID, stored in the
-    ``ns3::McpttServerCallMachine`` instance.  This is initialized by default
+    ``ns3::psc::McpttServerCallMachine`` instance.  This is initialized by default
     to 0, and typically left at the default value.
  
   * ``MCPTT Group ID`` The MCPTT Group ID pertains to group calls; it is also,
     in practice, a SIP URI (i.e. a string value).  In this ns-3 model, for
     simplicity, it is stored as a 32-bit unsigned integer.  On clients,
-    the value is stored in the base class ``ns3::McpttCallMachineGrp`` as an
+    the value is stored in the base class ``ns3::psc::McpttCallMachineGrp`` as an
     attribute, and similarly, on the server, it is stored in an attribute
-    in the base class ``ns3::McpttServerCallMachineGrp``.  The group ID
+    in the base class ``ns3::psc::McpttServerCallMachineGrp``.  The group ID
     is usually assigned explicitly by the simulation user as part of
     call definition.
 
@@ -217,7 +217,7 @@ Several MCPTT identifiers are used throughout the code, as follows.
     floor control messages.  In on-network operation, an SSRC is also
     assigned to the server (included in server-originated floor control
     messages).  The on-network arbitrator,
-    ``ns3::McpttOnNetworkFloorArbitrator``, contains an attribute 
+    ``ns3::psc::McpttOnNetworkFloorArbitrator``, contains an attribute 
     ``TxSsrc`` that defaults to the value 0.
     For simplicity, the clients reuse the MCPTT User ID value for SSRC; 
     i.e. all media streams are identified as being from the same source,
@@ -226,123 +226,123 @@ Several MCPTT identifiers are used throughout the code, as follows.
 MCPTT Application
 ~~~~~~~~~~~~~~~~~
 
-The ``ns3::McpttPttApp`` is the core component of the MCPTT model. It is the
+The ``ns3::psc::McpttPttApp`` is the core component of the MCPTT model. It is the
 object used to manage calls and provide an API with functions that would be
 available to a user like, starting a call, releasing a call, entering an
 emergency alert, etc. It also houses a few entities to help simulate the
 behavior of how an MCPTT application may be used. This class also implements
-the ``ns3::McpttMediaSink`` interface, which allows for an instance of the
-``ns3::McpttMediaSrc`` class to generate and pass media messages for
+the ``ns3::psc::McpttMediaSink`` interface, which allows for an instance of the
+``ns3::psc::McpttMediaSrc`` class to generate and pass media messages for
 transmission.
 
-The ``ns3::McpttMediaSrc`` is simply a class that generates RTP media messages
+The ``ns3::psc::McpttMediaSrc`` is simply a class that generates RTP media messages
 to be sent. It is used by the application to help model data traffic in the
 network. It is a rather simple traffic model but can be configured to alter
 data rate and message size.
 
-The ``ns3::McpttMsgParser`` is a class that reads the header of a packet to
+The ``ns3::psc::McpttMsgParser`` is a class that reads the header of a packet to
 determine which message is being received. This class is used by the
 application as well as in some test cases.
 
-The ``ns3::McpttPusher`` is class used to simulate the pushing of a button.
+The ``ns3::psc::McpttPusher`` is class used to simulate the pushing of a button.
 The application uses this class to simulate a user that is using the PTT
 button. This model is also simple but allows the user to configure it with
 a random variable to reflect how often a user may push and release the PTT
 button.
 
-The ``ns3::McpttCall`` class simply aggregates the components needed to have an
+The ``ns3::psc::McpttCall`` class simply aggregates the components needed to have an
 MCPTT call. This includes a channel for both floor control and media messages,
 and state machines for call control and floor control.
 
-The ``ns3::McpttChannel`` class is a wrapper around the ``ns3:Socket`` class to
+The ``ns3::psc::McpttChannel`` class is a wrapper around the ``ns3:Socket`` class to
 provide an interface similar to the functions required by the specifications,
 as well as handle opening and closing sockets on the fly. This class is used
-by the ``ns3::McpttCall`` and ``ns3::McpttPttApp`` classes.
+by the ``ns3::psc::McpttCall`` and ``ns3::psc::McpttPttApp`` classes.
 
-The ``ns3::McpttCallMachine`` is an interface created to handle the different
+The ``ns3::psc::McpttCallMachine`` is an interface created to handle the different
 types of calls that are available. This includes functions for starting and
 leaving calls. There are many subclasses:
-* ``ns3::McpttCallMachineGrpBasic`` for basic group calls
-* ``ns3::McpttCallMachineGrpBroadcast`` for broadcast group calls
-* ``ns3::McpttCallMachinePrivate`` for private calls, and
-* ``ns3::McpttCallMachineNull`` to "turn-off" call control.
+* ``ns3::psc::McpttCallMachineGrpBasic`` for basic group calls
+* ``ns3::psc::McpttCallMachineGrpBroadcast`` for broadcast group calls
+* ``ns3::psc::McpttCallMachinePrivate`` for private calls, and
+* ``ns3::psc::McpttCallMachineNull`` to "turn-off" call control.
 Each of the state machines except for the null state machine have several
 classes associated with each to represent the different states of the state
-machine. For example, the class ``ns3::McpttCallMachineGrpBroadcastStateB1``
+machine. For example, the class ``ns3::psc::McpttCallMachineGrpBroadcastStateB1``
 is a model of the "B1: start-stop" state of the Broadcast call control state
 machine from the 3GPP standard describing call control.
 
-The ``ns3::McpttFloorParticipant`` is an interface created to represent the floor
+The ``ns3::psc::McpttFloorParticipant`` is an interface created to represent the floor
 control protocol. There are two subclasses:
-- ``ns3::McpttOffNetworkFloorParticipant`` for the floor control protocol
-- ``ns3::McpttFloorParticipantNull`` to "turn-off" floor control
+- ``ns3::psc::McpttOffNetworkFloorParticipant`` for the floor control protocol
+- ``ns3::psc::McpttFloorParticipantNull`` to "turn-off" floor control
 
 Just like the state machines for call control, the
 ``ns3:McpttOffNetworkFloorParticipant`` class has an
-``ns3::McpttOffNetworkFloorParticipantState`` member which is derived by many classes
+``ns3::psc::McpttOffNetworkFloorParticipantState`` member which is derived by many classes
 such as ``ns3:McpttOffNetworkFloorParticipantStateHasPerm`` to represent the different
 states of the floor control state machine.
 
-The ``ns3::McpttEmergAlertMachine`` is an interface to represent the state
+The ``ns3::psc::McpttEmergAlertMachine`` is an interface to represent the state
 machine used to maintain a user's emergency alert status. This can be found in
 TS 24.379 [TS24379]_. There is currently one subclass:
-- ``ns3::McpttEmergAlertMachineBasic`` for the emergency alert protocol
+- ``ns3::psc::McpttEmergAlertMachineBasic`` for the emergency alert protocol
 
 In the standard, there is one emergency alert machine associated with one user,
 but in the current implementation there is an emergency alert machine
-associated with each ``ns3::McpttCallMachineGrpBasic`` instance. Unlike the
+associated with each ``ns3::psc::McpttCallMachineGrpBasic`` instance. Unlike the
 previous state machines, there is no "state" class associated with this machine,
 all the logic is self-contained.
 
-The ``ns3::McpttCallTypeMachine`` is an interface for the call type machines
+The ``ns3::psc::McpttCallTypeMachine`` is an interface for the call type machines
 described in the standard. These state machines exist to maintain the call type
 (e.g. basic, emergency, etc.) of a call. There are two subclasses:
-* ``ns3::McpttCallTypeMachineGrpBasic`` for a basic group call, and
-* ``ns3::McpttCallTypeMachinePriv`` for a private call.
+* ``ns3::psc::McpttCallTypeMachineGrpBasic`` for a basic group call, and
+* ``ns3::psc::McpttCallTypeMachinePriv`` for a private call.
     
 These state machines are also self-contained and are not associated with any
 "state" classes.
 
 Most state machines, if not all, have many members that are of the types
-``ns3::McpttCounter`` and ``ns3::McpttTimer``. These classes are used to
+``ns3::psc::McpttCounter`` and ``ns3::psc::McpttTimer``. These classes are used to
 provide an API to mirror the actions that can be requested of counters and
-timers that are defined throughout the standards. The ``ns3::McpttCounter``
+timers that are defined throughout the standards. The ``ns3::psc::McpttCounter``
 class provides an interface that can be used as counters are described in the
-standard with functions like, "Increment" and "Reset". The ``ns3::McpttTimer``
+standard with functions like, "Increment" and "Reset". The ``ns3::psc::McpttTimer``
 class does the same for timers described in the standard with functions like
-"Start", "Stop", and "Restart". The ``ns3::McpttTimer`` is simply a wrapper
+"Start", "Stop", and "Restart". The ``ns3::psc::McpttTimer`` is simply a wrapper
 around the ``ns3::Timer`` class.
 
-The ``ns3::McpttMsg`` class is a base class for all MCPTT off-network messages.
-This class is derived from by the ``ns3::McpttCallMsg`` class for call control
-messages, the ``ns3::McpttFloorMsg`` for floor control, and the
-``ns3::McpttMediaMsg`` for RTP media messages. The ``ns3::McpttCallMsg`` and
-``ns3::McpttFloorMsg`` classes both have many subclasses to represent each
+The ``ns3::psc::McpttMsg`` class is a base class for all MCPTT off-network messages.
+This class is derived from by the ``ns3::psc::McpttCallMsg`` class for call control
+messages, the ``ns3::psc::McpttFloorMsg`` for floor control, and the
+``ns3::psc::McpttMediaMsg`` for RTP media messages. The ``ns3::psc::McpttCallMsg`` and
+``ns3::psc::McpttFloorMsg`` classes both have many subclasses to represent each
 floor control or call control message used in the off-network portion of the
-standard. For example, the ``ns3::McpttFloorMsgRequest`` class represents the
+standard. For example, the ``ns3::psc::McpttFloorMsgRequest`` class represents the
 "Floor Request" message described in TS 24.380 [TS24380]_. These classes are 
 sent between
 the MCPTT applications and are consumed by the appropriate state machines
 throughout the simulation.
 
-As mentioned above, the ``ns3::McpttMediaMsg`` class is used to represent an
+As mentioned above, the ``ns3::psc::McpttMediaMsg`` class is used to represent an
 RTP media message, but the actual header for an RTP packet is modeled by the
-``ns3::McpttRtpHeader`` class. This class just defines the fields needed for
+``ns3::psc::McpttRtpHeader`` class. This class just defines the fields needed for
 a basic RTP header which is used by the media message.
 
-The ``ns3::McpttCallMsgField`` and ``ns3::McpttFloorMsgField`` classes
+The ``ns3::psc::McpttCallMsgField`` and ``ns3::psc::McpttFloorMsgField`` classes
 represent call control and floor control message fields, respectively. These
 classes are also just used as a base and have many child classes. For example,
-the ``ns3::McpttFloorMsgRequest`` class, which represents a "Floor Request"
-message contains a member of type ``ns3::McpttFloorMsgFieldUserId`` that
+the ``ns3::psc::McpttFloorMsgRequest`` class, which represents a "Floor Request"
+message contains a member of type ``ns3::psc::McpttFloorMsgFieldUserId`` that
 describes the ID of the MCPTT user making the floor request.
 
-The ``ns3::McpttEntityId`` class only exist for simulation to associate an ID
+The ``ns3::psc::McpttEntityId`` class only exist for simulation to associate an ID
 with various entities described in the standard. One may find that counters,
 timers, and various states have an ID, and this ID just helps distinguish
 between multiple objects of the same type.
 
-The ``ns3::McpttFloorQueue`` class is a wrapper around the ``std::vector``
+The ``ns3::psc::McpttFloorQueue`` class is a wrapper around the ``std::vector``
 class that provides an interface for the floor queue that is described in TS
 24.380 [TS24380]_. This class is only associated with a floor machine for 
 use when
@@ -350,7 +350,7 @@ queuing is enabled in floor control. One can enable queuing in floor control
 for a particular call, simply by setting the capacity of this queue to a size
 greater than zero.
 
-The ``ns3::McpttQueuedUserInfo`` class is used by the ``ns3::McpttFloorQueue``
+The ``ns3::psc::McpttQueuedUserInfo`` class is used by the ``ns3::psc::McpttFloorQueue``
 class to represent the structure of information needed to store for a user
 when they are placed in the queue, and made to wait to transmit during floor
 control.
@@ -360,14 +360,14 @@ Pusher Behavior
 
 Supplement to the MCPTT application, a pusher model exists to simulate the
 PTT behavior for a group of MCPTT users on a call. This model consists of a
-centralized entity derived from the ``ns3::McpttPusherOrchestrator`` class
+centralized entity derived from the ``ns3::psc::McpttPusherOrchestrator`` class
 that determines the interarrival time (IAT) and duration of PTT events for
-a set of ``ns3::McpttPusher`` objects. The value of this model comes from its
+a set of ``ns3::psc::McpttPusher`` objects. The value of this model comes from its
 ability to simulate the PTT behavior for a group based on data that was
 collected and generalized from real public safety call logs. Using the data
 from the call logs two main elements were extracted and realized by the model,
 and they are, PTT and session durations. In essence, a session is a time span
-when users (i.e. instances of the ``ns3::McpttPusher`` class) are actively
+when users (i.e. instances of the ``ns3::psc::McpttPusher`` class) are actively
 being scheduled to push and release the PTT button, while the PTT duration
 determines how long a PTT push will last. These durations are generated using
 instances of the ``ns3::EmpiricalRandomVariable`` class that interpolate bins
@@ -381,21 +381,21 @@ distribution of IATs. This means that the following sequence of
 non-overlapping steps is typical for generating PTT and session events: IAT,
 duration, IAT, duration, and so on.
 
-The ``ns3::McpttPusherOrchestratorInterface`` is a base class to the
-``ns3::McpttPusherOrchestrator``, ``ns3::McpttPusherOrchestratorSpurtCdf``,
-``ns3::McpttPusherOrchestratorSessionCdf``, and
-``ns3::McpttPusherOrchestratorContention``. The class
-``ns3::McpttPusherOrchestrator`` simply selects a random pusher from
+The ``ns3::psc::McpttPusherOrchestratorInterface`` is a base class to the
+``ns3::psc::McpttPusherOrchestrator``, ``ns3::psc::McpttPusherOrchestratorSpurtCdf``,
+``ns3::psc::McpttPusherOrchestratorSessionCdf``, and
+``ns3::psc::McpttPusherOrchestratorContention``. The class
+``ns3::psc::McpttPusherOrchestrator`` simply selects a random pusher from
 the set of pushers being orchestrated and uses two instances of an
 ``ns3::RandomVariableStream``. One for deciding push durations and another for
-deciding the IAT of push events. The ``ns3::McpttPusherOrchestratorSpurtCdf``
-is a wrapper around the ``ns3::McpttPusherOrchestrator`` class that
-initializes the random variables used by ``ns3::McpttPusherOrchestrator``
+deciding the IAT of push events. The ``ns3::psc::McpttPusherOrchestratorSpurtCdf``
+is a wrapper around the ``ns3::psc::McpttPusherOrchestrator`` class that
+initializes the random variables used by ``ns3::psc::McpttPusherOrchestrator``
 to match CDFs from the call logs based on the activity factor that was
-provided. The ``ns3::McpttPusherOrchestratorSessionCdf`` class is a decorator
+provided. The ``ns3::psc::McpttPusherOrchestratorSessionCdf`` class is a decorator
 that simply starts and stops an underlying orchestrator to create sessions
 based on the CDFs from the call log and the activity factor set by the user.
-Finally, the ``ns3::McpttPusherOrchestratorContention`` class is also a
+Finally, the ``ns3::psc::McpttPusherOrchestratorContention`` class is also a
 decorator that can be used to introduce contention, by using a threshold and
 an instance of the ``ns3::UniformRandomVariable`` class to determine if and
 when an additional PTT event should occur to collide with another active PTT
@@ -415,7 +415,7 @@ event.
 
    Session Duration CDF
 
-For ``ns3::McpttPusherOrchestratorSpurtCdf`` the PTT duration is based on the CDF
+For ``ns3::psc::McpttPusherOrchestratorSpurtCdf`` the PTT duration is based on the CDF
 of PTT durations in figure :ref:`fig-mcptt-ptt-duration-cdf`, while the mean
 value given to the exponential random variable responsible for generating the
 IAT is computed as:
@@ -427,7 +427,7 @@ variable, "Average PTT Duration" is 4.69 (which is the average PTT duration
 computed from the CDF data), and "Voice Activity Factory" is a value between
 (0, 1] that is set by the user.
 
-For ``ns3::McpttPusherOrchestratorSessionCdf`` the session duration is based
+For ``ns3::psc::McpttPusherOrchestratorSessionCdf`` the session duration is based
 on the CDF in figure :ref:`fig-mcptt-session-duration-cdf`, while the mean
 value given to the exponential random variable responsible for generating
 session IAT is computed as:
@@ -439,7 +439,7 @@ variable, "Average Session Duration" is 8.58 (which is the average session
 duration computed from the CDF data), and "Session Activity Factory" is a
 value between (0, 1] that is set by the user.
 
-Note that the ``ns3::McpttPusherOrchestratorContention`` class can affect the
+Note that the ``ns3::psc::McpttPusherOrchestratorContention`` class can affect the
 overall activity factor since it can create additional PTT requests, but how
 it will affect the activity factor depends on the protocol configuration
 (e.g. queuing, preemption, etc.). However, based on a configurable Contention
@@ -488,37 +488,37 @@ Helpers
 ~~~~~~~
 
 There are five helpers:
-  * ``ns3::McpttHelper`` for deploying MCPTT applications,
-  * ``ns3::McpttMsgStats`` for tracing transmitted MCPTT application messages,
-  * ``ns3::McpttProseCollisionDetector`` for examining ProSe operation, and
-  * ``ns3::McpttStateMachineStats`` for tracing state machine state transitions.
+  * ``ns3::psc::McpttHelper`` for deploying MCPTT applications,
+  * ``ns3::psc::McpttMsgStats`` for tracing transmitted MCPTT application messages,
+  * ``ns3::psc::McpttProseCollisionDetector`` for examining ProSe operation, and
+  * ``ns3::psc::McpttStateMachineStats`` for tracing state machine state transitions.
   * ``ns3::ImsHelper`` for adding an optional IMS (IP Multimedia Subsystem);
       the IMS is modeled as a single node connected to the PGW.
 
-As stated previously, the ``ns3::McpttHelper`` is used to configure and deploy
+As stated previously, the ``ns3::psc::McpttHelper`` is used to configure and deploy
 MCPTT applications. This is the class that a user should use to configure
 settings that will be common across the applications and use it to create
 several copies of the same configuration.
 
-The ``ns3::McpttMsgStats`` class has the necessary sink functions to connect
+The ``ns3::psc::McpttMsgStats`` class has the necessary sink functions to connect
 to and trace messages sent from app to app. One can set the name of the output
-file by setting the ``ns3::McpttMsgStats::OutputFileName`` attribute. The user
+file by setting the ``ns3::psc::McpttMsgStats::OutputFileName`` attribute. The user
 can also specify which types of messages should be captured. So if a user
 wanted to capture all message types the user should then set,
-``ns3::McpttMsgStats::CallControl``, ``ns3::McpttMsgStats::FloorControl``, and
-``ns3::McpttMsgStats::Media`` attributes to "true". If the user also wishes to
+``ns3::psc::McpttMsgStats::CallControl``, ``ns3::psc::McpttMsgStats::FloorControl``, and
+``ns3::psc::McpttMsgStats::Media`` attributes to "true". If the user also wishes to
 include not just the type of message in the trace but also the contents of
-the message the user can set ``ns3::McpttMsgStats::IncludeMessageContent`` to
+the message the user can set ``ns3::psc::McpttMsgStats::IncludeMessageContent`` to
 "true" as well.
 
 The ``McpttProseCollisionDetector`` class is used in the setup delay example
 for detecting when collisions occur in the PSCCH and PSSCH of the ProSe
 Sidelink channel.
 
-The ``ns3::McpttStateMachineStats`` class has the necessary functions to act as
+The ``ns3::psc::McpttStateMachineStats`` class has the necessary functions to act as
 a sink to trace state transitions of the various state machines throughout a
 simulation. One can set the name of the output file by setting the
-``ns3::McpttStateMachineStats::OutputFileName`` attribute.
+``ns3::psc::McpttStateMachineStats::OutputFileName`` attribute.
 
 Scope and Limitations
 #####################
@@ -607,11 +607,11 @@ with MCPTT.  The following code excerpts highlight the main aspects of
 configuring MCPTT in a program.
 
 The first block of code below highlights the use of the class
-``ns3::McpttHelper`` to encapsulate configuration statements on the key
+``ns3::psc::McpttHelper`` to encapsulate configuration statements on the key
 objects involved in the MCPTT service.  The helper exposes some methods
 that allow for custom configuration of the PttApp class and attributes,
 MediaSrc class and attributes, and Pusher class and attributes.  In the
-below, the configuration of ``ns3::McpttPusher`` to Automatic operation
+below, the configuration of ``ns3::psc::McpttPusher`` to Automatic operation
 means that the pushing and releasing times will be driven by random
 variables, and additional methods to easily configure these random variables
 are provided.  Following the configuration of these objects, the usual
@@ -627,13 +627,13 @@ followed.
      {
        mcpttHelper.EnableLogComponents ();
      }
-   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+   mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
                           "PeerAddress", Ipv4AddressValue (peerAddress),
                           "PushOnStart", BooleanValue (true));
-   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+   mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                           "Bytes", UintegerValue (msgSize),
                           "DataRate", DataRateValue (dataRate));
-   mcpttHelper.SetPusher ("ns3::McpttPusher",
+   mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (true));
    mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
                           "Mean", DoubleValue (pushTimeMean),
@@ -652,8 +652,8 @@ basic floor machine, the helper provides a single statement to configure
 the call, as follows.
  
 One could also use the following snippet to configure an
-``ns3::McpttPusherOrchestrator`` to control when push and release events
-occur for a set of ``ns3::McpttPttApp`` applications.
+``ns3::psc::McpttPusherOrchestrator`` to control when push and release events
+occur for a set of ``ns3::psc::McpttPttApp`` applications.
 .. sourcecode:: cpp
 
    ApplicationContainer clientApps;
@@ -662,13 +662,13 @@ occur for a set of ``ns3::McpttPttApp`` applications.
      {
        mcpttHelper.EnableLogComponents ();
      }
-   mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+   mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
                           "PeerAddress", Ipv4AddressValue (peerAddress),
                           "PushOnStart", BooleanValue (true));
-   mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+   mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                           "Bytes", UintegerValue (msgSize),
                           "DataRate", DataRateValue (dataRate));
-   mcpttHelper.SetPusher ("ns3::McpttPusher",
+   mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
                           "Automatic", BooleanValue (false));
  
    clientApps.Add (mcpttHelper.Install (ueNodes));
@@ -687,8 +687,8 @@ occur for a set of ``ns3::McpttPttApp`` applications.
 
 This method encapsulates the following operations:
 
-*  sets the call control state machine type to ``ns3::McpttCallMachineGrpBasic``
-*  sets the floor control state machine type to ``ns3::McpttOffNetworkFloorParticipant``
+*  sets the call control state machine type to ``ns3::psc::McpttCallMachineGrpBasic``
+*  sets the floor control state machine type to ``ns3::psc::McpttOffNetworkFloorParticipant``
 *  iterates across the clientApps in the provided application container.  If
    the provided ``usersPerGroup`` value is equal to or greater than the size
    of the ``clientApps`` container, all instances of ``McpttPttApp`` will 
@@ -777,7 +777,7 @@ MCPTT clients are added in a manner similar to off-network configuration; e.g.:
 .. sourcecode:: cpp
 
    McpttHelper mcpttClientHelper;
-   mcpttClientHelper.SetPttApp ("ns3::McpttPttApp");
+   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
    ...
    clientAppContainer1.Add (mcpttClientHelper.Install (ueNodePair1));
    clientAppContainer1.Start (start);
@@ -813,18 +813,18 @@ and properties of the call configurations on the server.
 
    McpttCallHelper callHelper;
    // Optional statements to tailor the configurable attributes
-   callHelper.SetArbitrator ("ns3::McpttOnNetworkFloorArbitrator",
+   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
                           "AckRequired", BooleanValue (false),
                           "AudioCutIn", BooleanValue (false),
                           "DualFloorSupported", BooleanValue (false),
                           "TxSsrc", UintegerValue (100),
                           "QueueingSupported", BooleanValue (true));
-   callHelper.SetTowardsParticipant ("ns3::McpttOnNetworkFloorTowardsParticipant",
+   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
                           "ReceiveOnly", BooleanValue (false));
-   callHelper.SetParticipant ("ns3::McpttOnNetworkFloorParticipant",
+   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
                           "AckRequired", BooleanValue (false),
                           "GenMedia", BooleanValue (true));
-   callHelper.SetServerCall ("ns3::McpttServerCall",
+   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
                           "AmbientListening", BooleanValue (false),
                           "TemporaryGroup", BooleanValue (false));
 
@@ -994,7 +994,7 @@ Traces
 ######
 
 There are currently four traces that can be activated by using the
-``ns3::McpttHelper``, and this can be done by following the example given
+``ns3::psc::McpttHelper``, and this can be done by following the example given
 below, after all the applications have been created.
 
 .. sourcecode:: cpp
@@ -1005,7 +1005,7 @@ below, after all the applications have been created.
   mcpttHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
   mcpttHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
 
-The ``ns3::McpttMsgStats`` class is used for tracing MCPTT messages at
+The ``ns3::psc::McpttMsgStats`` class is used for tracing MCPTT messages at
 the application layer and produces a file with the default name
 "mcptt-msg-stats.txt" with the following file format.
 
@@ -1014,7 +1014,7 @@ the application layer and produces a file with the default name
   time(s) nodeid callid ssrc selected  rx/tx bytes  message
 
 There may also be an additional field at the end of the row called "message"
-that will be included if the ``ns3::McpttMsgStats::IncludeMessageContent``
+that will be included if the ``ns3::psc::McpttMsgStats::IncludeMessageContent``
 attribute is set to "true". The "time(s)" column describes the time (in
 seconds) at which a message was sent/received. The "nodeid" column
 contains the ns3::Node ID value of the sender or receiver, and the 
@@ -1030,7 +1030,7 @@ application layer. The "message" column, if present, includes the string
 representation of the message that was sent and includes message field names
 and values.
 
-The ``ns3::McpttStateMachineStats`` is used for tracing state machine state
+The ``ns3::psc::McpttStateMachineStats`` is used for tracing state machine state
 transitions and produces a file with the default name,
 "mcptt-state-machine-stats.txt", with the following format.
 
@@ -1047,9 +1047,9 @@ the currently selected call on the client, or "N/A" for server messages. The
 "typeid" column
 contains the string representation of the state machine's ``ns3::TypeId``.
 The "oldstate" column contains the string representation of the
-``ns3::McpttEntityId`` which gives the name of the state that the state
+``ns3::psc::McpttEntityId`` which gives the name of the state that the state
 machine was in BEFORE the transition took place. And finally, the "newstate"
-column contains the string representation of the ``ns3::McpttEntityId`` which
+column contains the string representation of the ``ns3::psc::McpttEntityId`` which
 gives the name of the state that the state machine was in AFTER the transition
 took place.
 
@@ -1058,13 +1058,13 @@ the mouth-to-ear latency.  More information about this statistic can be
 found in NIST technical report NISTIR 8206 [NIST.IR.8206]_.  When the
 |ns3| model generates the first RTP packet of a talk spurt, the timestamp
 is encoded into the payload of that RTP packet and every subsequent RTP
-packet of the talk spurt.  Upon receipt of an ``ns3::McpttMediaMsg``, the 
+packet of the talk spurt.  Upon receipt of an ``ns3::psc::McpttMediaMsg``, the 
 receiving application will check whether the packet contains a newer
 'start-of-talkspurt' timestamp.  If so, this indicates the reception of the
 first RTP packet of a new talk spurt from a sender.  The latency of all
 such talk spurts, traced from the perspective of each receiving application,
 can be traced using the helper method 
-``ns3::McpttHelper::EnableMouthToEarLatencyTrace()`` which takes a single
+``ns3::psc::McpttHelper::EnableMouthToEarLatencyTrace()`` which takes a single
 argument, the trace filename.  The output file is formatted as follows.
 
 .. sourcecode:: text
@@ -1092,7 +1092,7 @@ fails, either due to the user (pusher) abandoning the request, or the end
 of the call, or some other reason.
 
 The latency and outcomes of access requests can be traced using the helper
-method ``ns3::McpttHelper::EnableAccessTimeTrace()`` which takes a single
+method ``ns3::psc::McpttHelper::EnableAccessTimeTrace()`` which takes a single
 argument, the trace filename.  The output file is formatted as follows.
 
 .. sourcecode:: text

@@ -32,6 +32,8 @@
 #include "mcptt-test-case.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 McpttTestCase::McpttTestCase (const std::string& name, Ptr<McpttTestCaseConfig>  config)
   : TestCase (name),
@@ -117,5 +119,7 @@ McpttTestCase::SetConfig (Ptr<McpttTestCaseConfig>  config)
   m_config = config;
 }
 
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 

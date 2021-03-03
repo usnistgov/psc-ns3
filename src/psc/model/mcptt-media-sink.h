@@ -38,11 +38,13 @@
 
 namespace ns3 { 
 
+namespace psc { 
+
 /**
  * \ingroup mcptt
  *
  * This is an interface for objects that can handle send requests of MCPTT
- * media messages. Intended to be paired with an ns3::McpttMediaSrc that
+ * media messages. Intended to be paired with a McpttMediaSrc that
  * that is capable of generating MCPTT media messages and making such requests.
  */
 class McpttMediaSink
@@ -65,6 +67,7 @@ protected:
  McpttMediaSink (void) { }
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_MEDIA_SINK_H */

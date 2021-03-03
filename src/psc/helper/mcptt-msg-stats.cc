@@ -46,16 +46,18 @@
 
 #include "mcptt-msg-stats.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttMsgStats");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttMsgStats);
 
 TypeId
 McpttMsgStats::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttMsgStats")
+  static TypeId tid = TypeId ("ns3::psc::McpttMsgStats")
     .SetParent<Object> ()
     .AddConstructor<McpttMsgStats> ()
     .AddAttribute ("CallControl",
@@ -226,5 +228,6 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
     }
 }
 
+} // namespace psc
 } // namespace ns3
 

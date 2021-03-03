@@ -42,12 +42,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPusherOrchestratorInterface");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorInterface);
 
 TypeId
 McpttPusherOrchestratorInterface::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPusherOrchestratorInterface")
+  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorInterface")
     .SetParent<Object> ()
     .AddTraceSource ("PttInterarrivalTimeTrace",
                      "The trace for capturing PTT interarrival times.",
@@ -114,4 +116,5 @@ McpttPusherOrchestratorInterface::TracePttDuration (const uint32_t userId, const
   m_pttDurationTrace (userId, duration);
 }
 
+} // namespace psc
 } // namespace ns3

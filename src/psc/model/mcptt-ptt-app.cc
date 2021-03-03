@@ -61,10 +61,11 @@
 #include "mcptt-pusher.h"
 #include "mcptt-media-src.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPttApp");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttPttApp);
 
@@ -85,7 +86,7 @@ McpttPttApp::AllocateNextPortNumber (void)
 TypeId
 McpttPttApp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPttApp")
+  static TypeId tid = TypeId ("ns3::psc::McpttPttApp")
     .SetParent<Application> ()
     .AddConstructor<McpttPttApp>()
    .AddAttribute ("Calls", "The map of all calls created during the simulation.",
@@ -103,13 +104,13 @@ McpttPttApp::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("RxTrace", "The trace for capturing received messages",
                      MakeTraceSourceAccessor (&McpttPttApp::m_rxTrace),
-                     "ns3::McpttPttApp::TxRxTracedCallback")
+                     "ns3::psc::McpttPttApp::TxRxTracedCallback")
     .AddTraceSource ("TxTrace", "The trace for capturing sent messages",
                      MakeTraceSourceAccessor (&McpttPttApp::m_txTrace),
-                     "ns3::McpttPttApp::TxRxTracedCallback")
+                     "ns3::psc::McpttPttApp::TxRxTracedCallback")
     .AddTraceSource ("EventTrace", "General event trace",
                      MakeTraceSourceAccessor (&McpttPttApp::m_eventTrace),
-                     "ns3::McpttPttApp::EventTracedCallback")
+                     "ns3::psc::McpttPttApp::EventTracedCallback")
    ;
     return tid;
 }  
@@ -1104,5 +1105,6 @@ McpttPttApp::SetUserId (uint32_t userId)
   m_userId = userId;
 }
 
+} // namespace psc
 } // namespace ns3
 

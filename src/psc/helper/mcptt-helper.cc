@@ -48,6 +48,7 @@
 #include "mcptt-helper.h"
 
 namespace ns3 {
+namespace psc {
 
 NS_LOG_COMPONENT_DEFINE ("McpttHelper");
 
@@ -318,5 +319,6 @@ McpttHelper::InstallPriv (const Ptr<Node>& node)
   return app;
 }
 
+} // namespace psc
 } // namespace ns3
 

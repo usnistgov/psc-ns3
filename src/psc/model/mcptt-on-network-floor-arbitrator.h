@@ -48,6 +48,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttOnNetworkFloorArbitratorState;
 class McpttOnNetworkFloorTowardsParticipant;
 class McpttServerCall;
@@ -482,6 +484,7 @@ public:
  virtual void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_ON_NETWORK_FLOOR_ARBITRATOR_H */

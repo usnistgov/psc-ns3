@@ -35,8 +35,9 @@
 
 #include "mcptt-entity-id.h"
 
-namespace ns3
-{
+namespace ns3 {
+
+namespace psc {
 
 McpttEntityId::McpttEntityId (void)
   : m_name (""),
@@ -122,5 +123,6 @@ operator<< (std::ostream& os, const McpttEntityId& id)
   return os;
 }
 
+} // namespace psc
 } // namespace ns3
 

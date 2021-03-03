@@ -40,6 +40,7 @@
 #include "mcptt-entity-id.h"
 
 namespace ns3 {
+namespace psc {
 
 /**
  * \ingroup mcptt
@@ -178,6 +179,7 @@ public:
  */
 std::ostream& operator<< (std::ostream& os, const McpttTimer& timer);
 
+} // namespace psc
 } // namespace ns3
 
 /********************************************************************
@@ -185,6 +187,7 @@ std::ostream& operator<< (std::ostream& os, const McpttTimer& timer);
  ********************************************************************/
 
 namespace ns3 {
+namespace psc {
 
 template <typename MEM_PTR, typename OBJ_PTR>
 void
@@ -210,6 +213,7 @@ McpttTimer::SetArgument (const T& arg)
   rawTimer->SetArguments (arg);
 }
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_TIMER_H */

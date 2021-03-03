@@ -62,13 +62,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorArbitrator");
 
+namespace psc {
+
 /** McpttOnNetworkFloorArbitrator - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorArbitrator);
 
 TypeId
 McpttOnNetworkFloorArbitrator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorArbitrator")
+  static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorArbitrator")
     .SetParent<Object> ()
     .AddConstructor<McpttOnNetworkFloorArbitrator>()
     .AddAttribute ("AckRequired", "The flag that indicates if acknowledgement is required.",
@@ -135,7 +137,7 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                    "The trace for capturing state changes.",
                    MakeTraceSourceAccessor (&McpttOnNetworkFloorArbitrator::m_stateChangeTrace),
-                   "ns3::McpttOnNetworkFloorArbitrator::StateChangeTracedCallback")
+                   "ns3::psc::McpttOnNetworkFloorArbitrator::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -1010,5 +1012,6 @@ McpttOnNetworkFloorArbitrator::SetTxCb (const Callback<void, Ptr<const McpttServ
 
 /** McpttOnNetworkFloorArbitrator - end **/
 
+} // namespace psc
 } // namespace ns3
 

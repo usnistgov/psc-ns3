@@ -51,6 +51,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class SipHeader;
 class McpttPusher;
 
@@ -127,8 +129,8 @@ public:
  /**
   * Creates a call using factory objects, and add to the container of calls
   * on this application instance.
-  * \param callFac The factory used to create an ns3::McpttCallMachine.
-  * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
+  * \param callFac The factory used to create an McpttCallMachine.
+  * \param floorFac The factory used to create an McpttFloorParticipant.
   * \param callType The type of network call (e.g. on-network)
   * \return pointer to newly created call
   */
@@ -136,8 +138,8 @@ public:
  /**
   * Creates a call using factory objects and a provided call ID, and add
   * to the container of calls on this application instance.
-  * \param callFac The factory used to create an ns3::McpttCallMachine.
-  * \param floorFac The factory used to create an ns3::McpttFloorParticipant.
+  * \param callFac The factory used to create an McpttCallMachine.
+  * \param floorFac The factory used to create an McpttFloorParticipant.
   * \param callType The type of network call (e.g. on-network)
   * \param callId The call ID to use
   * \return pointer to newly created call
@@ -436,6 +438,7 @@ public:
  virtual void SetUserId (uint32_t userId);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_PTT_APP_H */

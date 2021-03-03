@@ -47,9 +47,11 @@
 #include "mcptt-ptt-app.h"
 #include "mcptt-timer.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBroadcast");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMachineGrpBroadcast);
 
@@ -58,7 +60,7 @@ McpttCallMachineGrpBroadcast::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttCallMachineGrpBroadcast")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMachineGrpBroadcast")
     .SetParent<McpttCallMachineGrp> ()
     .AddConstructor<McpttCallMachineGrpBroadcast> ()
     .AddAttribute ("TFB1", "The initial delay to use for timer TFB1 (Time value)",
@@ -79,7 +81,7 @@ McpttCallMachineGrpBroadcast::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallMachineGrpBroadcast::m_stateChangeTrace),
-                     "ns3::McpttCallMachine::StateChangeTracedCallback")
+                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
    ;
 
   return tid;
@@ -786,5 +788,6 @@ McpttCallMachineGrpBroadcast::SetTfb3 (Ptr<McpttTimer>  tfb3)
   m_tfb3 = tfb3;
 }
 
+} // namespace psc
 } // namespace ns3
 

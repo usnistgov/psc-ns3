@@ -47,10 +47,11 @@
 #include "mcptt-server-call-machine-group-prearranged.h"
 #include "mcptt-server-call-machine-group-prearranged-state.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttServerCallMachineGroupPrearranged");
+
+namespace psc {
 
 /** McpttServerCallMachine - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGroupPrearranged);
@@ -58,7 +59,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGroupPrearranged);
 TypeId
 McpttServerCallMachineGroupPrearranged::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttServerCallMachineGroupPrearranged")
+  static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineGroupPrearranged")
     .SetParent<McpttServerCallMachineGrp> ()
     .AddConstructor<McpttServerCallMachineGroupPrearranged> ()
     .AddAttribute ("FloorPort", "The port to use for floor control messages.",
@@ -93,7 +94,7 @@ McpttServerCallMachineGroupPrearranged::GetTypeId (void)
                    MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttServerCallMachineGroupPrearranged::m_stateChangeTrace),
-                     "ns3::McpttServerCallMachine::StateChangeTracedCallback")
+                     "ns3::psc::McpttServerCallMachine::StateChangeTracedCallback")
    ;
   return tid;
 }
@@ -557,5 +558,6 @@ McpttServerCallMachineGroupPrearranged::GetNPendingTransactions (void) const
   return m_pending.size ();
 }
 
+} // namespace psc
 } // namespace ns3
 

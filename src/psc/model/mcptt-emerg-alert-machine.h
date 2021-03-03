@@ -42,6 +42,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachineGrp;
 
 /**
@@ -174,6 +176,7 @@ public:
  virtual void Stop (void);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_EMERG_ALERT_MACHINE_H */

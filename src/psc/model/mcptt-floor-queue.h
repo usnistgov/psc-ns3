@@ -42,6 +42,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -164,6 +166,7 @@ private:
  std::list<McpttQueuedUserInfo> m_users; //!< The collection of queued user info.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_FLOOR_QUEUE_H */

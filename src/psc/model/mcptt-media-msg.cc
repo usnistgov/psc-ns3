@@ -43,6 +43,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttMediaMsg");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttMediaMsg);
 
 TypeId
@@ -50,7 +52,7 @@ McpttMediaMsg::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttMediaMsg")
+  static TypeId tid = TypeId ("ns3::psc::McpttMediaMsg")
     .SetParent<McpttMsg> ()
     .AddConstructor<McpttMediaMsg> ()
   ;
@@ -277,4 +279,5 @@ McpttMediaMsg::SetTalkSpurtStart (Time talkSpurtStart)
   m_talkSpurtStart = talkSpurtStart;
 }
 
+} // namespace psc
 } // namespace ns3

@@ -44,9 +44,11 @@
 
 namespace ns3 {
 
-/** McpttCallMachinePrivateState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttCallMachinePrivateState");
 
+namespace psc {
+
+/** McpttCallMachinePrivateState - begin **/
 McpttCallMachinePrivateState::~McpttCallMachinePrivateState (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1332,5 +1334,6 @@ McpttCallMachinePrivateStateP5::RejectCall (McpttCallMachinePrivate& machine)
 }
 /** McpttCallMachinePrivateStateP5 - end **/
 
+} // namespace psc
 } // namespace ns3
 

@@ -44,6 +44,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachineGrpBasic;
 
 /**
@@ -416,6 +418,7 @@ public:
  virtual void SetUpgradeCb (const Callback<void, uint8_t>  upgradeCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_TYPE_MACHINE_GRP_BASIC_H */

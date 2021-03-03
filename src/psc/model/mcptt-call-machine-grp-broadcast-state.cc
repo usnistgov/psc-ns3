@@ -38,9 +38,11 @@
 #include "mcptt-call-machine-grp-broadcast-state.h"
 #include "mcptt-ptt-app.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBroadcastState");
+
+namespace psc {
 
 /** McpttCallMachineGrpBroadcastState - begin **/
 McpttCallMachineGrpBroadcastState::~McpttCallMachineGrpBroadcastState (void)
@@ -671,5 +673,6 @@ McpttCallMachineGrpBroadcastStateB4::McpttCallMachineGrpBroadcastStateB4 (void)
 }
 /** McpttCallMachineGrpBroadcastStateB4 - end **/
 
+} // namespace psc
 } // namespace ns3
 

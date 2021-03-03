@@ -43,10 +43,11 @@
 #include "mcptt-on-network-call-machine-client.h"
 #include "mcptt-on-network-call-machine-client-state.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkCallMachineClient");
+
+namespace psc {
 
 /** McpttCallMachine - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkCallMachineClient);
@@ -54,7 +55,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkCallMachineClient);
 TypeId
 McpttOnNetworkCallMachineClient::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOnNetworkCallMachineClient")
+  static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkCallMachineClient")
     .SetParent<McpttCallMachineGrp> ()
     .AddConstructor<McpttOnNetworkCallMachineClient> ()
     .AddAttribute ("FloorPort", "The port to use for floor control messages.",
@@ -89,7 +90,7 @@ McpttOnNetworkCallMachineClient::GetTypeId (void)
                    MakePointerChecker<RandomVariableStream> ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttOnNetworkCallMachineClient::m_stateChangeTrace),
-                     "ns3::McpttCallMachine::StateChangeTracedCallback")
+                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
    ;
   return tid;
 }
@@ -429,5 +430,6 @@ McpttOnNetworkCallMachineClient::GetGrpId (void) const
   return m_grpId;
 }
 
+} // namespace psc
 } // namespace ns3
 

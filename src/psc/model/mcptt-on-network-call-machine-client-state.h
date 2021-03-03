@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttOnNetworkCallMachineClient;
 
 /**
@@ -256,6 +258,8 @@ public:
  virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
  virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
 };
+
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_ON_NETWORK_CALL_MACHINE_CLIENT_STATE_H */

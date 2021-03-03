@@ -53,6 +53,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup psc
  * \brief A helper for creating, configuring, and installing MCPTT apps.
@@ -78,13 +80,13 @@ public:
   */
  virtual ~McpttHelper (void);
  /**
-  * \brief Associate an ns3::McpttPusherOrchestratorInterface with the pushers from a set of ns3::McpttPttApp objects.
+  * \brief Associate an ns3::psc::McpttPusherOrchestratorInterface with the pushers from a set of ns3::psc::McpttPttApp objects.
   * \param orchestrator The orchestrator.
   * \param apps The set of applications.
   */
  virtual void AddPushersToOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator, const ApplicationContainer& apps);
  /**
-  * \brief Install an ns3::McpttPttApp on each node of the input container.
+  * \brief Install an ns3::psc::McpttPttApp on each node of the input container.
   *
   * \param c NodeContainer of the set of nodes on which an McpttPttApp 
   * will be installed.
@@ -92,14 +94,14 @@ public:
   */
  virtual ApplicationContainer Install (const NodeContainer& c);
  /**
-  * \brief Install an ns3::McpttPttApp on the node. 
+  * \brief Install an ns3::psc::McpttPttApp on the node. 
   *
   * \param node The node on which an McpttPttApp will be installed.
   * \returns Container of Ptr to the applications installed.
   */
  virtual ApplicationContainer Install (const Ptr<Node>& node);
  /**
-  * \brief Install an ns3::McpttPttApp on the node.
+  * \brief Install an ns3::psc::McpttPttApp on the node.
   *
   * \param nodeName The node on which an McpttPttApp will be installed.
   * \returns Container of Ptr to the applications installed.
@@ -252,7 +254,7 @@ public:
                                         std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 protected:
  /**
-  * \brief Install an ns3::McpttPttApp on the node.
+  * \brief Install an ns3::psc::McpttPttApp on the node.
   *
   * \param node The node on which an McpttPttApp will be installed.
   * \returns Ptr to the application installed.
@@ -268,6 +270,7 @@ private:
  ObjectFactory m_mediaSrcFac; //!< The MCPTT send requester object factory.
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_HELPER_H */

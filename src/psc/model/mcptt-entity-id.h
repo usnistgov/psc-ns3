@@ -38,6 +38,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -123,6 +125,8 @@ bool operator!= (const McpttEntityId& rhs, const McpttEntityId& lhs);
  * \returns The output stream that was written to.
  */
 std::ostream& operator<< (std::ostream& os, const McpttEntityId& id);
+
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_ENTITY_ID_H */

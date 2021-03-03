@@ -41,6 +41,7 @@
 #include <fstream>
 
 using namespace ns3;
+using namespace psc;
 
 /*
  * Source file of example to demonstrate the operation of the MCPTT pusher
@@ -151,7 +152,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("verbose", "Whether or not to print out PTT duration and PTT IAT information.", s_verbose);
   cmd.Parse (argc, argv);
 
-  Config::SetDefault ("ns3::McpttMsgStats::CallControl", BooleanValue (false));
+  Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (false));
  
   NodeContainer nodes;
   nodes.Create (appCount);
@@ -210,12 +211,12 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Creating applications...");
   ApplicationContainer clientApps;
   McpttHelper mcpttHelper;
-  mcpttHelper.SetPttApp ("ns3::McpttPttApp",
+  mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
                          "PushOnStart", BooleanValue (true));
-  mcpttHelper.SetMediaSrc ("ns3::McpttMediaSrc",
+  mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
                          "Bytes", UintegerValue (msgSize),
                          "DataRate", DataRateValue (dataRate));
-  mcpttHelper.SetPusher ("ns3::McpttPusher",
+  mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (false));
 
   clientApps.Add (mcpttHelper.Install (nodes));

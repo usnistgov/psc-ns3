@@ -35,6 +35,8 @@
 #include "mcptt-msg-dropper.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 McpttMsgDropper::McpttMsgDropper (void)
 { }
@@ -136,5 +138,7 @@ McpttMsgDropperImpl::SetReceived (const uint32_t& received)
   m_received = received;
 }
 
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 

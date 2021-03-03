@@ -44,6 +44,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCall;
 
 /**
@@ -130,6 +132,7 @@ public:
  virtual void ReceiveMedia (const McpttMediaMsg& msg);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_FLOOR_MSG_SINK_H */

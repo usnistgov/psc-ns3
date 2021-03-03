@@ -42,6 +42,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -143,6 +145,7 @@ public:
  */
 std::ostream& operator<< (std::ostream& os, const McpttQueuedUserInfo& info);
 
+} // namespace psc
 } // namespace ns3
 
 #endif /** MCPTT_QUEUED_USER_INFO_H **/

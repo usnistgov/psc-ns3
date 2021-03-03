@@ -40,12 +40,14 @@
 #include "mcptt-pusher-orchestrator-interface.h"
 
 namespace ns3 {
+
+namespace psc {
  
 /**
  * \ingroup mcptt
  *
  * This class is used to orchestrate the behavior of a collection of
- * ns3::McpttPusher objects. This class uses a random variable for
+ * McpttPusher objects. This class uses a random variable for
  * determining when a PTT event will occur, and another random variable for
  * determining for how long. When pushers are orchestrated by this object
  * each pusher has equal opportunity for being selected go generate a PTT
@@ -145,6 +147,7 @@ private:
  Ptr<UniformRandomVariable> m_selectionVariable; //!< For selecting pushers.
 };
  
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_PUSHER_ORCHESTRATOR_H */

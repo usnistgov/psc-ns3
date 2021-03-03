@@ -42,6 +42,8 @@
 
 namespace ns3 {
  
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -160,6 +162,7 @@ public:
  virtual void SetOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator);
 };
  
+} // namespace psc 
 } // namespace ns3
 
 #endif /* MCPTT_PUSHER_ORCHESTRATOR_CONTENTION_H */

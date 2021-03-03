@@ -53,13 +53,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorParticipant");
 
+namespace psc {
+
 /** McpttOnNetworkFloorParticipant - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorParticipant);
 
 TypeId
 McpttOnNetworkFloorParticipant::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorParticipant")
+  static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorParticipant")
     .SetParent<McpttFloorParticipant> ()
     .AddConstructor<McpttOnNetworkFloorParticipant>()
     .AddAttribute ("AckRequired", "The flag that indicates if acknowledgement is required.",
@@ -114,7 +116,7 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                    "The trace for capturing state changes.",
                    MakeTraceSourceAccessor (&McpttOnNetworkFloorParticipant::m_stateChangeTrace),
-                   "ns3::McpttFloorParticipant::StateChangeTracedCallback")
+                   "ns3::psc::McpttFloorParticipant::StateChangeTracedCallback")
     ;
   
   return tid;
@@ -981,5 +983,6 @@ McpttOnNetworkFloorParticipant::SetTxCb (const Callback<void, const McpttFloorMs
 }
 /** McpttOnNetworkFloorParticipant - end **/
 
+} // namespace psc
 } // namespace ns3
 

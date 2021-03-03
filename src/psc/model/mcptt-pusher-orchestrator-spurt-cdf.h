@@ -42,14 +42,16 @@
 
 namespace ns3 {
  
+namespace psc {
+ 
 /**
  * \ingroup mcptt
  *
  * This class is used to orchestrate the behavior of a collection of
- * ns3::McpttPusher objects. This particular orchestrator uses a CDF
+ * McpttPusher objects. This particular orchestrator uses a CDF
  * generated from call public safety call logs in addition to an
  * activity factor to generate push and release events for a group
- * of ns3::McpttPusher objects.
+ * of McpttPusher objects.
  */
 class McpttPusherOrchestratorSpurtCdf : public McpttPusherOrchestratorInterface 
 {
@@ -159,6 +161,7 @@ public:
  virtual void SetActivityFactor (double af);
 };
  
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_PUSHER_ORCHESTRATOR_SPURT_CDF_H */

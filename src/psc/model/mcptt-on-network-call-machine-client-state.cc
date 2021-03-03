@@ -47,6 +47,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /** McpttOnNetworkCallMachineClientState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkCallMachineClientState");
 
@@ -453,4 +455,5 @@ McpttOnNetworkCallMachineClientStateS4::ReceiveResponse (McpttOnNetworkCallMachi
 
 /** McpttOnNetworkCallMachineClientStateS4 - end **/
 
+} // namespace psc
 } // namespace ns3

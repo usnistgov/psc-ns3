@@ -48,9 +48,11 @@
 
 namespace ns3 {
 
-/** McpttOnNetworkFloorDualControlState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorDualControlState");
 
+namespace psc {
+
+/** McpttOnNetworkFloorDualControlState - begin **/
 McpttOnNetworkFloorDualControlState::~McpttOnNetworkFloorDualControlState (void)
 {
   NS_LOG_FUNCTION (this);
@@ -172,7 +174,7 @@ McpttOnNetworkFloorDualControlState::McpttOnNetworkFloorDualControlState (void)
 /** McpttOnNetworkFloorDualControlState - end **/
 
 std::ostream&
-operator<< (std::ostream& os, const ns3::McpttOnNetworkFloorDualControlState& state)
+operator<< (std::ostream& os, const McpttOnNetworkFloorDualControlState& state)
 {
   return os << state.GetInstanceStateId ();
 }
@@ -545,5 +547,6 @@ McpttOnNetworkFloorDualControlStateReleasing::CallRelease2 (McpttOnNetworkFloorD
 }
 /** McpttOnNetworkFloorDualControlStateReleasing - end **/
 
+} //namespace psc
 } //namespace ns3
 

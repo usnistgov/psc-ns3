@@ -45,6 +45,8 @@
 #include "mcptt-test-call.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 McpttTestCaseConfig::McpttTestCaseConfig (void)
   : m_appCount (2),
@@ -228,6 +230,7 @@ McpttTestCaseConfig::CreateTestCall (ObjectFactory& callFac, ObjectFactory& floo
   return call;
 }
 
-
-}
+} // namespace tests
+} // namespace psc
+} // namespace ns3
 

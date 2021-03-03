@@ -48,12 +48,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttPusher");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttPusher);
 
 TypeId
 McpttPusher::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttPusher")
+  static TypeId tid = TypeId ("ns3::psc::McpttPusher")
     .SetParent<Object> ()
     .AddConstructor<McpttPusher>()
     .AddAttribute ("Automatic", "Indicates if pushes/releases should occur automatically.",
@@ -322,4 +324,5 @@ McpttPusher::SetPushing (bool pushing)
   m_pushing = pushing;
 }
 
+} // namespace psc
 } // namespace ns3

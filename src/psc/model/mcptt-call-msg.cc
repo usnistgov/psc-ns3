@@ -45,8 +45,9 @@
 
 #include "mcptt-call-msg.h"
 
-namespace ns3
-{
+namespace ns3 {
+
+namespace psc {
 
 /** McpttCallMsg - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttCallMsg");
@@ -56,7 +57,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsg);
 TypeId
 McpttCallMsg::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsg")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsg")
     .SetParent<McpttMsg> ()
   ;
 
@@ -191,7 +192,7 @@ const uint8_t McpttCallMsgGrpProbe::CODE = 1;
 TypeId
 McpttCallMsgGrpProbe::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpProbe")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpProbe")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpProbe> ()
   ;
@@ -299,7 +300,7 @@ const uint8_t McpttCallMsgGrpAnnoun::CODE = 2;
 TypeId
 McpttCallMsgGrpAnnoun::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpAnnoun")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpAnnoun")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpAnnoun> ()
   ;
@@ -709,7 +710,7 @@ const uint8_t McpttCallMsgGrpAccept::CODE = 3;
 TypeId
 McpttCallMsgGrpAccept::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpAccept")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpAccept")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpAccept> ()
   ;
@@ -888,7 +889,7 @@ const uint8_t McpttCallMsgGrpImmPerilEnd::CODE = 5;
 TypeId
 McpttCallMsgGrpImmPerilEnd::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpImmPerilEnd")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpImmPerilEnd")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpImmPerilEnd> ()
   ;
@@ -1094,7 +1095,7 @@ const uint8_t McpttCallMsgGrpEmergEnd::CODE = 4;
 TypeId
 McpttCallMsgGrpEmergEnd::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpEmergEnd")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergEnd")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpEmergEnd> ()
   ;
@@ -1300,7 +1301,7 @@ const uint8_t McpttCallMsgGrpEmergAlert::CODE = 17;
 TypeId
 McpttCallMsgGrpEmergAlert::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpEmergAlert")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlert")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpEmergAlert> ()
   ;
@@ -1489,7 +1490,7 @@ const uint8_t McpttCallMsgGrpEmergAlertAck::CODE = 18;
 TypeId
 McpttCallMsgGrpEmergAlertAck::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpEmergAlertAck")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlertAck")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpEmergAlertAck> ()
   ;
@@ -1646,7 +1647,7 @@ const uint8_t McpttCallMsgGrpEmergAlertCancel::CODE = 19;
 TypeId
 McpttCallMsgGrpEmergAlertCancel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpEmergAlertCancel")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlertCancel")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpEmergAlertCancel> ()
   ;
@@ -1815,7 +1816,7 @@ const uint8_t McpttCallMsgGrpEmergAlertCancelAck::CODE = 20;
 TypeId
 McpttCallMsgGrpEmergAlertCancelAck::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpEmergAlertCancelAck")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlertCancelAck")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpEmergAlertCancelAck> ()
   ;
@@ -1976,7 +1977,7 @@ const uint8_t McpttCallMsgGrpBroadcast::CODE = 6;
 TypeId
 McpttCallMsgGrpBroadcast::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpBroadcast")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpBroadcast")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpBroadcast> ()
   ;
@@ -2179,7 +2180,7 @@ const uint8_t McpttCallMsgGrpBroadcastEnd::CODE = 7;
 TypeId
 McpttCallMsgGrpBroadcastEnd::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgGrpBroadcastEnd")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpBroadcastEnd")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgGrpBroadcastEnd> ()
   ;
@@ -2334,7 +2335,7 @@ const uint8_t McpttCallMsgPrivateSetupReq::CODE = 8;
 TypeId
 McpttCallMsgPrivateSetupReq::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateSetupReq")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateSetupReq")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateSetupReq> ()
   ;
@@ -2585,7 +2586,7 @@ const uint8_t McpttCallMsgPrivateRinging::CODE = 9;
 TypeId
 McpttCallMsgPrivateRinging::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateRinging")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateRinging")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateRinging> ()
   ;
@@ -2921,7 +2922,7 @@ const uint8_t McpttCallMsgPrivateReject::CODE = 11;
 TypeId
 McpttCallMsgPrivateReject::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateReject")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateReject")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateReject> ()
   ;
@@ -3102,7 +3103,7 @@ const uint8_t McpttCallMsgPrivateRelease::CODE = 12;
 TypeId
 McpttCallMsgPrivateRelease::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateRelease")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateRelease")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateRelease> ()
   ;
@@ -3259,7 +3260,7 @@ const uint8_t McpttCallMsgPrivateReleaseAck::CODE = 13;
 TypeId
 McpttCallMsgPrivateReleaseAck::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateReleaseAck")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateReleaseAck")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateReleaseAck> ()
   ;
@@ -3416,7 +3417,7 @@ const uint8_t McpttCallMsgPrivateAcceptAck::CODE = 14;
 TypeId
 McpttCallMsgPrivateAcceptAck::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateAcceptAck")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateAcceptAck")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateAcceptAck> ()
   ;
@@ -3573,7 +3574,7 @@ const uint8_t McpttCallMsgPrivateEmergCancel::CODE = 15;
 TypeId
 McpttCallMsgPrivateEmergCancel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateEmergCancel")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateEmergCancel")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateEmergCancel> ()
   ;
@@ -3730,7 +3731,7 @@ const uint8_t McpttCallMsgPrivateEmergCancelAck::CODE = 16;
 TypeId
 McpttCallMsgPrivateEmergCancelAck::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgPrivateEmergCancelAck")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateEmergCancelAck")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateEmergCancelAck> ()
   ;
@@ -3879,5 +3880,6 @@ McpttCallMsgPrivateEmergCancelAck::SetCallerId (const McpttCallMsgFieldUserId& c
 }
 /** McpttCallMsgPrivateEmergCancelAck - end **/
 
+} // namespace psc
 } // namespace ns3
 

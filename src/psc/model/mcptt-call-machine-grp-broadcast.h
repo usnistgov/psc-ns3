@@ -46,6 +46,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -373,6 +375,7 @@ public:
  virtual void SetTfb3 (Ptr<McpttTimer>  tfb3);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MACHINE_GRP_BROADCAST_H */

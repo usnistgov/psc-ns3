@@ -43,6 +43,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttOffNetworkFloorParticipant;
 
 /**
@@ -251,12 +253,12 @@ protected:
  McpttOffNetworkFloorParticipantState (void);
 };
 /**
- * Overloaded output operator for the ns3::McpttOffNetworkFloorParticipantState class.
+ * Overloaded output operator for the McpttOffNetworkFloorParticipantState class.
  * \param os The output stream to write to.
  * \param state The state to write to the output stream.
  * \returns The output stream that was written to.
  */
-std::ostream& operator<< (std::ostream& os, const ns3::McpttOffNetworkFloorParticipantState& state);
+std::ostream& operator<< (std::ostream& os, const McpttOffNetworkFloorParticipantState& state);
 /**
  * \ingroup mcptt
  * \brief A class that represents the 'Start-stop' state.
@@ -770,6 +772,7 @@ public:
  virtual void PttPush (McpttOffNetworkFloorParticipant& floorMachine) const;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_OFF_NETWORK_FLOOR_PARTICIPANT_STATE_H */

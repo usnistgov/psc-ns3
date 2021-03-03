@@ -37,11 +37,13 @@
 #include "mcptt-msg-dropper.h"
 
 namespace ns3 {
+namespace psc {
+namespace tests {
 
 /**
  * \ingroup mcptt
  *
- * This class subclasses ns3::McpttCall and allows the ability to insert
+ * This class subclasses ns3::psc::McpttCall and allows the ability to insert
  * McpttMsgDroppers to the receive path for testing purposes.
  */
 class McpttTestCall : public McpttCall
@@ -96,6 +98,8 @@ private:
   std::vector<Ptr<McpttMsgDropper> > m_droppers;
 };
 
+} // namespace tests
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_TEST_CALL_H */

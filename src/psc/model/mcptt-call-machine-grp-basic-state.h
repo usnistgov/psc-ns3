@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachineGrpBasic;
 
 /**
@@ -565,6 +567,7 @@ public:
  virtual void ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MACHINE_GRP_BASIC_STATE_H */

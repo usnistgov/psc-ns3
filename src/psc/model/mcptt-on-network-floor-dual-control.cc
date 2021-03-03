@@ -52,13 +52,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorDualControl");
 
+namespace psc {
+
 /** McpttOnNetworkFloorDualControl - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorDualControl);
 
 TypeId
 McpttOnNetworkFloorDualControl::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttOnNetworkFloorDualControl")
+  static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorDualControl")
     .SetParent<Object> ()
     .AddConstructor<McpttOnNetworkFloorDualControl>()
     .AddAttribute ("T11", "The delay to use for timer T11 (Time value)",
@@ -72,7 +74,7 @@ McpttOnNetworkFloorDualControl::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace",
                    "The trace for capturing state changes.",
                    MakeTraceSourceAccessor (&McpttOnNetworkFloorDualControl::m_stateChangeTrace),
-                   "ns3::McpttOnNetworkFloorDualControl::StateChangeTrace")
+                   "ns3::psc::McpttOnNetworkFloorDualControl::StateChangeTrace")
     ;
   
   return tid;
@@ -420,5 +422,6 @@ McpttOnNetworkFloorDualControl::SetTxCb (const Callback<void, const McpttFloorMs
 }
 /** McpttOnNetworkFloorDualControl - end **/
 
+} // namespace psc
 } // namespace ns3
 

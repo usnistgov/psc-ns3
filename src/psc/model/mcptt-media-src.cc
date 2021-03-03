@@ -46,12 +46,14 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttMediaSrc");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttMediaSrc);
 
 TypeId
 McpttMediaSrc::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttMediaSrc")
+  static TypeId tid = TypeId ("ns3::psc::McpttMediaSrc")
     .SetParent<Object> ()
     .AddConstructor<McpttMediaSrc> ()
     .AddAttribute ("Bytes", "The number of data bytes to send per packet.",
@@ -286,5 +288,6 @@ McpttMediaSrc::SetTotalBytes (uint16_t totalBytes)
   m_totalBytes = totalBytes;
 }
 
+} // namespace psc
 } // namespace ns3
 

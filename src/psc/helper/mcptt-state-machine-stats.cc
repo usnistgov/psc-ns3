@@ -43,9 +43,11 @@
 
 #include "mcptt-state-machine-stats.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttStateMachineStats");
+
+namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttStateMachineStats);
 
@@ -54,7 +56,7 @@ McpttStateMachineStats::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttStateMachineStats")
+  static TypeId tid = TypeId ("ns3::psc::McpttStateMachineStats")
     .SetParent<Object> ()
     .AddConstructor<McpttStateMachineStats> ()
     .AddAttribute ("OutputFileName",
@@ -119,5 +121,6 @@ McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const s
   m_outputFile << std::endl;
 }
 
+} // namespace psc
 } // namespace ns3
 

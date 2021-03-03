@@ -37,13 +37,15 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttFloorParticipant");
 
+namespace psc {
+
 /** McpttFloorParticipant - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorParticipant);
 
 TypeId
 McpttFloorParticipant::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttFloorParticipant")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorParticipant")
     .SetParent<Object> ()
   ;
   
@@ -73,7 +75,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttFloorParticipantNull);
 TypeId
 McpttFloorParticipantNull::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttFloorParticipantNull")
+  static TypeId tid = TypeId ("ns3::psc::McpttFloorParticipantNull")
     .SetParent<Object> ()
     .AddConstructor<McpttFloorParticipantNull> ()
   ;
@@ -183,5 +185,6 @@ McpttFloorParticipantNull::PttRelease (void)
 }
 /** McpttFloorParticipantNull - end **/
 
+} // namespace psc
 } // namespace ns3
 

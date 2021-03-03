@@ -40,6 +40,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -84,6 +86,7 @@ protected:
  McpttMsg (void);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_MSG_H */

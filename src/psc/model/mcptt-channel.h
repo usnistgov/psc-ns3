@@ -42,6 +42,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -142,6 +144,7 @@ public:
  virtual void SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CHANNEL_H */

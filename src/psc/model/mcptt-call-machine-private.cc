@@ -52,9 +52,11 @@
 
 #include "mcptt-call-machine-private.h"
 
-namespace ns3
-{
+namespace ns3 {
+
 NS_LOG_COMPONENT_DEFINE ("McpttCallMachinePrivate");
+
+namespace psc {
 
 /** McpttCallMachinePrivate - begin **/
 
@@ -65,7 +67,7 @@ McpttCallMachinePrivate::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttCallMachinePrivate")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMachinePrivate")
     .SetParent<McpttCallMachineGrp> ()
     .AddConstructor<McpttCallMachinePrivate> ()
     .AddAttribute ("AutoCommencement", "The flag that indicates if auto commencement mode should be indicated.",
@@ -138,7 +140,7 @@ McpttCallMachinePrivate::GetTypeId (void)
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallMachinePrivate::m_stateChangeTrace),
-                     "ns3::McpttCallMachine::StateChangeTracedCallback")
+                     "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
     ;
 
   return tid;
@@ -1532,5 +1534,6 @@ McpttCallMachinePrivate::SetTypeMachine (Ptr<McpttCallTypeMachinePrivate>  typeM
 }
 /** McpttCallMachinePrivate - end **/
 
+} // namespace psc
 } // namespace ns3
 

@@ -47,6 +47,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttServerApp;
 class McpttOnNetworkFloorArbitrator;
 class McpttServerCallMachine;
@@ -62,7 +64,7 @@ class McpttServerCallMachine;
  * server application.
  *
  * The corresponding call encapsulation class on the MCPTT clients is the
- * class ns3::McpttCall.
+ * class McpttCall.
  */
 class McpttServerCall : public Object
 {
@@ -275,6 +277,7 @@ public:
  void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SERVER_CALL_H */

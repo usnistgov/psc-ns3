@@ -43,18 +43,20 @@
 
 #include "mcptt-call-msg-field.h"
 
-namespace ns3
-{
+namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("McpttCallMsgField");
+
+namespace psc {
 
 /** McpttCallMsgField - begin **/
-NS_LOG_COMPONENT_DEFINE ("McpttCallMsgField");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgField);
 
 TypeId
 McpttCallMsgField::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgField")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgField")
     .SetParent<ObjectBase> ()
   ;
 
@@ -89,7 +91,7 @@ std::ostream& operator<< (std::ostream& os, const McpttCallMsgField& field)
 TypeId
 McpttCallMsgFieldType6::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldType6")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldType6")
     .SetParent<McpttCallMsgField> ()
   ;
 
@@ -187,7 +189,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgFieldMsgType);
 TypeId
 McpttCallMsgFieldMsgType::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldMsgType")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldMsgType")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldMsgType> ()
   ;
@@ -279,7 +281,7 @@ McpttCallMsgFieldMsgType::SetType (uint8_t type)
 TypeId
 McpttCallMsgFieldCallId::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldCallId")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldCallId")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldCallId> ()
   ;
@@ -371,7 +373,7 @@ McpttCallMsgFieldCallId::SetCallId (uint16_t callId)
 TypeId
 McpttCallMsgFieldRefreshInterval::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldRefreshInterval")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldRefreshInterval")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor <McpttCallMsgFieldRefreshInterval> ()
   ;
@@ -463,7 +465,7 @@ McpttCallMsgFieldRefreshInterval::SetInterval (uint16_t interval)
 TypeId
 McpttCallMsgFieldGrpId::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldGrpId")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldGrpId")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldGrpId> ()
   ;
@@ -554,7 +556,7 @@ McpttCallMsgFieldGrpId::SetGrpId (uint32_t grpId)
 TypeId
 McpttCallMsgFieldSdp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldSdp")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldSdp")
     .SetParent<McpttCallMsgFieldType6> ()
     .AddConstructor<McpttCallMsgFieldSdp> ()
   ;
@@ -880,7 +882,7 @@ const uint8_t McpttCallMsgFieldCommMode::MANUAL_MODE = 1;
 TypeId
 McpttCallMsgFieldCommMode::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldCommMode")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldCommMode")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldCommMode> ()
   ;
@@ -983,7 +985,7 @@ const uint8_t McpttCallMsgFieldReason::FAILED = 4;
 TypeId
 McpttCallMsgFieldReason::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldReason")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldReason")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldReason> ()
   ;
@@ -1081,7 +1083,7 @@ McpttCallMsgFieldConfirmMode::GetIei (void)
 TypeId
 McpttCallMsgFieldConfirmMode::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldConfirmMode")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldConfirmMode")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor <McpttCallMsgFieldConfirmMode> ()
   ;
@@ -1149,7 +1151,7 @@ McpttCallMsgFieldConfirmMode::Serialize (Buffer::Iterator& buff) const
 TypeId
 McpttCallMsgFieldUserId::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldUserId")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldUserId")
     .SetParent<McpttCallMsgFieldType6> ()
     .AddConstructor<McpttCallMsgFieldUserId> ()
   ;
@@ -1294,7 +1296,7 @@ McpttCallMsgFieldCallType::GetCallTypePriority (uint8_t type)
 TypeId
 McpttCallMsgFieldCallType::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldCallType")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldCallType")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldCallType> ()
   ;
@@ -1392,7 +1394,7 @@ McpttCallMsgFieldUserLoc::GetIei (void)
 TypeId
 McpttCallMsgFieldUserLoc::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldUserLoc")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldUserLoc")
     .SetParent<McpttCallMsgFieldType6> ()
     .AddConstructor<McpttCallMsgFieldUserLoc> ()
   ;
@@ -1551,7 +1553,7 @@ McpttCallMsgFieldUserLoc::SetLoc (const Vector& loc)
 TypeId
 McpttCallMsgFieldOrgName::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldOrgName")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldOrgName")
     .SetParent<McpttCallMsgFieldType6> ()
     .AddConstructor<McpttCallMsgFieldOrgName> ()
   ;
@@ -1662,7 +1664,7 @@ McpttCallMsgFieldOrgName::SetName (const std::string& name)
 TypeId
 McpttCallMsgFieldStartTime::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldStartTime")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldStartTime")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldStartTime> ()
   ;
@@ -1762,7 +1764,7 @@ McpttCallMsgFieldStartTime::SetTime (const Time& time)
 TypeId
 McpttCallMsgFieldLastChgTime::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldLastChgTime")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldLastChgTime")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldLastChgTime> ()
   ;
@@ -1868,7 +1870,7 @@ McpttCallMsgFieldProbeResp::GetIei (void)
 TypeId
 McpttCallMsgFieldProbeResp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttCallMsgFieldProbeResp")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldProbeResp")
     .SetParent<McpttCallMsgField> ()
     .AddConstructor<McpttCallMsgFieldProbeResp> ()
   ;
@@ -1933,5 +1935,6 @@ McpttCallMsgFieldProbeResp::Serialize (Buffer::Iterator& buff) const
 
 /** McpttCallMsgFieldProbeResp - end **/
 
+} // namespace psc
 } // namespace ns3
 

@@ -42,8 +42,10 @@
 
 #include "mcptt-channel.h"
 
-namespace ns3
-{
+namespace ns3 {
+
+namespace psc {
+
 NS_LOG_COMPONENT_DEFINE ("McpttChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (McpttChannel);
@@ -51,7 +53,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttChannel);
 TypeId
 McpttChannel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::McpttChannel")
+  static TypeId tid = TypeId ("ns3::psc::McpttChannel")
     .SetParent<Object> ()
     .AddConstructor<McpttChannel> ()
   ;
@@ -291,5 +293,6 @@ McpttChannel::SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb)
   m_rxPktCb = rxPktCb;
 }
 
+} // namespace psc
 } // namespace ns3
 

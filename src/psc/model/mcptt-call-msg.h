@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallMachineGrpBasic;
 class McpttCallMachineGrpBroadcast;
 class McpttCallMachinePrivate;
@@ -2347,6 +2349,7 @@ public:
  virtual void SetCallerId (const McpttCallMsgFieldUserId& callerIdField);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_MSG_H */

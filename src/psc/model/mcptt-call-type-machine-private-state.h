@@ -41,6 +41,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 class McpttCallTypeMachinePrivate;
 
 /**
@@ -370,6 +372,7 @@ public:
  virtual void ReleaseCall (McpttCallTypeMachinePrivate& machine);
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_CALL_TYPE_MACHINE_PRIVATE_STATE_H */

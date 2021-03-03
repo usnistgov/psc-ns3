@@ -42,6 +42,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("McpttCallTypeMachine");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (McpttCallTypeMachine);
 
 TypeId
@@ -49,7 +51,7 @@ McpttCallTypeMachine::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  static TypeId tid = TypeId ("ns3::McpttCallTypeMachine")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallTypeMachine")
     .SetParent<Object> ()
   ;
 
@@ -75,5 +77,6 @@ McpttCallTypeMachine::GetInstanceTypeId (void) const
   return McpttCallTypeMachine::GetTypeId ();
 }
 
+} // namespace psc
 } // namespace ns3
 

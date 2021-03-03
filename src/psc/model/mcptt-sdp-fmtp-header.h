@@ -39,6 +39,8 @@
 
 namespace ns3 {
 
+namespace psc {
+
 /**
  * \ingroup mcptt
  *
@@ -92,6 +94,7 @@ private:
   bool m_mcImplicitRequest {false};
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif /* MCPTT_SDP_FMTP_HEADER_H */
