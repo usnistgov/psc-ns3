@@ -47,6 +47,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/vht-phy.h"
 #include "ns3/waypoint-mobility-model.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-default-protection-manager.h"
@@ -1081,18 +1082,6 @@ SetChannelFrequencyTest::DoRun ()
     // case 12:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-    wifi.SetStandard (WIFI_STANDARD_holland);
-    staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
-    phySta = GetYansWifiPhyPtr (staDevice);
-    // We expect channel 36, width 20, frequency 5180
-    NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 36, "802.11 5Mhz configuration");
-    NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5Mhz configuration");
-    NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5180, "802.11 5Mhz configuration");
-  }
-  {
-    // case 13:
-    WifiHelper wifi;
-    wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
     phy.Set ("ChannelNumber", UintegerValue (44));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
@@ -1102,7 +1091,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5220, "802.11 5GHz configuration");
   }
   {
-    // case 14:
+    // case 13:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     phy.Set ("ChannelNumber", UintegerValue (44));
@@ -1117,7 +1106,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5200, "802.11 5GHz configuration");
   }
   {
-    // case 15:
+    // case 14:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     phy.Set ("ChannelNumber", UintegerValue (44));
@@ -1134,7 +1123,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5220, "802.11 5GHz configuration");
   }
   {
-    // case 16:
+    // case 15:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
@@ -1152,7 +1141,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5220, "802.11 5GHz configuration");
   }
   {
-    // case 17:
+    // case 16:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     // Test that setting Frequency to a non-standard value will zero the
@@ -1167,7 +1156,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5281, "802.11 5GHz configuration");
   }
   {
-    // case 18:
+    // case 17:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
@@ -1182,7 +1171,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5500, "802.11 5GHz configuration");
   }
   {
-    // case 19:
+    // case 18:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
@@ -1194,7 +1183,7 @@ SetChannelFrequencyTest::DoRun ()
     phySta->SetAttribute ("ChannelNumber", UintegerValue (99));
   }
   {
-    // case 20:
+    // case 19:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     // Test how channel number behaves when frequency is non-standard
@@ -1222,7 +1211,7 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5180, "802.11 5GHz configuration");
   }
   {
-    // case 21:
+    // case 20:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     // Set both channel and frequency to consistent values
@@ -1462,7 +1451,7 @@ Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
   // Get channel bandwidth and modulation class
   Ptr<const WifiSpectrumSignalParameters> wifiTxParams = DynamicCast<WifiSpectrumSignalParameters> (txParams);
 
-  Ptr<WifiPpdu> ppdu = Copy (wifiTxParams->ppdu);
+  Ptr<WifiPpdu> ppdu = wifiTxParams->ppdu->Copy ();
   WifiTxVector txVector = ppdu->GetTxVector ();
   m_channelWidth = txVector.GetChannelWidth ();
   WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();
@@ -2700,19 +2689,19 @@ IdealRateManagerChannelWidthTest::DoRun (void)
   Simulator::Schedule (Seconds (0.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 80);
   Simulator::Schedule (Seconds (1.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   //Selected rate should be VHT-MCS 1
-  Simulator::Schedule (Seconds (1.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+  Simulator::Schedule (Seconds (1.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs1 ());
 
   //Set channel width to 20 MHz & send packet
   Simulator::Schedule (Seconds (1.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 20);
   Simulator::Schedule (Seconds (2.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   //Selected rate should be VHT-MCS 3 since SNR should be 6 dB higher than previously
-  Simulator::Schedule (Seconds (2.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
+  Simulator::Schedule (Seconds (2.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs3 ());
 
   //Set channel width to 40 MHz & send packet
   Simulator::Schedule (Seconds (2.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 40);
   Simulator::Schedule (Seconds (3.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   //Selected rate should be VHT-MCS 2 since SNR should be 3 dB lower than previously
-  Simulator::Schedule (Seconds (3.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (3.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs2 ());
 
   Simulator::Stop (Seconds (3.2));
   Simulator::Run ();
@@ -2887,7 +2876,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (1.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be VHT-MCS 2 because of settings and distance between TX and RX
-  Simulator::Schedule (Seconds (1.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (1.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs2 ());
 
 
   // TX: 1 antenna
@@ -2900,7 +2889,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (2.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be increased to VHT-MCS 3 because of RX diversity resulting in SNR improvement of about 3dB
-  Simulator::Schedule (Seconds (2.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
+  Simulator::Schedule (Seconds (2.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs3 ());
 
 
   // TX: 1 antenna
@@ -2913,7 +2902,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since TX supports a single antenna
   Simulator::Schedule (Seconds (3.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be as previously
-  Simulator::Schedule (Seconds (3.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
+  Simulator::Schedule (Seconds (3.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, but only supports 1 spatial stream
@@ -2926,7 +2915,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (4.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be VHT-MCS 2 because we do no longer have diversity in this scenario (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (4.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (4.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs2 ());
 
 
   // TX: 2 antennas, but only supports 1 spatial stream
@@ -2939,7 +2928,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since both TX and RX support a single antenna
   Simulator::Schedule (Seconds (5.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be increased to VHT-MCS 3 because of RX diversity resulting in SNR improvement of about 3dB (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (5.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
+  Simulator::Schedule (Seconds (5.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, but only supports 1 spatial stream
@@ -2952,7 +2941,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since TX supports a single antenna
   Simulator::Schedule (Seconds (6.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be as previously
-  Simulator::Schedule (Seconds (6.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
+  Simulator::Schedule (Seconds (6.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, and supports 2 spatial streams
@@ -2965,7 +2954,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since RX supports a single antenna
   Simulator::Schedule (Seconds (7.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be VHT-MCS 2 because we do no longer have diversity in this scenario (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (7.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (7.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs2 ());
 
 
   // TX: 2 antennas, and supports 2 spatial streams
@@ -2978,7 +2967,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 1 since RX supports a single antenna
   Simulator::Schedule (Seconds (8.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
   // Selected rate should be increased to VHT-MCS 3 because of RX diversity resulting in SNR improvement of about 3dB (more antennas at TX does not result in SNR improvement in AWGN channel)
-  Simulator::Schedule (Seconds (8.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs3 ());
+  Simulator::Schedule (Seconds (8.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs3 ());
 
 
   // TX: 2 antennas, and supports 2 spatial streams
@@ -2991,7 +2980,7 @@ IdealRateManagerMimoTest::DoRun (void)
   // Selected NSS should be 2 since both TX and RX support 2 antennas
   Simulator::Schedule (Seconds (9.2), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 2);
   // Selecte rate should be the same as without diversity, as it uses 2 spatial streams so there is no more benefits from diversity in AWGN channels
-  Simulator::Schedule (Seconds (9.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (9.2), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs2 ());
 
 
   // Verify we can go back to initial situation
@@ -2999,7 +2988,7 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Schedule (Seconds (9.9), &IdealRateManagerMimoTest::SetStaMimoSettings, this, 1, 1);
   Simulator::Schedule (Seconds (10.0), &IdealRateManagerMimoTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   Simulator::Schedule (Seconds (10.1), &IdealRateManagerMimoTest::CheckLastSelectedNss, this, 1);
-  Simulator::Schedule (Seconds (10.1), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+  Simulator::Schedule (Seconds (10.1), &IdealRateManagerMimoTest::CheckLastSelectedMode, this, VhtPhy::GetVhtMcs2 ());
 
   Simulator::Stop (Seconds (10.2));
   Simulator::Run ();

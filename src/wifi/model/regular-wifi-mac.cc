@@ -30,12 +30,12 @@
 #include "mgt-headers.h"
 #include "amsdu-subframe-header.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "vht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/vht-configuration.h"
+#include "ns3/he-configuration.h"
 #include <algorithm>
 #include <cmath>
-#include "he-frame-exchange-manager.h"
+#include "ns3/he-frame-exchange-manager.h"
 #include "channel-access-manager.h"
 
 namespace ns3 {
@@ -205,14 +205,12 @@ RegularWifiMac::GetHtCapabilities (void) const
   if (GetHtSupported ())
     {
       Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
-      bool greenfieldSupported = htConfiguration->GetGreenfieldSupported ();
       bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
       capabilities.SetHtSupported (1);
       capabilities.SetLdpc (htConfiguration->GetLdpcSupported ());
       capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () >= 40);
       capabilities.SetShortGuardInterval20 (sgiSupported);
       capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () >= 40 && sgiSupported);
-      capabilities.SetGreenfield (greenfieldSupported);
       // Set Maximum A-MSDU Length subfield
       uint16_t maxAmsduSize = std::max ({m_voMaxAmsduSize, m_viMaxAmsduSize,
                                          m_beMaxAmsduSize, m_bkMaxAmsduSize});
@@ -231,15 +229,10 @@ RegularWifiMac::GetHtCapabilities (void) const
       // The maximum A-MPDU length in HT capabilities elements ranges from 2^13-1 to 2^16-1
       capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 8191u), 65535u));
 
-      capabilities.SetLSigProtectionSupport (!greenfieldSupported);
+      capabilities.SetLSigProtectionSupport (true);
       uint64_t maxSupportedRate = 0; //in bit/s
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
-            {
-              continue;
-            }
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
@@ -305,11 +298,9 @@ RegularWifiMac::GetVhtCapabilities (void) const
       capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && sgiSupported);
       capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && sgiSupported);
       uint8_t maxMcs = 0;
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-              && (mcs.GetMcsValue () > maxMcs))
+          if (mcs.GetMcsValue () > maxMcs)
             {
               maxMcs = mcs.GetMcsValue ();
             }
@@ -324,10 +315,9 @@ RegularWifiMac::GetVhtCapabilities (void) const
           capabilities.SetTxMcsMap (maxMcs, nss);
         }
       uint64_t maxSupportedRateLGI = 0; //in bit/s
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_VHT || !mcs.IsAllowed (m_phy->GetChannelWidth (), 1))
+          if (!mcs.IsAllowed (m_phy->GetChannelWidth (), 1))
             {
               continue;
             }
@@ -390,11 +380,9 @@ RegularWifiMac::GetHeCapabilities (void) const
       capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575u), 8388607u));
 
       uint8_t maxMcs = 0;
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_HE)
-              && (mcs.GetMcsValue () > maxMcs))
+          if (mcs.GetMcsValue () > maxMcs)
             {
               maxMcs = mcs.GetMcsValue ();
             }
@@ -1126,7 +1114,6 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
       }
     case WIFI_STANDARD_80211g:
       SetErpSupported (true);
-    case WIFI_STANDARD_holland:
     case WIFI_STANDARD_80211a:
     case WIFI_STANDARD_80211p:
       cwmin = 15;

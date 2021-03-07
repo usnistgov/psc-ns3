@@ -35,8 +35,8 @@
 #include "amsdu-subframe-header.h"
 #include "wifi-phy.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/he-configuration.h"
 
 namespace ns3 {
 
@@ -240,22 +240,6 @@ ApWifiMac::GetShortPreambleEnabled (void) const
   return false;
 }
 
-bool
-ApWifiMac::IsNonGfHtStasPresent (void) const
-{
-  bool isNonGfHtStasPresent = false;
-  for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
-    {
-      if (!m_stationManager->GetGreenfieldSupported (i->second))
-        {
-          isNonGfHtStasPresent = true;
-          break;
-        }
-    }
-  m_stationManager->SetUseGreenfieldProtection (isNonGfHtStasPresent);
-  return isNonGfHtStasPresent;
-}
-
 uint16_t
 ApWifiMac::GetVhtOperationalChannelWidth (void) const
 {
@@ -387,9 +371,8 @@ ApWifiMac::GetSupportedRates (void) const
   SupportedRates rates;
   //Send the set of supported rates and make sure that we indicate
   //the Basic Rate set in this set of supported rates.
-  for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+  for (const auto & mode : m_phy->GetModeList ())
     {
-      WifiMode mode = m_phy->GetMode (i);
       uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth ());
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
@@ -416,9 +399,9 @@ ApWifiMac::GetSupportedRates (void) const
   //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
   if (GetHtSupported ())
     {
-      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+      for (const auto & selector : m_phy->GetBssMembershipSelectorList ())
         {
-          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
+          rates.AddBssMembershipSelectorRate (selector);
         }
     }
   return rates;
@@ -532,7 +515,7 @@ ApWifiMac::GetHtOperation (void) const
       operation.SetHtSupported (1);
       operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
       operation.SetRifsMode (false);
-      operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
+      operation.SetNonGfHtStasPresent (true);
       if (m_phy->GetChannelWidth () > 20)
         {
           operation.SetSecondaryChannelOffset (1);
@@ -547,13 +530,8 @@ ApWifiMac::GetHtOperation (void) const
           operation.SetHtProtection (MIXED_MODE_PROTECTION);
         }
       uint64_t maxSupportedRate = 0; //in bit/s
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
-            {
-              continue;
-            }
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
           uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), GetHtConfiguration ()->GetShortGuardIntervalSupported () ? 400 : 800, nss);
@@ -564,19 +542,17 @@ ApWifiMac::GetHtOperation (void) const
             }
         }
       uint8_t maxSpatialStream = m_phy->GetMaxSupportedTxSpatialStreams ();
-      uint8_t nMcs = m_phy->GetNMcs ();
+      auto mcsList = m_phy->GetMcsList (WIFI_MOD_CLASS_HT);
+      uint8_t nMcs = mcsList.size ();
       for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
         {
           if (m_stationManager->GetHtSupported (i->second))
             {
               uint64_t maxSupportedRateByHtSta = 0; //in bit/s
+              auto itMcs = mcsList.begin ();
               for (uint8_t j = 0; j < (std::min (nMcs, m_stationManager->GetNMcsSupported (i->second))); j++)
                 {
-                  WifiMode mcs = m_phy->GetMcs (j);
-                  if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
-                    {
-                      continue;
-                    }
+                  WifiMode mcs = *itMcs++;
                   uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
                   NS_ASSERT (nss > 0 && nss < 5);
                   uint64_t dataRate = mcs.GetDataRate (m_stationManager->GetChannelWidthSupported (i->second), m_stationManager->GetShortGuardIntervalSupported (i->second) ? 400 : 800, nss);
@@ -1129,9 +1105,8 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                 {
                   NS_LOG_DEBUG ("The Basic Rate set modes are supported by the station");
                   //record all its supported modes in its associated WifiRemoteStation
-                  for (uint8_t j = 0; j < m_phy->GetNModes (); j++)
+                  for (const auto & mode : m_phy->GetModeList ())
                     {
-                      WifiMode mode = m_phy->GetMode (j);
                       if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                         {
                           m_stationManager->AddSupportedMode (from, mode);
@@ -1152,10 +1127,9 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                       if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
                         {
                           m_stationManager->AddStationVhtCapabilities (from, vhtCapabilities);
-                          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+                          for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
                             {
-                              WifiMode mcs = m_phy->GetMcs (i);
-                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                              if (vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
                                 {
                                   m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
                                   //here should add a control to add basic MCS when it is implemented
@@ -1174,10 +1148,9 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                       if (heCapabilities.GetSupportedMcsAndNss () != 0)
                         {
                           m_stationManager->AddStationHeCapabilities (from, heCapabilities);
-                          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+                          for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
                             {
-                              WifiMode mcs = m_phy->GetMcs (i);
-                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                              if (heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
                                 {
                                   m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
                                   //here should add a control to add basic MCS when it is implemented
@@ -1317,9 +1290,8 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                 {
                   NS_LOG_DEBUG ("The Basic Rate set modes are supported by the station");
                   //update all its supported modes in its associated WifiRemoteStation
-                  for (uint8_t j = 0; j < m_phy->GetNModes (); j++)
+                  for (const auto & mode : m_phy->GetModeList ())
                     {
-                      WifiMode mode = m_phy->GetMode (j);
                       if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
                         {
                           m_stationManager->AddSupportedMode (from, mode);
@@ -1340,10 +1312,9 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                       if (vhtCapabilities.GetRxHighestSupportedLgiDataRate () > 0)
                         {
                           m_stationManager->AddStationVhtCapabilities (from, vhtCapabilities);
-                          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+                          for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
                             {
-                              WifiMode mcs = m_phy->GetMcs (i);
-                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                              if (vhtCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
                                 {
                                   m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
                                   //here should add a control to add basic MCS when it is implemented
@@ -1362,10 +1333,9 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                       if (heCapabilities.GetSupportedMcsAndNss () != 0)
                         {
                           m_stationManager->AddStationHeCapabilities (from, heCapabilities);
-                          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+                          for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
                             {
-                              WifiMode mcs = m_phy->GetMcs (i);
-                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                              if (heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
                                 {
                                   m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
                                   //here should add a control to add basic MCS when it is implemented

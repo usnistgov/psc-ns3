@@ -28,11 +28,11 @@
 #include "ns3/boolean.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "ns3/simulator.h"
 #include "spectrum-wifi-phy.h"
-#include "wifi-spectrum-signal-parameters.h"
 #include "wifi-spectrum-phy-interface.h"
+#include "wifi-spectrum-signal-parameters.h"
 #include "wifi-utils.h"
-#include "wifi-ppdu.h"
 #include "wifi-psdu.h"
 
 namespace ns3 {
@@ -92,6 +92,8 @@ SpectrumWifiPhy::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_wifiSpectrumPhyInterface = 0;
+  m_antenna = 0;
+  m_rxSpectrumModel = 0;
   WifiPhy::DoDispose ();
 }
 
@@ -344,20 +346,20 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     {
       NS_LOG_INFO ("Received non Wi-Fi signal");
       m_interference.AddForeignSignal (rxDuration, rxPowerW);
-      SwitchMaybeToCcaBusy ();
+      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
     }
   if (wifiRxParams && m_disableWifiReception)
     {
       NS_LOG_INFO ("Received Wi-Fi signal but blocked from syncing");
       m_interference.AddForeignSignal (rxDuration, rxPowerW);
-      SwitchMaybeToCcaBusy ();
+      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
     }
 
   NS_LOG_INFO ("Received Wi-Fi signal");
-  Ptr<WifiPpdu> ppdu = Copy (wifiRxParams->ppdu);
-  StartReceivePreamble (ppdu, rxPowerW);
+  Ptr<WifiPpdu> ppdu = wifiRxParams->ppdu->Copy ();
+  StartReceivePreamble (ppdu, rxPowerW, rxDuration);
 }
 
 Ptr<AntennaModel>
@@ -382,72 +384,23 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
   m_wifiSpectrumPhyInterface->SetDevice (device);
 }
 
-Ptr<SpectrumValue>
-SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const
-{
-  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW);
-  Ptr<SpectrumValue> v;
-  switch (modulationClass)
-    {
-    case WIFI_MOD_CLASS_OFDM:
-    case WIFI_MOD_CLASS_ERP_OFDM:
-      v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
-                                                                     m_txMaskInnerBandMinimumRejection, m_txMaskOuterBandMinimumRejection, m_txMaskOuterBandMaximumRejection);
-      break;
-    case WIFI_MOD_CLASS_DSSS:
-    case WIFI_MOD_CLASS_HR_DSSS:
-      NS_ABORT_MSG_IF (channelWidth != 22, "Invalid channel width for DSSS");
-      v = WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (centerFrequency, txPowerW, GetGuardBandwidth (channelWidth));
-      break;
-    case WIFI_MOD_CLASS_HT:
-    case WIFI_MOD_CLASS_VHT:
-      v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
-                                                                       m_txMaskInnerBandMinimumRejection, m_txMaskOuterBandMinimumRejection, m_txMaskOuterBandMaximumRejection);
-      break;
-    case WIFI_MOD_CLASS_HE:
-      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
-                                                                       m_txMaskInnerBandMinimumRejection, m_txMaskOuterBandMinimumRejection, m_txMaskOuterBandMaximumRejection);
-      break;
-    default:
-      NS_FATAL_ERROR ("modulation class unknown: " << modulationClass);
-      break;
-    }
-  return v;
-}
-
-uint16_t
-SpectrumWifiPhy::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
-{
-  NS_LOG_FUNCTION (this << txVector);
-  uint16_t centerFrequencyForSupportedWidth = GetFrequency ();
-  uint16_t supportedWidth = GetChannelWidth ();
-  uint16_t currentWidth = txVector.GetChannelWidth ();
-  if (currentWidth != supportedWidth)
-    {
-      uint16_t startingFrequency = centerFrequencyForSupportedWidth - (supportedWidth / 2);
-      return startingFrequency + (currentWidth / 2); // primary channel is in the lower part (for the time being)
-    }
-  return centerFrequencyForSupportedWidth;
-}
-
 void
 SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
-  WifiTxVector txVector = ppdu->GetTxVector ();
-  double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
-  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
-  double txPowerWatts = DbmToW (txPowerDbm);
-  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetCenterFrequencyForChannelWidth (txVector), txVector.GetChannelWidth (), txPowerWatts, ppdu->GetModulation ());
-  Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
-  txParams->duration = ppdu->GetTxDuration ();
-  txParams->psd = txPowerSpectrum;
+  GetPhyEntity (ppdu->GetModulation ())->StartTx (ppdu);
+}
+
+void
+SpectrumWifiPhy::Transmit (Ptr<WifiSpectrumSignalParameters> txParams)
+{
+  NS_LOG_FUNCTION (this << txParams);
+
+  //Finish configuration
   NS_ASSERT_MSG (m_wifiSpectrumPhyInterface, "SpectrumPhy() is not set; maybe forgot to call CreateWifiSpectrumPhyInterface?");
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
-  txParams->ppdu = ppdu;
-  NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << +GetChannelNumber ());
-  NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
+
   m_channel->StartTx (txParams);
 }
 
@@ -459,7 +412,6 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
     {
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
-    case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211b:
     case WIFI_PHY_STANDARD_80211n:
     case WIFI_PHY_STANDARD_80211ac:
@@ -563,6 +515,14 @@ SpectrumWifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::Subcarrier
   convertedSubcarriers.first = centerFrequencyIndex + range.first;
   convertedSubcarriers.second = centerFrequencyIndex + range.second;
   return convertedSubcarriers;
+}
+
+std::tuple<double, double, double>
+SpectrumWifiPhy::GetTxMaskRejectionParams (void) const
+{
+  return std::make_tuple (m_txMaskInnerBandMinimumRejection,
+                          m_txMaskOuterBandMinimumRejection,
+                          m_txMaskOuterBandMaximumRejection);
 }
 
 } //namespace ns3

@@ -256,7 +256,6 @@ The following values for WifiStandard are defined in
   WIFI_STANDARD_80211b,
   WIFI_STANDARD_80211g,
   WIFI_STANDARD_80211p,
-  WIFI_STANDARD_holland,
   WIFI_STANDARD_80211n_2_4GHZ,
   WIFI_STANDARD_80211n_5GHZ,
   WIFI_STANDARD_80211ac,
@@ -789,10 +788,6 @@ It is also possible to configure HT-specific attributes using ``Config::Set``.
 The following line of code enables the support of a short guard interval for all stations:
 
  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
-
-Furthermore, 802.11n provides an optional mode (Greenfield mode) to reduce preamble durations and which is only compatible with 802.11n devices. This mode is enabled as follows::
-
- htConfiguration->SetGreenfieldSupported (true);
 
 VHT configuration
 =================

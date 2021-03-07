@@ -51,7 +51,7 @@ struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
    */
   WifiSpectrumSignalParameters (const WifiSpectrumSignalParameters& p);
 
-  Ptr<WifiPpdu> ppdu; ///< The PPDU being transmitted
+  Ptr<WifiPpdu> ppdu;                  ///< The PPDU being transmitted
 };
 
 }  // namespace ns3
