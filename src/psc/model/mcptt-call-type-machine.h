@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -53,72 +53,72 @@ namespace psc {
 class McpttCallTypeMachine : public Object
 {
 public:
- /**
-  * Gets the type ID of the McpttCallTypeMachine class.
-  * \returns The type ID.
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the McpttCallTypeMachine class.
-  */
- McpttCallTypeMachine (void);
- /**
-  * \brief The destructor of the McpttCallTypeMachineclass.
-  */
- virtual ~McpttCallTypeMachine (void);
- /**
-  * Gets the current call type.
-  * \returns The call type.
-  */
- virtual McpttCallMsgFieldCallType GetCallType (void) const = 0;
- /**
-  * Gets the type ID of the object.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const = 0;
- /**
-  * Gets the ProSe per-packet priority.
-  * \returns The ProSe per-packet priority.
-  */
- virtual uint8_t GetPriority (void) const = 0;
- /**
-  * Gets the ID of the current state.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetStateId (void) const = 0;
- /**
-  * Indicates if the call type machine has been started.
-  * \returns True, if the machine has been started.
-  */
- virtual bool IsStarted (void) const = 0;
- /**
-  * Sets the current call type.
-  * \param callType The current call type.
-  */
- virtual void SetCallType (const McpttCallMsgFieldCallType& callType) = 0;
- /**
-  * Sets the downgrade callback.
-  * \param downgradeCb The downgrade callback.
-  */
- virtual void SetDowngradeCb (const Callback<void>  downgradeCb) = 0;
- /**
-  * Sets the ProSe per-packet priority.
-  * \param priority The ProSe per-packet priority.
-  */
- virtual void SetPriority (uint8_t priority) = 0;
- /**
-  * Sets the upgrade callback.
-  * \param upgradeCb The upgrade callback.
-  */
- virtual void SetUpgradeCb (const Callback<void, uint8_t>  upgradeCb) = 0;
- /**
-  * Starts the call type machine.
-  */
- virtual void Start (void) = 0;
- /**
-  * Stops the call type machine.
-  */
- virtual void Stop (void) = 0;
+  /**
+   * Gets the type ID of the McpttCallTypeMachine class.
+   * \returns The type ID.
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * Creates an instance of the McpttCallTypeMachine class.
+   */
+  McpttCallTypeMachine (void);
+  /**
+   * \brief The destructor of the McpttCallTypeMachineclass.
+   */
+  virtual ~McpttCallTypeMachine (void);
+  /**
+   * Gets the current call type.
+   * \returns The call type.
+   */
+  virtual McpttCallMsgFieldCallType GetCallType (void) const = 0;
+  /**
+   * Gets the type ID of the object.
+   * \returns The type ID.
+   */
+  virtual TypeId GetInstanceTypeId (void) const = 0;
+  /**
+   * Gets the ProSe per-packet priority.
+   * \returns The ProSe per-packet priority.
+   */
+  virtual uint8_t GetPriority (void) const = 0;
+  /**
+   * Gets the ID of the current state.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetStateId (void) const = 0;
+  /**
+   * Indicates if the call type machine has been started.
+   * \returns True, if the machine has been started.
+   */
+  virtual bool IsStarted (void) const = 0;
+  /**
+   * Sets the current call type.
+   * \param callType The current call type.
+   */
+  virtual void SetCallType (const McpttCallMsgFieldCallType& callType) = 0;
+  /**
+   * Sets the downgrade callback.
+   * \param downgradeCb The downgrade callback.
+   */
+  virtual void SetDowngradeCb (const Callback<void>  downgradeCb) = 0;
+  /**
+   * Sets the ProSe per-packet priority.
+   * \param priority The ProSe per-packet priority.
+   */
+  virtual void SetPriority (uint8_t priority) = 0;
+  /**
+   * Sets the upgrade callback.
+   * \param upgradeCb The upgrade callback.
+   */
+  virtual void SetUpgradeCb (const Callback<void, uint8_t>  upgradeCb) = 0;
+  /**
+   * Starts the call type machine.
+   */
+  virtual void Start (void) = 0;
+  /**
+   * Stops the call type machine.
+   */
+  virtual void Stop (void) = 0;
 };
 
 } // namespace psc

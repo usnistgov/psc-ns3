@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -80,7 +80,7 @@ McpttCall::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&McpttCall::m_callPort),
                    MakeUintegerChecker<uint16_t> ())
-     .AddAttribute ("FloorMachine", "The floor machine of the call.",
+    .AddAttribute ("FloorMachine", "The floor machine of the call.",
                    PointerValue (0),
                    MakePointerAccessor (&McpttCall::m_floorMachine),
                    MakePointerChecker<McpttFloorParticipant> ())
@@ -92,7 +92,7 @@ McpttCall::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&McpttCall::m_peerUserId),
                    MakeUintegerChecker<uint32_t> ())
-   ;
+  ;
   return tid;
 }
 
@@ -279,7 +279,7 @@ McpttCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
 void
 McpttCall::Receive (const McpttCallMsg& msg)
 {
-  NS_LOG_FUNCTION (this << & msg);
+  NS_LOG_FUNCTION (this << &msg);
 
   if (!m_rxCb.IsNull ())
     {
@@ -344,7 +344,7 @@ McpttCall::GetPeerSocketAddress (void) const
 uint32_t
 McpttCall::GetPeerUserId (void) const
 {
-  return m_peerUserId; 
+  return m_peerUserId;
 }
 
 // on-network sends SIP-based messages
@@ -648,35 +648,35 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
       Receive (reqMsg);
     }
   else if (subtype == McpttFloorMsgGranted::SUBTYPE
-      || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
       McpttFloorMsgGranted grantedMsg;
       pkt->RemoveHeader (grantedMsg);
       Receive (grantedMsg);
     }
   else if (subtype == McpttFloorMsgDeny::SUBTYPE
-      || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
       McpttFloorMsgDeny denyMsg;
       pkt->RemoveHeader (denyMsg);
       Receive (denyMsg);
     }
   else if (subtype == McpttFloorMsgRelease::SUBTYPE
-      || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgRelease releaseMsg;
       pkt->RemoveHeader (releaseMsg);
       Receive (releaseMsg);
     }
   else if (subtype == McpttFloorMsgIdle::SUBTYPE
-      || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
     {
       McpttFloorMsgIdle idleMsg;
       pkt->RemoveHeader (idleMsg);
       Receive (idleMsg);
     }
   else if (subtype == McpttFloorMsgTaken::SUBTYPE
-      || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
       McpttFloorMsgTaken takenMsg;
       pkt->RemoveHeader (takenMsg);
@@ -695,7 +695,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
       Receive (queuePositionRequestMsg);
     }
   else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-      || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
       pkt->RemoveHeader (queueInfoMsg);
@@ -865,8 +865,8 @@ McpttCall::SetStopTime (Time stopTime)
 
 std::ostream& operator << (std::ostream& os, const McpttCall::NetworkCallType& obj)
 {
-   os << static_cast<std::underlying_type<McpttCall::NetworkCallType>::type> (obj);
-   return os;
+  os << static_cast<std::underlying_type<McpttCall::NetworkCallType>::type> (obj);
+  return os;
 }
 
 } // namespace psc

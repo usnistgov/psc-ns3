@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -41,7 +41,7 @@
 
 namespace ns3 {
 
-namespace psc { 
+namespace psc {
 
 NS_LOG_COMPONENT_DEFINE ("McpttFloorMsgSink");
 
@@ -58,68 +58,55 @@ McpttFloorMsgSink::~McpttFloorMsgSink (void)
 
 void
 McpttFloorMsgSink::Receive (const McpttFloorMsg& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::Receive (const McpttMediaMsg& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorAck (const McpttFloorMsgAck& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorGranted (const McpttFloorMsgGranted& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorRelease (const McpttFloorMsgRelease& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorRequest (const McpttFloorMsgRequest& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveFloorTaken (const McpttFloorMsgTaken& msg)
-{
-}
+{}
 
 void
 McpttFloorMsgSink::ReceiveMedia (const McpttMediaMsg& msg)
-{
-}
+{}
 
 /** McpttFloorMsgSink - end **/
 

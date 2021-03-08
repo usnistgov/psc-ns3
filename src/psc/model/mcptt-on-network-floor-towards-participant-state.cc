@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -64,7 +64,7 @@ McpttOnNetworkFloorTowardsParticipantState::CallInitialized (Ptr<McpttOnNetworkF
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call initiated notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call initiated notification.");
 }
 
 void
@@ -73,7 +73,7 @@ McpttOnNetworkFloorTowardsParticipantState::CallRelease1 (Ptr<McpttOnNetworkFloo
   NS_LOG_FUNCTION (this);
 
   //TODO: Shall stop sending floor control messages.
-  
+
   //TODO: Shall request the network media interface to stop rendering RTP
   //      media packets towards to the associated MCPTT client
 
@@ -81,7 +81,7 @@ McpttOnNetworkFloorTowardsParticipantState::CallRelease1 (Ptr<McpttOnNetworkFloo
   //      floor participant
 
   machine->GetOwner ()->CallRelease1 ();
-  
+
   machine->ChangeState (McpttOnNetworkFloorTowardsParticipantStateReleasing::GetInstance ());
 }
 
@@ -90,7 +90,7 @@ McpttOnNetworkFloorTowardsParticipantState::CallRelease2 (Ptr<McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release notification (part II)."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release notification (part II).");
 }
 
 void
@@ -98,7 +98,7 @@ McpttOnNetworkFloorTowardsParticipantState::Enter (Ptr<McpttOnNetworkFloorToward
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter.");
 }
 
 void
@@ -106,7 +106,7 @@ McpttOnNetworkFloorTowardsParticipantState::ExpiryOfT8 (Ptr<McpttOnNetworkFloorT
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T8."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T8.");
 }
 
 McpttEntityId
@@ -120,7 +120,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorQueuePositionRequest (Pt
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -128,7 +128,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRelease (Ptr<McpttOnNetw
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -136,7 +136,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveFloorRequest (Ptr<McpttOnNetw
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -144,7 +144,7 @@ McpttOnNetworkFloorTowardsParticipantState::ReceiveMedia (Ptr<McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -158,7 +158,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorDeny (Ptr<McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << ".");
 
   machine->DoSend (msg);
 }
@@ -168,7 +168,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorGranted (Ptr<McpttOnNetwork
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << ".");
 
   machine->DoSend (msg);
 }
@@ -178,7 +178,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorIdle (Ptr<McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << ".");
 
   machine->DoSend (msg);
 }
@@ -188,7 +188,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorRevoke (Ptr<McpttOnNetworkF
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << ".");
 
   machine->DoSend (msg);
 }
@@ -198,7 +198,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendFloorTaken (Ptr<McpttOnNetworkFl
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << ".");
 
   machine->DoSend (msg);
 }
@@ -208,7 +208,7 @@ McpttOnNetworkFloorTowardsParticipantState::SendMedia (Ptr<McpttOnNetworkFloorTo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " sending " << msg.GetInstanceTypeId () << ".");
 
   machine->DoSend (msg);
 }
@@ -218,7 +218,7 @@ McpttOnNetworkFloorTowardsParticipantState::ClientRelease (Ptr<McpttOnNetworkFlo
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification.");
 }
 
 void
@@ -226,7 +226,7 @@ McpttOnNetworkFloorTowardsParticipantState::Terminate (Ptr<McpttOnNetworkFloorTo
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification.");
 }
 
 void
@@ -287,14 +287,14 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
 //  NS_LOG_FUNCTION (this);
 
   // Procedures are drawn from 24.380 section 6.3.5.2.2 SIP Session initiated
-  NS_LOG_DEBUG ("IsTemporaryGroup: " << machine->GetOwner ()->GetOwner ()->IsTemporaryGroup () 
-      << " IsAmbientListening: " << machine->GetOwner ()->GetOwner ()->IsAmbientListening ()
-      << " IsStarted: " << machine->GetOwner ()->IsStarted ()
-      << " IsImplicitRequest: " << machine->IsImplicitRequest ()
-      << " IsFloorOccupied: " << machine->GetOwner ()->IsFloorOccupied ()
-      << " IsEnabled: " << machine->GetOwner ()->IsQueueingSupported ()
-      << " IsQueueing: " <<  machine->IsQueueing () 
-      << " IsDualFloor: " <<  machine->IsDualFloor ()); 
+  NS_LOG_DEBUG ("IsTemporaryGroup: " << machine->GetOwner ()->GetOwner ()->IsTemporaryGroup ()
+                                     << " IsAmbientListening: " << machine->GetOwner ()->GetOwner ()->IsAmbientListening ()
+                                     << " IsStarted: " << machine->GetOwner ()->IsStarted ()
+                                     << " IsImplicitRequest: " << machine->IsImplicitRequest ()
+                                     << " IsFloorOccupied: " << machine->GetOwner ()->IsFloorOccupied ()
+                                     << " IsEnabled: " << machine->GetOwner ()->IsQueueingSupported ()
+                                     << " IsQueueing: " <<  machine->IsQueueing ()
+                                     << " IsDualFloor: " <<  machine->IsDualFloor ());
   if (!machine->GetOwner ()->GetOwner ()->IsTemporaryGroup ()
       || !machine->GetOwner ()->GetOwner ()->IsAmbientListening ())
     {
@@ -305,7 +305,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
           McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
         }
       else if (machine->GetOwner ()->IsStarted ()
-          && !machine->GetOwner ()->IsFloorOccupied ())
+               && !machine->GetOwner ()->IsFloorOccupied ())
         {
           NS_LOG_DEBUG ("Call is started and floor is not occupied");
           McpttFloorMsgIdle idleMsg;
@@ -316,13 +316,13 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
       else if (!machine->GetOwner ()->IsStarted ()
-          && !machine->IsImplicitRequest ())
+               && !machine->IsImplicitRequest ())
         {
           NS_LOG_DEBUG ("Call is not started and no implicit floor request");
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedIdle::GetInstance ()->Enter (machine);
         }
       else if (machine->GetOwner ()->IsStarted ()
-          && machine->GetOwner ()->IsFloorOccupied ())
+               && machine->GetOwner ()->IsFloorOccupied ())
         {
           NS_LOG_DEBUG ("Call is started and floor is occupied");
           McpttFloorMsgTaken takenMsg;
@@ -342,7 +342,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
         }
       else if (machine->GetOwner ()->IsStarted ()
-          && machine->IsImplicitRequest ())
+               && machine->IsImplicitRequest ())
         {
           if (!machine->GetOwner ()->IsFloorOccupied ())
             {
@@ -354,7 +354,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
               McpttOnNetworkFloorTowardsParticipantStatePermitted::GetInstance ()->Enter (machine);
             }
           else if (machine->GetOwner ()->IsQueueingSupported ()
-              && machine->IsQueueing ())
+                   && machine->IsQueueing ())
             {
               //TODO: shall set the priority level to the negotated maximum priority level
               NS_LOG_DEBUG ("Call is started and implicit floor request and floor is occupied (with queueing enabled)");
@@ -409,7 +409,7 @@ McpttOnNetworkFloorTowardsParticipantStateStartStop::CallInitialized (Ptr<McpttO
           takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
           machine->DoSend (takenMsg);
           McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::GetInstance ()->Enter (machine);
-         }
+        }
       else
         {
           NS_LOG_DEBUG ("Floor not occupied; generate idle message");
@@ -667,9 +667,9 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
       machine->GetOwner ()->ReceiveFloorRequest (msg);
     }
   else if (!msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL)
-      && !msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
-      && (!machine->GetOwner ()->IsQueueingSupported () || !machine->IsQueueing ())
-      && msg.GetPriority ().GetPriority () == 0)
+           && !msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
+           && (!machine->GetOwner ()->IsQueueingSupported () || !machine->IsQueueing ())
+           && msg.GetPriority ().GetPriority () == 0)
     {
       McpttFloorMsgDeny denyMsg;
       denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
@@ -713,7 +713,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRequest
           machine->DoSend (denyMsg);
         }
       else if (!machine->GetOwner ()->IsQueueingSupported ()
-          || !machine->IsQueueing ())
+               || !machine->IsQueueing ())
         {
           McpttFloorMsgDeny denyMsg;
           denyMsg.SetSsrc (machine->GetOwner ()->GetTxSsrc ());
@@ -769,7 +769,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
   NS_LOG_FUNCTION (this << &machine << msg);
 
   if ((!machine->GetOwner ()->IsQueueingSupported ()
-      || !machine->IsQueueing ()))
+       || !machine->IsQueueing ()))
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
@@ -803,7 +803,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedTaken::ReceiveFloorRelease
 
       takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
       machine->DoSend (takenMsg);
-     }
+    }
   else
     {
       if (msg.GetSubtype () == McpttFloorMsgRelease::SUBTYPE_ACK)
@@ -1008,7 +1008,7 @@ McpttOnNetworkFloorTowardsParticipantStatePermitted::SendFloorIdle (Ptr<McpttOnN
   NS_LOG_FUNCTION (this << &machine);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR
-      && machine->IsOverridden ()))
+                                       && machine->IsOverridden ()))
     {
       machine->DoSend (msg);
       machine->SetOverridden (false);
@@ -1154,7 +1154,7 @@ McpttOnNetworkFloorTowardsParticipantStatePendingRevoke::ExpiryOfT8 (Ptr<McpttOn
 
   machine->DoSend (revokeMsg);
   machine->GetT8 ()->Start ();
-  
+
   //TODO: How many times before giving up is up to implementation but it is
   //      recommnded that the client is disconnected once the floor control
   //      server has given up
@@ -1305,7 +1305,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ExpiryOfT8 (Ptr<Mcp
   machine->DoSend (revokeMsg);
 
   machine->GetT8 ()->Start ();
- 
+
   //TODO: How many times before giving up is up to implementation but it is
   //      recommnded that the client is disconnected once the floor control
   //      server has given up
@@ -1356,7 +1356,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedMedia::ReceiveFloorRelease
         {
           takenMsg.SetSubtype (McpttFloorMsgTaken::SUBTYPE_ACK);
         }
-      
+
       takenMsg.SetIndicator (machine->GetOwner ()->GetIndicator ());
 
       machine->DoSend (takenMsg);
@@ -1513,7 +1513,7 @@ McpttOnNetworkFloorTowardsParticipantStateNotPermittedInitiating::ReceiveFloorRe
         }
 
       machine->DoSend (queueInfoMsg);
-     }
+    }
   else
     {
       McpttFloorMsgDeny denyMsg;

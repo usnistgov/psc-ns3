@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -81,7 +81,7 @@ McpttEmergAlertMachineBasic::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttEmergAlertMachineBasic::m_stateChangeTrace),
                      "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-   ;
+  ;
 
   return tid;
 }
@@ -137,7 +137,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
       msg.SetOrigId (myId);
       msg.SetSendingId (myId);
 
-      tfe2->Stop();
+      tfe2->Stop ();
 
       Send (msg);
 
@@ -163,7 +163,7 @@ McpttEmergAlertMachineBasic::IsInEmergState (void) const
   NS_LOG_FUNCTION (this);
 
   bool isInEmergState = false;
-  
+
   if (IsStarted ())
     {
       isInEmergState = GetEmerg ();
@@ -211,7 +211,7 @@ McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmer
   Vector theirLoc = msg.GetUserLoc ().GetLoc ();
   std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
   uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
-  
+
   if (FindEmergUser (theirId, it))
     {
       it->Loc = theirLoc;
@@ -220,7 +220,7 @@ McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmer
   else
     {
       McpttEmergAlertMachineBasic::EmergUser emergUser;
-      emergUser.Id = msg.GetUserId ().GetId();
+      emergUser.Id = msg.GetUserId ().GetId ();
       emergUser.Loc = msg.GetUserLoc ().GetLoc ();
       emergUser.Tfe1 = CreateObject<McpttTimer> (McpttEntityId (1, "TFE1"));
       emergUser.Tfe1->Link (&McpttEmergAlertMachineBasic::ExpiryOfTfe1, this);
@@ -484,9 +484,9 @@ bool
 McpttEmergAlertMachineBasic::RemoveEmergUser (uint32_t userId)
 {
   NS_LOG_FUNCTION (this << userId);
- 
+
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " removing user " << userId << " from emergency list.");
- 
+
   std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
   bool found = FindEmergUser (userId, it);
 

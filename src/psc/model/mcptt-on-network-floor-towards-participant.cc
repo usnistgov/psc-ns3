@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -80,12 +80,12 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
     .AddAttribute ("PeerAddress", "The Ipv4 address of the node that the peer application is on.",
                    AddressValue (Ipv4Address ()),
                    MakeAddressAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerAddress,
-                                            &McpttOnNetworkFloorTowardsParticipant::SetPeerAddress),
+                                        &McpttOnNetworkFloorTowardsParticipant::SetPeerAddress),
                    MakeAddressChecker ())
     .AddAttribute ("PeerUserId", "The MCPTT User ID of the node that the peer application is on.",
                    UintegerValue (std::numeric_limits<uint32_t>::max ()),
                    MakeUintegerAccessor (&McpttOnNetworkFloorTowardsParticipant::GetPeerUserId,
-                                            &McpttOnNetworkFloorTowardsParticipant::SetPeerUserId),
+                                         &McpttOnNetworkFloorTowardsParticipant::SetPeerUserId),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ReceiveOnly", "Indicates if the associated participant is \"receive only\"",
                    BooleanValue (false),
@@ -96,11 +96,11 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
                    MakeTimeAccessor (&McpttOnNetworkFloorTowardsParticipant::SetDelayT8),
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace",
-                   "The trace for capturing state changes.",
-                   MakeTraceSourceAccessor (&McpttOnNetworkFloorTowardsParticipant::m_stateChangeTrace),
-                   "ns3::psc::McpttOnNetworkFloorTowardsParticipant::StateChangeTracedCallback")
-    ;
-  
+                     "The trace for capturing state changes.",
+                     MakeTraceSourceAccessor (&McpttOnNetworkFloorTowardsParticipant::m_stateChangeTrace),
+                     "ns3::psc::McpttOnNetworkFloorTowardsParticipant::StateChangeTracedCallback")
+  ;
+
   return tid;
 }
 
@@ -340,27 +340,27 @@ McpttOnNetworkFloorTowardsParticipant::Send (McpttMsg& msg)
   NS_LOG_LOGIC ("Send " << msg.GetInstanceTypeId () << ".");
   if (msg.IsA (McpttFloorMsgDeny::GetTypeId ()))
     {
-      SendFloorDeny (static_cast<McpttFloorMsgDeny&>(msg));
+      SendFloorDeny (static_cast<McpttFloorMsgDeny&> (msg));
     }
   else if (msg.IsA (McpttFloorMsgGranted::GetTypeId ()))
     {
-      SendFloorGranted (static_cast<McpttFloorMsgGranted&>(msg));
+      SendFloorGranted (static_cast<McpttFloorMsgGranted&> (msg));
     }
   else if (msg.IsA (McpttFloorMsgIdle::GetTypeId ()))
     {
-      SendFloorIdle (static_cast<McpttFloorMsgIdle&>(msg));
+      SendFloorIdle (static_cast<McpttFloorMsgIdle&> (msg));
     }
   else if (msg.IsA (McpttFloorMsgRevoke::GetTypeId ()))
     {
-      SendFloorRevoke (static_cast<McpttFloorMsgRevoke&>(msg));
+      SendFloorRevoke (static_cast<McpttFloorMsgRevoke&> (msg));
     }
   else if (msg.IsA (McpttFloorMsgTaken::GetTypeId ()))
     {
-      SendFloorTaken (static_cast<McpttFloorMsgTaken&>(msg));
+      SendFloorTaken (static_cast<McpttFloorMsgTaken&> (msg));
     }
   else if (msg.IsA (McpttMediaMsg::GetTypeId ()))
     {
-      SendMedia (static_cast<McpttMediaMsg&>(msg));
+      SendMedia (static_cast<McpttMediaMsg&> (msg));
     }
   else
     {
@@ -456,28 +456,28 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
       Receive (reqMsg);
     }
   else if (subtype == McpttFloorMsgGranted::SUBTYPE
-      || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
       McpttFloorMsgGranted grantedMsg;
       pkt->RemoveHeader (grantedMsg);
       Receive (grantedMsg);
     }
   else if (subtype == McpttFloorMsgDeny::SUBTYPE
-      || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
       McpttFloorMsgDeny denyMsg;
       pkt->RemoveHeader (denyMsg);
       Receive (denyMsg);
     }
   else if (subtype == McpttFloorMsgRelease::SUBTYPE
-      || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgRelease releaseMsg;
       pkt->RemoveHeader (releaseMsg);
       Receive (releaseMsg);
     }
   else if (subtype == McpttFloorMsgTaken::SUBTYPE
-      || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
       McpttFloorMsgTaken takenMsg;
       pkt->RemoveHeader (takenMsg);
@@ -490,7 +490,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
       Receive (queuePositionRequestMsg);
     }
   else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-      || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+           || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
       pkt->RemoveHeader (queueInfoMsg);
@@ -500,7 +500,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
     {
       McpttFloorMsgAck ackMsg;
       pkt->RemoveHeader (ackMsg);
-      Receive(ackMsg);
+      Receive (ackMsg);
     }
   else
     {

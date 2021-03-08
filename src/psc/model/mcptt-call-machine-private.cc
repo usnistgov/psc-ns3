@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -141,7 +141,7 @@ McpttCallMachinePrivate::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallMachinePrivate::m_stateChangeTrace),
                      "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-    ;
+  ;
 
   return tid;
 }
@@ -262,7 +262,7 @@ McpttCallMachinePrivate::ChangeState (Ptr<McpttCallMachinePrivateState>  state)
 
   if (currStateId != stateId)
     {
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
+      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
 
       SetState (state);
       if (!m_stateChangeCb.IsNull ())
@@ -534,7 +534,7 @@ McpttCallMachinePrivate::ReceiveEmergencyCancelAck (const McpttCallMsgPrivateEme
   //TODO: Not in standard - there is no check to see if call control messages should be ignored.
   if (GetState ()->GetInstanceStateId () != McpttCallMachinePrivateStateP1::GetStateId ())
     {
-      typeMachine->ReceiveEmergencyCancelAck(msg);
+      typeMachine->ReceiveEmergencyCancelAck (msg);
     }
 }
 
@@ -743,7 +743,7 @@ McpttCallMachinePrivate::ReleaseCall (void)
   typeMachine->ReleaseCall ();
   state->ReleaseCall (*this);
 }
- 
+
 void
 McpttCallMachinePrivate::Send (const McpttCallMsg& msg)
 {

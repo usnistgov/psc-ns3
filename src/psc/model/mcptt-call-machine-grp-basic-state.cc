@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -55,49 +55,49 @@ void
 McpttCallMachineGrpBasicState::AcceptCall (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring call accept."); 
+  NS_LOG_LOGIC ("Ignoring call accept.");
 }
 
 void
 McpttCallMachineGrpBasicState::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring expiry of TFG1."); 
+  NS_LOG_LOGIC ("Ignoring expiry of TFG1.");
 }
 
 void
 McpttCallMachineGrpBasicState::ExpiryOfTfg2 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring expiry of TFG2."); 
+  NS_LOG_LOGIC ("Ignoring expiry of TFG2.");
 }
 
 void
 McpttCallMachineGrpBasicState::ExpiryOfTfg3 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring expiry of TFG3."); 
+  NS_LOG_LOGIC ("Ignoring expiry of TFG3.");
 }
 
 void
 McpttCallMachineGrpBasicState::ExpiryOfTfg4 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring expiry of TFG4."); 
+  NS_LOG_LOGIC ("Ignoring expiry of TFG4.");
 }
 
 void
 McpttCallMachineGrpBasicState::ExpiryOfTfg5 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring expiry of TFG5."); 
+  NS_LOG_LOGIC ("Ignoring expiry of TFG5.");
 }
 
 void
 McpttCallMachineGrpBasicState::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring expiry of TFG6."); 
+  NS_LOG_LOGIC ("Ignoring expiry of TFG6.");
 }
 
 McpttEntityId
@@ -116,35 +116,35 @@ void
 McpttCallMachineGrpBasicState::InitiateCall (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring initate call."); 
+  NS_LOG_LOGIC ("Ignoring initate call.");
 }
 
 void
 McpttCallMachineGrpBasicState::ReceiveGrpCallAccept (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAccept& msg)
 {
   NS_LOG_FUNCTION (this << &machine << msg);
-  NS_LOG_LOGIC ("Ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC ("Ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
 McpttCallMachineGrpBasicState::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun & msg)
 {
   NS_LOG_FUNCTION (this << &machine << msg);
-  NS_LOG_LOGIC ("Ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC ("Ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
 McpttCallMachineGrpBasicState::ReceiveGrpCallProbe (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpProbe& msg)
 {
   NS_LOG_FUNCTION (this << &machine << msg);
-  NS_LOG_LOGIC ("Ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC ("Ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
 McpttCallMachineGrpBasicState::RejectCall (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring reject call."); 
+  NS_LOG_LOGIC ("Ignoring reject call.");
 }
 
 void
@@ -152,7 +152,7 @@ McpttCallMachineGrpBasicState::ReleaseCall (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC ("Ignoring release call."); 
+  NS_LOG_LOGIC ("Ignoring release call.");
 }
 
 McpttCallMachineGrpBasicState::McpttCallMachineGrpBasicState (void)
@@ -238,7 +238,7 @@ void
 McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic& machine, const McpttCallMsgGrpAnnoun& msg)
 {
   NS_LOG_FUNCTION (this << &machine << msg);
- 
+
   Time delayTfg2;
   Time delayTfg6;
   uint32_t myUserId = machine.GetCall ()->GetOwner ()->GetUserId ();
@@ -389,7 +389,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
     {
       tfg3->Stop ();
     }
- 
+
   McpttCallMsgFieldSdp sdp;
   sdp.SetFloorPort (floorPort);
   sdp.SetGrpAddr (grpAddress.Get ());
@@ -611,7 +611,7 @@ void
 McpttCallMachineGrpBasicStateS3::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  
+
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   Ptr<McpttTimer> tfg5 = machine.GetTfg5 ();
   Ptr<McpttCall> parent = machine.GetCall ();
@@ -694,7 +694,7 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 
   if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
       && (myProbeRespVal == false
-        || (myProbeRespVal == true && msg.IsProbeResp ()))
+          || (myProbeRespVal == true && msg.IsProbeResp ()))
       && myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
       && myStartTime.GetTime () == theirStartTime.GetTime ()
       && myLastChgTime.GetTime () == theirLastChgTime.GetTime ()
@@ -709,8 +709,8 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
       machine.SetProbeRespVal (false);
     }
   else if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
-      && (myOrigId.GetId () != theirOrigId.GetId ()
-        || myCallId.GetCallId () != theirCallId.GetCallId ()))
+           && (myOrigId.GetId () != theirOrigId.GetId ()
+               || myCallId.GetCallId () != theirCallId.GetCallId ()))
     {
       bool clause1 = (myCallType.GetType () == McpttCallMsgFieldCallType::BASIC_GROUP)
         && (theirCallType.GetType () == McpttCallMsgFieldCallType::EMERGENCY_GROUP
@@ -736,7 +736,7 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
           machine.SetOrigId (theirOrigId);
           machine.SetRefInt (theirRefInt);
           machine.SetStartTime (theirStartTime);
-          
+
           floorMachine->Stop ();
 
           parent->CloseFloorChannel ();
@@ -766,7 +766,7 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallProbe (McpttCallMachineGrpBasic& 
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  Time delayTfg2; 
+  Time delayTfg2;
   Ptr<McpttTimer> tfg2 = machine.GetTfg2 ();
   bool probeRespVal = machine.GetProbeRespVal ();
   McpttCallMsgFieldGrpId theirGrpId = msg.GetGrpId ();
@@ -811,7 +811,7 @@ McpttCallMachineGrpBasicStateS3::ReleaseCall (McpttCallMachineGrpBasic& machine)
     }
 
   //TODO: Not in standard - stopping timer TFG6 when the call is released (i.e. when leaving the S3 state).
-  tfg6->Stop (); 
+  tfg6->Stop ();
 
   tfg5->Start ();
 

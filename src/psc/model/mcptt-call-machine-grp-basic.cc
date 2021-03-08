@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -118,7 +118,7 @@ McpttCallMachineGrpBasic::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallMachineGrpBasic::m_stateChangeTrace),
                      "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-    ;
+  ;
 
   return tid;
 }
@@ -248,7 +248,7 @@ McpttCallMachineGrpBasic::CalcDelayForMaxDuration (void) const
 
   double seconds = x - (y - z);
   //TODO: Not in standard - making sure that the calculated time is at least zero.
-  seconds = (seconds < 0.0 ? 0.0 : seconds); 
+  seconds = (seconds < 0.0 ? 0.0 : seconds);
 
   Time delay = Seconds (seconds);
 
@@ -297,7 +297,7 @@ McpttCallMachineGrpBasic::ChangeState (Ptr<McpttCallMachineGrpBasicState>  state
 
   if (currStateId != stateId)
     {
-  NS_LOG_LOGIC (GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
+      NS_LOG_LOGIC (GetCall ()->GetOwner ()->GetUserId () << " moving from state " << *curr << " to state " << *state << ".");
 
       SetState (state);
       if (!m_stateChangeCb.IsNull ())
@@ -404,7 +404,8 @@ McpttCallMachineGrpBasic::IsConfirmMode (void) const
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " is" << (m_confirmMode ? " " : " NOT ") << "indicating confirm mode.");
 
-  return m_confirmMode;}
+  return m_confirmMode;
+}
 
 bool
 McpttCallMachineGrpBasic::IsStarted (void) const
@@ -524,7 +525,7 @@ McpttCallMachineGrpBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAl
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetCall ()->GetOwner ()->GetUserId () << " received " << msg << ".");
 
- Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
+  Ptr<McpttEmergAlertMachineBasic> emergMachine = GetEmergMachine ();
   emergMachine->ReceiveGrpCallEmergAlert (msg);
 }
 
@@ -610,7 +611,7 @@ McpttCallMachineGrpBasic::ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpImmPer
 void
 McpttCallMachineGrpBasic::ReceiveGrpCallProbe (const McpttCallMsgGrpProbe& msg)
 {
-  NS_LOG_FUNCTION (this << & msg);
+  NS_LOG_FUNCTION (this << &msg);
 
   if (!IsStarted ())
     {
@@ -663,7 +664,7 @@ McpttCallMachineGrpBasic::ReleaseCall (void)
   state->ReleaseCall (*this);
   typeMachine->ReleaseCall ();
 }
- 
+
 void
 McpttCallMachineGrpBasic::ReportEvent (const char* reason) const
 {
@@ -781,7 +782,7 @@ McpttCallMachineGrpBasic::Stop (void)
       call->CloseFloorChannel ();
     }
 
-  if (call->IsMediaChannelOpen())
+  if (call->IsMediaChannelOpen ())
     {
       call->CloseMediaChannel ();
     }
@@ -790,7 +791,7 @@ McpttCallMachineGrpBasic::Stop (void)
     {
       emergMachine->Stop ();
     }
-  
+
   if (typeMachine->IsStarted ())
     {
       typeMachine->Stop ();
@@ -1027,7 +1028,7 @@ McpttCallMachineGrpBasic::GetOrigId (void) const
 
   return m_origId;
 }
-  
+
 Ptr<McpttCall>
 McpttCallMachineGrpBasic::GetCall (void) const
 {
@@ -1187,7 +1188,7 @@ void
 McpttCallMachineGrpBasic::SetMergeCb (const Callback<void, uint16_t>  mergeCb)
 {
   NS_LOG_FUNCTION (this << &mergeCb);
-  
+
   m_mergeCb = mergeCb;
 }
 
@@ -1250,7 +1251,7 @@ void
 McpttCallMachineGrpBasic::SetStartTime (const McpttCallMsgFieldStartTime& startTime)
 {
   NS_LOG_FUNCTION (this << startTime);
-  
+
   m_startTime = startTime;
 }
 

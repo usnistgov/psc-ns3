@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -58,7 +58,7 @@ McpttCallTypeMachinePrivateState::Downgrade (McpttCallTypeMachinePrivate& machin
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring downgrade."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring downgrade.");
 }
 
 void
@@ -66,7 +66,7 @@ McpttCallTypeMachinePrivateState::ExpiryOfTfp1 (McpttCallTypeMachinePrivate& mac
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP1."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP1.");
 }
 
 void
@@ -74,7 +74,7 @@ McpttCallTypeMachinePrivateState::ExpiryOfTfp6 (McpttCallTypeMachinePrivate& mac
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP6."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP6.");
 }
 
 void
@@ -82,7 +82,7 @@ McpttCallTypeMachinePrivateState::ExpiryOfTfp8 (McpttCallTypeMachinePrivate& mac
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP8."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP8.");
 }
 
 void
@@ -90,7 +90,7 @@ McpttCallTypeMachinePrivateState::InitiateCall (McpttCallTypeMachinePrivate& mac
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring initate call."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring initate call.");
 }
 
 void
@@ -154,7 +154,7 @@ McpttCallTypeMachinePrivateState::ReleaseCall (McpttCallTypeMachinePrivate& mach
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release call."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release call.");
 }
 
 void
@@ -162,7 +162,7 @@ McpttCallTypeMachinePrivateState::UpgradeTo (McpttCallTypeMachinePrivate& machin
 {
   NS_LOG_FUNCTION (this << &machine << &callType);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring upgrade to " << callType.GetType () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring upgrade to " << callType.GetType () << ".");
 }
 
 McpttCallTypeMachinePrivateState::McpttCallTypeMachinePrivateState (void)
@@ -425,7 +425,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveAccept (McpttCallTypeMachinePrivate& 
       //TODO: Not in standard - does not require closing previous session.
       call->CloseFloorChannel ();
       call->CloseMediaChannel ();
-    
+
       call->OpenFloorChannel (grpAddress, floorPort);
       call->OpenMediaChannel (grpAddress, speechPort);
     }
@@ -523,7 +523,7 @@ McpttCallTypeMachinePrivateStateQ1::ReceiveSetupRequest (McpttCallTypeMachinePri
 
   uint32_t myUserId = pttApp->GetUserId ();
   Ptr<McpttTimer> tfp8 = callMachine->GetTfp8 ();
-  
+
   McpttCallMsgFieldSdp theirSdp = callMachine->GetSdp ();
   McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
   McpttCallMsgFieldUserId theirCallerId = msg.GetCallerId ();
@@ -739,7 +739,7 @@ McpttCallTypeMachinePrivateStateQ2::ExpiryOfTfp1 (McpttCallTypeMachinePrivate& m
   else
     {
       //TODO: Update stored user location with current user location.
-  
+
       cfp1->Increment ();
 
       McpttCallMsgPrivateSetupReq reqMsg;
@@ -840,7 +840,7 @@ void
 McpttCallTypeMachinePrivateStateQ2::ReceiveSetupRequest (McpttCallTypeMachinePrivate& machine, const McpttCallMsgPrivateSetupReq& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
-  
+
   // This procedure is defined for q1 and Q2 so Q1's procedure is used here
   // for maintenance.
   McpttCallTypeMachinePrivateStateQ1::GetInstance ()->ReceiveSetupRequest (machine, msg);

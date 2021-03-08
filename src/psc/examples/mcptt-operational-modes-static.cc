@@ -55,13 +55,13 @@
  *  -.-                    -.-                                  .----------------. -.-
  *   |                      |                                   |    Building    |  |
  *   |                      |                                   |                |  |
- *   |                     20m                                  |                |  | 
+ *   |                     20m                                  |                |  |
  *   |                .-    |    -+-               UE1          |                |  |
  *   |                |     |     3m                            |                |  |
  *   |        Team 1 <     -+-   -+-        UE0    UE2         d_1               |  |
- *  60 m              |     |     3m                            |                |  | 
+ *  60 m              |     |     3m                            |                |  |
  *   |                '-    |    -+-               UE3          |                |  |
- *   |                      |                                   |                |  | 
+ *   |                      |                                   |                |  |
  *   |                      |                                   |                |  |
  *   |                     40m                                  |                |  |
  *   |                      |                                   |                |  |
@@ -84,11 +84,11 @@
  *                          |                                   |                |  |
  *                         20m                                  :                :  :
  *                          |                                   |                |  |
- *                         -+-                                  '----------------' -'- 
+ *                         -+-                                  '----------------' -'-
  *
  *
- * Each team is composed of a minimum of 4 (team size can be expanded) 
- * stationary teams of UEs.  By default, team size is 4 UEs.  
+ * Each team is composed of a minimum of 4 (team size can be expanded)
+ * stationary teams of UEs.  By default, team size is 4 UEs.
  * Team 1 is positioned outside the building, on-network, and is the baseline
  * with no D2D/Sidelink communication.
  * Team 2 is positioned inside the building, off-network over D2D/Sidelink.
@@ -167,9 +167,9 @@ DoPrintPositions (Ptr<OutputStreamWrapper> stream)
       Ptr<MobilityModel> m = n.Get (i)->GetObject<MobilityModel> ();
       if (m)
         {
-          *os << Simulator::Now ().As (Time::S) << " " << std::setw (2) << n.Get (i)->GetId () 
-            << " (" << std::setw (3) << m->GetPosition ().x << ","  << std::setw (4) 
-            << m->GetPosition ().y << "," << std::setw (4) << m->GetPosition ().z << ")" << std::endl;
+          *os << Simulator::Now ().As (Time::S) << " " << std::setw (2) << n.Get (i)->GetId ()
+              << " (" << std::setw (3) << m->GetPosition ().x << ","  << std::setw (4)
+              << m->GetPosition ().y << "," << std::setw (4) << m->GetPosition ().z << ")" << std::endl;
         }
     }
 }
@@ -208,7 +208,7 @@ MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Head
         {
           m_nRxMsgsOff++;
         }
-    }  
+    }
 }
 
 /*
@@ -228,7 +228,7 @@ MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, const Head
         {
           m_nTxMsgsOff++;
         }
-     }
+    }
 }
 
 void
@@ -267,25 +267,25 @@ Pc5ConnectionStatusTrace (Ptr<McpttServerApp> serverApp, uint16_t callId, Ptr<No
 {
   NS_LOG_DEBUG ("PC5 status changed for srcL2Id " << srcL2Id << " and dstL2Id " << dstL2Id << " to " << status);
   if (status == LteSlBasicUeController::SECURE_ESTABLISHED && role == LteSlUeRrc::RelayRole::RemoteUE)
-  {
-    //Retrieve new IP address information
-    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-    Ipv6Address ipv6Addr = ipv6->GetAddress (iface, 1).GetAddress();
-    Ptr<McpttServerCall> call = serverApp->GetCall (callId);
-    NS_LOG_DEBUG ("Call " << callId << " user " << node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId() << " address " << ipv6Addr);
-    if (call != nullptr)
     {
-      Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
-      Ptr<McpttOnNetworkFloorTowardsParticipant> participantFloorCtrl = arbitrator->GetParticipantByUserId (node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId());
-      participantFloorCtrl->SetPeerAddress (ipv6Addr);
-      participantFloorCtrl->Stop ();
-      participantFloorCtrl->Start ();
+      //Retrieve new IP address information
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      Ipv6Address ipv6Addr = ipv6->GetAddress (iface, 1).GetAddress ();
+      Ptr<McpttServerCall> call = serverApp->GetCall (callId);
+      NS_LOG_DEBUG ("Call " << callId << " user " << node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId () << " address " << ipv6Addr);
+      if (call != nullptr)
+        {
+          Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
+          Ptr<McpttOnNetworkFloorTowardsParticipant> participantFloorCtrl = arbitrator->GetParticipantByUserId (node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId ());
+          participantFloorCtrl->SetPeerAddress (ipv6Addr);
+          participantFloorCtrl->Stop ();
+          participantFloorCtrl->Start ();
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Could not find call with ID " << callId);
+        }
     }
-    else
-    {
-      NS_LOG_DEBUG ("Could not find call with ID " << callId);
-    }
-  }
 }
 
 int main (int argc, char *argv[])
@@ -449,36 +449,36 @@ int main (int argc, char *argv[])
   double yInc = 6.0 / (nUEsPerTeam - 1);
   double xInit = 397;
   double yInit = -17;
-  for (uint32_t i = 0; i < nUEsPerTeam; i++) 
+  for (uint32_t i = 0; i < nUEsPerTeam; i++)
     {
       mm = CreateObject<ConstantPositionMobilityModel> ();
-      mm->SetPosition (Vector (xInit+ i * xInc, yInit - i * yInc, 1.5));
+      mm->SetPosition (Vector (xInit + i * xInc, yInit - i * yInc, 1.5));
       team1UeNodes.Get (i)->AggregateObject (mm);
     }
   BuildingsHelper::Install (team1UeNodes);
 
-  // Team 2 
+  // Team 2
   xInit = 427;
   yInit = -50;
-  for (uint32_t i = 0; i < nUEsPerTeam; i++) 
+  for (uint32_t i = 0; i < nUEsPerTeam; i++)
     {
       mm = CreateObject<ConstantPositionMobilityModel> ();
-      mm->SetPosition (Vector (xInit+ i * xInc, yInit - i * yInc, 1.5));
+      mm->SetPosition (Vector (xInit + i * xInc, yInit - i * yInc, 1.5));
       team2UeNodes.Get (i)->AggregateObject (mm);
     }
   BuildingsHelper::Install (team2UeNodes);
 
-  // Team 3; position first node outside 
+  // Team 3; position first node outside
   mm = CreateObject<ConstantPositionMobilityModel> ();
   mm->SetPosition (Vector (397, -100, 1.5));
   team3UeNodes.Get (0)->AggregateObject (mm);
 
   xInit = 430;
   yInit = -90;
-  for (uint32_t i = 1; i < nUEsPerTeam; i++) 
+  for (uint32_t i = 1; i < nUEsPerTeam; i++)
     {
       mm = CreateObject<ConstantPositionMobilityModel> ();
-      mm->SetPosition (Vector (xInit+ i * xInc, yInit - i * yInc, 1.5));
+      mm->SetPosition (Vector (xInit + i * xInc, yInit - i * yInc, 1.5));
       team3UeNodes.Get (i)->AggregateObject (mm);
     }
   BuildingsHelper::Install (team3UeNodes);
@@ -600,7 +600,7 @@ int main (int argc, char *argv[])
 
   ApplicationContainer serverApps;
   ApplicationContainer clientApps;
-  
+
   McpttServerHelper mcpttServerHelper;
   serverApps.Add (mcpttServerHelper.Install (remoteHost));
   serverApps.Start (callStartTime - Seconds (1));
@@ -613,16 +613,16 @@ int main (int argc, char *argv[])
   McpttHelper mcpttClientHelper;
   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
   mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                          "Bytes", UintegerValue (60),
-                          "DataRate", DataRateValue (DataRate ("24kb/s")));
+                                 "Bytes", UintegerValue (60),
+                                 "DataRate", DataRateValue (DataRate ("24kb/s")));
   mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
-                          "Automatic", BooleanValue (true));
+                               "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                          "Mean", DoubleValue (10.0),
-                          "Variance", DoubleValue (5.0));
+                                                          "Mean", DoubleValue (10.0),
+                                                          "Variance", DoubleValue (5.0));
   mcpttClientHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                          "Mean", DoubleValue (1.0),
-                          "Variance", DoubleValue (1.0));
+                                                  "Mean", DoubleValue (1.0),
+                                                  "Variance", DoubleValue (1.0));
 
   ApplicationContainer team1Apps = mcpttClientHelper.Install (team1UeNodes);
   ApplicationContainer team3Apps = mcpttClientHelper.Install (team3UeNodes);
@@ -631,7 +631,7 @@ int main (int argc, char *argv[])
   clientApps.Add (team1Apps);
   clientApps.Add (team2Apps);
   clientApps.Add (team3Apps);
- 
+
   clientApps.Start (callStartTime - Seconds (1));
   clientApps.Stop (simTime - Seconds (1));
 
@@ -656,38 +656,38 @@ int main (int argc, char *argv[])
   McpttCallHelper callHelper;
   // Optional statements to tailor the configurable attributes
   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "TxSsrc", UintegerValue (100));
+                            "AckRequired", BooleanValue (false),
+                            "AudioCutIn", BooleanValue (false),
+                            "DualFloorSupported", BooleanValue (false),
+                            "TxSsrc", UintegerValue (100));
   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                         "ReceiveOnly", BooleanValue (false));
+                                    "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                         "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
+                             "AckRequired", BooleanValue (false),
+                             "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                         "AmbientListening", BooleanValue (false),
-                         "TemporaryGroup", BooleanValue (false));
+                            "AmbientListening", BooleanValue (false),
+                            "TemporaryGroup", BooleanValue (false));
 
   uint16_t callId;
   uint32_t groupId = 1;
   std::map<uint32_t, uint16_t> groupIdToOnNetworkCallId;
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   callId = callHelper.AddCall (team1Apps,
-                      serverApp,
-                      groupId,
-                      callType,
-                      callStartTime,
-                      callStopTime);
+                               serverApp,
+                               groupId,
+                               callType,
+                               callStartTime,
+                               callStopTime);
   groupIdToOnNetworkCallId.insert (std::pair<uint32_t, uint16_t> (groupId, callId));
 
   groupId = 3;
   callId = callHelper.AddCall (team3Apps,
-                      serverApp,
-                      groupId,
-                      callType,
-                      callStartTime,
-                      callStopTime);
+                               serverApp,
+                               groupId,
+                               callType,
+                               callStartTime,
+                               callStopTime);
   groupIdToOnNetworkCallId.insert (std::pair<uint32_t, uint16_t> (groupId, callId));
   uint16_t team3CallId = callId;
 
@@ -767,7 +767,7 @@ int main (int argc, char *argv[])
 
   for (uint32_t ueIdx = 0; ueIdx < remoteUeNodes.GetN (); ueIdx++)
     {
-      Simulator::Schedule (relayConnectTime, &ConnectRelayService, remoteUeDevs.Get (ueIdx)); 
+      Simulator::Schedule (relayConnectTime, &ConnectRelayService, remoteUeDevs.Get (ueIdx));
       ctx << remoteUeNodes.Get (ueIdx)->GetId ();
       Ptr<LteUeRrc> rrc = remoteUeDevs.Get (ueIdx)->GetObject<LteUeNetDevice> ()->GetRrc ();
       PointerValue ptrOne;
@@ -810,7 +810,7 @@ int main (int argc, char *argv[])
   std::cout << "--------------------------------------------------------------" << std::endl;
   for (it = rxMessagesPerUeTracerMap.begin (); it != rxMessagesPerUeTracerMap.end (); it++ )
     {
-     std::cout << "Team: " << it->second.m_team
+      std::cout << "Team: " << it->second.m_team
                 << " UE idx: " << it->second.m_ueIdx
                 << " UE Node ID: " << it->second.m_ueNodeId
                 << " UE IMSI: " << it->second.m_ueImsi
@@ -823,7 +823,7 @@ int main (int argc, char *argv[])
         {
           std::cout << "--------------" << std::endl;
         }
-     }
+    }
 
   Simulator::Destroy ();
 

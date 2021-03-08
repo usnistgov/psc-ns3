@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -95,7 +95,7 @@ McpttServerCallMachineGroupPrearranged::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttServerCallMachineGroupPrearranged::m_stateChangeTrace),
                      "ns3::psc::McpttServerCallMachine::StateChangeTracedCallback")
-   ;
+  ;
   return tid;
 }
 
@@ -166,7 +166,7 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t from, uint32_t 
       UintegerValue portValue;
       GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
       uint16_t callPort = portValue.Get ();
-      InetSocketAddress inetAddr (ipv4Addr, callPort); 
+      InetSocketAddress inetAddr (ipv4Addr, callPort);
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
         {
           proxy->SendInvite (pkt, inetAddr, hdr.GetRequestUri (),
@@ -191,7 +191,7 @@ McpttServerCallMachineGroupPrearranged::SendSipRequest (uint32_t from, uint32_t 
       UintegerValue portValue;
       GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
       uint16_t callPort = portValue.Get ();
-      Inet6SocketAddress inet6Addr (ipv6Addr, callPort); 
+      Inet6SocketAddress inet6Addr (ipv6Addr, callPort);
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
         {
           proxy->SendInvite (pkt, inet6Addr, hdr.GetRequestUri (),
@@ -236,7 +236,7 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t from, uint32_t
               UintegerValue portValue;
               GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
               uint16_t callPort = portValue.Get ();
-              InetSocketAddress inetAddr (ipv4Addr, callPort); 
+              InetSocketAddress inetAddr (ipv4Addr, callPort);
               proxy->SendResponse (pkt, inetAddr, statusCode,
                                    from, to, hdr.GetCallId (),
                                    MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
@@ -248,7 +248,7 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t from, uint32_t
               UintegerValue portValue;
               GetServerCall ()->GetOwner ()->GetAttribute ("CallPort", portValue);
               uint16_t callPort = portValue.Get ();
-              Inet6SocketAddress inet6Addr (ipv6Addr, callPort); 
+              Inet6SocketAddress inet6Addr (ipv6Addr, callPort);
               proxy->SendResponse (pkt, inet6Addr, statusCode,
                                    from, to, hdr.GetCallId (),
                                    MakeCallback (&McpttServerCall::SendCallControlPacket, GetServerCall ()));
@@ -379,7 +379,7 @@ McpttServerCallMachineGroupPrearranged::ReceiveCallPacket (Ptr<Packet> pkt, cons
 }
 
 void
-McpttServerCallMachineGroupPrearranged::Receive (const McpttMediaMsg& msg) 
+McpttServerCallMachineGroupPrearranged::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 }
@@ -392,7 +392,7 @@ McpttServerCallMachineGroupPrearranged::RejectCall (void)
 
 void
 McpttServerCallMachineGroupPrearranged::SetCallId (const McpttCallMsgFieldCallId& callId)
-{ 
+{
   NS_LOG_DEBUG (this << callId);
   m_callId = callId.GetCallId ();
 }

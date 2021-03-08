@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -54,94 +54,98 @@ namespace psc {
 class McpttChannel : public Object
 {
 public:
- /**
-  * Gets the type ID of the McpttChannel class.
-  * \returns The type ID.
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the McpttChannel class.
-  */
- McpttChannel(void);
- /**
-  * \brief The destructor of the McpttChannel class.
-  */
- virtual ~McpttChannel (void);
- /**
-  * Closes the channel.
-  */
- virtual void Close (void);
- /**
-  * Gets the type ID of this McpttChannel instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Indicates if the channel is open.
-  * \returns True, if the channel is open.
-  */
- virtual bool IsOpen (void) const;
- /**
-  * Opens the channel.
-  * \param node The node in which the socket will reside.
-  * \param port The port number.
-  * \param local The local address.
-  * \param peer The peer address.
-  * \returns 0 on success; otherwise the error number.
-  */
- virtual int Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer);
- /**
-  * Sends a packet.
-  * \param pkt The packet to send.
-  * \returns The number of bytes accepted for transmission if no error occurs, and -1 otherwise.
-  */
- virtual int Send (Ptr<Packet>  pkt);
+  /**
+   * Gets the type ID of the McpttChannel class.
+   * \returns The type ID.
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * Creates an instance of the McpttChannel class.
+   */
+  McpttChannel (void);
+  /**
+   * \brief The destructor of the McpttChannel class.
+   */
+  virtual ~McpttChannel (void);
+  /**
+   * Closes the channel.
+   */
+  virtual void Close (void);
+  /**
+   * Gets the type ID of this McpttChannel instance.
+   * \returns The type ID.
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+  /**
+   * Indicates if the channel is open.
+   * \returns True, if the channel is open.
+   */
+  virtual bool IsOpen (void) const;
+  /**
+   * Opens the channel.
+   * \param node The node in which the socket will reside.
+   * \param port The port number.
+   * \param local The local address.
+   * \param peer The peer address.
+   * \returns 0 on success; otherwise the error number.
+   */
+  virtual int Open (Ptr<Node>  node, uint16_t port, const Address& local, const Address& peer);
+  /**
+   * Sends a packet.
+   * \param pkt The packet to send.
+   * \returns The number of bytes accepted for transmission if no error occurs, and -1 otherwise.
+   */
+  virtual int Send (Ptr<Packet>  pkt);
   /**
    * \brief Send data to a specified peer.
    *
    * \param p packet to send
    * \param flags Socket control flags
    * \param toAddress IP Address of remote host
-   * \returns -1 in case of error or the number of bytes copied in the 
+   * \returns -1 in case of error or the number of bytes copied in the
    *          internal buffer and accepted for transmission.
    */
- virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
+
 protected:
- /**
-  * Disposes of this McpttChannel instance.
-  */
- virtual void DoDispose (void);
- /**
-  * The function used to receive a single packet.
-  * \param pkt The packet that was received.
-  * \param from The source address of the packet.
-  */
- virtual void ReceivePkt (Ptr<Packet>  pkt, Address from);
- /**
-  * The sink for when packets are received.
-  * \param socket The socket from which to receive packets.
-  */
- virtual void ReceivePkts (Ptr<Socket> socket);
+  /**
+   * Disposes of this McpttChannel instance.
+   */
+  virtual void DoDispose (void);
+  /**
+   * The function used to receive a single packet.
+   * \param pkt The packet that was received.
+   * \param from The source address of the packet.
+   */
+  virtual void ReceivePkt (Ptr<Packet>  pkt, Address from);
+  /**
+   * The sink for when packets are received.
+   * \param socket The socket from which to receive packets.
+   */
+  virtual void ReceivePkts (Ptr<Socket> socket);
+
 private:
- Callback<void, Ptr<Packet>, Address > m_rxPktCb; //!< The sink used for receiving received packets.
- Ptr<Socket> m_socket; //!< The underlying socket of the channel.
+  Callback<void, Ptr<Packet>, Address > m_rxPktCb; //!< The sink used for receiving received packets.
+  Ptr<Socket> m_socket; //!< The underlying socket of the channel.
+
 protected:
- /**
-  * Sets the underlying socket of the channel.
-  * \param socket The underlying socket.
-  */
- virtual void SetSocket (Ptr<Socket>  socket);
+  /**
+   * Sets the underlying socket of the channel.
+   * \param socket The underlying socket.
+   */
+  virtual void SetSocket (Ptr<Socket>  socket);
+
 public:
- /**
-  * Gets the underlying socket of the channel.
-  * \returns The underlying socket.
-  */
- virtual Ptr<Socket> GetSocket (void) const;
- /**
-  * Sets the sink used for receiving received packets.
-  * \param rxPktCb The callback.
-  */
- virtual void SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb);
+  /**
+   * Gets the underlying socket of the channel.
+   * \returns The underlying socket.
+   */
+  virtual Ptr<Socket> GetSocket (void) const;
+  /**
+   * Sets the sink used for receiving received packets.
+   * \param rxPktCb The callback.
+   */
+  virtual void SetRxPktCb (const Callback<void, Ptr<Packet>, Address>  rxPktCb);
 };
 
 } // namespace psc

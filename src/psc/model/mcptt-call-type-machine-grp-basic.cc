@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -95,7 +95,7 @@ McpttCallTypeMachineGrpBasic::GetTypeId (void)
     .AddTraceSource ("StateChangeTrace", "The trace for capturing state changes.",
                      MakeTraceSourceAccessor (&McpttCallTypeMachineGrpBasic::m_stateChangeTrace),
                      "ns3::psc::McpttCallMachine::StateChangeTracedCallback")
-   ;
+  ;
 
   return tid;
 }
@@ -371,7 +371,7 @@ McpttCallTypeMachineGrpBasic::InitiateCall (uint8_t callType)
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
   Ptr<McpttEmergAlertMachine> emergMachineGrpBasic = owner->GetEmergMachine ();
-  uint32_t myUserId = owner->GetCall ()->GetOwner () ->GetUserId ();
+  uint32_t myUserId = owner->GetCall ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldLastChgTime lastChgTime (Simulator::Now ());
   McpttCallMsgFieldUserId lastChgUserId (myUserId);
 
@@ -427,7 +427,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
@@ -538,8 +538,8 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
         }
     }
   else if (stateId == McpttCallTypeMachineGrpBasic::T1
-      || stateId == McpttCallTypeMachineGrpBasic::T2
-      || stateId == McpttCallTypeMachineGrpBasic::T3)
+           || stateId == McpttCallTypeMachineGrpBasic::T2
+           || stateId == McpttCallTypeMachineGrpBasic::T3)
     {
       //match group ID and call id.
       if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
@@ -615,7 +615,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
                       ChangeState (McpttCallTypeMachineGrpBasic::T1);
                     }
                   else if (theirCallType.GetType () == McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP
-                      && myCallType.GetType () == McpttCallMsgFieldCallType::BASIC_GROUP)
+                           && myCallType.GetType () == McpttCallMsgFieldCallType::BASIC_GROUP)
                     {
                       SetLastChgTime (theirLastChgTime);
                       SetLastChgUserId (theirLastChgUserId);
@@ -664,7 +664,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
                     }
                   SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::EMERGENCY_GROUP));
                   ChangeState (McpttCallTypeMachineGrpBasic::T1);
-                 }
+                }
               else if (theirCallType.GetType () == McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP)
                 {
                   //TODO: Not in standard - Calculating the delay for TFG14 and starting it when merging to an 'IMMINENT PERIL' call.
@@ -673,7 +673,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
                   tfg14->Start ();
                   SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP));
                   ChangeState (McpttCallTypeMachineGrpBasic::T3);
-                 }
+                }
             }
         }
     }
@@ -696,7 +696,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmerg
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
@@ -725,7 +725,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpIm
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
@@ -760,7 +760,7 @@ McpttCallTypeMachineGrpBasic::ReleaseCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " releasing call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " releasing call.");
 
   McpttEntityId stateId = GetStateId ();
 
@@ -772,8 +772,8 @@ McpttCallTypeMachineGrpBasic::ReleaseCall (void)
       SetLastChgUserId (0);
     }
   else if (stateId == McpttCallTypeMachineGrpBasic::T1
-      || stateId == McpttCallTypeMachineGrpBasic::T2
-      || stateId == McpttCallTypeMachineGrpBasic::T3)
+           || stateId == McpttCallTypeMachineGrpBasic::T2
+           || stateId == McpttCallTypeMachineGrpBasic::T3)
     {
       SetCallType (McpttCallMsgFieldCallType::BASIC_GROUP);
       SetPriority (McpttCallMsgFieldCallType::GetCallTypePriority (McpttCallMsgFieldCallType::BASIC_GROUP));
@@ -794,7 +794,7 @@ McpttCallTypeMachineGrpBasic::RejectCall (void)
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " rejecting call.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " rejecting call.");
 
   McpttEntityId stateId = GetStateId ();
 
@@ -806,7 +806,7 @@ McpttCallTypeMachineGrpBasic::RejectCall (void)
       SetLastChgUserId (0);
     }
 }
- 
+
 void
 McpttCallTypeMachineGrpBasic::Send (const McpttCallMsg& msg)
 {
@@ -861,7 +861,7 @@ McpttCallTypeMachineGrpBasic::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " started.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " started.");
 
   SetStarted (true);
 }
@@ -871,7 +871,7 @@ McpttCallTypeMachineGrpBasic::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " stopped.");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " stopped.");
 
   Ptr<McpttTimer> tfg11 = GetTfg11 ();
   Ptr<McpttTimer> tfg12 = GetTfg12 ();
@@ -923,11 +923,11 @@ McpttCallTypeMachineGrpBasic::UpgradeTo (const McpttCallMsgFieldCallType& callTy
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner () ->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
-  uint32_t myUserId = owner->GetCall ()->GetOwner () ->GetUserId ();
+  uint32_t myUserId = owner->GetCall ()->GetOwner ()->GetUserId ();
   McpttCallMsgFieldCallId callId = owner->GetCallId ();
   McpttCallMsgFieldSdp sdp = owner->GetSdp ();
   McpttCallMsgFieldRefreshInterval refInt = owner->GetRefInt ();
@@ -942,10 +942,10 @@ McpttCallTypeMachineGrpBasic::UpgradeTo (const McpttCallMsgFieldCallType& callTy
   McpttCallMsgFieldUserId lastChgUserId = McpttCallMsgFieldUserId (myUserId);
 
   bool upgradeFromBasic = (stateId == McpttCallTypeMachineGrpBasic::T2
-      && (callType.GetType () == McpttCallMsgFieldCallType::EMERGENCY_GROUP
-        || callType.GetType () == McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP));
+                           && (callType.GetType () == McpttCallMsgFieldCallType::EMERGENCY_GROUP
+                               || callType.GetType () == McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP));
   bool upgradeFromImmPeril = (stateId == McpttCallTypeMachineGrpBasic::T3
-      && callType.GetType () == McpttCallMsgFieldCallType::EMERGENCY_GROUP);
+                              && callType.GetType () == McpttCallMsgFieldCallType::EMERGENCY_GROUP);
 
   if (upgradeFromBasic
       || upgradeFromImmPeril)

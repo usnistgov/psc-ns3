@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -85,13 +85,13 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::psc::McpttOffNetworkFloorParticipant::GenMedia", BooleanValue (true));
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200")); //Disable fragmentation in wifi
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200")); //Disable fragmentation in wifi
- 
+
   appCount = usersPerGroup * groupCount;
 
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
 
-  for (uint32_t s = (uint32_t)startSec; s < (uint32_t)stopSec; s+=1)
+  for (uint32_t s = (uint32_t)startSec; s < (uint32_t)stopSec; s += 1)
     {
       Simulator::Schedule (Seconds (s), &SimTimeUpdate);
     }
@@ -103,13 +103,13 @@ int main (int argc, char *argv[])
   wifi.SetStandard (WIFI_STANDARD_80211g); //2.4Ghz
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("ErpOfdmRate54Mbps"));
- 
+
   WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy;
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel",
-                                "Frequency", DoubleValue (2.407e9)); //2.4Ghz
+                                  "Frequency", DoubleValue (2.407e9)); //2.4Ghz
 
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
@@ -155,16 +155,16 @@ int main (int argc, char *argv[])
   mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",
                          "PushOnStart", BooleanValue (true));
   mcpttHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                         "Bytes", UintegerValue (msgSize),
-                         "DataRate", DataRateValue (dataRate));
+                           "Bytes", UintegerValue (msgSize),
+                           "DataRate", DataRateValue (dataRate));
   mcpttHelper.SetPusher ("ns3::psc::McpttPusher",
                          "Automatic", BooleanValue (true));
   mcpttHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                    "Mean", DoubleValue (onOffMean),
+                                                    "Variance", DoubleValue (2.0));
   mcpttHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                            "Mean", DoubleValue (onOffMean),
+                                            "Variance", DoubleValue (2.0));
 
   clientApps.Add (mcpttHelper.Install (nodes));
   clientApps.Start (start);

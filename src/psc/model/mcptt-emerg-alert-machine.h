@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -56,60 +56,60 @@ class McpttCallMachineGrp;
 class McpttEmergAlertMachine : public Object
 {
 public:
- /**
-  * Gets the type ID of the McpttEmergAlertMachine class.
-  * \returns The type ID.
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the  class.
-  */
- McpttEmergAlertMachine (void);
- /**
-  * \brief The destructor of the McpttEmergAlertMachine class.
-  */
- virtual ~McpttEmergAlertMachine (void);
- /**
-  * Indicates that the emergency alert should be canceled.
-  */
- virtual void CancelEmergAlert (void) = 0;
- /**
-  * Gets the type ID of this McpttEmergAlertMachine instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Indicates if the machine is in the emergency state.
-  * \returns True, if the machine is in the emergency state; otherwise, false.
-  */
- virtual bool IsInEmergState (void) const = 0;
- /**
-  * Indicates if the machine has been started.
-  * \returns True, if the machine has been started; false, otherwise.
-  */
- virtual bool IsStarted (void) const = 0;
- /**
-  * Receive a "GROUP EMERGENCY ALERT" message.
-  * \param msg The message.
-  */
- virtual void ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg) = 0;
- /**
-  * Receive a "GROUP EMERGENCY ALERT CANCEL" message.
-  * \param msg The message.
-  */
- virtual void ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg) = 0;
- /**
-  * Indicates to the machine that an emergency alert should be sent.
-  */
- virtual void SendEmergAlert (void) = 0;
- /**
-  * Starts the emergency alert machine.
-  */
- virtual void Start (void) = 0;
- /**
-  * Stops the emergency alert machine.
-  */
- virtual void Stop (void) = 0;
+  /**
+   * Gets the type ID of the McpttEmergAlertMachine class.
+   * \returns The type ID.
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * Creates an instance of the  class.
+   */
+  McpttEmergAlertMachine (void);
+  /**
+   * \brief The destructor of the McpttEmergAlertMachine class.
+   */
+  virtual ~McpttEmergAlertMachine (void);
+  /**
+   * Indicates that the emergency alert should be canceled.
+   */
+  virtual void CancelEmergAlert (void) = 0;
+  /**
+   * Gets the type ID of this McpttEmergAlertMachine instance.
+   * \returns The type ID.
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+  /**
+   * Indicates if the machine is in the emergency state.
+   * \returns True, if the machine is in the emergency state; otherwise, false.
+   */
+  virtual bool IsInEmergState (void) const = 0;
+  /**
+   * Indicates if the machine has been started.
+   * \returns True, if the machine has been started; false, otherwise.
+   */
+  virtual bool IsStarted (void) const = 0;
+  /**
+   * Receive a "GROUP EMERGENCY ALERT" message.
+   * \param msg The message.
+   */
+  virtual void ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg) = 0;
+  /**
+   * Receive a "GROUP EMERGENCY ALERT CANCEL" message.
+   * \param msg The message.
+   */
+  virtual void ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg) = 0;
+  /**
+   * Indicates to the machine that an emergency alert should be sent.
+   */
+  virtual void SendEmergAlert (void) = 0;
+  /**
+   * Starts the emergency alert machine.
+   */
+  virtual void Start (void) = 0;
+  /**
+   * Stops the emergency alert machine.
+   */
+  virtual void Stop (void) = 0;
 };
 
 /**
@@ -120,60 +120,60 @@ public:
 class McpttEmergAlertMachineNull : public McpttEmergAlertMachine
 {
 public:
- /**
-  * Gets the type ID of the McpttEmergAlertMachineNull class.
-  * \returns The type ID.
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the  class.
-  */
- McpttEmergAlertMachineNull (void);
- /**
-  * \brief The destructor of the McpttEmergAlertMachineNull class.
-  */
- virtual ~McpttEmergAlertMachineNull (void);
- /**
-  * Indicates that the emergency alert should be canceled.
-  */
- virtual void CancelEmergAlert (void);
- /**
-  * Gets the type ID of this McpttEmergAlertMachineNull instance.
-  * \returns The type ID.
-  */
- virtual TypeId GetInstanceTypeId (void) const;
- /**
-  * Indicates if the machine is in the emergency state.
-  * \returns True, if the machine is in the emergency state; otherwise, false.
-  */
- virtual bool IsInEmergState (void) const;
- /**
-  * Indicates if the machine has been started.
-  * \returns True, if the machine has been started; false, otherwise.
-  */
- virtual bool IsStarted (void) const;
- /**
-  * Receive a "GROUP EMERGENCY ALERT" message.
-  * \param msg The message.
-  */
- virtual void ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg);
- /**
-  * Receive a "GROUP EMERGENCY ALERT CANCEL" message.
-  * \param msg The message.
-  */
- virtual void ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg);
- /**
-  * Indicates to the machine that an emergency alert should be sent.
-  */
- virtual void SendEmergAlert (void);
- /**
-  * Starts the emergency alert machine.
-  */
- virtual void Start (void);
- /**
-  * Stops the emergency alert machine.
-  */
- virtual void Stop (void);
+  /**
+   * Gets the type ID of the McpttEmergAlertMachineNull class.
+   * \returns The type ID.
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * Creates an instance of the  class.
+   */
+  McpttEmergAlertMachineNull (void);
+  /**
+   * \brief The destructor of the McpttEmergAlertMachineNull class.
+   */
+  virtual ~McpttEmergAlertMachineNull (void);
+  /**
+   * Indicates that the emergency alert should be canceled.
+   */
+  virtual void CancelEmergAlert (void);
+  /**
+   * Gets the type ID of this McpttEmergAlertMachineNull instance.
+   * \returns The type ID.
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+  /**
+   * Indicates if the machine is in the emergency state.
+   * \returns True, if the machine is in the emergency state; otherwise, false.
+   */
+  virtual bool IsInEmergState (void) const;
+  /**
+   * Indicates if the machine has been started.
+   * \returns True, if the machine has been started; false, otherwise.
+   */
+  virtual bool IsStarted (void) const;
+  /**
+   * Receive a "GROUP EMERGENCY ALERT" message.
+   * \param msg The message.
+   */
+  virtual void ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmergAlert& msg);
+  /**
+   * Receive a "GROUP EMERGENCY ALERT CANCEL" message.
+   * \param msg The message.
+   */
+  virtual void ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGrpEmergAlertCancel& msg);
+  /**
+   * Indicates to the machine that an emergency alert should be sent.
+   */
+  virtual void SendEmergAlert (void);
+  /**
+   * Starts the emergency alert machine.
+   */
+  virtual void Start (void);
+  /**
+   * Stops the emergency alert machine.
+   */
+  virtual void Stop (void);
 };
 
 } // namespace psc

@@ -103,7 +103,7 @@
  * can be configured in the scenario and the timelines of the applications
  * adapt accordingly.  The timelines are visualized by additional ASCII
  * art embedded below in the program.
- * 
+ *
  * Team 1 is the baseline scenario with no D2D/Sidelink communication. Packet
  * loss is expected for the moving UEs (UE1, UE2, and UE3) when entering
  * into the building.
@@ -129,7 +129,7 @@
  * Additionally, users can inspect the generated output files to gain more
  * insight about the simulation.  The below output filenames are all prefixed
  * by 'mcptt-operationl-modes-mobility':
- * - access-time.dat:  MCPTT floor control access time and outcomes 
+ * - access-time.dat:  MCPTT floor control access time and outcomes
  * - course-change.dat:  Mobility trace (course changes)
  * - m2e-latency.dat:  Mouth-to-ear latency trace
  * - message.dat:  Message trace
@@ -251,18 +251,18 @@ MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Head
 
 #ifdef HAS_NETSIMULYZER
       if (m_mediaDelaySeries != nullptr)
-      {
-        Time timestamp = MicroSeconds (dynamic_cast<const McpttMediaMsg&>(msg).GetHeader ().GetTimestamp () * 10);
-        m_mediaDelaySeries->Append(Simulator::Now().GetSeconds(), (Simulator::Now () - timestamp).GetMilliSeconds ());
-      }
+        {
+          Time timestamp = MicroSeconds (dynamic_cast<const McpttMediaMsg&> (msg).GetHeader ().GetTimestamp () * 10);
+          m_mediaDelaySeries->Append (Simulator::Now ().GetSeconds (), (Simulator::Now () - timestamp).GetMilliSeconds ());
+        }
 #endif
-    }  
+    }
 
 #ifdef HAS_NETSIMULYZER
   if (m_nRxSeries != nullptr)
-  {
-    m_nRxSeries->Append (Simulator::Now().GetSeconds(), (m_nRxMsgsOn + m_nRxMsgsOff));
-  }
+    {
+      m_nRxSeries->Append (Simulator::Now ().GetSeconds (), (m_nRxMsgsOn + m_nRxMsgsOff));
+    }
 #endif
 }
 
@@ -283,7 +283,7 @@ MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, const Head
         {
           m_nTxMsgsOff++;
         }
-     }
+    }
 }
 
 /*
@@ -294,77 +294,77 @@ MessagesTracer::RsrpMeasurementTrace (uint64_t imsi, uint16_t cellId, double rsr
 {
 #ifdef HAS_NETSIMULYZER
   if (m_rsrpSeries != nullptr)
-  {
-    m_rsrpSeries->Append (Simulator::Now().GetSeconds(), rsrp);
-  }
+    {
+      m_rsrpSeries->Append (Simulator::Now ().GetSeconds (), rsrp);
+    }
 #endif
 }
 
-void 
+void
 MessagesTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName)
 {
 #ifdef HAS_NETSIMULYZER
   if (m_floorParticipant != nullptr)
-  {
-    m_floorParticipant->StateChangedId (m_stateToId.find (newStateName)->second);
-
-    if (m_accessTimeSeries != nullptr)
     {
-      std::stringstream sstream;
-      sstream.setf(std::ios::fixed);
-      sstream.precision(3);
-      sstream << Simulator::Now ().GetSeconds ();
-      //*applicationLog << sstream.str () << " s : CallId " << callId << " UserId " << mcpttUserId << " state: " << newStateName << "\n";
-      //calculate access time
-      if (((oldStateName == "'Start-stop'" || oldStateName == "'U: has no permission'") && newStateName == "'U: pending Request'")
-         ||(oldStateName == "'O: silence'" && newStateName == "'O: pending request'"))
-          {
-          m_accessTimeInfo = std::make_pair (Simulator::Now (), newStateName);
-          }
-      if (m_accessTimeInfo.second == "'U: pending Request'")
-          {
-            if (newStateName == "'U: queued'")
-              {
-                m_accessTimeInfo.second = newStateName;
-                return;
-              }
-            else if (newStateName == "'U: has permission'")
-              {
-                m_accessTimeSeries->Append (Simulator::Now ().GetSeconds(), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
-                return;
-              }
-          }
-        else if (m_accessTimeInfo.second == "'O: pending request'")
-          {
-            if (newStateName == "'O: queued'")
-              {
-                m_accessTimeInfo.second = newStateName;
-                return;
-              }
-            else if (newStateName == "'O: has permission'")
-              {
-                m_accessTimeSeries->Append (Simulator::Now ().GetSeconds(), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
-                return;
-              }
-          }
-        else if (m_accessTimeInfo.second == "'U: queued'")
-          {
-            if (newStateName == "'U: has permission'")
-              {
-                m_accessTimeSeries->Append (Simulator::Now ().GetSeconds(), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
-                return;
-              }
-          }
-        else if (m_accessTimeInfo.second == "'O: queued'")
-          {
-            if (newStateName == "'O: has permission'")
-              {
-                m_accessTimeSeries->Append (Simulator::Now ().GetSeconds(), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
-                return;
-              }
-          }
+      m_floorParticipant->StateChangedId (m_stateToId.find (newStateName)->second);
+
+      if (m_accessTimeSeries != nullptr)
+        {
+          std::stringstream sstream;
+          sstream.setf (std::ios::fixed);
+          sstream.precision (3);
+          sstream << Simulator::Now ().GetSeconds ();
+          //*applicationLog << sstream.str () << " s : CallId " << callId << " UserId " << mcpttUserId << " state: " << newStateName << "\n";
+          //calculate access time
+          if (((oldStateName == "'Start-stop'" || oldStateName == "'U: has no permission'") && newStateName == "'U: pending Request'")
+              ||(oldStateName == "'O: silence'" && newStateName == "'O: pending request'"))
+            {
+              m_accessTimeInfo = std::make_pair (Simulator::Now (), newStateName);
+            }
+          if (m_accessTimeInfo.second == "'U: pending Request'")
+            {
+              if (newStateName == "'U: queued'")
+                {
+                  m_accessTimeInfo.second = newStateName;
+                  return;
+                }
+              else if (newStateName == "'U: has permission'")
+                {
+                  m_accessTimeSeries->Append (Simulator::Now ().GetSeconds (), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
+                  return;
+                }
+            }
+          else if (m_accessTimeInfo.second == "'O: pending request'")
+            {
+              if (newStateName == "'O: queued'")
+                {
+                  m_accessTimeInfo.second = newStateName;
+                  return;
+                }
+              else if (newStateName == "'O: has permission'")
+                {
+                  m_accessTimeSeries->Append (Simulator::Now ().GetSeconds (), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
+                  return;
+                }
+            }
+          else if (m_accessTimeInfo.second == "'U: queued'")
+            {
+              if (newStateName == "'U: has permission'")
+                {
+                  m_accessTimeSeries->Append (Simulator::Now ().GetSeconds (), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
+                  return;
+                }
+            }
+          else if (m_accessTimeInfo.second == "'O: queued'")
+            {
+              if (newStateName == "'O: has permission'")
+                {
+                  m_accessTimeSeries->Append (Simulator::Now ().GetSeconds (), (Simulator::Now () - m_accessTimeInfo.first).GetMilliSeconds ());
+                  return;
+                }
+            }
+        }
     }
-  }
 #endif
 }
 
@@ -373,13 +373,13 @@ MessagesTracer::PusherStateTrace (bool oldValue, bool newValue)
 {
 #ifdef HAS_NETSIMULYZER
   if (m_pusher != nullptr)
-  {
-    m_pusher->StateChangedId (newValue == false ? 0 : 1);
-  }
+    {
+      m_pusher->StateChangedId (newValue == false ? 0 : 1);
+    }
 #endif
 }
 
-void 
+void
 ServerCallTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName)
 {
 #ifdef HAS_NETSIMULYZER
@@ -414,7 +414,7 @@ ServerCallTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId,
         {
           NS_ABORT_MSG ("Not able to recognize floor arbitrator state.");
         }
- 
+
       m_floorArbitrator->StateChangedId (stateId);
     }
 #endif
@@ -460,8 +460,8 @@ RemoteRsrpMeasurementTrace (Ptr<OutputStreamWrapper> stream, const double thresh
           if (mobilityLog != nullptr)
             {
               std::stringstream sstream;
-              sstream.setf(std::ios::fixed);
-              sstream.precision(3);
+              sstream.setf (std::ios::fixed);
+              sstream.precision (3);
               sstream << Simulator::Now ().GetSeconds ();
               *mobilityLog << sstream.str () << " s: Starting Relay Service as Remote UE for UE Node ID: " << ueDevice->GetNode ()->GetId () << "\n";
             }
@@ -489,28 +489,28 @@ void
 Pc5ConnectionStatusTrace (Ptr<McpttServerApp> serverApp, uint16_t callId, Ptr<Node> node, uint32_t srcL2Id, uint32_t dstL2Id, LteSlUeRrc::RelayRole role, LteSlBasicUeController::Pc5ConnectionStatus status, uint32_t iface)
 {
   if (status == LteSlBasicUeController::SECURE_ESTABLISHED && role == LteSlUeRrc::RelayRole::RemoteUE)
-  {
-    //Retrieve new IP address information
-    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-    Ipv6Address ipv6Addr = ipv6->GetAddress (iface, 1).GetAddress();
-    Ptr<McpttServerCall> call = serverApp->GetCall (callId);
-    NS_LOG_DEBUG ("Call " << callId << " user " << node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId() << " address " << ipv6Addr);
-    if (call != nullptr)
     {
-      Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
-      Ptr<McpttOnNetworkFloorTowardsParticipant> participantFloorCtrl = arbitrator->GetParticipantByUserId (node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId());
-      //Address currentAddr = participantFloorCtrl->GetPeerAddress ();
-      //Inet6SocketAddress socketAddr = Inet6SocketAddress::ConvertFrom (participantFloorCtrl->GetPeerAddress ());
-      //socketAddr.SetIpv6 (ipv6Addr);
-      participantFloorCtrl->SetPeerAddress (ipv6Addr);
-      participantFloorCtrl->Stop ();
-      participantFloorCtrl->Start ();
+      //Retrieve new IP address information
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      Ipv6Address ipv6Addr = ipv6->GetAddress (iface, 1).GetAddress ();
+      Ptr<McpttServerCall> call = serverApp->GetCall (callId);
+      NS_LOG_DEBUG ("Call " << callId << " user " << node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId () << " address " << ipv6Addr);
+      if (call != nullptr)
+        {
+          Ptr<McpttOnNetworkFloorArbitrator> arbitrator = call->GetArbitrator ();
+          Ptr<McpttOnNetworkFloorTowardsParticipant> participantFloorCtrl = arbitrator->GetParticipantByUserId (node->GetApplication (0)->GetObject<McpttPttApp> ()->GetUserId ());
+          //Address currentAddr = participantFloorCtrl->GetPeerAddress ();
+          //Inet6SocketAddress socketAddr = Inet6SocketAddress::ConvertFrom (participantFloorCtrl->GetPeerAddress ());
+          //socketAddr.SetIpv6 (ipv6Addr);
+          participantFloorCtrl->SetPeerAddress (ipv6Addr);
+          participantFloorCtrl->Stop ();
+          participantFloorCtrl->Start ();
+        }
+      else
+        {
+          NS_LOG_DEBUG ("Could not find call with ID " << callId);
+        }
     }
-    else
-    {
-      NS_LOG_DEBUG ("Could not find call with ID " << callId);
-    }
-  }
 }
 
 int main (int argc, char *argv[])
@@ -543,10 +543,10 @@ int main (int argc, char *argv[])
 
 #ifndef HAS_NETSIMULYZER
   if (enableVisualization)
-  {
-    std::cout << "Cannot enable visualization traces because netsimulyzer module not enabled" << std::endl;
-    return -1;
-  }
+    {
+      std::cout << "Cannot enable visualization traces because netsimulyzer module not enabled" << std::endl;
+      return -1;
+    }
 #endif
 
   NS_LOG_INFO ("Calculating timelines ...");
@@ -615,7 +615,7 @@ int main (int argc, char *argv[])
   //Set team's movement starting delay:
   double team1startDelayMovement = 15.0; //s
   double team2startDelayMovement = 60.0; //s
-  double team3startDelayMovement= 105.0; //s
+  double team3startDelayMovement = 105.0; //s
 
   //Define the time the UEs will take to reach the building
   double delayToReachBuilding = 15.0;  // s
@@ -860,7 +860,7 @@ int main (int argc, char *argv[])
 
           //Get initial position of the moving UE for the first waypoint
           Vector initialPos = mobilityModel->GetPosition ();
-          
+
           //Calculate team to which the UE belongs
           uint32_t team = (uint32_t)(movingUeNodeIdx / (nUEsPerTeam - 1)) + 1;
           //Choose movement start time depending on team
@@ -872,24 +872,24 @@ int main (int argc, char *argv[])
 
           Vector staticUEPos;
           switch (team)
-          {
-            case 1:
-              movementStartTime = team1StartTime + team1startDelayMovement;
-              staticUEPos = staticUEsNodes.Get(0)->GetObject<MobilityModel> ()->GetPosition ();
-              break;
-            case 2:
-              movementStartTime = team2StartTime + team2startDelayMovement;
-              staticUEPos = staticUEsNodes.Get(1)->GetObject<MobilityModel> ()->GetPosition ();
-              break;
-            case 3:
-              movementStartTime = team3StartTime + team3startDelayMovement;
-              staticUEPos = staticUEsNodes.Get(2)->GetObject<MobilityModel> ()->GetPosition ();
-              break;
-          }
+            {
+              case 1:
+                movementStartTime = team1StartTime + team1startDelayMovement;
+                staticUEPos = staticUEsNodes.Get (0)->GetObject<MobilityModel> ()->GetPosition ();
+                break;
+              case 2:
+                movementStartTime = team2StartTime + team2startDelayMovement;
+                staticUEPos = staticUEsNodes.Get (1)->GetObject<MobilityModel> ()->GetPosition ();
+                break;
+              case 3:
+                movementStartTime = team3StartTime + team3startDelayMovement;
+                staticUEPos = staticUEsNodes.Get (2)->GetObject<MobilityModel> ()->GetPosition ();
+                break;
+            }
           double movementStopTime = movementStartTime + delayToReachBuilding + durationMovementInsideBuilding;
 
           door_pos_y = staticUEPos.y;
-          inside_pos_y = (door_pos_y -10) + (movingUeNodeIdx % 3) * 10;
+          inside_pos_y = (door_pos_y - 10) + (movingUeNodeIdx % 3) * 10;
 
           Waypoint wpt0 (Seconds (movementStartTime), initialPos);
           Waypoint wpt1 (Seconds (movementStartTime + delayToReachBuilding), Vector (door_pos_x, door_pos_y, 1.5));
@@ -901,9 +901,9 @@ int main (int argc, char *argv[])
           NS_LOG_INFO ("Moving UE Node id = [" << allUeNodes.Get (movingUeNodeIdx)->GetId () << "]"
                        " starts moving at " <<  movementStartTime << " s"
                        " reaches the building at " <<  movementStartTime + delayToReachBuilding << " s"
-                       " on position (" << door_pos_x << "m, " << door_pos_y <<"m, 1.5)"
+                       " on position (" << door_pos_x << "m, " << door_pos_y << "m, 1.5)"
                        " and stops moving at " <<  movementStopTime << " s"
-                       " on position (" << inside_pos_x << "m, " << inside_pos_y <<"m, 1.5)");
+                       " on position (" << inside_pos_x << "m, " << inside_pos_y << "m, 1.5)");
 
         }
       mobilityMovingUEs.EnableAsciiAll (mobilityOutputStream);
@@ -1024,7 +1024,7 @@ int main (int argc, char *argv[])
 
   ApplicationContainer serverApps;
   ApplicationContainer clientApps;
-  
+
   McpttServerHelper mcpttServerHelper;
   serverApps.Add (mcpttServerHelper.Install (remoteHost));
   serverApps.Start (Seconds (team1StartTime - 1.0));
@@ -1037,16 +1037,16 @@ int main (int argc, char *argv[])
   McpttHelper mcpttClientHelper;
   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
   mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                          "Bytes", UintegerValue (60),
-                          "DataRate", DataRateValue (DataRate ("24kb/s")));
+                                 "Bytes", UintegerValue (60),
+                                 "DataRate", DataRateValue (DataRate ("24kb/s")));
   mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
-                          "Automatic", BooleanValue (true));
+                               "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                          "Mean", DoubleValue (10.0),
-                          "Variance", DoubleValue (5.0));
+                                                          "Mean", DoubleValue (10.0),
+                                                          "Variance", DoubleValue (5.0));
   mcpttClientHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                          "Mean", DoubleValue (1.0),
-                          "Variance", DoubleValue (1.0));
+                                                  "Mean", DoubleValue (1.0),
+                                                  "Variance", DoubleValue (1.0));
 
   ApplicationContainer team1Apps = mcpttClientHelper.Install (team1UeNodes);
   ApplicationContainer team3Apps = mcpttClientHelper.Install (team3UeNodes);
@@ -1055,7 +1055,7 @@ int main (int argc, char *argv[])
   clientApps.Add (team1Apps);
   clientApps.Add (team2Apps);
   clientApps.Add (team3Apps);
- 
+
   clientApps.Start (Seconds (team1StartTime - 1.0));
   clientApps.Stop (Seconds (simTime - 1.0));
 
@@ -1084,18 +1084,18 @@ int main (int argc, char *argv[])
   McpttCallHelper callHelper;
   // Optional statements to tailor the configurable attributes
   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "TxSsrc", UintegerValue (100));
+                            "AckRequired", BooleanValue (false),
+                            "AudioCutIn", BooleanValue (false),
+                            "DualFloorSupported", BooleanValue (false),
+                            "TxSsrc", UintegerValue (100));
   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                         "ReceiveOnly", BooleanValue (false));
+                                    "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                         "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
+                             "AckRequired", BooleanValue (false),
+                             "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                         "AmbientListening", BooleanValue (false),
-                         "TemporaryGroup", BooleanValue (false));
+                            "AmbientListening", BooleanValue (false),
+                            "TemporaryGroup", BooleanValue (false));
 
   uint16_t callId;
   uint32_t groupId = 1;
@@ -1104,11 +1104,11 @@ int main (int argc, char *argv[])
   double callStopTime =  team1StartTime + team1startDelayMovement + durationTimeInNetworkAppWhileMoving;
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   callId = callHelper.AddCall (team1Apps,
-                      serverApp,
-                      groupId,
-                      callType,
-                      Seconds (callStartTime),
-                      Seconds (callStopTime));
+                               serverApp,
+                               groupId,
+                               callType,
+                               Seconds (callStartTime),
+                               Seconds (callStopTime));
   groupIdToOnNetworkCallId.insert (std::pair<uint32_t, uint16_t> (groupId, callId));
 
   NS_LOG_INFO ("Team 1 "
@@ -1119,11 +1119,11 @@ int main (int argc, char *argv[])
   callStartTime = team2StartTime + startDelayInNetworkApp;
   callStopTime = callStartTime + team2durationTimeInNetworkApp;
   callId = callHelper.AddCall (team2Apps,
-                      serverApp,
-                      groupId,
-                      callType,
-                      Seconds (callStartTime),
-                      Seconds (callStopTime));
+                               serverApp,
+                               groupId,
+                               callType,
+                               Seconds (callStartTime),
+                               Seconds (callStopTime));
   groupIdToOnNetworkCallId.insert (std::pair<uint32_t, uint16_t> (groupId, callId));
 
   NS_LOG_INFO ("Team 2 "
@@ -1134,11 +1134,11 @@ int main (int argc, char *argv[])
   callStartTime = team3StartTime + startDelayInNetworkApp;
   callStopTime = team3StartTime + team3startDelayMovement + durationTimeInNetworkAppWhileMoving;
   callId = callHelper.AddCall (team3Apps,
-                      serverApp,
-                      groupId,
-                      callType,
-                      Seconds (callStartTime),
-                      Seconds (callStopTime));
+                               serverApp,
+                               groupId,
+                               callType,
+                               Seconds (callStartTime),
+                               Seconds (callStopTime));
   groupIdToOnNetworkCallId.insert (std::pair<uint32_t, uint16_t> (groupId, callId));
   uint16_t team3CallId = callId;
 
@@ -1272,81 +1272,81 @@ int main (int argc, char *argv[])
   using netsimulyzer::Color4;
   using netsimulyzer::Color4Value;
   if (enableVisualization)
-  {
-     NS_LOG_INFO ("Enabling visualization...");
-
-    orchestrator = CreateObject<netsimulyzer::Orchestrator> ("WarehouseFireDemo-ns.json");
-    orchestrator->SetAttribute ("MillisecondsPerFrame", OptionalValue<double> (guiResolution));
-    orchestrator->SetAttribute ("MobilityPollInterval", TimeValue (MilliSeconds (guiResolution)));
-
-    auto team1Area = CreateObject<netsimulyzer::RectangularArea>(orchestrator, Rectangle{395, 403, -25, -15});
-    team1Area->SetAttribute("Fill", EnumValue(netsimulyzer::RectangularArea::DrawMode::Hidden));
-    team1Area->SetAttribute("Border", EnumValue(netsimulyzer::RectangularArea::DrawMode::Solid));
-    // Red
-    team1Area->SetAttribute("BorderColor", Color3Value(Color3{153u, 0u, 0u}));
-
-    auto team2Area = CreateObject<netsimulyzer::RectangularArea>(orchestrator, Rectangle{395, 403, -65, -55});
-    team2Area->SetAttribute("Fill", EnumValue(netsimulyzer::RectangularArea::DrawMode::Hidden));
-    team2Area->SetAttribute("Border", EnumValue(netsimulyzer::RectangularArea::DrawMode::Solid));
-    // Green
-    team2Area->SetAttribute("BorderColor", Color3Value(Color3{0u, 153u, 0u}));
-
-    auto team3Area = CreateObject<netsimulyzer::RectangularArea>(orchestrator, Rectangle{395, 403, -105, -95});
-    team3Area->SetAttribute("Fill", EnumValue(netsimulyzer::RectangularArea::DrawMode::Hidden));
-    team3Area->SetAttribute("Border", EnumValue(netsimulyzer::RectangularArea::DrawMode::Solid));
-    // Blue
-    team3Area->SetAttribute("BorderColor", Color3Value(Color3{0u, 0u, 153u}));
-
-    auto firetruck1 = CreateObject<netsimulyzer::Decoration>(orchestrator);
-    firetruck1->SetAttribute("Model", StringValue("non-distributable/models/props/vehicle/Firetruck.obj"));
-    firetruck1->SetAttribute("Orientation", Vector3DValue({0.0, 0.0, 0.0}));
-    firetruck1->SetAttribute("Position", Vector3DValue({390.0, -40.0, 0.0}));
-
-    auto firetruck2 = CreateObject<netsimulyzer::Decoration>(orchestrator);
-    firetruck2->SetAttribute("Model", StringValue("non-distributable/models/props/vehicle/Firetruck.obj"));
-    firetruck2->SetAttribute("Orientation", Vector3DValue({0.0, 0.0, 0.0}));
-    firetruck2->SetAttribute("Position", Vector3DValue({390.0, -80.0, 0.0}));
-
-    //Configure buildings
-    netsimulyzer::BuildingConfigurationHelper buildingConfigHelper (orchestrator);
-    buildingConfigHelper.Install (building1);
-    Ptr<Building> door1 = CreateObject<Building> ();
-    door1->SetBoundaries (Box (409.8, 409.999, -21, -19, 0.0, 5.0));
-    buildingConfigHelper.Install (door1);
-    Ptr<Building> door2 = CreateObject<Building> ();
-    door2->SetBoundaries (Box (409.8, 409.999, -61, -59, 0.0, 5.0));
-    buildingConfigHelper.Install (door2);
-    Ptr<Building> door3 = CreateObject<Building> ();
-    door3->SetBoundaries (Box (409.8, 409.999, -101, -99, 0.0, 5.0));
-    buildingConfigHelper.Install (door3);
-    
-
-    //Configure nodes
-    netsimulyzer::NodeConfigurationHelper nodeConfigHelper (orchestrator);
-    nodeConfigHelper.Set ("Scale", DoubleValue (1.0));
-    nodeConfigHelper.Set ("Model", StringValue ("non-distributable/models/characters/rest/Firefighter.obj"));
-    nodeConfigHelper.Set ("Height", DoubleValue (1.8));
-    nodeConfigHelper.Set ("Offset", Vector3DValue (Vector3D(0, 0, -1.5)));
-    nodeConfigHelper.Set ("Orientation", Vector3DValue (Vector3D(0, 0, 90)));
-
-    for (uint32_t ueNodeIdx = 0; ueNodeIdx < allUeNodes.GetN (); ueNodeIdx++)
     {
-      uint32_t team = (uint32_t)(ueNodeIdx / (nUEsPerTeam)) + 1;
-      nodeConfigHelper.Set ("Name", StringValue ("Responder " + std::to_string (ueNodeIdx) + "-team " + std::to_string (team)));
-      nodeConfigHelper.Install (allUeNodes.Get(ueNodeIdx));
-    }
+      NS_LOG_INFO ("Enabling visualization...");
 
-    //Network
-    nodeConfigHelper.Set ("Model", StringValue ("non-distributable/models/props/Billboard_pole.obj"));
-    nodeConfigHelper.Set ("Name", StringValue ("Cell tower"));
-    nodeConfigHelper.Set ("Height", DoubleValue (30));
-    nodeConfigHelper.Set ("Offset", Vector3DValue (Vector3D(0, 0, -30)));
-    nodeConfigHelper.Set ("Orientation", Vector3DValue (Vector3D(0, 0, 0)));
-    nodeConfigHelper.Install (enbNode);
+      orchestrator = CreateObject<netsimulyzer::Orchestrator> ("WarehouseFireDemo-ns.json");
+      orchestrator->SetAttribute ("MillisecondsPerFrame", OptionalValue<double> (guiResolution));
+      orchestrator->SetAttribute ("MobilityPollInterval", TimeValue (MilliSeconds (guiResolution)));
 
-    //Decorations
-    // for (auto team = 0; team < 3; team++)
-    // {
+      auto team1Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -25, -15});
+      team1Area->SetAttribute ("Fill", EnumValue (netsimulyzer::RectangularArea::DrawMode::Hidden));
+      team1Area->SetAttribute ("Border", EnumValue (netsimulyzer::RectangularArea::DrawMode::Solid));
+      // Red
+      team1Area->SetAttribute ("BorderColor", Color3Value (Color3{153u, 0u, 0u}));
+
+      auto team2Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -65, -55});
+      team2Area->SetAttribute ("Fill", EnumValue (netsimulyzer::RectangularArea::DrawMode::Hidden));
+      team2Area->SetAttribute ("Border", EnumValue (netsimulyzer::RectangularArea::DrawMode::Solid));
+      // Green
+      team2Area->SetAttribute ("BorderColor", Color3Value (Color3{0u, 153u, 0u}));
+
+      auto team3Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -105, -95});
+      team3Area->SetAttribute ("Fill", EnumValue (netsimulyzer::RectangularArea::DrawMode::Hidden));
+      team3Area->SetAttribute ("Border", EnumValue (netsimulyzer::RectangularArea::DrawMode::Solid));
+      // Blue
+      team3Area->SetAttribute ("BorderColor", Color3Value (Color3{0u, 0u, 153u}));
+
+      auto firetruck1 = CreateObject<netsimulyzer::Decoration> (orchestrator);
+      firetruck1->SetAttribute ("Model", StringValue ("non-distributable/models/props/vehicle/Firetruck.obj"));
+      firetruck1->SetAttribute ("Orientation", Vector3DValue ({0.0, 0.0, 0.0}));
+      firetruck1->SetAttribute ("Position", Vector3DValue ({390.0, -40.0, 0.0}));
+
+      auto firetruck2 = CreateObject<netsimulyzer::Decoration> (orchestrator);
+      firetruck2->SetAttribute ("Model", StringValue ("non-distributable/models/props/vehicle/Firetruck.obj"));
+      firetruck2->SetAttribute ("Orientation", Vector3DValue ({0.0, 0.0, 0.0}));
+      firetruck2->SetAttribute ("Position", Vector3DValue ({390.0, -80.0, 0.0}));
+
+      //Configure buildings
+      netsimulyzer::BuildingConfigurationHelper buildingConfigHelper (orchestrator);
+      buildingConfigHelper.Install (building1);
+      Ptr<Building> door1 = CreateObject<Building> ();
+      door1->SetBoundaries (Box (409.8, 409.999, -21, -19, 0.0, 5.0));
+      buildingConfigHelper.Install (door1);
+      Ptr<Building> door2 = CreateObject<Building> ();
+      door2->SetBoundaries (Box (409.8, 409.999, -61, -59, 0.0, 5.0));
+      buildingConfigHelper.Install (door2);
+      Ptr<Building> door3 = CreateObject<Building> ();
+      door3->SetBoundaries (Box (409.8, 409.999, -101, -99, 0.0, 5.0));
+      buildingConfigHelper.Install (door3);
+
+
+      //Configure nodes
+      netsimulyzer::NodeConfigurationHelper nodeConfigHelper (orchestrator);
+      nodeConfigHelper.Set ("Scale", DoubleValue (1.0));
+      nodeConfigHelper.Set ("Model", StringValue ("non-distributable/models/characters/rest/Firefighter.obj"));
+      nodeConfigHelper.Set ("Height", DoubleValue (1.8));
+      nodeConfigHelper.Set ("Offset", Vector3DValue (Vector3D (0, 0, -1.5)));
+      nodeConfigHelper.Set ("Orientation", Vector3DValue (Vector3D (0, 0, 90)));
+
+      for (uint32_t ueNodeIdx = 0; ueNodeIdx < allUeNodes.GetN (); ueNodeIdx++)
+        {
+          uint32_t team = (uint32_t)(ueNodeIdx / (nUEsPerTeam)) + 1;
+          nodeConfigHelper.Set ("Name", StringValue ("Responder " + std::to_string (ueNodeIdx) + "-team " + std::to_string (team)));
+          nodeConfigHelper.Install (allUeNodes.Get (ueNodeIdx));
+        }
+
+      //Network
+      nodeConfigHelper.Set ("Model", StringValue ("non-distributable/models/props/Billboard_pole.obj"));
+      nodeConfigHelper.Set ("Name", StringValue ("Cell tower"));
+      nodeConfigHelper.Set ("Height", DoubleValue (30));
+      nodeConfigHelper.Set ("Offset", Vector3DValue (Vector3D (0, 0, -30)));
+      nodeConfigHelper.Set ("Orientation", Vector3DValue (Vector3D (0, 0, 0)));
+      nodeConfigHelper.Install (enbNode);
+
+      //Decorations
+      // for (auto team = 0; team < 3; team++)
+      // {
       // Ptr<netsimulyzer::Decoration> antenna = CreateObject<netsimulyzer::Decoration> (orchestrator);
       // antenna->SetAttribute ("Model", StringValue ("non-distributable/models/props/Cylinder.obj"));
       // antenna->SetAttribute ("Height", DoubleValue (3));
@@ -1362,308 +1362,308 @@ int main (int argc, char *argv[])
       // antenna->SetAttribute ("Height", DoubleValue (3));
       // antenna->SetAttribute ("Position", Vector3DValue (Vector3D(-1, -61, 28)));
       // eNodebAntennas.push_back (antenna);
-    // }
+      // }
 
-    //Log
-    applicationLog = CreateObject<netsimulyzer::LogStream> (orchestrator);
-    applicationLog->SetAttribute ("Name", StringValue ("Application log"));
+      //Log
+      applicationLog = CreateObject<netsimulyzer::LogStream> (orchestrator);
+      applicationLog->SetAttribute ("Name", StringValue ("Application log"));
 
-    applicationLog->SetAttribute("Color", Color3Value(Color3{100u, 150u, 100u}));
+      applicationLog->SetAttribute ("Color", Color3Value (Color3{100u, 150u, 100u}));
 
-    Simulator::Schedule (Seconds(15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 1 starts group call\n");
-    Simulator::Schedule (Seconds(15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 2 starts group call\n");
-    Simulator::Schedule (Seconds(15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 3 starts group call\n");
-    Simulator::Schedule (Seconds(75), &netsimulyzer::LogStream::Write, applicationLog, "75 s: Team 1 stops group call\n");
-    Simulator::Schedule (Seconds(120), &netsimulyzer::LogStream::Write, applicationLog, "120 s: Team 2 stops group call\n");
-    Simulator::Schedule (Seconds(165), &netsimulyzer::LogStream::Write, applicationLog, "165 s: Team 3 stops group call\n");
+      Simulator::Schedule (Seconds (15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 1 starts group call\n");
+      Simulator::Schedule (Seconds (15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 2 starts group call\n");
+      Simulator::Schedule (Seconds (15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 3 starts group call\n");
+      Simulator::Schedule (Seconds (75), &netsimulyzer::LogStream::Write, applicationLog, "75 s: Team 1 stops group call\n");
+      Simulator::Schedule (Seconds (120), &netsimulyzer::LogStream::Write, applicationLog, "120 s: Team 2 stops group call\n");
+      Simulator::Schedule (Seconds (165), &netsimulyzer::LogStream::Write, applicationLog, "165 s: Team 3 stops group call\n");
 
-    mobilityLog = CreateObject<netsimulyzer::LogStream> (orchestrator);
-    mobilityLog->SetAttribute ("Name", StringValue ("Mobility log"));
+      mobilityLog = CreateObject<netsimulyzer::LogStream> (orchestrator);
+      mobilityLog->SetAttribute ("Name", StringValue ("Mobility log"));
 
-    mobilityLog->SetAttribute("Color", Color3Value(Color3{72u, 66u, 245u}));
+      mobilityLog->SetAttribute ("Color", Color3Value (Color3{72u, 66u, 245u}));
 
-    Simulator::Schedule (Seconds(30), &netsimulyzer::LogStream::Write, mobilityLog, "30 s: Team 1 starts moving\n");
-    Simulator::Schedule (Seconds(45), &netsimulyzer::LogStream::Write, mobilityLog, "45 s: Team 1 enters building\n");
-    Simulator::Schedule (Seconds(75), &netsimulyzer::LogStream::Write, mobilityLog, "75 s: Team 1 stops moving\n");
-    Simulator::Schedule (Seconds(75), &netsimulyzer::LogStream::Write, mobilityLog, "75 s: Team 2 starts moving\n");
-    Simulator::Schedule (Seconds(90), &netsimulyzer::LogStream::Write, mobilityLog, "90 s: Team 2 enters building\n");
-    Simulator::Schedule (Seconds(120), &netsimulyzer::LogStream::Write, mobilityLog, "120 s: Team 2 stops moving\n");
-    Simulator::Schedule (Seconds(120), &netsimulyzer::LogStream::Write, mobilityLog, "135 s: Team 3 starts moving\n");
-    Simulator::Schedule (Seconds(135), &netsimulyzer::LogStream::Write, mobilityLog, "120 s: Team 3 enters building\n");
-    Simulator::Schedule (Seconds(165), &netsimulyzer::LogStream::Write, mobilityLog, "165 s: Team 3 enters building\n");
+      Simulator::Schedule (Seconds (30), &netsimulyzer::LogStream::Write, mobilityLog, "30 s: Team 1 starts moving\n");
+      Simulator::Schedule (Seconds (45), &netsimulyzer::LogStream::Write, mobilityLog, "45 s: Team 1 enters building\n");
+      Simulator::Schedule (Seconds (75), &netsimulyzer::LogStream::Write, mobilityLog, "75 s: Team 1 stops moving\n");
+      Simulator::Schedule (Seconds (75), &netsimulyzer::LogStream::Write, mobilityLog, "75 s: Team 2 starts moving\n");
+      Simulator::Schedule (Seconds (90), &netsimulyzer::LogStream::Write, mobilityLog, "90 s: Team 2 enters building\n");
+      Simulator::Schedule (Seconds (120), &netsimulyzer::LogStream::Write, mobilityLog, "120 s: Team 2 stops moving\n");
+      Simulator::Schedule (Seconds (120), &netsimulyzer::LogStream::Write, mobilityLog, "135 s: Team 3 starts moving\n");
+      Simulator::Schedule (Seconds (135), &netsimulyzer::LogStream::Write, mobilityLog, "120 s: Team 3 enters building\n");
+      Simulator::Schedule (Seconds (165), &netsimulyzer::LogStream::Write, mobilityLog, "165 s: Team 3 enters building\n");
 
-    //Statistics
-    PointerValue xAxis; 
-    PointerValue yAxis;
-    //Visualize MCPTT server
-    ObjectMapValue serverAppCalls;
-    serverApp->GetAttribute ("Calls", serverAppCalls);
-    std::map<uint32_t, uint16_t>::iterator groupIdToOnNetworkCallIdIt;
-    std::vector<netsimulyzer::CategoryAxis::ValuePair> floorArbitratorStates;
-    for (groupIdToOnNetworkCallIdIt = groupIdToOnNetworkCallId.begin (); groupIdToOnNetworkCallIdIt != groupIdToOnNetworkCallId.end (); groupIdToOnNetworkCallIdIt++)
-      {
-        Ptr<McpttServerCall> serverCall = serverAppCalls.Get (groupIdToOnNetworkCallIdIt->second)->GetObject<McpttServerCall> ();
-        ServerCallTracer serverCallTracer;
-        std::map<uint16_t, ServerCallTracer>::iterator serverIt;
-        serverCallTracers.insert (std::pair<uint16_t, ServerCallTracer> (groupIdToOnNetworkCallIdIt->first, serverCallTracer));
-        serverIt = serverCallTracers.find (groupIdToOnNetworkCallIdIt->first);
-        netsimulyzer::CategoryAxis::ValuePair floorArbitratorStateValue;
-        floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetNumber ();
-        floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetName ();
-        floorArbitratorStates.push_back (floorArbitratorStateValue);
-        floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetNumber ();
-        floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetName ();
-        floorArbitratorStates.push_back (floorArbitratorStateValue);
-        floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetNumber ();
-        floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetName ();
-        floorArbitratorStates.push_back (floorArbitratorStateValue);
-        floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetNumber ();
-        floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetName ();
-        floorArbitratorStates.push_back (floorArbitratorStateValue);
-        floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetNumber ();
-        floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetName ();
-        floorArbitratorStates.push_back (floorArbitratorStateValue);
-        floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetNumber ();
-        floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetName ();
-        floorArbitratorStates.push_back (floorArbitratorStateValue);
-
-        PointerValue floorArbitrator;
-        serverCall->GetAttribute ("FloorArbitrator", floorArbitrator);
-        Ptr<McpttOnNetworkFloorArbitrator> arbitrator = floorArbitrator.Get<McpttOnNetworkFloorArbitrator> ();
-        arbitrator->TraceConnectWithoutContext ("StateChangeTrace", MakeCallback (&ServerCallTracer::FloorControlStateTrace, &serverIt->second));
-
-        serverIt->second.m_floorArbitrator = CreateObject <netsimulyzer::StateTransitionSink>(orchestrator, floorArbitratorStates, 0);
-        serverIt->second.m_floorArbitrator->SetAttribute ("Name", StringValue("Team " + std::to_string(groupIdToOnNetworkCallIdIt->first) + " Floor Arbitrator"));
-        serverIt->second.m_floorArbitrator->SetAttribute ("LoggingMode", StringValue("None"));
-       }
-
-    std::map <uint32_t, MessagesTracer>::iterator rxMessagesPerUeTracerMapIt;
-    for (rxMessagesPerUeTracerMapIt = rxMessagesPerUeTracerMap.begin (); rxMessagesPerUeTracerMapIt != rxMessagesPerUeTracerMap.end (); rxMessagesPerUeTracerMapIt++)
-      {
-        //Calculate team to which the UE belongs
-        uint32_t ueNodeIdx = rxMessagesPerUeTracerMapIt->first;
-        uint32_t team = (uint32_t)(ueNodeIdx / (nUEsPerTeam)) + 1;
-
-        //RSRP
-        Ptr<LteUeRrc> rrc = allUeDevs.Get (ueNodeIdx)->GetObject<LteUeNetDevice> ()->GetRrc ();
-        rrc->TraceConnectWithoutContext ("RsrpMeasurement", 
-                         MakeCallback (&MessagesTracer::RsrpMeasurementTrace, &rxMessagesPerUeTracerMapIt->second));
-
-        if (ueNodeIdx == 2 || ueNodeIdx == 6 || ueNodeIdx == 11)
+      //Statistics
+      PointerValue xAxis;
+      PointerValue yAxis;
+      //Visualize MCPTT server
+      ObjectMapValue serverAppCalls;
+      serverApp->GetAttribute ("Calls", serverAppCalls);
+      std::map<uint32_t, uint16_t>::iterator groupIdToOnNetworkCallIdIt;
+      std::vector<netsimulyzer::CategoryAxis::ValuePair> floorArbitratorStates;
+      for (groupIdToOnNetworkCallIdIt = groupIdToOnNetworkCallId.begin (); groupIdToOnNetworkCallIdIt != groupIdToOnNetworkCallId.end (); groupIdToOnNetworkCallIdIt++)
         {
-        rxMessagesPerUeTracerMapIt->second.m_rsrpSeries = CreateObject <netsimulyzer::XYSeries>(orchestrator);
+          Ptr<McpttServerCall> serverCall = serverAppCalls.Get (groupIdToOnNetworkCallIdIt->second)->GetObject<McpttServerCall> ();
+          ServerCallTracer serverCallTracer;
+          std::map<uint16_t, ServerCallTracer>::iterator serverIt;
+          serverCallTracers.insert (std::pair<uint16_t, ServerCallTracer> (groupIdToOnNetworkCallIdIt->first, serverCallTracer));
+          serverIt = serverCallTracers.find (groupIdToOnNetworkCallIdIt->first);
+          netsimulyzer::CategoryAxis::ValuePair floorArbitratorStateValue;
+          floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetNumber ();
+          floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetName ();
+          floorArbitratorStates.push_back (floorArbitratorStateValue);
+          floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetNumber ();
+          floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetName ();
+          floorArbitratorStates.push_back (floorArbitratorStateValue);
+          floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetNumber ();
+          floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetName ();
+          floorArbitratorStates.push_back (floorArbitratorStateValue);
+          floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetNumber ();
+          floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetName ();
+          floorArbitratorStates.push_back (floorArbitratorStateValue);
+          floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetNumber ();
+          floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetName ();
+          floorArbitratorStates.push_back (floorArbitratorStateValue);
+          floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetNumber ();
+          floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetName ();
+          floorArbitratorStates.push_back (floorArbitratorStateValue);
 
-        rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " RSRP"));
-        rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("LabelMode", StringValue("Hidden"));
-        rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Connection", StringValue("None"));
-        switch (team)
-        {
-        case 0:
-          rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value(Color4{44u, 140u, 8u, 255u}));
-          break;
-        case 1:
-          rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value(Color4{3u, 163u, 81u, 255u}));
-          break;
-        case 2:
-          rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value(Color4{4u, 27u, 204u, 255u}));
-        default:
-          //should not happen, keep default color
-          break;
+          PointerValue floorArbitrator;
+          serverCall->GetAttribute ("FloorArbitrator", floorArbitrator);
+          Ptr<McpttOnNetworkFloorArbitrator> arbitrator = floorArbitrator.Get<McpttOnNetworkFloorArbitrator> ();
+          arbitrator->TraceConnectWithoutContext ("StateChangeTrace", MakeCallback (&ServerCallTracer::FloorControlStateTrace, &serverIt->second));
+
+          serverIt->second.m_floorArbitrator = CreateObject <netsimulyzer::StateTransitionSink> (orchestrator, floorArbitratorStates, 0);
+          serverIt->second.m_floorArbitrator->SetAttribute ("Name", StringValue ("Team " + std::to_string (groupIdToOnNetworkCallIdIt->first) + " Floor Arbitrator"));
+          serverIt->second.m_floorArbitrator->SetAttribute ("LoggingMode", StringValue ("None"));
         }
 
-        rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetAttribute ("XAxis", xAxis);
-        xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-        rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetAttribute ("YAxis", yAxis);
-        yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("RSRP (dBm)"));
-        yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("BoundMode", StringValue ("Fixed"));
-        yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Maximum", DoubleValue (-110));
-        yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Minimum", DoubleValue (-130));
-        
-
-        //Media delay
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries = CreateObject <netsimulyzer::XYSeries>(orchestrator);
-
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " M2E latency"));
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("LabelMode", StringValue("Hidden"));
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Connection", StringValue("None"));
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value(Color4{204u, 111u, 4u, 255u}));
-
-        switch (team)
+      std::map <uint32_t, MessagesTracer>::iterator rxMessagesPerUeTracerMapIt;
+      for (rxMessagesPerUeTracerMapIt = rxMessagesPerUeTracerMap.begin (); rxMessagesPerUeTracerMapIt != rxMessagesPerUeTracerMap.end (); rxMessagesPerUeTracerMapIt++)
         {
-        case 0:
-          rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value(Color4{44u, 140u, 8u, 255u}));
-          break;
-        case 1:
-          rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value(Color4{3u, 163u, 81u, 255u}));
-          break;
-        case 2:
-          rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value(Color4{4u, 27u, 204u, 255u}));
-          break;
-        default:
-          //should not happen, keep default color
-          break;
+          //Calculate team to which the UE belongs
+          uint32_t ueNodeIdx = rxMessagesPerUeTracerMapIt->first;
+          uint32_t team = (uint32_t)(ueNodeIdx / (nUEsPerTeam)) + 1;
+
+          //RSRP
+          Ptr<LteUeRrc> rrc = allUeDevs.Get (ueNodeIdx)->GetObject<LteUeNetDevice> ()->GetRrc ();
+          rrc->TraceConnectWithoutContext ("RsrpMeasurement",
+                                           MakeCallback (&MessagesTracer::RsrpMeasurementTrace, &rxMessagesPerUeTracerMapIt->second));
+
+          if (ueNodeIdx == 2 || ueNodeIdx == 6 || ueNodeIdx == 11)
+            {
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries = CreateObject <netsimulyzer::XYSeries> (orchestrator);
+
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " RSRP"));
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("LabelMode", StringValue ("Hidden"));
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Connection", StringValue ("None"));
+              switch (team)
+                {
+                  case 0:
+                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value (Color4{44u, 140u, 8u, 255u}));
+                    break;
+                  case 1:
+                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value (Color4{3u, 163u, 81u, 255u}));
+                    break;
+                  case 2:
+                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value (Color4{4u, 27u, 204u, 255u}));
+                  default:
+                    //should not happen, keep default color
+                    break;
+                }
+
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetAttribute ("XAxis", xAxis);
+              xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetAttribute ("YAxis", yAxis);
+              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("RSRP (dBm)"));
+              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("BoundMode", StringValue ("Fixed"));
+              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Maximum", DoubleValue (-110));
+              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Minimum", DoubleValue (-130));
+
+
+              //Media delay
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries = CreateObject <netsimulyzer::XYSeries> (orchestrator);
+
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " M2E latency"));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("LabelMode", StringValue ("Hidden"));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Connection", StringValue ("None"));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{204u, 111u, 4u, 255u}));
+
+              switch (team)
+                {
+                  case 0:
+                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{44u, 140u, 8u, 255u}));
+                    break;
+                  case 1:
+                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{3u, 163u, 81u, 255u}));
+                    break;
+                  case 2:
+                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{4u, 27u, 204u, 255u}));
+                    break;
+                  default:
+                    //should not happen, keep default color
+                    break;
+                }
+
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetAttribute ("XAxis", xAxis);
+              xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetAttribute ("YAxis", yAxis);
+              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Latency (ms)"));
+            }
+
+          bool hasOnNetworkCall = false;
+          bool hasOffNetworkCall = false;
+          std::map<uint16_t, Ptr<McpttCall> >::iterator ueCallsIt;
+          Ptr<McpttPttApp> pttApp = clientApps.Get (ueNodeIdx)->GetObject<McpttPttApp> ();
+          std::map<uint16_t, Ptr<McpttCall> > ueCalls = pttApp->GetCalls ();
+          for (ueCallsIt = ueCalls.begin (); ueCallsIt != ueCalls.end (); ueCallsIt++)
+            {
+              Ptr<McpttCall> ueCall = ueCallsIt->second;
+              Ptr<McpttFloorParticipant> ueFloorParticipant = ueCall->GetFloorMachine ();
+
+              if (ueFloorParticipant->GetInstanceTypeId () == McpttOnNetworkFloorParticipant::GetTypeId ())
+                {
+                  hasOnNetworkCall = true;
+                  ueFloorParticipant->GetObject<McpttOnNetworkFloorParticipant> ()->TraceConnectWithoutContext ("StateChangeTrace",
+                                                                                                                MakeCallback (&MessagesTracer::FloorControlStateTrace, &rxMessagesPerUeTracerMapIt->second));
+                }
+              else if (ueFloorParticipant->GetInstanceTypeId () == McpttOffNetworkFloorParticipant::GetTypeId ())
+                {
+                  hasOffNetworkCall = true;
+                  ueFloorParticipant->GetObject<McpttOffNetworkFloorParticipant> ()->TraceConnectWithoutContext ("StateChangeTrace",
+                                                                                                                 MakeCallback (&MessagesTracer::FloorControlStateTrace, &rxMessagesPerUeTracerMapIt->second));
+                }
+              else
+                {
+                  NS_ABORT_MSG ("Cannot identify floor participant to connect to state trace.");
+                }
+            }
+
+          std::vector<netsimulyzer::CategoryAxis::ValuePair> pusherStates;
+          netsimulyzer::CategoryAxis::ValuePair pusherStateValue;
+          pusherStateValue.key = 0;
+          pusherStateValue.value = "Released";
+          pusherStates.push_back (pusherStateValue);
+          pusherStateValue.key = 1;
+          pusherStateValue.value = "Pushed";
+          pusherStates.push_back (pusherStateValue);
+          pttApp->GetPusher ()->TraceConnectWithoutContext ("PushingState",
+                                                            MakeCallback (&MessagesTracer::PusherStateTrace, &rxMessagesPerUeTracerMapIt->second));
+
+          //Add pusher state only for Tx nodes
+          if (ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
+            {
+              rxMessagesPerUeTracerMapIt->second.m_pusher = CreateObject <netsimulyzer::StateTransitionSink> (orchestrator, pusherStates, 0);
+              rxMessagesPerUeTracerMapIt->second.m_pusher->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " Pusher state"));
+              rxMessagesPerUeTracerMapIt->second.m_pusher->SetAttribute ("LoggingMode", StringValue ("None"));
+            }
+
+          //Add state machine graphs
+          std::vector<netsimulyzer::CategoryAxis::ValuePair> floorCtrlStates;
+          netsimulyzer::CategoryAxis::ValuePair floorCtrlStateValue;
+          floorCtrlStateValue.key = 0;
+          floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateStartStop::GetStateId ().GetName ();
+          floorCtrlStates.push_back (floorCtrlStateValue);
+          rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+
+          if (hasOnNetworkCall)
+            {
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateHasNoPermission::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStatePendingRelease::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStatePendingRequest::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateHasPermission::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateReleasing::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateQueued::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+            }
+
+          if (hasOffNetworkCall)
+            {
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateSilence::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStatePendReq::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+              floorCtrlStateValue.key++;
+              floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateQueued::GetStateId ().GetName ();
+              floorCtrlStates.push_back (floorCtrlStateValue);
+              rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
+            }
+
+          //Create graph for floor control for Tx nodes only
+          if (ueNodeIdx == 0 || ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
+            {
+              rxMessagesPerUeTracerMapIt->second.m_floorParticipant = CreateObject <netsimulyzer::StateTransitionSink> (orchestrator, floorCtrlStates, 0);
+              rxMessagesPerUeTracerMapIt->second.m_floorParticipant->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " Floor control"));
+              rxMessagesPerUeTracerMapIt->second.m_floorParticipant->SetAttribute ("LoggingMode", StringValue ("None"));
+            }
+
+          //Create graph for access time and pusher states for Tx nodes only
+          if (ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
+            {
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries = CreateObject <netsimulyzer::XYSeries> (orchestrator);
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " Access time"));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("LabelMode", StringValue ("Hidden"));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Connection", StringValue ("None"));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{204u, 111u, 4u, 255u}));
+
+              switch (team)
+                {
+                  case 0:
+                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{44u, 140u, 8u, 255u}));
+                    break;
+                  case 1:
+                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{3u, 163u, 81u, 255u}));
+                    break;
+                  case 2:
+                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{4u, 27u, 204u, 255u}));
+                    break;
+                  default:
+                    //should not happen, keep default color
+                    break;
+                }
+
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetAttribute ("XAxis", xAxis);
+              xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetAttribute ("YAxis", yAxis);
+              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Access time (ms)"));
+            }
         }
-
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetAttribute ("XAxis", xAxis);
-        xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-        rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetAttribute ("YAxis", yAxis);
-        yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Latency (ms)"));
-        }
-      
-        bool hasOnNetworkCall = false;
-        bool hasOffNetworkCall = false;
-        std::map<uint16_t, Ptr<McpttCall> >::iterator ueCallsIt;
-        Ptr<McpttPttApp> pttApp = clientApps.Get (ueNodeIdx)->GetObject<McpttPttApp> ();
-        std::map<uint16_t, Ptr<McpttCall> > ueCalls = pttApp->GetCalls();
-        for (ueCallsIt = ueCalls.begin (); ueCallsIt != ueCalls.end (); ueCallsIt++)
-          {
-            Ptr<McpttCall> ueCall = ueCallsIt->second;
-            Ptr<McpttFloorParticipant> ueFloorParticipant = ueCall->GetFloorMachine ();
-
-            if (ueFloorParticipant->GetInstanceTypeId () == McpttOnNetworkFloorParticipant::GetTypeId ())
-              {
-                hasOnNetworkCall = true;
-                ueFloorParticipant->GetObject<McpttOnNetworkFloorParticipant> ()->TraceConnectWithoutContext ("StateChangeTrace",
-                    MakeCallback (&MessagesTracer::FloorControlStateTrace, &rxMessagesPerUeTracerMapIt->second));
-              }
-            else if (ueFloorParticipant->GetInstanceTypeId () == McpttOffNetworkFloorParticipant::GetTypeId ())
-              {
-                hasOffNetworkCall = true;
-                ueFloorParticipant->GetObject<McpttOffNetworkFloorParticipant> ()->TraceConnectWithoutContext ("StateChangeTrace",
-                    MakeCallback (&MessagesTracer::FloorControlStateTrace, &rxMessagesPerUeTracerMapIt->second));
-              }
-            else
-              {
-                NS_ABORT_MSG ("Cannot identify floor participant to connect to state trace.");
-              }
-          }
-
-        std::vector<netsimulyzer::CategoryAxis::ValuePair> pusherStates;
-        netsimulyzer::CategoryAxis::ValuePair pusherStateValue;
-        pusherStateValue.key = 0;
-        pusherStateValue.value = "Released";
-        pusherStates.push_back (pusherStateValue);
-        pusherStateValue.key = 1;
-        pusherStateValue.value = "Pushed";
-        pusherStates.push_back (pusherStateValue);
-        pttApp->GetPusher ()->TraceConnectWithoutContext ("PushingState",
-            MakeCallback (&MessagesTracer::PusherStateTrace, &rxMessagesPerUeTracerMapIt->second));
-
-        //Add pusher state only for Tx nodes
-        if (ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
-        {
-          rxMessagesPerUeTracerMapIt->second.m_pusher = CreateObject <netsimulyzer::StateTransitionSink>(orchestrator, pusherStates, 0);
-          rxMessagesPerUeTracerMapIt->second.m_pusher->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " Pusher state"));
-          rxMessagesPerUeTracerMapIt->second.m_pusher->SetAttribute ("LoggingMode", StringValue("None"));
-        }
-
-        //Add state machine graphs
-        std::vector<netsimulyzer::CategoryAxis::ValuePair> floorCtrlStates;
-        netsimulyzer::CategoryAxis::ValuePair floorCtrlStateValue;
-        floorCtrlStateValue.key = 0;
-        floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateStartStop::GetStateId ().GetName ();
-        floorCtrlStates.push_back (floorCtrlStateValue);
-        rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
- 
-        if (hasOnNetworkCall)
-          {
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateHasNoPermission::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStatePendingRelease::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStatePendingRequest::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateHasPermission::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateReleasing::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateQueued::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-          }
-
-        if (hasOffNetworkCall)
-          {
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateSilence::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateNoPerm::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStatePendGrant::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStatePendReq::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateHasPerm::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-            floorCtrlStateValue.key++;
-            floorCtrlStateValue.value = McpttOffNetworkFloorParticipantStateQueued::GetStateId ().GetName ();
-            floorCtrlStates.push_back (floorCtrlStateValue);
-            rxMessagesPerUeTracerMapIt->second.m_stateToId.insert (std::pair<std::string, int> (floorCtrlStateValue.value, floorCtrlStateValue.key));
-          }
-
-        //Create graph for floor control for Tx nodes only
-        if (ueNodeIdx == 0 || ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
-        {
-          rxMessagesPerUeTracerMapIt->second.m_floorParticipant = CreateObject <netsimulyzer::StateTransitionSink>(orchestrator, floorCtrlStates, 0);
-          rxMessagesPerUeTracerMapIt->second.m_floorParticipant->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " Floor control"));
-          rxMessagesPerUeTracerMapIt->second.m_floorParticipant->SetAttribute ("LoggingMode", StringValue("None"));
-        }
-
-        //Create graph for access time and pusher states for Tx nodes only
-        if (ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
-        {
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries = CreateObject <netsimulyzer::XYSeries>(orchestrator);
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " Access time"));
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("LabelMode", StringValue("Hidden"));
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Connection", StringValue("None"));
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value(Color4{204u, 111u, 4u, 255u}));
-
-          switch (team)
-          {
-            case 0:
-              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value(Color4{44u, 140u, 8u, 255u}));
-              break;
-            case 1:
-              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value(Color4{3u, 163u, 81u, 255u}));
-              break;
-            case 2:
-              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value(Color4{4u, 27u, 204u, 255u}));
-              break;
-            default:
-              //should not happen, keep default color
-              break;
-          }
-          
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetAttribute ("XAxis", xAxis);
-          xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-          rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetAttribute ("YAxis", yAxis);
-          yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Access time (ms)"));
-        }
-      }
 
       //Add graphs to collection data
-      rsrpCollection = CreateObject <netsimulyzer::SeriesCollection>(orchestrator);
-      rsrpCollection->SetAttribute ("Name", StringValue("RSRP"));
+      rsrpCollection = CreateObject <netsimulyzer::SeriesCollection> (orchestrator);
+      rsrpCollection->SetAttribute ("Name", StringValue ("RSRP"));
       rsrpCollection->GetAttribute ("XAxis", xAxis);
       xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
       rsrpCollection->GetAttribute ("YAxis", yAxis);
@@ -1672,15 +1672,15 @@ int main (int argc, char *argv[])
       yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Maximum", DoubleValue (-110));
       yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Minimum", DoubleValue (-130));
 
-      m2eCollection = CreateObject <netsimulyzer::SeriesCollection>(orchestrator);
-      m2eCollection->SetAttribute ("Name", StringValue("Mouth-to-Ear latency"));
+      m2eCollection = CreateObject <netsimulyzer::SeriesCollection> (orchestrator);
+      m2eCollection->SetAttribute ("Name", StringValue ("Mouth-to-Ear latency"));
       m2eCollection->GetAttribute ("XAxis", xAxis);
       xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
       m2eCollection->GetAttribute ("YAxis", yAxis);
       yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Latency (ms)"));
 
-      accessTimeCollection = CreateObject <netsimulyzer::SeriesCollection>(orchestrator);
-      accessTimeCollection->SetAttribute ("Name", StringValue("Access Time"));
+      accessTimeCollection = CreateObject <netsimulyzer::SeriesCollection> (orchestrator);
+      accessTimeCollection->SetAttribute ("Name", StringValue ("Access Time"));
       accessTimeCollection->GetAttribute ("XAxis", xAxis);
       xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
       accessTimeCollection->GetAttribute ("YAxis", yAxis);
@@ -1693,21 +1693,21 @@ int main (int argc, char *argv[])
           uint32_t ueNodeIdx = rxMessagesPerUeTracerMapIt->first;
           //Add RSRP measurements of certain nodes in a collection
           if (ueNodeIdx == 2 || ueNodeIdx == 6 || ueNodeIdx == 11)
-          {
-            //rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " (team " + std::to_string(team) + ")"));
-            rsrpCollection->Add (rxMessagesPerUeTracerMapIt->second.m_rsrpSeries);
-          }
+            {
+              //rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Name", StringValue("UE " + std::to_string(ueNodeIdx) + " (team " + std::to_string(team) + ")"));
+              rsrpCollection->Add (rxMessagesPerUeTracerMapIt->second.m_rsrpSeries);
+            }
 
           if (ueNodeIdx == 1 || ueNodeIdx == 5 || ueNodeIdx == 9)
-          {
-            accessTimeCollection->Add (rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries);
-          }
+            {
+              accessTimeCollection->Add (rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries);
+            }
 
           //Add media measurements of certain nodes in a collection
           if (ueNodeIdx == 2 || ueNodeIdx == 6 || ueNodeIdx == 11)
-          {
-            m2eCollection->Add (rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries);
-          }
+            {
+              m2eCollection->Add (rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries);
+            }
         }
     }
 #endif
@@ -1728,7 +1728,7 @@ int main (int argc, char *argv[])
   std::cout << "--------------------------------------------------------------" << std::endl;
   for (it = rxMessagesPerUeTracerMap.begin (); it != rxMessagesPerUeTracerMap.end (); it++ )
     {
-     std::cout << "Team: " << it->second.m_team
+      std::cout << "Team: " << it->second.m_team
                 << " UE idx: " << it->second.m_ueIdx
                 << " UE Node ID: " << it->second.m_ueNodeId
                 << " UE IMSI: " << it->second.m_ueImsi
@@ -1741,7 +1741,7 @@ int main (int argc, char *argv[])
         {
           std::cout << "--------------" << std::endl;
         }
-     }
+    }
 
   Simulator::Destroy ();
 

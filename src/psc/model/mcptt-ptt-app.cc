@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -89,11 +89,11 @@ McpttPttApp::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::psc::McpttPttApp")
     .SetParent<Application> ()
     .AddConstructor<McpttPttApp>()
-   .AddAttribute ("Calls", "The map of all calls created during the simulation.",
+    .AddAttribute ("Calls", "The map of all calls created during the simulation.",
                    ObjectMapValue (),
                    MakeObjectMapAccessor (&McpttPttApp::m_calls),
                    MakeObjectMapChecker<McpttCall> ())
-   .AddAttribute ("LocalAddress", "The local address of the node.",
+    .AddAttribute ("LocalAddress", "The local address of the node.",
                    AddressValue (Ipv4Address::GetAny ()),
                    MakeAddressAccessor (&McpttPttApp::GetLocalAddress,
                                         &McpttPttApp::SetLocalAddress),
@@ -111,9 +111,9 @@ McpttPttApp::GetTypeId (void)
     .AddTraceSource ("EventTrace", "General event trace",
                      MakeTraceSourceAccessor (&McpttPttApp::m_eventTrace),
                      "ns3::psc::McpttPttApp::EventTracedCallback")
-   ;
-    return tid;
-}  
+  ;
+  return tid;
+}
 
 McpttPttApp::McpttPttApp (void)
   : Application (),
@@ -124,9 +124,9 @@ McpttPttApp::McpttPttApp (void)
     m_newCallCb (MakeNullCallback<void, uint16_t> ()),
     m_pusher (0),
     m_selectedCall (0),
-    m_selectedCallChangeCb (MakeNullCallback<void, Ptr<McpttCall> , Ptr<McpttCall> > ()),
+    m_selectedCallChangeCb (MakeNullCallback<void, Ptr<McpttCall>, Ptr<McpttCall> > ()),
     m_userId (0)
-{  
+{
   NS_LOG_FUNCTION (this);
   m_sipAgent = CreateObject<sip::SipAgent> ();
 }
@@ -149,7 +149,7 @@ McpttPttApp::AcceptCall (void)
 
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -165,7 +165,7 @@ McpttPttApp::AcceptFloorGrant (void)
 
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       floorMachine = call->GetFloorMachine ();
@@ -182,7 +182,7 @@ McpttPttApp::BeginEmergAlert (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -200,7 +200,7 @@ McpttPttApp::CancelEmergAlert (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-   
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -270,10 +270,10 @@ Vector
 McpttPttApp::GetNodeLoc (void) const
 {
   Ptr<MobilityModel> mobility = GetNode ()->GetObject<MobilityModel> ();
-  Vector current = mobility->GetPosition();
+  Vector current = mobility->GetPosition ();
 
   NS_LOG_LOGIC ("McpttPttApp located at " << current << ".");
-  
+
   return current;
 }
 
@@ -317,7 +317,7 @@ McpttPttApp::InitiateCall (void)
 
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       call->GetFloorMachine ()->SetOriginator (true);
@@ -376,7 +376,7 @@ McpttPttApp::RejectCall (void)
 
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -392,7 +392,7 @@ McpttPttApp::ReleaseCall (void)
 
   Ptr<McpttCall> call = GetSelectedCall ();
   Ptr<McpttCallMachine> callMachine = 0;
-  
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -429,7 +429,7 @@ McpttPttApp::ReleaseRequest (void)
 
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       floorMachine = call->GetFloorMachine ();
@@ -569,7 +569,7 @@ McpttPttApp::TakeReleaseNotification (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
-  
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -620,7 +620,7 @@ McpttPttApp::UpgradeCallType (uint8_t callType)
 
   Ptr<McpttCall> call = GetSelectedCall ();
   Ptr<McpttCallMachine> callMachine = 0;
-  
+
   if (call != 0)
     {
       callMachine = call->GetCallMachine ();
@@ -867,7 +867,7 @@ McpttPttApp::StartApplication (void)
 
   if (m_pushOnStart == true && GetSelectedCall ())
     {
-      // Start activity on the selected call (if one is selected) 
+      // Start activity on the selected call (if one is selected)
       Simulator::ScheduleNow (&McpttPusher::Start, m_pusher);
       NS_LOG_DEBUG ("m_pushOnStart " << m_pushOnStart);
     }
@@ -884,7 +884,7 @@ McpttPttApp::StopApplication (void)
   Ptr<McpttPusher> pusher = GetPusher ();
   Ptr<McpttMediaSrc> mediaSrc = GetMediaSrc ();
 
-  pusher->Stop();
+  pusher->Stop ();
 
   if (mediaSrc->IsMakingReq ())
     {
@@ -948,7 +948,7 @@ McpttPttApp::OpenCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Net
         }
       m_callChannelReferenceCount.emplace (channel, 1);
     }
-  
+
   // Add this call to the list of on-network or off-network calls, respectively
   if (callType == McpttCall::NetworkCallType::ON_NETWORK)
     {
@@ -995,7 +995,7 @@ McpttPttApp::CloseCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Ne
 Ptr<McpttChannel>
 McpttPttApp::GetCallChannel (uint16_t port) const
 {
-  auto it = m_callChannels.find (port);  
+  auto it = m_callChannels.find (port);
   if (it != m_callChannels.end ())
     {
       return it->second;
@@ -1090,7 +1090,7 @@ McpttPttApp::SetPusher (Ptr<McpttPusher>  pusher)
 }
 
 void
-McpttPttApp::SetSelectedCallChangeCb (const Callback<void, Ptr<McpttCall> , Ptr<McpttCall> >  selectedCallChangeCb)
+McpttPttApp::SetSelectedCallChangeCb (const Callback<void, Ptr<McpttCall>, Ptr<McpttCall> >  selectedCallChangeCb)
 {
   NS_LOG_FUNCTION (this << &selectedCallChangeCb);
 

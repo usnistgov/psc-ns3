@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -86,7 +86,7 @@ McpttFloorMsg::McpttFloorMsg (uint8_t subtype, uint32_t ssrc)
   NS_LOG_FUNCTION (this << (uint32_t)subtype << ssrc);
 }
 
-McpttFloorMsg::McpttFloorMsg(const std::string& name, uint8_t payloadType, uint8_t subtype, uint32_t ssrc)
+McpttFloorMsg::McpttFloorMsg (const std::string& name, uint8_t payloadType, uint8_t subtype, uint32_t ssrc)
   : McpttMsg (),
     m_length (16),
     m_name (name),
@@ -116,7 +116,7 @@ McpttFloorMsg::Deserialize (Buffer::Iterator start)
   // First two bits contain RTP version.
   uint8_t version = (firstByte >> 6);
   // Third bit is just a padding bit.
-  uint8_t padding = (firstByte & 0x20) >> 5; 
+  uint8_t padding = (firstByte & 0x20) >> 5;
   // The last five bits represents the message Subtype.
   uint8_t subtype = (firstByte & 0x1F);
 
@@ -156,10 +156,10 @@ McpttFloorMsg::Deserialize (Buffer::Iterator start)
 
   bytesRead += ReadData (start);
 
-  // Read next 
-  start.ReadNtohU32 ();  
+  // Read next
+  start.ReadNtohU32 ();
   bytesRead += 4;
-  start.ReadNtohU32 ();  
+  start.ReadNtohU32 ();
   bytesRead += 4;
 
   NS_LOG_LOGIC ("McpttFloorMsg read eight more bytes for security fields.");
@@ -228,7 +228,7 @@ McpttFloorMsg::Serialize (Buffer::Iterator start) const
   uint16_t length = GetLength ();
   uint32_t ssrc = GetSsrc ();
   std::string name = GetName ();
-  
+
   uint8_t firstByte = (version << 6) + (padding << 5) + subtype;
 
   start.WriteU8 (firstByte);
@@ -363,7 +363,7 @@ McpttFloorMsg::SetName (const std::string& name)
 {
   NS_LOG_FUNCTION (this << name);
 
-  NS_ASSERT_MSG (name.size() == 4, "The name must contain 4 ASCII characters.");
+  NS_ASSERT_MSG (name.size () == 4, "The name must contain 4 ASCII characters.");
 
   m_name = name;
 }
@@ -858,7 +858,7 @@ McpttFloorMsgGranted::WriteData (Buffer::Iterator& buff) const
 
   indicator.Serialize (buff);
 }
- 
+
 void
 McpttFloorMsgGranted::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo)
 {
@@ -972,7 +972,7 @@ McpttFloorMsgGranted::SetGrantedSsrc (McpttFloorMsgFieldSsrc grantedSsrc)
   m_grantedSsrc = grantedSsrc;
 }
 
-void 
+void
 McpttFloorMsgGranted::SetIndicator (const McpttFloorMsgFieldIndic& indicator)
 {
   NS_LOG_FUNCTION (this << indicator);
@@ -1130,7 +1130,7 @@ McpttFloorMsgDeny::Print (std::ostream& os) const
   indicator.Print (os);
 
   os << ")";
-} 
+}
 
 void
 McpttFloorMsgDeny::WriteData (Buffer::Iterator& buff) const
@@ -1151,7 +1151,7 @@ McpttFloorMsgDeny::WriteData (Buffer::Iterator& buff) const
   trackInfo.Serialize (buff);
   indicator.Serialize (buff);
 }
- 
+
 void
 McpttFloorMsgDeny::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo)
 {
@@ -1521,7 +1521,7 @@ McpttFloorMsgRevoke::Print (std::ostream& os) const
   indicator.Print (os);
 
   os << ")";
-} 
+}
 
 void
 McpttFloorMsgRevoke::WriteData (Buffer::Iterator& buff) const
@@ -1540,7 +1540,7 @@ McpttFloorMsgRevoke::WriteData (Buffer::Iterator& buff) const
   trackInfo.Serialize (buff);
   indicator.Serialize (buff);
 }
- 
+
 void
 McpttFloorMsgRevoke::UpdateTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo)
 {
@@ -1708,7 +1708,7 @@ McpttFloorMsgIdle::Print (std::ostream& os) const
 
   os << ")";
 }
-  
+
 void
 McpttFloorMsgIdle::WriteData (Buffer::Iterator& buff) const
 {
@@ -1918,7 +1918,7 @@ McpttFloorMsgTaken::Print (std::ostream& os) const
 
   os << ")";
 }
-  
+
 void
 McpttFloorMsgTaken::WriteData (Buffer::Iterator& buff) const
 {
@@ -2145,7 +2145,7 @@ McpttFloorMsgQueuePositionRequest::Print (std::ostream& os) const
 
   userId.Print (os);
   trackInfo.Print (os);
-  
+
   NS_LOG_LOGIC (")");
 }
 
@@ -2590,7 +2590,7 @@ McpttFloorMsgAck::Print (std::ostream& os) const
 
   os << ")";
 }
-  
+
 void
 McpttFloorMsgAck::WriteData (Buffer::Iterator& buff) const
 {

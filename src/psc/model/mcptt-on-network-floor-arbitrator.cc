@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -102,7 +102,7 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&McpttOnNetworkFloorArbitrator::m_participants),
                    MakeObjectVectorChecker<McpttOnNetworkFloorTowardsParticipant> ())
-   .AddAttribute ("QueueingSupported", "Whether queueing of floor requests is supported.",
+    .AddAttribute ("QueueingSupported", "Whether queueing of floor requests is supported.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&McpttOnNetworkFloorArbitrator::m_queueingSupported),
                    MakeBooleanChecker ())
@@ -135,11 +135,11 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
                    MakeTimeAccessor (&McpttOnNetworkFloorArbitrator::SetDelayT20),
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace",
-                   "The trace for capturing state changes.",
-                   MakeTraceSourceAccessor (&McpttOnNetworkFloorArbitrator::m_stateChangeTrace),
-                   "ns3::psc::McpttOnNetworkFloorArbitrator::StateChangeTracedCallback")
-    ;
-  
+                     "The trace for capturing state changes.",
+                     MakeTraceSourceAccessor (&McpttOnNetworkFloorArbitrator::m_stateChangeTrace),
+                     "ns3::psc::McpttOnNetworkFloorArbitrator::StateChangeTracedCallback")
+  ;
+
   return tid;
 }
 
@@ -433,60 +433,60 @@ McpttOnNetworkFloorArbitrator::IsPreemptive (const McpttFloorMsgRequest& msg) co
   bool preemptive = false;
 
   //if (!GetParticipantBySsrc (msg.GetSsrc ())->IsReceiveOnly ())
-    //{
-      if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+  //{
+  if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+    {
+      if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
         {
-          if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
-            {
-              if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
-                {
-                  preemptive = true;
-                }
-            }
-          else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
-                  || GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
-            {
-              preemptive = false;
-            }
-        }
-      else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
-        {
-          if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+          if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
             {
               preemptive = true;
             }
-          else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
-            {
-              if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
-                {
-                  preemptive = true;
-                }
-            }
-          else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
-            {
-              preemptive = false;
-            }
         }
-      else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
+      else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL)
+               || GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
         {
-          if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL)
-              || GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+          preemptive = false;
+        }
+    }
+  else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+    {
+      if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL))
+        {
+          preemptive = true;
+        }
+      else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+        {
+          if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
             {
               preemptive = true;
             }
-          else
-            {
-              if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
-                {
-                  preemptive = true;
-                }
-            }
+        }
+      else if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
+        {
+          preemptive = false;
+        }
+    }
+  else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::EMERGENCY_CALL))
+    {
+      if (GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::NORMAL_CALL)
+          || GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::IMMINENT_CALL))
+        {
+          preemptive = true;
         }
       else
         {
-          NS_FATAL_ERROR ("No call type indicated.");
+          if (msg.GetPriority ().GetPriority () > GetStoredPriority ())
+            {
+              preemptive = true;
+            }
         }
-    //}
+    }
+  else
+    {
+      NS_FATAL_ERROR ("No call type indicated.");
+    }
+  //}
 
   return preemptive;
 }
@@ -738,9 +738,9 @@ McpttOnNetworkFloorArbitrator::DoDispose (void)
     }
 
   for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
-  {
-    (*it)->Dispose ();
-  }
+    {
+      (*it)->Dispose ();
+    }
   m_participants.clear ();
   m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
   m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
@@ -982,7 +982,7 @@ void
 McpttOnNetworkFloorArbitrator::SetStoredSsrc (const uint32_t storedSsrc)
 {
   NS_LOG_FUNCTION (this << storedSsrc);
-  
+
   m_storedSsrc = storedSsrc;
 }
 

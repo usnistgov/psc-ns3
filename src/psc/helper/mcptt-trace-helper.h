@@ -9,7 +9,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -19,7 +19,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -59,55 +59,56 @@ class McpttStateMachineStats;
 class McpttTraceHelper
 {
 public:
- /**
-  * \brief Creates an instance of the McpttHelper class.
-  */
- McpttTraceHelper (void);
- /**
-  * \brief Destructor of the McpttHelper class.
-  */
- virtual ~McpttTraceHelper (void);
- /**
-  * Enables the MCPTT message trace at the application layer.
-  */
- virtual void EnableMsgTraces (void);
- /**
-  * Disables the MCPTT message trace at the application layer.
-  */
- virtual void DisableMsgTraces (void);
- /**
-  * Enables the MCPTT state machine traces.
-  */
- virtual void EnableStateMachineTraces (void);
- /**
-  * Disables the MCPTT state machine traces.
-  */
- virtual void DisableStateMachineTraces (void);
- /**
-  * Enables a trace for MCPTT access time statistics
-  * \param filename Filename to open for writing the trace
-  */
- virtual void EnableAccessTimeTrace (std::string filename);
- /**
-  * Disables any traces for MCPTT access time statistics
-  */
- virtual void DisableAccessTimeTrace (void);
- /**
-  * Enables a trace for MCPTT mouth-to-ear latency statistics
-  * \param filename Filename to open for writing the trace
-  */
- virtual void EnableMouthToEarLatencyTrace (std::string filename);
- /**
-  * Disables any traces for MCPTT mouth-to-ear latency statistics
-  */
- virtual void DisableMouthToEarLatencyTrace (void);
+  /**
+   * \brief Creates an instance of the McpttHelper class.
+   */
+  McpttTraceHelper (void);
+  /**
+   * \brief Destructor of the McpttHelper class.
+   */
+  virtual ~McpttTraceHelper (void);
+  /**
+   * Enables the MCPTT message trace at the application layer.
+   */
+  virtual void EnableMsgTraces (void);
+  /**
+   * Disables the MCPTT message trace at the application layer.
+   */
+  virtual void DisableMsgTraces (void);
+  /**
+   * Enables the MCPTT state machine traces.
+   */
+  virtual void EnableStateMachineTraces (void);
+  /**
+   * Disables the MCPTT state machine traces.
+   */
+  virtual void DisableStateMachineTraces (void);
+  /**
+   * Enables a trace for MCPTT access time statistics
+   * \param filename Filename to open for writing the trace
+   */
+  virtual void EnableAccessTimeTrace (std::string filename);
+  /**
+   * Disables any traces for MCPTT access time statistics
+   */
+  virtual void DisableAccessTimeTrace (void);
+  /**
+   * Enables a trace for MCPTT mouth-to-ear latency statistics
+   * \param filename Filename to open for writing the trace
+   */
+  virtual void EnableMouthToEarLatencyTrace (std::string filename);
+  /**
+   * Disables any traces for MCPTT mouth-to-ear latency statistics
+   */
+  virtual void DisableMouthToEarLatencyTrace (void);
+
 private:
- Ptr<McpttMsgStats> m_msgTracer; //!< The object used to trace MCPTT messages.
- Ptr<McpttStateMachineStats> m_stateMachineTracer; //!< The object used to trace MCPTT state machine traces.
- std::map<std::pair<uint32_t, uint16_t>, Time> m_mouthToEarLatencyMap; //!< state tracker
- std::map<std::pair<uint32_t, uint16_t>, std::pair<Time, std::string> > m_accessTimeMap; //!< state tracker
- std::ofstream m_mouthToEarLatencyTraceFile; //!< file stream for latency trace
- std::ofstream m_accessTimeTraceFile; //!< file stream for the access time trace
+  Ptr<McpttMsgStats> m_msgTracer; //!< The object used to trace MCPTT messages.
+  Ptr<McpttStateMachineStats> m_stateMachineTracer; //!< The object used to trace MCPTT state machine traces.
+  std::map<std::pair<uint32_t, uint16_t>, Time> m_mouthToEarLatencyMap; //!< state tracker
+  std::map<std::pair<uint32_t, uint16_t>, std::pair<Time, std::string> > m_accessTimeMap; //!< state tracker
+  std::ofstream m_mouthToEarLatencyTraceFile; //!< file stream for latency trace
+  std::ofstream m_accessTimeTraceFile; //!< file stream for the access time trace
 
   void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const Header& msg);
   void TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);

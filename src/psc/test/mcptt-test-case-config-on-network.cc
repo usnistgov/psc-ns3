@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -49,27 +49,27 @@ McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork (void)
   : McpttTestCaseConfig ()
 {
   m_clientHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                         "PushOnStart", BooleanValue (false));
+                            "PushOnStart", BooleanValue (false));
   m_clientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                         "Bytes", UintegerValue (60),
-                         "DataRate", DataRateValue (DataRate ("24kb/s")));
+                              "Bytes", UintegerValue (60),
+                              "DataRate", DataRateValue (DataRate ("24kb/s")));
   m_clientHelper.SetPusher ("ns3::psc::McpttPusher",
-                         "Automatic", BooleanValue (false));
+                            "Automatic", BooleanValue (false));
 
   m_callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "TxSsrc", UintegerValue (100),
-                         "QueueingSupported", BooleanValue (true));
+                              "AckRequired", BooleanValue (false),
+                              "AudioCutIn", BooleanValue (false),
+                              "DualFloorSupported", BooleanValue (false),
+                              "TxSsrc", UintegerValue (100),
+                              "QueueingSupported", BooleanValue (true));
   m_callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                         "ReceiveOnly", BooleanValue (false));
+                                      "ReceiveOnly", BooleanValue (false));
   m_callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                         "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
+                               "AckRequired", BooleanValue (false),
+                               "GenMedia", BooleanValue (true));
   m_callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                         "AmbientListening", BooleanValue (false),
-                         "TemporaryGroup", BooleanValue (false));
+                              "AmbientListening", BooleanValue (false),
+                              "TemporaryGroup", BooleanValue (false));
 }
 
 McpttTestCaseConfigOnNetwork::~McpttTestCaseConfigOnNetwork (void)

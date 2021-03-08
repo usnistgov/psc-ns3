@@ -32,7 +32,7 @@
 // has two call added (callIds 1 and 2), and then callId 1 is selected again
 // and started.  Upon PTT activity, it eventually gets the floor.  At time 20s,
 // the user selects the second call without releasing the first call.  This
-// is analogous to a real user backgrounding the first call while putting 
+// is analogous to a real user backgrounding the first call while putting
 // the second call in the foreground.  It can be observed from the trace that
 // the UE releases the floor on callId 1 at that time, and for its next
 // push event, generates a floor request on callId 2.  The event trace
@@ -126,13 +126,13 @@ main (int argc, char *argv[])
   imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
 
   // Create a second IMS and MCPTT server.  This requires an explicit
-  // configuration of the IP network away from the default, because the 
+  // configuration of the IP network away from the default, because the
   // first helper took the default
   Ptr<ImsHelper> imsHelper2 = CreateObject<ImsHelper> ();
   imsHelper2->SetImsIpv4Network (Ipv4Address ("16.0.0.0"), Ipv4Mask ("255.0.0.0"));
   imsHelper2->ConnectPgw (epcHelper->GetPgwNode ());
 
-   // Create a single RemoteHost
+  // Create a single RemoteHost
   NodeContainer remoteHostContainer;
   remoteHostContainer.Create (1);
   Ptr<Node> remoteHost = remoteHostContainer.Get (0);
@@ -159,8 +159,8 @@ main (int argc, char *argv[])
   NodeContainer ueNodes;
   NodeContainer enbNodes;
   enbNodes.Create (numEnb);
-  ueNodeGroup1.Create (numUe/2);
-  ueNodeGroup2.Create (numUe/2);
+  ueNodeGroup1.Create (numUe / 2);
+  ueNodeGroup2.Create (numUe / 2);
   ueNodes.Add (ueNodeGroup1);
   ueNodes.Add (ueNodeGroup2);
 
@@ -178,11 +178,11 @@ main (int argc, char *argv[])
   positionAlloc->Add (Vector (distance * 2, -10, 0));
   positionAlloc->Add (Vector (distance * 3, -10, 0));
   MobilityHelper mobility;
-  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-  mobility.SetPositionAllocator(positionAlloc);
-  mobility.Install(enbNodes);
-  mobility.Install(ueNodeGroup1);
-  mobility.Install(ueNodeGroup2);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (enbNodes);
+  mobility.Install (ueNodeGroup1);
+  mobility.Install (ueNodeGroup2);
 
   // Install LTE Devices to the nodes
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
@@ -203,12 +203,12 @@ main (int argc, char *argv[])
 
   // Attach one UE per eNodeB
   // side effect: the default EPS bearer will be activated
-  lteHelper->Attach (ueLteDevs.Get(0), enbLteDevs.Get(0));
-  lteHelper->Attach (ueLteDevs.Get(1), enbLteDevs.Get(1));
-  lteHelper->Attach (ueLteDevs.Get(2), enbLteDevs.Get(0));
-  lteHelper->Attach (ueLteDevs.Get(3), enbLteDevs.Get(1));
-  lteHelper->Attach (ueLteDevs.Get(4), enbLteDevs.Get(0));
-  lteHelper->Attach (ueLteDevs.Get(5), enbLteDevs.Get(1));
+  lteHelper->Attach (ueLteDevs.Get (0), enbLteDevs.Get (0));
+  lteHelper->Attach (ueLteDevs.Get (1), enbLteDevs.Get (1));
+  lteHelper->Attach (ueLteDevs.Get (2), enbLteDevs.Get (0));
+  lteHelper->Attach (ueLteDevs.Get (3), enbLteDevs.Get (1));
+  lteHelper->Attach (ueLteDevs.Get (4), enbLteDevs.Get (0));
+  lteHelper->Attach (ueLteDevs.Get (5), enbLteDevs.Get (1));
 
   NS_LOG_INFO ("Creating applications...");
   ApplicationContainer serverAppContainer;
@@ -229,16 +229,16 @@ main (int argc, char *argv[])
   McpttHelper mcpttClientHelper;
   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp");
   mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                         "Bytes", UintegerValue (msgSize),
-                         "DataRate", DataRateValue (dataRate));
+                                 "Bytes", UintegerValue (msgSize),
+                                 "DataRate", DataRateValue (dataRate));
   mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
-                         "Automatic", BooleanValue (true));
+                               "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                          "Mean", DoubleValue (onOffMean),
+                                                          "Variance", DoubleValue (2.0));
   mcpttClientHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                  "Mean", DoubleValue (onOffMean),
+                                                  "Variance", DoubleValue (2.0));
 
   clientAppContainer1.Add (mcpttClientHelper.Install (ueNodeGroup1));
   clientAppContainer2.Add (mcpttClientHelper.Install (ueNodeGroup2));
@@ -270,18 +270,18 @@ main (int argc, char *argv[])
   McpttCallHelper callHelper;
   // Optional statements to tailor the configurable attributes
   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "QueueingSupported", BooleanValue (true));
+                            "AckRequired", BooleanValue (false),
+                            "AudioCutIn", BooleanValue (false),
+                            "DualFloorSupported", BooleanValue (false),
+                            "QueueingSupported", BooleanValue (true));
   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                         "ReceiveOnly", BooleanValue (false));
+                                    "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                         "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
+                             "AckRequired", BooleanValue (false),
+                             "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                         "AmbientListening", BooleanValue (false),
-                         "TemporaryGroup", BooleanValue (false));
+                            "AmbientListening", BooleanValue (false),
+                            "TemporaryGroup", BooleanValue (false));
 
   // Build the application containers used to configure each call.  The first
   // three UEs are part of the first call.  The second three UEs are part of

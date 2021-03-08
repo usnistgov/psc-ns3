@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -48,56 +48,56 @@ namespace tests {
 class FloorMsgRequestTest : public TestCase
 {
 public:
- FloorMsgRequestTest (void);
- virtual void DoRun (void);
+  FloorMsgRequestTest (void);
+  virtual void DoRun (void);
 };
 
 class FloorMsgGrantedTest : public TestCase
 {
 public:
   FloorMsgGrantedTest (void);
- virtual void DoRun (void);
+  virtual void DoRun (void);
 };
 
 class FloorMsgDenyTest : public TestCase
 {
 public:
- FloorMsgDenyTest (void);
- virtual void DoRun (void);
+  FloorMsgDenyTest (void);
+  virtual void DoRun (void);
 };
 
 class FloorMsgReleaseTest : public TestCase
 {
 public:
- FloorMsgReleaseTest (void);
- virtual void DoRun (void);
+  FloorMsgReleaseTest (void);
+  virtual void DoRun (void);
 };
 
 class FloorMsgTakenTest : public TestCase
 {
 public:
- FloorMsgTakenTest (void);
- virtual void DoRun (void);
+  FloorMsgTakenTest (void);
+  virtual void DoRun (void);
 };
 
 class FloorMsgQueuePositionRequestTest : public TestCase
 {
 public:
- FloorMsgQueuePositionRequestTest (void);
- virtual void DoRun (void);
+  FloorMsgQueuePositionRequestTest (void);
+  virtual void DoRun (void);
 };
 
 class FloorMsgQueuePositionInfoTest : public TestCase
 {
 public:
- FloorMsgQueuePositionInfoTest (void);
- virtual void DoRun (void);
+  FloorMsgQueuePositionInfoTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttFloorControlMsgTestSuite : public TestSuite
 {
 public:
- McpttFloorControlMsgTestSuite (void);
+  McpttFloorControlMsgTestSuite (void);
 };
 
 /***************************************************************
@@ -108,8 +108,7 @@ static McpttFloorControlMsgTestSuite suite;
 
 FloorMsgRequestTest::FloorMsgRequestTest (void)
   : TestCase ("Floor Request")
-{
-}
+{}
 
 void
 FloorMsgRequestTest::DoRun (void)
@@ -137,7 +136,7 @@ FloorMsgRequestTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -154,8 +153,7 @@ FloorMsgRequestTest::DoRun (void)
 
 FloorMsgGrantedTest::FloorMsgGrantedTest (void)
   : TestCase ("Floor Granted")
-{
-}
+{}
 
 void
 FloorMsgGrantedTest::DoRun (void)
@@ -200,7 +198,7 @@ FloorMsgGrantedTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -217,8 +215,7 @@ FloorMsgGrantedTest::DoRun (void)
 
 FloorMsgDenyTest::FloorMsgDenyTest (void)
   : TestCase ("Floor Deny")
-{
-}
+{}
 
 void
 FloorMsgDenyTest::DoRun (void)
@@ -240,7 +237,7 @@ FloorMsgDenyTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -257,8 +254,7 @@ FloorMsgDenyTest::DoRun (void)
 
 FloorMsgReleaseTest::FloorMsgReleaseTest (void)
   : TestCase ("Floor Release")
-{
-}
+{}
 
 void
 FloorMsgReleaseTest::DoRun (void)
@@ -281,7 +277,7 @@ FloorMsgReleaseTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -298,8 +294,7 @@ FloorMsgReleaseTest::DoRun (void)
 
 FloorMsgTakenTest::FloorMsgTakenTest (void)
   : TestCase ("Floor Taken")
-{
-}
+{}
 
 void
 FloorMsgTakenTest::DoRun (void)
@@ -333,7 +328,7 @@ FloorMsgTakenTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -350,8 +345,7 @@ FloorMsgTakenTest::DoRun (void)
 
 FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest (void)
   : TestCase ("Queue Position Request")
-{
-}
+{}
 
 void
 FloorMsgQueuePositionRequestTest::DoRun (void)
@@ -370,7 +364,7 @@ FloorMsgQueuePositionRequestTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -387,8 +381,7 @@ FloorMsgQueuePositionRequestTest::DoRun (void)
 
 FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest (void)
   : TestCase ("Queue Info")
-{
-}
+{}
 
 void
 FloorMsgQueuePositionInfoTest::DoRun (void)
@@ -418,7 +411,7 @@ FloorMsgQueuePositionInfoTest::DoRun (void)
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (srcMsg);
-  p->RemoveHeader(dstMsg);
+  p->RemoveHeader (dstMsg);
 
   std::stringstream dstStr;
   std::stringstream srcStr;
@@ -434,7 +427,7 @@ FloorMsgQueuePositionInfoTest::DoRun (void)
 }
 
 McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite (void)
-   : TestSuite ("mcptt-floor-control-messages", TestSuite::UNIT)
+  : TestSuite ("mcptt-floor-control-messages", TestSuite::UNIT)
 {
   AddTestCase (new FloorMsgRequestTest (), TestCase::QUICK);
   AddTestCase (new FloorMsgGrantedTest (), TestCase::QUICK);

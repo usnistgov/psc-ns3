@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /**
  * Copyright 2019 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -75,130 +75,131 @@ public:
    * \param stopTime stop time of the call
    */
   void AddCallOffNetwork (ApplicationContainer clients, uint16_t callId, Address peerAddress, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime);
- /**
-  * Configures and selects a call for a set of MCPTT applications.
-  * \param apps The application container with the set of apps to configure.
-  * \param peerAddress The peer address.
-  * \param usersPerGroup The number of users to put in each group.
-  * \param baseGroupId The starting group ID.
-  */
- virtual void ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Address peerAddress, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
- /**
-  * Configures the default floor control arbitrator object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetArbitrator (std::string tid,
-                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
-  * Configures the default floor control towards participant object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetTowardsParticipant (std::string tid,
-                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
-  * Configures the default floor control participant object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetParticipant (std::string tid,
-                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
- /**
-  * Configures the default server call object.
-  * \param name the name of the model to set
-  * \param n0 the name of the attribute to set
-  * \param v0 the value of the attribute to set
-  * \param n1 the name of the attribute to set
-  * \param v1 the value of the attribute to set
-  * \param n2 the name of the attribute to set
-  * \param v2 the value of the attribute to set
-  * \param n3 the name of the attribute to set
-  * \param v3 the value of the attribute to set
-  * \param n4 the name of the attribute to set
-  * \param v4 the value of the attribute to set
-  * \param n5 the name of the attribute to set
-  * \param v5 the value of the attribute to set
-  * \param n6 the name of the attribute to set
-  * \param v6 the value of the attribute to set
-  * \param n7 the name of the attribute to set
-  * \param v7 the value of the attribute to set
-  */
- virtual void SetServerCall (std::string tid,
-                             std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                             std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                             std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                             std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                             std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                             std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                             std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                             std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * Configures and selects a call for a set of MCPTT applications.
+   * \param apps The application container with the set of apps to configure.
+   * \param peerAddress The peer address.
+   * \param usersPerGroup The number of users to put in each group.
+   * \param baseGroupId The starting group ID.
+   */
+  virtual void ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Address peerAddress, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
+  /**
+   * Configures the default floor control arbitrator object.
+   * \param name the name of the model to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
+   */
+  virtual void SetArbitrator (std::string tid,
+                              std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                              std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                              std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                              std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                              std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                              std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                              std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                              std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * Configures the default floor control towards participant object.
+   * \param name the name of the model to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
+   */
+  virtual void SetTowardsParticipant (std::string tid,
+                                      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                                      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                                      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                                      std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                                      std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                                      std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                                      std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                                      std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * Configures the default floor control participant object.
+   * \param name the name of the model to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
+   */
+  virtual void SetParticipant (std::string tid,
+                               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * Configures the default server call object.
+   * \param name the name of the model to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
+   */
+  virtual void SetServerCall (std::string tid,
+                              std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                              std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                              std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                              std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                              std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                              std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                              std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                              std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+
 private:
   ObjectFactory m_arbitratorFactory; //!< The floor arbitrator factory
   ObjectFactory m_towardsParticipantFactory; //!< The towards participant factory

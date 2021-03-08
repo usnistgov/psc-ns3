@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -51,405 +51,436 @@ namespace tests {
 class TestCallTypeMachine : public McpttCallTypeMachineGrpBasic
 {
 public:
- static TypeId GetTypeId (void);
- TestCallTypeMachine (void);
- virtual ~TestCallTypeMachine (void);
- virtual void ChangeState (const McpttEntityId& stateId);
- virtual TypeId GetInstanceTypeId (void) const;
- virtual void ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun& msg);
- virtual void ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmergEnd& msg);
- virtual void ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpImmPerilEnd& msg);
- virtual void Start (void);
- virtual void Send (const McpttCallMsg& msg);
+  static TypeId GetTypeId (void);
+  TestCallTypeMachine (void);
+  virtual ~TestCallTypeMachine (void);
+  virtual void ChangeState (const McpttEntityId& stateId);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun& msg);
+  virtual void ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmergEnd& msg);
+  virtual void ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpImmPerilEnd& msg);
+  virtual void Start (void);
+  virtual void Send (const McpttCallMsg& msg);
+
 protected:
- virtual void ExpiryOfTfg1 (void);
- virtual void ExpiryOfTfg11 (void);
- virtual void ExpiryOfTfg12 (void);
- virtual void ExpiryOfTfg13 (void);
- virtual void ExpiryOfTfg14 (void);
+  virtual void ExpiryOfTfg1 (void);
+  virtual void ExpiryOfTfg11 (void);
+  virtual void ExpiryOfTfg12 (void);
+  virtual void ExpiryOfTfg13 (void);
+  virtual void ExpiryOfTfg14 (void);
+
 private:
- Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_postRxCb;
- Callback<void, const TestCallTypeMachine&, const McpttTimer&> m_postTimerExpCb;
- Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_postTxCb;
- Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_preRxCb;
- Callback<void, const TestCallTypeMachine&, const McpttTimer&> m_preTimerExpCb;
- Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_preTxCb;
- McpttEntityId m_startStateId;
- Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb;
+  Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_postRxCb;
+  Callback<void, const TestCallTypeMachine&, const McpttTimer&> m_postTimerExpCb;
+  Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_postTxCb;
+  Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_preRxCb;
+  Callback<void, const TestCallTypeMachine&, const McpttTimer&> m_preTimerExpCb;
+  Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_preTxCb;
+  McpttEntityId m_startStateId;
+  Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb;
+
 public:
- virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostRxCb (void) const;
- virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPostTimerExpCb (void) const;
- virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostTxCb (void) const;
- virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreRxCb (void) const;
- virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPreTimerExpCb (void) const;
- virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreTxCb (void) const;
- virtual Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> GetStateChangeCb (void) const;
- virtual void SetPostRxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  postRxCb);
- virtual void SetPostTimerExpCb (const Callback<void, const TestCallTypeMachine&, const McpttTimer&>  timerExpCb);
- virtual void SetPostTxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  postTxCb);
- virtual void SetPreRxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  preRxCb);
- virtual void SetPreTimerExpCb (const Callback<void, const TestCallTypeMachine&, const McpttTimer&>  timerExpCb);
- virtual void SetPreTxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  preTxCb);
- virtual void SetStateChangeTestCb (const Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>  stateChangeCb);
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostRxCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPostTimerExpCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostTxCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreRxCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPreTimerExpCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreTxCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> GetStateChangeCb (void) const;
+  virtual void SetPostRxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  postRxCb);
+  virtual void SetPostTimerExpCb (const Callback<void, const TestCallTypeMachine&, const McpttTimer&>  timerExpCb);
+  virtual void SetPostTxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  postTxCb);
+  virtual void SetPreRxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  preRxCb);
+  virtual void SetPreTimerExpCb (const Callback<void, const TestCallTypeMachine&, const McpttTimer&>  timerExpCb);
+  virtual void SetPreTxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  preTxCb);
+  virtual void SetStateChangeTestCb (const Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>  stateChangeCb);
 };
 
 class McpttCallTypeInitEstabNewCall : public McpttTestCase
 {
 public:
- McpttCallTypeInitEstabNewCall (const std::string& name = "Call Type Initialization - Establish New Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeInitEstabNewCall (const std::string& name = "Call Type Initialization - Establish New Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT0ToT2;
- bool m_ueATfg1Exp;
+  bool m_ueAT0ToT2;
+  bool m_ueATfg1Exp;
 };
 
 class McpttCallTypeInitJoinEmergCall : public McpttTestCase
 {
 public:
- McpttCallTypeInitJoinEmergCall (const std::string& name = "Call Type Initialization - Join Emergency Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeInitJoinEmergCall (const std::string& name = "Call Type Initialization - Join Emergency Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueARxAnnoun;
- bool m_ueAT0ToT1;
+  bool m_ueARxAnnoun;
+  bool m_ueAT0ToT1;
 };
 
 class McpttCallTypeInitJoinImmPerilCall : public McpttTestCase
 {
 public:
- McpttCallTypeInitJoinImmPerilCall (const std::string& name = "Call Type Initialization - Join Imminent Peril Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeInitJoinImmPerilCall (const std::string& name = "Call Type Initialization - Join Imminent Peril Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueARxAnnoun;
- bool m_ueAT0ToT3;
+  bool m_ueARxAnnoun;
+  bool m_ueAT0ToT3;
 };
 
 class McpttCallTypeInitJoinBasicCall : public McpttTestCase
 {
 public:
- McpttCallTypeInitJoinBasicCall (const std::string& name = "Call Type Initialization - Join Basic Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeInitJoinBasicCall (const std::string& name = "Call Type Initialization - Join Basic Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueARxAnnoun;
- bool m_ueAT0ToT2;
+  bool m_ueARxAnnoun;
+  bool m_ueAT0ToT2;
 };
 
 class McpttCallTypeInitJoinEmergCallUserAck : public McpttTestCase
 {
 public:
- McpttCallTypeInitJoinEmergCallUserAck (const std::string& name = "Call Type Initialization - Join Emergency Call with User Acknowledgement", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeInitJoinEmergCallUserAck (const std::string& name = "Call Type Initialization - Join Emergency Call with User Acknowledgement", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueARxAnnoun;
- bool m_ueAT0ToT1;
+  bool m_ueARxAnnoun;
+  bool m_ueAT0ToT1;
 };
 
 class McpttCallTypeInitJoinEmergCallNoUserAck : public McpttTestCase
 {
 public:
- McpttCallTypeInitJoinEmergCallNoUserAck (const std::string& name = "Call Type Initialization - Join Emergency Call with User Acknowledgement", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeInitJoinEmergCallNoUserAck (const std::string& name = "Call Type Initialization - Join Emergency Call with User Acknowledgement", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueARxAnnoun;
- bool m_ueAT0ToT1;
+  bool m_ueARxAnnoun;
+  bool m_ueAT0ToT1;
 };
 
 class McpttCallTypeUpgradeFromBasicCall : public McpttTestCase
 {
 public:
- McpttCallTypeUpgradeFromBasicCall (const std::string& name = "Call Type Upgrade - From Basic Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeUpgradeFromBasicCall (const std::string& name = "Call Type Upgrade - From Basic Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT2ToT3;
- bool m_ueATxAnnoun;
- bool m_ueBRxAnnoun;
- bool m_ueBT2ToT3;
- bool m_ueCRxAnnoun;
- bool m_ueCT2ToT3;
+  bool m_ueAT2ToT3;
+  bool m_ueATxAnnoun;
+  bool m_ueBRxAnnoun;
+  bool m_ueBT2ToT3;
+  bool m_ueCRxAnnoun;
+  bool m_ueCT2ToT3;
 };
 
 class McpttCallTypeUpgradeFromImmPerilCall : public McpttTestCase
 {
 public:
- McpttCallTypeUpgradeFromImmPerilCall (const std::string& name = "Call Type Upgrade - From Imminent Peril Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeUpgradeFromImmPerilCall (const std::string& name = "Call Type Upgrade - From Imminent Peril Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT3ToT1;
- bool m_ueATxAnnoun;
- bool m_ueBRxAnnoun;
- bool m_ueBT3ToT1;
- bool m_ueCRxAnnoun;
- bool m_ueCT3ToT1;
+  bool m_ueAT3ToT1;
+  bool m_ueATxAnnoun;
+  bool m_ueBRxAnnoun;
+  bool m_ueBT3ToT1;
+  bool m_ueCRxAnnoun;
+  bool m_ueCT3ToT1;
 };
 
 class McpttCallTypeExplicitDowngradeFromEmerg : public McpttTestCase
 {
 public:
- McpttCallTypeExplicitDowngradeFromEmerg (const std::string& name = "Call Type Explicit Downgrade - From Emergency", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeExplicitDowngradeFromEmerg (const std::string& name = "Call Type Explicit Downgrade - From Emergency", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT1ToT2;
- bool m_ueATxEmergEnd;
- bool m_ueBRxEmergEnd;
- bool m_ueBT1ToT2;
- bool m_ueCRxEmergEnd;
- bool m_ueCT1ToT2;
+  bool m_ueAT1ToT2;
+  bool m_ueATxEmergEnd;
+  bool m_ueBRxEmergEnd;
+  bool m_ueBT1ToT2;
+  bool m_ueCRxEmergEnd;
+  bool m_ueCT1ToT2;
 };
 
 class McpttCallTypeExplicitDowngradeFromImmPeril : public McpttTestCase
 {
 public:
- McpttCallTypeExplicitDowngradeFromImmPeril (const std::string& name = "Call Type Explicit Downgrade - From Imminent Peril", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeExplicitDowngradeFromImmPeril (const std::string& name = "Call Type Explicit Downgrade - From Imminent Peril", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT3ToT2;
- bool m_ueATxImmPerilEnd;
- bool m_ueBRxImmPerilEnd;
- bool m_ueBT3ToT2;
- bool m_ueCRxImmPerilEnd;
- bool m_ueCT3ToT2;
+  bool m_ueAT3ToT2;
+  bool m_ueATxImmPerilEnd;
+  bool m_ueBRxImmPerilEnd;
+  bool m_ueBT3ToT2;
+  bool m_ueCRxImmPerilEnd;
+  bool m_ueCT3ToT2;
 };
 
 class McpttCallTypeImplicitDowngradeFromEmerg : public McpttTestCase
 {
 public:
- McpttCallTypeImplicitDowngradeFromEmerg (const std::string& name = "Call Type Implicit Downgrade - From Emergency", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeImplicitDowngradeFromEmerg (const std::string& name = "Call Type Implicit Downgrade - From Emergency", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT1ToT2;
- bool m_ueATfg13Exp;
+  bool m_ueAT1ToT2;
+  bool m_ueATfg13Exp;
 };
 
 class McpttCallTypeImplicitDowngradeFromImmPeril : public McpttTestCase
 {
 public:
- McpttCallTypeImplicitDowngradeFromImmPeril (const std::string& name = "Call Type Implicit Downgrade - From Imminent Peril", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeImplicitDowngradeFromImmPeril (const std::string& name = "Call Type Implicit Downgrade - From Imminent Peril", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT3ToT2;
- bool m_ueATfg14Exp;
+  bool m_ueAT3ToT2;
+  bool m_ueATfg14Exp;
 };
 
 class McpttCallTypeReleaseAfterCallEstab : public McpttTestCase
 {
 public:
- McpttCallTypeReleaseAfterCallEstab (const std::string& name = "Call Type Release - After Call Establishment", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeReleaseAfterCallEstab (const std::string& name = "Call Type Release - After Call Establishment", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueAT2ToT0;
+  bool m_ueAT2ToT0;
 };
 
 class McpttCallTypeMerge : public McpttTestCase
 {
 public:
- McpttCallTypeMerge (const std::string& name = "Call Type Merge", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+  McpttCallTypeMerge (const std::string& name = "Call Type Merge", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void);
- virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
- virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
- virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
- virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void Configure (void);
+  virtual void Execute (void);
+  virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeATxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeBStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeBTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeBTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCRxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+  virtual void UeCStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
+  virtual void UeCTimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
+  virtual void UeCTxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
+
 private:
- bool m_ueARxAnnoun;
- bool m_ueAT2ToT1;
- bool m_ueBRxAnnoun;
- bool m_ueBT3ToT1;
+  bool m_ueARxAnnoun;
+  bool m_ueAT2ToT1;
+  bool m_ueBRxAnnoun;
+  bool m_ueBT3ToT1;
 };
 
 class McpttCallTypeControlTestSuite : public TestSuite
 {
 public:
- McpttCallTypeControlTestSuite (void);
+  McpttCallTypeControlTestSuite (void);
 };
 
 /***************************************************************
@@ -825,7 +856,7 @@ McpttCallTypeInitEstabNewCall::Configure (void)
   Simulator::Schedule (startTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeInitEstabNewCall::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -1105,7 +1136,7 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
   Simulator::Schedule (joinTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeInitJoinEmergCall::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -1392,7 +1423,7 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
   Simulator::Schedule (joinTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeInitJoinImmPerilCall::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -1672,7 +1703,7 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
   Simulator::Schedule (joinTime, &McpttPttApp::TakePushNotification, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeInitJoinBasicCall::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -1957,7 +1988,7 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
-void 
+void
 McpttCallTypeInitJoinEmergCallUserAck::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -2249,7 +2280,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
-void 
+void
 McpttCallTypeInitJoinEmergCallNoUserAck::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -2554,7 +2585,7 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
   Simulator::Schedule (upgradeTime, &McpttPttApp::UpgradeCallType, ueAPttApp, McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP);
 }
 
-void 
+void
 McpttCallTypeUpgradeFromBasicCall::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -2966,7 +2997,7 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
   Simulator::Schedule (upgradeTime, &McpttPttApp::UpgradeCallType, ueAPttApp, McpttCallMsgFieldCallType::EMERGENCY_GROUP);
 }
 
-void 
+void
 McpttCallTypeUpgradeFromImmPerilCall::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -3385,7 +3416,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
   Simulator::Schedule (upgradeTime, &McpttPttApp::DowngradeCallType, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeExplicitDowngradeFromEmerg::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -3804,7 +3835,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
   Simulator::Schedule (upgradeTime, &McpttPttApp::DowngradeCallType, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeExplicitDowngradeFromImmPeril::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -4217,7 +4248,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
-void 
+void
 McpttCallTypeImplicitDowngradeFromEmerg::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -4520,7 +4551,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
-void 
+void
 McpttCallTypeImplicitDowngradeFromImmPeril::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -4816,7 +4847,7 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
   Simulator::Schedule (exitTime, &McpttPttApp::ReleaseCall, ueAPttApp);
 }
 
-void 
+void
 McpttCallTypeReleaseAfterCallEstab::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -5084,7 +5115,7 @@ McpttCallTypeMerge::Configure (void)
   Simulator::Schedule (startTime, &McpttCall::OpenMediaChannel, ueCCall, grpAddress.Get (), speechPort);
 }
 
-void 
+void
 McpttCallTypeMerge::Execute (void)
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
@@ -5278,7 +5309,7 @@ McpttCallTypeMerge::UeCStateChangeCb (const TestCallTypeMachine& machine, const 
 
 
 McpttCallTypeControlTestSuite::McpttCallTypeControlTestSuite (void)
-   : TestSuite ("mcptt-call-type-control", TestSuite::SYSTEM)
+  : TestSuite ("mcptt-call-type-control", TestSuite::SYSTEM)
 {
   AddTestCase (new McpttCallTypeInitEstabNewCall (), TestCase::QUICK);
   AddTestCase (new McpttCallTypeInitJoinEmergCall (), TestCase::QUICK);

@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -54,17 +54,19 @@ namespace tests {
 class McpttTestCaseConfigOnNetwork : public McpttTestCaseConfig
 {
 public:
- McpttTestCaseConfigOnNetwork (void);
- virtual ~McpttTestCaseConfigOnNetwork (void);
- virtual ApplicationContainer Configure (void);
+  McpttTestCaseConfigOnNetwork (void);
+  virtual ~McpttTestCaseConfigOnNetwork (void);
+  virtual ApplicationContainer Configure (void);
+
 private:
- McpttCallHelper m_callHelper;
- McpttHelper m_clientHelper;
- McpttServerHelper m_serverHelper;
+  McpttCallHelper m_callHelper;
+  McpttHelper m_clientHelper;
+  McpttServerHelper m_serverHelper;
+
 public:
- virtual void SetCallHelper (const McpttCallHelper& callHelper);
- virtual void SetClientHelper (const McpttHelper& clientHelper);
- virtual void SetServerHelper (const McpttServerHelper& serverHelper);
+  virtual void SetCallHelper (const McpttCallHelper& callHelper);
+  virtual void SetClientHelper (const McpttHelper& clientHelper);
+  virtual void SetServerHelper (const McpttServerHelper& serverHelper);
 };
 
 } // namespace tests

@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -50,50 +50,52 @@ namespace psc {
 class McpttMsgStats : public Object
 {
 public:
- /**
-  * Gets the type ID of the McpttMsgStats class.
-  * \returns The type ID.
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the McpttMsgStats class.
-  */
+  /**
+   * Gets the type ID of the McpttMsgStats class.
+   * \returns The type ID.
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * Creates an instance of the McpttMsgStats class.
+   */
   McpttMsgStats (void);
- /**
-  * \brief The destructor of the McpttMsgStats class.
-  */
- virtual ~McpttMsgStats (void);
- /**
-  * The sink function for tracing the received messages.
-  * \param app The app.
-  * \param callId The callId.
-  * \param msg The message.
-  */
- virtual void ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg);
- /**
-  * The sink function for tracing the transmitted messages.
-  * \param app The app.
-  * \param callId The callId.
-  * \param msg The message.
-  */
+  /**
+   * \brief The destructor of the McpttMsgStats class.
+   */
+  virtual ~McpttMsgStats (void);
+  /**
+   * The sink function for tracing the received messages.
+   * \param app The app.
+   * \param callId The callId.
+   * \param msg The message.
+   */
+  virtual void ReceiveRxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg);
+  /**
+   * The sink function for tracing the transmitted messages.
+   * \param app The app.
+   * \param callId The callId.
+   * \param msg The message.
+   */
   virtual void ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg);
+
 protected:
- /**
-  * Writes to the trace.
-  * \param app The app.
-  * \param callId The callId.
-  * \param msg The message.
-  * \param rx The flag that indicates if an RX or TX should be traced.
-  */
- virtual void Trace (Ptr<const Application> app, uint16_t callId, const Header& msg, bool rx);
+  /**
+   * Writes to the trace.
+   * \param app The app.
+   * \param callId The callId.
+   * \param msg The message.
+   * \param rx The flag that indicates if an RX or TX should be traced.
+   */
+  virtual void Trace (Ptr<const Application> app, uint16_t callId, const Header& msg, bool rx);
+
 private:
- bool m_callControl; //!< The flag that indicates if call control messages should be included.
- bool m_firstMsg; //!< Flag that indicates if no message has been traced yet.
- bool m_floorControl; //!< The flag that indicates if floor control messages should be included.
- bool m_includeMsgContent; //!< The flag that indicates if the message contents should be included.
- bool m_media; //!< The flag that indicates if media messages should be included.
- std::string m_outputFileName; //!< The file name of the trace file.
- std::ofstream m_outputFile;  //!< The file stream object of trace file
+  bool m_callControl; //!< The flag that indicates if call control messages should be included.
+  bool m_firstMsg; //!< Flag that indicates if no message has been traced yet.
+  bool m_floorControl; //!< The flag that indicates if floor control messages should be included.
+  bool m_includeMsgContent; //!< The flag that indicates if the message contents should be included.
+  bool m_media; //!< The flag that indicates if media messages should be included.
+  std::string m_outputFileName; //!< The file name of the trace file.
+  std::ofstream m_outputFile; //!< The file stream object of trace file
 };
 
 } // namespace psc

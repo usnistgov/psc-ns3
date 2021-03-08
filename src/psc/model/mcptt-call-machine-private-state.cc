@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -59,7 +59,7 @@ McpttCallMachinePrivateState::AcceptCall (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call accept."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call accept.");
 }
 
 void
@@ -67,7 +67,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp1 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP1."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP1.");
 }
 
 void
@@ -75,7 +75,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp2 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP2."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP2.");
 }
 
 void
@@ -83,7 +83,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp3 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP3."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP3.");
 }
 
 void
@@ -91,7 +91,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp4 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP4."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP4.");
 }
 
 void
@@ -99,7 +99,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp5 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP5."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP5.");
 }
 
 void
@@ -107,7 +107,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp6 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP6."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP6.");
 }
 
 void
@@ -115,7 +115,7 @@ McpttCallMachinePrivateState::ExpiryOfTfp7 (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP7."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of TFP7.");
 }
 
 void
@@ -123,7 +123,7 @@ McpttCallMachinePrivateState::InitiateCall (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring initate call."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring initate call.");
 }
 
 bool
@@ -203,7 +203,7 @@ McpttCallMachinePrivateState::RejectCall (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring reject call."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring reject call.");
 }
 
 void
@@ -211,7 +211,7 @@ McpttCallMachinePrivateState::ReleaseCall (McpttCallMachinePrivate& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release call."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release call.");
 }
 
 McpttCallMachinePrivateState::McpttCallMachinePrivateState (void)
@@ -539,7 +539,7 @@ McpttCallMachinePrivateStateP1::ReceiveRelease (McpttCallMachinePrivate& machine
 
   McpttCallMsgFieldCallId myCallId = machine.GetCallId ();
   McpttCallMsgFieldCallId theirCallId = msg.GetCallId ();
-  
+
   if (myCallId.GetCallId () == theirCallId.GetCallId ())
     {
       McpttCallMsgPrivateReleaseAck ackMsg;
@@ -623,7 +623,7 @@ McpttCallMachinePrivateStateP2::ExpiryOfTfp1 (McpttCallMachinePrivate& machine)
   McpttCallMsgFieldCallId callId = machine.GetCallId ();
   McpttCallMsgFieldUserId callerId = machine.GetCallerId ();
   McpttCallMsgFieldUserId calleeId = machine.GetCalleeId ();
-  McpttCallMsgFieldCommMode commMode= machine.GetCommMode ();
+  McpttCallMsgFieldCommMode commMode = machine.GetCommMode ();
   McpttCallMsgFieldCallType callType = typeMachine->GetCallType ();
 
   if (cfp1->IsLimitReached ())
@@ -639,7 +639,7 @@ McpttCallMachinePrivateStateP2::ExpiryOfTfp1 (McpttCallMachinePrivate& machine)
           tfp2->Start ();
 
           machine.ChangeState (McpttCallMachinePrivateStateP2::GetInstance ());
-        } 
+        }
     }
   else
     {

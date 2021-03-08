@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -62,7 +62,7 @@ McpttOnNetworkFloorParticipantState::AcceptGrant (McpttOnNetworkFloorParticipant
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring accept grant."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring accept grant.");
 }
 
 void
@@ -70,7 +70,7 @@ McpttOnNetworkFloorParticipantState::ExpiryOfT100 (McpttOnNetworkFloorParticipan
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T100."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T100.");
 }
 
 void
@@ -78,7 +78,7 @@ McpttOnNetworkFloorParticipantState::ExpiryOfT101 (McpttOnNetworkFloorParticipan
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T101."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T101.");
 }
 
 void
@@ -86,7 +86,7 @@ McpttOnNetworkFloorParticipantState::ExpiryOfT103 (McpttOnNetworkFloorParticipan
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T103."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T103.");
 }
 
 void
@@ -94,7 +94,7 @@ McpttOnNetworkFloorParticipantState::ExpiryOfT104 (McpttOnNetworkFloorParticipan
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T104."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T104.");
 }
 
 void
@@ -102,7 +102,7 @@ McpttOnNetworkFloorParticipantState::ExpiryOfT132 (McpttOnNetworkFloorParticipan
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T132."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T132.");
 }
 
 McpttEntityId
@@ -141,10 +141,10 @@ void
 McpttOnNetworkFloorParticipantState::CallRelease1 (McpttOnNetworkFloorParticipant& machine) const
 {
   // Section 6.2.4.7.2
-  if ((GetInstanceStateId() == McpttOnNetworkFloorParticipantStateStartStop::GetInstance ()->GetInstanceStateId ()) ||
-    (GetInstanceStateId() == McpttOnNetworkFloorParticipantStateReleasing::GetInstance ()->GetInstanceStateId ()))
+  if ((GetInstanceStateId () == McpttOnNetworkFloorParticipantStateStartStop::GetInstance ()->GetInstanceStateId ())
+      || (GetInstanceStateId () == McpttOnNetworkFloorParticipantStateReleasing::GetInstance ()->GetInstanceStateId ()))
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part I)."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part I).");
     }
   else
     {
@@ -157,7 +157,7 @@ McpttOnNetworkFloorParticipantState::CallRelease1 (McpttOnNetworkFloorParticipan
 void
 McpttOnNetworkFloorParticipantState::CallRelease2 (McpttOnNetworkFloorParticipant& machine) const
 {
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part II)."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part II).");
 }
 
 void
@@ -165,7 +165,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorAck (McpttOnNetworkFloorPartici
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -173,7 +173,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorDeny (McpttOnNetworkFloorPartic
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -181,7 +181,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorGranted (McpttOnNetworkFloorPar
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -189,7 +189,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorIdle (McpttOnNetworkFloorPartic
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -197,7 +197,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorQueuePositionInfo (McpttOnNetwo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -205,7 +205,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorRevoke (McpttOnNetworkFloorPart
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -213,7 +213,7 @@ McpttOnNetworkFloorParticipantState::ReceiveFloorTaken (McpttOnNetworkFloorParti
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -221,7 +221,7 @@ McpttOnNetworkFloorParticipantState::ReceiveMedia (McpttOnNetworkFloorParticipan
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -229,7 +229,7 @@ McpttOnNetworkFloorParticipantState::SendFloorQueuePositionRequest (McpttOnNetwo
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring floor queue position request."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring floor queue position request.");
 }
 
 void
@@ -237,7 +237,7 @@ McpttOnNetworkFloorParticipantState::ReleaseRequest (McpttOnNetworkFloorParticip
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release request."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release request.");
 }
 
 void
@@ -251,7 +251,7 @@ McpttOnNetworkFloorParticipantState::PttPush (McpttOnNetworkFloorParticipant& ma
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring push notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring push notification.");
 }
 
 void
@@ -259,7 +259,7 @@ McpttOnNetworkFloorParticipantState::PttRelease (McpttOnNetworkFloorParticipant&
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release notification.");
 }
 
 void
@@ -368,7 +368,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorAck (McpttOnNetworkFlo
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -381,7 +381,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorDeny (McpttOnNetworkFl
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -394,7 +394,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorGranted (McpttOnNetwor
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -407,7 +407,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorIdle (McpttOnNetworkFl
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -421,7 +421,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorQueuePositionInfo (Mcp
   machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_QUEUE);
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -434,7 +434,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorRevoke (McpttOnNetwork
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -447,7 +447,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveFloorTaken (McpttOnNetworkF
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -460,7 +460,7 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveMedia (McpttOnNetworkFloorP
 
   if (machine.IsOriginator ())
     {
-      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << "."); 
+      NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " storing " << msg.GetInstanceTypeId () << ".");
 
       machine.GetStoredMsgs ()->AddHeader (msg);
     }
@@ -533,7 +533,7 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::ReceiveFloorTaken (McpttOnNe
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
       machine.Send (ackMsg);
     }
-  
+
   machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_TAKEN);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
@@ -577,7 +577,7 @@ void
 McpttOnNetworkFloorParticipantStateHasNoPermission::ExpiryOfT103 (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
-  
+
   machine.ReportEvent (McpttFloorParticipant::TIMER_T103_EXPIRED);
 }
 
@@ -585,7 +585,7 @@ void
 McpttOnNetworkFloorParticipantStateHasNoPermission::Selected (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
-  
+
   Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner ();
 
   if (app->IsPushed ())
@@ -634,7 +634,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
   NS_LOG_FUNCTION (this << &machine);
 
   McpttFloorMsg temp;
-  Ptr<Packet> storedMsgs = Create<Packet>(); 
+  Ptr<Packet> storedMsgs = Create<Packet>();
   Ptr<Packet> reversedStoredMsgs = machine.GetStoredMsgs ();
 
   while (reversedStoredMsgs->GetSize () > 0)
@@ -649,21 +649,21 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
           storedMsgs->AddHeader (reqMsg);
         }
       else if (subtype == McpttFloorMsgGranted::SUBTYPE
-          || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
         {
           McpttFloorMsgGranted grantedMsg;
           reversedStoredMsgs->RemoveHeader (grantedMsg);
           storedMsgs->AddHeader (grantedMsg);
         }
       else if (subtype == McpttFloorMsgDeny::SUBTYPE
-          || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
         {
           McpttFloorMsgDeny denyMsg;
           reversedStoredMsgs->RemoveHeader (denyMsg);
           storedMsgs->AddHeader (denyMsg);
         }
       else if (subtype == McpttFloorMsgRelease::SUBTYPE
-          || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
           McpttFloorMsgRelease releaseMsg;
           reversedStoredMsgs->RemoveHeader (releaseMsg);
@@ -676,14 +676,14 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
           storedMsgs->AddHeader (revokeMsg);
         }
       else if (subtype == McpttFloorMsgIdle::SUBTYPE
-          || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
         {
           McpttFloorMsgIdle takenMsg;
           reversedStoredMsgs->RemoveHeader (takenMsg);
           storedMsgs->AddHeader (takenMsg);
         }
       else if (subtype == McpttFloorMsgTaken::SUBTYPE
-          || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
         {
           McpttFloorMsgTaken takenMsg;
           reversedStoredMsgs->RemoveHeader (takenMsg);
@@ -696,7 +696,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
           storedMsgs->AddHeader (queuePosReqMsg);
         }
       else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-          || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
         {
           McpttFloorMsgQueuePositionInfo queueInfoMsg;
           reversedStoredMsgs->RemoveHeader (queueInfoMsg);
@@ -727,21 +727,21 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
           machine.Receive (reqMsg);
         }
       else if (subtype == McpttFloorMsgGranted::SUBTYPE
-          || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
         {
           McpttFloorMsgGranted grantedMsg;
           storedMsgs->RemoveHeader (grantedMsg);
           machine.Receive (grantedMsg);
         }
       else if (subtype == McpttFloorMsgDeny::SUBTYPE
-          || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
         {
           McpttFloorMsgDeny denyMsg;
           storedMsgs->RemoveHeader (denyMsg);
           machine.Receive (denyMsg);
         }
       else if (subtype == McpttFloorMsgRelease::SUBTYPE
-          || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
         {
           McpttFloorMsgRelease releaseMsg;
           storedMsgs->RemoveHeader (releaseMsg);
@@ -754,14 +754,14 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
           machine.Receive (revokeMsg);
         }
       else if (subtype == McpttFloorMsgIdle::SUBTYPE
-          || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
         {
           McpttFloorMsgIdle takenMsg;
           storedMsgs->RemoveHeader (takenMsg);
           machine.Receive (takenMsg);
         }
       else if (subtype == McpttFloorMsgTaken::SUBTYPE
-          || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
         {
           McpttFloorMsgTaken takenMsg;
           storedMsgs->RemoveHeader (takenMsg);
@@ -774,7 +774,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::Selected (McpttOnNetworkFloor
           machine.Receive (queuePosReqMsg);
         }
       else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-          || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
+               || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
         {
           McpttFloorMsgQueuePositionInfo queueInfoMsg;
           storedMsgs->RemoveHeader (queueInfoMsg);
@@ -841,7 +841,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorGranted (McpttOnN
     }
 
   machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
-  
+
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
       //TODO: Provide notification to the user indicating the call type.
@@ -930,7 +930,7 @@ McpttOnNetworkFloorParticipantStatePendingRequest::PttRelease (McpttOnNetworkFlo
     {
       releaseMsg.SetSubtype (McpttFloorMsgRelease::SUBTYPE_ACK);
     }
-  
+
   machine.Send (releaseMsg);
   machine.GetC100 ()->Reset ();
   machine.GetT100 ()->Start ();
@@ -1028,7 +1028,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::PttRelease (McpttOnNetworkFloo
     {
       releaseMsg.SetSubtype (McpttFloorMsgRelease::SUBTYPE_ACK);
     }
-  
+
   machine.Send (releaseMsg);
   machine.SetOverriding (false);
   machine.SetOverridden (false);
@@ -1117,7 +1117,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::ReceiveFloorIdle (McpttOnNetwo
         }
     }
   else if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::DUAL_FLOOR)
-      && machine.IsOverridden ())
+           && machine.IsOverridden ())
     {
       if (msg.GetSubtype () == McpttFloorMsgIdle::SUBTYPE_ACK)
         {
@@ -1150,7 +1150,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Selected (McpttOnNetworkFloorP
 {
   NS_LOG_FUNCTION (this << " HasPermission::Selected " << &machine);
 
-  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner (); 
+  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner ();
   Ptr<McpttMediaSrc> mediaSrc = app->GetMediaSrc ();
 
   if (!app->IsPushed ())
@@ -1172,7 +1172,7 @@ McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloo
 {
   NS_LOG_FUNCTION (this << " HasPermission::Unselected " << &machine);
 
-  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner (); 
+  Ptr<McpttPttApp> app = machine.GetCall ()->GetOwner ();
   Ptr<McpttMediaSrc> mediaSrc = app->GetMediaSrc ();
 
   if (app->IsPushed ())
@@ -1294,7 +1294,7 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorTaken (McpttOnNet
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
       machine.Send (ackMsg);
     }
-  
+
   machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_TAKEN);
 
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
@@ -1344,7 +1344,7 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorGranted (McpttOnN
       ackMsg.SetSource (McpttFloorMsgFieldSource (McpttFloorMsgFieldSource::FLOOR_PARTICIPANT));
       machine.Send (ackMsg);
     }
- }
+}
 /** McpttOnNetworkFloorParticipantStatePendingRelease - end **/
 
 /** McpttOnNetworkFloorParticipantStateReleasing - begin **/
@@ -1500,7 +1500,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorGranted (McpttOnNetworkFl
     }
 
   machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_GRANTED);
-  
+
   if (msg.GetIndicator ().IsIndicated (McpttFloorMsgFieldIndic::BROADCAST_CALL))
     {
       //TODO: Shall provide a notification to the user indicating the type of call.
@@ -1532,7 +1532,7 @@ McpttOnNetworkFloorParticipantStateQueued::ReceiveFloorDeny (McpttOnNetworkFloor
   machine.ReportEvent (McpttFloorParticipant::RECEIVED_FLOOR_DENY);
   //TODO: Shall provide a floor deny notification to the MCPTT user.
   //TODO: May display the deny reason to the user using information in the Reject Cause field.
- 
+
   if (machine.GetT104 ()->IsRunning ())
     {
       machine.GetT104 ()->Stop ();
@@ -1647,7 +1647,7 @@ McpttOnNetworkFloorParticipantStateQueued::ExpiryOfT104 (McpttOnNetworkFloorPart
   else
     {
       //TODO: Shall provide a floor queued timeout to the MCPTT client.
-      
+
       McpttFloorMsgRelease releaseMsg;
       releaseMsg.SetSsrc (machine.GetTxSsrc ());
 
@@ -1673,7 +1673,7 @@ void
 McpttOnNetworkFloorParticipantStateQueued::ExpiryOfT132 (McpttOnNetworkFloorParticipant& machine) const
 {
   NS_LOG_FUNCTION (this << &machine);
-      
+
   McpttFloorMsgRelease releaseMsg;
   releaseMsg.SetSsrc (machine.GetTxSsrc ());
 
@@ -1684,8 +1684,8 @@ McpttOnNetworkFloorParticipantStateQueued::ExpiryOfT132 (McpttOnNetworkFloorPart
 
   //TODO: May indicate the user that the floor is no more available.
 
-    machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRelease::GetInstance ());
- }
+  machine.ChangeState (McpttOnNetworkFloorParticipantStatePendingRelease::GetInstance ());
+}
 
 /** McpttOnNetworkFloorParticipantStateQueued - end **/
 

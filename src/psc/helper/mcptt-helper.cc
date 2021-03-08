@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -124,15 +124,14 @@ McpttHelper::GetNextUserId (void)
 McpttHelper::McpttHelper (void)
   : m_pushConfigured (false),
     m_releaseConfigured (false)
-{ 
+{
   m_appFac.SetTypeId (McpttPttApp::GetTypeId ());
   m_pusherFac.SetTypeId (McpttPusher::GetTypeId ());
   m_mediaSrcFac.SetTypeId (McpttMediaSrc::GetTypeId ());
 }
 
 McpttHelper::~McpttHelper ()
-{
-}
+{}
 
 void
 McpttHelper::AddPushersToOrchestrator (Ptr<McpttPusherOrchestratorInterface> orchestrator, const ApplicationContainer& apps)
@@ -153,7 +152,7 @@ ApplicationContainer
 McpttHelper::Install (const std::string& nodeName)
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
-  
+
   return ApplicationContainer (InstallPriv (node));
 }
 
@@ -243,14 +242,14 @@ McpttHelper::SetPusher (std::string name,
 
 void
 McpttHelper::SetPusherPttInterarrivalTimeVariable (std::string name,
-                                    std::string n0, const AttributeValue& v0,
-                                    std::string n1, const AttributeValue& v1,
-                                    std::string n2, const AttributeValue& v2,
-                                    std::string n3, const AttributeValue& v3,
-                                    std::string n4, const AttributeValue& v4,
-                                    std::string n5, const AttributeValue& v5,
-                                    std::string n6, const AttributeValue& v6,
-                                    std::string n7, const AttributeValue& v7)
+                                                   std::string n0, const AttributeValue& v0,
+                                                   std::string n1, const AttributeValue& v1,
+                                                   std::string n2, const AttributeValue& v2,
+                                                   std::string n3, const AttributeValue& v3,
+                                                   std::string n4, const AttributeValue& v4,
+                                                   std::string n5, const AttributeValue& v5,
+                                                   std::string n6, const AttributeValue& v6,
+                                                   std::string n7, const AttributeValue& v7)
 {
   m_pushConfigured = true;
   ObjectFactory factory;
@@ -268,14 +267,14 @@ McpttHelper::SetPusherPttInterarrivalTimeVariable (std::string name,
 
 void
 McpttHelper::SetPusherPttDurationVariable (std::string name,
-                                       std::string n0, const AttributeValue& v0,
-                                       std::string n1, const AttributeValue& v1,
-                                       std::string n2, const AttributeValue& v2,
-                                       std::string n3, const AttributeValue& v3,
-                                       std::string n4, const AttributeValue& v4,
-                                       std::string n5, const AttributeValue& v5,
-                                       std::string n6, const AttributeValue& v6,
-                                       std::string n7, const AttributeValue& v7)
+                                           std::string n0, const AttributeValue& v0,
+                                           std::string n1, const AttributeValue& v1,
+                                           std::string n2, const AttributeValue& v2,
+                                           std::string n3, const AttributeValue& v3,
+                                           std::string n4, const AttributeValue& v4,
+                                           std::string n5, const AttributeValue& v5,
+                                           std::string n6, const AttributeValue& v6,
+                                           std::string n7, const AttributeValue& v7)
 {
   m_releaseConfigured = true;
   ObjectFactory factory;

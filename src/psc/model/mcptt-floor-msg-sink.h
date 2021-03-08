@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -57,79 +57,79 @@ class McpttCall;
 class McpttFloorMsgSink
 {
 public:
- /**
-  * \brief Creates an instance of the McpttFloorMsgSink class.
-  */
- McpttFloorMsgSink (void);
- /**
-  * \brief The destructor of the McpttFloorMsgSink class.
-  */
- virtual ~McpttFloorMsgSink (void);
- /**
-  * Receives a message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttFloorMsg& msg);
- /**
-  * \brief Receives a message.
-  * \param msg The message that was received.
-  */
- virtual void Receive (const McpttMediaMsg& msg);
- /**
-  * Receives a floor ack message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorAck (const McpttFloorMsgAck& msg);
- /**
-  * Receives a floor deny message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorDeny (const McpttFloorMsgDeny& msg);
- /**
-  * Receives a floor granted message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorGranted (const McpttFloorMsgGranted& msg);
- /**
-  * Receives a floor idle message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorIdle (const McpttFloorMsgIdle& msg);
- /**
-  * Receives Floor Queue Position Request message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg);
- /**
-  * Receives a floor queue position info message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg);
- /**
-  * Receives a floor release message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRelease (const McpttFloorMsgRelease& msg);
- /**
-  * Receives a floor request message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRequest (const McpttFloorMsgRequest& msg);
- /**
-  * Receives a floor revoke message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg);
- /**
-  * Receives a floor taken message.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorTaken (const McpttFloorMsgTaken& msg);
- /**
-  * Receives an RTP media message.
-  * \param msg The received message.
-  */
- virtual void ReceiveMedia (const McpttMediaMsg& msg);
+  /**
+   * \brief Creates an instance of the McpttFloorMsgSink class.
+   */
+  McpttFloorMsgSink (void);
+  /**
+   * \brief The destructor of the McpttFloorMsgSink class.
+   */
+  virtual ~McpttFloorMsgSink (void);
+  /**
+   * Receives a message.
+   * \param msg The message that was received.
+   */
+  virtual void Receive (const McpttFloorMsg& msg);
+  /**
+   * \brief Receives a message.
+   * \param msg The message that was received.
+   */
+  virtual void Receive (const McpttMediaMsg& msg);
+  /**
+   * Receives a floor ack message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorAck (const McpttFloorMsgAck& msg);
+  /**
+   * Receives a floor deny message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorDeny (const McpttFloorMsgDeny& msg);
+  /**
+   * Receives a floor granted message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorGranted (const McpttFloorMsgGranted& msg);
+  /**
+   * Receives a floor idle message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorIdle (const McpttFloorMsgIdle& msg);
+  /**
+   * Receives Floor Queue Position Request message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorQueuePositionRequest (const McpttFloorMsgQueuePositionRequest& msg);
+  /**
+   * Receives a floor queue position info message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorQueuePositionInfo (const McpttFloorMsgQueuePositionInfo& msg);
+  /**
+   * Receives a floor release message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRelease (const McpttFloorMsgRelease& msg);
+  /**
+   * Receives a floor request message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRequest (const McpttFloorMsgRequest& msg);
+  /**
+   * Receives a floor revoke message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRevoke (const McpttFloorMsgRevoke& msg);
+  /**
+   * Receives a floor taken message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorTaken (const McpttFloorMsgTaken& msg);
+  /**
+   * Receives an RTP media message.
+   * \param msg The received message.
+   */
+  virtual void ReceiveMedia (const McpttMediaMsg& msg);
 };
 
 } // namespace psc

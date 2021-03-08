@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /**
  * Copyright 2019 University of Washington
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -50,19 +50,18 @@ McpttCallHelper::McpttCallHelper (void)
 }
 
 McpttCallHelper::~McpttCallHelper ()
-{
-}
+{}
 
 void
 McpttCallHelper::SetArbitrator (std::string name,
-                        std::string n0, const AttributeValue& v0,
-                        std::string n1, const AttributeValue& v1,
-                        std::string n2, const AttributeValue& v2,
-                        std::string n3, const AttributeValue& v3,
-                        std::string n4, const AttributeValue& v4,
-                        std::string n5, const AttributeValue& v5,
-                        std::string n6, const AttributeValue& v6,
-                        std::string n7, const AttributeValue& v7)
+                                std::string n0, const AttributeValue& v0,
+                                std::string n1, const AttributeValue& v1,
+                                std::string n2, const AttributeValue& v2,
+                                std::string n3, const AttributeValue& v3,
+                                std::string n4, const AttributeValue& v4,
+                                std::string n5, const AttributeValue& v5,
+                                std::string n6, const AttributeValue& v6,
+                                std::string n7, const AttributeValue& v7)
 {
   ObjectFactory factory;
   factory.SetTypeId (name);
@@ -79,14 +78,14 @@ McpttCallHelper::SetArbitrator (std::string name,
 
 void
 McpttCallHelper::SetTowardsParticipant (std::string name,
-                        std::string n0, const AttributeValue& v0,
-                        std::string n1, const AttributeValue& v1,
-                        std::string n2, const AttributeValue& v2,
-                        std::string n3, const AttributeValue& v3,
-                        std::string n4, const AttributeValue& v4,
-                        std::string n5, const AttributeValue& v5,
-                        std::string n6, const AttributeValue& v6,
-                        std::string n7, const AttributeValue& v7)
+                                        std::string n0, const AttributeValue& v0,
+                                        std::string n1, const AttributeValue& v1,
+                                        std::string n2, const AttributeValue& v2,
+                                        std::string n3, const AttributeValue& v3,
+                                        std::string n4, const AttributeValue& v4,
+                                        std::string n5, const AttributeValue& v5,
+                                        std::string n6, const AttributeValue& v6,
+                                        std::string n7, const AttributeValue& v7)
 {
   ObjectFactory factory;
   factory.SetTypeId (name);
@@ -103,14 +102,14 @@ McpttCallHelper::SetTowardsParticipant (std::string name,
 
 void
 McpttCallHelper::SetParticipant (std::string name,
-                        std::string n0, const AttributeValue& v0,
-                        std::string n1, const AttributeValue& v1,
-                        std::string n2, const AttributeValue& v2,
-                        std::string n3, const AttributeValue& v3,
-                        std::string n4, const AttributeValue& v4,
-                        std::string n5, const AttributeValue& v5,
-                        std::string n6, const AttributeValue& v6,
-                        std::string n7, const AttributeValue& v7)
+                                 std::string n0, const AttributeValue& v0,
+                                 std::string n1, const AttributeValue& v1,
+                                 std::string n2, const AttributeValue& v2,
+                                 std::string n3, const AttributeValue& v3,
+                                 std::string n4, const AttributeValue& v4,
+                                 std::string n5, const AttributeValue& v5,
+                                 std::string n6, const AttributeValue& v6,
+                                 std::string n7, const AttributeValue& v7)
 {
   ObjectFactory factory;
   factory.SetTypeId (name);
@@ -127,14 +126,14 @@ McpttCallHelper::SetParticipant (std::string name,
 
 void
 McpttCallHelper::SetServerCall (std::string name,
-                        std::string n0, const AttributeValue& v0,
-                        std::string n1, const AttributeValue& v1,
-                        std::string n2, const AttributeValue& v2,
-                        std::string n3, const AttributeValue& v3,
-                        std::string n4, const AttributeValue& v4,
-                        std::string n5, const AttributeValue& v5,
-                        std::string n6, const AttributeValue& v6,
-                        std::string n7, const AttributeValue& v7)
+                                std::string n0, const AttributeValue& v0,
+                                std::string n1, const AttributeValue& v1,
+                                std::string n2, const AttributeValue& v2,
+                                std::string n3, const AttributeValue& v3,
+                                std::string n4, const AttributeValue& v4,
+                                std::string n5, const AttributeValue& v5,
+                                std::string n6, const AttributeValue& v6,
+                                std::string n7, const AttributeValue& v7)
 {
   ObjectFactory factory;
   factory.SetTypeId (name);
@@ -154,13 +153,13 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
                           uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime)
 {
   NS_LOG_FUNCTION (this << clients.GetN () << server->GetNode ()->GetId ()
-    << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
+                        << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
   // callType not presently used
   uint16_t callId = server->AllocateCallId ();
   Ptr<McpttOnNetworkFloorArbitrator> arbitrator = m_arbitratorFactory.Create<McpttOnNetworkFloorArbitrator> ();
   NS_LOG_DEBUG ("Creating call with callID " << callId);
   std::vector<uint32_t> clientUserIds;
-  
+
   for (uint32_t i = 0; i < clients.GetN (); i++)
     {
       Ptr<McpttPttApp> app = clients.Get (i)->GetObject<McpttPttApp> ();
@@ -168,15 +167,15 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
       // McpttPttApp uses a static integer for allocating unique port numbers
       uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
       uint16_t mediaPort = McpttPttApp::AllocateNextPortNumber ();
-      NS_LOG_DEBUG ("Port from " << app->GetNode ()->GetId () 
-                    << " to server:  floor " << floorPort 
-                    << " media " << mediaPort);
+      NS_LOG_DEBUG ("Port from " << app->GetNode ()->GetId ()
+                                 << " to server:  floor " << floorPort
+                                 << " media " << mediaPort);
       // Each application gets its own instance of a McpttCall object
       Ptr<McpttCall> call = CreateObject<McpttCall> (McpttCall::NetworkCallType::ON_NETWORK);
       call->SetAttribute ("PeerAddress", AddressValue (server->GetLocalAddress ()));
       call->SetStartTime (startTime);
       call->SetStopTime (stopTime);
-      // XXX TODO: configure call machine type from call type 
+      // XXX TODO: configure call machine type from call type
       Ptr<McpttCallMachine> callMachine =
         CreateObjectWithAttributes<McpttOnNetworkCallMachineClient> ("GroupId", UintegerValue (groupId));
       call->SetCallMachine (callMachine);
@@ -195,8 +194,8 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
 
       Ptr<McpttOnNetworkFloorTowardsParticipant> serverTowardsParticipant =
         m_towardsParticipantFactory.Create<McpttOnNetworkFloorTowardsParticipant> ();
-      serverTowardsParticipant->SetPeerAddress (app->GetLocalAddress());
-      serverTowardsParticipant->SetPeerUserId (app->GetUserId());
+      serverTowardsParticipant->SetPeerAddress (app->GetLocalAddress ());
+      serverTowardsParticipant->SetPeerUserId (app->GetUserId ());
       serverTowardsParticipant->SetFloorPort (floorPort);
       serverTowardsParticipant->SetMediaPort (mediaPort);
       serverTowardsParticipant->SetOriginator (clientFloorControl->IsOriginator ());
@@ -209,7 +208,7 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
   arbitrator->SetDualControl (dualControl);
   // Each server application gets an instance of a McpttServerCall object
   Ptr<McpttServerCall> call = m_serverCallFactory.Create<McpttServerCall> ();
-  // XXX TODO configure call machine type from call type 
+  // XXX TODO configure call machine type from call type
   Ptr<McpttServerCallMachine> callMachine =
     CreateObjectWithAttributes<McpttServerCallMachineGroupPrearranged> ("GroupId", UintegerValue (groupId));
   call->SetCallMachine (callMachine);
@@ -217,7 +216,7 @@ McpttCallHelper::AddCall (ApplicationContainer clients, Ptr<McpttServerApp> serv
   call->SetClientUserIds (clientUserIds);
   arbitrator->SetOwner (call);
   call->SetArbitrator (arbitrator);
-  
+
   server->AddCall (call);
   return callId;
 }
@@ -226,7 +225,7 @@ void
 McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callId, Address peerAddress, uint32_t groupId, McpttCallMsgFieldCallType callType, Time startTime, Time stopTime)
 {
   NS_LOG_FUNCTION (this << clients.GetN () << +callId << peerAddress
-    << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
+                        << groupId << +callType.GetType () << startTime.GetSeconds () << stopTime.GetSeconds ());
 
   ObjectFactory callFac;
 
@@ -246,7 +245,7 @@ McpttCallHelper::AddCallOffNetwork (ApplicationContainer clients, uint16_t callI
   for (uint32_t idx = 0; idx < clients.GetN (); idx++)
     {
       Ptr<McpttPttApp> pttApp = DynamicCast<McpttPttApp> (clients.Get (idx));
-        
+
       Ptr<McpttCall> call = CreateObject<McpttCall> (McpttCall::NetworkCallType::OFF_NETWORK);
       Ptr<McpttChannel> floorChannel = CreateObject<McpttChannel> ();
       Ptr<McpttChannel> mediaChannel = CreateObject<McpttChannel> ();
@@ -289,7 +288,7 @@ McpttCallHelper::ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Ad
       Ptr<McpttCall> call = pttApp->CreateCall (callFac, floorFac, McpttCall::NetworkCallType::OFF_NETWORK);
       call->SetAttribute ("PeerAddress", AddressValue (peerAddress));
       pttApp->SelectCall (call->GetCallId ());
- 
+
       if ((idx + 1) % usersPerGroup == 0)
         {
           groupId += 1;

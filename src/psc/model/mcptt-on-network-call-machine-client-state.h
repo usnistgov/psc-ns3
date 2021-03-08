@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -71,60 +71,61 @@ class McpttOnNetworkCallMachineClient;
 class McpttOnNetworkCallMachineClientState : public SimpleRefCount<McpttOnNetworkCallMachineClientState>
 {
 public:
- /**
-  * \brief The destructor of the McpttOnNetworkCallMachineClientState class.
-  */
- virtual ~McpttOnNetworkCallMachineClientState (void);
- /**
-  * Gets the state ID of this McpttOnNetworkCallMachineClientState instance.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Indicates if the call is active.
-  * \param machine The machine that the action is for.
-  * \returns True, if the call is active.
-  */
- virtual bool IsCallOngoing (const McpttOnNetworkCallMachineClient& machine) const;
- /**
-  * Reception of a SIP INVITE
-  * \param machine The state machine that the action is for.
-  * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the body of the SIP INVITE
-  * \param hdr The SIP header
-  */
- virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- /**
-  * Reception of a SIP BYE 
-  * \param machine The state machine that the action is for.
-  * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the body of the SIP BYE
-  * \param hdr The SIP header
-  */
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- /**
-  * Reception of a SIP response message 
-  * \param machine The state machine that the action is for.
-  * \param from The MCPTT User ID of the originator
-  * \param pkt The packet containing the body of the SIP response
-  * \param hdr The SIP header
-  */
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- /**
-  * Indicates that the call should be initiated
-  * \param machine The state machine that the action is for.
-  */
- virtual void InitiateCall (McpttOnNetworkCallMachineClient& machine);
- /**
-  * Indicates that the call should be released.
-  * \param machine The state machine that the action is for.
-  */
- virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
+  /**
+   * \brief The destructor of the McpttOnNetworkCallMachineClientState class.
+   */
+  virtual ~McpttOnNetworkCallMachineClientState (void);
+  /**
+   * Gets the state ID of this McpttOnNetworkCallMachineClientState instance.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Indicates if the call is active.
+   * \param machine The machine that the action is for.
+   * \returns True, if the call is active.
+   */
+  virtual bool IsCallOngoing (const McpttOnNetworkCallMachineClient& machine) const;
+  /**
+   * Reception of a SIP INVITE
+   * \param machine The state machine that the action is for.
+   * \param from The MCPTT User ID of the originator
+   * \param pkt The packet containing the body of the SIP INVITE
+   * \param hdr The SIP header
+   */
+  virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  /**
+   * Reception of a SIP BYE
+   * \param machine The state machine that the action is for.
+   * \param from The MCPTT User ID of the originator
+   * \param pkt The packet containing the body of the SIP BYE
+   * \param hdr The SIP header
+   */
+  virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  /**
+   * Reception of a SIP response message
+   * \param machine The state machine that the action is for.
+   * \param from The MCPTT User ID of the originator
+   * \param pkt The packet containing the body of the SIP response
+   * \param hdr The SIP header
+   */
+  virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  /**
+   * Indicates that the call should be initiated
+   * \param machine The state machine that the action is for.
+   */
+  virtual void InitiateCall (McpttOnNetworkCallMachineClient& machine);
+  /**
+   * Indicates that the call should be released.
+   * \param machine The state machine that the action is for.
+   */
+  virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
+
 protected:
- /**
-  * Creates an instance of the McpttOnNetworkCallMachineClientState class.
-  */
- McpttOnNetworkCallMachineClientState (void);
+  /**
+   * Creates an instance of the McpttOnNetworkCallMachineClientState class.
+   */
+  McpttOnNetworkCallMachineClientState (void);
 };
 /**
  * The output operator of the McpttOnNetworkCallMachineClientState class.
@@ -141,25 +142,25 @@ std::ostream& operator<< (std::ostream& os, const McpttOnNetworkCallMachineClien
 class McpttOnNetworkCallMachineClientStateS1 : public McpttOnNetworkCallMachineClientState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkCallMachineClientStateS1 class.
-  * \returns The S1 instance.
-  */
- static Ptr<McpttOnNetworkCallMachineClientStateS1> GetInstance (void);
- /**
-  * Gets the state ID of the McpttOnNetworkCallMachineClientStateS1 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttOnNetworkCallMachineClientStateS1 class.
-  */
- McpttOnNetworkCallMachineClientStateS1 (void);
- // Documented in base class
- virtual ~McpttOnNetworkCallMachineClientStateS1 (void);
- virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void InitiateCall (McpttOnNetworkCallMachineClient& machine);
- virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  /**
+   * Gets an instance of the McpttOnNetworkCallMachineClientStateS1 class.
+   * \returns The S1 instance.
+   */
+  static Ptr<McpttOnNetworkCallMachineClientStateS1> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttOnNetworkCallMachineClientStateS1 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttOnNetworkCallMachineClientStateS1 class.
+   */
+  McpttOnNetworkCallMachineClientStateS1 (void);
+  // Documented in base class
+  virtual ~McpttOnNetworkCallMachineClientStateS1 (void);
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  virtual void InitiateCall (McpttOnNetworkCallMachineClient& machine);
+  virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
 };
 /**
  * \ingroup mcptt
@@ -170,27 +171,27 @@ public:
 class McpttOnNetworkCallMachineClientStateS2 : public McpttOnNetworkCallMachineClientState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkCallMachineClientStateS2 class.
-  * \returns The S2 instance.
-  */
- static Ptr<McpttOnNetworkCallMachineClientStateS2> GetInstance (void);
- /**
-  * Gets the state ID of the McpttOnNetworkCallMachineClientStateS2 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttOnNetworkCallMachineClientStateS2 class.
-  */
- McpttOnNetworkCallMachineClientStateS2 (void);
- // Documented in base class
- virtual ~McpttOnNetworkCallMachineClientStateS2 (void);
- virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
+  /**
+   * Gets an instance of the McpttOnNetworkCallMachineClientStateS2 class.
+   * \returns The S2 instance.
+   */
+  static Ptr<McpttOnNetworkCallMachineClientStateS2> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttOnNetworkCallMachineClientStateS2 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttOnNetworkCallMachineClientStateS2 class.
+   */
+  McpttOnNetworkCallMachineClientStateS2 (void);
+  // Documented in base class
+  virtual ~McpttOnNetworkCallMachineClientStateS2 (void);
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  virtual void ReceiveInvite (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
 };
 /**
  * \ingroup mcptt
@@ -201,30 +202,30 @@ public:
 class McpttOnNetworkCallMachineClientStateS3 : public McpttOnNetworkCallMachineClientState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkCallMachineClientStateS3 class.
-  * \returns An instance of the S3 state.
-  */
- static Ptr<McpttOnNetworkCallMachineClientStateS3> GetInstance (void);
- /**
-  * Gets the state ID of the McpttOnNetworkCallMachineClientStateS3 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttOnNetworkCallMachineClientStateS3 class.
-  */
- McpttOnNetworkCallMachineClientStateS3 (void);
- /**
-  * \brief The destructor of the McpttOnNetworkCallMachineClientStateS3 class.
-  */
- virtual ~McpttOnNetworkCallMachineClientStateS3 (void);
- // Documented in base class
- virtual McpttEntityId GetInstanceStateId (void) const;
- virtual bool IsCallOngoing (const McpttOnNetworkCallMachineClient& machine) const;
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
+  /**
+   * Gets an instance of the McpttOnNetworkCallMachineClientStateS3 class.
+   * \returns An instance of the S3 state.
+   */
+  static Ptr<McpttOnNetworkCallMachineClientStateS3> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttOnNetworkCallMachineClientStateS3 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttOnNetworkCallMachineClientStateS3 class.
+   */
+  McpttOnNetworkCallMachineClientStateS3 (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkCallMachineClientStateS3 class.
+   */
+  virtual ~McpttOnNetworkCallMachineClientStateS3 (void);
+  // Documented in base class
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  virtual bool IsCallOngoing (const McpttOnNetworkCallMachineClient& machine) const;
+  virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  virtual void ReleaseCall (McpttOnNetworkCallMachineClient& machine);
 };
 /**
  * \ingroup mcptt
@@ -235,28 +236,28 @@ public:
 class McpttOnNetworkCallMachineClientStateS4 : public McpttOnNetworkCallMachineClientState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkCallMachineClientStateS4 class.
-  * \returns An instance of the S4 state.
-  */
- static Ptr<McpttOnNetworkCallMachineClientStateS4> GetInstance (void);
- /**
-  * Gets the state ID of the McpttOnNetworkCallMachineClientStateS4 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttOnNetworkCallMachineClientStateS4 class.
-  */
- McpttOnNetworkCallMachineClientStateS4 (void);
- /**
-  * \brief The destructor of the McpttOnNetworkCallMachineClientStateS4 class.
-  */
- virtual ~McpttOnNetworkCallMachineClientStateS4 (void);
- // Documented in base class
- virtual McpttEntityId GetInstanceStateId (void) const;
- virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
- virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  /**
+   * Gets an instance of the McpttOnNetworkCallMachineClientStateS4 class.
+   * \returns An instance of the S4 state.
+   */
+  static Ptr<McpttOnNetworkCallMachineClientStateS4> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttOnNetworkCallMachineClientStateS4 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttOnNetworkCallMachineClientStateS4 class.
+   */
+  McpttOnNetworkCallMachineClientStateS4 (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkCallMachineClientStateS4 class.
+   */
+  virtual ~McpttOnNetworkCallMachineClientStateS4 (void);
+  // Documented in base class
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  virtual void ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
+  virtual void ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr);
 };
 
 } // namespace psc

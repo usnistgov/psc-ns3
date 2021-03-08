@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -86,21 +86,21 @@ void
 McpttOnNetworkCallMachineClientState::ReceiveBye (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
-  NS_LOG_LOGIC ("Ignoring BYE"); 
+  NS_LOG_LOGIC ("Ignoring BYE");
 }
 
 void
 McpttOnNetworkCallMachineClientState::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader &hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
-  NS_LOG_LOGIC ("Ignoring response"); 
+  NS_LOG_LOGIC ("Ignoring response");
 }
 
 void
 McpttOnNetworkCallMachineClientState::InitiateCall (McpttOnNetworkCallMachineClient& machine)
 {
   NS_LOG_FUNCTION (this << &machine);
-  NS_LOG_LOGIC ("Ignoring initiate call."); 
+  NS_LOG_LOGIC ("Ignoring initiate call.");
 }
 
 void
@@ -108,7 +108,7 @@ McpttOnNetworkCallMachineClientState::ReleaseCall (McpttOnNetworkCallMachineClie
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC ("Ignoring release call."); 
+  NS_LOG_LOGIC ("Ignoring release call.");
 }
 
 /** McpttOnNetworkCallMachineClientState - end **/
@@ -200,7 +200,7 @@ McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachine
 
   Ptr<Packet> newPkt = Create<Packet> (machine.GetResponsePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
-  agent->SendResponse (newPkt, 
+  agent->SendResponse (newPkt,
                        machine.GetCall ()->GetPeerSocketAddress (), // peer addr
                        200, // status code
                        hdr.GetFrom (),
@@ -260,10 +260,10 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveInvite (McpttOnNetworkCallMachine
 
   // Notify McpttPttApp of session initiation
   machine.GetCall ()->GetOwner ()->SessionInitiateRequest ();
-  
+
   Ptr<Packet> newPkt = Create<Packet> (machine.GetResponsePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
-  agent->SendResponse (newPkt, 
+  agent->SendResponse (newPkt,
                        machine.GetCall ()->GetPeerSocketAddress (), // peer addr
                        200, // status code
                        hdr.GetFrom (),
@@ -355,7 +355,7 @@ void
 McpttOnNetworkCallMachineClientStateS3::ReceiveResponse (McpttOnNetworkCallMachineClient& machine, uint32_t from, Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << &machine << from << pkt << hdr);
-  NS_LOG_LOGIC ("Ignoring response in established state"); 
+  NS_LOG_LOGIC ("Ignoring response in established state");
 }
 
 void
@@ -392,7 +392,7 @@ McpttOnNetworkCallMachineClientStateS3::ReleaseCall (McpttOnNetworkCallMachineCl
 
   Ptr<Packet> pkt = Create<Packet> (machine.GetByePayloadSize ());
   Ptr<sip::SipAgent> agent = machine.GetCall ()->GetOwner ()->GetSipAgent ();
-  agent->SendBye (pkt, 
+  agent->SendBye (pkt,
                   machine.GetCall ()->GetPeerSocketAddress (), // peer addr
                   machine.GetGrpId ().GetGrpId (),  // request URI
                   machine.GetCall ()->GetOwner ()->GetUserId (), // from

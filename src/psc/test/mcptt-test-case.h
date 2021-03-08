@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -49,24 +49,28 @@ namespace tests {
 class McpttTestCase : public TestCase
 {
 public:
- McpttTestCase (const std::string& name, Ptr<McpttTestCaseConfig>  config);
- virtual Ptr<McpttPttApp> GetApp (uint32_t index = 0);
- virtual Ptr<McpttCallMachine> GetCallMachine (uint32_t index = 0);
- virtual Ptr<McpttFloorParticipant> GetFloorMachine (uint32_t index = 0);
+  McpttTestCase (const std::string& name, Ptr<McpttTestCaseConfig>  config);
+  virtual Ptr<McpttPttApp> GetApp (uint32_t index = 0);
+  virtual Ptr<McpttCallMachine> GetCallMachine (uint32_t index = 0);
+  virtual Ptr<McpttFloorParticipant> GetFloorMachine (uint32_t index = 0);
+
 protected:
- virtual void Configure (void);
- virtual void Execute (void) = 0;
- virtual void Stop (void);
+  virtual void Configure (void);
+  virtual void Execute (void) = 0;
+  virtual void Stop (void);
+
 private:
- virtual void DoRun (void);
+  virtual void DoRun (void);
+
 private:
- ApplicationContainer m_clientApps;
- Ptr<McpttTestCaseConfig> m_config;
+  ApplicationContainer m_clientApps;
+  Ptr<McpttTestCaseConfig> m_config;
+
 protected:
- virtual ApplicationContainer GetClientApps (void) const;
- virtual Ptr<McpttTestCaseConfig> GetConfig (void) const;
- virtual void SetClientApps (const ApplicationContainer& clientApps);
- virtual void SetConfig (Ptr<McpttTestCaseConfig>  config);
+  virtual ApplicationContainer GetClientApps (void) const;
+  virtual Ptr<McpttTestCaseConfig> GetConfig (void) const;
+  virtual void SetClientApps (const ApplicationContainer& clientApps);
+  virtual void SetConfig (Ptr<McpttTestCaseConfig>  config);
 };
 
 } // namespace tests

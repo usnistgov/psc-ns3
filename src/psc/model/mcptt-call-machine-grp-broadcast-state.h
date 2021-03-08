@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -68,73 +68,74 @@ class McpttCallMachineGrpBroadcast;
 class McpttCallMachineGrpBroadcastState : public SimpleRefCount<McpttCallMachineGrpBroadcastState>
 {
 public:
- /**
-  * \brief The destructor of the McpttCallMachineGrpBroadcastState class.
-  */
- virtual ~McpttCallMachineGrpBroadcastState (void);
- /**
-  * Accepts the call.
-  * \param machine The FSM.
-  */
- virtual void AcceptCall (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Expirty of timer TFB1.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Expiry of timer TFB2.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb2 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Expiry of timer TFB3.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb3 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const = 0;
- /**
-  * Initiates a call.
-  * \param machine The FSM.
-  */
- virtual void InitiateCall (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Indicates if there is an ongoing call.
-  * \param machine The machine that the action is for.
-  * \returns True, if there is an ongoing call.
-  */
- virtual bool IsCallOngoing (const McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Receives a "GROUP CALL BROADCAST" message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const;
- /**
-  * Receives a "GROUP CALL BROADCAST END" message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
+  /**
+   * \brief The destructor of the McpttCallMachineGrpBroadcastState class.
+   */
+  virtual ~McpttCallMachineGrpBroadcastState (void);
+  /**
+   * Accepts the call.
+   * \param machine The FSM.
+   */
+  virtual void AcceptCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Expirty of timer TFB1.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Expiry of timer TFB2.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb2 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Expiry of timer TFB3.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb3 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const = 0;
+  /**
+   * Initiates a call.
+   * \param machine The FSM.
+   */
+  virtual void InitiateCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Indicates if there is an ongoing call.
+   * \param machine The machine that the action is for.
+   * \returns True, if there is an ongoing call.
+   */
+  virtual bool IsCallOngoing (const McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Receives a "GROUP CALL BROADCAST" message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const;
+  /**
+   * Receives a "GROUP CALL BROADCAST END" message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
   virtual void ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const;
- /**
-  * Rejects the call.
-  * \param machine The FSM.
-  */
- virtual void RejectCall (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Releases the call.
-  * \param machine The FSM.
-  */
- virtual void ReleaseCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Rejects the call.
+   * \param machine The FSM.
+   */
+  virtual void RejectCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Releases the call.
+   * \param machine The FSM.
+   */
+  virtual void ReleaseCall (McpttCallMachineGrpBroadcast& machine) const;
+
 protected:
- /**
-  * Creates an instance of the McpttCallMachineGrpBroadcastState class.
-  */
- McpttCallMachineGrpBroadcastState (void);
+  /**
+   * Creates an instance of the McpttCallMachineGrpBroadcastState class.
+   */
+  McpttCallMachineGrpBroadcastState (void);
 };
 /**
  * The output operator of the McpttCallMachineGrpBroadcastState class.
@@ -151,40 +152,40 @@ std::ostream& operator<< (std::ostream& os, const McpttCallMachineGrpBroadcastSt
 class McpttCallMachineGrpBroadcastStateB1 : public McpttCallMachineGrpBroadcastState
 {
 public:
- /**
-  * Gets an instance of the McpttCallMachineGrpBroadcastStateB1 class.
-  * \returns The instance.
-  */
- static Ptr<McpttCallMachineGrpBroadcastStateB1> GetInstance (void);
- /**
-  * Gets the state ID of the McpttCallMachineGrpBroadcastStateB1 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttCallMachineGrpBroadcastStateB1 class.
-  */
- McpttCallMachineGrpBroadcastStateB1 (void);
- /**
-  * \brief The destructor of the McpttCallMachineGrpBroadcastStateB1 class.
-  */
- virtual ~McpttCallMachineGrpBroadcastStateB1 (void);
- /**
-  * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Initiates a call.
-  * \param machine The FSM.
-  */
- virtual void InitiateCall (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Receives a "GROUP CALL BROADCAST" message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const;
+  /**
+   * Gets an instance of the McpttCallMachineGrpBroadcastStateB1 class.
+   * \returns The instance.
+   */
+  static Ptr<McpttCallMachineGrpBroadcastStateB1> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttCallMachineGrpBroadcastStateB1 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttCallMachineGrpBroadcastStateB1 class.
+   */
+  McpttCallMachineGrpBroadcastStateB1 (void);
+  /**
+   * \brief The destructor of the McpttCallMachineGrpBroadcastStateB1 class.
+   */
+  virtual ~McpttCallMachineGrpBroadcastStateB1 (void);
+  /**
+   * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Initiates a call.
+   * \param machine The FSM.
+   */
+  virtual void InitiateCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Receives a "GROUP CALL BROADCAST" message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const;
 };
 /**
  * \ingroup mcptt
@@ -194,56 +195,56 @@ public:
 class McpttCallMachineGrpBroadcastStateB2 : public McpttCallMachineGrpBroadcastState
 {
 public:
- /**
-  * Gets an instance of the McpttCallMachineGrpBroadcastStateB2 class.
-  * \returns The instance.
-  */
- static Ptr<McpttCallMachineGrpBroadcastStateB2> GetInstance (void);
- /**
-  * Gets the state ID of the McpttCallMachineGrpBroadcastStateB2 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttCallMachineGrpBroadcastStateB2 class.
-  */
- McpttCallMachineGrpBroadcastStateB2 (void);
- /**
-  * \brief The destructor of the McpttCallMachineGrpBroadcastStateB2 class.
-  */
- virtual ~McpttCallMachineGrpBroadcastStateB2 (void);
- /**
-  * Expirty of timer TFB1.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Expiry of timer TFB2.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb2 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Indicates if there is an ongoing call.
-  * \param machine The machine that the action is for.
-  * \returns True, if there is an ongoing call.
-  */
- virtual bool IsCallOngoing (const McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Receives a "GROUP CALL BROADCAST END" message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
+  /**
+   * Gets an instance of the McpttCallMachineGrpBroadcastStateB2 class.
+   * \returns The instance.
+   */
+  static Ptr<McpttCallMachineGrpBroadcastStateB2> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttCallMachineGrpBroadcastStateB2 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttCallMachineGrpBroadcastStateB2 class.
+   */
+  McpttCallMachineGrpBroadcastStateB2 (void);
+  /**
+   * \brief The destructor of the McpttCallMachineGrpBroadcastStateB2 class.
+   */
+  virtual ~McpttCallMachineGrpBroadcastStateB2 (void);
+  /**
+   * Expirty of timer TFB1.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Expiry of timer TFB2.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb2 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Indicates if there is an ongoing call.
+   * \param machine The machine that the action is for.
+   * \returns True, if there is an ongoing call.
+   */
+  virtual bool IsCallOngoing (const McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Receives a "GROUP CALL BROADCAST END" message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
   virtual void ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const;
- /**
-  * Releases the call.
-  * \param machine The FSM.
-  */
- virtual void ReleaseCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Releases the call.
+   * \param machine The FSM.
+   */
+  virtual void ReleaseCall (McpttCallMachineGrpBroadcast& machine) const;
 };
 /**
  * \ingroup mcptt
@@ -253,44 +254,44 @@ public:
 class McpttCallMachineGrpBroadcastStateB3 : public McpttCallMachineGrpBroadcastState
 {
 public:
- /**
-  * Gets an instance of the McpttCallMachineGrpBroadcastStateB3 class.
-  * \returns The instance.
-  */
- static Ptr<McpttCallMachineGrpBroadcastStateB3> GetInstance (void);
- /**
-  * Gets the state ID of the McpttCallMachineGrpBroadcastStateB3 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttCallMachineGrpBroadcastStateB3 class.
-  */
- McpttCallMachineGrpBroadcastStateB3 (void);
- /**
-  * \brief The destructor of the McpttCallMachineGrpBroadcastStateB3 class.
-  */
- virtual ~McpttCallMachineGrpBroadcastStateB3 (void);
- /**
-  * Accepts the call.
-  * \param machine The FSM.
-  */
- virtual void AcceptCall (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Expiry of timer TFB3.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb3 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Rejects the call.
-  * \param machine The FSM.
-  */
- virtual void RejectCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Gets an instance of the McpttCallMachineGrpBroadcastStateB3 class.
+   * \returns The instance.
+   */
+  static Ptr<McpttCallMachineGrpBroadcastStateB3> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttCallMachineGrpBroadcastStateB3 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttCallMachineGrpBroadcastStateB3 class.
+   */
+  McpttCallMachineGrpBroadcastStateB3 (void);
+  /**
+   * \brief The destructor of the McpttCallMachineGrpBroadcastStateB3 class.
+   */
+  virtual ~McpttCallMachineGrpBroadcastStateB3 (void);
+  /**
+   * Accepts the call.
+   * \param machine The FSM.
+   */
+  virtual void AcceptCall (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Expiry of timer TFB3.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb3 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Rejects the call.
+   * \param machine The FSM.
+   */
+  virtual void RejectCall (McpttCallMachineGrpBroadcast& machine) const;
 };
 /**
  * \ingroup mcptt
@@ -300,45 +301,45 @@ public:
 class McpttCallMachineGrpBroadcastStateB4 : public McpttCallMachineGrpBroadcastState
 {
 public:
- /**
-  * Gets an instance of the McpttCallMachineGrpBroadcastStateB4 class.
-  * \returns The instance.
-  */
- static Ptr<McpttCallMachineGrpBroadcastStateB4> GetInstance (void);
- /**
-  * Gets the state ID of the McpttCallMachineGrpBroadcastStateB4 class.
-  * \returns The state ID.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * Creates an instance of the McpttCallMachineGrpBroadcastStateB4 class.
-  */
- McpttCallMachineGrpBroadcastStateB4 (void);
- /**
-  * \brief The destructor of the McpttCallMachineGrpBroadcastStateB4 class.
-  */
- virtual ~McpttCallMachineGrpBroadcastStateB4 (void);
- /**
-  * Expirty of timer TFB1.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const;
- /**
-  * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
-  * \returns The state ID.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Receives a "GROUP CALL BROADCAST" message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const;
- /**
-  * Receives a "GROUP CALL BROADCAST END" message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
+  /**
+   * Gets an instance of the McpttCallMachineGrpBroadcastStateB4 class.
+   * \returns The instance.
+   */
+  static Ptr<McpttCallMachineGrpBroadcastStateB4> GetInstance (void);
+  /**
+   * Gets the state ID of the McpttCallMachineGrpBroadcastStateB4 class.
+   * \returns The state ID.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * Creates an instance of the McpttCallMachineGrpBroadcastStateB4 class.
+   */
+  McpttCallMachineGrpBroadcastStateB4 (void);
+  /**
+   * \brief The destructor of the McpttCallMachineGrpBroadcastStateB4 class.
+   */
+  virtual ~McpttCallMachineGrpBroadcastStateB4 (void);
+  /**
+   * Expirty of timer TFB1.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfTfb1 (McpttCallMachineGrpBroadcast& machine) const;
+  /**
+   * Gets the state ID of this McpttCallMachineGrpBroadcastState instance.
+   * \returns The state ID.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Receives a "GROUP CALL BROADCAST" message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveGrpCallBroadcast (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcast& msg) const;
+  /**
+   * Receives a "GROUP CALL BROADCAST END" message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
   virtual void ReceiveGrpCallBroadcastEnd (McpttCallMachineGrpBroadcast& machine, const McpttCallMsgGrpBroadcastEnd& msg) const;
 };
 

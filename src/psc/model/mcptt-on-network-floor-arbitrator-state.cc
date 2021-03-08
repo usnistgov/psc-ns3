@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -72,7 +72,7 @@ McpttOnNetworkFloorArbitratorState::Enter (Ptr<McpttOnNetworkFloorArbitrator> ma
 {
   NS_LOG_FUNCTION (this << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter.");
 }
 
 void
@@ -80,7 +80,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrato
 {
   NS_LOG_FUNCTION (this << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T1."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T1.");
 }
 
 void
@@ -88,7 +88,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrato
 {
   NS_LOG_FUNCTION (this << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T2."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T2.");
 }
 
 void
@@ -96,7 +96,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrato
 {
   NS_LOG_FUNCTION (this << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T3."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T3.");
 }
 
 void
@@ -104,7 +104,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrato
 {
   NS_LOG_FUNCTION (this << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T4."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T4.");
 }
 
 void
@@ -112,7 +112,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrato
 {
   NS_LOG_FUNCTION (this << GetInstanceStateId ().GetName () << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T7."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T7.");
 }
 
 void
@@ -120,7 +120,7 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrat
 {
   NS_LOG_FUNCTION (this << machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T20."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T20.");
 }
 
 McpttEntityId
@@ -140,7 +140,7 @@ McpttOnNetworkFloorArbitratorState::ReceiveFloorRelease (Ptr<McpttOnNetworkFloor
 {
   NS_LOG_FUNCTION (this << machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -148,7 +148,7 @@ McpttOnNetworkFloorArbitratorState::ReceiveFloorRequest (Ptr<McpttOnNetworkFloor
 {
   NS_LOG_FUNCTION (this << machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -156,7 +156,7 @@ McpttOnNetworkFloorArbitratorState::ReceiveMedia (Ptr<McpttOnNetworkFloorArbitra
 {
   NS_LOG_FUNCTION (this << machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -170,7 +170,7 @@ McpttOnNetworkFloorArbitratorState::ClientRelease (Ptr<McpttOnNetworkFloorArbitr
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification.");
 }
 
 void
@@ -189,7 +189,7 @@ McpttOnNetworkFloorArbitratorState::CallRelease2 (Ptr<McpttOnNetworkFloorArbitra
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part II)."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release (part II).");
 }
 
 void
@@ -345,7 +345,7 @@ McpttOnNetworkFloorArbitratorStateIdle::Enter (Ptr<McpttOnNetworkFloorArbitrator
         }
     }
   else if (machine->GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ()
-      && machine->IsDualFloor ())
+           && machine->IsDualFloor ())
     {
       machine->SetTrackInfo (McpttFloorMsgFieldTrackInfo ());
 
@@ -524,7 +524,7 @@ McpttOnNetworkFloorArbitratorStateTaken::ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbi
     {
       machine->GetT2 ()->Stop ();
     }
-  
+
   if (machine->GetT20 ()->IsRunning ())
     {
       machine->GetT20 ()->Stop ();
@@ -655,12 +655,12 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (Ptr<McpttOnNetwork
           queuedUserId.SetUserId (msg.GetSsrc ());
           McpttFloorMsgFieldQueuePositionInfo queueInfo (0, msg.GetPriority ().GetPriority ());
           McpttQueuedUserInfo userInfo (msg.GetSsrc (), queuedUserId, queueInfo);
- 
+
           machine->GetQueue ()->Pull (msg.GetSsrc ());
           machine->GetQueue ()->Enqueue (userInfo);
 
           if (machine->IsQueueingSupported ()
-            && machine->GetParticipantBySsrc (msg.GetSsrc ())->IsQueueing ())
+              && machine->GetParticipantBySsrc (msg.GetSsrc ())->IsQueueing ())
             {
               McpttFloorMsgQueuePositionInfo queuedMsg;
               queuedMsg.SetSsrc (machine->GetTxSsrc ());

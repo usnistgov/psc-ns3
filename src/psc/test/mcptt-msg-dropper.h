@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -43,32 +43,35 @@ namespace tests {
 class McpttMsgDropper : public SimpleRefCount<McpttMsgDropper>
 {
 public:
- McpttMsgDropper (void);
- virtual ~McpttMsgDropper (void);
- virtual bool ShouldDropMsg (const McpttMsg& msg) = 0;
+  McpttMsgDropper (void);
+  virtual ~McpttMsgDropper (void);
+  virtual bool ShouldDropMsg (const McpttMsg& msg) = 0;
 };
 
 class McpttMsgDropperImpl : public McpttMsgDropper
 {
 public:
- McpttMsgDropperImpl (void);
- McpttMsgDropperImpl (const uint32_t& limit, const TypeId& msgTypeId);
- virtual ~McpttMsgDropperImpl (void);
- virtual bool ShouldDropMsg (const McpttMsg& msg);
+  McpttMsgDropperImpl (void);
+  McpttMsgDropperImpl (const uint32_t& limit, const TypeId& msgTypeId);
+  virtual ~McpttMsgDropperImpl (void);
+  virtual bool ShouldDropMsg (const McpttMsg& msg);
+
 protected:
- virtual void IncrementReceived (const uint32_t& amount = 1);
- virtual bool IsLimitReached (void) const;
+  virtual void IncrementReceived (const uint32_t& amount = 1);
+  virtual bool IsLimitReached (void) const;
+
 private:
- uint32_t m_limit;
- TypeId m_msgTypeId;
- uint32_t m_received;
+  uint32_t m_limit;
+  TypeId m_msgTypeId;
+  uint32_t m_received;
+
 protected:
- virtual uint32_t GetLimit (void) const;
- virtual TypeId GetMsgTypeId (void) const;
- virtual uint32_t GetReceived (void) const;
- virtual void SetLimit (const uint32_t& limit);
- virtual void SetMsgTypeId (const TypeId& msgTypeId);
- virtual void SetReceived (const uint32_t& receieved);
+  virtual uint32_t GetLimit (void) const;
+  virtual TypeId GetMsgTypeId (void) const;
+  virtual uint32_t GetReceived (void) const;
+  virtual void SetLimit (const uint32_t& limit);
+  virtual void SetMsgTypeId (const TypeId& msgTypeId);
+  virtual void SetReceived (const uint32_t& receieved);
 };
 
 } // namespace tests

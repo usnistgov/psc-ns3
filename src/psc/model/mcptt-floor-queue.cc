@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -58,7 +58,7 @@ McpttFloorQueue::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&McpttFloorQueue::m_capacity),
                    MakeUintegerChecker<uint16_t> ())
-;
+  ;
 
   return tid;
 }
@@ -132,7 +132,7 @@ McpttFloorQueue::Enqueue (McpttQueuedUserInfo& user)
   queuedInfo.SetPosition (position);
   user.SetInfo (queuedInfo);
   m_users.insert (it, user);
- }
+}
 
 uint16_t
 McpttFloorQueue::Find (uint32_t userId) const
@@ -143,7 +143,7 @@ McpttFloorQueue::Find (uint32_t userId) const
   McpttQueuedUserInfo temp;
 
   View (userId, temp, position);
-  
+
   return position;
 }
 

@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -48,70 +48,70 @@ namespace tests {
 class McpttCallMsgGrpProbeTest : public TestCase
 {
 public:
- McpttCallMsgGrpProbeTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpProbeTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpAnnounTest : public TestCase
 {
 public:
   McpttCallMsgGrpAnnounTest (void);
- virtual void DoRun (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpAcceptTest : public TestCase
 {
 public:
- McpttCallMsgGrpAcceptTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpAcceptTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpImmPerilEndTest : public TestCase
 {
 public:
- McpttCallMsgGrpImmPerilEndTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpImmPerilEndTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpEmergEndTest : public TestCase
 {
 public:
- McpttCallMsgGrpEmergEndTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpEmergEndTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpEmergAlertTest : public TestCase
 {
 public:
- McpttCallMsgGrpEmergAlertTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpEmergAlertAckTest : public TestCase
 {
 public:
- McpttCallMsgGrpEmergAlertAckTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertAckTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpEmergAlertCancelTest : public TestCase
 {
 public:
- McpttCallMsgGrpEmergAlertCancelTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertCancelTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallMsgGrpEmergAlertCancelAckTest : public TestCase
 {
 public:
- McpttCallMsgGrpEmergAlertCancelAckTest (void);
- virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertCancelAckTest (void);
+  virtual void DoRun (void);
 };
 
 class McpttCallControlMsgTestSuite : public TestSuite
 {
 public:
- McpttCallControlMsgTestSuite (void);
+  McpttCallControlMsgTestSuite (void);
 };
 
 /***************************************************************
@@ -122,8 +122,7 @@ static McpttCallControlMsgTestSuite suite;
 
 McpttCallMsgGrpProbeTest::McpttCallMsgGrpProbeTest (void)
   : TestCase ("GROUP CALL PROBE")
-{
-}
+{}
 
 void
 McpttCallMsgGrpProbeTest::DoRun (void)
@@ -153,8 +152,7 @@ McpttCallMsgGrpProbeTest::DoRun (void)
 
 McpttCallMsgGrpAnnounTest::McpttCallMsgGrpAnnounTest (void)
   : TestCase ("GROUP CALL ANNOUNCEMENT")
-{
-}
+{}
 
 void
 McpttCallMsgGrpAnnounTest::DoRun (void)
@@ -190,7 +188,7 @@ McpttCallMsgGrpAnnounTest::DoRun (void)
   sdp.SetGrpAddr (Ipv4Address ("129.6.142.230"));
   sdp.SetOrigAddr (Ipv4Address ("192.168.1.1"));
 
-  McpttCallMsgFieldStartTime startTime; 
+  McpttCallMsgFieldStartTime startTime;
   startTime.SetTime (Seconds (1));
 
   McpttCallMsgGrpAnnoun dstMsg;
@@ -225,8 +223,7 @@ McpttCallMsgGrpAnnounTest::DoRun (void)
 
 McpttCallMsgGrpAcceptTest::McpttCallMsgGrpAcceptTest (void)
   : TestCase ("GROUP CALL ACCEPT")
-{
-}
+{}
 
 void
 McpttCallMsgGrpAcceptTest::DoRun (void)
@@ -268,21 +265,20 @@ McpttCallMsgGrpAcceptTest::DoRun (void)
 
 McpttCallMsgGrpImmPerilEndTest::McpttCallMsgGrpImmPerilEndTest (void)
   : TestCase ("GROUP CALL IMMINENT PERIL END")
-{
-}
+{}
 
 void
 McpttCallMsgGrpImmPerilEndTest::DoRun (void)
 {
   McpttCallMsgFieldCallId callId;
   callId.SetCallId (5);
-  
+
   McpttCallMsgFieldGrpId grpId;
   grpId.SetGrpId (6);
 
   McpttCallMsgFieldLastChgTime lastChgTime;
   lastChgTime.SetTime (Seconds (3));
-  
+
   McpttCallMsgFieldUserId lastChgUserId;
   lastChgUserId.SetId (7);
 
@@ -315,21 +311,20 @@ McpttCallMsgGrpImmPerilEndTest::DoRun (void)
 
 McpttCallMsgGrpEmergEndTest::McpttCallMsgGrpEmergEndTest (void)
   : TestCase ("GROUP CALL EMERGENCY END")
-{
-}
+{}
 
 void
 McpttCallMsgGrpEmergEndTest::DoRun (void)
 {
   McpttCallMsgFieldCallId callId;
   callId.SetCallId (5);
-  
+
   McpttCallMsgFieldGrpId grpId;
   grpId.SetGrpId (6);
 
   McpttCallMsgFieldLastChgTime lastChgTime;
   lastChgTime.SetTime (Seconds (3));
-  
+
   McpttCallMsgFieldUserId lastChgUserId;
   lastChgUserId.SetId (7);
 
@@ -362,8 +357,7 @@ McpttCallMsgGrpEmergEndTest::DoRun (void)
 
 McpttCallMsgGrpEmergAlertTest::McpttCallMsgGrpEmergAlertTest (void)
   : TestCase ("GROUP CALL EMERGENCY ALERT")
-{
-}
+{}
 
 void
 McpttCallMsgGrpEmergAlertTest::DoRun (void)
@@ -405,8 +399,7 @@ McpttCallMsgGrpEmergAlertTest::DoRun (void)
 
 McpttCallMsgGrpEmergAlertAckTest::McpttCallMsgGrpEmergAlertAckTest (void)
   : TestCase ("GROUP CALL EMERGENCY ALERT ACK")
-{
-}
+{}
 
 void
 McpttCallMsgGrpEmergAlertAckTest::DoRun (void)
@@ -425,7 +418,7 @@ McpttCallMsgGrpEmergAlertAckTest::DoRun (void)
   srcMsg.SetGrpId (grpId);
   srcMsg.SetOrigId (origId);
   srcMsg.SetSendingId (sendingId);
-  
+
   std::stringstream dstStr;
   std::stringstream srcStr;
 
@@ -444,8 +437,7 @@ McpttCallMsgGrpEmergAlertAckTest::DoRun (void)
 
 McpttCallMsgGrpEmergAlertCancelTest::McpttCallMsgGrpEmergAlertCancelTest (void)
   : TestCase ("GROUP CALL EMERGENCY ALERT CANCEL")
-{
-}
+{}
 
 void
 McpttCallMsgGrpEmergAlertCancelTest::DoRun (void)
@@ -464,7 +456,7 @@ McpttCallMsgGrpEmergAlertCancelTest::DoRun (void)
   srcMsg.SetGrpId (grpId);
   srcMsg.SetOrigId (origId);
   srcMsg.SetSendingId (sendingId);
-  
+
   std::stringstream dstStr;
   std::stringstream srcStr;
 
@@ -483,8 +475,7 @@ McpttCallMsgGrpEmergAlertCancelTest::DoRun (void)
 
 McpttCallMsgGrpEmergAlertCancelAckTest::McpttCallMsgGrpEmergAlertCancelAckTest (void)
   : TestCase ("GROUP CALL EMERGENCY ALERT CANCEL ACK")
-{
-}
+{}
 
 void
 McpttCallMsgGrpEmergAlertCancelAckTest::DoRun (void)
@@ -503,7 +494,7 @@ McpttCallMsgGrpEmergAlertCancelAckTest::DoRun (void)
   srcMsg.SetGrpId (grpId);
   srcMsg.SetOrigId (origId);
   srcMsg.SetSendingId (sendingId);
-  
+
   std::stringstream dstStr;
   std::stringstream srcStr;
 
@@ -521,7 +512,7 @@ McpttCallMsgGrpEmergAlertCancelAckTest::DoRun (void)
 }
 
 McpttCallControlMsgTestSuite::McpttCallControlMsgTestSuite (void)
-   : TestSuite ("mcptt-call-control-messages", TestSuite::UNIT)
+  : TestSuite ("mcptt-call-control-messages", TestSuite::UNIT)
 {
   AddTestCase (new McpttCallMsgGrpProbeTest (), TestCase::QUICK);
   AddTestCase (new McpttCallMsgGrpAnnounTest (), TestCase::QUICK);

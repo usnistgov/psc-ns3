@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -57,7 +57,7 @@ McpttFloorMsgField::GetTypeId (void)
     .SetParent<ObjectBase> ()
     .AddConstructor<McpttFloorMsgField> ()
   ;
-  
+
   return tid;
 }
 
@@ -72,7 +72,7 @@ McpttFloorMsgField::McpttFloorMsgField (uint8_t id, uint8_t length)
   : m_id (id),
     m_length (length)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)id <<(uint32_t) length);
+  NS_LOG_FUNCTION (this << (uint32_t)id << (uint32_t) length);
 }
 
 McpttFloorMsgField::~McpttFloorMsgField (void)
@@ -248,7 +248,7 @@ McpttFloorMsgFieldPriority::Deserialize (Buffer::Iterator& buff)
   buff.ReadU8 (); // Read "spare" byte.
   bytesRead += 1;
 
-  NS_LOG_LOGIC ("Read two bytes (priority=" <<(uint32_t) priority << ").");
+  NS_LOG_LOGIC ("Read two bytes (priority=" << (uint32_t) priority << ").");
 
   SetPriority (priority);
 
@@ -1099,7 +1099,7 @@ McpttFloorMsgFieldQueueSize::Print (std::ostream& os) const
 
   McpttFloorMsgField::Print (os);
 
-  uint16_t queueSize = GetQueueSize();
+  uint16_t queueSize = GetQueueSize ();
 
   os << ";";
   os << "queueSize=" << (uint32_t)queueSize;
@@ -1274,7 +1274,7 @@ McpttFloorMsgFieldQueuedUserId::McpttFloorMsgFieldQueuedUserId (void)
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMsgFieldQueuedUserId::McpttFloorMsgFieldQueuedUserId(uint32_t userId)
+McpttFloorMsgFieldQueuedUserId::McpttFloorMsgFieldQueuedUserId (uint32_t userId)
   : McpttFloorMsgFieldUserId (9, 4, userId)
 {
   NS_LOG_FUNCTION (this);
@@ -1399,7 +1399,7 @@ void
 McpttFloorMsgFieldSource::Print (std::ostream& os) const
 {
   NS_LOG_FUNCTION (this);
-  
+
   os << "McpttFloorMsgFieldSource(";
 
   McpttFloorMsgField::Print (os);
@@ -1681,7 +1681,7 @@ McpttFloorMsgFieldTrackInfo::Serialize (Buffer::Iterator& buff) const
 
   NS_LOG_LOGIC ("McpttFloorMsgFieldTrackInfo wrote " << (uint32_t)ptLengthWithPadding << " bytes (" << (ptLengthWithPadding - ptLength) << " were for padding).");
 
-  for (uint32_t refIndex = 0; refIndex < refs.size(); refIndex++)
+  for (uint32_t refIndex = 0; refIndex < refs.size (); refIndex++)
     {
       uint32_t ref = refs.at (refIndex);
 

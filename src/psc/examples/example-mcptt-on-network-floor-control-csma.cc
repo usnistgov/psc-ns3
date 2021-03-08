@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -80,11 +80,11 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::psc::McpttMsgStats::Media", BooleanValue (true));
   Config::SetDefault ("ns3::psc::McpttMsgStats::IncludeMessageContent", BooleanValue (false));
   Config::SetDefault ("ns3::psc::McpttOnNetworkFloorParticipant::GenMedia", BooleanValue (true));
- 
+
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
 
-  for (uint32_t s = (uint32_t)startSec; s < (uint32_t)stopSec; s+=1)
+  for (uint32_t s = (uint32_t)startSec; s < (uint32_t)stopSec; s += 1)
     {
       Simulator::Schedule (Seconds (s), &SimTimeUpdate);
     }
@@ -145,18 +145,18 @@ int main (int argc, char *argv[])
   ApplicationContainer clientApps;
   McpttHelper mcpttClientHelper;
   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                         "PushOnStart", BooleanValue (true));
+                               "PushOnStart", BooleanValue (true));
   mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                         "Bytes", UintegerValue (msgSize),
-                         "DataRate", DataRateValue (dataRate));
+                                 "Bytes", UintegerValue (msgSize),
+                                 "DataRate", DataRateValue (dataRate));
   mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
-                         "Automatic", BooleanValue (true));
+                               "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                          "Mean", DoubleValue (onOffMean),
+                                                          "Variance", DoubleValue (2.0));
   mcpttClientHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                  "Mean", DoubleValue (onOffMean),
+                                                  "Variance", DoubleValue (2.0));
 
   clientApps.Add (mcpttClientHelper.Install (clients));
   clientApps.Start (start);
@@ -183,21 +183,21 @@ int main (int argc, char *argv[])
 
   McpttCallHelper callHelper;
   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "TxSsrc", UintegerValue (100),
-                         "QueueingSupported", BooleanValue (true));
+                            "AckRequired", BooleanValue (false),
+                            "AudioCutIn", BooleanValue (false),
+                            "DualFloorSupported", BooleanValue (false),
+                            "TxSsrc", UintegerValue (100),
+                            "QueueingSupported", BooleanValue (true));
   // Dual control not yet in the refactoring
   // callHelper.SetDualControl ("ns3::psc::McpttOnNetworkFloorDualControl");
   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                         "ReceiveOnly", BooleanValue (false));
+                                    "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                         "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
+                             "AckRequired", BooleanValue (false),
+                             "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                         "AmbientListening", BooleanValue (false),
-                         "TemporaryGroup", BooleanValue (false));
+                            "AmbientListening", BooleanValue (false),
+                            "TemporaryGroup", BooleanValue (false));
 
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   uint32_t groupId = 1;

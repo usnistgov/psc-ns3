@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -84,7 +84,7 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_genMedia),
                    MakeBooleanChecker ())
-     .AddAttribute ("ImplicitRequest", "The flag that indicates if the SIP INVITE includes an implicit Floor Request.",
+    .AddAttribute ("ImplicitRequest", "The flag that indicates if the SIP INVITE includes an implicit Floor Request.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&McpttOnNetworkFloorParticipant::m_implicitRequest),
                    MakeBooleanChecker ())
@@ -114,11 +114,11 @@ McpttOnNetworkFloorParticipant::GetTypeId (void)
                    MakeTimeAccessor (&McpttOnNetworkFloorParticipant::SetDelayT132),
                    MakeTimeChecker ())
     .AddTraceSource ("StateChangeTrace",
-                   "The trace for capturing state changes.",
-                   MakeTraceSourceAccessor (&McpttOnNetworkFloorParticipant::m_stateChangeTrace),
-                   "ns3::psc::McpttFloorParticipant::StateChangeTracedCallback")
-    ;
-  
+                     "The trace for capturing state changes.",
+                     MakeTraceSourceAccessor (&McpttOnNetworkFloorParticipant::m_stateChangeTrace),
+                     "ns3::psc::McpttFloorParticipant::StateChangeTracedCallback")
+  ;
+
   return tid;
 }
 
@@ -215,7 +215,7 @@ McpttOnNetworkFloorParticipant::ChangeState (Ptr<McpttOnNetworkFloorParticipantS
 {
   NS_LOG_FUNCTION (this << state->GetInstanceStateId ());
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
   NS_LOG_LOGIC ("UserId " << userId << " moving from state " << m_state->GetName () << " to state " << state->GetName () << ".");
   std::string selected = "False";
   if (GetCall ()->GetCallId () == GetCall ()->GetOwner ()->GetSelectedCall ()->GetCallId ())
@@ -252,7 +252,7 @@ McpttOnNetworkFloorParticipant::GetCallTypeId (void) const
 
   return callTypeId;
 }
- 
+
 
 McpttFloorMsgFieldIndic
 McpttOnNetworkFloorParticipant::GetIndicator (void) const
@@ -316,7 +316,7 @@ McpttOnNetworkFloorParticipant::GetState (void) const
 uint32_t
 McpttOnNetworkFloorParticipant::GetTxSsrc () const
 {
-  uint32_t txSsrc = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t txSsrc = GetCall ()->GetOwner ()->GetUserId ();
 
   return txSsrc;
 }
@@ -382,7 +382,7 @@ McpttOnNetworkFloorParticipant::MediaReady (McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << myUserId << "'s client is about to send media.");
 
@@ -412,7 +412,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorAck (const McpttFloorMsgAck& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -429,7 +429,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -446,7 +446,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorGranted (const McpttFloorMsgGranted&
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -463,7 +463,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorIdle (const McpttFloorMsgIdle& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -480,7 +480,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorQueuePositionInfo (const McpttFloorM
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -497,7 +497,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorRevoke (const McpttFloorMsgRevoke& m
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -514,7 +514,7 @@ McpttOnNetworkFloorParticipant::ReceiveFloorTaken (const McpttFloorMsgTaken& msg
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -531,7 +531,7 @@ McpttOnNetworkFloorParticipant::ReceiveMedia (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorParticipant " << userId << " received " << msg.GetInstanceTypeId () << ".");
 
@@ -679,7 +679,7 @@ McpttOnNetworkFloorParticipant::PttRelease (void)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t userId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t userId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorParticipant " << userId << " taking release notification.");
 
@@ -753,7 +753,7 @@ McpttOnNetworkFloorParticipant::ExpiryOfT100 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorParticipant " << myUserId << " T100 expired " << GetC100 ()->GetValue () << " times.");
 
@@ -765,7 +765,7 @@ McpttOnNetworkFloorParticipant::ExpiryOfT101 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorParticipant " << myUserId << " T101 expired.");
 
@@ -777,7 +777,7 @@ McpttOnNetworkFloorParticipant::ExpiryOfT103 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorParticipant " << myUserId << " T103 has expired.");
 
@@ -789,7 +789,7 @@ McpttOnNetworkFloorParticipant::ExpiryOfT104 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorParticipant " << myUserId << " T104 has expired.");
 
@@ -801,7 +801,7 @@ McpttOnNetworkFloorParticipant::ExpiryOfT132 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t myUserId = GetCall ()->GetOwner ()-> GetUserId ();
+  uint32_t myUserId = GetCall ()->GetOwner ()->GetUserId ();
 
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorParticipant " << myUserId << " T132 has expired.");
 

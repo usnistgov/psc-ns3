@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -83,109 +83,110 @@ class McpttOnNetworkFloorTowardsParticipant;
 class McpttOnNetworkFloorArbitratorState : public SimpleRefCount<McpttOnNetworkFloorArbitratorState>
 {
 public:
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorState class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorState (void);
- /**
-  * Notifies the floor machine state that the call was initialized.
-  * \param machine The FSM.
-  * \param participant The participant that initiated the call.
-  */
- virtual void CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const;
- /**
-  * Indicates to the floor control server that the call has been released (part I).
-  * \param machine The FSM.
-  */
- virtual void CallRelease1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Indicates to the floor control server that the call has been released (part II).
-  * \param machine The FSM.
-  */
- virtual void CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Indicates to the floor control server that the client has disconnected.
-  * \param machine The FSM.
-  */
- virtual void ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Enters the given state.
-  * \param machine The FSM.
-  */
- virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T1 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T2 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T3 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T4 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T7 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T20 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Indicates if a client is permitted to send media.
-  * \returns True, if a client is permitted; otherwise, false.
-  */
- virtual bool IsFloorOccupied (void) const;
- /**
-  * Receives a floor release message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
- /**
-  * Receives a floor request message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
- /**
-  * Receives a media message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
- /**
-  * Notifies the machine state that it has been selected.
-  * \param machine The FSM.
-  */
- virtual void Selected (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the machine state that it has been unselected.
-  * \param machine The FSM.
-  */
- virtual void Unselected (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorState class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorState (void);
+  /**
+   * Notifies the floor machine state that the call was initialized.
+   * \param machine The FSM.
+   * \param participant The participant that initiated the call.
+   */
+  virtual void CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const;
+  /**
+   * Indicates to the floor control server that the call has been released (part I).
+   * \param machine The FSM.
+   */
+  virtual void CallRelease1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Indicates to the floor control server that the call has been released (part II).
+   * \param machine The FSM.
+   */
+  virtual void CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Indicates to the floor control server that the client has disconnected.
+   * \param machine The FSM.
+   */
+  virtual void ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Enters the given state.
+   * \param machine The FSM.
+   */
+  virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T1 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T2 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T3 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T4 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T7 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T20 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Indicates if a client is permitted to send media.
+   * \returns True, if a client is permitted; otherwise, false.
+   */
+  virtual bool IsFloorOccupied (void) const;
+  /**
+   * Receives a floor release message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
+  /**
+   * Receives a floor request message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
+  /**
+   * Receives a media message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
+  /**
+   * Notifies the machine state that it has been selected.
+   * \param machine The FSM.
+   */
+  virtual void Selected (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the machine state that it has been unselected.
+   * \param machine The FSM.
+   */
+  virtual void Unselected (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+
 protected:
- /**
-  * Creates an instance of the McpttOnNetworkFloorArbitratorState class.
-  */
- McpttOnNetworkFloorArbitratorState (void);
+  /**
+   * Creates an instance of the McpttOnNetworkFloorArbitratorState class.
+   */
+  McpttOnNetworkFloorArbitratorState (void);
 };
 /**
  * Overloaded output operator for the McpttOnNetworkFloorArbitratorState class.
@@ -201,35 +202,35 @@ std::ostream& operator<< (std::ostream& os, const McpttOnNetworkFloorArbitratorS
 class McpttOnNetworkFloorArbitratorStateStartStop : public McpttOnNetworkFloorArbitratorState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkFloorArbitratorStateStartStop.
-  * \returns An instance.
-  */
- static Ptr<McpttOnNetworkFloorArbitratorStateStartStop> GetInstance (void);
- /**
-  * \brief Gets the ID of the state.
-  * \returns The ID of the state.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateStartStop class.
-  */
- McpttOnNetworkFloorArbitratorStateStartStop (void);
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorStateStartStop class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorStateStartStop (void);
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Notifies the floor machine state that the call was initialized.
-  * \param machine The FSM.
-  * \param participant The participant that initiated the call.
-  */
- virtual void CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const;
+  /**
+   * Gets an instance of the McpttOnNetworkFloorArbitratorStateStartStop.
+   * \returns An instance.
+   */
+  static Ptr<McpttOnNetworkFloorArbitratorStateStartStop> GetInstance (void);
+  /**
+   * \brief Gets the ID of the state.
+   * \returns The ID of the state.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateStartStop class.
+   */
+  McpttOnNetworkFloorArbitratorStateStartStop (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorStateStartStop class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorStateStartStop (void);
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Notifies the floor machine state that the call was initialized.
+   * \param machine The FSM.
+   * \param participant The participant that initiated the call.
+   */
+  virtual void CallInitialized (Ptr<McpttOnNetworkFloorArbitrator> machine, Ptr<McpttOnNetworkFloorTowardsParticipant> participant) const;
 };
 /**
  * \ingroup mcptt
@@ -238,50 +239,50 @@ public:
 class McpttOnNetworkFloorArbitratorStateIdle : public McpttOnNetworkFloorArbitratorState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkFloorArbitratorStateIdle.
-  * \returns An instance.
-  */
- static Ptr<McpttOnNetworkFloorArbitratorStateIdle> GetInstance (void);
- /**
-  * \brief Gets the ID of the state.
-  * \returns The ID of the state.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateIdle class.
-  */
- McpttOnNetworkFloorArbitratorStateIdle (void);
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorStateIdle class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorStateIdle (void);
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Enters this state.
-  * \param machine The FSM.
-  */
- virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Receives a floor request message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
- /**
-  * Notifies the floor machine state that timer T7 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T4 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Gets an instance of the McpttOnNetworkFloorArbitratorStateIdle.
+   * \returns An instance.
+   */
+  static Ptr<McpttOnNetworkFloorArbitratorStateIdle> GetInstance (void);
+  /**
+   * \brief Gets the ID of the state.
+   * \returns The ID of the state.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateIdle class.
+   */
+  McpttOnNetworkFloorArbitratorStateIdle (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorStateIdle class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorStateIdle (void);
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Enters this state.
+   * \param machine The FSM.
+   */
+  virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Receives a floor request message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
+  /**
+   * Notifies the floor machine state that timer T7 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT7 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T4 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -290,77 +291,77 @@ public:
 class McpttOnNetworkFloorArbitratorStateTaken : public McpttOnNetworkFloorArbitratorState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkFloorArbitratorStateTaken.
-  * \returns An instance.
-  */
- static Ptr<McpttOnNetworkFloorArbitratorStateTaken> GetInstance (void);
- /**
-  * \brief Gets the ID of the state.
-  * \returns The ID of the state.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateTaken class.
-  */
- McpttOnNetworkFloorArbitratorStateTaken (void);
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorStateTaken class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorStateTaken (void);
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Indicates if a client is permitted to send media.
-  * \returns True, if a client is permitted; otherwise, false.
-  */
- virtual bool IsFloorOccupied (void) const;
- /**
-  * Notifies the machine state that it has been selected.
-  * \param machine The FSM.
-  */
- virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T1 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T2 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Receives a media message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
- /**
-  * Receives a floor release message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
- /**
-  * Receives a floor request message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
- /**
-  * Notifies the floor machine state that timer T20 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Indicates to the floor control server that the client has disconnected.
-  * \param machine The FSM.
-  */
- virtual void ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Gets an instance of the McpttOnNetworkFloorArbitratorStateTaken.
+   * \returns An instance.
+   */
+  static Ptr<McpttOnNetworkFloorArbitratorStateTaken> GetInstance (void);
+  /**
+   * \brief Gets the ID of the state.
+   * \returns The ID of the state.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateTaken class.
+   */
+  McpttOnNetworkFloorArbitratorStateTaken (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorStateTaken class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorStateTaken (void);
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Indicates if a client is permitted to send media.
+   * \returns True, if a client is permitted; otherwise, false.
+   */
+  virtual bool IsFloorOccupied (void) const;
+  /**
+   * Notifies the machine state that it has been selected.
+   * \param machine The FSM.
+   */
+  virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T1 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T2 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Receives a media message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
+  /**
+   * Receives a floor release message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
+  /**
+   * Receives a floor request message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRequest (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRequest& msg) const;
+  /**
+   * Notifies the floor machine state that timer T20 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Indicates to the floor control server that the client has disconnected.
+   * \param machine The FSM.
+   */
+  virtual void ClientRelease (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -369,61 +370,61 @@ public:
 class McpttOnNetworkFloorArbitratorStateRevoke : public McpttOnNetworkFloorArbitratorState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkFloorArbitratorStateRevoke.
-  * \returns An instance.
-  */
- static Ptr<McpttOnNetworkFloorArbitratorStateRevoke> GetInstance (void);
- /**
-  * \brief Gets the ID of the state.
-  * \returns The ID of the state.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateRevoke class.
-  */
- McpttOnNetworkFloorArbitratorStateRevoke (void);
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorStateRevoke class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorStateRevoke (void);
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Indicates if a client is permitted to send media.
-  * \returns True, if a client is permitted; otherwise, false.
-  */
- virtual bool IsFloorOccupied (void) const;
- /**
-  * Enters the given state.
-  * \param machine The FSM.
-  */
- virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Receives a media message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
- /**
-  * Receives a floor release message.
-  * \param machine The FSM.
-  * \param msg The received message.
-  */
- virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
- /**
-  * Notifies the floor machine state that timer T3 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
- /**
-  * Notifies the floor machine state that timer T1 has expired.
-  * \param machine The FSM.
-  */
- virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Gets an instance of the McpttOnNetworkFloorArbitratorStateRevoke.
+   * \returns An instance.
+   */
+  static Ptr<McpttOnNetworkFloorArbitratorStateRevoke> GetInstance (void);
+  /**
+   * \brief Gets the ID of the state.
+   * \returns The ID of the state.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateRevoke class.
+   */
+  McpttOnNetworkFloorArbitratorStateRevoke (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorStateRevoke class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorStateRevoke (void);
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Indicates if a client is permitted to send media.
+   * \returns True, if a client is permitted; otherwise, false.
+   */
+  virtual bool IsFloorOccupied (void) const;
+  /**
+   * Enters the given state.
+   * \param machine The FSM.
+   */
+  virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Receives a media message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveMedia (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttMediaMsg& msg) const;
+  /**
+   * Receives a floor release message.
+   * \param machine The FSM.
+   * \param msg The received message.
+   */
+  virtual void ReceiveFloorRelease (Ptr<McpttOnNetworkFloorArbitrator> machine, const McpttFloorMsgRelease& msg) const;
+  /**
+   * Notifies the floor machine state that timer T3 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT3 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Notifies the floor machine state that timer T1 has expired.
+   * \param machine The FSM.
+   */
+  virtual void ExpiryOfT1 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -432,34 +433,34 @@ public:
 class McpttOnNetworkFloorArbitratorStateReleasing : public McpttOnNetworkFloorArbitratorState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkFloorArbitratorStateReleasing.
-  * \returns An instance.
-  */
- static Ptr<McpttOnNetworkFloorArbitratorStateReleasing> GetInstance (void);
- /**
-  * \brief Gets the ID of the state.
-  * \returns The ID of the state.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateReleasing class.
-  */
- McpttOnNetworkFloorArbitratorStateReleasing (void);
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorStateReleasing class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorStateReleasing (void);
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Indicates to the floor control server that the call has been released (part II).
-  * \param machine The FSM.
-  */
- virtual void CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Gets an instance of the McpttOnNetworkFloorArbitratorStateReleasing.
+   * \returns An instance.
+   */
+  static Ptr<McpttOnNetworkFloorArbitratorStateReleasing> GetInstance (void);
+  /**
+   * \brief Gets the ID of the state.
+   * \returns The ID of the state.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateReleasing class.
+   */
+  McpttOnNetworkFloorArbitratorStateReleasing (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorStateReleasing class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorStateReleasing (void);
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Indicates to the floor control server that the call has been released (part II).
+   * \param machine The FSM.
+   */
+  virtual void CallRelease2 (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 /**
  * \ingroup mcptt
@@ -471,34 +472,34 @@ public:
 class McpttOnNetworkFloorArbitratorStateInitialising : public McpttOnNetworkFloorArbitratorState
 {
 public:
- /**
-  * Gets an instance of the McpttOnNetworkFloorArbitratorStateInitialising.
-  * \returns An instance.
-  */
- static Ptr<McpttOnNetworkFloorArbitratorStateInitialising> GetInstance (void);
- /**
-  * \brief Gets the ID of the state.
-  * \returns The ID of the state.
-  */
- static McpttEntityId GetStateId (void);
- /**
-  * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateInitialising class.
-  */
- McpttOnNetworkFloorArbitratorStateInitialising (void);
- /**
-  * \brief The destructor of the McpttOnNetworkFloorArbitratorStateInitialising class.
-  */
- virtual ~McpttOnNetworkFloorArbitratorStateInitialising (void);
- /**
-  * Gets the ID of the machine state.
-  * \returns The ID of the state.
-  */
- virtual McpttEntityId GetInstanceStateId (void) const;
- /**
-  * Enters the given state.
-  * \param machine The FSM.
-  */
- virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
+  /**
+   * Gets an instance of the McpttOnNetworkFloorArbitratorStateInitialising.
+   * \returns An instance.
+   */
+  static Ptr<McpttOnNetworkFloorArbitratorStateInitialising> GetInstance (void);
+  /**
+   * \brief Gets the ID of the state.
+   * \returns The ID of the state.
+   */
+  static McpttEntityId GetStateId (void);
+  /**
+   * \brief Creates an instance of the McpttOnNetworkFloorArbitratorStateInitialising class.
+   */
+  McpttOnNetworkFloorArbitratorStateInitialising (void);
+  /**
+   * \brief The destructor of the McpttOnNetworkFloorArbitratorStateInitialising class.
+   */
+  virtual ~McpttOnNetworkFloorArbitratorStateInitialising (void);
+  /**
+   * Gets the ID of the machine state.
+   * \returns The ID of the state.
+   */
+  virtual McpttEntityId GetInstanceStateId (void) const;
+  /**
+   * Enters the given state.
+   * \param machine The FSM.
+   */
+  virtual void Enter (Ptr<McpttOnNetworkFloorArbitrator> machine) const;
 };
 
 } // namespace psc

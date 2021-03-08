@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -81,7 +81,7 @@ McpttPusher::GetTypeId (void)
                      "The trace for capturing PTT durations.",
                      MakeTraceSourceAccessor (&McpttPusher::m_pttDurationTrace),
                      "ns3::Time::TracedCallback")
-    ;
+  ;
 
   return tid;
 }
@@ -229,7 +229,7 @@ McpttPusher::ScheduleRelease (const Time& delay)
   NS_LOG_FUNCTION (this << delay);
   if (!m_releaseEvent.IsRunning ())
     {
-      NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds() << "s.");
+      NS_LOG_LOGIC ("Pusher scheduling to release button in " << delay.GetSeconds () << "s.");
       m_releaseEvent = Simulator::Schedule (delay, &McpttPusher::Release, this);
       m_pttDurationTrace (GetPttApp ()->GetUserId (), delay);
       return true;

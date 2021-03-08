@@ -52,7 +52,7 @@ main (int argc, char *argv[])
   Time start = Seconds (2.0);
   Time stop = Seconds (12.0);
   bool useCa = false;
- 
+
   // Command line arguments
   CommandLine cmd;
   cmd.AddValue ("data-rate", "The data rate at which media will be sent at.", dataRate);
@@ -70,14 +70,14 @@ main (int argc, char *argv[])
   inputConfig.ConfigureDefaults ();
 
   // parse again so you can override default values from the command line
-  cmd.Parse(argc, argv);
+  cmd.Parse (argc, argv);
 
   if (useCa)
-   {
-     Config::SetDefault ("ns3::LteHelper::UseCa", BooleanValue (useCa));
-     Config::SetDefault ("ns3::LteHelper::NumberOfComponentCarriers", UintegerValue (2));
-     Config::SetDefault ("ns3::LteHelper::EnbComponentCarrierManager", StringValue ("ns3::RrComponentCarrierManager"));
-   }
+    {
+      Config::SetDefault ("ns3::LteHelper::UseCa", BooleanValue (useCa));
+      Config::SetDefault ("ns3::LteHelper::NumberOfComponentCarriers", UintegerValue (2));
+      Config::SetDefault ("ns3::LteHelper::EnbComponentCarrierManager", StringValue ("ns3::RrComponentCarrierManager"));
+    }
 
   Config::SetDefault ("ns3::psc::McpttMsgStats::CallControl", BooleanValue (true));
   Config::SetDefault ("ns3::psc::McpttMsgStats::FloorControl", BooleanValue (true));
@@ -93,7 +93,7 @@ main (int argc, char *argv[])
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
-   // Create a single RemoteHost
+  // Create a single RemoteHost
   NodeContainer remoteHostContainer;
   remoteHostContainer.Create (1);
   Ptr<Node> remoteHost = remoteHostContainer.Get (0);
@@ -126,10 +126,10 @@ main (int argc, char *argv[])
       positionAlloc->Add (Vector (distance * i, 0, 0));
     }
   MobilityHelper mobility;
-  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-  mobility.SetPositionAllocator(positionAlloc);
-  mobility.Install(enbNodes);
-  mobility.Install(ueNodes);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (enbNodes);
+  mobility.Install (ueNodes);
 
   // Install LTE Devices to the nodes
   NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice (enbNodes);
@@ -151,7 +151,7 @@ main (int argc, char *argv[])
   // Attach one UE per eNodeB
   for (uint16_t i = 0; i < numNodePairs; i++)
     {
-      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
+      lteHelper->Attach (ueLteDevs.Get (i), enbLteDevs.Get (i));
       // side effect: the default EPS bearer will be activated
     }
 
@@ -168,18 +168,18 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps;
   McpttHelper mcpttClientHelper;
   mcpttClientHelper.SetPttApp ("ns3::psc::McpttPttApp",
-                         "PushOnStart", BooleanValue (true));
+                               "PushOnStart", BooleanValue (true));
   mcpttClientHelper.SetMediaSrc ("ns3::psc::McpttMediaSrc",
-                         "Bytes", UintegerValue (msgSize),
-                         "DataRate", DataRateValue (dataRate));
+                                 "Bytes", UintegerValue (msgSize),
+                                 "DataRate", DataRateValue (dataRate));
   mcpttClientHelper.SetPusher ("ns3::psc::McpttPusher",
-                         "Automatic", BooleanValue (true));
+                               "Automatic", BooleanValue (true));
   mcpttClientHelper.SetPusherPttInterarrivalTimeVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                          "Mean", DoubleValue (onOffMean),
+                                                          "Variance", DoubleValue (2.0));
   mcpttClientHelper.SetPusherPttDurationVariable ("ns3::NormalRandomVariable",
-                         "Mean", DoubleValue (onOffMean),
-                         "Variance", DoubleValue (2.0));
+                                                  "Mean", DoubleValue (onOffMean),
+                                                  "Variance", DoubleValue (2.0));
 
   clientApps.Add (mcpttClientHelper.Install (ueNodes));
   clientApps.Start (start);
@@ -208,21 +208,21 @@ main (int argc, char *argv[])
 
   McpttCallHelper callHelper;
   callHelper.SetArbitrator ("ns3::psc::McpttOnNetworkFloorArbitrator",
-                         "AckRequired", BooleanValue (false),
-                         "AudioCutIn", BooleanValue (false),
-                         "DualFloorSupported", BooleanValue (false),
-                         "TxSsrc", UintegerValue (100),
-                         "QueueingSupported", BooleanValue (true));
+                            "AckRequired", BooleanValue (false),
+                            "AudioCutIn", BooleanValue (false),
+                            "DualFloorSupported", BooleanValue (false),
+                            "TxSsrc", UintegerValue (100),
+                            "QueueingSupported", BooleanValue (true));
   // Dual control not yet in the refactoring
   // callHelper.SetDualControl ("ns3::psc::McpttOnNetworkFloorDualControl");
   callHelper.SetTowardsParticipant ("ns3::psc::McpttOnNetworkFloorTowardsParticipant",
-                         "ReceiveOnly", BooleanValue (false));
+                                    "ReceiveOnly", BooleanValue (false));
   callHelper.SetParticipant ("ns3::psc::McpttOnNetworkFloorParticipant",
-                         "AckRequired", BooleanValue (false),
-                         "GenMedia", BooleanValue (true));
+                             "AckRequired", BooleanValue (false),
+                             "GenMedia", BooleanValue (true));
   callHelper.SetServerCall ("ns3::psc::McpttServerCall",
-                         "AmbientListening", BooleanValue (false),
-                         "TemporaryGroup", BooleanValue (false));
+                            "AmbientListening", BooleanValue (false),
+                            "TemporaryGroup", BooleanValue (false));
 
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   uint32_t groupId = 1;

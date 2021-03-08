@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -62,10 +62,10 @@ McpttMediaSrc::GetTypeId (void)
                    MakeUintegerChecker <uint16_t> ())
     .AddAttribute ("DataRate", "The data rate at which data should be sent.",
                    DataRateValue (DataRate ("68.75b/s")),
-                   MakeDataRateAccessor(&McpttMediaSrc::m_dataRate),
+                   MakeDataRateAccessor (&McpttMediaSrc::m_dataRate),
                    MakeDataRateChecker ())
   ;
-    return tid;
+  return tid;
 }
 
 McpttMediaSrc::McpttMediaSrc (void)
@@ -186,12 +186,12 @@ McpttMediaSrc::MakeRequest (void)
   // RTP timestamp semantics are application-specific.  Here, we will try
   // to make best use of 32 bits.  If units are in tens of microseconds,
   // we can run for 42949 seconds (almost 12 hours) without rolling over.
-  hdr.SetTimestamp (static_cast<uint32_t> (Simulator::Now ().GetMicroSeconds ()/10));
+  hdr.SetTimestamp (static_cast<uint32_t> (Simulator::Now ().GetMicroSeconds () / 10));
   hdr.SetSeqNum (m_nextSeqNum++);
   McpttMediaMsg msg (hdr, m_bytes, m_startTime);
 
   uint32_t size = msg.GetSerializedSize ();
-  
+
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester making request to send " << m_bytes << " data byte(s), for a total of " << size << " byte(s).");
 
   if (sink->TakeSendReq (msg))
@@ -201,9 +201,9 @@ McpttMediaSrc::MakeRequest (void)
       AddToTotalBytes (size);
     }
   else
-  {
-    NS_LOG_LOGIC ("Request was NOT taken.");
-  }
+    {
+      NS_LOG_LOGIC ("Request was NOT taken.");
+    }
 
   ScheduleNextReq ();
 }
@@ -217,7 +217,7 @@ McpttMediaSrc::ScheduleNextReq (void)
 
   Time nextReq (Seconds (bits / static_cast<double> (m_dataRate.GetBitRate ())));
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester scheduling to make request in " << nextReq.As(Time::S) << ".");
+  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester scheduling to make request in " << nextReq.As (Time::S) << ".");
 
   EventId reqEvent = Simulator::Schedule (nextReq, &McpttMediaSrc::MakeRequest, this);
 

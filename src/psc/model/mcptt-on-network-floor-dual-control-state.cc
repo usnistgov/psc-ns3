@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -65,7 +65,7 @@ McpttOnNetworkFloorDualControlState::CallRelease1 (McpttOnNetworkFloorDualContro
 
   //TODO: Shall request the media distributor in the MCPTT server to stop
   //      rendering RTP media packets
-  
+
   machine.ChangeState (McpttOnNetworkFloorDualControlStateReleasing::GetInstance ());
 }
 
@@ -73,7 +73,7 @@ void
 McpttOnNetworkFloorDualControlState::CallRelease2 (McpttOnNetworkFloorDualControl& machine) const
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release notification (part II)."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring call release notification (part II).");
 }
 
 void
@@ -81,7 +81,7 @@ McpttOnNetworkFloorDualControlState::Enter (McpttOnNetworkFloorDualControl& mach
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring enter.");
 }
 
 void
@@ -89,7 +89,7 @@ McpttOnNetworkFloorDualControlState::ExpiryOfT11 (McpttOnNetworkFloorDualControl
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T11."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T11.");
 }
 
 void
@@ -97,7 +97,7 @@ McpttOnNetworkFloorDualControlState::ExpiryOfT12 (McpttOnNetworkFloorDualControl
 {
   NS_LOG_FUNCTION (this << &machine);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T12."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring expiry of T12.");
 }
 
 McpttEntityId
@@ -111,7 +111,7 @@ McpttOnNetworkFloorDualControlState::ReceiveFloorRelease (McpttOnNetworkFloorDua
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -119,7 +119,7 @@ McpttOnNetworkFloorDualControlState::ReceiveFloorRequest (McpttOnNetworkFloorDua
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -127,7 +127,7 @@ McpttOnNetworkFloorDualControlState::ReceiveMedia (McpttOnNetworkFloorDualContro
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -135,7 +135,7 @@ McpttOnNetworkFloorDualControlState::ReceivePreemptiveFloorRequest (McpttOnNetwo
 {
   NS_LOG_FUNCTION (this << &machine << msg);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << "."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring " << msg.GetInstanceTypeId () << ".");
 }
 
 void
@@ -149,7 +149,7 @@ McpttOnNetworkFloorDualControlState::ClientRelease (McpttOnNetworkFloorDualContr
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification.");
 }
 
 void
@@ -157,7 +157,7 @@ McpttOnNetworkFloorDualControlState::Terminate (McpttOnNetworkFloorDualControl& 
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification."); 
+  NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring client release notification.");
 }
 
 void
@@ -338,7 +338,7 @@ McpttOnNetworkFloorDualControlStateTaken::ExpiryOfT12 (McpttOnNetworkFloorDualCo
   NS_LOG_FUNCTION (this << &machine);
 
   machine.GetT11 ()->Stop ();
-  
+
   //TODO: Shall request the media distributor in the MCPTT server to stop
   //      distributing RTP media packets to the other MCPTT clients.
 

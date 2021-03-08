@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -90,7 +90,7 @@ McpttPusherOrchestratorContention::AddPusher (Ptr<McpttPusher> pusher)
   m_orchestrator->AddPusher (pusher);
 }
 
-int64_t 
+int64_t
 McpttPusherOrchestratorContention::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
@@ -241,13 +241,13 @@ McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Ti
       std::vector<Ptr<McpttPusher> > activePushers = GetActivePushers ();
 
       for (std::vector<Ptr<McpttPusher> >::iterator pit = pushers.begin ();
-          pit != pushers.end ();
-          pit++)
+           pit != pushers.end ();
+           pit++)
         {
           bool found = false;
           for (std::vector<Ptr<McpttPusher> >::iterator apit = activePushers.begin ();
-              apit != activePushers.end ();
-              apit++)
+               apit != activePushers.end ();
+               apit++)
             {
               if (*pit == *apit)
                 {
@@ -289,12 +289,12 @@ McpttPusherOrchestratorContention::SetOrchestrator (Ptr<McpttPusherOrchestratorI
 
   if (m_orchestrator)
     {
-      orchestrator->TraceDisconnectWithoutContext ("PttDurationTrace", MakeCallback(&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
+      orchestrator->TraceDisconnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
     }
 
   if (orchestrator)
     {
-      orchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback(&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
+      orchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorContention::PttDurationTraceCallback, this));
     }
 
   m_orchestrator = orchestrator;

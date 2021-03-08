@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -41,9 +41,9 @@
 #include "mcptt-pusher-orchestrator.h"
 
 namespace ns3 {
- 
+
 namespace psc {
- 
+
 /**
  * \ingroup mcptt
  *
@@ -53,114 +53,117 @@ namespace psc {
  * activity factor to generate push and release events for a group
  * of McpttPusher objects.
  */
-class McpttPusherOrchestratorSpurtCdf : public McpttPusherOrchestratorInterface 
+class McpttPusherOrchestratorSpurtCdf : public McpttPusherOrchestratorInterface
 {
 public:
- /**
-  * \brief The collection of CDF points.
-  */
- static const std::vector<std::pair<double, double> > CDF_POINTS;
- /**
-  * The average of the CDF points.
-  */
- static const double CDF_POINTS_AVG;
- /**
-  * \brief Get the type ID.
-  * \return the object TypeId
-  */
- static TypeId GetTypeId (void);
- /**
-  * \brief Creates an instance of the McpttPusherOrchestratorSpurtCdf class.
-  */
- McpttPusherOrchestratorSpurtCdf (void);
- /**
-  * \brief The destructor of the McpttPusherOrchestratorSpurtCdf class.
-  */
- virtual ~McpttPusherOrchestratorSpurtCdf (void);
- /**
-  * \brief Adds a pusher to the orchestrated set.
-  * \param pusher The pusher to add.
-  */
- virtual void AddPusher (Ptr<McpttPusher> pusher);
- /**
-  * \brief Set the stream for each random variable.
-  * \param stream The starting stream number.
-  * \returns The number of streams that were set.
-  */
- virtual int64_t AssignStreams (int64_t stream);
- /**
-  * \brief Changes the ECDF and updates the average obtained with that CDF.
-  * \param pttDurationVariable The new variable to use for selecting PTT durations.
-  * \param average The average value of the PTT durations obtained from the ECDF being provided.
-  */
- virtual void ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVaraible, double avgPttDuration);
- /**
-  * \brief Gets the set of orchestrated pushers.
-  * \returns The set of pushers.
-  */
- virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const;
- /**
-  * \brief Gets the set of pushers that are currently pushing the button.
-  * \returns The set of pushers.
-  */
- virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const;
- /**
-  * \brief Generates an interarrival time.
-  * \returns The interarrival time.
-  */
- virtual Time NextPttIat (void);
- /**
-  * \brief Generates a PTT duration.
-  * \returns The PTT duration.
-  */
- virtual Time NextPttDuration (void);
- /**
-  * \brief Starts generating push and release events.
-  */
- virtual void Start (void);
- /**
-  * \brief Stops generating push and release events.
-  * This method may be called multiple times consecutively without side effect.
-  */
- virtual void Stop (void);
+  /**
+   * \brief The collection of CDF points.
+   */
+  static const std::vector<std::pair<double, double> > CDF_POINTS;
+  /**
+   * The average of the CDF points.
+   */
+  static const double CDF_POINTS_AVG;
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * \brief Creates an instance of the McpttPusherOrchestratorSpurtCdf class.
+   */
+  McpttPusherOrchestratorSpurtCdf (void);
+  /**
+   * \brief The destructor of the McpttPusherOrchestratorSpurtCdf class.
+   */
+  virtual ~McpttPusherOrchestratorSpurtCdf (void);
+  /**
+   * \brief Adds a pusher to the orchestrated set.
+   * \param pusher The pusher to add.
+   */
+  virtual void AddPusher (Ptr<McpttPusher> pusher);
+  /**
+   * \brief Set the stream for each random variable.
+   * \param stream The starting stream number.
+   * \returns The number of streams that were set.
+   */
+  virtual int64_t AssignStreams (int64_t stream);
+  /**
+   * \brief Changes the ECDF and updates the average obtained with that CDF.
+   * \param pttDurationVariable The new variable to use for selecting PTT durations.
+   * \param average The average value of the PTT durations obtained from the ECDF being provided.
+   */
+  virtual void ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVaraible, double avgPttDuration);
+  /**
+   * \brief Gets the set of orchestrated pushers.
+   * \returns The set of pushers.
+   */
+  virtual std::vector<Ptr<McpttPusher> > GetPushers (void) const;
+  /**
+   * \brief Gets the set of pushers that are currently pushing the button.
+   * \returns The set of pushers.
+   */
+  virtual std::vector<Ptr<McpttPusher> > GetActivePushers (void) const;
+  /**
+   * \brief Generates an interarrival time.
+   * \returns The interarrival time.
+   */
+  virtual Time NextPttIat (void);
+  /**
+   * \brief Generates a PTT duration.
+   * \returns The PTT duration.
+   */
+  virtual Time NextPttDuration (void);
+  /**
+   * \brief Starts generating push and release events.
+   */
+  virtual void Start (void);
+  /**
+   * \brief Stops generating push and release events.
+   * This method may be called multiple times consecutively without side effect.
+   */
+  virtual void Stop (void);
+
 protected:
- /**
-  * Destructor implementation.
-  */
- virtual void DoDispose (void);
- /**
-  * \brief The PTT duration callback for the underlying orchestrator.
-  * \param userId The MCPTT user ID of the pusher.
-  * \param duration The PTT duration.
-  */
- virtual void PttDurationTrace (uint32_t userId, Time duration);
- /**
-  * \brief The PTT interarrival time callback for the underlying orchestrator.
-  * \param userId The MCPTT user ID of the pusher.
-  * \param iat The PTT interarrival time.
-  */
- virtual void PttIatTrace (uint32_t userId, Time iat);
- /**
-  * Updates the PTT interarrival variable.
-  */
- virtual void UpdatePttIatVariable (void);
+  /**
+   * Destructor implementation.
+   */
+  virtual void DoDispose (void);
+  /**
+   * \brief The PTT duration callback for the underlying orchestrator.
+   * \param userId The MCPTT user ID of the pusher.
+   * \param duration The PTT duration.
+   */
+  virtual void PttDurationTrace (uint32_t userId, Time duration);
+  /**
+   * \brief The PTT interarrival time callback for the underlying orchestrator.
+   * \param userId The MCPTT user ID of the pusher.
+   * \param iat The PTT interarrival time.
+   */
+  virtual void PttIatTrace (uint32_t userId, Time iat);
+  /**
+   * Updates the PTT interarrival variable.
+   */
+  virtual void UpdatePttIatVariable (void);
+
 private:
- double m_af; //!< The activity factor per user.
- double m_avgPttDuration; //!< The average duration of PTT event.
- Ptr<McpttPusherOrchestrator> m_orchestrator; //!< The underlying orchestrator.
+  double m_af; //!< The activity factor per user.
+  double m_avgPttDuration; //!< The average duration of PTT event.
+  Ptr<McpttPusherOrchestrator> m_orchestrator; //!< The underlying orchestrator.
+
 public:
- /**
-  * Gets the activity factor.
-  * \returns The activity factor.
-  */
- virtual double GetActivityFactor (void) const;
- /**
-  * Sets the activity factory.
-  * \param af The activity factor.
-  */
- virtual void SetActivityFactor (double af);
+  /**
+   * Gets the activity factor.
+   * \returns The activity factor.
+   */
+  virtual double GetActivityFactor (void) const;
+  /**
+   * Sets the activity factory.
+   * \param af The activity factor.
+   */
+  virtual void SetActivityFactor (double af);
 };
- 
+
 } // namespace psc
 } // namespace ns3
 

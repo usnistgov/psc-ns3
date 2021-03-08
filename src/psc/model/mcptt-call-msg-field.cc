@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -64,8 +64,7 @@ McpttCallMsgField::GetTypeId (void)
 }
 
 McpttCallMsgField::~McpttCallMsgField (void)
-{
-}
+{}
 
 TypeId
 McpttCallMsgField::GetInstanceTypeId (void) const
@@ -99,8 +98,7 @@ McpttCallMsgFieldType6::GetTypeId (void)
 }
 
 McpttCallMsgFieldType6::~McpttCallMsgFieldType6 (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldType6::Deserialize (Buffer::Iterator& buff)
@@ -142,7 +140,7 @@ McpttCallMsgFieldType6::Print (std::ostream& os) const
   os << "McpttCallMsgFieldType6(";
   os << "length=" << (uint32_t)length;
   os << ")";
-} 
+}
 
 void
 McpttCallMsgFieldType6::Serialize (Buffer::Iterator& buff) const
@@ -212,8 +210,7 @@ McpttCallMsgFieldMsgType::McpttCallMsgFieldMsgType (uint8_t type)
 }
 
 McpttCallMsgFieldMsgType::~McpttCallMsgFieldMsgType (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldMsgType::Deserialize (Buffer::Iterator& start)
@@ -304,8 +301,7 @@ McpttCallMsgFieldCallId::McpttCallMsgFieldCallId (uint16_t callId)
 }
 
 McpttCallMsgFieldCallId::~McpttCallMsgFieldCallId (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldCallId::Deserialize (Buffer::Iterator& buff)
@@ -396,8 +392,7 @@ McpttCallMsgFieldRefreshInterval::McpttCallMsgFieldRefreshInterval (uint16_t int
 }
 
 McpttCallMsgFieldRefreshInterval::~McpttCallMsgFieldRefreshInterval (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldRefreshInterval::Deserialize (Buffer::Iterator& buff)
@@ -488,8 +483,7 @@ McpttCallMsgFieldGrpId::McpttCallMsgFieldGrpId (uint32_t grpId)
 }
 
 McpttCallMsgFieldGrpId::~McpttCallMsgFieldGrpId (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldGrpId::Deserialize (Buffer::Iterator& buff)
@@ -575,8 +569,7 @@ McpttCallMsgFieldSdp::McpttCallMsgFieldSdp (void)
 }
 
 McpttCallMsgFieldSdp::~McpttCallMsgFieldSdp (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldSdp::Deserialize (Buffer::Iterator& buff)
@@ -726,7 +719,7 @@ McpttCallMsgFieldSdp::Print (std::ostream& os) const
   os << ";";
   os << strRep;
   os << ")";
-} 
+}
 
 void
 McpttCallMsgFieldSdp::Serialize (Buffer::Iterator& buff) const
@@ -737,7 +730,7 @@ McpttCallMsgFieldSdp::Serialize (Buffer::Iterator& buff) const
 
   std::string strRep = ToStr ();
 
-  for (uint32_t idx = 0; idx < strRep.length (); idx++) 
+  for (uint32_t idx = 0; idx < strRep.length (); idx++)
     {
       buff.WriteU8 ((uint8_t)strRep[idx]);
     }
@@ -905,8 +898,7 @@ McpttCallMsgFieldCommMode::McpttCallMsgFieldCommMode (uint8_t commMode)
 }
 
 McpttCallMsgFieldCommMode::~McpttCallMsgFieldCommMode (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldCommMode::Deserialize (Buffer::Iterator& buff)
@@ -1008,8 +1000,7 @@ McpttCallMsgFieldReason::McpttCallMsgFieldReason (uint8_t reason)
 }
 
 McpttCallMsgFieldReason::~McpttCallMsgFieldReason (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldReason::Deserialize (Buffer::Iterator& buff)
@@ -1098,8 +1089,7 @@ McpttCallMsgFieldConfirmMode::McpttCallMsgFieldConfirmMode (void)
 }
 
 McpttCallMsgFieldConfirmMode::~McpttCallMsgFieldConfirmMode (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldConfirmMode::Deserialize (Buffer::Iterator& buff)
@@ -1174,8 +1164,7 @@ McpttCallMsgFieldUserId::McpttCallMsgFieldUserId (uint32_t id)
 }
 
 McpttCallMsgFieldUserId::~McpttCallMsgFieldUserId (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldUserId::Deserialize (Buffer::Iterator& buff)
@@ -1257,17 +1246,29 @@ McpttCallMsgFieldCallType::GetCallTypeName (uint8_t type)
   std::string callTypeName = "N/A";
 
   if (type == McpttCallMsgFieldCallType::BASIC_GROUP)
-  { callTypeName = "Basic"; }
+    {
+      callTypeName = "Basic";
+    }
   else if (type == McpttCallMsgFieldCallType::BROADCAST_GROUP)
-  { callTypeName = "Broadcast"; }
+    {
+      callTypeName = "Broadcast";
+    }
   else if (type == McpttCallMsgFieldCallType::EMERGENCY_GROUP)
-  { callTypeName = "Emergency"; }
+    {
+      callTypeName = "Emergency";
+    }
   else if (type == McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP)
-  { callTypeName = "Imminent Peril"; }
+    {
+      callTypeName = "Imminent Peril";
+    }
   else if (type == McpttCallMsgFieldCallType::PRIVATE)
-  { callTypeName = "Private'"; }
+    {
+      callTypeName = "Private'";
+    }
   else if (type == McpttCallMsgFieldCallType::EMERGENCY_PRIVATE)
-  { callTypeName = "Private Emergency"; }
+    {
+      callTypeName = "Private Emergency";
+    }
 
   return callTypeName;
 }
@@ -1278,17 +1279,29 @@ McpttCallMsgFieldCallType::GetCallTypePriority (uint8_t type)
   uint8_t priority = 0;
 
   if (type == McpttCallMsgFieldCallType::BASIC_GROUP)
-  { priority = 1; }
+    {
+      priority = 1;
+    }
   else if (type == McpttCallMsgFieldCallType::BROADCAST_GROUP)
-  { priority = 1; }
+    {
+      priority = 1;
+    }
   else if (type == McpttCallMsgFieldCallType::EMERGENCY_GROUP)
-  { priority = 1; }
+    {
+      priority = 1;
+    }
   else if (type == McpttCallMsgFieldCallType::IMMINENT_PERIL_GROUP)
-  { priority = 1; }
+    {
+      priority = 1;
+    }
   else if (type == McpttCallMsgFieldCallType::PRIVATE)
-  { priority = 1; }
+    {
+      priority = 1;
+    }
   else if (type == McpttCallMsgFieldCallType::EMERGENCY_PRIVATE)
-  { priority = 1; }
+    {
+      priority = 1;
+    }
 
   return priority;
 }
@@ -1319,8 +1332,7 @@ McpttCallMsgFieldCallType::McpttCallMsgFieldCallType (uint8_t type)
 }
 
 McpttCallMsgFieldCallType::~McpttCallMsgFieldCallType (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldCallType::Deserialize (Buffer::Iterator& buff)
@@ -1417,8 +1429,7 @@ McpttCallMsgFieldUserLoc::McpttCallMsgFieldUserLoc (const Vector& loc)
 }
 
 McpttCallMsgFieldUserLoc::~McpttCallMsgFieldUserLoc (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldUserLoc::Deserialize (Buffer::Iterator& buff)
@@ -1434,7 +1445,7 @@ McpttCallMsgFieldUserLoc::Deserialize (Buffer::Iterator& buff)
   bytesRead += 1;
 
   NS_ASSERT_MSG (iei == McpttCallMsgFieldUserLoc::GetIei (), "IEI \"" << (uint32_t)iei << "\" is not for " << GetInstanceTypeId ().GetName () << ".");
-  
+
   bytesRead += McpttCallMsgFieldType6::Deserialize (buff);
 
   for (uint32_t i = 0; i < 3; i++)
@@ -1576,8 +1587,7 @@ McpttCallMsgFieldOrgName::McpttCallMsgFieldOrgName (const std::string& name)
 }
 
 McpttCallMsgFieldOrgName::~McpttCallMsgFieldOrgName (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldOrgName::Deserialize (Buffer::Iterator& buff)
@@ -1615,7 +1625,7 @@ McpttCallMsgFieldOrgName::Print (std::ostream& os) const
 
   os << "name=" << name;
   os << ")";
-} 
+}
 
 void
 McpttCallMsgFieldOrgName::Serialize (Buffer::Iterator& buff) const
@@ -1687,8 +1697,7 @@ McpttCallMsgFieldStartTime::McpttCallMsgFieldStartTime (const Time& time)
 }
 
 McpttCallMsgFieldStartTime::~McpttCallMsgFieldStartTime (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldStartTime::Deserialize (Buffer::Iterator& buff)
@@ -1700,7 +1709,7 @@ McpttCallMsgFieldStartTime::Deserialize (Buffer::Iterator& buff)
   uint32_t seconds = buff.ReadNtohU32 ();
   bytesRead += 4;
   buff.ReadU8 (); // dummy byte
-  bytesRead ++;
+  bytesRead++;
 
   SetTime (MilliSeconds (seconds));
 
@@ -1787,8 +1796,7 @@ McpttCallMsgFieldLastChgTime::McpttCallMsgFieldLastChgTime (const Time& time)
 }
 
 McpttCallMsgFieldLastChgTime::~McpttCallMsgFieldLastChgTime (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldLastChgTime::Deserialize (Buffer::Iterator& buff)
@@ -1800,7 +1808,7 @@ McpttCallMsgFieldLastChgTime::Deserialize (Buffer::Iterator& buff)
   uint32_t seconds = buff.ReadNtohU32 ();
   bytesRead += 4;
   buff.ReadU8 (); // dummy byte
-  bytesRead ++;
+  bytesRead++;
 
   SetTime (MilliSeconds (seconds));
 
@@ -1885,8 +1893,7 @@ McpttCallMsgFieldProbeResp::McpttCallMsgFieldProbeResp (void)
 }
 
 McpttCallMsgFieldProbeResp::~McpttCallMsgFieldProbeResp (void)
-{
-}
+{}
 
 uint32_t
 McpttCallMsgFieldProbeResp::Deserialize (Buffer::Iterator& buff)

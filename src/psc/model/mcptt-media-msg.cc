@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -123,7 +123,7 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
   uint16_t payloadSize = start.ReadNtohU16 ();
   bytesRead += 2;
   index += 2;
-  NS_ABORT_MSG_UNLESS (payloadSize >=6, "Payload size must be at least six bytes");
+  NS_ABORT_MSG_UNLESS (payloadSize >= 6, "Payload size must be at least six bytes");
   m_talkSpurtStart = MicroSeconds (10 * start.ReadNtohU32 ());
   bytesRead += 4;
   index += 4;
@@ -196,14 +196,14 @@ McpttMediaMsg::Serialize (Buffer::Iterator start) const
 
   start.Next (headerSize);
 
-  NS_ABORT_MSG_UNLESS (m_payloadSize >=6, "Payload size must be at least six bytes");
+  NS_ABORT_MSG_UNLESS (m_payloadSize >= 6, "Payload size must be at least six bytes");
   uint16_t index = 0;
   start.WriteHtonU16 (m_payloadSize);
   index += 2;
 
   // Similar to RTP timestamp, we try to make best use of 32 bits. If units
   // are in tens of microseconds,  we can run for 12 hours without rolling over.
-  start.WriteHtonU32 (static_cast<uint32_t> (m_talkSpurtStart.GetMicroSeconds ()/10));
+  start.WriteHtonU32 (static_cast<uint32_t> (m_talkSpurtStart.GetMicroSeconds () / 10));
   index += 4;
 
   // Zero-fill the remaining payload

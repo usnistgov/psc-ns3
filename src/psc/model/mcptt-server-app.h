@@ -8,7 +8,7 @@
  * a notice stating that you changed the software and should note the date and
  * nature of any such change. Please explicitly acknowledge the National
  * Institute of Standards and Technology as the source of the software.
- * 
+ *
  * NIST-developed software is expressly provided "AS IS." NIST MAKES NO
  * WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF
  * LAW, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -18,7 +18,7 @@
  * DOES NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE
  * SOFTWARE OR THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE
  * CORRECTNESS, ACCURACY, RELIABILITY, OR USEFULNESS OF THE SOFTWARE.
- * 
+ *
  * You are solely responsible for determining the appropriateness of using and
  * distributing the software and you assume all risks associated with its use,
  * including but not limited to the risks and costs of program errors,
@@ -61,109 +61,110 @@ class McpttChannel;
 class McpttServerApp : public Application
 {
 public:
- /**
-  * Get the type ID.
-  * \return the object TypeId
-  */
- static TypeId GetTypeId (void);
- /**
-  * Creates an instance of the McpttServerApp class.
-  */
- McpttServerApp (void);
- /**
-  * The destructor of the McpttServerApp class.
-  */
- virtual ~McpttServerApp (void);
- /**
-  * Get the SipProxy associated with this application.
-  * \return pointer to SipProxy
-  */
- Ptr<sip::SipProxy> GetSipProxy (void) const;
+  /**
+   * Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * Creates an instance of the McpttServerApp class.
+   */
+  McpttServerApp (void);
+  /**
+   * The destructor of the McpttServerApp class.
+   */
+  virtual ~McpttServerApp (void);
+  /**
+   * Get the SipProxy associated with this application.
+   * \return pointer to SipProxy
+   */
+  Ptr<sip::SipProxy> GetSipProxy (void) const;
   /**
    * Return a new call ID value
    * \return new call ID value
    */
   uint16_t AllocateCallId (void);
- /**
-  * Add a call definition to the server
-  * \param call a pointer to the call object
-  */
- void AddCall (Ptr<McpttServerCall> call);
- /**
-  * Get a call definition from the server
-  * \param callId The ID of the call
-  */
- Ptr<McpttServerCall> GetCall (uint16_t callId);
- /**
-  * Sends a call control packet.
-  * \param pkt The packet to send.
-  * \param toAddr The address to send to
-  */
- virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr);
- /**
-  * Sends a call control message.
-  * \param msg The message to send.
-  */
- virtual void Send (const McpttCallMsg& msg);
- /**
-  * Gets the address of the host.
-  * \returns The address.
-  */
- Address GetLocalAddress (void) const;
- /**
-  * Sets the address of the host.
-  * \param localAddress The address.
-  */
- void SetLocalAddress (const Address& localAddress);
- /**
-  * Indicates whether or not the application is running
-  * \returns True, if the application is running.
-  */
- virtual bool IsRunning (void) const;
+  /**
+   * Add a call definition to the server
+   * \param call a pointer to the call object
+   */
+  void AddCall (Ptr<McpttServerCall> call);
+  /**
+   * Get a call definition from the server
+   * \param callId The ID of the call
+   */
+  Ptr<McpttServerCall> GetCall (uint16_t callId);
+  /**
+   * Sends a call control packet.
+   * \param pkt The packet to send.
+   * \param toAddr The address to send to
+   */
+  virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr);
+  /**
+   * Sends a call control message.
+   * \param msg The message to send.
+   */
+  virtual void Send (const McpttCallMsg& msg);
+  /**
+   * Gets the address of the host.
+   * \returns The address.
+   */
+  Address GetLocalAddress (void) const;
+  /**
+   * Sets the address of the host.
+   * \param localAddress The address.
+   */
+  void SetLocalAddress (const Address& localAddress);
+  /**
+   * Indicates whether or not the application is running
+   * \returns True, if the application is running.
+   */
+  virtual bool IsRunning (void) const;
 
 protected:
- /**
-  * The callback to fire when a message is received.
-  * \param call The call associated with the message.
-  * \param msg The message that was received.
-  */
- virtual void RxCb (Ptr<const McpttServerCall> call, const Header& msg);
- /**
-  * Disposes of the McpttServerApp instance.
-  */
- virtual void DoDispose (void);
- /**
-  * Starts the McpttServerApp application.
-  */
- virtual void StartApplication (void);
- /**
-  * Stops the McpttServerApp application.
-  */
- virtual void StopApplication (void);
- /**
-  * The callback to fire when a message is sent.
-  * \param call The call associated with the message.
-  * \param msg The message that was sent.
-  */
- virtual void TxCb (Ptr<const McpttServerCall> call, const Header& msg);
- /**
-  * TracedCallback signature for McpttMsg transmission or reception events
-  * \param [in] app Ptr<Application>
-  * \param [in] callId Call ID
-  * \param [in] msg Header
-  */
- typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
+  /**
+   * The callback to fire when a message is received.
+   * \param call The call associated with the message.
+   * \param msg The message that was received.
+   */
+  virtual void RxCb (Ptr<const McpttServerCall> call, const Header& msg);
+  /**
+   * Disposes of the McpttServerApp instance.
+   */
+  virtual void DoDispose (void);
+  /**
+   * Starts the McpttServerApp application.
+   */
+  virtual void StartApplication (void);
+  /**
+   * Stops the McpttServerApp application.
+   */
+  virtual void StopApplication (void);
+  /**
+   * The callback to fire when a message is sent.
+   * \param call The call associated with the message.
+   * \param msg The message that was sent.
+   */
+  virtual void TxCb (Ptr<const McpttServerCall> call, const Header& msg);
+  /**
+   * TracedCallback signature for McpttMsg transmission or reception events
+   * \param [in] app Ptr<Application>
+   * \param [in] callId Call ID
+   * \param [in] msg Header
+   */
+  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
+
 private:
- static uint16_t s_callId; //!< Call ID counter
- std::map<uint16_t, Ptr<McpttServerCall> > m_calls; //!< Call container keyed by callId
- Address m_localAddress; //!< The local IP address.
- Address m_peerAddress; //!< The peer IP address.
- uint16_t m_callPort; //!< The port on which call control messages will flow.
- Ptr<McpttChannel> m_callChannel; //!< The channel for call control messages.
- Ptr<sip::SipProxy> m_sipProxy; //!< The SIP proxy agent
- TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
- TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
- bool m_isRunning; //!< Flag to mark if the application is running
+  static uint16_t s_callId; //!< Call ID counter
+  std::map<uint16_t, Ptr<McpttServerCall> > m_calls; //!< Call container keyed by callId
+  Address m_localAddress; //!< The local IP address.
+  Address m_peerAddress; //!< The peer IP address.
+  uint16_t m_callPort; //!< The port on which call control messages will flow.
+  Ptr<McpttChannel> m_callChannel; //!< The channel for call control messages.
+  Ptr<sip::SipProxy> m_sipProxy; //!< The SIP proxy agent
+  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
+  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
+  bool m_isRunning; //!< Flag to mark if the application is running
 };
 
 } // namespace psc
