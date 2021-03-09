@@ -265,7 +265,7 @@ public:
   void SetOriginator (uint32_t originator);
   /**
    * Gets the originating client MCPTT user IDs for this call
-   * \param originator the originating client's user ID
+   * \returns the originating client's user ID
    */
   uint32_t GetOriginator (void) const;
   /**

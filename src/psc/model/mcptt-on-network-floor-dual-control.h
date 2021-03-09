@@ -247,7 +247,7 @@ public:
   virtual void SetStoredSsrc (const uint32_t storedSsrc);
   /**
    * Sets the stored priority of the floor.
-   * \param priority The stored priority.
+   * \param storedPriority The stored priority.
    */
   virtual void SetStoredPriority (uint8_t storedPriority);
   /**

@@ -57,14 +57,17 @@ class SipHeader;
 class McpttPusher;
 
 /**
- * \defgroup psc
+ * \defgroup psc Public Safety Communications
  *
  * This section documents the API of the ns-3 psc module.The module contains
- * models specific to Public Safety Communications (PSC) research. This
- * includes Mission Critical Push-to-Talk over LTE (MCPTT).
+ * models specific to Public Safety Communications (PSC) research.
  */
 /**
- * \defgroup mcptt
+ * \defgroup mcptt Mission Critical Push-To-Talk
+ *
+ *  This sections documents the Mission Critical Push-to-Talk API.
+ */
+/**
  * \ingroup mcptt
  *
  * This class is the main component of the MCPTT off-network model, and it

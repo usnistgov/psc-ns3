@@ -182,7 +182,7 @@ std::ostream& operator<< (std::ostream& os, const McpttFloorMsgField& field);
  * |field ID value |Length value   |value          |               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Floor Priority> value field shall consist of 16 bit parameter giving
+ * The <b>Floor Priority</b> value field shall consist of 16 bit parameter giving
  * the floor priority  ('0' to '255') where '0' is the lowest priority and '255' is
  * the highest priority.
  *
@@ -259,7 +259,7 @@ public:
  * |field ID value |length value   |                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Duration> value is a binary value in seconds.
+ * The <b>Duration</b> value is a binary value in seconds.
  */
 class McpttFloorMsgFieldDuration : public McpttFloorMsgField
 {
@@ -339,14 +339,14 @@ public:
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
  * Reject Causes:
- * Cause #1 - Another MCPTT client has permission; The <Reject cause> value set to 1 indicates that another MCPTT user has permission to send a media.
- * Cause #2 - Internal floor control server error; The <Reject cause> value set to 2 indicates that the floor control server cannot grant the floor request due to an internal error.
- * Cause #3 - Only one participant;    The <Reject cause> value set to 3 indicates that the floor control server cannot grant the floor request, because the requesting party is the only participant in the MCPTT session.
- * Cause #4 - Retry-after timer has not expired; The <Reject cause> value set to 4 indicates that the floor control server cannot grant the floor request, because timer T9 (Retry-after) has not expired after permission to send media has been revoked.
- * Cause #5 - Receive only; The <Reject cause> value set to 5 indicates that the floor control server cannot grant the floor request, because the requesting party only has receive privilege.
- * Cause #6 - No resources available; The <Reject cause> value set to 6 indicates that the floor control server cannot grant the floor request due to congestion.
- * Cause #7  Queue full; The <Reject cause> value set to 7 indicates that the floor control server cannot queue the floor request, because the queue is full.
- * Cause #255 - Other reason; The <Reject cause> value set to 255 indicates that the floor control server does not grant the floor request due to the floor control server local policy.
+ * Cause #1 - Another MCPTT client has permission; The <b>Reject cause</b> value set to 1 indicates that another MCPTT user has permission to send a media.
+ * Cause #2 - Internal floor control server error; The <b>Reject cause</b> value set to 2 indicates that the floor control server cannot grant the floor request due to an internal error.
+ * Cause #3 - Only one participant;    The <b>Reject cause</b> value set to 3 indicates that the floor control server cannot grant the floor request, because the requesting party is the only participant in the MCPTT session.
+ * Cause #4 - Retry-after timer has not expired; The <b>Reject cause</b> value set to 4 indicates that the floor control server cannot grant the floor request, because timer T9 (Retry-after) has not expired after permission to send media has been revoked.
+ * Cause #5 - Receive only; The <b>Reject cause</b> value set to 5 indicates that the floor control server cannot grant the floor request, because the requesting party only has receive privilege.
+ * Cause #6 - No resources available; The <b>Reject cause</b> value set to 6 indicates that the floor control server cannot grant the floor request due to congestion.
+ * Cause #7  Queue full; The <b>Reject cause</b> value set to 7 indicates that the floor control server cannot queue the floor request, because the queue is full.
+ * Cause #255 - Other reason; The <b>Reject cause</b> value set to 255 indicates that the floor control server does not grant the floor request due to the floor control server local policy.
  *
  * \todo Implement Reject Phrase (standard states that it is not mandatory though).
  */
@@ -431,9 +431,9 @@ public:
  * |field ID value |length value   |Info value     | Level value   |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Queue Info length> value is a binary value and shall have the value 2 indicating the total length in octets of the <Queue position info> value and the <Queue Priority Level> value items.
- * The <Queue Position Info> value is a binary value. It shall have value 254 if the MCPTT client is not queued. It shall have the max value (255) if the MCPTT client is queued but the MCPTT server is unable to determine the queue position or if MCPTT server policy is not to release information of the queue position to the MCPTT client.
- * The <Queue Priority Level> value is coded as the <Floor Priority> value
+ * The <b>Queue Info length</b> value is a binary value and shall have the value 2 indicating the total length in octets of the <b>Queue position info</b> value and the <b>Queue Priority Level</b> value items.
+ * The <b>Queue Position Info</b> value is a binary value. It shall have value 254 if the MCPTT client is not queued. It shall have the max value (255) if the MCPTT client is queued but the MCPTT server is unable to determine the queue position or if MCPTT server policy is not to release information of the queue position to the MCPTT client.
+ * The <b>Queue Priority Level</b> value is coded as the <b>Floor Priority</b> value
  */
 class McpttFloorMsgFieldQueuePositionInfo : public McpttFloorMsgField
 {
@@ -524,8 +524,8 @@ public:
  * :                                                               :
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Granted Party's Identity> value is coded as the <User ID> value in subclause 8.2.3.8.
- * If the length of the <Granted Party's> value is not a multiple of 4 bytes, the Granted Party's Identity field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
+ * The <b>Granted Party's Identity</b> value is coded as the <b>User ID</b> value in subclause 8.2.3.8.
+ * If the length of the <b>Granted Party's Identity</b> value is not a multiple of 4 bytes, the Granted Party's Identity field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
  */
 class McpttFloorMsgFieldGrantedPartyId : public McpttFloorMsgField
 {
@@ -602,8 +602,8 @@ public:
  * |               |value          |                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Permission to Request the Floor length> value is a binary value and shall have the value 2 indicating the total length in octets of the <Permission to Request the Floor> value item.
- * The <Permission to Request the Floor> value is binary and coded as follows:
+ * The <b>Permission to Request the Floor length</b> value is a binary value and shall have the value 2 indicating the total length in octets of the <b>Permission to Request the Floor</b> value item.
+ * The <b>Permission to Request the Floor</b> value is binary and coded as follows:
  *  0    The receiver is not permitted to request floor.
  *  1    The receiver is permitted to request floor.
  */
@@ -685,8 +685,8 @@ public:
  * |                                        Padding                |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <User ID length> value is a binary value and shall include the value indicating the length in octets of the <User ID> value item except padding.
- * If the length of the <User ID> value is not a multiple of 4 bytes User ID field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The floor control client shall ignore the value of the padding bytes.
+ * The <b>User ID length</b> value is a binary value and shall include the value indicating the length in octets of the <b>User ID</b> value item except padding.
+ * If the length of the <b>User ID</b> value is not a multiple of 4 bytes User ID field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The floor control client shall ignore the value of the padding bytes.
  */
 class McpttFloorMsgFieldUserId : public McpttFloorMsgField
 {
@@ -770,8 +770,8 @@ public:
  * |field ID value |length value   |                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Queue Size length> value is a binary value and shall have the value 2 indicating the total length in octets of the <Queue Size> value item.
- * The <Queue Size> value is a binary value.
+ * The <b>Queue Size length</b> value is a binary value and shall have the value 2 indicating the total length in octets of the <b>Queue Size</b> value item.
+ * The <b>Queue Size</b> value is a binary value.
  */
 class McpttFloorMsgFieldQueueSize : public McpttFloorMsgField
 {
@@ -847,8 +847,8 @@ public:
  * |field ID value |length value   |                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The \<Message Sequence Number length\> value is a binary value and shall have the value 2 indicating the total length in octets of the \<Message Sequence Number\> value item.
- * The \<Message Sequence Number\> value is a binary value. The \<Message Sequence Number\> value can be between 0 and 65535. When the 65535 value is reached, \<Message Sequence Number\> value starts from 0 again
+ * The <b>Message Sequence Number length</b> value is a binary value and shall have the value 2 indicating the total length in octets of the <b>Message Sequence Number</b> value item.
+ * The <b>Message Sequence Number</b> value is a binary value. The <b>Message Sequence Number</b> value can be between 0 and 65535. When the 65535 value is reached, <b>Message Sequence Number</b> value starts from 0 again
  */
 class McpttFloorMsgFieldSeqNum : public McpttFloorMsgField
 {
@@ -925,9 +925,9 @@ public:
  * :                                                               :
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Queued User ID length> value is coded as the <User ID length> value in subclause 8.2.3.11.
- * The <Queued User ID> value is coded as the <User ID> value in subclause 8.2.3.11.
- * If the length of the <Queue User ID> value is not a multiple of 4 bytes, the Queue User ID field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
+ * The <b>Queued User ID length</b> value is coded as the <b>User ID length</b> value in subclause 8.2.3.11.
+ * The <b>Queued User ID</b> value is coded as the <b>User ID</b> value in subclause 8.2.3.11.
+ * If the length of the <b>Queue User ID</b> value is not a multiple of 4 bytes, the Queue User ID field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
  */
 class McpttFloorMsgFieldQueuedUserId : public McpttFloorMsgFieldUserId
 {
@@ -987,8 +987,8 @@ public:
  * |field ID value |length value   |                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Source length> value is a binary value and shall have the value 2 indicating the total length in octets of the <Source> value item.
- * The <Source> value is a 16 bit binary value where:
+ * The <b>Source length</b> value is a binary value and shall have the value 2 indicating the total length in octets of the <b>Source</b> value item.
+ * The <b>Source</b> value is a 16 bit binary value where:
  *  0    the floor participant is the source
  *  1    the participating MCPTT function is the source
  *  2    the controlling MCPTT function is the source
@@ -1080,17 +1080,17 @@ public:
  * |                  Floor Participant Reference n                |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Track Info length> value is a binary value and shall have a value indicating the total length in octets of the <Queueing Capability> value, <Track Info Priority Level> value and one or more <Floor Participant Reference> value items.
- * The <Queueing Capability> value is an 8 bit binary value where:
+ * The <b>Track Info length</b> value is a binary value and shall have a value indicating the total length in octets of the <b>Queueing Capability</b> value, <b>Track Info Priority Level</b> value and one or more <b>Floor Participant Reference</b> value items.
+ * The <b>Queueing Capability</b> value is an 8 bit binary value where:
  *  0    the floor participant in the MCPTT client do not support queueing
  *  1    the floor participant in the MCPTT client do not support queueing
  * All other values are reserved for future use.
  * The spare bits are reserved for future use and shall be set to zero. The spare bits shall be ignored.
- * The <Participant Type Length> value is 8 bit binary value set to the length of the <Participant Type> value.
- * If the length of the <Participant> value is not a multiple of 4 bytes, the Track Info field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
- * NOTE 1: The content of the <Participant Type> value is MCPTT service provider specific and out of scope of the present document.
+ * The <b>Participant Type Length</b> value is 8 bit binary value set to the length of the <b>Participant Type</b> value.
+ * If the length of the <b>Participant</b> value is not a multiple of 4 bytes, the Track Info field shall be padded to a multiple of 4 bytes. The value of the padding bytes should be set to zero. The padding bytes shall be ignored.
+ * NOTE 1: The content of the <b>Participant Type</b> value is MCPTT service provider specific and out of scope of the present document.
  * All other values are reserved for future use.
- * The <Floor Participant Reference> value is a 32 bit binary value containing a reference to the floor participant in the non-Controlling function of an MCPTT group.
+ * The <b>Floor Participant Reference</b> value is a 32 bit binary value containing a reference to the floor participant in the non-Controlling function of an MCPTT group.
  * NOTE 2: The reference to the floor participant is a value only understandable by the floor control server interface in the non-Controlling function of an MCPTT group.
  */
 class McpttFloorMsgFieldTrackInfo : public McpttFloorMsgField
@@ -1214,8 +1214,8 @@ protected:
  * |field ID value |Length value   |value          |               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Message Type Length> value is a binary value and shall have the value 2.
- * The <Message Type> value is an 8 bit binary value containing the binary value of the message type as coded in table 8.2.3.1-2.
+ * The <b>Message Type Length</b> value is a binary value and shall have the value 2.
+ * The <b>Message Type</b> value is an 8 bit binary value containing the binary value of the message type as coded in table 8.2.3.1-2.
  */
 class McpttFloorMsgFieldType : public McpttFloorMsgField
 {
@@ -1288,8 +1288,8 @@ public:
  * |field ID value |Length value   |                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <Floor Indicator Length> value is a binary value and shall have the value 2.
- * The <Floor Indicator> value is a 16 bit bit-map named as shown:
+ * The <b>Floor Indicator Length</b> value is a binary value and shall have the value 2.
+ * The <b>Floor Indicator</b> value is a 16 bit bit-map named as shown:
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  * |A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1303,7 +1303,7 @@ public:
  * G  =  Dual floor
  * H  =  Temporary group call
  *
- * NOTE:    The indicators C, D and E are only informative. There are no procedures specified for the C, D and E indicators in this release of the present document and the use of the indicators are implementation specific.
+ * \note  The indicators C, D and E are only informative. There are no procedures specified for the C, D and E indicators in this release of the present document and the use of the indicators are implementation specific.
  * Bits F to P are reserved for future use and shall be set to 0.
  * There can be more than one bit set to 1 at the same time. The local policy in the floor control server decides which combinations are possible and the priority of the indications.
  */
@@ -1403,9 +1403,9 @@ protected:
  * |                                                               |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The <SSRC field ID> value is a binary value and is set according to table 8.2.3.1-2
- * The <SSRC length> value is a binary value of '6'.
- * The <SSRC> value is coded as the SSRC specified in IETF RFC 3550.
+ * The <b>SSRC field ID</b> value is a binary value and is set according to table 8.2.3.1-2
+ * The <b>SSRC length</b> value is a binary value of '6'.
+ * The <b>SSRC</b> value is coded as the SSRC specified in IETF RFC 3550.
  */
 class McpttFloorMsgFieldSsrc : public McpttFloorMsgField
 {

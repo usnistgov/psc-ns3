@@ -85,7 +85,7 @@ public:
   virtual void ConfigureOffNetworkBasicGrpCall (ApplicationContainer& apps, Address peerAddress, uint32_t usersPerGroup, uint32_t baseGroupId = 1);
   /**
    * Configures the default floor control arbitrator object.
-   * \param name the name of the model to set
+   * \param tid the name of the model to set
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
    * \param n1 the name of the attribute to set
@@ -114,7 +114,7 @@ public:
                               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * Configures the default floor control towards participant object.
-   * \param name the name of the model to set
+   * \param tid the name of the model to set
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
    * \param n1 the name of the attribute to set
@@ -143,7 +143,7 @@ public:
                                       std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * Configures the default floor control participant object.
-   * \param name the name of the model to set
+   * \param tid the name of the model to set
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
    * \param n1 the name of the attribute to set
@@ -172,7 +172,7 @@ public:
                                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * Configures the default server call object.
-   * \param name the name of the model to set
+   * \param tid the name of the model to set
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
    * \param n1 the name of the attribute to set

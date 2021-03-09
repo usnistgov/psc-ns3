@@ -86,7 +86,7 @@ public:
   virtual void Receive (const McpttMediaMsg& msg);
   /**
    * Add a message dropper
-   * \param msg The message that was received.
+   * \param dropper The message dropper to add.
    */
   virtual void AddDropper (Ptr<McpttMsgDropper>  dropper);
 

@@ -91,9 +91,9 @@ public:
   /**
    * \brief Changes the ECDF and updates the average obtained with that CDF.
    * \param pttDurationVariable The new variable to use for selecting PTT durations.
-   * \param average The average value of the PTT durations obtained from the ECDF being provided.
+   * \param avgPttDuration The average value of the PTT durations obtained from the ECDF being provided.
    */
-  virtual void ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVaraible, double avgPttDuration);
+  virtual void ChangeCdf (Ptr<EmpiricalRandomVariable> pttDurationVariable, double avgPttDuration);
   /**
    * \brief Gets the set of orchestrated pushers.
    * \returns The set of pushers.

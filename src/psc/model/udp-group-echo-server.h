@@ -50,10 +50,6 @@ struct UdpGroupEchoClient
 };
 
 /**
- * \defgroup psc Public Safety Communications
- */
-
-/**
  * \ingroup psc
  * \brief A Udp Group Echo server
  *

@@ -93,7 +93,7 @@ public:
   virtual int64_t AssignStreams (int64_t stream);
   /**
    * Changes the CDF used for the call session.
-   * \parm sessionDurationVariable The ECDF to use for session durations.
+   * \param sessionDurationVariable The ECDF to use for session durations.
    * \param avgSessionDuration The average produced by the ECDF.
    */
   virtual void ChangeCdf (Ptr<EmpiricalRandomVariable> sessionDurationVariable, double avgSessionDuration);

@@ -363,6 +363,7 @@ public:
 /**
   * \brief Stream output operator
   * \param os output stream
+  * \param obj NetworkCallType object
   * \return updated stream
   */
 std::ostream& operator<< (std::ostream& os, const McpttCall::NetworkCallType& obj);

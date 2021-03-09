@@ -170,7 +170,7 @@ public:
   virtual bool IsPrivateCall (uint32_t userId = 0) const;
   /**
    * Receives a call control packet
-   * \param msg The packet to receive.
+   * \param pkt The packet to receive.
    * \param hdr The (deserialized) SIP header.
    */
   virtual void ReceiveCallPacket (Ptr<Packet> pkt, const sip::SipHeader& hdr);

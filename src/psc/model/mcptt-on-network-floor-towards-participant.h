@@ -271,7 +271,7 @@ protected:
   typedef void (* StateChangeTracedCallback) (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
 
 private:
-  bool m_dualFloor; //!< The flag that indicates if the associated participant is listenting to two sources.
+  bool m_dualFloor; //!< The flag that indicates if the associated participant is listening to two sources.
   Ptr<McpttChannel> m_floorChannel; //!< The channel to use for floor control messages.
   uint16_t m_floorPort; //!< The port to use for the floor control channel.
   bool m_implicitRequest; //!< The flag that indicates if SDP offer contains the "mc_implicit_request" fmtp.
@@ -357,10 +357,10 @@ public:
    */
   virtual Ptr<McpttTimer> GetT8 (void) const;
   /**
-   * Sets the flag that indicates if the associated participant is listenting to two sources.
-   * \param listentingToTwoSources The flag.
+   * Sets the flag that indicates if the associated participant is listening to two sources.
+   * \param dualFloor true if listening to two sources
    */
-  virtual void SetDualFloor (const bool);
+  virtual void SetDualFloor (const bool dualFloor);
   /**
    * Sets the channel to use for floor control messages.
    * \param floorChannel The channel.
@@ -383,7 +383,7 @@ public:
   virtual void SetMediaPort (const uint16_t mediaPort);
   /**
    * Sets the flag that indicates if the associated floor participant is the originator.
-   * \parm originator The flag.
+   * \param originator The flag.
    */
   virtual void SetOriginator (const bool originator);
   /**
@@ -438,7 +438,7 @@ public:
   virtual void SetStoredSsrc (const uint32_t storedSsrc);
   /**
    * Sets the stored priority of the floor.
-   * \param priority The stored priority.
+   * \param storedPriority The stored priority.
    */
   virtual void SetStoredPriority (uint8_t storedPriority);
   /**

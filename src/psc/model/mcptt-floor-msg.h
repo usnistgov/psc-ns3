@@ -427,7 +427,7 @@ protected:
  *  1.SSRC of queued floor participant;
  *  2.Queued User ID field; and
  *  3.Queue info field.
- * The set shall occur as many times as the <Queue size> value in the Queue size field.
+ * The set shall occur as many times as the <b>Queue size</b> value in the Queue size field.
  * SSRC of queued floor participant: The SSRC of queued floor participant is only applicable in off-network and shall carry the SSRC of the floor participant in the queue.
  * Queued User ID: The Queued User ID field is only applicable in off-network and contains the MCPTT ID of the floor participant in the queue.
  * Queue Info: The Queue Info field is only applicable in off-network and defines the queue position and granted floor priority in the queue.
