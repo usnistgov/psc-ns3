@@ -184,11 +184,11 @@ SipElement::SendBye (Ptr<Packet> p, const Address& addr, uint32_t requestUri, ui
   it->second.m_sendCallback = sendCallback;
   SetDialogState (did, DialogState::TERMINATED);
   if (TransactionExists (tid))
-    { 
+    {
       SetTransactionState (tid, TransactionState::TRYING);
     }
   else
-    { 
+    {
       CreateTransaction (tid, sendCallback);
       SetTransactionState (tid, TransactionState::TRYING);
     }
@@ -269,7 +269,7 @@ SipElement::Receive (Ptr<Packet> p, Address from)
   if (sipHeader.GetMessageType () == SipHeader::SIP_RESPONSE)
     {
       if (sipHeader.GetStatusCode () == 100)
-        { 
+        {
           NS_LOG_DEBUG ("Received 100 Trying for call ID " << sipHeader.GetCallId ());
           eventIt->second (TRYING_RECEIVED, TransactionState::PROCEEDING);
           SetDialogState (did, DialogState::PROCEEDING);
@@ -279,7 +279,7 @@ SipElement::Receive (Ptr<Packet> p, Address from)
           FreeTransactionPacket (tid);
         }
       else if (sipHeader.GetStatusCode () == 200)
-        { 
+        {
           NS_LOG_DEBUG ("Received 200 OK for call ID " << sipHeader.GetCallId ());
           auto dialogIt = m_dialogs.find (did);
           if (dialogIt->second.m_state == DialogState::TRYING || dialogIt->second.m_state == DialogState::PROCEEDING)
@@ -339,7 +339,7 @@ SipElement::Receive (Ptr<Packet> p, Address from)
             }
         }
       else if (sipHeader.GetStatusCode () == 408)
-        { 
+        {
           NS_LOG_DEBUG ("Received 408 Request Timeout for call ID " << sipHeader.GetCallId ());
           CancelTimerA (tid);
           CancelTimerB (tid);
@@ -350,14 +350,14 @@ SipElement::Receive (Ptr<Packet> p, Address from)
           receiveIt->second (p, sipHeader, TransactionState::FAILED);
         }
       else
-        { 
+        {
           NS_LOG_DEBUG ("Received unknown response " << sipHeader.GetStatusCode () << " for call ID " << sipHeader.GetCallId ());
         }
     }
   else if (sipHeader.GetMessageType () == SipHeader::SIP_REQUEST)
     {
       if (sipHeader.GetMethod () == SipHeader::INVITE)
-        { 
+        {
           NS_LOG_DEBUG ("Received INVITE for call ID " << sipHeader.GetCallId ());
           auto dialogIt = m_dialogs.find (did);
           if (dialogIt == m_dialogs.end ())
@@ -375,7 +375,7 @@ SipElement::Receive (Ptr<Packet> p, Address from)
             }
         }
       else if (sipHeader.GetMethod () == SipHeader::BYE)
-        { 
+        {
           NS_LOG_DEBUG ("Received BYE for call ID " << sipHeader.GetCallId ());
           SetDialogState (did, DialogState::TERMINATED);
           if (TransactionExists (tid))
@@ -396,7 +396,7 @@ SipElement::Receive (Ptr<Packet> p, Address from)
           receiveIt->second (p, sipHeader, TransactionState::TRYING);
         }
       else if (sipHeader.GetMethod () == SipHeader::ACK)
-        { 
+        {
           NS_LOG_DEBUG ("Received ACK for call ID " << sipHeader.GetCallId ());
           eventIt->second (ACK_RECEIVED, TransactionState::CONFIRMED);
           SetTransactionState (tid, TransactionState::CONFIRMED);
@@ -437,7 +437,7 @@ SipElement::SetDefaultSendCallback (Callback<void, Ptr<Packet>, const Address&, 
   m_defaultSendCallback = sendCallback;
 }
 
-// Protected members 
+// Protected members
 
 std::string
 SipElement::DialogIdToString (DialogId id) const
@@ -761,7 +761,7 @@ SipElement::HandleTimerB (TransactionId id)
   auto transIt = m_transactions.find (id);
   NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
   NS_ASSERT_MSG (transIt->second.m_state == TransactionState::CALLING, "Transaction not in CALLING");
-  // Cancel timer A and fail the transaction 
+  // Cancel timer A and fail the transaction
   CancelTimerA (id);
   SetTransactionState (id, TransactionState::FAILED);
   SetDialogState (did, DialogState::TERMINATED);
@@ -796,7 +796,7 @@ SipElement::HandleTimerF (TransactionId id)
   NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
   NS_ASSERT_MSG (transIt->second.m_state == TransactionState::TRYING, "Transaction not in TRYING");
   eventIt->second (TIMER_F_EXPIRED, transIt->second.m_state);
-  // Cancel timer E and fail the transaction 
+  // Cancel timer E and fail the transaction
   CancelTimerE (id);
   SetTransactionState (id, TransactionState::FAILED);
 }
@@ -842,14 +842,14 @@ SipElement::HandleTimerK (TransactionId id)
 
 std::ostream& operator<< (std::ostream& os, const SipElement::DialogState& state)
 {
-   os << static_cast<uint16_t> (state);
-   return os;
+  os << static_cast<uint16_t> (state);
+  return os;
 }
 
 std::ostream& operator<< (std::ostream& os, const SipElement::TransactionState& state)
 {
-   os << static_cast<uint16_t> (state);
-   return os;
+  os << static_cast<uint16_t> (state);
+  return os;
 }
 
 } // namespace sip

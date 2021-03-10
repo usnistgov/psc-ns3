@@ -80,7 +80,7 @@ public:
    */
   virtual void ScheduleTimerC (TransactionId id);
   /**
-   * \brief Cancel Timer C 
+   * \brief Cancel Timer C
    * \param id Transaction ID
    */
   virtual void CancelTimerC (TransactionId id);

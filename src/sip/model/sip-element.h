@@ -201,17 +201,17 @@ public:
   /**
    * Events to report; defined as C-style string literals
    */
- static constexpr const char* ACK_RECEIVED = "ACK received";
- static constexpr const char* TRYING_RECEIVED = "Trying received";
- static constexpr const char* REQUEST_TIMEOUT = "Request timeout";
- static constexpr const char* TIMER_A_EXPIRED = "Timer A expired";
- static constexpr const char* TIMER_B_EXPIRED = "Timer B expired";
- static constexpr const char* TIMER_C_EXPIRED = "Timer C expired";
- static constexpr const char* TIMER_E_EXPIRED = "Timer E expired";
- static constexpr const char* TIMER_F_EXPIRED = "Timer F expired";
- static constexpr const char* TIMER_I_EXPIRED = "Timer I expired";
- static constexpr const char* TIMER_J_EXPIRED = "Timer J expired";
- static constexpr const char* TIMER_K_EXPIRED = "Timer K expired";
+  static constexpr const char* ACK_RECEIVED = "ACK received";
+  static constexpr const char* TRYING_RECEIVED = "Trying received";
+  static constexpr const char* REQUEST_TIMEOUT = "Request timeout";
+  static constexpr const char* TIMER_A_EXPIRED = "Timer A expired";
+  static constexpr const char* TIMER_B_EXPIRED = "Timer B expired";
+  static constexpr const char* TIMER_C_EXPIRED = "Timer C expired";
+  static constexpr const char* TIMER_E_EXPIRED = "Timer E expired";
+  static constexpr const char* TIMER_F_EXPIRED = "Timer F expired";
+  static constexpr const char* TIMER_I_EXPIRED = "Timer I expired";
+  static constexpr const char* TIMER_J_EXPIRED = "Timer J expired";
+  static constexpr const char* TIMER_K_EXPIRED = "Timer K expired";
 
 protected:
   void DoDispose (void);
@@ -247,7 +247,7 @@ protected:
         m_state (state)
     {}
     uint16_t m_callId;
-    Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_sendCallback; 
+    Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_sendCallback;
     DialogState m_state;
   };
   /**
@@ -278,18 +278,18 @@ protected:
       : m_callId (callId),
         m_sendCallback (sendCallback)
     {
-       m_state = TransactionState::IDLE;
-       m_packet = 0;
+      m_state = TransactionState::IDLE;
+      m_packet = 0;
     }
     uint16_t m_callId;
-    Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_sendCallback; 
+    Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_sendCallback;
     TransactionState m_state;
     Ptr<Packet> m_packet;
     Address m_address;
     SipHeader m_sipHeader;
     Timer m_timerA {Timer::CANCEL_ON_DESTROY}; //!< Timer A
     Timer m_timerB {Timer::CANCEL_ON_DESTROY}; //!< Timer B
-    Timer m_timerC {Timer::CANCEL_ON_DESTROY}; //!< Timer C 
+    Timer m_timerC {Timer::CANCEL_ON_DESTROY}; //!< Timer C
     Timer m_timerE {Timer::CANCEL_ON_DESTROY}; //!< Timer E
     Timer m_timerF {Timer::CANCEL_ON_DESTROY}; //!< Timer F
     Timer m_timerI {Timer::CANCEL_ON_DESTROY}; //!< Timer I
@@ -298,7 +298,7 @@ protected:
   };
   /**
    * Create a new Dialog object and store it in the internal map, with call ID
-   * and URIs as a key.  If a Dialog already exists for the key, the program 
+   * and URIs as a key.  If a Dialog already exists for the key, the program
    * terminates.  The Dialog state will be set to UNINITIALIZED.
    *
    * \param id Dialog ID
@@ -345,7 +345,7 @@ protected:
       return std::hash<std::size_t> () (static_cast<uint32_t> ((std::get<0> (tuple) << 16) | (std::get<1> (tuple) << 8) | std::get<2> (tuple)));
     }
   };
-  
+
   /**
    * Check if a transaction object exists for the call ID and URIs
    * \param id Transaction ID
@@ -364,7 +364,7 @@ protected:
 
   /**
    * Cache a Ptr<Packet> to use for any transaction retransmissions
-   * with a tuple of (call ID, from, to) as a key.  This method will store 
+   * with a tuple of (call ID, from, to) as a key.  This method will store
    * a deep copy of the provided Packet pointer.
    *
    * \param id TransactionId
@@ -439,12 +439,12 @@ protected:
    */
   void CancelTimerB (TransactionId id);
   /**
-   * \brief Cancel Timer E 
+   * \brief Cancel Timer E
    * \param id Transaction ID
    */
   void CancelTimerE (TransactionId id);
   /**
-   * \brief Cancel Timer F 
+   * \brief Cancel Timer F
    * \param id Transaction ID
    */
   void CancelTimerF (TransactionId id);

@@ -51,6 +51,7 @@ public:
   // Scheduled events
   void Client1SendSipInvite (void);
   void Client1SendSipBye (void);
+
 protected:
   // Promoted from private in case it needs to be called by subclasses
   virtual void DoSetup (void);
@@ -63,7 +64,7 @@ protected:
   Ptr<Socket> m_client2Socket;
   Ptr<Socket> m_client3Socket;
   Ptr<Socket> m_serverSocket;
-  Ptr<Node> m_server; 
+  Ptr<Node> m_server;
   Ptr<Node> m_client1;
   Ptr<Node> m_client2;
   Ptr<Node> m_client3;
@@ -74,16 +75,17 @@ protected:
   Ptr<SimpleNetDevice> m_client2DeviceTowardsServer;
   Ptr<SimpleNetDevice> m_client3DeviceTowardsServer;
   // Test event recording
-  struct TestEvent {
+  struct TestEvent
+  {
     uint32_t m_step;
     uint32_t m_userId;
     std::string m_message;
     TestEvent (uint32_t step, uint32_t userId, std::string message)
-     : m_step (step),
-       m_userId (userId),
-       m_message (message)
+      : m_step (step),
+        m_userId (userId),
+        m_message (message)
     {}
-    bool operator !=(const TestEvent& b) const
+    bool operator != (const TestEvent& b) const
     {
       return (m_step != b.m_step || m_userId != b.m_userId || m_message != b.m_message);
     }
@@ -150,6 +152,7 @@ protected:
   void Client2TxTrace (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
   void Client3RxTrace (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
   void Client3TxTrace (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+
 private:
   virtual void DoRun (void) = 0;
 };
@@ -164,8 +167,7 @@ SipTestCase::SipTestCase (std::string name)
     m_client3ServerAddress (Ipv4Address::GetAny (), 0),
     m_callId (0),
     m_receivedTerminatingReply (false)
-{
-}
+{}
 
 void
 SipTestCase::DoSetup (void)
@@ -179,7 +181,7 @@ SipTestCase::DoSetup (void)
   n.Add (m_client2);
   m_client3 = CreateObject<Node> ();
   n.Add (m_client3);
-  
+
   NodeContainer n1;
   n1.Add (m_server);
   n1.Add (m_client1);
@@ -352,7 +354,7 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
           m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive SIP INVITE"));
           m_step++;
           // SIP has delivered an invite to the proxy.  Check that this is
-          // from client 1.  Send '100 Trying' to client 1, and then forward 
+          // from client 1.  Send '100 Trying' to client 1, and then forward
           // the INVITE to client 2 and client 3.
           if (hdr.GetFrom () == 1)
             {
@@ -360,8 +362,8 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
               m_step++;
               Ptr<Packet> p1 = Create<Packet> ();
               // From: and To: fields remain the same in the response
-              m_sipProxy->SendResponse (p1, m_client1Address, 100, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
-                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+              m_sipProxy->SendResponse (p1, m_client1Address, 100, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
+                                        MakeCallback (&SipTestCase::ServerSendSipMessage, this));
               // Save header for later responses
               m_proxiedInviteHeader = hdr;
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP INVITE"));
@@ -369,13 +371,13 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
               Ptr<Packet> p2 = Create<Packet> ();
               // From: server URI, to:  client URI
               m_sipProxy->SendInvite (p2, m_client2Address, 2, 0, 2, hdr.GetCallId (),
-                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+                                      MakeCallback (&SipTestCase::ServerSendSipMessage, this));
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP INVITE"));
               m_step++;
               Ptr<Packet> p3 = Create<Packet> ();
               // From: server URI, to:  client URI
               m_sipProxy->SendInvite (p3, m_client3Address, 3, 0, 3, hdr.GetCallId (),
-                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+                                      MakeCallback (&SipTestCase::ServerSendSipMessage, this));
             }
         }
       else if (hdr.GetMethod () == sip::SipHeader::BYE)
@@ -383,25 +385,25 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
           m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive SIP BYE"));
           m_step++;
           // SIP has delivered a bye  to the proxy.  Check that this is
-          // from client 1.  Send 'OK' to client 1, and then forward 
+          // from client 1.  Send 'OK' to client 1, and then forward
           // the BYE to client 2 and client 3.
           if (hdr.GetFrom () == 1)
             {
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 200 OK"));
               m_step++;
               Ptr<Packet> p1 = Create<Packet> ();
-              m_sipProxy->SendResponse (p1, m_client1Address, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
-                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+              m_sipProxy->SendResponse (p1, m_client1Address, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
+                                        MakeCallback (&SipTestCase::ServerSendSipMessage, this));
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP BYE"));
               m_step++;
               Ptr<Packet> p2 = Create<Packet> ();
               m_sipProxy->SendBye (p2, m_client2Address, 2, 0, 2, hdr.GetCallId (),
-                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+                                   MakeCallback (&SipTestCase::ServerSendSipMessage, this));
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP BYE"));
               m_step++;
               Ptr<Packet> p3 = Create<Packet> ();
               m_sipProxy->SendBye (p3, m_client3Address, 3, 0, 3, hdr.GetCallId (),
-                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+                                   MakeCallback (&SipTestCase::ServerSendSipMessage, this));
             }
         }
     }
@@ -428,8 +430,8 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
               m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 200 OK"));
               m_step++;
               Ptr<Packet> p1 = Create<Packet> ();
-              m_sipProxy->SendResponse (p1, m_client1Address, 200, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), hdr.GetCallId (), 
-                 MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+              m_sipProxy->SendResponse (p1, m_client1Address, 200, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), hdr.GetCallId (),
+                                        MakeCallback (&SipTestCase::ServerSendSipMessage, this));
             }
         }
     }
@@ -439,7 +441,7 @@ void
 SipTestCase::ServerReceiveSipEvent (const char* event, sip::SipElement::TransactionState state)
 {
   NS_LOG_DEBUG ("Server received SIP event: " << event << "; state: " << SipElement::
-TransactionStateToString (state));
+                TransactionStateToString (state));
   if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
       m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive ACK"));
@@ -459,8 +461,8 @@ TransactionStateToString (state));
         {
           // Both clients 2 and 3 failed; send 408 Request Timeout to client 1
           Ptr<Packet> p1 = Create<Packet> ();
-          m_sipProxy->SendResponse (p1, m_client1Address, 408, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), m_proxiedInviteHeader.GetCallId (), 
-                 MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+          m_sipProxy->SendResponse (p1, m_client1Address, 408, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), m_proxiedInviteHeader.GetCallId (),
+                                    MakeCallback (&SipTestCase::ServerSendSipMessage, this));
           m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 408 Request Timeout"));
         }
     }
@@ -474,7 +476,7 @@ SipTestCase::ServerReceive (Ptr<Socket> socket)
   while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () == 0)
-        { 
+        {
           break;
         }
       NS_LOG_DEBUG ("Server received packet from UDP socket");
@@ -561,7 +563,7 @@ SipTestCase::Client1Receive (Ptr<Socket> socket)
   while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () == 0)
-        { 
+        {
           break;
         }
       NS_LOG_DEBUG ("Client1 received packet from UDP socket");
@@ -593,8 +595,8 @@ SipTestCase::Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
           m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 send 200 OK"));
           m_step++;
           Ptr<Packet> p2 = Create<Packet> ();
-          m_sipAgent2->SendResponse (p2, m_client2ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
-                 MakeCallback (&SipTestCase::Client2SendSipMessage, this));
+          m_sipAgent2->SendResponse (p2, m_client2ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
+                                     MakeCallback (&SipTestCase::Client2SendSipMessage, this));
         }
       else if (hdr.GetMethod () == sip::SipHeader::BYE)
         {
@@ -603,8 +605,8 @@ SipTestCase::Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
           m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 send 200 OK"));
           m_step++;
           Ptr<Packet> p2 = Create<Packet> ();
-          m_sipAgent2->SendResponse (p2, m_client2ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
-                 MakeCallback (&SipTestCase::Client2SendSipMessage, this));
+          m_sipAgent2->SendResponse (p2, m_client2ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
+                                     MakeCallback (&SipTestCase::Client2SendSipMessage, this));
         }
     }
 }
@@ -633,7 +635,7 @@ SipTestCase::Client2Receive (Ptr<Socket> socket)
   while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () == 0)
-        { 
+        {
           break;
         }
       NS_LOG_DEBUG ("Client2 received packet from UDP socket");
@@ -665,8 +667,8 @@ SipTestCase::Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
           m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 send 200 OK"));
           m_step++;
           Ptr<Packet> p3 = Create<Packet> ();
-          m_sipAgent3->SendResponse (p3, m_client3ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
-                 MakeCallback (&SipTestCase::Client3SendSipMessage, this));
+          m_sipAgent3->SendResponse (p3, m_client3ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
+                                     MakeCallback (&SipTestCase::Client3SendSipMessage, this));
         }
       else if (hdr.GetMethod () == sip::SipHeader::BYE)
         {
@@ -675,8 +677,8 @@ SipTestCase::Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
           m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 send 200 OK"));
           m_step++;
           Ptr<Packet> p2 = Create<Packet> ();
-          m_sipAgent3->SendResponse (p2, m_client3ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (), 
-                 MakeCallback (&SipTestCase::Client3SendSipMessage, this));
+          m_sipAgent3->SendResponse (p2, m_client3ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
+                                     MakeCallback (&SipTestCase::Client3SendSipMessage, this));
         }
     }
 }
@@ -705,7 +707,7 @@ SipTestCase::Client3Receive (Ptr<Socket> socket)
   while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () == 0)
-        { 
+        {
           break;
         }
       NS_LOG_DEBUG ("Client3 received packet from UDP socket");
@@ -831,14 +833,14 @@ class SipDialogTest : public SipTestCase
 {
 public:
   SipDialogTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipDialogTest::SipDialogTest (void)
   : SipTestCase ("SIP dialog test")
-{
-}
+{}
 
 void
 SipDialogTest::DoRun ()
@@ -1024,27 +1026,27 @@ SipDialogTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client2 state changes:" << std::endl;
   for (auto it = m_client2ObservedStateChanges.begin (); it != m_client2ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client3 state changes:" << std::endl;
   for (auto it = m_client3ObservedStateChanges.begin (); it != m_client3ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Proxy state changes:" << std::endl;
   for (auto it = m_proxyObservedStateChanges.begin (); it != m_proxyObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1053,12 +1055,12 @@ SipDialogTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1068,12 +1070,12 @@ SipDialogTest::DoRun ()
   auto it3 = m_client1ExpectedStateChanges.begin ();
   auto it4 = m_client1ObservedStateChanges.begin ();
   while (it3 != m_client1ExpectedStateChanges.end () && it4 != m_client1ObservedStateChanges.end ())
-    { 
+    {
       if (*it3 != *it4)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");
         }
       it3++;
       it4++;
@@ -1082,12 +1084,12 @@ SipDialogTest::DoRun ()
   auto it5 = m_client2ExpectedStateChanges.begin ();
   auto it6 = m_client2ObservedStateChanges.begin ();
   while (it5 != m_client2ExpectedStateChanges.end () && it6 != m_client2ObservedStateChanges.end ())
-    { 
+    {
       if (*it5 != *it6)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it5->m_step, it6->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it5->m_userId, it6->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it5->m_message, it6->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it5->m_step, it6->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it5->m_userId, it6->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it5->m_message, it6->m_message, "Message not equal");
         }
       it5++;
       it6++;
@@ -1096,12 +1098,12 @@ SipDialogTest::DoRun ()
   auto it7 = m_client3ExpectedStateChanges.begin ();
   auto it8 = m_client3ObservedStateChanges.begin ();
   while (it7 != m_client3ExpectedStateChanges.end () && it8 != m_client3ObservedStateChanges.end ())
-    { 
+    {
       if (*it7 != *it8)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it7->m_step, it8->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it7->m_userId, it8->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it7->m_message, it8->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it7->m_step, it8->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it7->m_userId, it8->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it7->m_message, it8->m_message, "Message not equal");
         }
       it7++;
       it8++;
@@ -1110,12 +1112,12 @@ SipDialogTest::DoRun ()
   auto it9 = m_proxyExpectedStateChanges.begin ();
   auto it10 = m_proxyObservedStateChanges.begin ();
   while (it9 != m_proxyExpectedStateChanges.end () && it10 != m_proxyObservedStateChanges.end ())
-    { 
+    {
       if (*it9 != *it10)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it9->m_step, it10->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it9->m_userId, it10->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it9->m_message, it10->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it9->m_step, it10->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it9->m_userId, it10->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it9->m_message, it10->m_message, "Message not equal");
         }
       it9++;
       it10++;
@@ -1130,14 +1132,14 @@ class SipInitiatorInviteLossTest : public SipTestCase
 {
 public:
   SipInitiatorInviteLossTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipInitiatorInviteLossTest::SipInitiatorInviteLossTest (void)
-  : SipTestCase ("SIP initiator INVITE loss test") 
-{
-}
+  : SipTestCase ("SIP initiator INVITE loss test")
+{}
 
 void
 SipInitiatorInviteLossTest::DoRun ()
@@ -1215,27 +1217,27 @@ SipInitiatorInviteLossTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client2 state changes:" << std::endl;
   for (auto it = m_client2ObservedStateChanges.begin (); it != m_client2ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client3 state changes:" << std::endl;
   for (auto it = m_client3ObservedStateChanges.begin (); it != m_client3ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Proxy state changes:" << std::endl;
   for (auto it = m_proxyObservedStateChanges.begin (); it != m_proxyObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1243,12 +1245,12 @@ SipInitiatorInviteLossTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1265,14 +1267,14 @@ class SipInitiatorInviteFailureTest : public SipTestCase
 {
 public:
   SipInitiatorInviteFailureTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipInitiatorInviteFailureTest::SipInitiatorInviteFailureTest (void)
-  : SipTestCase ("SIP initiator INVITE failure test") 
-{
-}
+  : SipTestCase ("SIP initiator INVITE failure test")
+{}
 
 void
 SipInitiatorInviteFailureTest::DoRun ()
@@ -1281,7 +1283,7 @@ SipInitiatorInviteFailureTest::DoRun ()
   // to the server
   Ptr<ReceiveListErrorModel> em = CreateObject<ReceiveListErrorModel> ();
   std::list<uint32_t> errorList;
-  // 7 losses will lead to a Timer B 
+  // 7 losses will lead to a Timer B
   errorList.push_back (0);
   errorList.push_back (1);
   errorList.push_back (2);
@@ -1321,7 +1323,7 @@ SipInitiatorInviteFailureTest::DoRun ()
   m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
   m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
   // We expect at time 33s for the dialog to enter TERMINATED and transaction
-  // to enter FAILED 
+  // to enter FAILED
   m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Transaction (1000,1,0) enter FAILED"));
   m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Dialog (1000,0,1) enter TERMINATED"));
 
@@ -1334,12 +1336,12 @@ SipInitiatorInviteFailureTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1347,12 +1349,12 @@ SipInitiatorInviteFailureTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1362,12 +1364,12 @@ SipInitiatorInviteFailureTest::DoRun ()
   auto it3 = m_client1ExpectedStateChanges.begin ();
   auto it4 = m_client1ObservedStateChanges.begin ();
   while (it3 != m_client1ExpectedStateChanges.end () && it4 != m_client1ObservedStateChanges.end ())
-    { 
+    {
       if (*it3 != *it4)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");
         }
       it3++;
       it4++;
@@ -1382,14 +1384,14 @@ class SipInitiatorByeLossTest : public SipTestCase
 {
 public:
   SipInitiatorByeLossTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipInitiatorByeLossTest::SipInitiatorByeLossTest (void)
-  : SipTestCase ("SIP initiator BYE loss test") 
-{
-}
+  : SipTestCase ("SIP initiator BYE loss test")
+{}
 
 void
 SipInitiatorByeLossTest::DoRun ()
@@ -1482,27 +1484,27 @@ SipInitiatorByeLossTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client2 state changes:" << std::endl;
   for (auto it = m_client2ObservedStateChanges.begin (); it != m_client2ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client3 state changes:" << std::endl;
   for (auto it = m_client3ObservedStateChanges.begin (); it != m_client3ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Proxy state changes:" << std::endl;
   for (auto it = m_proxyObservedStateChanges.begin (); it != m_proxyObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1510,12 +1512,12 @@ SipInitiatorByeLossTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1532,14 +1534,14 @@ class SipInitiatorByeFailureTest : public SipTestCase
 {
 public:
   SipInitiatorByeFailureTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipInitiatorByeFailureTest::SipInitiatorByeFailureTest (void)
-  : SipTestCase ("SIP initiator BYE failure test") 
-{
-}
+  : SipTestCase ("SIP initiator BYE failure test")
+{}
 
 void
 SipInitiatorByeFailureTest::DoRun ()
@@ -1548,7 +1550,7 @@ SipInitiatorByeFailureTest::DoRun ()
   // to the server
   Ptr<ReceiveListErrorModel> em = CreateObject<ReceiveListErrorModel> ();
   std::list<uint32_t> errorList;
-  // 7 losses from message 2 onward (the first BYE) will lead to a Timer F 
+  // 7 losses from message 2 onward (the first BYE) will lead to a Timer F
   errorList.push_back (2);
   errorList.push_back (3);
   errorList.push_back (4);
@@ -1646,12 +1648,12 @@ SipInitiatorByeFailureTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1659,12 +1661,12 @@ SipInitiatorByeFailureTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1674,12 +1676,12 @@ SipInitiatorByeFailureTest::DoRun ()
   auto it3 = m_client1ExpectedStateChanges.begin ();
   auto it4 = m_client1ObservedStateChanges.begin ();
   while (it3 != m_client1ExpectedStateChanges.end () && it4 != m_client1ObservedStateChanges.end ())
-    { 
+    {
       if (*it3 != *it4)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");
         }
       it3++;
       it4++;
@@ -1694,14 +1696,14 @@ class SipProxyInviteLossTest : public SipTestCase
 {
 public:
   SipProxyInviteLossTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipProxyInviteLossTest::SipProxyInviteLossTest (void)
-  : SipTestCase ("SIP proxy INVITE loss test") 
-{
-}
+  : SipTestCase ("SIP proxy INVITE loss test")
+{}
 
 void
 SipProxyInviteLossTest::DoRun ()
@@ -1782,27 +1784,27 @@ SipProxyInviteLossTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client2 state changes:" << std::endl;
   for (auto it = m_client2ObservedStateChanges.begin (); it != m_client2ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client2ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client3 state changes:" << std::endl;
   for (auto it = m_client3ObservedStateChanges.begin (); it != m_client3ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client3ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Proxy state changes:" << std::endl;
   for (auto it = m_proxyObservedStateChanges.begin (); it != m_proxyObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_proxyExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1810,12 +1812,12 @@ SipProxyInviteLossTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1832,14 +1834,14 @@ class SipProxyInviteFailureTest : public SipTestCase
 {
 public:
   SipProxyInviteFailureTest (void);
+
 private:
   virtual void DoRun (void);
 };
 
 SipProxyInviteFailureTest::SipProxyInviteFailureTest (void)
-  : SipTestCase ("SIP proxy INVITE failure test") 
-{
-}
+  : SipTestCase ("SIP proxy INVITE failure test")
+{}
 
 void
 SipProxyInviteFailureTest::DoRun ()
@@ -1848,7 +1850,7 @@ SipProxyInviteFailureTest::DoRun ()
   // to the server
   Ptr<ReceiveListErrorModel> em2 = CreateObject<ReceiveListErrorModel> ();
   std::list<uint32_t> errorList;
-  // 7 losses will lead to a Timer B 
+  // 7 losses will lead to a Timer B
   errorList.push_back (0);
   errorList.push_back (1);
   errorList.push_back (2);
@@ -1920,12 +1922,12 @@ SipProxyInviteFailureTest::DoRun ()
   // or to generate new expected events.
   for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
     {
-      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
   std::cout << "Client1 state changes:" << std::endl;
   for (auto it = m_client1ObservedStateChanges.begin (); it != m_client1ObservedStateChanges.end (); it++)
     {
-      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message <<"\"));" << std::endl;
+      std::cout << "  m_client1ExpectedStateChanges.push_back (TestEvent (" << it->m_step << ", " << it->m_userId << ", \"" << it->m_message << "\"));" << std::endl;
     }
 #endif
 
@@ -1933,12 +1935,12 @@ SipProxyInviteFailureTest::DoRun ()
   auto it1 = m_observedEvents.begin ();
   auto it2 = m_expectedEvents.begin ();
   while (it1 != m_observedEvents.end () && it2 != m_expectedEvents.end ())
-    { 
+    {
       if (*it1 != *it2)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it1->m_step, it2->m_step, "Event steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_userId, it2->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it1->m_message, it2->m_message, "Message not equal");
         }
       it1++;
       it2++;
@@ -1948,12 +1950,12 @@ SipProxyInviteFailureTest::DoRun ()
   auto it3 = m_client1ExpectedStateChanges.begin ();
   auto it4 = m_client1ObservedStateChanges.begin ();
   while (it3 != m_client1ExpectedStateChanges.end () && it4 != m_client1ObservedStateChanges.end ())
-    { 
+    {
       if (*it3 != *it4)
-        { 
-          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");      
-          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");  
+        {
+          NS_TEST_ASSERT_MSG_EQ (it3->m_step, it4->m_step, "State steps not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_userId, it4->m_userId, "User IDs not equal");
+          NS_TEST_ASSERT_MSG_EQ (it3->m_message, it4->m_message, "Message not equal");
         }
       it3++;
       it4++;

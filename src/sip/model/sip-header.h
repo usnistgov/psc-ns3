@@ -102,7 +102,7 @@ public:
     BYE = 1,
     ACK = 2,
     CANCEL = 3,
-    INVALID_METHOD = 4 
+    INVALID_METHOD = 4
   };
 
   // These eight methods need doxygen

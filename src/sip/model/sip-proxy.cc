@@ -96,7 +96,7 @@ SipProxy::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode,
           NS_FATAL_ERROR ("SendResponse 200 unsupported from state " << DialogStateToString (it->second.m_state));
         }
     }
- else if (statusCode == 408)
+  else if (statusCode == 408)
     {
       SetDialogState (did, DialogState::TERMINATED);
       SetTransactionState (tid, TransactionState::FAILED);
