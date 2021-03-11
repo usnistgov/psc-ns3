@@ -100,9 +100,9 @@ LteSlSciTag::Serialize (TagBuffer i) const
 void
 LteSlSciTag::Deserialize (TagBuffer i)
 {
-  m_rnti = (uint16_t) i.ReadU16 ();
-  m_resNo = (uint8_t) i.ReadU16 ();
-  m_tbSize = (uint8_t) i.ReadU32 ();
+  m_rnti = i.ReadU16 ();
+  m_resNo = i.ReadU16 ();
+  m_tbSize = i.ReadU32 ();
 }
 
 uint16_t
