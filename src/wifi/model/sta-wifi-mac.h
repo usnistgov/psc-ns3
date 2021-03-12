@@ -23,7 +23,7 @@
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
-#include "infrastructure-wifi-mac.h"
+#include "regular-wifi-mac.h"
 #include "mgt-headers.h"
 
 class TwoLevelAggregationTest;
@@ -103,7 +103,7 @@ struct ApInfo
  * 7. The transition from Associated to Unassociated occurs if the number
  *    of missed beacons exceeds the threshold.
  */
-class StaWifiMac : public InfrastructureWifiMac
+class StaWifiMac : public RegularWifiMac
 {
 public:
   /// Allow test cases to access private members
@@ -120,13 +120,6 @@ public:
 
   StaWifiMac ();
   virtual ~StaWifiMac ();
-
-  /**
-   * Set up WifiRemoteStationManager associated with this StaWifiMac.
-   *
-   * \param stationManager the station manager attached to this MAC.
-   */
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
 
   /**
    * \param packet the packet to send.

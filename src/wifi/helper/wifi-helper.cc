@@ -948,7 +948,6 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("HtPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("HtPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
-  LogComponentEnable ("InfrastructureWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("MacRxMiddle", LOG_LEVEL_ALL);
   LogComponentEnable ("MacTxMiddle", LOG_LEVEL_ALL);
@@ -989,6 +988,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("WifiNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhyStateHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiPhyOperatingChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiProtectionManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPsdu", LOG_LEVEL_ALL);

@@ -41,7 +41,7 @@ TypeId
 StaWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::StaWifiMac")
-    .SetParent<InfrastructureWifiMac> ()
+    .SetParent<RegularWifiMac> ()
     .SetGroupName ("Wifi")
     .AddConstructor<StaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "The duration to actively probe the channel.",
@@ -143,14 +143,6 @@ StaWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
   NS_LOG_FUNCTION (this << phy);
   RegularWifiMac::SetWifiPhy (phy);
   m_phy->SetCapabilitiesChangedCallback (MakeCallback (&StaWifiMac::PhyCapabilitiesChanged, this));
-}
-
-void
-StaWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
-{
-  NS_LOG_FUNCTION (this << stationManager);
-  RegularWifiMac::SetWifiRemoteStationManager (stationManager);
-  m_stationManager->SetPcfSupported (GetPcfSupported ());
 }
 
 void
@@ -1062,10 +1054,6 @@ StaWifiMac::GetCapabilities (void) const
   CapabilityInformation capabilities;
   capabilities.SetShortPreamble (m_phy->GetShortPhyPreambleSupported () || GetErpSupported ());
   capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported ());
-  if (GetPcfSupported ())
-    {
-      capabilities.SetCfPollable ();
-    }
   return capabilities;
 }
 

@@ -27,6 +27,7 @@
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
 #include "phy-entity.h"
+#include "wifi-phy-operating-channel.h"
 
 namespace ns3 {
 
@@ -57,19 +58,8 @@ public:
   WifiPhy ();
   virtual ~WifiPhy ();
 
-  /**
-   * A pair of a channel number and a WifiPhyBand
-   */
-  typedef std::pair<uint8_t, WifiPhyBand> ChannelNumberBandPair;
-  /**
-   * A pair of a ChannelNumberBandPair and a WifiPhyStandard
-   */
-  typedef std::pair<ChannelNumberBandPair, WifiPhyStandard> ChannelNumberStandardPair;
-  /**
-   * A pair of a center frequency (MHz) and a channel width (MHz)
-   */
-  typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
-  
+  static const std::set<FrequencyChannelInfo> m_frequencyChannels;  //!< Available frequency channels
+
   /**
    * Return the WifiPhyStateHelper of this PHY
    *
@@ -459,7 +449,17 @@ public:
    *
    * where Starting channel frequency is standard-dependent,
    * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
-   * This method may fail to take action if the PHY model determines that
+   *
+   * If the operating channel for this object has not been set yet, the given
+   * channel number is saved and will be used, along with the center frequency and
+   * width that have been saved similarly, to set the operating channel when the
+   * standard and band are configured. Note that if center frequency and channel
+   * number are both 0 when the standard and band are configured, a default channel
+   * (of the configured width, if any, or the default width for the current standard
+   * and band, otherwise) is set.
+   * If the operating channel for this object has been already set, the specified
+   * channel number must uniquely identify a channel in the band being used. If so,
+   * this method may still fail to take action if the PHY model determines that
    * the channel number cannot be switched for some reason (e.g. sleep state)
    *
    * \param id the channel number
@@ -499,22 +499,11 @@ public:
   WifiPhyBand GetPhyBand (void) const;
 
   /**
-   * Add a channel definition to the WifiPhy. The channelNumber, PHY
-   * band and PHY standard informations may then be used to lookup a
-   * pair (frequency, channelWidth).
+   * Get a const reference to the operating channel
    *
-   * If the channel is not already defined for the standard, the method
-   * should return true; otherwise false.
-   *
-   * \param channelNumber the channel number to define
-   * \param band the PHY band which the channel belongs to
-   * \param standard the applicable WifiPhyStandard
-   * \param frequency the frequency (MHz)
-   * \param channelWidth the channel width (MHz)
-   *
-   * \return true if the channel definition succeeded
+   * \return a const reference to the operating channel
    */
-  bool DefineChannelNumber (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth);
+  const WifiPhyOperatingChannel& GetOperatingChannel (void) const;
 
   /**
    * Return the Channel this WifiPhy is connected to.
@@ -819,6 +808,29 @@ public:
   Ptr<MobilityModel> GetMobility (void) const;
 
   /**
+   * Set the operating channel according to the specified parameters. If this object
+   * has been already initialized, setting the operating channel involves a channel
+   * switch, which might be suppressed (e.g., if this object is in sleep mode) or
+   * delayed (e.g., if this object is transmitting a frame).
+   *
+   * \param number the channel number (use 0 to leave it unspecified)
+   * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
+   * \param width the channel width in MHz (use 0 to leave it unspecified)
+   */
+  void SetOperatingChannel (uint8_t number, uint16_t frequency, uint16_t width);
+  /**
+   * If the operating channel for this object has not been set yet, the given
+   * center frequency is saved and will be used, along with the channel number and
+   * width that have been saved similarly, to set the operating channel when the
+   * standard and band are configured. Note that if center frequency and
+   * channel number are both 0 when the standard and band are configured, a default
+   * channel (of the configured width, if any, or the default width for the current
+   * standard and band, otherwise) is set.
+   * If the operating channel for this object has been already set, the specified
+   * center frequency must uniquely identify a channel in the band being used. If so,
+   * this method may still fail to take action if the PHY model determines that
+   * the operating channel cannot be switched for some reason (e.g. sleep state)
+   *
    * \param freq the operating center frequency (MHz) on this node.
    */
   virtual void SetFrequency (uint16_t freq);
@@ -905,6 +917,17 @@ public:
    */
   uint16_t GetChannelWidth (void) const;
   /**
+   * If the operating channel for this object has not been set yet, the given
+   * channel width is saved and will be used, along with the center frequency and
+   * channel number that have been saved similarly, to set the operating channel
+   * when the standard and band are configured. Note that if center frequency and
+   * channel number are both 0 when the standard and band are configured, a default
+   * channel (of the configured width, if any, or the default width for the current
+   * standard and band, otherwise) is set.
+   * Do not call this method when the standard and band of this object have been
+   * already configured, because it cannot uniquely identify a channel in the band
+   * being used.
+   *
    * \param channelWidth the channel width (in MHz)
    */
   virtual void SetChannelWidth (uint16_t channelWidth);
@@ -1024,7 +1047,6 @@ public:
 
 protected:
   // Inherited
-  virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
   /*
@@ -1033,25 +1055,15 @@ protected:
   void Reset (void);
 
   /**
-   * The default implementation does nothing and returns true.  This method
-   * is typically called internally by SetChannelNumber ().
+   * Perform any actions necessary when user changes operating channel after
+   * initialization.
    *
-   * \brief Perform any actions necessary when user changes channel number
-   * \param id channel number to try to switch to
-   * \return true if WifiPhy can actually change the number; false if not
-   * \see SetChannelNumber
+   * \return zero if the PHY can immediately switch channel, a positive value
+   *         indicating the amount of time to wait until the channel switch can
+   *         be performed or a negative value indicating that channel switch is
+   *         currently not possible (i.e., the radio is in sleep mode)
    */
-  bool DoChannelSwitch (uint8_t id);
-  /**
-   * The default implementation does nothing and returns true.  This method
-   * is typically called internally by SetFrequency ().
-   *
-   * \brief Perform any actions necessary when user changes frequency
-   * \param frequency frequency to try to switch to in MHz
-   * \return true if WifiPhy can actually change the frequency; false if not
-   * \see SetFrequency
-   */
-  bool DoFrequencySwitch (uint16_t frequency);
+  Time DoChannelSwitch (void);
 
   /**
    * Check if PHY state should move to CCA busy state based on current
@@ -1132,17 +1144,6 @@ protected:
 
 private:
   /**
-   * \brief post-construction setting of frequency and/or channel number
-   *
-   * This method exists to handle the fact that two attribute values,
-   * Frequency and ChannelNumber, are coupled.  The initialization of
-   * these values needs to be deferred until after attribute construction
-   * time, to avoid static initialization order issues.  This method is
-   * typically called either when ConfigureStandard () is called or when
-   * DoInitialize () is called.
-   */
-  void InitializeFrequencyChannelNumber (void);
-  /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11a standard.
    */
@@ -1192,35 +1193,6 @@ private:
    * Rebuild the mapping of MCS values to indices in the device MCS set.
    */
   void RebuildMcsMap (void);
-  /**
-   * Configure the PHY-level parameters for different Wi-Fi standard.
-   * This method is called when defaults for each standard must be
-   * selected.
-   */
-  void ConfigureDefaultsForStandard (void);
-  /**
-   * Configure the PHY-level parameters for different Wi-Fi standard.
-   * This method is called when the Frequency or ChannelNumber attributes
-   * are set by the user.  If the Frequency or ChannelNumber are valid for
-   * the standard, they are used instead.
-   */
-  void ConfigureChannelForStandard (void);
-
-  /**
-   * Look for channel number matching the frequency and width
-   * \param frequency The center frequency to use in MHz
-   * \param width The channel width to use in MHz
-   * \return the channel number if found, zero if not
-   */
-  uint8_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint16_t width) const;
-  /**
-   * Lookup frequency/width pair for channelNumber/standard pair
-   * \param channelNumber The channel number to check
-   * \param band the PHY band to check
-   * \param standard The WifiPhyStandard to check
-   * \return the FrequencyWidthPair found
-   */
-  FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard) const;
 
   /**
    * Due to newly arrived signal, the current reception cannot be continued and has to be aborted
@@ -1351,11 +1323,12 @@ private:
 
   WifiPhyStandard m_standard;               //!< WifiPhyStandard
   WifiPhyBand m_band;                       //!< WifiPhyBand
-  bool m_isConstructed;                     //!< true when ready to set frequency
-  uint16_t m_channelCenterFrequency;        //!< Center frequency in MHz
   uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
-  bool m_frequencyChannelNumberInitialized; //!< Store initialization state
-  uint16_t m_channelWidth;                  //!< Channel width (MHz)
+  uint8_t m_initialChannelNumber;           //!< Store channel number until initialization
+  uint16_t m_initialChannelWidth;           //!< Store channel width (MHz) until initialization
+
+  WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
+  std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)
 
   Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
   Time m_slot;                              //!< Slot duration
@@ -1381,13 +1354,6 @@ private:
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
-
-  typedef std::map<ChannelNumberStandardPair, FrequencyWidthPair> ChannelToFrequencyWidthMap; //!< channel to frequency width map typedef
-  static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;                               //!< the channel to frequency width map
-
-  std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)
-  uint8_t               m_channelNumber;            //!< Operating channel number
-  uint8_t               m_initialChannelNumber;     //!< Initial channel number
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
 

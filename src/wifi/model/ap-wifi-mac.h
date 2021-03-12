@@ -23,7 +23,7 @@
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
-#include "infrastructure-wifi-mac.h"
+#include "regular-wifi-mac.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -45,7 +45,7 @@ class CfParameterSet;
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.
  */
-class ApWifiMac : public InfrastructureWifiMac
+class ApWifiMac : public RegularWifiMac
 {
 public:
   /**
@@ -290,14 +290,11 @@ private:
   bool m_enableBeaconGeneration;             //!< Flag whether beacons are being generated
   Time m_beaconInterval;                     //!< Beacon interval
   EventId m_beaconEvent;                     //!< Event to generate one beacon
-  EventId m_cfpEvent;                        //!< Event to generate one PCF frame
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
   std::list<Mac48Address> m_nonErpStations;  //!< List of all non-ERP stations currently associated to the AP
   std::list<Mac48Address> m_nonHtStations;   //!< List of all non-HT stations currently associated to the AP
-  std::list<Mac48Address> m_cfPollingList;   //!< List of all PCF stations currently associated to the AP
-  std::list<Mac48Address>::iterator m_itCfPollingList; //!< Iterator to the list of all PCF stations currently associated to the AP
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
   Time m_bsrLifetime;                        //!< Lifetime of Buffer Status Reports
   //!< store value and timestamp for each Buffer Status Report

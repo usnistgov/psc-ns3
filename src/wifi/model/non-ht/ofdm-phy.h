@@ -24,7 +24,6 @@
 #define OFDM_PHY_H
 
 #include "ns3/phy-entity.h"
-#include <vector>
 
 /**
  * \file
@@ -97,15 +96,6 @@ public:
    * \return a WifiMode for OFDM
    */
   static WifiMode GetOfdmRate (uint64_t rate, uint16_t bw = 20);
-  /**
-   * Return the list of rates (in bps) achievable with
-   * OFDM along with the supported bandwidth.
-   *
-   * \return a map containing a vector of achievable rates in bps
-   *         for each supported bandwidth in Mbps
-   */
-  static std::map<uint16_t, std::vector<uint64_t> > GetOfdmRatesBpsList (void);
-
   /**
    * Return a WifiMode for OFDM at 6 Mbps.
    *

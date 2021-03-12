@@ -23,6 +23,7 @@
 
 #include <map>
 #include "wifi-phy-band.h"
+#include "ns3/abort.h"
 
 namespace ns3 {
 
@@ -207,6 +208,88 @@ const std::map<WifiStandard, WifiStandardInfo> wifiStandards =
   { WIFI_STANDARD_80211ax_5GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211ax } },
   { WIFI_STANDARD_80211ax_6GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_6GHZ, WIFI_MAC_STANDARD_80211ax } }
 };
+
+/**
+ * \ingroup wifi
+ * \brief Enumeration of frequency channel types
+ */
+enum FrequencyChannelType : uint8_t
+{
+  WIFI_PHY_DSSS_CHANNEL = 0,
+  WIFI_PHY_OFDM_CHANNEL,
+  WIFI_PHY_80211p_CHANNEL
+};
+
+/**
+ * Get the type of the frequency channel for the given PHY standard
+ *
+ * \param standard the PHY standard
+ * \return the type of the frequency channel for the given PHY standard
+ */
+inline FrequencyChannelType GetFrequencyChannelType (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+      case WIFI_PHY_STANDARD_80211b:
+        return WIFI_PHY_DSSS_CHANNEL;
+      case WIFI_PHY_STANDARD_80211p:
+        return WIFI_PHY_80211p_CHANNEL;
+      default:
+        return WIFI_PHY_OFDM_CHANNEL;
+    }
+}
+
+/**
+ * Get the maximum channel width in MHz allowed for the given PHY standard.
+ *
+ * \param standard the PHY standard
+ * \return the maximum channel width in MHz allowed for the given PHY standard
+ */
+inline uint16_t GetMaximumChannelWidth (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+      case WIFI_PHY_STANDARD_80211b:
+        return 22;
+      case WIFI_PHY_STANDARD_80211p:
+        return 10;
+      case WIFI_PHY_STANDARD_80211a:
+      case WIFI_PHY_STANDARD_80211g:
+        return 20;
+      case WIFI_PHY_STANDARD_80211n:
+        return 40;
+      case WIFI_PHY_STANDARD_80211ac:
+      case WIFI_PHY_STANDARD_80211ax:
+        return 160;
+      default:
+        NS_ABORT_MSG ("Unknown standard: " << standard);
+        return 0;
+    }
+}
+
+/**
+ * Get the default channel width for the given PHY standard and band.
+ *
+ * \param standard the given PHY standard
+ * \param band the given PHY band
+ * \return the default channel width (MHz) for the given PHY standard
+ */
+inline uint16_t GetDefaultChannelWidth (WifiPhyStandard standard, WifiPhyBand band)
+{
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211b:
+      return 22;
+    case WIFI_PHY_STANDARD_80211p:
+      return 10;
+    case WIFI_PHY_STANDARD_80211ac:
+      return 80;
+    case WIFI_PHY_STANDARD_80211ax:
+      return (band == WIFI_PHY_BAND_2_4GHZ ? 20 : 80);
+    default:
+      return 20;
+    }
+}
 
 } //namespace ns3
 
