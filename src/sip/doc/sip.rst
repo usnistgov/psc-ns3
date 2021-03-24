@@ -162,6 +162,7 @@ The following attributes exist for class ``ns3::SipElement``:
 * **T4** Maximum duration a message will remain in the network
 
 The following attributes exist for class ``ns3::SipProxy``:
+
 * **ProxyInviteTransactionTimeout** Timer C timeout value
 
 No attributes exist for class ``ns3::SipAgent``.

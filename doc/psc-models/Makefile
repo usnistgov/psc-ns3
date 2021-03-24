@@ -26,6 +26,7 @@ SOURCES = \
 	$(SRC)/lte/doc/source/lte-design-sidelink.inc \
 	$(SRC)/lte/doc/source/lte-testing-sidelink.inc \
 	$(SRC)/lte/doc/source/lte-references-sidelink.inc \
+	$(SRC)/sip/doc/sip.rst \
 	source/psc.rst \
 	$(SRC)/psc/doc/source/psc-design.rst \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
@@ -75,7 +76,12 @@ SOURCEFIGS = \
         $(SRC)/lte/doc/source/figures/helpers.png \
 	$(SRC)/lte/doc/source/figures/lte-sl-relay-selection.png \
 	$(SRC)/psc/doc/source/figures/intel-http.png \
-
+	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-scenario.png \
+	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-access-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-m2e-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-ptt-duration-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-session-duration-cdf.png \
+	$(SRC)/psc/doc/source/figures/mcptt-pusher-model-example.png \
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)

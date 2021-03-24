@@ -262,10 +262,12 @@ by the ``ns3::psc::McpttCall`` and ``ns3::psc::McpttPttApp`` classes.
 The ``ns3::psc::McpttCallMachine`` is an interface created to handle the different
 types of calls that are available. This includes functions for starting and
 leaving calls. There are many subclasses:
+
 * ``ns3::psc::McpttCallMachineGrpBasic`` for basic group calls
 * ``ns3::psc::McpttCallMachineGrpBroadcast`` for broadcast group calls
 * ``ns3::psc::McpttCallMachinePrivate`` for private calls, and
 * ``ns3::psc::McpttCallMachineNull`` to "turn-off" call control.
+
 Each of the state machines except for the null state machine have several
 classes associated with each to represent the different states of the state
 machine. For example, the class ``ns3::psc::McpttCallMachineGrpBroadcastStateB1``
@@ -274,6 +276,7 @@ machine from the 3GPP standard describing call control.
 
 The ``ns3::psc::McpttFloorParticipant`` is an interface created to represent the floor
 control protocol. There are two subclasses:
+
 - ``ns3::psc::McpttOffNetworkFloorParticipant`` for the floor control protocol
 - ``ns3::psc::McpttFloorParticipantNull`` to "turn-off" floor control
 
@@ -286,6 +289,7 @@ states of the floor control state machine.
 The ``ns3::psc::McpttEmergAlertMachine`` is an interface to represent the state
 machine used to maintain a user's emergency alert status. This can be found in
 TS 24.379 [TS24379]_. There is currently one subclass:
+
 - ``ns3::psc::McpttEmergAlertMachineBasic`` for the emergency alert protocol
 
 In the standard, there is one emergency alert machine associated with one user,
@@ -297,6 +301,7 @@ all the logic is self-contained.
 The ``ns3::psc::McpttCallTypeMachine`` is an interface for the call type machines
 described in the standard. These state machines exist to maintain the call type
 (e.g. basic, emergency, etc.) of a call. There are two subclasses:
+
 * ``ns3::psc::McpttCallTypeMachineGrpBasic`` for a basic group call, and
 * ``ns3::psc::McpttCallTypeMachinePriv`` for a private call.
     
@@ -381,10 +386,14 @@ distribution of IATs. This means that the following sequence of
 non-overlapping steps is typical for generating PTT and session events: IAT,
 duration, IAT, duration, and so on.
 
-The ``ns3::psc::McpttPusherOrchestratorInterface`` is a base class to the
-``ns3::psc::McpttPusherOrchestrator``, ``ns3::psc::McpttPusherOrchestratorSpurtCdf``,
-``ns3::psc::McpttPusherOrchestratorSessionCdf``, and
-``ns3::psc::McpttPusherOrchestratorContention``. The class
+The ``ns3::psc::McpttPusherOrchestratorInterface`` is a base class for the subclasses:
+
+* ``ns3::psc::McpttPusherOrchestrator``,
+* ``ns3::psc::McpttPusherOrchestratorSpurtCdf``,
+* ``ns3::psc::McpttPusherOrchestratorSessionCdf``, and
+* ``ns3::psc::McpttPusherOrchestratorContention``. 
+
+The class
 ``ns3::psc::McpttPusherOrchestrator`` simply selects a random pusher from
 the set of pushers being orchestrated and uses two instances of an
 ``ns3::RandomVariableStream``. One for deciding push durations and another for
@@ -654,6 +663,7 @@ the call, as follows.
 One could also use the following snippet to configure an
 ``ns3::psc::McpttPusherOrchestrator`` to control when push and release events
 occur for a set of ``ns3::psc::McpttPttApp`` applications.
+
 .. sourcecode:: cpp
 
    ApplicationContainer clientApps;
@@ -681,11 +691,13 @@ occur for a set of ``ns3::psc::McpttPttApp`` applications.
 
    mcpttHelper.Associate (orchestrator, clientApps);
 
+The following method:
+
 .. sourcecode:: cpp
 
    mcpttHelper.ConfigureBasicGrpCall (clientApps, usersPerGroup);
 
-This method encapsulates the following operations:
+encapsulates the following operations:
 
 *  sets the call control state machine type to ``ns3::psc::McpttCallMachineGrpBasic``
 *  sets the floor control state machine type to ``ns3::psc::McpttOffNetworkFloorParticipant``
@@ -769,8 +781,6 @@ add the MCPTT server to the EPC (via the notional IMS) with an ImsHelper.
 
    Ptr<ImsHelper> imsHelper = CreateObject<ImsHelper> ();
    imsHelper->ConnectPgw (epcHelper->GetPgwNode ());
-
-.. sourcecode:: cpp
 
 MCPTT clients are added in a manner similar to off-network configuration; e.g.:
 
@@ -872,7 +882,7 @@ The main change in configuration is to configure a second IMS network
 (essentially, a second MCPTT server) and to configure its network address
 to another subnet instead of the default 15.0.0.0:
 
-..sourcecode:: cpp
+.. sourcecode:: cpp
 
    Ptr<ImsHelper> imsHelper2 = CreateObject<ImsHelper> ();
    imsHelper2->SetImsIpv4Network (Ipv4Address ("16.0.0.0"), Ipv4Mask ("255.0.0.0"));
@@ -880,7 +890,7 @@ to another subnet instead of the default 15.0.0.0:
 
 The first user is added to both the first and second call groups:
 
-..sourcecode:: cpp
+.. sourcecode:: cpp
 
    ApplicationContainer callContainer1;
    callContainer1.Add (clientAppContainer1.Get (0));
@@ -892,7 +902,7 @@ The first user is added to both the first and second call groups:
 
 and the two calls configured in the call helper have different server apps:
 
-..sourcecode:: cpp
+.. sourcecode:: cpp
 
    McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
    uint32_t groupId = 1;
@@ -906,7 +916,7 @@ Finally, some events must be added to cause the first MCPTT user to switch
 calls at specified times.  This is done with the ``McpttPttApp::SelectCall``
 method, such as follows:
 
-..sourcecode:: cpp
+.. sourcecode:: cpp
 
    // schedule events to cause the user (McpttPusher) to switch calls at the
    // configured times in the simulation
