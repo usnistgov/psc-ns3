@@ -188,7 +188,7 @@ struct MessagesTracer
   void RxTrace (Ptr<const Application> app, uint16_t callId, const Header& header); ///< Trace sink function
   void TxTrace (Ptr<const Application> app, uint16_t callId, const Header& header); ///< Trace sink function
   void RsrpMeasurementTrace (uint64_t imsi, uint16_t cellId, double rsrp); ///< Trace sink function
-  void FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName); ///< Trace sink for floor participant state change
+  void FloorControlStateTrace (uint32_t mcpttUserId, uint16_t callId, const std::string& selected, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName); ///< Trace sink for floor participant state change
   void PusherStateTrace (bool oldValue, bool newValue); ///< The pusher state trace.
 
   uint32_t m_ueIdx; ///< UE index
@@ -219,7 +219,7 @@ struct MessagesTracer
  */
 struct ServerCallTracer
 {
-  void FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName); //!< Trace sink for floor control server state change
+  void FloorControlStateTrace (uint32_t mcpttUserId, uint16_t callId, const std::string& selected, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName); //!< Trace sink for floor control server state change
 
   uint16_t m_callId; //!< The ID of the call.
   Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator {nullptr}; //!< The floor arbitrator.
@@ -303,7 +303,7 @@ MessagesTracer::RsrpMeasurementTrace (uint64_t imsi, uint16_t cellId, double rsr
 }
 
 void
-MessagesTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName)
+MessagesTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint16_t callId, const std::string& /* selected */, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName)
 {
 #ifdef HAS_NETSIMULYZER
   if (m_floorParticipant != nullptr)
@@ -382,43 +382,44 @@ MessagesTracer::PusherStateTrace (bool oldValue, bool newValue)
 }
 
 void
-ServerCallTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint32_t callId, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName)
+ServerCallTracer::FloorControlStateTrace (uint32_t mcpttUserId, uint16_t callId, const std::string& /* selected */, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName)
 {
 #ifdef HAS_NETSIMULYZER
-  if (m_floorArbitrator != nullptr)
-    {
-      int stateId;
-      if (newStateName == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetName ())
-        {
-          stateId = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetNumber ();
-        }
-      else if (newStateName == McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetName ())
-        {
-          stateId = McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetNumber ();
-        }
-      else if (newStateName == McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetName ())
-        {
-          stateId = McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetNumber ();
-        }
-      else if (newStateName == McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetName ())
-        {
-          stateId = McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetNumber ();
-        }
-      else if (newStateName == McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetName ())
-        {
-          stateId = McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetNumber ();
-        }
-      else if (newStateName == McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetName ())
-        {
-          stateId = McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetNumber ();
-        }
-      else
-        {
-          NS_ABORT_MSG ("Not able to recognize floor arbitrator state.");
-        }
+  if (m_floorArbitrator == nullptr)
+    return;
 
-      m_floorArbitrator->StateChangedId (stateId);
+  int stateId;
+  if (newStateName == McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetName ())
+    {
+      stateId = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetNumber ();
     }
+  else if (newStateName == McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetName ())
+    {
+      stateId = McpttOnNetworkFloorArbitratorStateIdle::GetStateId ().GetNumber ();
+    }
+  else if (newStateName == McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetName ())
+    {
+      stateId = McpttOnNetworkFloorArbitratorStateTaken::GetStateId ().GetNumber ();
+    }
+  else if (newStateName == McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetName ())
+    {
+      stateId = McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ().GetNumber ();
+    }
+  else if (newStateName == McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetName ())
+    {
+      stateId = McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ().GetNumber ();
+    }
+  else if (newStateName == McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetName ())
+    {
+      stateId = McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ().GetNumber ();
+    }
+  else
+    {
+      NS_ABORT_MSG ("Not able to recognize floor arbitrator state.");
+    }
+
+  m_floorArbitrator->StateChangedId (stateId);
+
 #endif
 }
 
@@ -526,12 +527,12 @@ int main (int argc, char *argv[])
   double uesDistanceToBuilding_x = 10; //m
   bool queueing = false;
   bool enableVisualization = false;
-  double guiResolution = 200; //refresh time in ms
+  int guiResolution = 200; //refresh time in ms
 
   CommandLine cmd;
 
-  cmd.AddValue ("enableGuiTraces", "Flag to enable the visualization traces", enableVisualization);
-  cmd.AddValue ("guiResolution", "Granularity of the visualization", guiResolution);
+  cmd.AddValue ("enableGuiTraces", "Flag to enable the NetSimulyzer traces", enableVisualization);
+  cmd.AddValue ("guiResolution", "Mobility granularity of the visualization", guiResolution);
   cmd.AddValue ("queueing", "Whether floor queueing is enabled", queueing);
 
   cmd.Parse (argc, argv);
@@ -1271,33 +1272,37 @@ int main (int argc, char *argv[])
   using netsimulyzer::OptionalValue;
   using netsimulyzer::Color3;
   using netsimulyzer::Color3Value;
-  using netsimulyzer::Color4;
-  using netsimulyzer::Color4Value;
+  using CategoryValuePair = netsimulyzer::CategoryAxis::ValuePair;
+
   if (enableVisualization)
     {
       NS_LOG_INFO ("Enabling visualization...");
 
-      orchestrator = CreateObject<netsimulyzer::Orchestrator> ("WarehouseFireDemo-ns.json");
-      orchestrator->SetAttribute ("MillisecondsPerFrame", OptionalValue<double> (guiResolution));
+      const auto teamOneColor = netsimulyzer::RED_VALUE;
+      const auto teamTwoColor = netsimulyzer::GREEN_VALUE;
+      const auto teamThreeColor = netsimulyzer::BLUE_VALUE;
+
+      orchestrator = CreateObject<netsimulyzer::Orchestrator> ("mcptt-operational-modes-mobility.json");
+      orchestrator->SetAttribute ("TimeStep", OptionalValue<int> (guiResolution));
       orchestrator->SetAttribute ("MobilityPollInterval", TimeValue (MilliSeconds (guiResolution)));
 
       auto team1Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -25, -15});
       team1Area->SetAttribute ("Fill", EnumValue (netsimulyzer::RectangularArea::DrawMode::Hidden));
       team1Area->SetAttribute ("Border", EnumValue (netsimulyzer::RectangularArea::DrawMode::Solid));
       // Red
-      team1Area->SetAttribute ("BorderColor", Color3Value (Color3{153u, 0u, 0u}));
+      team1Area->SetAttribute ("BorderColor", teamOneColor);
 
       auto team2Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -65, -55});
       team2Area->SetAttribute ("Fill", EnumValue (netsimulyzer::RectangularArea::DrawMode::Hidden));
       team2Area->SetAttribute ("Border", EnumValue (netsimulyzer::RectangularArea::DrawMode::Solid));
       // Green
-      team2Area->SetAttribute ("BorderColor", Color3Value (Color3{0u, 153u, 0u}));
+      team2Area->SetAttribute ("BorderColor", teamTwoColor);
 
       auto team3Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -105, -95});
       team3Area->SetAttribute ("Fill", EnumValue (netsimulyzer::RectangularArea::DrawMode::Hidden));
       team3Area->SetAttribute ("Border", EnumValue (netsimulyzer::RectangularArea::DrawMode::Solid));
       // Blue
-      team3Area->SetAttribute ("BorderColor", Color3Value (Color3{0u, 0u, 153u}));
+      team3Area->SetAttribute ("BorderColor", teamThreeColor);
 
       auto firetruck1 = CreateObject<netsimulyzer::Decoration> (orchestrator);
       firetruck1->SetAttribute ("Model", StringValue ("non-distributable/models/props/vehicle/Firetruck.obj"));
@@ -1327,7 +1332,7 @@ int main (int argc, char *argv[])
       netsimulyzer::NodeConfigurationHelper nodeConfigHelper (orchestrator);
       nodeConfigHelper.Set ("Scale", DoubleValue (1.0));
       nodeConfigHelper.Set ("Model", StringValue ("non-distributable/models/characters/rest/Firefighter.obj"));
-      nodeConfigHelper.Set ("Height", DoubleValue (1.8));
+      nodeConfigHelper.Set ("Height", OptionalValue<double> (1.8));
       nodeConfigHelper.Set ("Offset", Vector3DValue (Vector3D (0, 0, -1.5)));
       nodeConfigHelper.Set ("Orientation", Vector3DValue (Vector3D (0, 0, 90)));
 
@@ -1341,7 +1346,7 @@ int main (int argc, char *argv[])
       //Network
       nodeConfigHelper.Set ("Model", StringValue ("non-distributable/models/props/Billboard_pole.obj"));
       nodeConfigHelper.Set ("Name", StringValue ("Cell tower"));
-      nodeConfigHelper.Set ("Height", DoubleValue (30));
+      nodeConfigHelper.Set ("Height", OptionalValue<double> (30));
       nodeConfigHelper.Set ("Offset", Vector3DValue (Vector3D (0, 0, -30)));
       nodeConfigHelper.Set ("Orientation", Vector3DValue (Vector3D (0, 0, 0)));
       nodeConfigHelper.Install (enbNode);
@@ -1351,17 +1356,17 @@ int main (int argc, char *argv[])
       // {
       // Ptr<netsimulyzer::Decoration> antenna = CreateObject<netsimulyzer::Decoration> (orchestrator);
       // antenna->SetAttribute ("Model", StringValue ("non-distributable/models/props/Cylinder.obj"));
-      // antenna->SetAttribute ("Height", DoubleValue (3));
+      // antenna->SetAttribute ("Height", OptionalValue<double> (3));
       // antenna->SetAttribute ("Position", Vector3DValue (Vector3D(1, -59, 28)));
       // eNodebAntennas.push_back (antenna);
       // antenna = CreateObject<netsimulyzer::Decoration> (orchestrator);
       // antenna->SetAttribute ("Model", StringValue ("non-distributable/models/props/Cylinder.obj"));
-      // antenna->SetAttribute ("Height", DoubleValue (3));
+      // antenna->SetAttribute ("Height", OptionalValue<double> (3));
       // antenna->SetAttribute ("Position", Vector3DValue (Vector3D(-1, -61, 28)));
       // eNodebAntennas.push_back (antenna);
       // antenna = CreateObject<netsimulyzer::Decoration> (orchestrator);
       // antenna->SetAttribute ("Model", StringValue ("non-distributable/models/props/Cylinder.obj"));
-      // antenna->SetAttribute ("Height", DoubleValue (3));
+      // antenna->SetAttribute ("Height", OptionalValue<double> (3));
       // antenna->SetAttribute ("Position", Vector3DValue (Vector3D(-1, -61, 28)));
       // eNodebAntennas.push_back (antenna);
       // }
@@ -1370,7 +1375,7 @@ int main (int argc, char *argv[])
       applicationLog = CreateObject<netsimulyzer::LogStream> (orchestrator);
       applicationLog->SetAttribute ("Name", StringValue ("Application log"));
 
-      applicationLog->SetAttribute ("Color", Color3Value (Color3{100u, 150u, 100u}));
+      applicationLog->SetAttribute ("Color", OptionalValue<Color3> {100u, 150u, 100u});
 
       Simulator::Schedule (Seconds (15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 1 starts group call\n");
       Simulator::Schedule (Seconds (15), &netsimulyzer::LogStream::Write, applicationLog, "15 s: Team 2 starts group call\n");
@@ -1382,7 +1387,7 @@ int main (int argc, char *argv[])
       mobilityLog = CreateObject<netsimulyzer::LogStream> (orchestrator);
       mobilityLog->SetAttribute ("Name", StringValue ("Mobility log"));
 
-      mobilityLog->SetAttribute ("Color", Color3Value (Color3{72u, 66u, 245u}));
+      mobilityLog->SetAttribute ("Color", OptionalValue<Color3> {72u, 66u, 245u});
 
       Simulator::Schedule (Seconds (30), &netsimulyzer::LogStream::Write, mobilityLog, "30 s: Team 1 starts moving\n");
       Simulator::Schedule (Seconds (45), &netsimulyzer::LogStream::Write, mobilityLog, "45 s: Team 1 enters building\n");
@@ -1401,7 +1406,7 @@ int main (int argc, char *argv[])
       ObjectMapValue serverAppCalls;
       serverApp->GetAttribute ("Calls", serverAppCalls);
       std::map<uint32_t, uint16_t>::iterator groupIdToOnNetworkCallIdIt;
-      std::vector<netsimulyzer::CategoryAxis::ValuePair> floorArbitratorStates;
+      std::vector<CategoryValuePair> floorArbitratorStates;
       for (groupIdToOnNetworkCallIdIt = groupIdToOnNetworkCallId.begin (); groupIdToOnNetworkCallIdIt != groupIdToOnNetworkCallId.end (); groupIdToOnNetworkCallIdIt++)
         {
           Ptr<McpttServerCall> serverCall = serverAppCalls.Get (groupIdToOnNetworkCallIdIt->second)->GetObject<McpttServerCall> ();
@@ -1409,7 +1414,7 @@ int main (int argc, char *argv[])
           std::map<uint16_t, ServerCallTracer>::iterator serverIt;
           serverCallTracers.insert (std::pair<uint16_t, ServerCallTracer> (groupIdToOnNetworkCallIdIt->first, serverCallTracer));
           serverIt = serverCallTracers.find (groupIdToOnNetworkCallIdIt->first);
-          netsimulyzer::CategoryAxis::ValuePair floorArbitratorStateValue;
+          CategoryValuePair floorArbitratorStateValue;
           floorArbitratorStateValue.key = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetNumber ();
           floorArbitratorStateValue.value = McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ().GetName ();
           floorArbitratorStates.push_back (floorArbitratorStateValue);
@@ -1460,21 +1465,20 @@ int main (int argc, char *argv[])
               rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Connection", StringValue ("None"));
               switch (team)
                 {
-                  case 0:
-                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value (Color4{44u, 140u, 8u, 255u}));
-                    break;
                   case 1:
-                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value (Color4{3u, 163u, 81u, 255u}));
+                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", teamOneColor);
                     break;
                   case 2:
-                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", Color4Value (Color4{4u, 27u, 204u, 255u}));
+                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", teamTwoColor);
+                    break;
+                  case 3:
+                    rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->SetAttribute ("Color", teamThreeColor);
                   default:
                     //should not happen, keep default color
                     break;
                 }
 
-              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetAttribute ("XAxis", xAxis);
-              xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
+              rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetXAxis()->SetAttribute ("Name", StringValue ("Time (s)"));
               rxMessagesPerUeTracerMapIt->second.m_rsrpSeries->GetAttribute ("YAxis", yAxis);
               yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("RSRP (dBm)"));
               yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("BoundMode", StringValue ("Fixed"));
@@ -1488,28 +1492,26 @@ int main (int argc, char *argv[])
               rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " M2E latency"));
               rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("LabelMode", StringValue ("Hidden"));
               rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Connection", StringValue ("None"));
-              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{204u, 111u, 4u, 255u}));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color3Value {204u, 111u, 4u});
 
               switch (team)
                 {
-                  case 0:
-                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{44u, 140u, 8u, 255u}));
-                    break;
                   case 1:
-                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{3u, 163u, 81u, 255u}));
+                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", teamOneColor);
                     break;
                   case 2:
-                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", Color4Value (Color4{4u, 27u, 204u, 255u}));
+                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", teamTwoColor);
+                    break;
+                  case 3:
+                    rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->SetAttribute ("Color", teamThreeColor);
                     break;
                   default:
                     //should not happen, keep default color
                     break;
                 }
 
-              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetAttribute ("XAxis", xAxis);
-              xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetAttribute ("YAxis", yAxis);
-              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Latency (ms)"));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetXAxis()->SetAttribute ("Name", StringValue ("Time (s)"));
+              rxMessagesPerUeTracerMapIt->second.m_mediaDelaySeries->GetYAxis()->SetAttribute ("Name", StringValue ("Latency (ms)"));
             }
 
           bool hasOnNetworkCall = false;
@@ -1540,8 +1542,8 @@ int main (int argc, char *argv[])
                 }
             }
 
-          std::vector<netsimulyzer::CategoryAxis::ValuePair> pusherStates;
-          netsimulyzer::CategoryAxis::ValuePair pusherStateValue;
+          std::vector<CategoryValuePair> pusherStates;
+          CategoryValuePair pusherStateValue;
           pusherStateValue.key = 0;
           pusherStateValue.value = "Released";
           pusherStates.push_back (pusherStateValue);
@@ -1560,8 +1562,8 @@ int main (int argc, char *argv[])
             }
 
           //Add state machine graphs
-          std::vector<netsimulyzer::CategoryAxis::ValuePair> floorCtrlStates;
-          netsimulyzer::CategoryAxis::ValuePair floorCtrlStateValue;
+          std::vector<CategoryValuePair> floorCtrlStates;
+          CategoryValuePair floorCtrlStateValue;
           floorCtrlStateValue.key = 0;
           floorCtrlStateValue.value = McpttOnNetworkFloorParticipantStateStartStop::GetStateId ().GetName ();
           floorCtrlStates.push_back (floorCtrlStateValue);
@@ -1638,36 +1640,33 @@ int main (int argc, char *argv[])
               rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Name", StringValue ("UE " + std::to_string (ueNodeIdx) + " Access time"));
               rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("LabelMode", StringValue ("Hidden"));
               rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Connection", StringValue ("None"));
-              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{204u, 111u, 4u, 255u}));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color3Value {204u, 111u, 4u});
 
               switch (team)
                 {
-                  case 0:
-                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{44u, 140u, 8u, 255u}));
-                    break;
                   case 1:
-                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{3u, 163u, 81u, 255u}));
+                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", teamOneColor);
                     break;
                   case 2:
-                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", Color4Value (Color4{4u, 27u, 204u, 255u}));
+                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", teamTwoColor);
+                    break;
+                  case 3:
+                    rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->SetAttribute ("Color", teamThreeColor);
                     break;
                   default:
                     //should not happen, keep default color
                     break;
                 }
 
-              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetAttribute ("XAxis", xAxis);
-              xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetAttribute ("YAxis", yAxis);
-              yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Access time (ms)"));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetXAxis()->SetAttribute ("Name", StringValue ("Time (s)"));
+              rxMessagesPerUeTracerMapIt->second.m_accessTimeSeries->GetYAxis()->SetAttribute ("Name", StringValue ("Access time (ms)"));
             }
         }
 
       //Add graphs to collection data
       rsrpCollection = CreateObject <netsimulyzer::SeriesCollection> (orchestrator);
       rsrpCollection->SetAttribute ("Name", StringValue ("RSRP"));
-      rsrpCollection->GetAttribute ("XAxis", xAxis);
-      xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
+      rsrpCollection->GetXAxis()->SetAttribute ("Name", StringValue ("Time (s)"));
       rsrpCollection->GetAttribute ("YAxis", yAxis);
       yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("RSRP (dBm)"));
       yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("BoundMode", StringValue ("Fixed"));
@@ -1676,17 +1675,13 @@ int main (int argc, char *argv[])
 
       m2eCollection = CreateObject <netsimulyzer::SeriesCollection> (orchestrator);
       m2eCollection->SetAttribute ("Name", StringValue ("Mouth-to-Ear latency"));
-      m2eCollection->GetAttribute ("XAxis", xAxis);
-      xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-      m2eCollection->GetAttribute ("YAxis", yAxis);
-      yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Latency (ms)"));
+      m2eCollection->GetXAxis()->SetAttribute ("Name", StringValue ("Time (s)"));
+      m2eCollection->GetYAxis()->SetAttribute ("Name", StringValue ("Latency (ms)"));
 
       accessTimeCollection = CreateObject <netsimulyzer::SeriesCollection> (orchestrator);
       accessTimeCollection->SetAttribute ("Name", StringValue ("Access Time"));
-      accessTimeCollection->GetAttribute ("XAxis", xAxis);
-      xAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Time (s)"));
-      accessTimeCollection->GetAttribute ("YAxis", yAxis);
-      yAxis.Get<netsimulyzer::ValueAxis> ()->SetAttribute ("Name", StringValue ("Access Time (ms)"));
+      accessTimeCollection->GetXAxis()->SetAttribute ("Name", StringValue ("Time (s)"));
+      accessTimeCollection->GetYAxis()->SetAttribute ("Name", StringValue ("Access Time (ms)"));
 
 
       //std::map <uint32_t, MessagesTracer>::iterator rxMessagesPerUeTracerMapIt;
