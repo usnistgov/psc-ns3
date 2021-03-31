@@ -352,21 +352,30 @@ void
 McpttCall::SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt << hdr);
+  if (!GetOwner ()->IsRunning ())
+    {
+      NS_LOG_DEBUG ("Not sending message because McpttPttApp is not running");
+      return;
+    }
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
-      Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
-      if (GetOwner ()->IsRunning ())
+      GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (Ipv4Address::ConvertFrom (m_peerAddress), m_callPort));
+      if (!m_txCb.IsNull ())
         {
-          GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
-          if (!m_txCb.IsNull ())
-            {
-              m_txCb (this, hdr);
-            }
+          m_txCb (this, hdr);
         }
-      else
+    }
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
+    {
+      GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_callPort));
+      if (!m_txCb.IsNull ())
         {
-          NS_LOG_DEBUG ("Not sending message because McpttPttApp is not running");
+          m_txCb (this, hdr);
         }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Not sending message because m_peerAddress unrecognized: " << m_peerAddress);
     }
 }
 
