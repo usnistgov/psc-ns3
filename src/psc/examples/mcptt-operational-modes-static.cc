@@ -220,7 +220,9 @@ MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, const Head
 {
   if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
-      if (callId == 1 || callId == 2)
+      // CallIDs 1 and 2 are allocated to the on-network and relay calls
+      // CallID for the off network will be a randomly generated one
+      if (callId < 3)
         {
           m_nTxMsgsOn++;
         }
