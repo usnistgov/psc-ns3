@@ -29,6 +29,8 @@ class NetDevice;
 class PointToPointNetDevice;
 class EpcTft;
 
+namespace psc {
+
 /**
  * \ingroup lte
  *
@@ -116,6 +118,7 @@ private:
   Ptr<PointToPointNetDevice> m_imsDevice;
 };
 
+} // namespace psc
 } // namespace ns3
 
 #endif // IMS_HELPER_H

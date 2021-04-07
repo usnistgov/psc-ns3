@@ -39,6 +39,8 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ImsHelper");
 
+namespace psc {
+
 NS_OBJECT_ENSURE_REGISTERED (ImsHelper);
 
 ImsHelper::ImsHelper () 
@@ -54,7 +56,7 @@ ImsHelper::~ImsHelper ()
 TypeId
 ImsHelper::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::ImsHelper")
+  static TypeId tid = TypeId ("ns3::psc::ImsHelper")
     .SetParent<Object> ()
     .AddAttribute ("UseIPv6",
                    "The flag that indicates if IPv6 should be used.",
@@ -181,4 +183,5 @@ ImsHelper::SetImsIpv6Network (Ipv6Address baseAddress, Ipv6Prefix basePrefix)
   m_ipv6BasePrefix = basePrefix;
 }
 
+} // namespace psc
 } // namespace ns3
