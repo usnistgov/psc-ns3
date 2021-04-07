@@ -92,6 +92,7 @@ public:
 
 protected:
   void DoDispose (void);
+private:
   Time m_proxyInviteTransactionTimeout; //!< Timeout value for Timer C
 };
 
