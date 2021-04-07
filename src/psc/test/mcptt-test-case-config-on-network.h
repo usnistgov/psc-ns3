@@ -36,6 +36,7 @@
 #include <ns3/application-container.h>
 #include <ns3/mcptt-call-helper.h>
 #include <ns3/mcptt-helper.h>
+#include <ns3/mcptt-server-app.h>
 #include <ns3/mcptt-server-helper.h>
 #include <ns3/ptr.h>
 #include <ns3/simple-ref-count.h>
@@ -62,11 +63,13 @@ private:
   McpttCallHelper m_callHelper;
   McpttHelper m_clientHelper;
   McpttServerHelper m_serverHelper;
+  Ptr<McpttServerApp> m_serverApp {nullptr};
 
 public:
   virtual void SetCallHelper (const McpttCallHelper& callHelper);
   virtual void SetClientHelper (const McpttHelper& clientHelper);
   virtual void SetServerHelper (const McpttServerHelper& serverHelper);
+  Ptr<McpttServerApp> GetServerApp (void) const;
 };
 
 } // namespace tests

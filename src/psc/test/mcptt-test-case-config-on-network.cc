@@ -123,9 +123,9 @@ McpttTestCaseConfigOnNetwork::Configure (void)
   serverApps.Start (start);
   serverApps.Stop (stop);
 
-  Ptr<McpttServerApp> serverApp = DynamicCast<McpttServerApp> (serverApps.Get (0));
+  m_serverApp = DynamicCast<McpttServerApp> (serverApps.Get (0));
   Ipv4Address serverAddress = interfaces.GetAddress (0);
-  serverApp->SetLocalAddress (serverAddress);
+  m_serverApp->SetLocalAddress (serverAddress);
 
   ApplicationContainer clientApps;
   clientApps.Add (m_clientHelper.Install (clients));
@@ -142,7 +142,7 @@ McpttTestCaseConfigOnNetwork::Configure (void)
 
   McpttCallMsgFieldCallType callType = McpttCallMsgFieldCallType::BASIC_GROUP;
   uint32_t groupId = 1;
-  m_callHelper.AddCall (clientApps, serverApp, groupId, callType, start, stop);
+  m_callHelper.AddCall (clientApps, m_serverApp, groupId, callType, start, stop);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -165,6 +165,12 @@ void
 McpttTestCaseConfigOnNetwork::SetServerHelper (const McpttServerHelper& serverHelper)
 {
   m_serverHelper = serverHelper;
+}
+
+Ptr<McpttServerApp>
+McpttTestCaseConfigOnNetwork::GetServerApp (void) const
+{
+  return m_serverApp;
 }
 
 } // namespace tests
