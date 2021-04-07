@@ -67,6 +67,8 @@ SipMessageTypeToString (SipHeader::SipMessageType messageType)
         return "Request";
       case SipHeader::SIP_RESPONSE:
         return "Response";
+      case SipHeader::SIP_INVALID:
+        return "Invalid";
       default:
         return "Unknown";
     }
@@ -82,6 +84,10 @@ SipMethodToString (SipHeader::SipMethod method)
         return "INVITE";
       case SipHeader::BYE:
         return "BYE";
+      case SipHeader::ACK:
+        return "ACK";
+      case SipHeader::CANCEL:
+        return "CANCEL";
       case SipHeader::INVALID_METHOD:
         return "Invalid";
       default:
