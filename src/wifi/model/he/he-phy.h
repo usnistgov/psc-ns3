@@ -99,6 +99,7 @@ public:
   void StartTx (Ptr<WifiPpdu> ppdu) override;
   uint16_t GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
+  virtual bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const override;
 
   /**
    * \return the BSS color of this PHY.
@@ -128,14 +129,25 @@ public:
   Time CalculateNonOfdmaDurationForHeTb (const WifiTxVector& txVector) const;
 
   /**
-   * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   * Get the band in the TX spectrum associated with the RU used by the PSDU
+   * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
    *
    * \param txVector the TXVECTOR used for the transmission
-   * \param staId the STA-ID of the recipient
+   * \param staId the STA-ID of the station
    *
-   * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   * \return the RU band in the TX spectrum
    */
-  WifiSpectrumBand GetRuBand (const WifiTxVector& txVector, uint16_t staId) const;
+  WifiSpectrumBand GetRuBandForTx (const WifiTxVector& txVector, uint16_t staId) const;
+  /**
+   * Get the band in the RX spectrum associated with the RU used by the PSDU
+   * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the station
+   *
+   * \return the RU band in the RX spectrum
+   */
+  WifiSpectrumBand GetRuBandForRx (const WifiTxVector& txVector, uint16_t staId) const;
   /**
    * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
    *
@@ -145,6 +157,13 @@ public:
    * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
    */
   WifiSpectrumBand GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const;
+  /**
+   * Get the width in MHz of the non-OFDMA portion of an HE TB PPDU
+   *
+   * \param ru the RU in which the HE TB PPDU is sent
+   * \return the width in MHz of the non-OFDMA portion of an HE TB PPDU
+   */
+  uint16_t GetNonOfdmaWidth (HeRu::RuSpec ru) const;
 
   /**
    * \return the UID of the HE TB PPDU being received
@@ -388,6 +407,16 @@ protected:
    * \return he number of usable subcarriers for data
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
+
+  /**
+   * Get the maximum PSDU size in bytes (see Table 27-55 HE PHY characteristics
+   * of IEEE 802.11ax D5.0)
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const override;
+
+  virtual WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const override;
 
   uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received

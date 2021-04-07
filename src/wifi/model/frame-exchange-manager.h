@@ -35,6 +35,7 @@
 namespace ns3 {
 
 class ChannelAccessManager;
+struct RxSignalInfo;
 class WifiProtectionManager;
 struct WifiProtection;
 class WifiAckManager;
@@ -56,6 +57,15 @@ public:
   static TypeId GetTypeId (void);
   FrameExchangeManager ();
   virtual ~FrameExchangeManager ();
+
+  /**
+   * typedef for a callback to invoke when an MPDU is dropped.
+   */
+  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpdu;
+  /**
+   * typedef for a callback to invoke when an MPDU is successfully acknowledged.
+   */
+  typedef Callback <void, Ptr<const WifiMacQueueItem>> AckedMpdu;
 
   /**
    * Request the FrameExchangeManager to start a frame exchange sequence.
@@ -139,6 +149,18 @@ public:
    */
   virtual void SetBssid (Mac48Address bssid);
   /**
+   * Set the callback to invoke when an MPDU is dropped.
+   *
+   * \param callback the callback to invoke when an MPDU is dropped
+   */
+  virtual void SetDroppedMpduCallback (DroppedMpdu callback);
+  /**
+   * Set the callback to invoke when an MPDU is successfully acked.
+   *
+   * \param callback the callback to invoke when an MPDU is successfully acked
+   */
+  void SetAckedMpduCallback (AckedMpdu callback);
+  /**
    * Enable promiscuous mode.
    */
   void SetPromisc (void);
@@ -149,6 +171,13 @@ public:
    *         false otherwise
    */
   bool IsPromisc (void) const;
+
+  /**
+   * Get a const reference to the WifiTxTimer object.
+   *
+   * \return a const reference to the WifiTxTimer object
+   */
+  const WifiTxTimer& GetWifiTxTimer (void) const;
 
   /**
    * Get the Protection Manager used by this node.
@@ -258,11 +287,11 @@ protected:
    * MPDUs is completed.
    *
    * \param psdu the received PSDU
-   * \param rxSnr snr of MPDU received in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TxVector of the received PSDU
    * \param perMpduStatus per MPDU reception status
    */
-  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
+  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                                 const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus);
 
   /**
@@ -271,11 +300,11 @@ protected:
    * \param mpdu the MPDU that was acknowledged
    * \param txVector the TXVECTOR used to transmit the MPDU that was acknowledged
    * \param ackTxVector the TXVECTOR used to transmit the Normal Ack frame
-   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+   * \param rxInfo the info on the received signal (\see RxSignalInfo)
    * \param snr the SNR at the receiver for the MPDU that was acknowledged
    */
   virtual void ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
-                                  const WifiTxVector& ackTxVector, RxSignalInfo rxSignalInfo, double snr);
+                                  const WifiTxVector& ackTxVector, const RxSignalInfo& rxInfo, double snr);
 
   /**
    * Notify other components that an MPDU was acknowledged.
@@ -299,8 +328,8 @@ protected:
   virtual void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * Pass the packet included in the given MPDU to the
-   * packet dropped callback.
+   * Pass the given MPDU, discarded because of the max retry limit was reached,
+   * to the MPDU dropped callback.
    *
    * \param mpdu the discarded MPDU
    */
@@ -350,6 +379,8 @@ protected:
   Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
   Time m_navEnd;                                    //!< NAV expiration time
   bool m_promisc;                                   //!< Flag if the device is operating in promiscuous mode
+  DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
+  AckedMpdu m_ackedMpduCallback;                    //!< the acknowledged MPDU callback
 
   /**
    * Forward an MPDU down to the PHY layer.
@@ -469,13 +500,17 @@ protected:
    * Called when the Ack timeout expires.
    *
    * \param mpdu the MPDU that solicited a Normal Ack response
+   * \param txVector the TXVECTOR used to transmit the frame soliciting the Normal Ack
    */
-  void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu);
+  void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
 
   /**
    * Called when the CTS timeout expires.
+   *
+   * \param rts the RTS that solicited a CTS response
+   * \param txVector the TXVECTOR used to transmit the RTS frame
    */
-  virtual void CtsTimeout (void);
+  virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector);
 
 private:
   /**

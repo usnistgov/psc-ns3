@@ -276,6 +276,24 @@ public:
                                    uint16_t staId) const = 0;
 
   /**
+   * Get a WifiConstPsduMap from a PSDU and the TXVECTOR to use to send the PSDU.
+   * The STA-ID value is properly determined based on whether the given PSDU has
+   * to be transmitted as a DL or UL frame.
+   *
+   * \param psdu the given PSDU
+   * \param txVector the TXVECTOR to use to send the PSDU
+   * \return a WifiConstPsduMap built from the given PSDU and the given TXVECTOR
+   */
+  virtual WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const;
+
+  /**
+   * Get the maximum PSDU size in bytes.
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const = 0;
+
+  /**
    * A pair containing information on the PHY header chunk, namely
    * the start and stop times of the chunk and the WifiMode used.
    */
@@ -460,6 +478,18 @@ public:
    * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
    */
   virtual Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const;
+
+  /**
+   * Check whether the given PPDU can be received by this PHY entity. Normally,
+   * a PPDU can be received if it is transmitted over a channel that overlaps
+   * the primary20 channel of this PHY entity.
+   *
+   * \param ppdu the given PPDU
+   * \param txCenterFreq the center frequency (MHz) of the channel over which the
+   *        PPDU is transmitted
+   * \return true if this PPDU can be received, false otherwise
+   */
+  virtual bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const;
 
 protected:
   /**

@@ -89,6 +89,16 @@ public:
    */
   void FlushGlobalNixRoutingCache (void) const;
 
+  /**
+   * @brief Print the Routing Path according to Nix Routing
+   * \param source Source node
+   * \param dest Destination node address
+   * \param stream The ostream the Routing path is printed to
+   * \param unit the time unit to be used in the report
+   */
+  void PrintRoutingPath (Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit);
+
+
 private:
 
   /**
@@ -251,22 +261,6 @@ private:
   /** Total neighbors used for nix-vector to determine number of bits */
   uint32_t m_totalNeighbors;
 
-
-  /**
-   * \brief Hashing for the ipv4Address class
-   */
-  struct Ipv4AddressHash
-  {
-    /**
-     * \brief operator ()
-     * \param address the IPv4 address to hash
-     * \return the hash of the address
-     */
-    size_t operator() (const Ipv4Address &address) const
-    {
-      return std::hash<uint32_t>()(address.Get ());
-    }
-  };
 
   /**
    * Mapping of IPv4 address to ns-3 node.

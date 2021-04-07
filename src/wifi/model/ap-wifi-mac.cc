@@ -97,7 +97,6 @@ ApWifiMac::ApWifiMac ()
   m_beaconTxop->SetMaxCw (0);
   m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
   m_beaconTxop->SetTxMiddle (m_txMiddle);
-  m_beaconTxop->SetTxOkCallback (MakeCallback (&ApWifiMac::TxOk, this));
 
   //Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);
@@ -107,6 +106,7 @@ ApWifiMac::~ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   m_staList.clear ();
+  m_addressIdMap.clear ();
   m_nonErpStations.clear ();
   m_nonHtStations.clear ();
 }
@@ -648,9 +648,7 @@ ApWifiMac::GetHeOperation (void) const
         {
           operation.SetMaxHeMcsPerNss (nss, 11); //TBD: hardcode to 11 for now since we assume all MCS values are supported
         }
-      UintegerValue bssColor;
-      GetHeConfiguration ()->GetAttribute ("BssColor", bssColor);
-      operation.SetBssColor (bssColor.Get ());
+      operation.SetBssColor (GetHeConfiguration ()->GetBssColor ());
     }
   return operation;
 }
@@ -746,6 +744,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
         {
           aid = GetNextAssociationId ();
           m_staList.insert (std::make_pair (aid, to));
+          m_addressIdMap.insert (std::make_pair (to, aid));
         }
       assoc.SetAssociationId (aid);
     }
@@ -861,10 +860,10 @@ ApWifiMac::SendOneBeacon (void)
 }
 
 void
-ApWifiMac::TxOk (const WifiMacHeader &hdr)
+ApWifiMac::TxOk (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this);
-  RegularWifiMac::TxOk (hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
   if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
       && m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
     {
@@ -874,10 +873,10 @@ ApWifiMac::TxOk (const WifiMacHeader &hdr)
 }
 
 void
-ApWifiMac::TxFailed (const WifiMacHeader &hdr)
+ApWifiMac::TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this);
-  RegularWifiMac::TxFailed (hdr);
+  NS_LOG_FUNCTION (this << +timeoutReason << *mpdu << txVector);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
 
   if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
       && m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
@@ -1359,6 +1358,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                   if (j->second == from)
                     {
                       m_staList.erase (j);
+                      m_addressIdMap.erase (from);
                       break;
                     }
                 }
@@ -1430,6 +1430,8 @@ ApWifiMac::DoInitialize (void)
           m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
         }
     }
+  NS_ABORT_IF (!TraceConnectWithoutContext ("AckedMpdu", MakeCallback (&ApWifiMac::TxOk, this)));
+  NS_ABORT_IF (!TraceConnectWithoutContext ("MpduResponseTimeout", MakeCallback (&ApWifiMac::TxFailed, this)));
   RegularWifiMac::DoInitialize ();
 }
 
@@ -1454,6 +1456,24 @@ ApWifiMac::GetNextAssociationId (void)
     }
   NS_FATAL_ERROR ("No free association ID available!");
   return 0;
+}
+
+const std::map<uint16_t, Mac48Address>&
+ApWifiMac::GetStaList (void) const
+{
+  return m_staList;
+}
+
+uint16_t
+ApWifiMac::GetAssociationId (Mac48Address addr) const
+{
+  auto it = m_addressIdMap.find (addr);
+
+  if (it == m_addressIdMap.end ())
+    {
+      return SU_STA_ID;
+    }
+  return it->second;
 }
 
 uint8_t

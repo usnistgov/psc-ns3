@@ -92,8 +92,7 @@ QosTxop::GetTypeId (void)
 }
 
 QosTxop::QosTxop ()
-  : m_typeOfStation (STA),
-    m_startTxop (Seconds (0)),
+  : m_startTxop (Seconds (0)),
     m_txopDuration (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
@@ -102,8 +101,6 @@ QosTxop::QosTxop ()
   m_baManager->SetQueue (m_queue);
   m_baManager->SetBlockDestinationCallback (MakeCallback (&QosBlockedDestinations::Block, m_qosBlockedDestinations));
   m_baManager->SetUnblockDestinationCallback (MakeCallback (&QosBlockedDestinations::Unblock, m_qosBlockedDestinations));
-  m_baManager->SetTxOkCallback (MakeCallback (&QosTxop::BaTxOk, this));
-  m_baManager->SetTxFailedCallback (MakeCallback (&QosTxop::BaTxFailed, this));
 }
 
 QosTxop::~QosTxop ()
@@ -142,6 +139,16 @@ QosTxop::SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem)
 {
   NS_LOG_FUNCTION (this << qosFem);
   m_qosFem = qosFem;
+}
+
+void
+QosTxop::SetDroppedMpduCallback (DroppedMpdu callback)
+{
+  NS_LOG_FUNCTION (this << &callback);
+  Txop::SetDroppedMpduCallback (callback);
+  m_baManager->GetRetransmitQueue ()->TraceConnectWithoutContext ("Expired",
+                                                                  m_droppedMpduCallback
+                                                                  .Bind (WIFI_MAC_DROP_EXPIRED_LIFETIME));
 }
 
 Ptr<BlockAckManager>
@@ -202,19 +209,6 @@ QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remote
   Txop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
   m_baManager->SetWifiRemoteStationManager (m_stationManager);
-}
-
-void
-QosTxop::SetTypeOfStation (TypeOfStation type)
-{
-  NS_LOG_FUNCTION (this << +type);
-  m_typeOfStation = type;
-}
-
-TypeOfStation
-QosTxop::GetTypeOfStation (void) const
-{
-  return m_typeOfStation;
 }
 
 bool
@@ -507,9 +501,9 @@ QosTxop::NotifyInternalCollision (void)
         {
           NS_LOG_DEBUG ("reset DCF");
           m_stationManager->ReportFinalDataFailed (mpdu);
-          if (!m_txDroppedCallback.IsNull ())
+          if (!m_droppedMpduCallback.IsNull ())
             {
-              m_txDroppedCallback (mpdu->GetPacket ());
+              m_droppedMpduCallback (WIFI_MAC_DROP_REACHED_RETRY_LIMIT, mpdu);
             }
           ResetCw ();
           // We have to discard mpdu, but first we have to determine whether mpdu
@@ -728,26 +722,6 @@ QosTxop::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   ResetCw ();
   GenerateBackoff ();
-}
-
-void
-QosTxop::BaTxOk (const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this << hdr);
-  if (!m_txOkCallback.IsNull ())
-    {
-      m_txOkCallback (hdr);
-    }
-}
-
-void
-QosTxop::BaTxFailed (const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this << hdr);
-  if (!m_txFailedCallback.IsNull ())
-    {
-      m_txFailedCallback (hdr);
-    }
 }
 
 void

@@ -121,7 +121,23 @@ public:
   void EndReceiveInterBss (void);
 
   /**
-   * \param psdu the PSDU to send
+   * Get a WifiConstPsduMap from a PSDU and the TXVECTOR to use to send the PSDU.
+   * The STA-ID value is properly determined based on whether the given PSDU has
+   * to be transmitted as a DL or UL frame.
+   *
+   * \param psdu the given PSDU
+   * \param txVector the TXVECTOR to use to send the PSDU
+   * \return a WifiConstPsduMap built from the given PSDU and the given TXVECTOR
+   */
+  static WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+
+  /**
+   * This function is a wrapper for the Send variant that accepts a WifiConstPsduMap
+   * as first argument. This function inserts the given PSDU in a WifiConstPsduMap
+   * along with a STA-ID value that is determined based on whether the given PSDU has
+   * to be transmitted as a DL or UL frame.
+   *
+   * \param psdu the PSDU to send (in a SU PPDU)
    * \param txVector the TXVECTOR that has TX parameters such as mode, the transmission mode to use to send
    *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
@@ -217,6 +233,21 @@ public:
    */
   static Time CalculateTxDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band,
                                    uint16_t staId = SU_STA_ID);
+  /**
+   * This function is a wrapper for the CalculateTxDuration variant that accepts a
+   * WifiConstPsduMap as first argument. This function inserts the given PSDU in a
+   * WifiConstPsduMap along with a STA-ID value that is determined based on whether
+   * the given PSDU has to be transmitted as a DL or UL frame, thus allowing to
+   * properly calculate the TX duration in case the PSDU has to be transmitted as
+   * an UL frame.
+   *
+   * \param psdu the PSDU to transmit
+   * \param txVector the TXVECTOR used for the transmission of the PSDU
+   * \param band the frequency band
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
+   */
+  static Time CalculateTxDuration (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, WifiPhyBand band);
   /**
    * \param psduMap the PSDU(s) to transmit indexed by STA-ID
    * \param txVector the TXVECTOR used for the transmission of the PPDU
@@ -393,6 +424,14 @@ public:
    * \return the estimated BlockAck TX time
    */
   Time GetBlockAckTxTime (void) const;
+
+  /**
+   * Get the maximum PSDU size in bytes for the given modulation class.
+   *
+   * \param modulation the modulation class
+   * \return the maximum PSDU size in bytes for the given modulation class
+   */
+  static uint32_t GetMaxPsduSize (WifiModulationClass modulation);
 
   /**
   * The WifiPhy::BssMembershipSelector() method is used
@@ -839,6 +878,13 @@ public:
    */
   uint16_t GetFrequency (void) const;
   /**
+   * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
+   * with the lowest center frequency).
+   *
+   * \param index the index of the primary 20 MHz channel
+   */
+  void SetPrimary20Index (uint8_t index);
+  /**
    * \param antennas the number of antennas on this node.
    */
   void SetNumberOfAntennas (uint8_t antennas);
@@ -978,13 +1024,17 @@ public:
 
 
   /**
-   * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
+   * \param bandWidth the width (MHz) of the band used for the OFDMA transmission. Must be
+   *                  a multiple of 20 MHz
+   * \param guardBandwidth width of the guard band (MHz)
    * \param range the subcarrier range of the HE RU
+   * \param bandIndex the index (starting at 0) of the band within the operating channel
    * \return the converted subcarriers
    *
    * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
    */
-  virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
+  virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t bandWidth, uint16_t guardBandwidth,
+                                                   HeRu::SubcarrierRange range, uint8_t bandIndex = 0) const;
 
   /**
    * Add the PHY entity to the map of __implemented__ PHY entities for the
@@ -1094,6 +1144,19 @@ protected:
    * \return a pair of start and stop indexes that defines the band
    */
   virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
+
+  /**
+   * If the operating channel width is a multiple of 20 MHz, return the start
+   * band index and the stop band index for the primary channel of the given
+   * bandwidth (which must be a multiple of 20 MHz and not exceed the operating
+   * channel width). Otherwise, this call is equivalent to GetBand with
+   * <i>bandIndex</i> equal to zero.
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  WifiSpectrumBand GetPrimaryBand (uint16_t bandWidth);
 
   /**
    * Add the PHY entity to the map of supported PHY entities for the
@@ -1326,6 +1389,7 @@ private:
   uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
   uint8_t m_initialChannelNumber;           //!< Store channel number until initialization
   uint16_t m_initialChannelWidth;           //!< Store channel width (MHz) until initialization
+  uint8_t m_initialPrimary20Index;          //!< Store the index of primary20 until initialization
 
   WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
   std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)

@@ -39,21 +39,6 @@ class QosFrameExchangeManager;
 class WifiTxParameters;
 
 /**
- * Enumeration for type of station
- */
-enum TypeOfStation
-{
-  STA,
-  AP,
-  ADHOC_STA,
-  MESH,
-  HT_STA,
-  HT_AP,
-  HT_ADHOC_STA,
-  OCB
-};
-
-/**
  * \brief Handle packet fragmentation and retransmissions for QoS data frames as well
  * as MSDU aggregation (A-MSDU) and block ack sessions, for a given access class.
  * \ingroup wifi
@@ -105,19 +90,7 @@ public:
   void NotifyInternalCollision (void);
   virtual void NotifyChannelAccessed (Time txopDuration);
   void NotifyChannelReleased (void);
-
-  /**
-   * Set type of station with the given type.
-   *
-   * \param type the type of station.
-   */
-  void SetTypeOfStation (TypeOfStation type);
-  /**
-   * Return type of station.
-   *
-   * \return type of station.
-   */
-  TypeOfStation GetTypeOfStation (void) const;
+  void SetDroppedMpduCallback (DroppedMpdu callback);
 
   /**
    * Set the Frame Exchange Manager associated with this QoS STA.
@@ -400,19 +373,6 @@ public:
   void AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * The packet we sent was successfully received by the receiver.
-   *
-   * \param hdr the header of the packet that we successfully sent.
-   */
-  void BaTxOk (const WifiMacHeader &hdr);
-  /**
-   * The packet we sent was successfully received by the receiver.
-   *
-   * \param hdr the header of the packet that we failed to sent.
-   */
-  void BaTxFailed (const WifiMacHeader &hdr);
-
-  /**
    * Set the Queue Size subfield of the QoS Control field of the given QoS data frame.
    *
    * \param mpdu the given QoS data frame
@@ -454,7 +414,6 @@ private:
   bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
 
   AcIndex m_ac;                                         //!< the access category
-  TypeOfStation m_typeOfStation;                        //!< the type of station
   Ptr<QosFrameExchangeManager> m_qosFem;                //!< the QoS Frame Exchange Manager
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< the QoS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the block ack manager

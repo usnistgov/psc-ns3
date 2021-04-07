@@ -35,6 +35,7 @@ class WifiMacQueueItem;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class WifiRemoteStationManager;
+enum WifiMacDropReason : uint8_t;  // opaque enum declaration
 
 /**
  * \brief Handle packet fragmentation and retransmissions
@@ -76,20 +77,9 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * typedef for a callback to invoke when a
-   * packet transmission was completed successfully.
+   * typedef for a callback to invoke when an MPDU is dropped.
    */
-  typedef Callback <void, const WifiMacHeader&> TxOk;
-  /**
-   * typedef for a callback to invoke when a
-   * packet transmission was failed.
-   */
-  typedef Callback <void, const WifiMacHeader&> TxFailed;
-  /**
-   * typedef for a callback to invoke when a
-   * packet is dropped.
-   */
-  typedef Callback <void, Ptr<const Packet> > TxDropped;
+  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem> > DroppedMpdu;
 
   /**
    * Enumeration for channel access status
@@ -128,20 +118,9 @@ public:
   void SetTxMiddle (const Ptr<MacTxMiddle> txMiddle);
 
   /**
-   * \param callback the callback to invoke when a
-   * packet transmission was completed successfully.
+   * \param callback the callback to invoke when an MPDU is dropped
    */
-  void SetTxOkCallback (TxOk callback);
-  /**
-   * \param callback the callback to invoke when a
-   *        packet transmission was completed unsuccessfully.
-   */
-  void SetTxFailedCallback (TxFailed callback);
-  /**
-   * \param callback the callback to invoke when a
-   *        packet is dropped.
-   */
-  void SetTxDroppedCallback (TxDropped callback);
+  virtual void SetDroppedMpduCallback (DroppedMpdu callback);
 
   /**
    * Return the packet queue associated with this Txop.
@@ -342,19 +321,8 @@ protected:
    */
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
 
-  /**
-   *
-   * Pass the packet included in the wifi MAC queue item to the
-   * packet dropped callback.
-   *
-   * \param item the wifi MAC queue item.
-   */
-  void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
-
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
-  TxOk m_txOkCallback;                              //!< the transmit OK callback
-  TxFailed m_txFailedCallback;                      //!< the transmit failed callback
-  TxDropped m_txDroppedCallback;                    //!< the packet dropped callback
+  DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
   Ptr<WifiRemoteStationManager> m_stationManager;   //!< the wifi remote station manager

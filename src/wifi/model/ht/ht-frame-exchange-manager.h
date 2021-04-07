@@ -161,6 +161,22 @@ public:
    * \param tid the TID associated with the Block Ack agreement
    */
   void DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid);
+  /**
+   * This method can be called to accept a received ADDBA Request. An
+   * ADDBA Response will be constructed and queued for transmission.
+   *
+   * \param reqHdr a pointer to the received ADDBA Request header.
+   * \param originator the MAC address of the originator.
+   */
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
+                          Mac48Address originator);
+  /**
+   * Get the maximum supported buffer size for a Block Ack agreement. This value
+   * is typically included in ADDBA Response frames.
+   *
+   * \return the maximum supported buffer size for a Block Ack agreement
+   */
+  virtual uint16_t GetSupportedBaBufferSize (void) const;
 
   /**
    * Return true if a Block Ack agreement has been established with the given
@@ -188,14 +204,14 @@ protected:
   // Overridden from QosFrameExchangeManager
   virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu) override;
-  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
+  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                                 const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
   virtual void NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu) override;
   virtual void NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu) override;
   virtual void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const override;
   virtual void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const override;
   virtual void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
-  virtual void CtsTimeout (void) override;
+  virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
   virtual void TransmissionSucceeded (void) override;
   virtual void DequeueMpdu (Ptr<WifiMacQueueItem> mpdu) override;
 

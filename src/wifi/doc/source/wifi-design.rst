@@ -51,9 +51,9 @@ The implementation is modular and provides roughly three sublayers of models:
 * the **PHY layer models**: they model amendment-specific and common
   PHY layer operations and functions.
 * the so-called **MAC low models**: they model functions such as medium
-  access (DCF and EDCA), RTS/CTS and ACK.  In |ns3|, the lower-level MAC
-  is further subdivided into a **MAC low** and **MAC middle** sublayering,
-  with channel access grouped into the **MAC middle**.   
+  access (DCF and EDCA), frame protection (RTS/CTS) and acknowledgment (ACK/BlockAck).
+  In |ns3|, the lower-level MAC is comprised of a **Frame Exchange Manager** hierarchy,
+  a **Channel Access Manager** and a **MAC middle** entity.
 * the so-called **MAC high models**: they implement non-time-critical processes
   in Wifi such as the MAC-level beacon generation, probing, and association 
   state machines, and a set of **Rate control algorithms**.  In the literature,
@@ -102,17 +102,16 @@ MAC low layer
 
 The **MAC low layer** is split into three main components:
 
-#. ``ns3::MacLow`` which takes care of RTS/CTS/DATA/ACK transactions and also
-   performs MPDU aggregation.
-#. ``ns3::ChannelAccessManager`` and ``ns3::DcfState`` which implements the DCF and EDCAF
+#. ``ns3::FrameExchangeManager`` a class hierarchy which implement the frame exchange
+   sequences introduced by the supported IEEE 802.11 amendments. It also handles
+   frame aggregation, frame retransmissions, protection and acknowledgment.
+#. ``ns3::ChannelAccessManager`` which implements the DCF and EDCAF
    functions.
-#. ``ns3::Txop`` and ``ns3::QosTxop`` which handle the packet queue,
-   packet fragmentation, and packet retransmissions if they are needed.
+#. ``ns3::Txop`` and ``ns3::QosTxop`` which handle the packet queue.
    The ``ns3::Txop`` object is used by high MACs that are not QoS-enabled,
    and for transmission of frames (e.g., of type Management)
    that the standard says should access the medium using the DCF. 
-   ``ns3::QosTxop`` is is used by QoS-enabled high MACs and also
-   performs MSDU aggregation.
+   ``ns3::QosTxop`` is used by QoS-enabled high MACs.
 
 PHY layer models
 ================
@@ -595,12 +594,11 @@ The validation scenario is set as follows:
 #. Phase tracking, phase correction, phase noise, carrier frequency offset, power amplifier non-linearities etc. are not considered.
 
 Several packets are simulated across the link to obtain PER, the number of packets needed to reliably
-estimate a PER value is computed using the consideration that ratio of the estimation error to the true
-value should be within 10 % with probability 0.95.
-For each SNR value (using 0.2 dB SNR resolution), simulations were run until either a minimum value
-of 400 unsuccessfully decoded packets were observed or a total of 40000 packets were simulated.
+estimate a PER value is computed using the consideration that the ratio of the estimation error to the
+true value should be within 10 % with probability 0.95.
+For each SNR value, simulations were run until a total of 40000 packets were simulated.
 
-The obtained results are very close to original TGn curves as shown in Figure
+The obtained results are very close to TGax curves as shown in Figure
 :ref:`default-table-based-error-model-validation`
 
 .. _default-table-based-error-model-validation:
@@ -608,7 +606,7 @@ The obtained results are very close to original TGn curves as shown in Figure
 .. figure:: figures/default-table-based-error-model-validation.*
    :scale: 75%
   
-   *Comparison of table-based OFDM Error Model with TGn results.*
+   *Comparison of table-based OFDM Error Model with TGax results.*
 
 Legacy ErrorRateModels
 ######################
@@ -846,6 +844,84 @@ deal with:
 * MSDU aggregation,
 * etc.
 
+Frame Exchange Managers
+#######################
+As the IEEE 802.11 standard evolves, more and more features are added and it is
+more and more difficult to have a single component handling all of the allowed
+frame exchange sequences. A hierarchy of FrameExchangeManager classes has been
+introduced to make the code clean and scalable, while avoiding code duplication.
+Each FrameExchangeManager class handles the frame exchange sequences introduced
+by a given amendment. The FrameExchangeManager hierarchy is depicted in Figure
+:ref:`fem-hierarchy`.
+
+.. _fem-hierarchy:
+
+.. figure:: figures/FemHierarchy.*
+
+   *FrameExchangeManager hierarchy*
+
+The features supported by every FrameExchangeManager class are as follows:
+
+* ``FrameExchangeManager`` is the base class. It handles the basic sequences
+  for non-QoS stations: MPDU followed by Normal Ack, RTS/CTS and CTS-to-self,
+  NAV setting and resetting, MPDU fragmentation
+* ``QosFrameExchangeManager`` adds TXOP support: multiple protection setting,
+  TXOP truncation via CF-End, TXOP recovery, ignore NAV when responding to an
+  RTS sent by the TXOP holder
+* ``HtFrameExchangeManager`` adds support for Block Ack (compressed variant),
+  A-MSDU and A-MPDU aggregation, Implicit Block Ack Request policy
+* ``VhtFrameExchangeManager`` adds support for S-MPDUs
+* ``HeFrameExchangeManager`` is empty for now
+
+Ack manager
+###########
+
+Since the introduction of the IEEE 802.11e amendment, multiple acknowledgment policies
+are available, which are coded in the Ack Policy subfield in the QoS Control field of
+QoS Data frames (see Section 9.2.4.5.4 of the IEEE 802.11-2016 standard). For instance,
+an A-MPDU can be sent with the *Normal Ack or Implicit Block Ack Request* policy, in which
+case the receiver replies with a Normal Ack or a Block Ack depending on whether the A-MPDU
+contains a single MPDU or multiple MPDUs, or with the *Block Ack* policy, in which case
+the receiver waits to receive a Block Ack Request in the future to which it replies with
+a Block Ack.
+
+``WifiAckManager`` is the abstract base class introduced to provide an interface
+for multiple ack managers. Currently, the default ack manager is
+the ``WifiDefaultAckManager``.
+
+WifiDefaultAckManager
+#####################
+
+The ``WifiDefaultAckManager`` allows to determine which acknowledgment policy
+to use depending on the value of its attributes:
+
+* UseExplicitBar: used to determine the ack policy to use when a response is needed from
+  the recipient and the current transmission includes multiple frames (A-MPDU) or there are
+  frames transmitted previously for which an acknowledgment is needed. If this attribute is
+  true, the *Block Ack* policy is used. Otherwise, the *Implicit Block Ack Request* policy is used.
+* BaThreshold: used to determine when the originator of a Block Ack agreement needs to
+  request a response from the recipient. A value of zero means that a response is requested
+  at every frame transmission. Otherwise, a non-zero value (less than or equal to 1) means
+  that a response is requested upon transmission of a frame whose sequence number is distant
+  at least BaThreshold multiplied by the transmit window size from the starting sequence
+  number of the transmit window.
+
+Protection manager
+##################
+
+The protection manager is in charge of determining the protection mechanism to use,
+if any, when sending a frame.
+
+``WifiProtectionManager`` is the abstract base class introduced to provide an interface
+for multiple protection managers. Currently, the default protection manager is
+the ``WifiDefaultProtectionManager``.
+
+WifiDefaultProtectionManager
+############################
+
+The ``WifiDefaultProtectionManager`` selects a protection mechanism based on the
+information provided by the remote station manager.
+
 Rate control algorithms
 #######################
 
@@ -872,6 +948,7 @@ Algorithms in literature:
 * ``AarfcdWifiManager`` [maguolo2008aarfcd]_
 * ``ParfWifiManager`` [akella2007parf]_
 * ``AparfWifiManager`` [chevillat2005aparf]_
+* ``ThompsonSamplingWifiManager`` [krotov2020rate]_
 
 ConstantRateWifiManager
 #######################
@@ -934,6 +1011,42 @@ With this new default value (i.e. 1e-6), a HE STA moving away from a HE AP has
 smooth throughput decrease (whereas with 1e-5, better performance was seen further
 away, which is not "ideal").
 
+ThompsonSamplingWifiManager
+###########################
+
+Thompson Sampling (TS) is a classical solution to the Multi-Armed
+Bandit problem.  `ThompsonSamplingWifiManager` implements a rate
+control algorithm based on TS with the goal of providing a simple
+statistics-based algorithm with a low number of parameters.
+
+The algorithm maintains the number of successful transmissions
+:math:`\alpha_i` and the number of unsuccessful transmissions
+:math:`\beta_i` for each MCS :math:`i`, both of which are initially
+set to zero.
+
+To select MCS for a data frame, the algorithm draws a sample frame
+success rate :math:`q_i` from the beta distribution with shape
+parameters :math:`(1 + \alpha_i, 1 + \beta_i)` for each MCS and then
+selects MCS with the highest expected throughput calculated as the
+sample frame success rate multiplied by MCS rate.
+
+To account for changing channel conditions, exponential decay is
+applied to :math:`\alpha_i` and :math:`\beta_i`. The rate of
+exponential decay is controlled with the `Decay` attribute which is
+the inverse of the time constant. Default value of 1 Hz results in
+using exponential window with the time constant of 1 second.  Setting
+this value to zero effectively disables exponential decay and can be
+used in static scenarios.
+
+Control frames are always transmitted using the most robust MCS,
+except when the standard specifies otherwise, such as for ACK frames.
+
+As the main goal of this algorithm is to provide a stable baseline, it
+does not take into account backoff overhead, inter-frame spaces and
+aggregation for MCS rate calculation. For an example of a more complex
+statistics-based rate control algorithm used in real devices, consider
+Minstrel-HT described below.
+
 MinstrelWifiManager
 ###################
 
@@ -954,39 +1067,6 @@ MinstrelHtWifiManager
 #####################
 
 This is the extension of minstrel for 802.11n/ac/ax.
-
-Ack policy selection
-####################
-
-Since the introduction of the IEEE 802.11e amendment, multiple acknowledgment policies
-are available, which are coded in the Ack Policy subfield in the QoS Control field of
-QoS Data frames (see Section 9.2.4.5.4 of the IEEE 802.11-2016 standard). For instance,
-an A-MPDU can be sent with the *Normal Ack or Implicit Block Ack Request* policy, in which
-case the receiver replies with a Normal Ack or a Block Ack depending on whether the A-MPDU
-contains a single MPDU or multiple MPDUs, or with the *Block Ack* policy, in which case
-the receiver waits to receive a Block Ack Request in the future to which it replies with
-a Block Ack.
-
-``WifiAckPolicySelector`` is the abstract base class introduced to provide an interface
-for multiple ack policy selectors. Currently, the default ack policy selector is
-the ``ConstantWifiAckPolicySelector``.
-
-ConstantWifiAckPolicySelector
-#############################
-
-The ``ConstantWifiAckPolicySelector`` allows to determine which acknowledgment policy
-to use depending on the value of its attributes:
-
-* UseExplicitBar: used to determine the ack policy to use when a response is needed from
-  the recipient and the current transmission includes multiple frames (A-MPDU) or there are
-  frames transmitted previously for which an acknowledgment is needed. If this attribute is
-  true, the *Block Ack* policy is used. Otherwise, the *Implicit Block Ack Request* policy is used.
-* BaThreshold: used to determine when the originator of a Block Ack agreement needs to
-  request a response from the recipient. A value of zero means that a response is requested
-  at every frame transmission. Otherwise, a non-zero value (less than or equal to 1) means
-  that a response is requested upon transmission of a frame whose sequence number is distant
-  at least BaThreshold multiplied by the transmit window size from the starting sequence
-  number of the transmit window.
 
 802.11ax OBSS PD spatial reuse
 ##############################

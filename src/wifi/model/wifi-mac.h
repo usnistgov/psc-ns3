@@ -35,6 +35,30 @@ class VhtConfiguration;
 class HeConfiguration;
 
 /**
+ * Enumeration for type of station
+ */
+enum TypeOfStation
+{
+  STA,
+  AP,
+  ADHOC_STA,
+  MESH,
+  OCB
+};
+
+/**
+ * \ingroup wifi
+  * \enum WifiMacDropReason
+  * \brief The reason why an MPDU was dropped
+  */
+enum WifiMacDropReason : uint8_t
+{
+  WIFI_MAC_DROP_FAILED_ENQUEUE = 0,
+  WIFI_MAC_DROP_EXPIRED_LIFETIME,
+  WIFI_MAC_DROP_REACHED_RETRY_LIMIT
+};
+
+/**
  * \brief base class for all MAC-level wifi objects.
  * \ingroup wifi
  *
@@ -67,7 +91,22 @@ public:
    */
   Ptr<NetDevice> GetDevice (void) const;
 
+   /**
+   * This method is invoked by a subclass to specify what type of
+   * station it is implementing. This is something that the channel
+   * access functions need to know.
+   *
+   * \param type the type of station.
+   */
+  virtual void SetTypeOfStation (TypeOfStation type) = 0;
   /**
+   * Return the type of station.
+   *
+   * \return the type of station.
+   */
+  virtual TypeOfStation GetTypeOfStation (void) const = 0;
+
+ /**
    * \param ssid the current SSID of this MAC layer.
    */
   virtual void SetSsid (Ssid ssid) = 0;
@@ -186,9 +225,9 @@ public:
   /**
    * \param packet the packet being dropped
    *
-   * Public method used to fire a MacTxDrop trace. Implemented for encapsulation purposes.
-   * This trace indicates that the packet was dropped before it was transmitted
-   * (e.g. when a STA is not associated with an AP).
+   * Public method used to fire a MacTxDrop trace.
+   * This trace indicates that the packet was dropped before it was queued for
+   * transmission (e.g. when a STA is not associated with an AP).
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
   /**
@@ -258,7 +297,7 @@ private:
   TracedCallback<Ptr<const Packet> > m_macTxTrace;
   /**
    * The trace source fired when packets coming into the "top" of the device
-   * are dropped at the MAC layer during transmission.
+   * are dropped at the MAC layer before being queued for transmission.
    *
    * \see class CallBackTraceSource
    */
