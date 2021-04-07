@@ -72,31 +72,33 @@ public:
   static TypeId GetTypeId (void);
   /**
    * The states representing the progression of a SIP transaction
-   * (based on Figure 5 of RFC 3261).
+   * (based on Figure 5 of RFC 3261).  This is a plain enum rather
+   * than an enum class due to a limitation in PyBindGen.
    */
-  enum class TransactionState
+  enum TransactionState
   {
-    IDLE,
-    CALLING, // Initial client state for INVITE transaction
-    TRYING,  // Initial client and server state, non-INVITE transaction
-    PROCEEDING, // Server send 100, client receipt of 100
-    COMPLETED,
-    CONFIRMED,
-    TERMINATED,
-    FAILED
+    TRANSACTION_IDLE,
+    TRANSACTION_CALLING, // Initial client state for INVITE transaction
+    TRANSACTION_TRYING,  // Initial client and server state, non-INVITE transaction
+    TRANSACTION_PROCEEDING, // Server send 100, client receipt of 100
+    TRANSACTION_COMPLETED,
+    TRANSACTION_CONFIRMED,
+    TRANSACTION_TERMINATED,
+    TRANSACTION_FAILED
   };
   /**
    * The states representing the progression of a SIP dialog
-   * (based on Figure 3 of RFC 4235).
+   * (based on Figure 3 of RFC 4235).  This is a plain enum rather
+   * than an enum class due to a limitation in PyBindGen.
    */
-  enum class DialogState
+  enum DialogState
   {
-    UNINITIALIZED,  // not in RFC 4235
-    TRYING,  // entered before send or receipt of 100 Trying
-    PROCEEDING, // entered after send or receipt of 100 Trying
-    EARLY,  // not presently used
-    CONFIRMED, // entered after send or receipt of 200 OK
-    TERMINATED // entered after send or receipt of BYE
+    DIALOG_UNINITIALIZED,  // not in RFC 4235
+    DIALOG_TRYING,  // entered before send or receipt of 100 Trying
+    DIALOG_PROCEEDING, // entered after send or receipt of 100 Trying
+    DIALOG_EARLY,  // not presently used
+    DIALOG_CONFIRMED, // entered after send or receipt of 200 OK
+    DIALOG_TERMINATED // entered after send or receipt of BYE
   };
   /**
    * Return string corresponding to TransactionState value
@@ -278,7 +280,7 @@ protected:
       : m_callId (callId),
         m_sendCallback (sendCallback)
     {
-      m_state = TransactionState::IDLE;
+      m_state = TRANSACTION_IDLE;
       m_packet = 0;
     }
     uint16_t m_callId;
@@ -486,15 +488,32 @@ protected:
    */
   void HandleTimerK (TransactionId id);
 
+  // Accessors for private members; these are exposed as non-const accessors
+  // rather than simply making the member variables protected because
+  // PyBindGen does not support protected member variables of this type
+
+  /**
+   * Handle Timer K expiry (client move state from COMPLETED to TERMINATED)
+   * \param id Transaction ID
+   */
+  std::unordered_map<DialogId, Dialog, TupleHash>& GetDialogs (void);
+  std::unordered_map<TransactionId, Transaction, TupleHash>& GetTransactions (void);
+  std::unordered_map<uint16_t, Callback<void, const char*, TransactionState> >& GetEventCallbacks (void);
+  std::unordered_map<uint16_t, Callback<void, Ptr<Packet>, const SipHeader&, TransactionState> >& GetReceiveCallbacks (void);
+
+  // PyBindGen does not complain about exposing the below as protected
+
+  TracedCallback<Ptr<Packet>, const SipHeader&>  m_txTrace; //!< Trace send
+  TracedCallback<Ptr<Packet>, const SipHeader&>  m_rxTrace; //!< Trace receive
+  TracedCallback<uint16_t, uint32_t, uint32_t, DialogState> m_dialogTrace; //!< Trace dialog state change
+  TracedCallback<uint16_t, uint32_t, uint32_t, TransactionState> m_transactionTrace; //!< Trace transaction state change
+
+private:
   std::unordered_map<DialogId, Dialog, TupleHash> m_dialogs;
   std::unordered_map<TransactionId, Transaction, TupleHash> m_transactions;
   std::unordered_map<uint16_t, Callback<void, Ptr<Packet>, const SipHeader&, TransactionState> > m_receiveCallbacks;
   std::unordered_map<uint16_t, Callback<void, const char*, TransactionState> > m_eventCallbacks;
   Callback<void, Ptr<Packet>, const Address&, const SipHeader&> m_defaultSendCallback;
-  TracedCallback<Ptr<Packet>, const SipHeader&>  m_rxTrace;
-  TracedCallback<Ptr<Packet>, const SipHeader&>  m_txTrace;
-  TracedCallback<uint16_t, uint32_t, uint32_t, DialogState> m_dialogTrace;
-  TracedCallback<uint16_t, uint32_t, uint32_t, TransactionState> m_transactionTrace;
 
   bool m_reliableTransport; //!< reliable transport flag
   // timers

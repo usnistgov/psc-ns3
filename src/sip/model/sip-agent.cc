@@ -50,8 +50,6 @@ SipAgent::SipAgent ()
 SipAgent::~SipAgent ()
 {
   NS_LOG_FUNCTION (this);
-  m_dialogs.clear ();
-  m_transactions.clear ();
 }
 
 void

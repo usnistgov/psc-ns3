@@ -69,26 +69,26 @@ SipProxy::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode,
   NS_LOG_FUNCTION (p << addr << statusCode << from << to << callId);
   TransactionId tid = GetTransactionId (callId, from, to);
   DialogId did = GetDialogId (callId, from, to);
-  auto it = m_dialogs.find (did);
-  NS_ASSERT_MSG (it != m_dialogs.end (), "Dialog not found");
+  auto it = GetDialogs ().find (did);
+  NS_ASSERT_MSG (it != GetDialogs ().end (), "Dialog not found");
   it->second.m_sendCallback = sendCallback;
   if (statusCode == 100)
     {
-      SetDialogState (did, DialogState::PROCEEDING);
-      SetTransactionState (tid, TransactionState::PROCEEDING);
+      SetDialogState (did, DIALOG_PROCEEDING);
+      SetTransactionState (tid, TRANSACTION_PROCEEDING);
       ScheduleTimerC (tid);
     }
   else if (statusCode == 200)
     {
-      if (it->second.m_state == DialogState::TRYING || it->second.m_state == DialogState::PROCEEDING)
+      if (it->second.m_state == DIALOG_TRYING || it->second.m_state == DIALOG_PROCEEDING)
         {
-          SetDialogState (did, DialogState::CONFIRMED);
-          SetTransactionState (tid, TransactionState::COMPLETED);
+          SetDialogState (did, DIALOG_CONFIRMED);
+          SetTransactionState (tid, TRANSACTION_COMPLETED);
           CancelTimerC (tid);
         }
-      else if (it->second.m_state == DialogState::TERMINATED)
+      else if (it->second.m_state == DIALOG_TERMINATED)
         {
-          SetTransactionState (tid, TransactionState::COMPLETED);
+          SetTransactionState (tid, TRANSACTION_COMPLETED);
           ScheduleTimerJ (tid);  // Start Timer J (to transition to TERMINATED)
         }
       else
@@ -98,8 +98,8 @@ SipProxy::SendResponse (Ptr<Packet> p, const Address& addr, uint16_t statusCode,
     }
   else if (statusCode == 408)
     {
-      SetDialogState (did, DialogState::TERMINATED);
-      SetTransactionState (tid, TransactionState::FAILED);
+      SetDialogState (did, DIALOG_TERMINATED);
+      SetTransactionState (tid, TRANSACTION_FAILED);
       CancelTimerC (tid);
     }
   SipHeader header;
@@ -117,8 +117,8 @@ void
 SipProxy::ScheduleTimerC (TransactionId id)
 {
   NS_LOG_FUNCTION (this << TransactionIdToString (id));
-  auto transIt = m_transactions.find (id);
-  NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
+  auto transIt = GetTransactions ().find (id);
+  NS_ASSERT_MSG (transIt != GetTransactions ().end (), "Transaction not found");
   transIt->second.m_timerC.SetFunction (&SipProxy::HandleTimerC, this);
   transIt->second.m_timerC.SetArguments (id);
   transIt->second.m_timerC.Schedule (m_proxyInviteTransactionTimeout);
@@ -128,8 +128,8 @@ void
 SipProxy::CancelTimerC (TransactionId id)
 {
   NS_LOG_FUNCTION (this << TransactionIdToString (id));
-  auto transIt = m_transactions.find (id);
-  NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
+  auto transIt = GetTransactions ().find (id);
+  NS_ASSERT_MSG (transIt != GetTransactions ().end (), "Transaction not found");
   transIt->second.m_timerC.Cancel ();
 }
 
@@ -137,11 +137,11 @@ void
 SipProxy::HandleTimerC (TransactionId id)
 {
   NS_LOG_FUNCTION (this << TransactionIdToString (id));
-  auto eventIt = m_eventCallbacks.find (std::get<0> (id));
-  NS_ASSERT_MSG (eventIt != m_eventCallbacks.end (), "CallID not found");
-  auto transIt = m_transactions.find (id);
-  NS_ASSERT_MSG (transIt != m_transactions.end (), "Transaction not found");
-  NS_ASSERT_MSG (transIt->second.m_state == TransactionState::PROCEEDING, "Transaction not in PROCEEDING");
+  auto eventIt = GetEventCallbacks ().find (std::get<0> (id));
+  NS_ASSERT_MSG (eventIt != GetEventCallbacks ().end (), "CallID not found");
+  auto transIt = GetTransactions ().find (id);
+  NS_ASSERT_MSG (transIt != GetTransactions ().end (), "Transaction not found");
+  NS_ASSERT_MSG (transIt->second.m_state == TRANSACTION_PROCEEDING, "Transaction not in PROCEEDING");
   // Notify user and let user handle this event
   eventIt->second (TIMER_C_EXPIRED, transIt->second.m_state);
 }
