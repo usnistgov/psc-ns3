@@ -257,6 +257,20 @@ public:
   // Events to report
   static constexpr const char* CALL_SELECTED  = "Call selected";
 
+  /**
+   * Trace the transmission of a message for a given callId
+   * \param callId The call that the message is for
+   * \param hdr Message sent
+   */
+  void TraceMessageSend (uint16_t callId, const Header& hdr);
+
+  /**
+   * Trace the reception of a message for a given callId
+   * \param callId The call that the message is for
+   * \param hdr Message received
+   */
+  void TraceMessageReceive (uint16_t callId, const Header& hdr);
+
 protected:
   /**
    * Disposes of the McpttPttApp instance.
@@ -283,12 +297,6 @@ protected:
    */
   virtual void Receive (const McpttCallMsg& msg);
   /**
-   * The callback to fire when a message is received.
-   * \param call The call that the message is for.
-   * \param msg The message that was received.
-   */
-  virtual void RxCb (Ptr<const McpttCall> call, const Header& msg);
-  /**
    * Starts the McpttPttApp application.
    */
   virtual void StartApplication (void);
@@ -296,12 +304,6 @@ protected:
    * Stops the McpttPttApp application.
    */
   virtual void StopApplication (void);
-  /**
-   * The callback to fire when a message is sent.
-   * \param call The call that the message is for.
-   * \param msg The message that was sent.
-   */
-  virtual void TxCb (Ptr<const McpttCall> call, const Header& msg);
   /**
    * TracedCallback signature for McpttMsg transmission or reception events
    * \param [in] app Ptr<Application>

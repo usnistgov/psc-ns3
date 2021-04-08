@@ -34,6 +34,7 @@
 #include "ns3/packet.h"
 #include "ns3/sip-header.h"
 #include "ns3/mcptt-on-network-call-machine-client.h"
+#include "ns3/mcptt-ptt-app.h"
 #include "mcptt-test-call.h"
 
 namespace ns3 {
@@ -82,10 +83,7 @@ McpttTestCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
   NS_LOG_FUNCTION (this << pkt << hdr);
   NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
   NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, hdr);
-    }
+  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
   GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -99,12 +97,7 @@ McpttTestCall::Receive (const McpttCallMsg& msg)
       NS_LOG_DEBUG ("Dropping McpttCallMsg");
       return;
     }
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-
+  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   GetCallMachine ()->Receive (msg);
 }
 
@@ -119,11 +112,7 @@ McpttTestCall::Receive (const McpttFloorMsg& msg)
       return;
     }
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-
+  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   GetFloorMachine ()->Receive (msg);
 }
 
@@ -138,11 +127,7 @@ McpttTestCall::Receive (const McpttMediaMsg& msg)
       return;
     }
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-
+  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   GetCallMachine ()->Receive (msg);
   GetFloorMachine ()->Receive (msg);
 }

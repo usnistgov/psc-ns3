@@ -73,7 +73,7 @@ public:
   /**
    * Types of MCPTT calls
    */
-  enum class NetworkCallType
+  enum NetworkCallType
   {
     ON_NETWORK,
     OFF_NETWORK,
@@ -268,10 +268,6 @@ private:
   Time m_startTime; //!< The call start time.
   Time m_stopTime; //!< The call stop time.
 
-protected:
-  Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The received message callback.
-  Callback<void, Ptr<const McpttCall>, const Header&> m_txCb; //!< The transmitted message callback.
-
 public:
   /**
    * Gets the channel used for call control messages.
@@ -338,16 +334,6 @@ public:
    * \param owner The owner.
    */
   void SetOwner (Ptr<McpttPttApp> owner);
-  /**
-   * Sets the received message callback.
-   * \param rxCb The callback.
-   */
-  void SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb);
-  /**
-   * Sets the transmitted message callback.
-   * \param txCb The callback.
-   */
-  void SetTxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  txCb);
   /**
    * Sets the call start time
    * \param startTime The start time.

@@ -241,8 +241,6 @@ McpttPttApp::AddCall (Ptr<McpttCall> call)
 {
   NS_LOG_FUNCTION (this << call);
   call->SetOwner (this);
-  call->SetRxCb (MakeCallback (&McpttPttApp::RxCb, this));
-  call->SetTxCb (MakeCallback (&McpttPttApp::TxCb, this));
   NS_ABORT_MSG_UNLESS (call->GetStartTime () >= Simulator::Now (), "Call start time in the past");
   Simulator::ScheduleWithContext (GetNode ()->GetId (), call->GetStartTime () - Simulator::Now (), &McpttPttApp::SelectCall, this, call->GetCallId (), call->GetPushOnSelect ());
   NS_ABORT_MSG_UNLESS (call->GetStopTime () >= Simulator::Now (), "Call stop time in the past");
@@ -848,11 +846,10 @@ McpttPttApp::Receive (const McpttCallMsg& msg)
 }
 
 void
-McpttPttApp::RxCb (Ptr<const McpttCall> call, const Header& msg)
+McpttPttApp::TraceMessageReceive (uint16_t callId, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << call << &msg);
-
-  m_rxTrace (this, call->GetCallId (), msg);
+  NS_LOG_FUNCTION (this << callId << &msg);
+  m_rxTrace (this, callId, msg);
 }
 
 void
@@ -901,11 +898,10 @@ McpttPttApp::StopApplication (void)
 }
 
 void
-McpttPttApp::TxCb (Ptr<const McpttCall> call, const Header& msg)
+McpttPttApp::TraceMessageSend (uint16_t callId, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << call << &msg);
-
-  m_txTrace (this, call->GetCallId (), msg);
+  NS_LOG_FUNCTION (this << callId << &msg);
+  m_txTrace (this, callId, msg);
 }
 
 void

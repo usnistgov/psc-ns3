@@ -104,9 +104,7 @@ McpttCall::McpttCall (void)
     m_owner (0),
     m_pushOnSelect (false),
     m_startTime (Seconds (0)),
-    m_stopTime (Seconds (0)),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ()),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ())
+    m_stopTime (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
 }
@@ -119,9 +117,7 @@ McpttCall::McpttCall (NetworkCallType callType)
     m_owner (0),
     m_pushOnSelect (false),
     m_startTime (Seconds (0)),
-    m_stopTime (Seconds (0)),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ()),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttCall>, const Header&> ())
+    m_stopTime (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
 }
@@ -245,10 +241,7 @@ void
 McpttCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state)
 {
   NS_LOG_FUNCTION (this << pkt << hdr << state);
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, hdr);
-    }
+  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
   GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -269,10 +262,7 @@ McpttCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
       return;
     }
   NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, hdr);
-    }
+  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
   GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -281,11 +271,7 @@ McpttCall::Receive (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-
+  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
   callMachine->Receive (msg);
 }
@@ -295,11 +281,7 @@ McpttCall::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-
+  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
   floorMachine->Receive (msg);
 }
@@ -309,10 +291,7 @@ McpttCall::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
+  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
 
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
   Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
@@ -360,18 +339,12 @@ McpttCall::SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipH
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
       GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (Ipv4Address::ConvertFrom (m_peerAddress), m_callPort));
-      if (!m_txCb.IsNull ())
-        {
-          m_txCb (this, hdr);
-        }
+      GetOwner ()->TraceMessageSend (GetCallId (), hdr);
     }
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_callPort));
-      if (!m_txCb.IsNull ())
-        {
-          m_txCb (this, hdr);
-        }
+      GetOwner ()->TraceMessageSend (GetCallId (), hdr);
     }
   else
     {
@@ -393,19 +366,13 @@ McpttCall::Send (const McpttCallMsg& msg)
     {
       Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
       GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
-      if (!m_txCb.IsNull ())
-        {
-          m_txCb (this, msg);
-        }
+      GetOwner ()->TraceMessageSend (GetCallId (), msg);
     }
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
       GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
-      if (!m_txCb.IsNull ())
-        {
-          m_txCb (this, msg);
-        }
+      GetOwner ()->TraceMessageSend (GetCallId (), msg);
     }
 }
 
@@ -414,10 +381,7 @@ McpttCall::Send (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (this, msg);
-    }
+  GetOwner ()->TraceMessageSend (GetCallId (), msg);
 
   Ptr<Packet> pkt = Create<Packet> ();
   Ptr<McpttChannel> floorChannel = GetFloorChannel ();
@@ -439,11 +403,7 @@ McpttCall::Send (const McpttMediaMsg& msg)
   McpttMediaMsg txMsg (msg);
 
   floorMachine->MediaReady (txMsg);
-
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (this, msg);
-    }
+  GetOwner ()->TraceMessageSend (GetCallId (), msg);
 
   pkt->AddHeader (txMsg);
 
@@ -840,22 +800,6 @@ McpttCall::SetOwner (Ptr<McpttPttApp> owner)
   NS_LOG_FUNCTION (this << owner);
 
   m_owner = owner;
-}
-
-void
-McpttCall::SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rxCb = rxCb;
-}
-
-void
-McpttCall::SetTxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  txCb)
-{
-  NS_LOG_FUNCTION (this << &txCb);
-
-  m_txCb = txCb;
 }
 
 void
