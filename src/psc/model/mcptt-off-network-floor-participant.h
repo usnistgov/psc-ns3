@@ -375,7 +375,6 @@ private:
   Ptr<McpttCall> m_call; //!< The McpttCall that owns this floor machine.
   uint8_t m_priority; //!< The priority of this floor machine.
   Ptr<McpttFloorQueue> m_queue; //!< The floor queue.
-  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
   Time m_setupDelayStartTime; //!< The setup delay time.
   Callback<void, const Time&> m_setupDelayCb; //!< The setup delay call back.
   bool m_started; //!< A flag that indicates whether or not the floor machine has started.
@@ -392,7 +391,6 @@ private:
   Ptr<McpttTimer> m_t207; //!< The timer T207.
   Ptr<McpttTimer> m_t230; //!< The timer T230.
   Ptr<McpttTimer> m_t233; //!< The timer T233.
-  Callback<void, const McpttFloorMsg&> m_txCb; //!< The message tranmission call back.
 
 protected:
   /**
@@ -553,11 +551,6 @@ public:
   */
   virtual void SetQueue (Ptr<McpttFloorQueue>  queue);
   /**
-   * Sets the received message call back.
-   * \param rxCb The received message call back.
-   */
-  virtual void SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb);
-  /**
    * Sets the setup delay.
    * \param startTime The setup delay time.
    */
@@ -627,11 +620,6 @@ public:
    * \param t233 The timer.
    */
   virtual void SetT233 (Ptr<McpttTimer>  t233);
-  /**
-   * Sets the transmission call back.
-   * \param txCb The transmission call back.
-   */
-  virtual void SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb);
 };
 
 } // namespace psc

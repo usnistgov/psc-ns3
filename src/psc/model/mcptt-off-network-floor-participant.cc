@@ -132,7 +132,6 @@ McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant (void)
     m_call (0),
     m_priority (1),
     m_queue (CreateObject<McpttFloorQueue> ()),
-    m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
     m_setupDelayStartTime (Seconds (0)),
     m_setupDelayCb (MakeNullCallback<void, const Time&> ()),
     m_started (false),
@@ -147,8 +146,7 @@ McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant (void)
     m_t206 (CreateObject<McpttTimer> (McpttEntityId (6, "T206"))),
     m_t207 (CreateObject<McpttTimer> (McpttEntityId (7, "T207"))),
     m_t230 (CreateObject<McpttTimer> (McpttEntityId (30, "T230"))),
-    m_t233 (CreateObject<McpttTimer> (McpttEntityId (33, "T233"))),
-    m_txCb (MakeNullCallback<void, const McpttFloorMsg&> ())
+    m_t233 (CreateObject<McpttTimer> (McpttEntityId (33, "T233")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -445,11 +443,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorDeny (const McpttFloorMsgDeny& msg)
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorDeny (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -463,11 +456,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorGranted (const McpttFloorMsgGranted
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorGranted (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -490,11 +478,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorQueuePositionRequest (const McpttFl
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorQueuePositionRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -508,11 +491,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorQueuePositionInfo (const McpttFloor
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorQueuePositionInfo (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -526,11 +504,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorRelease (const McpttFloorMsgRelease
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorRelease (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -544,11 +517,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorRequest (const McpttFloorMsgRequest
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -572,11 +540,6 @@ McpttOffNetworkFloorParticipant::ReceiveFloorTaken (const McpttFloorMsgTaken& ms
 
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   state->ReceiveFloorTaken (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -650,11 +613,6 @@ McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
 
   GetCall ()->Send (msg);
-
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (msg);
-    }
 }
 
 void
@@ -1299,14 +1257,6 @@ McpttOffNetworkFloorParticipant::SetQueue (Ptr<McpttFloorQueue>  queue)
 }
 
 void
-McpttOffNetworkFloorParticipant::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rxCb = rxCb;
-}
-
-void
 McpttOffNetworkFloorParticipant::SetSetupDelayStartTime (const Time& startTime)
 {
   NS_LOG_FUNCTION (this << startTime);
@@ -1418,13 +1368,6 @@ McpttOffNetworkFloorParticipant::SetT233 (Ptr<McpttTimer>  t233)
   m_t233 = t233;
 }
 
-void
-McpttOffNetworkFloorParticipant::SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_txCb = txCb;
-}
 /** McpttOffNetworkFloorParticipant - end **/
 
 } // namespace psc
