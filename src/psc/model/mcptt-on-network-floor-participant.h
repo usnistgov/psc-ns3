@@ -356,7 +356,6 @@ private:
   bool m_overriding; //!< A flag that indicates whether the user is overriding without revoke.
   Ptr<McpttCall> m_call; //!< The McpttCall that owns this floor machine.
   uint8_t m_priority; //!< The priority of this floor machine.
-  Callback<void, Ptr<const McpttCall>, const Header&> m_rxCb; //!< The message received call back.
   Ptr<McpttOnNetworkFloorParticipantState> m_state; //!< The state of the floor machine.
   Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
   TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
@@ -366,7 +365,6 @@ private:
   Ptr<McpttTimer> m_t103; //!< The timer T103.
   Ptr<McpttTimer> m_t104; //!< The timer T104.
   Ptr<McpttTimer> m_t132; //!< The timer T132.
-  Callback<void, const McpttFloorMsg&> m_txCb; //!< The message transmission call back.
 
 public:
   /**
@@ -460,11 +458,6 @@ public:
    */
   virtual void SetPriority (uint8_t priority);
   /**
-   * Sets the received message call back.
-   * \param rxCb The received message call back.
-   */
-  virtual void SetRxCb (const Callback<void, Ptr<const McpttCall>, const Header&>  rxCb);
-  /**
    * Sets the state of the floor machine.
    * \param state The state.
    */
@@ -474,11 +467,6 @@ public:
    * \param stateChangeCb The setup delay callback.
    */
   virtual void SetStateChangeCb (const Callback<void, const McpttEntityId&, const McpttEntityId&>  stateChangeCb);
-  /**
-   * Sets the transmission call back.
-   * \param txCb The transmission call back.
-   */
-  virtual void SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb);
 };
 
 } // namespace psc
