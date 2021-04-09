@@ -115,11 +115,9 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
     m_overriding (false),
     m_owner (0),
     m_revokeMsg (McpttFloorMsgRevoke ()),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
     m_state (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
-    m_t8 (CreateObject<McpttTimer> (McpttEntityId (8, "T8"))),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
+    m_t8 (CreateObject<McpttTimer> (McpttEntityId (8, "T8")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -188,6 +186,8 @@ McpttOnNetworkFloorTowardsParticipant::ChangeState (Ptr<McpttOnNetworkFloorTowar
     }
 }
 
+// This method is the interface to the floor control and media sockets
+// to send packets back to the UEs
 void
 McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 {
@@ -195,10 +195,7 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
   Ptr<Packet> pkt = Create<Packet> ();
   pkt->AddHeader (msg);
 
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (GetOwner ()->GetOwner (), msg);
-    }
+  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageSend (GetOwner ()->GetOwner ()->GetCallId (), msg);
 
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
     {
@@ -279,10 +276,7 @@ McpttOnNetworkFloorTowardsParticipant::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (GetOwner ()->GetOwner (), msg);
-    }
+  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), msg);
 
   msg.Visit (*this);
 }
@@ -292,10 +286,7 @@ McpttOnNetworkFloorTowardsParticipant::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (GetOwner ()->GetOwner (), msg);
-    }
+  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), msg);
 
   msg.Visit (*this);
 }
@@ -434,18 +425,17 @@ McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
   m_owner = 0;
   m_state = 0;
   m_t8 = 0;
-  m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
-  m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
 }
 
+// This method is the main entry point of on-network floor control packets
+// for processing on the server
 void
 McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
 {
   NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttFloorMsg temp;
-
   pkt->PeekHeader (temp);
   uint8_t subtype = temp.GetSubtype ();
 
@@ -508,15 +498,15 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
     }
 }
 
+// This method is the main entry point of on-network media packets
+// for processing on the server
 void
 McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
 {
   NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttMediaMsg msg;
-
   pkt->RemoveHeader (msg);
-
   Receive (msg);
 }
 
@@ -758,14 +748,6 @@ McpttOnNetworkFloorTowardsParticipant::SetRevokeMsg (const McpttFloorMsgRevoke& 
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rxCb = rxCb;
-}
-
-void
 McpttOnNetworkFloorTowardsParticipant::SetState (Ptr<McpttOnNetworkFloorTowardsParticipantState>  state)
 {
   NS_LOG_FUNCTION (this << state);
@@ -803,14 +785,6 @@ McpttOnNetworkFloorTowardsParticipant::SetTrackInfo (const McpttFloorMsgFieldTra
   NS_LOG_FUNCTION (this);
 
   m_trackInfo = trackInfo;
-}
-
-void
-McpttOnNetworkFloorTowardsParticipant::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_txCb = txCb;
 }
 /** McpttOnNetworkFloorTowardsParticipant - end **/
 

@@ -89,11 +89,7 @@ McpttServerCall::McpttServerCall (void)
   : Object (),
     m_callId (std::numeric_limits<uint16_t>::max ()),
     m_originator (std::numeric_limits<uint32_t>::max ()),
-    m_floorChannel (0),
-    m_mediaChannel (0),
-    m_owner (0),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
+    m_owner (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -128,58 +124,11 @@ McpttServerCall::IsTemporaryGroup (void) const
   return m_temporaryGroup;
 }
 
-bool
-McpttServerCall::IsFloorChannelOpen (void) const
-{
-  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
-  bool isOpen = floorChannel->IsOpen ();
-
-  return isOpen;
-}
-
-bool
-McpttServerCall::IsMediaChannelOpen (void) const
-{
-  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
-  bool isOpen = mediaChannel->IsOpen ();
-
-  return isOpen;
-}
-
-void
-McpttServerCall::OpenFloorChannel (const Address& peerAddr, const uint16_t port)
-{
-  NS_LOG_FUNCTION (this << peerAddr << port);
-
-  Ptr<McpttServerApp> owner = GetOwner ();
-  Ptr<Node> node = owner->GetNode ();
-  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
-  Address localAddr = owner->GetLocalAddress ();
-
-  floorChannel->Open (node, port, localAddr, peerAddr);
-}
-
-void
-McpttServerCall::OpenMediaChannel (const Address& peerAddr, const uint16_t port)
-{
-  NS_LOG_FUNCTION (this << peerAddr << port);
-
-  Ptr<McpttServerApp> owner = GetOwner ();
-  Ptr<Node> node = owner->GetNode ();
-  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
-  Address localAddr = owner->GetLocalAddress ();
-
-  mediaChannel->Open (node, port, localAddr, peerAddr);
-}
-
 void
 McpttServerCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state)
 {
   NS_LOG_FUNCTION (this << pkt << hdr << state);
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, hdr);
-    }
+  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
   GetCallMachine ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -191,81 +140,13 @@ McpttServerCall::ReceiveSipEvent (const char* event, sip::SipProxy::TransactionS
 }
 
 void
-McpttServerCall::Receive (const McpttFloorMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-  NS_FATAL_ERROR ("Unreachable?");
-}
-
-void
-McpttServerCall::Receive (const McpttMediaMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (this, msg);
-    }
-  NS_FATAL_ERROR ("Unreachable?");
-}
-
-void
-McpttServerCall::Send (const McpttFloorMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (this, msg);
-    }
-
-  Ptr<Packet> pkt = Create<Packet> ();
-  Ptr<McpttChannel> floorChannel = GetFloorChannel ();
-
-  pkt->AddHeader (msg);
-
-  floorChannel->Send (pkt);
-}
-
-void
-McpttServerCall::Send (const McpttMediaMsg& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-
-  Ptr<Packet> pkt = Create<Packet> ();
-  Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
-  Ptr<McpttOnNetworkFloorArbitrator> arbitrator = GetArbitrator ();
-
-  McpttMediaMsg txMsg (msg);
-
-  //arbitrator->MediaReady (txMsg);
-
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (this, msg);
-    }
-
-  pkt->AddHeader (txMsg);
-
-  mediaChannel->Send (pkt);
-}
-
-void
 McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, const sip::SipHeader &hdr)
 {
   NS_LOG_FUNCTION (this << pkt << toAddr << hdr);
   if (m_owner->IsRunning ())
     {
       m_owner->SendCallControlPacket (pkt, toAddr);
-      if (!m_txCb.IsNull ())
-        {
-          m_txCb (this, hdr);
-        }
+      GetOwner ()->TraceMessageSend (GetCallId (), hdr);
     }
   else
     {
@@ -283,120 +164,14 @@ McpttServerCall::DoDispose (void)
       GetArbitrator ()->Dispose ();
       SetArbitrator (0);
     }
-  if (GetFloorChannel ())
-    {
-      GetFloorChannel ()->Dispose ();
-      SetFloorChannel (0);
-    }
-  if (GetMediaChannel ())
-    {
-      GetMediaChannel ()->Dispose ();
-      SetMediaChannel (0);
-    }
   if (GetCallMachine ())
     {
       GetCallMachine ()->Dispose ();
       SetCallMachine (0);
     }
   SetOwner (0);
-  m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
-  m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
 
   Object::DoDispose ();
-}
-
-void
-McpttServerCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
-{
-  NS_LOG_FUNCTION (this << &pkt << from);
-
-  McpttFloorMsg temp;
-
-  pkt->PeekHeader (temp);
-  uint8_t subtype = temp.GetSubtype ();
-
-  if (subtype == McpttFloorMsgRequest::SUBTYPE)
-    {
-      McpttFloorMsgRequest reqMsg;
-      pkt->RemoveHeader (reqMsg);
-      Receive (reqMsg);
-    }
-  else if (subtype == McpttFloorMsgGranted::SUBTYPE
-           || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
-    {
-      McpttFloorMsgGranted grantedMsg;
-      pkt->RemoveHeader (grantedMsg);
-      Receive (grantedMsg);
-    }
-  else if (subtype == McpttFloorMsgDeny::SUBTYPE
-           || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
-    {
-      McpttFloorMsgDeny denyMsg;
-      pkt->RemoveHeader (denyMsg);
-      Receive (denyMsg);
-    }
-  else if (subtype == McpttFloorMsgRelease::SUBTYPE
-           || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
-    {
-      McpttFloorMsgRelease releaseMsg;
-      pkt->RemoveHeader (releaseMsg);
-      Receive (releaseMsg);
-    }
-  else if (subtype == McpttFloorMsgIdle::SUBTYPE
-           || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
-    {
-      McpttFloorMsgIdle idleMsg;
-      pkt->RemoveHeader (idleMsg);
-      Receive (idleMsg);
-    }
-  else if (subtype == McpttFloorMsgTaken::SUBTYPE
-           || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
-    {
-      McpttFloorMsgTaken takenMsg;
-      pkt->RemoveHeader (takenMsg);
-      Receive (takenMsg);
-    }
-  else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
-    {
-      McpttFloorMsgRevoke revokeMsg;
-      pkt->RemoveHeader (revokeMsg);
-      Receive (revokeMsg);
-    }
-  else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
-    {
-      McpttFloorMsgQueuePositionRequest queuePositionRequestMsg;
-      pkt->RemoveHeader (queuePositionRequestMsg);
-      Receive (queuePositionRequestMsg);
-    }
-  else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
-           || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
-    {
-      McpttFloorMsgQueuePositionInfo queueInfoMsg;
-      pkt->RemoveHeader (queueInfoMsg);
-      Receive (queueInfoMsg);
-    }
-  else if (subtype == McpttFloorMsgAck::SUBTYPE)
-    {
-      McpttFloorMsgAck ackMsg;
-      pkt->RemoveHeader (ackMsg);
-      Receive (ackMsg);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
-    }
-}
-
-void
-McpttServerCall::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
-{
-  NS_LOG_FUNCTION (this << &pkt);
-
-  McpttMediaMsg msg;
-
-  pkt->RemoveHeader (msg);
-
-  Receive (msg);
 }
 
 Ptr<McpttServerCallMachine>
@@ -405,22 +180,10 @@ McpttServerCall::GetCallMachine (void) const
   return m_callMachine;
 }
 
-Ptr<McpttChannel>
-McpttServerCall::GetFloorChannel (void) const
-{
-  return m_floorChannel;
-}
-
 Ptr<McpttOnNetworkFloorArbitrator>
 McpttServerCall::GetArbitrator (void) const
 {
   return m_arbitrator;
-}
-
-Ptr<McpttChannel>
-McpttServerCall::GetMediaChannel (void) const
-{
-  return m_mediaChannel;
 }
 
 Ptr<McpttServerApp>
@@ -443,19 +206,6 @@ McpttServerCall::SetCallMachine (Ptr<McpttServerCallMachine>  callMachine)
 }
 
 void
-McpttServerCall::SetFloorChannel (Ptr<McpttChannel>  floorChannel)
-{
-  NS_LOG_FUNCTION (this << &floorChannel);
-
-  if (floorChannel != 0)
-    {
-      floorChannel->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveFloorPkt, this));
-    }
-
-  m_floorChannel = floorChannel;
-}
-
-void
 McpttServerCall::SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator)
 {
   NS_LOG_FUNCTION (this << &arbitrator);
@@ -466,19 +216,6 @@ McpttServerCall::SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator)
     }
 
   m_arbitrator = arbitrator;
-}
-
-void
-McpttServerCall::SetMediaChannel (Ptr<McpttChannel>  mediaChannel)
-{
-  NS_LOG_FUNCTION (this << &mediaChannel);
-
-  if (mediaChannel != 0)
-    {
-      mediaChannel->SetRxPktCb (MakeCallback (&McpttServerCall::ReceiveMediaPkt, this));
-    }
-
-  m_mediaChannel = mediaChannel;
 }
 
 void
@@ -513,22 +250,6 @@ uint32_t
 McpttServerCall::GetOriginator (void) const
 {
   return m_originator;
-}
-
-void
-McpttServerCall::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rxCb = rxCb;
-}
-
-void
-McpttServerCall::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb)
-{
-  NS_LOG_FUNCTION (this << &txCb);
-
-  m_txCb = txCb;
 }
 
 } // namespace psc

@@ -101,11 +101,6 @@ public:
    */
   virtual void SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr);
   /**
-   * Sends a call control message.
-   * \param msg The message to send.
-   */
-  virtual void Send (const McpttCallMsg& msg);
-  /**
    * Gets the address of the host.
    * \returns The address.
    */
@@ -120,14 +115,21 @@ public:
    * \returns True, if the application is running.
    */
   virtual bool IsRunning (void) const;
+  /**
+   * Trace the transmission of a message for a given callId
+   * \param callId The call that the message is for
+   * \param hdr Message sent
+   */
+  void TraceMessageSend (uint16_t callId, const Header& hdr);
+
+  /**
+   * Trace the reception of a message for a given callId
+   * \param callId The call that the message is for
+   * \param hdr Message received
+   */
+  void TraceMessageReceive (uint16_t callId, const Header& hdr);
 
 protected:
-  /**
-   * The callback to fire when a message is received.
-   * \param call The call associated with the message.
-   * \param msg The message that was received.
-   */
-  virtual void RxCb (Ptr<const McpttServerCall> call, const Header& msg);
   /**
    * Disposes of the McpttServerApp instance.
    */
@@ -140,12 +142,7 @@ protected:
    * Stops the McpttServerApp application.
    */
   virtual void StopApplication (void);
-  /**
-   * The callback to fire when a message is sent.
-   * \param call The call associated with the message.
-   * \param msg The message that was sent.
-   */
-  virtual void TxCb (Ptr<const McpttServerCall> call, const Header& msg);
+
   /**
    * TracedCallback signature for McpttMsg transmission or reception events
    * \param [in] app Ptr<Application>

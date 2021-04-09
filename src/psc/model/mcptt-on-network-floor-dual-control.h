@@ -178,7 +178,6 @@ protected:
 
 private:
   Ptr<McpttOnNetworkFloorArbitrator> m_owner; //!< The floor abitration server.
-  Callback<void, const McpttFloorMsg&> m_rxCb; //!< The message received call back.
   Ptr<McpttOnNetworkFloorDualControlState> m_state; //!< The state of the floor machine.
   Callback<void, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb; //!< The state change callback.
   TracedCallback<uint32_t, uint16_t, const std::string&, const std::string&, const std::string&, const std::string&> m_stateChangeTrace; //!< The state change traced callback.
@@ -187,7 +186,6 @@ private:
   McpttFloorMsgFieldTrackInfo m_trackInfo; //!< The track info field.
   Ptr<McpttTimer> m_t11; //!< The timer T11.
   Ptr<McpttTimer> m_t12; //!< The timer T12.
-  Callback<void, const McpttFloorMsg&> m_txCb; //!< The message tranmission call back.
 
 public:
   /**
@@ -226,11 +224,6 @@ public:
    */
   virtual void SetOwner (Ptr<McpttOnNetworkFloorArbitrator> owner);
   /**
-   * Sets the received message call back.
-   * \param rxCb The received message call back.
-   */
-  virtual void SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb);
-  /**
    * Sets the state of the floor machine.
    * \param state The state.
    */
@@ -255,11 +248,6 @@ public:
   * \param trackInfo The track info field.
   */
   virtual void SetTrackInfo (const McpttFloorMsgFieldTrackInfo& trackInfo);
-  /**
-   * Sets the transmission call back.
-   * \param txCb The transmission call back.
-   */
-  virtual void SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb);
 };
 
 } // namespace psc

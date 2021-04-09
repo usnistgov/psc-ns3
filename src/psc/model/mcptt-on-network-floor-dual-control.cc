@@ -83,12 +83,10 @@ McpttOnNetworkFloorDualControl::GetTypeId (void)
 McpttOnNetworkFloorDualControl::McpttOnNetworkFloorDualControl (void)
   : Object (),
     m_owner (0),
-    m_rxCb (MakeNullCallback<void, const McpttFloorMsg&> ()),
     m_state (McpttOnNetworkFloorDualControlStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
     m_t11 (CreateObject<McpttTimer> (McpttEntityId (11, "T11"))),
-    m_t12 (CreateObject<McpttTimer> (McpttEntityId (12, "T12"))),
-    m_txCb (MakeNullCallback<void, const McpttFloorMsg&> ())
+    m_t12 (CreateObject<McpttTimer> (McpttEntityId (12, "T12")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -186,11 +184,6 @@ McpttOnNetworkFloorDualControl::ReceiveFloorRelease (const McpttFloorMsgRelease&
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRelease (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -201,11 +194,6 @@ McpttOnNetworkFloorDualControl::ReceiveFloorRequest (const McpttFloorMsgRequest&
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -226,11 +214,6 @@ McpttOnNetworkFloorDualControl::ReceivePreemptiveFloorRequest (const McpttFloorM
   NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received preemptive " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceivePreemptiveFloorRequest (*this, msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (msg);
-    }
 }
 
 void
@@ -284,8 +267,6 @@ McpttOnNetworkFloorDualControl::DoDispose (void)
   m_state = 0;
   m_t11 = 0;
   m_t12 = 0;
-  m_rxCb = MakeNullCallback<void, const McpttFloorMsg&> ();
-  m_txCb = MakeNullCallback<void, const McpttFloorMsg&> ();
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
@@ -366,14 +347,6 @@ McpttOnNetworkFloorDualControl::SetOwner (Ptr<McpttOnNetworkFloorArbitrator> own
 }
 
 void
-McpttOnNetworkFloorDualControl::SetRxCb (const Callback<void, const McpttFloorMsg&>  rxCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rxCb = rxCb;
-}
-
-void
 McpttOnNetworkFloorDualControl::SetState (Ptr<McpttOnNetworkFloorDualControlState>  state)
 {
   NS_LOG_FUNCTION (this << state);
@@ -413,13 +386,6 @@ McpttOnNetworkFloorDualControl::SetTrackInfo (const McpttFloorMsgFieldTrackInfo&
   m_trackInfo = trackInfo;
 }
 
-void
-McpttOnNetworkFloorDualControl::SetTxCb (const Callback<void, const McpttFloorMsg&>  txCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_txCb = txCb;
-}
 /** McpttOnNetworkFloorDualControl - end **/
 
 } // namespace psc

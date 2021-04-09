@@ -103,28 +103,6 @@ public:
    */
   virtual bool IsTemporaryGroup (void) const;
   /**
-   * Indicates if the floor channel is open.
-   * \returns True, if the channel is open.
-   */
-  bool IsFloorChannelOpen (void) const;
-  /**
-   * Indicates if the media channel is open.
-   * \returns True, if the channel is open.
-   */
-  bool IsMediaChannelOpen (void) const;
-  /**
-   * Opens the floor channel.
-   * \param peerAddr The peer address.
-   * \param port The peer port.
-   */
-  void OpenFloorChannel (const Address& peerAddr, const uint16_t port);
-  /**
-   * Opens the media channel.
-   * \param peerAddr The peer address.
-   * \param port The peer port.
-   */
-  void OpenMediaChannel (const Address& peerAddr, const uint16_t port);
-  /**
    * Receive an on-network SIP call message
    * \param pkt The packet (without SIP header)
    * \param hdr A reference to the SIP header that has been deserialized
@@ -138,26 +116,6 @@ public:
    */
   virtual void ReceiveSipEvent (const char* event, sip::SipProxy::TransactionState state);
   /**
-   * Receives a floor message.
-   * \param msg The message that was received.
-   */
-  virtual void Receive (const McpttFloorMsg& msg);
-  /**
-   * Receive a media message.
-   * \param msg The message that was received.
-   */
-  virtual void Receive (const McpttMediaMsg& msg);
-  /**
-   * Sends a floor message.
-   * \param msg The message to send.
-   */
-  void Send (const McpttFloorMsg& msg);
-  /**
-   * Sends a media message.
-   * \param msg The media message.
-   */
-  void Send (const McpttMediaMsg& msg);
-  /**
    * Sends a call control packet.
    * \param pkt The packet (already serialized with SIP header)
    * \param toAddr The address to send to
@@ -170,18 +128,6 @@ protected:
    * Disposes of the McpttServerCall instance.
    */
   void DoDispose (void);
-  /**
-   * Handles the receieved floor control packet.
-   * \param pkt The packet that was received.
-   * \param from The source address of the packet.
-   */
-  void ReceiveFloorPkt (Ptr<Packet>  pkt, Address from);
-  /**
-   * Handles the received media packet.
-   * \param pkt The packet that was received.
-   * \param from The source address of the packet.
-   */
-  void ReceiveMediaPkt (Ptr<Packet>  pkt, Address from);
 
 private:
   uint16_t m_callId; //!< Call ID of the call.
@@ -189,13 +135,9 @@ private:
   uint32_t m_originator; //!< Originating UE user ID
   bool m_ambientListening; //!< The flag that indicates if the call is configured for ambient listening.
   bool m_temporaryGroup; //!< The flag that indicates if the call is configured for a temporary group.
-  Ptr<McpttChannel> m_floorChannel; //!< The channel to use for floor control messages.
   Ptr<McpttServerCallMachine> m_callMachine; //!< The call control machine.
   Ptr<McpttOnNetworkFloorArbitrator> m_arbitrator; //!< The floor control machine.
-  Ptr<McpttChannel> m_mediaChannel; //!< The channel to use for media messages.
   Ptr<McpttServerApp> m_owner; //!< The owner of this call.
-  Callback<void, Ptr<const McpttServerCall>, const Header&> m_rxCb; //!< The received message callback.
-  Callback<void, Ptr<const McpttServerCall>, const Header&> m_txCb; //!< The transmitted message callback.
 
 public:
   /**
@@ -204,20 +146,10 @@ public:
    */
   Ptr<McpttServerCallMachine> GetCallMachine (void) const;
   /**
-   * Gets the channel to use for floor control messages.
-   * \returns The channel.
-   */
-  Ptr<McpttChannel> GetFloorChannel (void) const;
-  /**
    * Gets the arbitrator.
    * \returns The arbitrator
    */
   Ptr<McpttOnNetworkFloorArbitrator> GetArbitrator (void) const;
-  /**
-   * Gets the channel to use for floor control messages.
-   * \returns The channel.
-   */
-  Ptr<McpttChannel> GetMediaChannel (void) const;
   /**
    * Gets the owner of this call.
    * \returns The owner.
@@ -229,20 +161,10 @@ public:
    */
   void SetCallMachine (Ptr<McpttServerCallMachine> callMachine);
   /**
-   * Sets the channel to use for floor control messages.
-   * \param floorChannel The channel.
-   */
-  void SetFloorChannel (Ptr<McpttChannel>  floorChannel);
-  /**
    * Sets the arbitrator.
    * \param arbitrator The arbitrator
    */
   void SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator);
-  /**
-   * Sets the channel to use for media messages.
-   * \param mediaChannel The channel.
-   */
-  void SetMediaChannel (Ptr<McpttChannel>  mediaChannel);
   /**
    * Sets the owner of this call.
    * \param owner The owner.
@@ -268,16 +190,6 @@ public:
    * \returns the originating client's user ID
    */
   uint32_t GetOriginator (void) const;
-  /**
-   * Sets the received message callback.
-   * \param rxCb The callback.
-   */
-  void SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  rxCb);
-  /**
-   * Sets the transmitted message callback.
-   * \param txCb The callback.
-   */
-  void SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&>  txCb);
 };
 
 } // namespace psc

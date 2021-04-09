@@ -118,10 +118,6 @@ McpttServerApp::AddCall (Ptr<McpttServerCall> call)
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (call->GetCallId () > s_callId, "CallID out of range");
-  call->GetArbitrator ()->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
-  call->SetRxCb (MakeCallback (&McpttServerApp::RxCb, this));
-  call->GetArbitrator ()->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
-  call->SetTxCb (MakeCallback (&McpttServerApp::TxCb, this));
   NS_LOG_DEBUG ("Inserting call with callId " << call->GetCallId () << " to list");
   call->SetOwner (this);
   m_calls.insert ({call->GetCallId (), call});
@@ -160,10 +156,9 @@ McpttServerApp::DoDispose (void)
 }
 
 void
-McpttServerApp::RxCb (Ptr<const McpttServerCall> call, const Header& msg)
+McpttServerApp::TraceMessageReceive (uint16_t callId, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << call << &msg);
-  m_rxTrace (this, call->GetCallId (), msg);
+  m_rxTrace (this, callId, msg);
 }
 
 void
@@ -208,19 +203,9 @@ McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr)
 }
 
 void
-McpttServerApp::Send (const McpttCallMsg& msg)
+McpttServerApp::TraceMessageSend (uint16_t callId, const Header& msg)
 {
-  NS_LOG_FUNCTION (this << &msg);
-
-  NS_FATAL_ERROR ("Not yet implemented server call msg send");
-
-}
-
-void
-McpttServerApp::TxCb (Ptr<const McpttServerCall> call, const Header& msg)
-{
-  NS_LOG_FUNCTION (this << &msg);
-  m_txTrace (this, call->GetCallId (), msg);
+  m_txTrace (this, callId, msg);
 }
 
 Address

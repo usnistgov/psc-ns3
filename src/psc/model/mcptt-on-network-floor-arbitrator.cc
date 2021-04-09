@@ -152,7 +152,6 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_queueingSupported (false),
     m_queue (CreateObject<McpttFloorQueue> ()),
     m_rejectCause (0),
-    m_rxCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ()),
     m_seqNum (0),
     m_state (McpttOnNetworkFloorArbitratorStateStartStop::GetInstance ()),
     m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
@@ -164,8 +163,7 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
     m_t3 (CreateObject<McpttTimer> (McpttEntityId (3, "T3"))),
     m_t4 (CreateObject<McpttTimer> (McpttEntityId (4, "T4"))),
     m_t7 (CreateObject<McpttTimer> (McpttEntityId (7, "T7"))),
-    m_t20 (CreateObject<McpttTimer> (McpttEntityId (20, "T20"))),
-    m_txCb (MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ())
+    m_t20 (CreateObject<McpttTimer> (McpttEntityId (20, "T20")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -189,8 +187,6 @@ McpttOnNetworkFloorArbitrator::AddParticipant (Ptr<McpttOnNetworkFloorTowardsPar
 
   participant->SetOwner (this);
   m_participants.push_back (participant);
-  participant->SetRxCb (MakeCallback (&McpttOnNetworkFloorArbitrator::RxCb, this));
-  participant->SetTxCb (MakeCallback (&McpttOnNetworkFloorArbitrator::TxCb, this));
 }
 
 void
@@ -742,8 +738,6 @@ McpttOnNetworkFloorArbitrator::DoDispose (void)
       (*it)->Dispose ();
     }
   m_participants.clear ();
-  m_rxCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
-  m_txCb = MakeNullCallback<void, Ptr<const McpttServerCall>, const Header&> ();
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
@@ -805,28 +799,6 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator T20 (Floor Granted) expired.");
 
   m_state->ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrator> (this));
-}
-
-void
-McpttOnNetworkFloorArbitrator::RxCb (Ptr<const McpttServerCall> call, const Header& msg)
-{
-  NS_LOG_FUNCTION (this << call << &msg);
-
-  if (!m_rxCb.IsNull ())
-    {
-      m_rxCb (GetOwner (), msg);
-    }
-}
-
-void
-McpttOnNetworkFloorArbitrator::TxCb (Ptr<const McpttServerCall> call, const Header& msg)
-{
-  NS_LOG_FUNCTION (this << call << &msg);
-
-  if (!m_txCb.IsNull ())
-    {
-      m_txCb (GetOwner (), msg);
-    }
 }
 
 Ptr<McpttCounter>
@@ -955,14 +927,6 @@ McpttOnNetworkFloorArbitrator::SetRejectCause (const uint16_t rejectCause)
 }
 
 void
-McpttOnNetworkFloorArbitrator::SetRxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&> rxCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rxCb = rxCb;
-}
-
-void
 McpttOnNetworkFloorArbitrator::SetState (Ptr<McpttOnNetworkFloorArbitratorState>  state)
 {
   NS_LOG_FUNCTION (this << state);
@@ -1000,14 +964,6 @@ McpttOnNetworkFloorArbitrator::SetTrackInfo (const McpttFloorMsgFieldTrackInfo& 
   NS_LOG_FUNCTION (this);
 
   m_trackInfo = trackInfo;
-}
-
-void
-McpttOnNetworkFloorArbitrator::SetTxCb (const Callback<void, Ptr<const McpttServerCall>, const Header&> txCb)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_txCb = txCb;
 }
 
 /** McpttOnNetworkFloorArbitrator - end **/
