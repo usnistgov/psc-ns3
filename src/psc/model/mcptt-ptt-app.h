@@ -36,6 +36,7 @@
 
 #include <ns3/application.h>
 #include <ns3/callback.h>
+#include <ns3/header.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 #include <ns3/traced-callback.h>
