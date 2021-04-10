@@ -29,11 +29,6 @@
 #include <ns3/ipv6-interface-container.h>
 #include <ns3/ipv4-static-routing-helper.h>
 #include <ns3/ipv6-static-routing-helper.h>
-#include <ns3/ipv4-address.h>
-#include <ns3/ipv6-address.h>
-#include <ns3/epc-tft.h>
-#include <ns3/lte-ue-net-device.h>
-#include <ns3/epc-ue-nas.h>
 
 namespace ns3 {
 

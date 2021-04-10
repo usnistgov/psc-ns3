@@ -19,20 +19,18 @@
 #define IMS_HELPER_H
 
 #include <ns3/object.h>
-#include <ns3/ipv4-address-helper.h>
-#include <ns3/eps-bearer.h>
+#include <ns3/ipv4-address.h>
+#include <ns3/ipv6-address.h>
+#include <ns3/point-to-point-net-device.h>
 
 namespace ns3 {
 
 class Node;
-class NetDevice;
-class PointToPointNetDevice;
-class EpcTft;
 
 namespace psc {
 
 /**
- * \ingroup lte
+ * \ingroup psc
  *
  * \brief Helper class to handle IMS creation
  */
