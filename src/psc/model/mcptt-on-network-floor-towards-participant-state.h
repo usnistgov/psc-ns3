@@ -29,8 +29,8 @@
  * employees is not subject to copyright protection within the United States.
  */
 
-#ifndef MCPTT_ON_NETWORK_FLOOR_DUAL_CONTROL_STATE_H
-#define MCPTT_ON_NETWORK_FLOOR_DUAL_CONTROL_STATE_H
+#ifndef MCPTT_ON_NETWORK_FLOOR_TOWARDS_PARTICIPANT_STATE_H
+#define MCPTT_ON_NETWORK_FLOOR_TOWARDS_PARTICIPANT_STATE_H
 
 #include <ns3/object.h>
 #include <ns3/ptr.h>
@@ -700,5 +700,5 @@ public:
 } // namespace psc
 } // namespace ns3
 
-#endif /* MCPTT_ON_NETWORK_FLOOR_DUAL_CONTROL_STATE_H */
+#endif /* MCPTT_ON_NETWORK_FLOOR_TOWARDS_PARTICIPANT_STATE_H */
 
