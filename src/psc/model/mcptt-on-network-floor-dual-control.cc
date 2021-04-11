@@ -104,7 +104,7 @@ McpttOnNetworkFloorDualControl::CallRelease1 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl (" << this << ") taking call release notification (part I).");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking call release notification (part I).");
 
   m_state->CallRelease1 (*this);
 }
@@ -114,7 +114,7 @@ McpttOnNetworkFloorDualControl::CallRelease2 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl (" << this << ") taking call release notification (part II).");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking call release notification (part II).");
 
   m_state->CallRelease2 (*this);
 }
@@ -124,7 +124,7 @@ McpttOnNetworkFloorDualControl::ClientRelease (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl (" << this << ") taking client release notification.");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking client release notification.");
 
   m_state->ClientRelease (*this);
 }
@@ -140,7 +140,7 @@ McpttOnNetworkFloorDualControl::ChangeState (Ptr<McpttOnNetworkFloorDualControlS
 
   if (currStateId != stateId)
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
+      NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") moving from state " << *m_state << " to state " << *state << ".");
 
       m_state->Unselected (*this);
       SetState (state);
@@ -181,7 +181,7 @@ McpttOnNetworkFloorDualControl::ReceiveFloorRelease (const McpttFloorMsgRelease&
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRelease (*this, msg);
 }
@@ -191,7 +191,7 @@ McpttOnNetworkFloorDualControl::ReceiveFloorRequest (const McpttFloorMsgRequest&
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveFloorRequest (*this, msg);
 }
@@ -201,7 +201,7 @@ McpttOnNetworkFloorDualControl::ReceiveMedia (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceiveMedia (*this, msg);
 }
@@ -211,7 +211,7 @@ McpttOnNetworkFloorDualControl::ReceivePreemptiveFloorRequest (const McpttFloorM
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl(" << this << ") received preemptive " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl(" << this << ") received preemptive " << msg.GetInstanceTypeId () << ".");
 
   m_state->ReceivePreemptiveFloorRequest (*this, msg);
 }
@@ -253,7 +253,7 @@ McpttOnNetworkFloorDualControl::Terminate (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorDualControl (" << this << ") taking terminate notification.");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl (" << this << ") taking terminate notification.");
 
   m_state->Terminate (*this);
 }
@@ -275,7 +275,7 @@ McpttOnNetworkFloorDualControl::ExpiryOfT11 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorDualControl T11 expired.");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl T11 expired.");
 
   m_state->ExpiryOfT11 (*this);
 }
@@ -285,7 +285,7 @@ McpttOnNetworkFloorDualControl::ExpiryOfT12 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorDualControl T12 expired.");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorDualControl T12 expired.");
 
   m_state->ExpiryOfT12 (*this);
 }

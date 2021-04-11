@@ -113,7 +113,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
   std::string selected = "False";
@@ -122,7 +122,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
       selected = "True";
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " canceling emergency alert.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " canceling emergency alert.");
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
   McpttCallMsgFieldGrpId grpId = GetOwner ()->GetGrpId ();
@@ -169,7 +169,7 @@ McpttEmergAlertMachineBasic::IsInEmergState (void) const
       isInEmergState = GetEmerg ();
     }
 
-  // NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " is" << (isInEmergState ? " " : " not ") << "in emergency state.");
+  // NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " is" << (isInEmergState ? " " : " not ") << "in emergency state.");
 
   return isInEmergState;
 }
@@ -201,11 +201,11 @@ McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlert (const McpttCallMsgGrpEmer
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
 
   uint32_t theirId = msg.GetUserId ().GetId ();
   Vector theirLoc = msg.GetUserLoc ().GetLoc ();
@@ -246,11 +246,11 @@ McpttEmergAlertMachineBasic::ReceiveGrpCallEmergAlertCancel (const McpttCallMsgG
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " received " << msg << ".");
 
   uint32_t theirId = msg.GetSendingId ().GetId ();
   uint32_t myId = GetOwner ()->GetCall ()->GetOwner ()->GetUserId ();
@@ -273,11 +273,11 @@ McpttEmergAlertMachineBasic::Send (const McpttCallMsg& msg)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " trying to send " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " trying to send " << msg << ".");
 
   Ptr<McpttCallMachineGrp> owner = GetOwner ();
   owner->Send (msg);
@@ -290,7 +290,7 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
   std::string selected = "False";
@@ -299,7 +299,7 @@ McpttEmergAlertMachineBasic::SendEmergAlert (void)
       selected = "True";
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " sending emergency alert.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " sending emergency alert.");
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
   Ptr<McpttCallMachineGrp> owner = GetOwner ();
@@ -349,7 +349,7 @@ McpttEmergAlertMachineBasic::Start (void)
     }
   else
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " started.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " started.");
 
       SetEmerg (false);
       SetStarted (true);
@@ -361,7 +361,7 @@ McpttEmergAlertMachineBasic::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " stopped.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " stopped.");
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
 
@@ -390,7 +390,7 @@ McpttEmergAlertMachineBasic::AddEmergUser (const McpttEmergAlertMachineBasic::Em
 {
   NS_LOG_FUNCTION (this << &user);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " adding user " << user.Id << " to emergency alert list.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " adding user " << user.Id << " to emergency alert list.");
 
   m_emergUsers.push_back (user);
 }
@@ -411,11 +411,11 @@ McpttEmergAlertMachineBasic::ExpiryOfTfe1 (uint32_t userId)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFE1 timer expired for user " << userId << " to emergency alert list.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFE1 timer expired for user " << userId << " to emergency alert list.");
 
   RemoveEmergUser (userId);
 }
@@ -427,11 +427,11 @@ McpttEmergAlertMachineBasic::ExpiryOfTfe2 (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFE2 timer expired.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFE2 timer expired.");
 
   Ptr<McpttTimer> tfe2 = GetTfe2 ();
   Ptr<McpttCallMachineGrp> owner = GetOwner ();
@@ -459,7 +459,7 @@ McpttEmergAlertMachineBasic::FindEmergUser (uint32_t userId, std::list<McpttEmer
 {
   NS_LOG_FUNCTION (this << userId);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " looking for user " << userId << " in emergency list.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " looking for user " << userId << " in emergency list.");
 
   bool found = false;
   it = m_emergUsers.begin ();
@@ -475,7 +475,7 @@ McpttEmergAlertMachineBasic::FindEmergUser (uint32_t userId, std::list<McpttEmer
         }
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " did" << (found ? " " : " NOT ") << "find user " << userId << " in emergency list.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " did" << (found ? " " : " NOT ") << "find user " << userId << " in emergency list.");
 
   return found;
 }
@@ -485,7 +485,7 @@ McpttEmergAlertMachineBasic::RemoveEmergUser (uint32_t userId)
 {
   NS_LOG_FUNCTION (this << userId);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " removing user " << userId << " from emergency list.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " removing user " << userId << " from emergency list.");
 
   std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
   bool found = FindEmergUser (userId, it);

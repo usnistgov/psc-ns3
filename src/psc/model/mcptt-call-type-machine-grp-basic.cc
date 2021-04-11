@@ -187,11 +187,11 @@ McpttCallTypeMachineGrpBasic::CallStarted (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " call started.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " call started.");
 
   Ptr<McpttTimer> tfg13 = GetTfg13 ();
   Ptr<McpttTimer> tfg14 = GetTfg14 ();
@@ -230,7 +230,7 @@ McpttCallTypeMachineGrpBasic::ChangeState (const McpttEntityId& stateId)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
   std::string selected = "0";
@@ -241,7 +241,7 @@ McpttCallTypeMachineGrpBasic::ChangeState (const McpttEntityId& stateId)
 
   if (stateId != m_stateId)
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " moving from " << GetStateId ().GetName () << " to " << stateId.GetName () << ".");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " moving from " << GetStateId ().GetName () << " to " << stateId.GetName () << ".");
       m_stateChangeTrace (m_owner->GetCall ()->GetOwner ()->GetUserId (), m_owner->GetCall ()->GetCallId (), selected, GetInstanceTypeId ().GetName (), GetStateId ().GetName (), stateId.GetName ());
       SetStateId (stateId);
     }
@@ -254,11 +254,11 @@ McpttCallTypeMachineGrpBasic::Downgrade (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " downgrading call.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " downgrading call.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   uint32_t myUserId = owner->GetCall ()->GetOwner ()->GetUserId ();
@@ -338,11 +338,11 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg1 (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  "'s TFG1 timer expired.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  "'s TFG1 timer expired.");
 
   CallStarted ();
 }
@@ -362,11 +362,11 @@ McpttCallTypeMachineGrpBasic::InitiateCall (uint8_t callType)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " initiating group call.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " initiating group call.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
@@ -423,11 +423,11 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
@@ -686,7 +686,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmerg
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
@@ -696,7 +696,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmerg
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
@@ -721,11 +721,11 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpIm
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " received " << msg << ".");
 
   McpttEntityId stateId = GetStateId ();
   McpttCallMsgFieldUserId theirLastChgUserId = msg.GetLastChgUserId ();
@@ -756,11 +756,11 @@ McpttCallTypeMachineGrpBasic::ReleaseCall (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " releasing call.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " releasing call.");
 
   McpttEntityId stateId = GetStateId ();
 
@@ -790,11 +790,11 @@ McpttCallTypeMachineGrpBasic::RejectCall (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " rejecting call.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " rejecting call.");
 
   McpttEntityId stateId = GetStateId ();
 
@@ -814,11 +814,11 @@ McpttCallTypeMachineGrpBasic::Send (const McpttCallMsg& msg)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () << " trying to send " << msg << ".");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   owner->Send (msg);
@@ -861,7 +861,7 @@ McpttCallTypeMachineGrpBasic::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " started.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " started.");
 
   SetStarted (true);
 }
@@ -871,7 +871,7 @@ McpttCallTypeMachineGrpBasic::Stop (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " stopped.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " stopped.");
 
   Ptr<McpttTimer> tfg11 = GetTfg11 ();
   Ptr<McpttTimer> tfg12 = GetTfg12 ();
@@ -919,11 +919,11 @@ McpttCallTypeMachineGrpBasic::UpgradeTo (const McpttCallMsgFieldCallType& callTy
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () << " " << GetOwner ()->GetCall ()->GetOwner ()->GetUserId () <<  " upgrading call type to " << (uint32_t)callType.GetType () << ".");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
@@ -1035,11 +1035,11 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg11 (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFG11 timer expired " << GetCfg11 ()->GetValue () << " times.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFG11 timer expired " << GetCfg11 ()->GetValue () << " times.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
@@ -1078,11 +1078,11 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg12 (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFG12 timer expired " << GetCfg12 ()->GetValue () << " times.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFG12 timer expired " << GetCfg12 ()->GetValue () << " times.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttCallMsgFieldGrpId grpId = owner->GetGrpId ();
@@ -1121,11 +1121,11 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg13 (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFG13 timer expired.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFG13 timer expired.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();
@@ -1149,11 +1149,11 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg14 (void)
 
   if (!IsStarted ())
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  " not started yet.");
+      NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  " not started yet.");
       return;
     }
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": " << GetInstanceTypeId ().GetName () <<  "'s TFG14 timer expired.");
+  NS_LOG_LOGIC (GetInstanceTypeId ().GetName () <<  "'s TFG14 timer expired.");
 
   Ptr<McpttCallMachineGrpBasic> owner = GetOwner ();
   McpttEntityId stateId = GetStateId ();

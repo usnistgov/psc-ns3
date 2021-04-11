@@ -122,7 +122,7 @@ McpttMediaSrc::StartMakingReq (void)
   m_started = true;
   m_startTime = Simulator::Now ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester starting to make request.");
+  NS_LOG_LOGIC ("Requester starting to make request.");
 
   MakeRequest ();
 }
@@ -134,7 +134,7 @@ McpttMediaSrc::StopMakingReq (void)
 
   m_started = false;
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester stopping request.");
+  NS_LOG_LOGIC ("Requester stopping request.");
 
   CancelRequest ();
 }
@@ -158,7 +158,7 @@ McpttMediaSrc::CancelRequest (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester canceling pending request.");
+  NS_LOG_LOGIC ("Requester canceling pending request.");
 
   EventId reqEvent = GetReqEvent ();
 
@@ -192,7 +192,7 @@ McpttMediaSrc::MakeRequest (void)
 
   uint32_t size = msg.GetSerializedSize ();
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester making request to send " << m_bytes << " data byte(s), for a total of " << size << " byte(s).");
+  NS_LOG_LOGIC ("Requester making request to send " << m_bytes << " data byte(s), for a total of " << size << " byte(s).");
 
   if (sink->TakeSendReq (msg))
     {
@@ -217,7 +217,7 @@ McpttMediaSrc::ScheduleNextReq (void)
 
   Time nextReq (Seconds (bits / static_cast<double> (m_dataRate.GetBitRate ())));
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: Requester scheduling to make request in " << nextReq.As (Time::S) << ".");
+  NS_LOG_LOGIC ("Requester scheduling to make request in " << nextReq.As (Time::S) << ".");
 
   EventId reqEvent = Simulator::Schedule (nextReq, &McpttMediaSrc::MakeRequest, this);
 

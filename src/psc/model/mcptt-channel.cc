@@ -264,7 +264,7 @@ McpttChannel::ReceivePkts (Ptr<Socket> socket)
           NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
         }
 
-      NS_LOG_INFO (Simulator::Now ().GetSeconds () << "s: McpttChannel received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
+      NS_LOG_INFO ("McpttChannel received " << pktSize << " byte packet from " << ssAddress.str () << ":" << ssPort.str () << ".");
       ReceivePkt (pkt, from);
     }
 }

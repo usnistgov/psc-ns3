@@ -233,7 +233,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
       m_rxTrace (packet, from);
       if (InetSocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO (Simulator::Now ().GetSeconds () << " server received " << packet->GetSize () << " bytes from " <<
+          NS_LOG_INFO ("server received " << packet->GetSize () << " bytes from " <<
                        InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
                        InetSocketAddress::ConvertFrom (from).GetPort ());
 
@@ -245,7 +245,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
         }
       else if (Inet6SocketAddress::IsMatchingType (from))
         {
-          NS_LOG_INFO (Simulator::Now ().GetSeconds () << " server received " << packet->GetSize () << " bytes from " <<
+          NS_LOG_INFO ("server received " << packet->GetSize () << " bytes from " <<
                        Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
                        Inet6SocketAddress::ConvertFrom (from).GetPort ());
           os << Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << ":" << Inet6SocketAddress::ConvertFrom (from).GetPort ();
@@ -329,8 +329,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
               if (InetSocketAddress::IsMatchingType (addrs_dest))
                 {
-                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-                               << " server sent "
+                  NS_LOG_INFO ("server sent "
                                << packet->GetSize ()
                                << " bytes to "
                                << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 ()
@@ -339,8 +338,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
               else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
                 {
-                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-                               << " server sent "
+                  NS_LOG_INFO ("server sent "
                                << packet->GetSize ()
                                << " bytes to "
                                << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 ()
@@ -371,8 +369,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
               if (InetSocketAddress::IsMatchingType (addrs_dest))
                 {
-                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-                               << " server sent "
+                  NS_LOG_INFO ("server sent "
                                << packet->GetSize ()
                                << " bytes to "
                                << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 ()
@@ -381,8 +378,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
               else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
                 {
-                  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-                               << " server sent "
+                  NS_LOG_INFO ("server sent "
                                << packet->GetSize ()
                                << " bytes to "
                                << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 ()
@@ -426,8 +422,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 
                   if (InetSocketAddress::IsMatchingType (addrs_dest))
                     {
-                      NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-                                   << " server sent "
+                      NS_LOG_INFO ("server sent "
                                    << packet->GetSize ()
                                    << " bytes to "
                                    << InetSocketAddress::ConvertFrom (addrs_dest).GetIpv4 ()
@@ -436,8 +431,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                     }
                   else if (Inet6SocketAddress::IsMatchingType (addrs_dest))
                     {
-                      NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-                                   << " server sent "
+                      NS_LOG_INFO ("server sent "
                                    << packet->GetSize ()
                                    << " bytes to "
                                    << Inet6SocketAddress::ConvertFrom (addrs_dest).GetIpv6 ()
@@ -447,7 +441,7 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
                 }
               else // Time has expired. Remove client.
                 {
-                  //NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () <<" client " << it->first << " session time expired! ");
+                  //NS_LOG_INFO ("client " << it->first << " session time expired! ");
                   tempit = it;
                   --it;
                   m_clients.erase (tempit);
@@ -461,8 +455,7 @@ void
 UdpGroupEchoServer::LogClients (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_INFO (Simulator::Now ().GetSeconds ()
-               << " number of clients: " << m_clients.size ());
+  NS_LOG_INFO ("number of clients: " << m_clients.size ());
   if ( m_clients.size () > 0 )
     {
       // Check time lapse

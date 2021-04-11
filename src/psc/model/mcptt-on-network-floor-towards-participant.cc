@@ -515,7 +515,7 @@ McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8 (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": McpttOnNetworkFloorTowardsParticipant T8 expired.");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant T8 expired.");
 
   m_state->ExpiryOfT8 (Ptr<McpttOnNetworkFloorTowardsParticipant> (this));
 }
@@ -525,7 +525,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorDeny (McpttFloorMsgDeny& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorDeny (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
@@ -535,7 +535,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorGranted (McpttFloorMsgGranted& m
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorGranted (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
@@ -545,7 +545,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorIdle (McpttFloorMsgIdle& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorIdle (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
@@ -555,7 +555,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorRevoke (McpttFloorMsgRevoke& msg
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorRevoke (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
@@ -565,7 +565,7 @@ McpttOnNetworkFloorTowardsParticipant::SendFloorTaken (McpttFloorMsgTaken& msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendFloorTaken (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
@@ -575,7 +575,7 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "s: McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
+  NS_LOG_LOGIC ("McpttOnNetworkFloorTowardsParticipant(" << this << ") sending " << msg.GetInstanceTypeId () << ".");
 
   m_state->SendMedia (Ptr<McpttOnNetworkFloorTowardsParticipant> (this), msg);
 }
