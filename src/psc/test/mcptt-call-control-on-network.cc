@@ -157,17 +157,35 @@ McpttTestCasePreArrangedGroupCO::Execute (void)
 {
   // Configure expected sequence according to TS 36.579-2, Table 6.1.1.1.3.2-1
   m_expectedEvents.push_back (TestEvent (2, "-->", "SIP INVITE"));
-  // TODO: Add step 3 SIP 100 Trying message
+  // TODO: Step 3 'SIP 100 Trying' is occurring (in the logs) but this
+  // test suite cannot hook the event until McpttCall::ReceiveSipEvent
+  // is completed (and the TRYING_RECEIVED event is exported)
   m_expectedEvents.push_back (TestEvent (5, "<--", "SIP 200 (OK)"));
-  // TODO: Add step 6 SIP ACK message
+  m_expectedEvents.push_back (TestEvent (6, "-->", "SIP ACK"));
   m_expectedEvents.push_back (TestEvent (9, "-->", "Floor Release"));
   m_expectedEvents.push_back (TestEvent (10, "<--", "Floor Ack"));
   m_expectedEvents.push_back (TestEvent (11, "<--", "Floor Idle"));
-  // TODO:  events beyond step 11
+  // TODO:  add events beyond step 11
 
   Simulator::Stop (Seconds (10));
   Simulator::Run ();
   Simulator::Destroy ();
+
+//#define PRE_ARRANGED_GROUP_C0 1
+#ifdef PRE_ARRANGED_GROUP_C0
+  // Define this to print out the observed events, if needed for debugging
+  // or to generate new expected events.
+  std::cout << "Expected events:" << std::endl;
+  for (auto it = m_expectedEvents.begin (); it != m_expectedEvents.end (); it++)
+    {
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_ueToServer << ", \"" << it->m_message << "\"));" << std::endl;
+    }
+  std::cout << "Observed events: (these are printed out as 'expected' so they can be copied)" << std::endl;
+  for (auto it = m_observedEvents.begin (); it != m_observedEvents.end (); it++)
+    {
+      std::cout << "  m_expectedEvents.push_back (TestEvent (" << it->m_step << ", " << it->m_ueToServer << ", \"" << it->m_message << "\"));" << std::endl;
+    }
+#endif
 
   NS_TEST_ASSERT_MSG_EQ (m_observedEvents.size (), m_expectedEvents.size (), "Did not observe all expected events");
   auto it1 = m_observedEvents.begin ();
@@ -188,6 +206,7 @@ McpttTestCasePreArrangedGroupCO::Execute (void)
 void
 McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
 {
+  NS_LOG_DEBUG ("UE1 receive message");
   if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId ())
     {
       sip::SipHeader::SipMessageType messageType = static_cast<const sip::SipHeader &> (msg).GetMessageType ();
@@ -198,13 +217,16 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
           if (statusCode == 200 && m_step == 2)
             {
               NS_LOG_DEBUG ("Step 5 <-- SIP 200 (OK)");
-              m_observedEvents.push_back (TestEvent (5, "<--", "SIP 200 (OK)"));
+              // Skip to step 5, since step 3 (Trying) is not observable
+              // in this test, and step 4 is 'Void' in Table 6.1.1.1.3.2-1
               m_step = 5;
+              m_observedEvents.push_back (TestEvent (m_step, "<--", "SIP 200 (OK)"));
             }
         }
       else if (messageType == sip::SipHeader::SIP_REQUEST)
         {
           // Placeholder
+          NS_LOG_DEBUG ("SIP Request not yet expected");
         }
     }
   else if (msg.GetInstanceTypeId () == McpttFloorMsgAck::GetTypeId ())
@@ -230,6 +252,7 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
 void
 McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
 {
+  NS_LOG_DEBUG ("UE1 send message");
   if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId ())
     {
       sip::SipHeader::SipMessageType messageType = static_cast<const sip::SipHeader &> (msg).GetMessageType ();
@@ -240,18 +263,24 @@ McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t c
           if (method == sip::SipHeader::INVITE && m_step == 1)
             {
               NS_LOG_DEBUG ("Step 2 --> SIP INVITE");
-              m_observedEvents.push_back (TestEvent (2, "-->", "SIP INVITE"));
-              m_step = 2;
+              m_step++;
+              m_observedEvents.push_back (TestEvent (m_step, "-->", "SIP INVITE"));
+            }
+          else if (method == sip::SipHeader::ACK && m_step == 5)
+            {
+              NS_LOG_DEBUG ("Step 6 --> SIP ACK");
+              m_step++;
+              m_observedEvents.push_back (TestEvent (m_step, "-->", "SIP ACK"));
             }
         }
       else if (messageType == sip::SipHeader::SIP_RESPONSE)
         {
-          // Placeholder
+          NS_LOG_DEBUG ("SIP Response not yet expected");
         }
     }
   else if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
     {
-      if (m_step == 5)
+      if (m_step == 6)
         {
           NS_LOG_DEBUG ("Step 9 --> Floor Release");
           m_observedEvents.push_back (TestEvent (9, "-->", "Floor Release"));
@@ -263,6 +292,7 @@ McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t c
 void
 McpttTestCasePreArrangedGroupCO::ServerRxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
 {
+  NS_LOG_DEBUG ("Server receive message");
   // Note:  In TS 36.579-2, events are ordered from the perspective of
   // the UE, testing against a black box EPC, so only log observed events
   // on the UE, and just print debug log statements here
@@ -279,6 +309,7 @@ McpttTestCasePreArrangedGroupCO::ServerRxCb (Ptr<const Application> app, uint16_
 void
 McpttTestCasePreArrangedGroupCO::ServerTxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
 {
+  NS_LOG_DEBUG ("Server send message");
   // Note:  In TS 36.579-2, events are ordered from the perspective of
   // the UE, testing against a black box EPC, so only log observed events
   // on the UE, and just print debug log statements here
