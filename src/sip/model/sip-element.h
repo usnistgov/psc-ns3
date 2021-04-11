@@ -491,11 +491,6 @@ protected:
   // Accessors for private members; these are exposed as non-const accessors
   // rather than simply making the member variables protected because
   // PyBindGen does not support protected member variables of this type
-
-  /**
-   * Handle Timer K expiry (client move state from COMPLETED to TERMINATED)
-   * \param id Transaction ID
-   */
   std::unordered_map<DialogId, Dialog, TupleHash>& GetDialogs (void);
   std::unordered_map<TransactionId, Transaction, TupleHash>& GetTransactions (void);
   std::unordered_map<uint16_t, Callback<void, const char*, TransactionState> >& GetEventCallbacks (void);
