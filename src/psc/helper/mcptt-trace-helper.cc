@@ -210,7 +210,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
       return;
     }
 
-  std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
+  std::pair<uint32_t, uint16_t> key = std::make_pair (userId, callId);
   auto it = m_accessTimeMap.find (key);
   if (it == m_accessTimeMap.end ())
     {
@@ -398,7 +398,7 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
     }
 
   // Note: 'selected' field is not used by this method
-  std::pair<uint32_t, uint32_t> key = std::make_pair (userId, callId);
+  std::pair<uint32_t, uint16_t> key = std::make_pair (userId, callId);
   auto it = m_accessTimeMap.find (key);
   if (it == m_accessTimeMap.end ())
     {
