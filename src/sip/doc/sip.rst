@@ -34,7 +34,7 @@ usage of SIP in the IMS are described in TS 24.229 [TS24.229]_.
 For the procedures at the UE (Section 5.1):
 
 * **Registration and authentication:**  Not implemented.
-* **Subscription and notificationn:**  Not implemented.
+* **Subscription and notification:**  Not implemented.
 * **Call initiation:** Supported
 * **Session modification:** Not yet supported, but possible for future.
 * **Call release:** Supported
@@ -109,8 +109,7 @@ The following timers are used:
 * **Timer F:** non-INVITE transaction timeout interval (UDP only).  Similar to Timer B.
 * **Timer I:** Wait time for ACK retransmits (server absorb ACKs for a time before moving to Terminated).  This is part of INVITE server transaction.
 * **Timer J:** Wait time for non-INVITE request retransmits (server Completed to Terminated transition, to respond to duplicate requests).
-* **Timer K:** Wait time for response retransmits (client absorbs any retransmitted responses for a time before moving from Completed to Terminated).  This is
-part of non-INVITE client transaction.
+* **Timer K:** Wait time for response retransmits (client absorbs any retransmitted responses for a time before moving from Completed to Terminated).  This is part of non-INVITE client transaction.
 
 The following timers from [RFC3261]_ are not supported:
 
@@ -136,6 +135,9 @@ messages for SIP sessions.  This model does not support [RFC4028]_.
 
 References
 ==========
+
+If references are not rendered here, they can be found in the bibliography
+section at the end of the document.
 
 .. [RFC3261] RFC 3261 "SIP: Session Initiation Protocol"
 

@@ -68,6 +68,7 @@ SOURCES = \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
 	$(SRC)/psc/doc/source/uav-mobility-energy.rst \
 	$(SRC)/psc/doc/source/mcptt.rst \
+	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
@@ -88,6 +89,7 @@ SOURCES = \
 	$(SRC)/olsr/doc/olsr.rst \
 	$(SRC)/openflow/doc/openflow-switch.rst \
 	$(SRC)/point-to-point/doc/point-to-point.rst \
+	$(SRC)/sip/doc/sip.rst \
 	$(SRC)/wifi/doc/source/wifi.rst \
 	$(SRC)/wifi/doc/source/wifi-design.rst \
 	$(SRC)/wifi/doc/source/wifi-user.rst \

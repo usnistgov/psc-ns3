@@ -501,7 +501,7 @@ There are five helpers:
   * ``ns3::psc::McpttMsgStats`` for tracing transmitted MCPTT application messages,
   * ``ns3::psc::McpttProseCollisionDetector`` for examining ProSe operation, and
   * ``ns3::psc::McpttStateMachineStats`` for tracing state machine state transitions.
-  * ``ns3::ImsHelper`` for adding an optional IMS (IP Multimedia Subsystem);
+  * ``ns3::psc::ImsHelper`` for adding an optional IMS (IP Multimedia Subsystem);
       the IMS is modeled as a single node connected to the PGW.
 
 As stated previously, the ``ns3::psc::McpttHelper`` is used to configure and deploy
@@ -766,7 +766,7 @@ mcptt-on-network-two-calls
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The program ``mcptt-on-network-two-calls.cc`` is an adaptation of the LTE
-example ``lena-simple-epc.cc` to experiment with two MCPTT on-network calls
+example ``lena-simple-epc.cc`` to experiment with two MCPTT on-network calls
 involving two different pairs of UEs to a single MCPTT server managing 
 both calls.  The first group call (between the first pair of UEs) starts
 when the McpttPttApps start at time 2 seconds and runs until simulation
@@ -1143,6 +1143,25 @@ standards to create over 50 test cases for off-network MCPTT operation.
 More information about those test cases
 can be found in NIST technical report NISTIR 8236 [NIST.IR.8236]_.
 
+On-network MCPTT call control has been tested against the protocol
+conformance specification 3GPP TS 36.579-2 [TS365792]_.  The current
+test suite checks steps 1-11 in Table 6.1.1.1.3.2-1 for the on-network,
+on-demand pre-arranged group call with automatic commencement mode.
+The underlying SIP module supporting the on-network MCPTT call control
+has also been tested against the SIP RFCs.
+
+On-network MCPTT floor control has been tested for several floor control
+scenarios, including:
+
+* UE floor release after initiating the call
+* UE floor grant after another UE initiates the call and then releases the floor
+* UE floor revoked after higher priority UE requests floor
+* UE floor denied due to another UE requesting the floor
+* UE floor queued and later cancelled by the requesting UE
+* UE floor queued and later granted after another UE releases the floor
+* Floor control with dual floor control enabled (two UEs holding the floor
+  at the same time
+
 .. References below will be placed in separate Bibliography section
 
 .. [TS22179] 3GPP TS 22.179 `"Mission Critical Push To Talk (MCPTT) Mission Critical Push to Talk (MCPTT) over LTE; Stage 1"
@@ -1153,6 +1172,9 @@ can be found in NIST technical report NISTIR 8236 [NIST.IR.8236]_.
 
 .. [TS24380] 3GPP TS 24.380 `"Mission Critical Push To Talk (MCPTT) media plane control; Protocol specification"
    <http://www.3gpp.org/ftp//Specs/archive/24_series/24.380/24380-e40.zip>`_
+
+.. [TS365792] 3GPP TS 36.579-2 `"Mission Critical Push To Talk (MCPTT) User Equpment (UE) Protocol conformance specification"
+   <https://www.3gpp.org/ftp//Specs/archive/36_series/36.579-2/36579-2-e50.zip>`_
 
 .. [NIST.IR.8206] Frey, J., Pieper, J., and Thompson, T., `"Mission Critical Voice QoE Mouth-to-Ear Latency Measurement Methods" <https://doi.org/10.6028/NIST.IR.8206>`_, February 2018.
 

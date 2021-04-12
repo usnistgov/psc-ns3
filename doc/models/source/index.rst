@@ -46,6 +46,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    propagation
    psc
    spectrum
+   sip
    sixlowpan
    topology
    traffic-control

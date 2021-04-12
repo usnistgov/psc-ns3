@@ -4702,6 +4702,7 @@ equally among carriers, by diving the buffer status report among different carri
 SRB0 and SRB1 flows will be forwarded only over primary carrier.
 
 .. include:: lte-design-sidelink.inc
+
 -------
 Helpers
 -------
@@ -4740,4 +4741,3 @@ called by the ``LteHelper``. The exact interactions are displayed in the Figure 
 
    Sequence diagram of the interaction between ``LteHelper`` and ``EpcHelper``.
 
->>>>>>> master
