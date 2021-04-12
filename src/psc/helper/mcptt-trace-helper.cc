@@ -238,6 +238,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "D"; // denied
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
         {
@@ -248,6 +249,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
         {
@@ -258,6 +260,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::PTT_BUTTON_RELEASED) == 0)
         {
@@ -268,6 +271,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "A"; // abandoned
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
     }
   else if (it->second.second == "'U: queued'"
@@ -293,6 +297,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "D"; // denied
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_REVOKED) == 0)
         {
@@ -303,6 +308,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::RECEIVED_FLOOR_IDLE) == 0)
         {
@@ -313,6 +319,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::TIMER_T101_EXPIRED_N_TIMES) == 0)
         {
@@ -323,6 +330,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::TIMER_T204_EXPIRED_N_TIMES) == 0)
         {
@@ -333,6 +341,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::TIMER_T203_EXPIRED) == 0)
         {
@@ -343,6 +352,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::TIMER_T233_EXPIRED) == 0)
         {
@@ -353,6 +363,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (strcmp (description, McpttFloorParticipant::TIMER_T132_EXPIRED) == 0)
         {
@@ -367,6 +378,7 @@ McpttTraceHelper::TraceEventsForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "A"; // abandoned
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
     }
 }
@@ -438,6 +450,7 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "I"; // immediate
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
       else
         {
@@ -448,10 +461,10 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           m_accessTimeTraceFile << std::setw (6) << "F"; // failed
           m_accessTimeTraceFile << std::fixed << std::setw (11) << (Simulator::Now () - it->second.first).GetSeconds () << std::endl;
           m_accessTimeMap.erase (key);
+          return;
         }
     }
-
-  if (it->second.second == "'U: pending Request'"
+  else if (it->second.second == "'U: pending Request'"
       || it->second.second == "'O: pending request'")
     {
       if (newStateName == "'U: has permission'"
@@ -487,12 +500,14 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           // catch them before this state transition and erase the entry
           // However, end of call may trigger this also, so just erase here
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
         {
           // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
           // However, end of call may trigger this also, so just erase here
           m_accessTimeMap.erase (key);
+          return; 
         }
       else
         {
@@ -500,7 +515,7 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           NS_FATAL_ERROR ("Unknown state transition from U:  pending request");
         }
     }
-  if (it->second.second == "'U: queued'"
+  else if (it->second.second == "'U: queued'"
       || it->second.second == "'O: queued'")
     {
       if (newStateName == "'U: has permission'"
@@ -525,12 +540,14 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
           // catch them before this state transition and erase the entry
           // However, end of call may trigger this also, so just erase here
           m_accessTimeMap.erase (key);
+          return;
         }
       else if (newStateName == "'Releasing'" || newStateName == "'Start-stop'")
         {
           // No such transitions listed in TS 24.380 Figure 6.2.4.1-1
           // However, end of call may trigger this also, so just erase here
           m_accessTimeMap.erase (key);
+          return;
         }
       else
         {
