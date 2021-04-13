@@ -17,4 +17,5 @@ Public Safety Communications
    udp-group-echo
    uav-mobility-energy
    intel-http
+   video-models
    psc-references

@@ -71,6 +71,7 @@ SOURCES = \
 	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 	$(SRC)/psc/doc/source/intel-http.rst \
+	$(SRC)/psc/doc/source/video-models.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
 	$(SRC)/network/doc/error-model.rst \
@@ -371,6 +372,7 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/PacketTimeline.png \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
 	$(SRC)/psc/doc/source/figures/intel-http.png \
+	$(SRC)/psc/doc/source/figures/sample-video-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-scenario.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-access-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-m2e-cdf.png \
