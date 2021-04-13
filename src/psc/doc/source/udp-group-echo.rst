@@ -4,7 +4,7 @@
 UDP Group Echo Server
 +++++++++++++++++++++
 
-The class ``ns3::UdpGroupEchoServer`` implements a group echo server that
+The class ``ns3::psc::UdpGroupEchoServer`` implements a group echo server that
 echoes received UDP datagrams to a set of clients.  The policy
 of generating replies can be tailored through the use of attributes.
 
@@ -27,9 +27,9 @@ The implementation is provided in the following files:
 
 Additionally, a simple example is provided at ``src/psc/examples/example-udp-group-echo.cc``.
 
-The model is based on the ``ns3::UdpEchoServer``, but differs in that the
+The model is based on the ``ns3::psc::UdpEchoServer``, but differs in that the
 existing server only handles one client, while the group echo server handles
-one or more clients.  The behavior of the ``ns3::UdpEchoServer`` can be
+one or more clients.  The behavior of the ``ns3::psc::UdpEchoServer`` can be
 reproduced (i.e., it is a special case of this object).
 
 The model works as follows.  The UdpGroupEchoServer is an |ns3| application,
