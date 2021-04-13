@@ -70,6 +70,7 @@ SOURCES = \
 	$(SRC)/psc/doc/source/mcptt.rst \
 	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
+	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
 	$(SRC)/network/doc/error-model.rst \
