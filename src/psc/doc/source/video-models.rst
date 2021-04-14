@@ -166,8 +166,8 @@ Attributes
 PscVideoStreaming
 -----------------
 * ``Distribution``:
-    Name of the data distribution provided by
-    ``ns3::psc::PscVideoStreamingDistributions`` to be used by the model
+    Label in ``ns3::psc::PscVideoStreamingDistributions`` that selects 
+    the data distribution to be used by the model
 * ``ReceiverAddress``:
     Address of the node receiving the data packets
 * ``ReceiverPort``:
