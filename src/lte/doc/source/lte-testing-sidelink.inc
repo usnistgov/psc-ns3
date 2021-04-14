@@ -44,7 +44,7 @@ This test checks the starting frame and subframe number of the next Sidelink
 Control (SC) period given the current frame and subframe number. Let :math:`Fr`
 be the current frame number and :math:`Sf` the current subframe number. The
 absolute subframe number :math:`Sf_\mathrm{abs}`, since the :math:`Sf = 0` of
-:math:`Fr = 0` is give by :
+:math:`Fr = 0` is given by :
 
 .. math::
 
@@ -78,18 +78,18 @@ Three different configuration has been tested:
 
 For this configuration, the expected behavior is that the next Sidelink control
 period will start in frame number 8 and subframe 0 because of the
-:math:`Sc_\mathrm{offset}` of 80 msec.
+:math:`Sc_\mathrm{offset}` of 80 ms.
 
 2. :math:`Fr = 1023` and :math:`Sf = 0`
 
 This configuration tests the roll over upon reaching the maximum frame number
 range. Here, the expected behavior is to have a :math:`Sc_\mathrm{offset}` of 80
-msec once again starting from :math:`Sf = 0` of :math:`Fr = 0`.
+ms once again starting from :math:`Sf = 0` of :math:`Fr = 0`.
 
 3. :math:`Fr = 1002` and :math:`Sf = 0`
 
 This configuration reflects the condition when the current frame and subframe
-number are part of an on going Sidelink control period. The expected behavior is
+number are part of an ongoing Sidelink control period. The expected behavior is
 that the next period will start in frame 1004 and subframe 0, i.e., right after
 the remaining frames/subframes of the current Sidelink control period.
 
@@ -196,7 +196,7 @@ This test checks for the frame-subframe number for PSSCH transmissions. In this
 test beside the parameters from the pool configuration, an important parameter,
 i.e., Time Resource Pattern index (iTRP) is provided. All the tests are
 performed with :math:`iTRP = 5`, which corresponds to the bit map of
-(0,0,0,0,0,1,0,0) give by the table Table 14.1.1.1.1-1 of [TS36213]_. Every
+(0,0,0,0,0,1,0,0) given by Table 14.1.1.1.1-1 of [TS36213]_. Every
 transmission on PSSCH is transmitted using 4 HARQ processes using 4 different
 subframes. Therefore, this test verifies the frame and subframe number of all
 the 4 transmissions.
@@ -308,7 +308,7 @@ Four different configurations have been tested:
 
 For this configuration, the expected behavior is that the next discovery period
 will start in frame number 8 and subframe 0 because of the
-:math:`Disc_\mathrm{offset}` of 80 msec.
+:math:`Disc_\mathrm{offset}` of 80 ms.
 
 2. :math:`Fr = 8` and :math:`Sf = 0`
 
@@ -319,12 +319,12 @@ will start after :math:`DiscPr = 320 ms` in frame number 40 and subframe 0.
 
 This configuration tests the roll over upon reaching the maximum frame number
 range. Here the expected behavior is to have a :math:`Disc_\mathrm{offset}` of
-80 msec once again starting from frame number 0.
+80 ms once again starting from frame number 0.
 
 4. :math:`Fr = 800` and :math:`Sf = 0`
 
 This configuration reflects the condition when the current frame and subframe
-number are part of an on going discovery period. The expected behavior is that
+number are part of an ongoing discovery period. The expected behavior is that
 the next discovery period will start in frame 808 and subframe 0, i.e., right
 after the remaining frames/subframes of the current discovery period.
 
@@ -390,7 +390,7 @@ and RB 10 and 11 should be assigned for discovery transmission.
 
 2. :math:`Fr = 8` and :math:`Sf = 2`
 
-If we go to 82 ms, we we should be outside the discovery channel and there
+If we go to 82 ms, we should be outside the discovery channel and there
 should be no resource block assignment during this subframe.
 
 System Tests

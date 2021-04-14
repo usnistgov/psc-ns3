@@ -896,7 +896,7 @@ MAC
 +++
 
 Among the following eNB and UE specific enhancements for ProSe, one of the
-important change, irrespective of the eNB or UE implementation, is the
+important changes, irrespective of the eNB or UE implementation, is the
 limitation to the maximum frame number, which is now set to 1024. This is
 because all the computations to determine correctly the boundaries of ProSe
 communication and discovery periods and their resource allocation considers the
@@ -1055,7 +1055,7 @@ Sidelink synchronization
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 For the Sidelink synchronization, ``LteUeMac`` receives notification from
-``LteUePhy`` upon change of time, i.e, change of frame and subframe number when
+``LteUePhy`` upon change of time, i.e., change of frame and subframe number when
 a new SyncRef is selected.
 
 PHY
@@ -1092,7 +1092,7 @@ respectively. It also has the function
 StartRandomInitialSubframeIndication for triggering the
 SubframeIndication method by randomly choosing the frame and subframe
 number. Additionally, the function SetDownlinkCqiPeriodicity sets the
-periodicty for the downlink periodic wideband (P10) and aperiodic
+periodicity for the downlink periodic wideband (P10) and aperiodic
 subband (A30) CQI reporting. The function InitializeDiscRxPool is used
 to initialize the discovery reception pool taking in appropriate frame
 number and subframe number as parameters.
@@ -1210,7 +1210,7 @@ the MIB-SL to ``LteUePhy`` class. Once a suitable SyncRef is selected, the
 change of timing is performed upon subframe indication, i.e., before the next
 subframe to avoid any miss alignments. We also note that the transmission of a
 MIB-SL has priority over the transmission of SCI, if they are scheduled in the
-same subframe. On the other hand, an MIB-SL can not be transmitted if a SyncRef
+same subframe. On the other hand, an MIB-SL cannot be transmitted if a SyncRef
 scanning or measurement process is in progress. The ``LteUeMac`` and
 ``LteUeRrc`` class are notified about the successful change of timings using the
 existing SAP interfaces, i.e., ``LteUeCphySapUser`` and ``LteUePhySapUser``
@@ -1362,7 +1362,7 @@ perform a TB to SINR index mapping and retrieve the SINR of the expected TB from
 the perceived SINR vector. Then, this SINR and the HARQ info (if it is the
 retransmission) along with other parameters are used to compute the BLER of this
 message. Finally, the third type of messages, similar to the first type, are
-decoded by first storing them in desending order of the SINR, since we do not
+decoded by first storing them in descending order of the SINR, since we do not
 have the prior information about the TB. The only difference, is that the
 discovery messages can be retransmitted up to 3 times, therefore, we maintain
 the HARQ history of each transmission and use it along with other parameters for
@@ -1421,7 +1421,7 @@ components. These objects are:
 
 **Note: Wrap-around functionality is not fully supported yet.**
 
-It is possible to create a simple LTE-only simulations by using the
+It is possible to create a simple LTE-only simulation by using the
 ``LteHelper`` alone, or to create complete LTE-EPC simulations by using both
 ``LteHelper`` and ``EpcHelper``. When both helpers are used, they interact in a
 master-slave fashion, with the ``LteHelper`` being the Master that interacts

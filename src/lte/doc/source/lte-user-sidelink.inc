@@ -1037,7 +1037,7 @@ connected to it using the attribute system as shown above.
    NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
 
 
-* Creating the eNB and UE nodes and setting their possition and mobility : ::
+* Creating the eNB and UE nodes and setting their position and mobility : ::
 
    NodeContainer enbNode;
    enbNode.Create (1);
@@ -1262,7 +1262,7 @@ Relay UE and UE 2 will have the role of Remote UE.
 The Relay UE service will start first, at 2 seconds of simulation time. Then, 
 the Relay UE will start to advertise the service code on its UE-to-Network 
 Relay Discovery Announcements. At 4 seconds of simulation time, the Remote UE
-starts its service and proceeds to monitor the announcements and to measure the 
+starts its service and proceeds to monitor the announcements and to measure
 their SD-RSRP. Eventually (4 discovery periods), the Relay Selection procedure
 will be executed, the Remote UE will select UE 1 as its Relay UE (as it is the 
 only one in the system) and then it will start the one-to-one connection 
@@ -2115,11 +2115,11 @@ Topology configuration
 
 Compared to the topology of the synchronization example that we discussed
 before, this example is very simple. For instance, it does not use hexagonal
-topology or form groups of UEs, i.e, it does not use
+topology or form groups of UEs, i.e., it does not use
 ``Lte3gppHexGridEnbTopologyHelper`` and ``LteSidelinkHelper``. The ``LteHelper``
 and ``PointToPointEpcHelper`` are initialized in the same way like any other LTE
 example with EPC. Also, the call to disable the eNB PHY can also be skipped,
-since it does not instantiates the eNB nodes. Moreover, this example only
+since it does not instantiate the eNB nodes. Moreover, this example only
 focuses on simulating ProSe out-of-coverage discovery, therefore, there is no
 need to configure the IP of the UEs since discovery is purely a MAC layer
 application where the messages are filtered on the basis of ProSeAppCode.
@@ -2325,7 +2325,7 @@ containing the information of the simulated discovery process.
  * SlRxPhyStats.txt
 
    This file contains the information about the reception of the discovery
-   announcements at the physical layer of a recepient UE. In particular, it is
+   announcements at the physical layer of a recipient UE. In particular, it is
    obtained by listening to the "SlPhyReception" trace of ``LteSpectrumPhy``
    class. 
 

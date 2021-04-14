@@ -29,7 +29,7 @@ At present, a large portion of the code related to public safety communications 
 found in the ProSe and UE-to-Network relay implementation in the ``lte`` module.  This is because
 the ProSe services of sidelink communications, discovery, and synchronization
 are deeply connected to the LTE models and difficult to factor into a
-separate module. Features intrisic to the low-level operation of ProSe in 
+separate module. Features intrinsic to the low-level operation of ProSe in 
 LTE are found in the ``lte`` module.
 
 The ``psc`` module also includes:
