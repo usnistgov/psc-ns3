@@ -33,6 +33,7 @@ SOURCES = \
 	$(SRC)/psc/doc/source/uav-mobility-energy.rst \
 	$(SRC)/psc/doc/source/mcptt.rst \
 	$(SRC)/psc/doc/source/intel-http.rst \
+	$(SRC)/psc/doc/source/video-models.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 
 # list all model library figure files that need to be copied to 
@@ -76,6 +77,7 @@ SOURCEFIGS = \
         $(SRC)/lte/doc/source/figures/helpers.png \
 	$(SRC)/lte/doc/source/figures/lte-sl-relay-selection.png \
 	$(SRC)/psc/doc/source/figures/intel-http.png \
+	$(SRC)/psc/doc/source/figures/sample-video-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-scenario.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-access-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-m2e-cdf.png \
