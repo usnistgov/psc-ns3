@@ -26,9 +26,7 @@ The purpose of the MCPTT model is to enable research into the performance
 of MCPTT protocols in both off-network and on-network public safety scenarios. 
 Users are expected to be interested in studying Key Performance Indicators
 (KPIs) such as the push-to-talk access time (KPI1) or the mouth-to-ear
-latency (KPI3) metrics described in [TS22179]_.
-
-*Insert TS22.179 Figure 6.15.3.1.1: Illustration of MCPTT access time and mouth-to-ear latency*
+latency (KPI3) metrics defined in Section 6.15.3 of [TS22179]_.
 
 Design
 ######
