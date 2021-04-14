@@ -13,7 +13,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    :maxdepth: 1
 
    psc
-   sip
    lte
    buildings
    antenna
+   sip
