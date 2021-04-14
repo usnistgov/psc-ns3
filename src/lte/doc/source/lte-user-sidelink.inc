@@ -497,7 +497,7 @@ the range of values depending on the KTRP value [TS36213]_.
 							BooleanValue (false));
 
 Along with the error model configuration, by setting the "DropRbOnCollisionEnabled"
-attribute all the TBs collided in time and frequency are dropped. This attribute
+attribute, all the TBs collided in time and frequency are dropped. This attribute
 could be of particular interest for the users, e.g., to study the impact of
 collisions in MODE 2. In this example, this attribute has no impact as only one
 UE is acting as a transmitter. It is included just to make the users aware of
@@ -908,7 +908,7 @@ and the receiving UE.
 lte-sl-in-covrg-relay
 +++++++++++++++++++++
 This example simulates an in-coverage UE-to-Network Relay scenario, which
-uses both, direct discovery and direct communication. The topology of the 
+uses both direct discovery and direct communication. The topology of the 
 access network is the one depicted in :ref:`fig-lte-sl-simple-scenario` 
 in which two UEs are in-coverage of a single eNB. 
 In this scenario, UE 1 has the role of *Relay UE* and UE 2 has the role of
@@ -916,18 +916,18 @@ In this scenario, UE 1 has the role of *Relay UE* and UE 2 has the role of
 Remote UE communicates, using the connection to the eNB at the beginning of the
 simulation, and using the Relay UE once connected to it.
 
-When the relay service starts in the simulation, both are UEs are configured 
+When the relay service starts in the simulation, both UEs are configured 
 to perform UE-to-Network Relay discovery for their respective roles. Thus, 
 the Remote UE will be able to detect the Relay UE, select it, and hence 
 establish a one-to-one communication connection with it (See section 
 :ref:`sec-lte-sl-rrc` for more information about the protocols). Then, all the
 packets the Remote UE application sends to the Remote Host are transmitted on
-the Sidelink to the Relay UE which then forward them to the network via the 
+the Sidelink to the Relay UE, which then forwards them to the network via the 
 eNB, to finally be routed in the network to the Remote Host. 
 Packets from the Remote Host towards the Remote UE follow the reverse path 
 (i.e., Remote Host -> Network -> eNB -> Relay UE -> Remote UE).    
 
-The scenario uses MODE 2 (UE_SELECTED) for both, direct discovery and
+The scenario uses MODE 2 (UE_SELECTED) for both direct discovery and
 direct communication.
 
 The user can configure the simulation time (in seconds) and to output the
