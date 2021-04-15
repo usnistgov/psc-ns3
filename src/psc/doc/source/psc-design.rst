@@ -67,9 +67,9 @@ extensions:
 * Fernando J. Cintron (fernando.cintron@nist.gov)
 * Samantha Gamboa (samantha.gamboa@nist.gov)
 * Wesley Garey (wesley.garey@nist.gov)
-* Tom Henderson (tomh@tomh.org)
+* Tom Henderson (tomhend@uw.edu)
 * Antonio Izquierdo Manzanares (antonio.izquierdomanzanares@nist.gov)
-* Manuel Requena (manuel.requena@cct.es)
+* Manuel Requena (manuel.requena@cttc.es)
 * Richard Rouil (richard.rouil@nist.gov)
 * Raghav Thanigaivel (Raghav.Thanigaivel@colorado.edu)
 
