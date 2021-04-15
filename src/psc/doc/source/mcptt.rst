@@ -1126,7 +1126,7 @@ request is pending).
 
 When measuring access time in ns-3, we recommend to count the "I" and "Q"
 outcomes and filter out the "D", "F", and "A" outcomes.  The [TS22179]_ standard
-suggests that access time should be less than 300ms for 99 % of all MCPTT
+suggests that access time should be less than 300 ms for 99 % of all MCPTT
 requests, but suggests that the system should have negligible backhaul
 delay and not be overloaded (less than 70 % load per node) when comparing
 against this threshold.  In simulations, the access time may rise above
