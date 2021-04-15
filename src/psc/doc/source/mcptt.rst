@@ -54,8 +54,9 @@ manually with user intervention) also can be defined.  The difference
 between an on-demand and pre-established session is that in the 
 pre-established case, certain network setup steps are completed before 
 a user initiates the call; these steps include negotiation of IP 
-addresses and ports (e.g. ICE procedures) and coordination of bearers in 
-the IMS core.  In a prearranged group call, the group members will be 
+addresses and ports (e.g., Interactive Connectivity Establishment (ICE) procedures) 
+and coordination of bearers in the IP Media Subsystem (IMS) core.  In a 
+prearranged group call, the group members will be 
 defined a priori, while the chat group (restricted) call model allows 
 members to join calls without being invited.  The initial support in 
 |ns3| for on-network call types is the 'prearranged group call, using 
@@ -118,7 +119,7 @@ The MCPTT model includes:
   control and floor control in the off-network case
 - Helper classes to act as a sink for time-sensitive message and state change
   traces that can be used to capture the behavior of the different off-network
-  MCPTT state machines (i.e. protocols)
+  MCPTT state machines (i.e., protocols)
 - A helper class that allows users to configure and deploy MCPTT applications
   in a scenario with nodes
 - A few examples that show how the model can be used
@@ -190,7 +191,7 @@ Identifiers
 
 Several MCPTT identifiers are used throughout the code, as follows.
 
-  * ``MCPTT User ID`` The MCPTT User ID is, in practice, a SIP URI (i.e.
+  * ``MCPTT User ID`` The MCPTT User ID is, in practice, a SIP URI (i.e.,
     a string value).  In this ns-3 model, for simplicity, it is stored as a
     32-bit unsigned integer.  Clients for which the ``ns3::psc::McpttHelper``
     installs an instance of the ``ns3::psc::McpttPttApp`` will be assigned a
@@ -200,7 +201,7 @@ Several MCPTT identifiers are used throughout the code, as follows.
     to 0, and typically left at the default value.
  
   * ``MCPTT Group ID`` The MCPTT Group ID pertains to group calls; it is also,
-    in practice, a SIP URI (i.e. a string value).  In this ns-3 model, for
+    in practice, a SIP URI (i.e., a string value).  In this ns-3 model, for
     simplicity, it is stored as a 32-bit unsigned integer.  On clients,
     the value is stored in the base class ``ns3::psc::McpttCallMachineGrp`` as an
     attribute, and similarly, on the server, it is stored in an attribute
@@ -218,7 +219,7 @@ Several MCPTT identifiers are used throughout the code, as follows.
     ``ns3::psc::McpttOnNetworkFloorArbitrator``, contains an attribute 
     ``TxSsrc`` that defaults to the value 0.
     For simplicity, the clients reuse the MCPTT User ID value for SSRC; 
-    i.e. all media streams are identified as being from the same source,
+    i.e., all media streams are identified as being from the same source,
     in the current version of this model.
 
 MCPTT Application
@@ -298,7 +299,7 @@ all the logic is self-contained.
 
 The ``ns3::psc::McpttCallTypeMachine`` is an interface for the call type machines
 described in the standard. These state machines exist to maintain the call type
-(e.g. basic, emergency, etc.) of a call. There are two subclasses:
+(e.g., basic, emergency, etc.) of a call. There are two subclasses:
 
 * ``ns3::psc::McpttCallTypeMachineGrpBasic`` for a basic group call, and
 * ``ns3::psc::McpttCallTypeMachinePriv`` for a private call.
@@ -370,7 +371,7 @@ ability to simulate the PTT behavior for a group based on data that was
 collected and generalized from real public safety call logs. Using the data
 from the call logs two main elements were extracted and realized by the model,
 and they are, PTT and session durations. In essence, a session is a time span
-when users (i.e. instances of the ``ns3::psc::McpttPusher`` class) are actively
+when users (i.e., instances of the ``ns3::psc::McpttPusher`` class) are actively
 being scheduled to push and release the PTT button, while the PTT duration
 determines how long a PTT push will last. These durations are generated using
 instances of the ``ns3::EmpiricalRandomVariable`` class that interpolate bins
@@ -449,7 +450,7 @@ value between (0, 1] that is set by the user.
 Note that the ``ns3::psc::McpttPusherOrchestratorContention`` class can affect the
 overall activity factor since it can create additional PTT requests, but how
 it will affect the activity factor depends on the protocol configuration
-(e.g. queuing, preemption, etc.). However, based on a configurable Contention
+(e.g., queuing, preemption, etc.). However, based on a configurable Contention
 Probability (CP) threshold, the probability that a single pusher's request
 will occur at the same time as another pusher's request is:
 
@@ -499,7 +500,7 @@ There are five helpers:
   * ``ns3::psc::McpttMsgStats`` for tracing transmitted MCPTT application messages,
   * ``ns3::psc::McpttProseCollisionDetector`` for examining ProSe operation, and
   * ``ns3::psc::McpttStateMachineStats`` for tracing state machine state transitions.
-  * ``ns3::psc::ImsHelper`` for adding an optional IMS (IP Multimedia Subsystem);
+  * ``ns3::psc::ImsHelper`` for adding an optional IMS;
       the IMS is modeled as a single node connected to the PGW.
 
 As stated previously, the ``ns3::psc::McpttHelper`` is used to configure and deploy
@@ -1030,7 +1031,7 @@ contains the ns3::Node ID value of the sender or receiver, and the
 prints the RTP synchronization source (SSRC) field if available.  The
 "selected" column indicates whether the message was sent or received for
 the currently selected call on the client, or "N/A" for server messages. The  
-"rx/tx" column indicates if the message was sent or received, i.e. if "rx"
+"rx/tx" column indicates if the message was sent or received, i.e., if "rx"
 is the value in the column then that means the message was received, while a
 value of "tx" indicates that the message was sent. The "bytes" columns
 indicates the size (in bytes) of the message that was generated at the
@@ -1081,7 +1082,7 @@ argument, the trace filename.  The output file is formatted as follows.
   3.727000    3      8      1   0.024010
   3.727000    3      9      1   0.024010
 
-In the example, node ID 8 started to receive a talk spurt at time 3.727s, 
+In the example, node ID 8 started to receive a talk spurt at time 3.727 s, 
 on call ID 1, with a mouth-to-ear latency of 24 ms (see Figure 1 of 
 [NIST.IR.8206]_).
 
@@ -1113,7 +1114,7 @@ argument, the trace filename.  The output file is formatted as follows.
   28.952000      4      1     I   0.024378
   34.017000      3      1     F   0.651460
 
-The above example illustrates that at time 7.246s, user ID 1 from call ID 0
+The above example illustrates that at time 7.246 s, user ID 1 from call ID 0
 was able to immediately request the floor in a transaction that took a bit
 more than 24 ms.  The timestamp in the first column indicates the time at
 which the outcome is decided, not when the floor request was initiated.
@@ -1125,18 +1126,18 @@ request is pending).
 
 When measuring access time in ns-3, we recommend to count the "I" and "Q"
 outcomes and filter out the "D", "F", and "A" outcomes.  The [TS22179]_ standard
-suggests that access time should be less than 300ms for 99% of all MCPTT
+suggests that access time should be less than 300ms for 99 % of all MCPTT
 requests, but suggests that the system should have negligible backhaul
-delay and not be overloaded (less than 70% load per node) when comparing
+delay and not be overloaded (less than 70 % load per node) when comparing
 against this threshold.  In simulations, the access time may rise above
-300ms due to non-negligible backhaul delay, the pusher model (if too many
+300 ms due to non-negligible backhaul delay, the pusher model (if too many
 MCPTT users are contending for the floor), or congestion or transmission
 losses in the LTE network.
 
 Testing and Validation
 ======================
 
-The National Institute of Standards and Technology (NIST) used the 3GPP
+NIST used the 3GPP
 standards to create over 50 test cases for off-network MCPTT operation.
 More information about those test cases
 can be found in NIST technical report NISTIR 8236 [NIST.IR.8236]_.

@@ -7,11 +7,8 @@ Public Safety Communications Overview
 
 |ns3| support for public safety communications (PSC) is based on 
 relatively new capabilities for 4G LTE systems introduced in 3GPP Release 12
-and later releases.  Device-to-Device (D2D) Proximity Services (ProSe)
-communications are terms relating to features allowing for UEs to discover
-each other, synchronize, and communicate with each other, with or without
-the use of an eNodeB.  These services make use of a so-called `sidelink`
-channel between UEs.
+and later releases. This includes Device-to-Device (D2D) communications over sidelink
+and mission-critical push-to-talk (MCPTT) application.
 
 Support for public safety communications is distributed among the following
 five |ns3| modules:
@@ -50,21 +47,9 @@ Acknowledgments
 
 Public safety communications features are based on development led by the
 Wireless Networks Division of the U.S. National Institute of Standards
-and Technology, described in publications ([NIST2016]_, [NIST2017]_, and [NIST2019]_).
+and Technology (NIST), described in publications ([NIST2016]_, [NIST2017]_, and [NIST2019]_).
 Users of the D2D features of |ns3| are requested to cite [NIST2017]_
 in academic publications based on these models. 
-
-The following individuals are authors of the public safety communications
-extensions:
-
-* Aziza Ben-Mosbah (aziza.ben.mosbah@gmail.com)
-* Evan Black (evan.black@nist.gov)
-* Fernando J. Cintron (fernando.cintron@nist.gov)
-* Samantha Gamboa (samantha.gamboa@nist.gov)
-* Wesley Garey (wesley.garey@nist.gov)
-* Antonio Izquierdo Manzanares (antonio.izquierdomanzanares@nist.gov)
-* Richard Rouil (richard.rouil@nist.gov)
-* Raghav Thanigaivel (Raghav.Thanigaivel@colorado.edu)
 
 The integration of the initial ProSe module with the LTE and buildings module,
 as well as the creation of additional examples and tests, and contributions
@@ -72,3 +57,19 @@ to on-network MCPTT support, was assisted  by CTTC and the
 University of Washington. This work was performed under the financial 
 assistance award 70NANB17H170 and 70NANB20H179 from U.S. Department of
 Commerce, National Institute of Standards and Technology.
+
+The following individuals are authors of the public safety communications
+extensions:
+
+* Zoraze Ali (zoraze.ali@cttc.es)
+* Aziza Ben-Mosbah (aziza.ben.mosbah@gmail.com)
+* Evan Black (evan.black@nist.gov)
+* Fernando J. Cintron (fernando.cintron@nist.gov)
+* Samantha Gamboa (samantha.gamboa@nist.gov)
+* Wesley Garey (wesley.garey@nist.gov)
+* Tom Henderson (tomh@tomh.org)
+* Antonio Izquierdo Manzanares (antonio.izquierdomanzanares@nist.gov)
+* Manuel Requena (manuel.requena@cct.es)
+* Richard Rouil (richard.rouil@nist.gov)
+* Raghav Thanigaivel (Raghav.Thanigaivel@colorado.edu)
+

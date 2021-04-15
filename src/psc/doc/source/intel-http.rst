@@ -163,7 +163,7 @@ IntelHttpClient
     General trace for receiving an application packet of any kind. If the 
     application packet was fragmented, only one line will be traced when the
     last fragment is received. This trace source is invoked for all application
-    packets received (i.e. all the Responses). This source makes available the 
+    packets received (i.e., all the Responses). This source makes available the 
     received application packet (with the ``IntelHttpHeader``) and the address 
     of the node that sent the packet. As the ``IntelHttpHeader`` is included, 
     trace sinks can make use of the ``RequestType`` and ``NumberOfObjects`` 
@@ -193,7 +193,7 @@ IntelHttpClient
 
 * ``Tx``:
     General trace for sending an application packet of any kind. This trace 
-    source is invoked for all application packets sent (i.e. all the Requests). 
+    source is invoked for all application packets sent (i.e., all the Requests). 
     This source makes available the application packet sent (with the 
     ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, trace sinks 
     can make use of the ``RequestType`` and ``NumberOfObjects`` fields to 
@@ -233,7 +233,7 @@ IntelHttpServer
     General trace for receiving an application packet of any kind. If the 
     application packet was fragmented, only one line will be traced when the
     last fragment is received. This trace source is invoked for all application
-    packets received (i.e. all the Requests). This source makes available the 
+    packets received (i.e., all the Requests). This source makes available the 
     received application packet (with the ``IntelHttpHeader``) and the address 
     of the node that sent the packet. As the ``IntelHttpHeader`` is included, 
     trace sinks can make use of the ``RequestType`` and ``NumberOfObjects`` 
@@ -263,7 +263,7 @@ IntelHttpServer
 
 * ``Tx``:
     General trace for sending an application packet of any kind. This trace 
-    source is invoked for all application packets sent (i.e. all the 
+    source is invoked for all application packets sent (i.e., all the 
     Responses). 
     This source makes available the application packet sent (with the 
     ``IntelHttpHeader``). As the ``IntelHttpHeader`` is included, trace sinks 
@@ -326,8 +326,8 @@ and may be found in ``src/psc/test/intel-http-model-test.cc``:
     Test that the client waits the time from `ReadTimeRvs` before requesting
     another main object.
 * ``IntelHttpTestCaseTxRxCountSizes``:
-    Verify the specific transmit (i.e. `TxMainObject`) and receive
-    (i.e. `RxEmbeddedObject`) traces are called the same number of times
+    Verify the specific transmit (i.e., `TxMainObject`) and receive
+    (i.e., `RxEmbeddedObject`) traces are called the same number of times
     as the general ones (`Tx`/`Rx`). Also verifies the packets of each
     type are of the correct size.
 
@@ -369,7 +369,7 @@ by users:
     distribution to use). Based on this, the model provides default values for 
     both parameters (``CacheThreshold`` and ``CacheRvs``) that are functional 
     (a 16 % cache hit ratio on the client fits a small cache size with diverse 
-    (i.e. multiple different sites) browsing). However, these values may not 
+    (i.e., multiple different sites) browsing). However, these values may not 
     fit all use cases (e.g., local caches in corporate environments where 
     browsing is restricted to intranet pages that share the same structure, 
     images, etc. can easily reach 90 % hit ratios). 
