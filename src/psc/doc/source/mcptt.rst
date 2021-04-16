@@ -79,15 +79,16 @@ change the "status" of a call at any point and this is communicated via the
 "GROUP CALL ANNOUNCEMENT" message.
 
 In an MCPTT group call, only a single member of the group is allowed to talk
-at a time, and during this time all other group members need to listen. This
-is facilitated by the floor control protocol. The protocol consists of floor
-participants and a floor control server. The floor participants make requests
-to the floor control server, while the floor control server receives and
-handles these requests. In the on-network version there is a centralized MCPTT
-server that acts as the floor control server, but in the off-network case, the
-UE of the current speaker is the one acting as the floor control server (also
-known as the current arbitrator). It is optional to use floor control for a
-private call.
+at a time (with the exception of the dual-speaker feature of on-network), and
+during this time all other group members need to listen. This is facilitated
+by the floor control protocol. The protocol consists of floor participants and
+a floor control server. The floor participants make requests to the floor
+control server, while the floor control server receives and handles these
+requests. In the on-network version there is a centralized MCPTT server that
+acts as the floor control server, but in the off-network case, the UE of the
+current speaker is the one acting as the floor control server (also known as
+the current arbitrator). It is optional to use floor control for a private
+call.
 
 When off-network, all floor control messages are sent to all members of the
 group. When a user wants to talk, which is indicated by a PTT press during a
@@ -134,11 +135,11 @@ is no support in ProSe for this feature and, thus, it is not used.
 
 .. note::
    MCPTT was created specifically for LTE, and the main component that ties
-   MCPTT to LTE is the use of PPPP, which is provided to lower layers of LTE
-   when sending messages for physical resource selection, but the current
-   implementation of the off-network model does not make use of this feature
-   since there is currently no support for it in the current ns-3
-   implementation of ProSe. This means that the current MCPTT model is
+   off-network MCPTT to LTE is the use of PPPP, which is provided to lower
+   layers of LTE  when sending messages for physical resource selection, but
+   the current implementation of the off-network model does not make use of
+   this feature since there is currently no support for it in the current
+   ns-3 implementation of ProSe. This means that the current MCPTT model is
    capable of being used over more technologies than just LTE since it is
    just an application in |ns3|.
 
@@ -519,10 +520,6 @@ include not just the type of message in the trace but also the contents of
 the message the user can set ``ns3::psc::McpttMsgStats::IncludeMessageContent`` to
 "true" as well.
 
-The ``McpttProseCollisionDetector`` class is used in the setup delay example
-for detecting when collisions occur in the PSCCH and PSSCH of the ProSe
-Sidelink channel.
-
 The ``ns3::psc::McpttStateMachineStats`` class has the necessary functions to act as
 a sink to trace state transitions of the various state machines throughout a
 simulation. One can set the name of the output file by setting the
@@ -536,7 +533,11 @@ were meant to be captured by the current MCPTT model. There is a feature
 described throughout the call control document called PPPP or Prose Per-Packet
 Priority that is taken into consideration at the application but is not
 propagated to the lower layers as specified because currently this feature is
-not supported by the ProSe model.
+not supported by the ProSe model. On-network currently only supports
+pre-arranged group call, using an on-demand session, with automatic
+commencement. Also, elevated call types, such as 'Emergency,' and the use of
+Guaranteed Bit-Rate (GBR) bearers' are not modeled in on-network as this would
+require additional features in the LTE model.
 
 Usage
 =====
