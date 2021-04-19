@@ -522,45 +522,74 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
       return;
     }
 
-  Icmpv6OptionLinkLayerAddress lla (1);
-  Address hardwareAddress;
   NdiscCache::Entry* entry = 0;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
   uint8_t flags = 0;
 
-  /* XXX search all options following the NS header */
+  /* search all options following the NS header */
+  Icmpv6OptionLinkLayerAddress sllaoHdr (true);
+
+  bool next = true;
+  bool hasSllao = false;
+
+  while (next == true)
+    {
+      uint8_t type;
+      packet->CopyData (&type, sizeof (type));
+
+      switch (type)
+        {
+          case Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE:
+            if (!hasSllao)
+              {
+                packet->RemoveHeader (sllaoHdr);
+                hasSllao = true;
+              }
+            break;
+          default:
+            /* unknow option, quit */
+            next = false;
+        }
+      if (packet->GetSize () == 0)
+        {
+          next = false;
+        }
+    }
+
+  Address replyMacAddress;
 
   if (src != Ipv6Address::GetAny ())
     {
-      uint8_t type;
-      packet->CopyData (&type, sizeof(type));
-
-      if (type != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
-        {
-          return;
-        }
-
-      /* Get LLA */
-      packet->RemoveHeader (lla);
-
       entry = cache->Lookup (src);
       if (!entry)
         {
+          if (!hasSllao)
+            {
+              NS_LOG_LOGIC ("Icmpv6L4Protocol::HandleNS: NS without SLLAO and we do not have a NCE, discarding.");
+              return;
+            }
           entry = cache->Add (src);
           entry->SetRouter (false);
-          entry->MarkStale (lla.GetAddress ());
+          entry->MarkStale (sllaoHdr.GetAddress ());
+          replyMacAddress = sllaoHdr.GetAddress ();
         }
-      else if (entry->GetMacAddress () != lla.GetAddress ())
+      else if (hasSllao && (entry->GetMacAddress () != sllaoHdr.GetAddress ()))
         {
-          entry->MarkStale (lla.GetAddress ());
+          entry->MarkStale (sllaoHdr.GetAddress ());
+          replyMacAddress = sllaoHdr.GetAddress ();
+        }
+      else
+        {
+          replyMacAddress = entry->GetMacAddress ();
         }
 
       flags = 3; /* S + O flags */
     }
   else
     {
-      /* it means someone do a DAD */
+      /* it's a DAD */
       flags = 1; /* O flag */
+      replyMacAddress = interface->GetDevice ()->GetMulticast (dst);
     }
 
   /* send a NA to src */
@@ -571,14 +600,16 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
       flags += 4; /* R flag */
     }
 
-  hardwareAddress = interface->GetDevice ()->GetAddress ();
+  Address hardwareAddress = interface->GetDevice ()->GetAddress ();
   NdiscCache::Ipv6PayloadHeaderPair p = ForgeNA (target.IsLinkLocal () ? interface->GetLinkLocalAddress ().GetAddress () : ifaddr.GetAddress (),
                                                  src.IsAny () ? dst : src, // DAD replies must go to the multicast group it was sent to.
                                                  &hardwareAddress,
                                                  flags );
-  interface->Send (p.first, p.second, src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src);
 
-  /* not a NS for us discard it */
+  // We must bypass the IPv6 layer, as a NA must be sent regardless of the NCE status (and not change it beyond what we did already).
+  Ptr<Packet> pkt = p.first;
+  pkt->AddHeader (p.second);
+  interface->GetDevice ()->Send (pkt, replyMacAddress, Ipv6L3Protocol::PROT_NUMBER);
 }
 
 NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ipv6Address dst, Address hardwareAddress)
@@ -587,10 +618,16 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ip
   Ptr<Packet> p = Create<Packet> ();
   Ipv6Header ipHeader;
   Icmpv6RS rs;
-  Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
 
-  NS_LOG_LOGIC ("Send RS ( from " << src << " to " << dst << ")");
-  p->AddHeader (llOption);
+  NS_LOG_LOGIC ("Forge RS (from " << src << " to " << dst << ")");
+  // RFC 4861:
+  // The link-layer address of the sender MUST NOT be included if the Source Address is the unspecified address.
+  // Otherwise, it SHOULD be included on link layers that have addresses.
+  if (!src.IsAny ())
+    {
+      Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
+      p->AddHeader (llOption);
+    }
 
   rs.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + rs.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (rs);
@@ -1036,15 +1073,17 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwa
   NS_LOG_FUNCTION (this << src << dst << hardwareAddress);
   Ptr<Packet> p = Create<Packet> ();
   Icmpv6RS rs;
-  Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
 
-  /* if the source is unspec, multicast the NA to all-nodes multicast */
-  if (src != Ipv6Address::GetAny ())
+  // RFC 4861:
+  // The link-layer address of the sender MUST NOT be included if the Source Address is the unspecified address.
+  // Otherwise, it SHOULD be included on link layers that have addresses.
+  if (!src.IsAny ())
     {
+      Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);
       p->AddHeader (llOption);
     }
 
-  NS_LOG_LOGIC ("Send RS ( from " << src << " to " << dst << ")");
+  NS_LOG_LOGIC ("Send RS (from " << src << " to " << dst << ")");
 
   rs.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + rs.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (rs);
