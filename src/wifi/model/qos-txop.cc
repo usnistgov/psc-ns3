@@ -682,13 +682,6 @@ QosTxop::CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-QosTxop::CompleteConfig (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_baManager->SetTxMiddle (m_txMiddle);
-}
-
-void
 QosTxop::SetBlockAckThreshold (uint8_t threshold)
 {
   NS_LOG_FUNCTION (this << +threshold);
@@ -786,6 +779,12 @@ bool
 QosTxop::IsQosTxop (void) const
 {
   return true;
+}
+
+AcIndex
+QosTxop::GetAccessCategory (void) const
+{
+  return m_ac;
 }
 
 } //namespace ns3

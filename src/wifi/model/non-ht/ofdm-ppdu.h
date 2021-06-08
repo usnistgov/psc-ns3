@@ -64,12 +64,11 @@ public:
      */
     static TypeId GetTypeId (void);
 
-    // Inherited
-    TypeId GetInstanceTypeId (void) const;
-    void Print (std::ostream &os) const;
-    uint32_t GetSerializedSize (void) const;
-    void Serialize (Buffer::Iterator start) const;
-    uint32_t Deserialize (Buffer::Iterator start);
+    TypeId GetInstanceTypeId (void) const override;
+    void Print (std::ostream &os) const override;
+    uint32_t GetSerializedSize (void) const override;
+    void Serialize (Buffer::Iterator start) const override;
+    uint32_t Deserialize (Buffer::Iterator start) override;
 
     /**
      * Fill the RATE field of L-SIG (in bit/s).
@@ -120,9 +119,8 @@ public:
    */
   virtual ~OfdmPpdu ();
 
-  // Inherited
-  virtual Time GetTxDuration (void) const override;
-  virtual Ptr<WifiPpdu> Copy (void) const override;
+  Time GetTxDuration (void) const override;
+  Ptr<WifiPpdu> Copy (void) const override;
 
 protected:
   WifiPhyBand m_band;       //!< the WifiPhyBand used to transmit that PPDU
@@ -130,8 +128,7 @@ protected:
   LSigHeader m_lSig;        //!< the L-SIG PHY header
 
 private:
-  // Inherited
-  virtual WifiTxVector DoGetTxVector (void) const override;
+  WifiTxVector DoGetTxVector (void) const override;
 }; //class OfdmPpdu
 
 } //namespace ns3

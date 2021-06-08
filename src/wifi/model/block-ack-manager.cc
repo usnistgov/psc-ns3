@@ -25,7 +25,6 @@
 #include "ctrl-headers.h"
 #include "mgt-headers.h"
 #include "wifi-mac-queue.h"
-#include "mac-tx-middle.h"
 #include "qos-utils.h"
 #include "wifi-tx-vector.h"
 
@@ -456,12 +455,21 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, WifiTxVector dataTxVector)
+BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac48Address recipient,
+                                    const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
+                                    const WifiTxVector& dataTxVector, size_t index)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataTxVector);
-  if (!blockAck->IsMultiTid ())
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataTxVector << index);
+  if (!blockAck.IsMultiTid ())
     {
-      uint8_t tid = blockAck->GetTidInfo ();
+      uint8_t tid = blockAck.GetTidInfo (index);
+      // If this is a Multi-STA Block Ack with All-ack context (TID equal to 14),
+      // use the TID passed by the caller.
+      if (tid == 14)
+        {
+          NS_ASSERT (blockAck.GetAckType (index) && tids.size () == 1);
+          tid = *tids.begin ();
+        }
       if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
         {
           bool foundFirstLost = false;
@@ -486,12 +494,12 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
           uint16_t currentStartingSeq = it->second.first.GetStartingSequence ();
           uint16_t currentSeq = SEQNO_SPACE_SIZE;   // invalid value
 
-          if (blockAck->IsBasic ())
+          if (blockAck.IsBasic ())
             {
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
                   currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
-                  if (blockAck->IsFragmentReceived (currentSeq,
+                  if (blockAck.IsFragmentReceived (currentSeq,
                                                     (*queueIt)->GetHeader ().GetFragmentNumber ()))
                     {
                       nSuccessfulMpdus++;
@@ -515,12 +523,12 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                   RemoveOldPackets (recipient, tid, (currentSeq + 1) % SEQNO_SPACE_SIZE);
                 }
             }
-          else if (blockAck->IsCompressed () || blockAck->IsExtendedCompressed ())
+          else if (blockAck.IsCompressed () || blockAck.IsExtendedCompressed () || blockAck.IsMultiSta ())
             {
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
                   currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
-                  if (blockAck->IsPacketReceived (currentSeq))
+                  if (blockAck.IsPacketReceived (currentSeq, index))
                     {
                       it->second.first.NotifyAckedMpdu (*queueIt);
                       nSuccessfulMpdus++;
@@ -908,13 +916,6 @@ BlockAckManager::SetUnblockDestinationCallback (Callback<void, Mac48Address, uin
 {
   NS_LOG_FUNCTION (this << &callback);
   m_unblockPackets = callback;
-}
-
-void
-BlockAckManager::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
-{
-  NS_LOG_FUNCTION (this << txMiddle);
-  m_txMiddle = txMiddle;
 }
 
 void

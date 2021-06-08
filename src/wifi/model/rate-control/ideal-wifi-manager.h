@@ -58,7 +58,6 @@ public:
 
 
 private:
-  //overridden from base class
   void DoInitialize (void) override;
   WifiRemoteStation* DoCreateStation (void) const override;
   void DoReportRxOk (WifiRemoteStation *station,
@@ -78,6 +77,8 @@ private:
 
   /**
    * Reset the station, invoked if the maximum amount of retries has failed.
+   *
+   * \param station the station for which statistics should be reset
    */
   void Reset (WifiRemoteStation *station) const;
 

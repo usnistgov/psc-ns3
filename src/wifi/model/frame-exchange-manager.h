@@ -235,7 +235,7 @@ public:
   void NotifyOffNow (void);
 
 protected:
-  virtual void DoDispose ();
+  void DoDispose () override;
 
   /**
    * Fragment the given MPDU if needed. If fragmentation is needed, return the
@@ -539,9 +539,7 @@ private:
   WifiTxParameters m_txParams;                    //!< the TX parameters for the current frame
   Ptr<Packet> m_fragmentedPacket;                 //!< the MSDU being fragmented
   bool m_moreFragments;                           //!< true if a fragment has to be sent after a SIFS
-  TypeId m_protectionManagerTypeId;               //!< TypeId of the protection manager to install
   Ptr<WifiProtectionManager> m_protectionManager; //!< Protection manager
-  TypeId m_acknowledgmentManagerTypeId;           //!< TypeId of the acknowledgment manager to install
   Ptr<WifiAckManager> m_ackManager;               //!< Acknowledgment manager
 };
 

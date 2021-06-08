@@ -58,9 +58,22 @@ private:
   /// allow ChannelAccessManagerTest class access
   friend class ChannelAccessManagerTest<TxopType>;
 
-  /// Inherited
-  void DoDispose (void);
-  void NotifyChannelAccessed (Time txopDuration = Seconds (0));
+  /// \copydoc ns3::Txop::DoDispose
+  void DoDispose (void) override;
+  /// \copydoc ns3::Txop::NotifyChannelAccessed
+  void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
+  /// \copydoc ns3::Txop::NotifyInternalCollision
+  void NotifyInternalCollision (void) override;
+  /// \copydoc ns3::Txop::HasFramesToTransmit
+  bool HasFramesToTransmit (void) override;
+  /// \copydoc ns3::Txop::NotifyChannelSwitching
+  void NotifyChannelSwitching (void) override;
+  /// \copydoc ns3::Txop::NotifySleep
+  void NotifySleep (void) override;
+  /// \copydoc ns3::Txop::NotifyWakeUp
+  void NotifyWakeUp (void) override;
+  /// \copydoc ns3::Txop::GenerateBackoff
+  void GenerateBackoff (void) override;
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
@@ -77,31 +90,9 @@ private:
   ExpectedGrants m_expectedGrants; //!< expected grants
 
   /**
-   * Notify the Txop that internal collision has occurred.
-   */
-  void NotifyInternalCollision (void);
-  /**
-   * Generate a new backoff now.
-   */
-  void GenerateBackoff (void);
-  /**
    * Check if the Txop has frames to transmit.
    * \return true if the Txop has frames to transmit.
    */
-  bool HasFramesToTransmit (void);
-  /**
-   * When a channel switching occurs, enqueued packets are removed.
-   */
-  void NotifyChannelSwitching (void);
-  /**
-   * When sleep operation occurs, if there is a pending packet transmission,
-   * it will be reinserted to the front of the queue.
-   */
-  void NotifySleep (void);
-  /**
-   * When wake up operation occurs, channel access will be restarted.
-   */
-  void NotifyWakeUp (void);
 
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
   uint32_t m_i; //!< the index of the Txop
@@ -148,25 +139,24 @@ public:
   }
 
 private:
-  // Inherited from base class
-  Time GetSifs (void) const
+  Time GetSifs (void) const override
   {
     return m_sifs;
   }
 
-  Time GetSlot (void) const
+  Time GetSlot (void) const override
   {
     return m_slot;
   }
 
-  Time GetEifsNoDifs (void) const
+  Time GetEifsNoDifs (void) const override
   {
     return m_eifsNoDifs;
   }
 
-  Time m_slot;        // slot duration
-  Time m_sifs;        // SIFS duration
-  Time m_eifsNoDifs;  // EIFS duration minus a DIFS
+  Time m_slot;        //!< slot duration
+  Time m_sifs;        //!< SIFS duration
+  Time m_eifsNoDifs;  //!< EIFS duration minus a DIFS
 };
 
 /**
@@ -188,7 +178,7 @@ public:
    *            the DCF on non-QoS stations and an EDCA on QoS stations.
    * \return true if a frame exchange sequence was started, false otherwise
    */
-  bool StartTransmission (Ptr<Txop> dcf)
+  bool StartTransmission (Ptr<Txop> dcf) override
   {
     dcf->NotifyChannelAccessed ();
     return true;
@@ -206,7 +196,7 @@ class ChannelAccessManagerTest : public TestCase
 {
 public:
   ChannelAccessManagerTest ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
   /**
    * Notify access granted function

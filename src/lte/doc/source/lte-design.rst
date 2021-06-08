@@ -679,9 +679,9 @@ The BLER performance of all MCS obtained with the link level simulator are plott
 Integration of the BLER curves in the ns-3 LTE module
 -----------------------------------------------------
 
-The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINR two instances of ``LtePemSinrChunkProcessor`` (child of ``LteChunkProcessor`` dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution respectively of PDSCH (UE side) and ULSCH (eNB side).
+The model implemented uses the curves for the LSM of the recently LTE PHY Error Model released in the ns3 community by the Signet Group [PaduaPEM]_ and the new ones generated for different CB sizes. The ``LteSpectrumPhy`` class is in charge of evaluating the TB BLER thanks to the methods provided by the ``LteMiErrorModel`` class, which is in charge of evaluating the TB BLER according to the vector of the perceived SINR per RB, the MCS and the size in order to proper model the segmentation of the TB in CBs. In order to obtain the vector of the perceived SINRs for data and control signals, two instances of ``LteChunkProcessor`` (dedicated to evaluate the SINR for obtaining physical error performance) have been attached to UE downlink and eNB uplink ``LteSpectrumPhy`` modules for evaluating the error model distribution of PDSCH (UE side) and ULSCH (eNB side).
 
-The model can be disabled for working with a zero-losses channel by setting the ``PemEnabled`` attribute of the ``LteSpectrumPhy`` class (by default is active). This can be done according to the standard ns3 attribute system procedure, that is::
+The model can be disabled for working with a zero-losses channel by setting the ``DataErrorModelEnabled`` attribute of the ``LteSpectrumPhy`` class (by default is active). This can be done according to the standard ns3 attribute system procedure, that is::
 
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
 
@@ -1542,8 +1542,8 @@ transmit operations:
     * **Transmission Buffer**: it is the RLC SDU queue. 
       When the AM RLC entity receives a SDU in the TransmitPdcpPdu service primitive from the
       upper PDCP entity, it enqueues it in the Transmission Buffer. We
-      put a limit on the RLC buffer size and just silently drop SDUs
-      when the buffer is full. 
+      put a limit on the RLC buffer size and the LteRlc TxDrop trace source
+      is called when a drop due to a full buffer occurs. 
 
     * **Transmitted PDUs Buffer**: it is the queue of transmitted RLC PDUs for which an ACK/NACK has not
       been received yet. When the AM RLC entity sends a PDU to the MAC

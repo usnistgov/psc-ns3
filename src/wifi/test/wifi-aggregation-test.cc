@@ -67,13 +67,13 @@ private:
    */
   void MpduDiscarded (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
   Ptr<YansWifiPhy> m_phy; ///< Phy
   Ptr<WifiRemoteStationManager> m_manager; ///< remote station manager
   ObjectFactory m_factory; ///< factory
-  bool m_discarded;
+  bool m_discarded; ///< whether the packet should be discarded
 };
 
 AmpduAggregationTest::AmpduAggregationTest ()
@@ -326,7 +326,7 @@ public:
   TwoLevelAggregationTest ();
 
 private:
-  virtual void DoRun (void);
+  void DoRun (void) override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
   Ptr<YansWifiPhy> m_phy; ///< Phy
@@ -551,7 +551,7 @@ public:
   HeAggregationTest ();
 
 private:
-  void DoRun (void);
+  void DoRun (void) override;
   /**
    * Run test for a given buffer size
    *
@@ -742,7 +742,7 @@ public:
   PreservePacketsInAmpdus ();
   virtual ~PreservePacketsInAmpdus ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:

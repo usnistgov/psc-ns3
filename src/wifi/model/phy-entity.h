@@ -209,8 +209,6 @@ public:
    * \param txVector the transmission parameters
    *
    * \return the WifiMode used for the SIG field
-   *
-   * This method is overridden by child classes.
    */
   virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const;
 
@@ -244,8 +242,6 @@ public:
    * \param txVector the transmission parameters
    *
    * \return the duration of the PPDU field
-   *
-   * This method is overridden by child classes.
    */
   virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const;
   /**
@@ -324,9 +320,6 @@ public:
    * \param ppduDuration the transmission duration of the PPDU
    *
    * \return the amendment-specific WifiPpdu
-   *
-   * This method is overridden by child classes to create their
-   * corresponding PPDU, e.g., HtPhy creates HtPpdu.
    */
   virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration);
 
@@ -370,8 +363,7 @@ public:
   /**
    * Start receiving a given field.
    *
-   * This method will call the DoStartReceiveField (which will should
-   * be overridden by child classes).
+   * This method will call the DoStartReceiveField.
    * EndReceiveField is also scheduled after the duration of the field
    * (except for the special case of preambles \see DoStartReceivePreamble).
    * The PHY is kept in CCA busy during the reception of the field (except for
@@ -384,8 +376,7 @@ public:
   /**
    * End receiving a given field.
    *
-   * This method will call the DoEndReceiveField (which will should
-   * be overridden by child classes) to obtain the outcome of the reception.
+   * This method will call the DoEndReceiveField  to obtain the outcome of the reception.
    * In case of success, reception of the next field is triggered.
    * In case of failure, the indications in the returned \see PhyFieldRxStatus
    * are performed.
@@ -440,6 +431,14 @@ public:
    * \return the channel width (in MHz) used for RSSI measurement
    */
   virtual uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const;
+
+  /**
+   * Return the channel width used in the reception spectrum model.
+   *
+   * \param txVector the TXVECTOR of the PPDU that is being received
+   * \return the channel width (in MHz) used for RxSpectrumModel
+   */
+  virtual uint16_t GetRxChannelWidth (const WifiTxVector& txVector) const;
 
   /**
    * This function is called by SpectrumWifiPhy to send
@@ -510,9 +509,6 @@ protected:
 
   /**
    * Return the PPDU formats of the PHY.
-   *
-   * This method should be implemented (overridden) by each child
-   * class introducing new formats.
    *
    * \return the PPDU formats of the PHY
    */
@@ -740,14 +736,14 @@ protected:
    * Create an event using WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
    *
-   * \copydoc InterferenceHelper::Add(Ptr<const WifiPpdu>, WifiTxVector, Time, RxPowerWattPerChannelBand, bool)
+   * \copydoc InterferenceHelper::Add
    */
   Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
   /**
    * Update an event in WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
    *
-   * \copydoc InterferenceHelper::UpdateEvent(Ptr<Event>, RxPowerWattPerChannelBand)
+   * \copydoc InterferenceHelper::UpdateEvent
    */
   void UpdateInterferenceEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
   /**

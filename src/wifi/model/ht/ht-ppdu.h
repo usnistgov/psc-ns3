@@ -61,12 +61,11 @@ public:
      */
     static TypeId GetTypeId (void);
 
-    // Inherited
-    TypeId GetInstanceTypeId (void) const;
-    void Print (std::ostream &os) const;
-    uint32_t GetSerializedSize (void) const;
-    void Serialize (Buffer::Iterator start) const;
-    uint32_t Deserialize (Buffer::Iterator start);
+    TypeId GetInstanceTypeId (void) const override;
+    void Print (std::ostream &os) const override;
+    uint32_t GetSerializedSize (void) const override;
+    void Serialize (Buffer::Iterator start) const override;
+    uint32_t Deserialize (Buffer::Iterator start) override;
 
     /**
      * Fill the MCS field of HT-SIG.
@@ -153,12 +152,10 @@ public:
    */
   virtual ~HtPpdu ();
 
-  // Inherited
   Time GetTxDuration (void) const override;
   Ptr<WifiPpdu> Copy (void) const override;
 
 private:
-  // Inherited
   WifiTxVector DoGetTxVector (void) const override;
 
   HtSigHeader m_htSig;  //!< the HT-SIG PHY header

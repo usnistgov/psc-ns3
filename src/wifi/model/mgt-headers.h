@@ -153,11 +153,12 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+
+  TypeId GetInstanceTypeId (void) const override;
+  void Print (std::ostream &os) const override;
+  uint32_t GetSerializedSize (void) const override;
+  void Serialize (Buffer::Iterator start) const override;
+  uint32_t Deserialize (Buffer::Iterator start) override;
 
 
 private:
@@ -1249,7 +1250,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  // Inherited
+
   TypeId GetInstanceTypeId (void) const;
   void Print (std::ostream &os) const;
   uint32_t GetSerializedSize (void) const;

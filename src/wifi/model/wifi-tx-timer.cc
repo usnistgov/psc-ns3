@@ -79,6 +79,11 @@ case WAIT_ ## x: \
     FOO (CTS);
     FOO (NORMAL_ACK);
     FOO (BLOCK_ACK);
+    FOO (NORMAL_ACK_AFTER_DL_MU_PPDU);
+    FOO (BLOCK_ACKS_IN_TB_PPDU);
+    FOO (TB_PPDU_AFTER_BASIC_TF);
+    FOO (QOS_NULL_AFTER_BSRP_TF);
+    FOO (BLOCK_ACK_AFTER_TB_PPDU);
     default:
       NS_ABORT_MSG ("Unknown reason");
     }
@@ -111,10 +116,8 @@ WifiTxTimer::SetMpduResponseTimeoutCallback (MpduResponseTimeout callback) const
   m_mpduResponseTimeoutCallback = callback;
 }
 
-template<>
 void
-WifiTxTimer::FeedTraceSource<Ptr<WifiMacQueueItem>, WifiTxVector> (Ptr<WifiMacQueueItem> item,
-                                                                   WifiTxVector txVector)
+WifiTxTimer::FeedTraceSource (Ptr<WifiMacQueueItem> item, WifiTxVector txVector)
 {
   if (!m_mpduResponseTimeoutCallback.IsNull ())
     {
@@ -128,14 +131,28 @@ WifiTxTimer::SetPsduResponseTimeoutCallback (PsduResponseTimeout callback) const
   m_psduResponseTimeoutCallback = callback;
 }
 
-template<>
 void
-WifiTxTimer::FeedTraceSource<Ptr<WifiPsdu>, WifiTxVector> (Ptr<WifiPsdu> psdu,
-                                                           WifiTxVector txVector)
+WifiTxTimer::FeedTraceSource (Ptr<WifiPsdu> psdu, WifiTxVector txVector)
 {
   if (!m_psduResponseTimeoutCallback.IsNull ())
     {
       m_psduResponseTimeoutCallback (m_reason, psdu, txVector);
+    }
+}
+
+void
+WifiTxTimer::SetPsduMapResponseTimeoutCallback (PsduMapResponseTimeout callback) const
+{
+  m_psduMapResponseTimeoutCallback = callback;
+}
+
+void
+WifiTxTimer::FeedTraceSource (WifiPsduMap* psduMap, std::set<Mac48Address>* missingStations,
+                              std::size_t nTotalStations)
+{
+  if (!m_psduMapResponseTimeoutCallback.IsNull ())
+    {
+      m_psduMapResponseTimeoutCallback (m_reason, psduMap, missingStations, nTotalStations);
     }
 }
 

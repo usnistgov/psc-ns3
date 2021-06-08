@@ -67,6 +67,7 @@ void
 HtFrameExchangeManager::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  m_agreements.clear ();
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
   m_psdu = 0;
@@ -1263,7 +1264,7 @@ HtFrameExchangeManager::SendBlockAck (const RecipientBlockAckAgreement& agreemen
   // time, in microseconds between the end of the PPDU carrying the frame that
   // elicited the response and the end of the PPDU carrying the BlockAck frame.
   Time baDurationId = durationId - m_phy->GetSifs ()
-                      - m_phy->CalculateTxDuration (psdu->GetSize (), blockAckTxVector, m_phy->GetPhyBand ());
+                      - m_phy->CalculateTxDuration (psdu, blockAckTxVector, m_phy->GetPhyBand ());
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8 of 802.11-2016)
   if (baDurationId.IsStrictlyNegative ())
     {
@@ -1338,7 +1339,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           CtrlBAckResponseHeader blockAck;
           mpdu->GetPacket ()->PeekHeader (blockAck);
           uint8_t tid = blockAck.GetTidInfo ();
-          GetBaManager (tid)->NotifyGotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr,
+          GetBaManager (tid)->NotifyGotBlockAck (blockAck, hdr.GetAddr2 (), {tid}, rxSnr,
                                                  tag.Get (), m_txParams.m_txVector);
 
           // cancel the timer

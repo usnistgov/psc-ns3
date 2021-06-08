@@ -83,14 +83,14 @@ public:
   QosTxop ();
   virtual ~QosTxop ();
 
-  // Overridden from Txop
-  bool IsQosTxop (void) const;
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
-  virtual bool HasFramesToTransmit (void);
-  void NotifyInternalCollision (void);
-  virtual void NotifyChannelAccessed (Time txopDuration);
-  void NotifyChannelReleased (void);
-  void SetDroppedMpduCallback (DroppedMpdu callback);
+  bool IsQosTxop (void) const override;
+  AcIndex GetAccessCategory (void) const override;
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager) override;
+  bool HasFramesToTransmit (void) override;
+  void NotifyInternalCollision (void) override;
+  void NotifyChannelAccessed (Time txopDuration) override;
+  void NotifyChannelReleased (void) override;
+  void SetDroppedMpduCallback (DroppedMpdu callback) override;
 
   /**
    * Set the Frame Exchange Manager associated with this QoS STA.
@@ -164,6 +164,7 @@ public:
   /**
    * \param recipient Address of recipient.
    * \param tid traffic ID.
+   * \return the BlockAckRequest to send
    *
    * Prepare a BlockAckRequest to be sent to <i>recipient</i> for Traffic ID
    * <i>tid</i>. The header for the BlockAckRequest is requested to the QosTxop
@@ -225,11 +226,6 @@ public:
    * can be sent safely.
    */
   void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
-
-  /**
-   * Complete block ack configuration.
-   */
-  void CompleteConfig (void);
 
   /**
    * Set threshold for block ack mechanism. If number of packets in the
@@ -393,15 +389,13 @@ public:
   virtual Time GetRemainingTxop (void) const;
 
 protected:
-  // Overridden from Txop
-  void DoDispose (void);
+  void DoDispose (void) override;
 
 private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
 
-  // Overridden from Txop
-  void DoInitialize (void);
+  void DoInitialize (void) override;
 
   /**
    * Check if the given MPDU is to be considered old according to the current

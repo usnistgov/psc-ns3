@@ -63,17 +63,16 @@ public:
    */
   virtual ~HtPhy ();
 
-  // Inherited
   WifiMode GetMcs (uint8_t index) const override;
   bool IsMcsSupported (uint8_t index) const override;
   bool HandlesMcsModes (void) const override;
-  virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  virtual const PpduFormats & GetPpduFormats (void) const override;
-  virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
+  WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
+  const PpduFormats & GetPpduFormats (void) const override;
+  Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * \return the WifiMode used for the L-SIG (non-HT header) field
@@ -449,11 +448,11 @@ public:
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
 
 protected:
-  // Inherited
-  virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
-  virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
-  virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
-  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
+  PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
+  bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
+  bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
+  uint32_t GetMaxPsduSize (void) const override;
 
   /**
    * Build mode list.
@@ -509,7 +508,7 @@ protected:
    *
    * \param symbolDuration the symbol duration (in us) excluding guard interval
    * \param guardInterval the considered guard interval duration in nanoseconds
-   * \param usableSubarriers the number of usable subcarriers for data
+   * \param usableSubCarriers the number of usable subcarriers for data
    * \param numberOfBitsPerSubcarrier the number of data bits per subcarrier
    * \param codingRate the coding rate
    * \param nss the considered number of streams
@@ -524,14 +523,6 @@ protected:
    * \return he number of usable subcarriers for data
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
-
-  /**
-   * Get the maximum PSDU size in bytes (see Table 19-25 HT PHY characteristics
-   * of IEEE 802.11-2016)
-   *
-   * \return the maximum PSDU size in bytes
-   */
-  virtual uint32_t GetMaxPsduSize (void) const override;
 
   uint8_t m_maxMcsIndexPerSs;          //!< the maximum MCS index per spatial stream as defined by the standard
   uint8_t m_maxSupportedMcsIndexPerSs; //!< the maximum supported MCS index per spatial stream

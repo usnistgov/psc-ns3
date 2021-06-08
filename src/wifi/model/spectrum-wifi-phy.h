@@ -69,7 +69,7 @@ public:
   // Implementation of pure virtual method.
   void StartTx (Ptr<WifiPpdu> ppdu) override;
   Ptr<Channel> GetChannel (void) const override;
-  virtual uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
+  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
   std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;
 
   /**
@@ -137,10 +137,10 @@ public:
 
   // The following four methods call to the base WifiPhy class method
   // but also generate a new SpectrumModel if called during runtime
-  virtual void SetChannelNumber (uint8_t id) override;
-  virtual void SetFrequency (uint16_t freq) override;
-  virtual void SetChannelWidth (uint16_t channelwidth) override;
-  virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band) override;
+  void SetChannelNumber (uint8_t id) override;
+  void SetFrequency (uint16_t freq) override;
+  void SetChannelWidth (uint16_t channelwidth) override;
+  void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band) override;
 
   /**
    * This function is sending the signal to the Spectrum channel
@@ -151,7 +151,6 @@ public:
   void Transmit (Ptr<WifiSpectrumSignalParameters> txParams);
 
 protected:
-  // Inherited
   void DoDispose (void) override;
   void DoInitialize (void) override;
 
@@ -194,7 +193,7 @@ private:
   Ptr<AntennaModel> m_antenna;                              //!< antenna model
   mutable Ptr<const SpectrumModel> m_rxSpectrumModel;       //!< receive spectrum model
 
-  ///< Map a spectrum band associated with an RU to the RU specification
+  /// Map a spectrum band associated with an RU to the RU specification
   typedef std::map<WifiSpectrumBand, HeRu::RuSpec> RuBand;
 
   std::map<uint16_t, RuBand> m_ruBands;  /**< For each channel width, store all the distinct spectrum

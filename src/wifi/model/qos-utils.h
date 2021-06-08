@@ -22,6 +22,7 @@
 #define QOS_UTILS_H
 
 #include "ns3/ptr.h"
+#include <map>
 
 namespace ns3 {
 
@@ -37,6 +38,12 @@ typedef std::pair<Mac48Address, uint8_t> WifiAddressTidPair;  //!< (MAC address,
  */
 struct WifiAddressTidHash
 {
+  /**
+   * Functional operator for (MAC address, TID) hash computation.
+   *
+   * \param addressTidPair the (MAC address, TID) pair
+   * \return the hash
+   */
   std::size_t operator() (const WifiAddressTidPair& addressTidPair) const;
 };
 
@@ -45,6 +52,12 @@ struct WifiAddressTidHash
  */
 struct WifiAddressHash
 {
+  /**
+   * Functional operator for MAC address hash computation.
+   *
+   * \param address the MAC address
+   * \return the hash
+   */
   std::size_t operator() (const Mac48Address& address) const;
 };
 
@@ -68,6 +81,95 @@ enum AcIndex : uint8_t
   AC_BE_NQOS = 4,
   AC_UNDEF
 };
+
+/**
+ * \ingroup wifi
+ * This class stores the pair of TIDs of an Access Category.
+ */
+class WifiAc
+{
+public:
+  /**
+   * Constructor.
+   *
+   * \param lowTid the TID with lower priority
+   * \param highTid the TID with higher priority
+   */
+  WifiAc (uint8_t lowTid, uint8_t highTid);
+  /**
+   * Get the TID with lower priority
+   *
+   * \return the TID with lower priority
+   */
+  uint8_t GetLowTid (void) const;
+  /**
+   * Get the TID with higher priority
+   *
+   * \return the TID with higher priority
+   */
+  uint8_t GetHighTid (void) const;
+  /**
+   * Given a TID belonging to this Access Category, get the other TID of this AC.
+   *
+   * \param tid a TID belonging to this AC
+   * \return the other TID belonging to this AC
+   */
+  uint8_t GetOtherTid (uint8_t tid) const;
+
+private:
+  uint8_t m_lowTid;      //!< the TID with lower priority
+  uint8_t m_highTid;     //!< the TID with higher priority
+};
+
+/**
+ * \ingroup wifi
+ * Operator> overload returning true if the AC on the left has higher priority
+ * than the AC on the right.
+ *
+ * \param left the AC on the left of operator>
+ * \param right the AC on the right of operator>
+ * \return true if the AC on the left has higher priority than the AC on the right
+ */
+bool operator> (enum AcIndex left, enum AcIndex right);
+
+/**
+ * \ingroup wifi
+ * Operator>= overload returning true if the AC on the left has higher or the same
+ * priority than the AC on the right.
+ *
+ * \param left the AC on the left of operator>=
+ * \param right the AC on the right of operator>=
+ * \return true if the AC on the left has higher or the same priority than the AC on the right
+ */
+bool operator>= (enum AcIndex left, enum AcIndex right);
+
+/**
+ * \ingroup wifi
+ * Operator< overload returning true if the AC on the left has lower priority
+ * than the AC on the right.
+ *
+ * \param left the AC on the left of operator<
+ * \param right the AC on the right of operator<
+ * \return true if the AC on the left has lower priority than the AC on the right
+ */
+bool operator< (enum AcIndex left, enum AcIndex right);
+
+/**
+ * \ingroup wifi
+ * Operator<= overload returning true if the AC on the left has lower or the same
+ * priority than the AC on the right.
+ *
+ * \param left the AC on the left of operator<=
+ * \param right the AC on the right of operator<=
+ * \return true if the AC on the left has lower or the same priority than the AC on the right
+ */
+bool operator<= (enum AcIndex left, enum AcIndex right);
+
+/**
+ * Map containing the four ACs in increasing order of priority (according to
+ * Table 10-1 "UP-to-AC Mappings" of 802.11-2016)
+ */
+extern const std::map<AcIndex, WifiAc> wifiAcList;
 
 /**
  * \ingroup wifi
@@ -145,12 +247,11 @@ bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
 
 /**
  * \ingroup wifi
- * Next function is useful to get traffic id of different packet types.
+ * This function is useful to get traffic id of different packet types.
  *
  * \param packet packet to check
  * \param hdr 802.11 header for packet to check
- *
- * Returns TID of different packet types
+ * \return the TID of different packet types
  */
 uint8_t GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr);
 

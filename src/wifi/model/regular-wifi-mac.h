@@ -24,6 +24,8 @@
 #include "wifi-mac.h"
 #include "qos-txop.h"
 #include "ssid.h"
+#include <set>
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -34,6 +36,8 @@ class ExtendedCapabilities;
 class FrameExchangeManager;
 class WifiPsdu;
 enum WifiTxTimerReason : uint8_t;
+
+typedef std::unordered_map <uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
 
 /**
  * \brief base class for all MAC-level wifi objects.
@@ -56,39 +60,29 @@ public:
   virtual ~RegularWifiMac ();
 
   // Implementations of pure virtual methods.
-  void SetShortSlotTimeSupported (bool enable);
-  void SetSsid (Ssid ssid);
-  void SetAddress (Mac48Address address);
-  void SetPromisc (void);
-  bool GetShortSlotTimeSupported (void) const;
-  Ssid GetSsid (void) const;
-  Mac48Address GetAddress (void) const;
-  Mac48Address GetBssid (void) const;
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
-  virtual bool SupportsSendFrom (void) const;
-  virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
-  Ptr<WifiPhy> GetWifiPhy (void) const;
-  void ResetWifiPhy (void);
-  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-  void ConfigureStandard (WifiStandard standard);
-  TypeOfStation GetTypeOfStation (void) const;
-
-  /**
-   * This type defines the callback of a higher layer that a
-   * WifiMac(-derived) object invokes to pass a packet up the stack.
-   *
-   * \param packet the packet that has been received.
-   * \param from the MAC address of the device that sent the packet.
-   * \param to the MAC address of the device that the packet is destined for.
-   */
-  typedef Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
-
-  void SetForwardUpCallback (ForwardUpCallback upCallback);
-  void SetLinkUpCallback (Callback<void> linkUp);
-  void SetLinkDownCallback (Callback<void> linkDown);
+  void SetShortSlotTimeSupported (bool enable) override;
+  void SetSsid (Ssid ssid) override;
+  void SetAddress (Mac48Address address) override;
+  void SetPromisc (void) override;
+  bool GetShortSlotTimeSupported (void) const override;
+  Ssid GetSsid (void) const override;
+  Mac48Address GetAddress (void) const override;
+  Mac48Address GetBssid (void) const override;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
+  bool SupportsSendFrom (void) const override;
+  void SetWifiPhy (const Ptr<WifiPhy> phy) override;
+  Ptr<WifiPhy> GetWifiPhy (void) const override;
+  void ResetWifiPhy (void) override;
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
+  void ConfigureStandard (WifiStandard standard) override;
+  TypeOfStation GetTypeOfStation (void) const override;
+  void SetForwardUpCallback (ForwardUpCallback upCallback) override;
+  void SetLinkUpCallback (Callback<void> linkUp) override;
+  void SetLinkDownCallback (Callback<void> linkDown) override;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const override;
 
   // Should be implemented by child classes
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to) override = 0;
 
   /**
    * Get the Frame Exchange Manager
@@ -108,11 +102,6 @@ public:
    * \param bssid the BSSID of the network that this device belongs to.
    */
   void SetBssid (Mac48Address bssid);
-
-  /**
-   * \return the station manager attached to this MAC.
-   */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   /**
    * Accessor for the DCF object
@@ -161,9 +150,9 @@ public:
   HeCapabilities GetHeCapabilities (void) const;
 
 protected:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
-  void SetTypeOfStation (TypeOfStation type);
+  void DoInitialize () override;
+  void DoDispose () override;
+  void SetTypeOfStation (TypeOfStation type) override;
 
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)
@@ -494,6 +483,27 @@ private:
    * This trace source is fed by a WifiTxTimer object.
    */
   PsduResponseTimeoutTracedCallback m_psduResponseTimeoutCallback;
+
+  /**
+   * TracedCallback signature for PSDU map response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param psduMap the PSDU map for which not all responses were received before the timeout
+   * \param missingStations the MAC addresses of the stations that did not respond
+   * \param nTotalStations the total number of stations that had to respond
+   */
+  typedef void (* PsduMapResponseTimeoutCallback)(uint8_t reason, WifiPsduMap* psduMap,
+                                                  const std::set<Mac48Address>* missingStations,
+                                                  std::size_t nTotalStations);
+
+  /// TracedCallback for PSDU map response timeout events typedef
+  typedef TracedCallback<uint8_t, WifiPsduMap*, const std::set<Mac48Address>*, std::size_t> PsduMapResponseTimeoutTracedCallback;
+
+  /**
+   * PSDU map response timeout traced callback.
+   * This trace source is fed by a WifiTxTimer object.
+   */
+  PsduMapResponseTimeoutTracedCallback m_psduMapResponseTimeoutCallback;
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
   bool m_ctsToSelfSupported;     ///< flag indicating whether CTS-To-Self is supported

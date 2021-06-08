@@ -27,6 +27,7 @@
 #include "wifi-mac-header.h"
 #include "ctrl-headers.h"
 #include <map>
+#include <memory>
 
 
 namespace ns3 {
@@ -54,7 +55,9 @@ struct WifiAcknowledgment
       BAR_BLOCK_ACK,
       DL_MU_BAR_BA_SEQUENCE,
       DL_MU_TF_MU_BAR,
-      DL_MU_AGGREGATE_TF
+      DL_MU_AGGREGATE_TF,
+      UL_MU_MULTI_STA_BA,
+      ACK_AFTER_TB_PPDU
     };
 
   /**
@@ -63,6 +66,12 @@ struct WifiAcknowledgment
    */
   WifiAcknowledgment (Method m);
   virtual ~WifiAcknowledgment ();
+
+  /**
+   * Clone this object.
+   * \return a pointer to the cloned object
+   */
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const = 0;
 
   /**
    * Get the QoS Ack policy to use for the MPDUs addressed to the given receiver
@@ -121,7 +130,7 @@ struct WifiNoAck : public WifiAcknowledgment
 {
   WifiNoAck ();
 
-  // Overridden from WifiAcknowledgment
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 };
@@ -136,7 +145,7 @@ struct WifiNormalAck : public WifiAcknowledgment
 {
   WifiNormalAck ();
 
-  // Overridden from WifiAcknowledgment
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -153,9 +162,9 @@ struct WifiBlockAck : public WifiAcknowledgment
 {
   WifiBlockAck ();
 
-  // Overridden from WifiAcknowledgment
-  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const;
-  void Print (std::ostream &os) const;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
 
   WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
   BlockAckType baType;                 //!< BlockAck type
@@ -171,9 +180,9 @@ struct WifiBarBlockAck : public WifiAcknowledgment
 {
   WifiBarBlockAck ();
 
-  // Overridden from WifiAcknowledgment
-  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const;
-  void Print (std::ostream &os) const;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
 
   WifiTxVector blockAckReqTxVector;    //!< BlockAckReq TXVECTOR
   WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
@@ -193,7 +202,7 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
 {
   WifiDlMuBarBaSequence ();
 
-  // Overridden from WifiAcknowledgment
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -217,11 +226,11 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
     BlockAckType baType;               //!< BlockAck type
   };
 
-  ///< Set of stations replying with an Ack frame (no more than one)
+  /// Set of stations replying with an Ack frame (no more than one)
   std::map<Mac48Address, AckInfo> stationsReplyingWithNormalAck;
-  ///< Set of stations replying with a BlockAck frame (no more than one)
+  /// Set of stations replying with a BlockAck frame (no more than one)
   std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
-  ///< Set of stations receiving a BlockAckReq frame and replying with a BlockAck frame
+  /// Set of stations receiving a BlockAckReq frame and replying with a BlockAck frame
   std::map<Mac48Address, BlockAckReqInfo> stationsSendBlockAckReqTo;
 };
 
@@ -237,7 +246,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
 {
   WifiDlMuTfMuBar ();
 
-  // Overridden from WifiAcknowledgment
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -249,7 +258,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
     BlockAckType baType;               //!< BlockAck type
   };
 
-  ///< Set of stations replying with a BlockAck frame
+  /// Set of stations replying with a BlockAck frame
   std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
   std::list<BlockAckReqType> barTypes; //!< BAR types
   uint16_t ulLength;                   //!< the UL Length field of the MU-BAR Trigger Frame
@@ -268,7 +277,7 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
 {
   WifiDlMuAggregateTf ();
 
-  // Overridden from WifiAcknowledgment
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -281,9 +290,50 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
     BlockAckType baType;               //!< BlockAck type
   };
 
-  ///< Set of stations replying with a BlockAck frame
+  /// Set of stations replying with a BlockAck frame
   std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
   uint16_t ulLength;                   //!< the UL Length field of the MU-BAR Trigger Frames
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiUlMuMultiStaBa specifies that a Basic Trigger Frame is being sent to
+ * solicit TB PPDUs that will be acknowledged through a multi-STA BlockAck frame.
+ */
+struct WifiUlMuMultiStaBa : public WifiAcknowledgment
+{
+  WifiUlMuMultiStaBa ();
+
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
+
+  /// Map (originator, tid) pairs to the their index in baType
+  std::map<std::pair<Mac48Address, uint8_t>, std::size_t> stationsReceivingMultiStaBa;
+  BlockAckType baType;                 //!< BlockAck type
+  WifiTxVector tbPpduTxVector;         //!< TXVECTOR for a TB PPDU
+  WifiTxVector multiStaBaTxVector;     //!< TXVECTOR for the Multi-STA BlockAck
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiAckAfterTbPpdu is used when a station prepares a TB PPDU to send in
+ * response to a Basic Trigger Frame. The acknowledgment time must be
+ * zero because the time taken by the actual acknowledgment is not included
+ * in the duration indicated by the Trigger Frame. The QoS ack policy instead
+ * must be Normal Ack/Implicit Block Ack Request.
+ */
+struct WifiAckAfterTbPpdu : public WifiAcknowledgment
+{
+  WifiAckAfterTbPpdu ();
+
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
 };
 
 

@@ -49,13 +49,18 @@ const PhyEntity::ModulationLookupTable ErpOfdmPhy::m_erpOfdmModulationLookupTabl
   { "ErpOfdmRate54Mbps", { WIFI_CODE_RATE_3_4, 64 } }
 };
 
-// ERP OFDM rates in bits per second
+/// ERP OFDM rates in bits per second
 static const std::array<uint64_t, 8> s_erpOfdmRatesBpsList =
     {  6000000,  9000000, 12000000, 18000000,
       24000000, 36000000, 48000000, 54000000};
 
 /* *NS_CHECK_STYLE_ON* */
 
+/**
+ * Get the array of possible ERP OFDM rates.
+ *
+ * \return the ERP OFDM rates in bits per second
+ */
 const std::array<uint64_t, 8>& GetErpOfdmRatesBpsList (void)
 {
   return s_erpOfdmRatesBpsList;
@@ -147,16 +152,16 @@ ErpOfdmPhy::Get ## x (void) \
 { \
   static WifiMode mode = CreateErpOfdmMode (#x, f); \
   return mode; \
-} \
+}; \
 
-GET_ERP_OFDM_MODE (ErpOfdmRate6Mbps,  true );
-GET_ERP_OFDM_MODE (ErpOfdmRate9Mbps,  false);
-GET_ERP_OFDM_MODE (ErpOfdmRate12Mbps, true );
-GET_ERP_OFDM_MODE (ErpOfdmRate18Mbps, false);
-GET_ERP_OFDM_MODE (ErpOfdmRate24Mbps, true );
-GET_ERP_OFDM_MODE (ErpOfdmRate36Mbps, false);
-GET_ERP_OFDM_MODE (ErpOfdmRate48Mbps, false);
-GET_ERP_OFDM_MODE (ErpOfdmRate54Mbps, false);
+GET_ERP_OFDM_MODE (ErpOfdmRate6Mbps,  true)
+GET_ERP_OFDM_MODE (ErpOfdmRate9Mbps,  false)
+GET_ERP_OFDM_MODE (ErpOfdmRate12Mbps, true)
+GET_ERP_OFDM_MODE (ErpOfdmRate18Mbps, false)
+GET_ERP_OFDM_MODE (ErpOfdmRate24Mbps, true)
+GET_ERP_OFDM_MODE (ErpOfdmRate36Mbps, false)
+GET_ERP_OFDM_MODE (ErpOfdmRate48Mbps, false)
+GET_ERP_OFDM_MODE (ErpOfdmRate54Mbps, false)
 #undef GET_ERP_OFDM_MODE
 
 WifiMode

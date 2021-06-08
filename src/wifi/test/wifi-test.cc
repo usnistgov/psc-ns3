@@ -98,7 +98,7 @@ class WifiTest : public TestCase
 public:
   WifiTest ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -233,7 +233,7 @@ public:
   QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket")
   {
   }
-  virtual void DoRun (void)
+  void DoRun (void) override
   {
     //startingSeq=0, seqNum=2047
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2047), false, "2047 is new in comparison to 0");
@@ -263,7 +263,7 @@ class InterferenceHelperSequenceTest : public TestCase
 public:
   InterferenceHelperSequenceTest ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -445,7 +445,7 @@ class DcfImmediateAccessBroadcastTestCase : public TestCase
 public:
   DcfImmediateAccessBroadcastTestCase ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -599,7 +599,7 @@ public:
   Bug730TestCase ();
   virtual ~Bug730TestCase ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -736,7 +736,7 @@ public:
   QosFragmentationTestCase ();
   virtual ~QosFragmentationTestCase ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -896,7 +896,7 @@ class SetChannelFrequencyTest : public TestCase
 public:
   SetChannelFrequencyTest ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -1317,7 +1317,7 @@ public:
   Bug2222TestCase ();
   virtual ~Bug2222TestCase ();
 
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 
 private:
@@ -1328,7 +1328,7 @@ private:
    * \param context the context
    * \param adr the MAC address
    */
-  void TxDataFailedTrace (std::string context, Mac48Address adress);
+  void TxDataFailedTrace (std::string context, Mac48Address adr);
 };
 
 Bug2222TestCase::Bug2222TestCase ()
@@ -1453,7 +1453,7 @@ class Bug2843TestCase : public TestCase
 public:
   Bug2843TestCase ();
   virtual ~Bug2843TestCase ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -1629,7 +1629,7 @@ class Bug2831TestCase : public TestCase
 public:
   Bug2831TestCase ();
   virtual ~Bug2831TestCase ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -1826,7 +1826,7 @@ class StaWifiMacScanningTestCase : public TestCase
 public:
   StaWifiMacScanningTestCase ();
   virtual ~StaWifiMacScanningTestCase ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -2018,7 +2018,7 @@ class Bug2470TestCase : public TestCase
 public:
   Bug2470TestCase ();
   virtual ~Bug2470TestCase ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -2304,7 +2304,7 @@ class Issue40TestCase : public TestCase
 public:
   Issue40TestCase ();
   virtual ~Issue40TestCase ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -2329,7 +2329,7 @@ private:
   /**
    * Transmit final data failed function
    * \param context the context
-   * \param adr the MAC address
+   * \param address the MAC address
    */
   void TxFinalDataFailedCallback (std::string context, Mac48Address address);
 
@@ -2490,7 +2490,7 @@ class Issue169TestCase : public TestCase
 public:
   Issue169TestCase ();
   virtual ~Issue169TestCase ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -2505,7 +2505,7 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psduMap the PSDU map to transmit
+   * \param psdus the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
@@ -2607,7 +2607,7 @@ Issue169TestCase::DoRun (void)
  * The scenario considers an access point and a fixed station.
  * The access point first sends a 80 MHz PPDU to the station,
  * for which Ideal rate manager should select VH-MCS 0 based
- * on the distance (no interference generatd in this test). Then,
+ * on the distance (no interference generated in this test). Then,
  * the access point sends a 20 MHz PPDU to the station,
  * which corresponds to a SNR 6 dB higher than previously, hence
  * VHT-MCS 2 should be selected. Finally, the access point sends a
@@ -2620,7 +2620,7 @@ class IdealRateManagerChannelWidthTest : public TestCase
 public:
   IdealRateManagerChannelWidthTest ();
   virtual ~IdealRateManagerChannelWidthTest ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -2790,7 +2790,7 @@ class IdealRateManagerMimoTest : public TestCase
 public:
   IdealRateManagerMimoTest ();
   virtual ~IdealRateManagerMimoTest ();
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
 private:
   /**
@@ -2815,7 +2815,7 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psduMap the PSDU map to transmit
+   * \param psdus the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
@@ -3085,7 +3085,7 @@ private:
    * \returns true if data rates are the same, false otherwise
    */
   bool CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate);
-  virtual void DoRun (void);
+  void DoRun (void) override;
 };
 
 HeRuMcsDataRateTestCase::HeRuMcsDataRateTestCase ()

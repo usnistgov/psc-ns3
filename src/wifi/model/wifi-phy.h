@@ -1096,10 +1096,9 @@ public:
   virtual std::tuple<double, double, double> GetTxMaskRejectionParams (void) const = 0;
 
 protected:
-  // Inherited
   virtual void DoDispose (void);
 
-  /*
+  /**
    * Reset data upon end of TX or RX
    */
   void Reset (void);
@@ -1131,7 +1130,7 @@ protected:
    * HE TB PPDU solicited by the AP.
    *
    * \param ppdu the PPDU that is being received
-   * \param the channel width (in MHz) used for RSSI measurement
+   * \return the channel width (in MHz) used for RSSI measurement
    */
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const;
 

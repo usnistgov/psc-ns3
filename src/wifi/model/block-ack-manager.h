@@ -37,7 +37,6 @@ class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
 class CtrlBAckRequestHeader;
-class MacTxMiddle;
 class WifiMacQueue;
 class WifiMode;
 class Packet;
@@ -194,17 +193,23 @@ public:
   /**
    * \param blockAck The received BlockAck frame.
    * \param recipient Sender of BlockAck frame.
+   * \param tids the set of TIDs the acknowledged MPDUs belong to
    * \param rxSnr received SNR of the BlockAck frame itself
    * \param dataSnr data SNR reported by remote station
    * \param dataTxVector the TXVECTOR used to send the Data
+   * \param index the index of the Per AID TID Info subfield, in case of Multi-STA
+   *              Block Ack, or 0, otherwise
    *
    * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
    * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
    * with Ack Policy set to Block Ack, were correctly received by the recipient.
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
+   * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
+   * using All-ack context.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                          double rxSnr, double dataSnr, WifiTxVector dataTxVector);
+  void NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac48Address recipient,
+                          const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
+                          const WifiTxVector& dataTxVector, size_t index = 0);
   /**
    * \param recipient Sender of the expected BlockAck frame.
    * \param tid Traffic ID.
@@ -285,11 +290,6 @@ public:
    * \param queue The WifiMacQueue object.
    */
   void SetQueue (const Ptr<WifiMacQueue> queue);
-  /**
-   * Set the MacTxMiddle
-   * \param txMiddle the MacTxMiddle
-   */
-  void SetTxMiddle (const Ptr<MacTxMiddle> txMiddle);
 
   /**
    * Set block ack inactivity callback
@@ -413,6 +413,7 @@ public:
   /**
    * \param recipient the recipient
    * \param tid the TID
+   * \return the BlockAckRequest header for the established BA agreement
    *
    * Get the BlockAckRequest header for the established BA agreement
    * (<i>recipient</i>,<i>tid</i>).
@@ -524,8 +525,6 @@ private:
   std::list<Bar> m_bars; ///< list of BARs
 
   uint8_t m_blockAckThreshold; ///< block ack threshold
-  Ptr<MacTxMiddle> m_txMiddle; ///< the MacTxMiddle
-  Mac48Address m_address;      ///< address
   Ptr<WifiMacQueue> m_queue;   ///< queue
   Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout; ///< BlockAck inactivity timeout callback
   Callback<void, Mac48Address, uint8_t> m_blockPackets;   ///< block packets callback

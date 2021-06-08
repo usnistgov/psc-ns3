@@ -44,7 +44,7 @@ public:
    * \param tid the TID
    */
   BlockAckAgreement (Mac48Address peer, uint8_t tid);
-  ~BlockAckAgreement ();
+  virtual ~BlockAckAgreement ();
   /**
    * Set buffer size.
    *
@@ -112,7 +112,7 @@ public:
    *
    * \return starting sequence number
    */
-  uint16_t GetStartingSequence (void) const;
+  virtual uint16_t GetStartingSequence (void) const;
   /**
    * Return the starting sequence control
    *

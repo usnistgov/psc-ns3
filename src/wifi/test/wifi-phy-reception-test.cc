@@ -61,8 +61,8 @@ public:
   virtual ~TestThresholdPreambleDetectionWithoutFrameCapture ();
 
 protected:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -87,7 +87,7 @@ protected:
   uint32_t m_countRxFailure; ///< count RX failure
 
 private:
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
   /**
    * Schedule now to check  the PHY state
@@ -106,7 +106,7 @@ private:
    */
   void CheckRxPacketCount (uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestThresholdPreambleDetectionWithoutFrameCapture::TestThresholdPreambleDetectionWithoutFrameCapture ()
@@ -426,8 +426,8 @@ public:
   virtual ~TestThresholdPreambleDetectionWithFrameCapture ();
 
 protected:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -452,7 +452,7 @@ protected:
   uint32_t m_countRxFailure; ///< count RX failure
 
 private:
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
   /**
    * Schedule now to check  the PHY state
@@ -471,7 +471,7 @@ private:
    */
   void CheckRxPacketCount (uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestThresholdPreambleDetectionWithFrameCapture::TestThresholdPreambleDetectionWithFrameCapture ()
@@ -931,11 +931,11 @@ public:
   virtual ~TestSimpleFrameCaptureModel ();
 
 protected:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
 
 private:
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
   /**
    * Reset function
@@ -987,7 +987,7 @@ private:
   bool m_rxDropped1000B; ///< count dropped packets with 1000B payload
   bool m_rxDropped1500B; ///< count dropped packets with 1500B payload
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestSimpleFrameCaptureModel::TestSimpleFrameCaptureModel ()
@@ -1184,8 +1184,8 @@ public:
   virtual ~TestPhyHeadersReception ();
 
 protected:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -1194,7 +1194,7 @@ protected:
   void SendPacket (double rxPowerDbm);
 
 private:
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
   /**
    * Schedule now to check  the PHY state
@@ -1207,7 +1207,7 @@ private:
    */
   void DoCheckPhyState (WifiPhyState expectedState);
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestPhyHeadersReception::TestPhyHeadersReception ()
@@ -1436,11 +1436,11 @@ public:
   virtual ~TestAmpduReception ();
 
 protected:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
 
 private:
-  virtual void DoRun (void);
+  void DoRun (void) override;
 
   /**
    * RX success function

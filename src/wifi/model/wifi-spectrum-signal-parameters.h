@@ -36,8 +36,7 @@ class WifiPpdu;
 struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
 {
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+  Ptr<SpectrumSignalParameters> Copy () override;
 
   /**
    * default constructor

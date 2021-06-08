@@ -57,13 +57,12 @@ public:
   ApWifiMac ();
   virtual ~ApWifiMac ();
 
-  // Implementations of pure virtual methods, or overridden from base class.
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-  void SetLinkUpCallback (Callback<void> linkUp);
-  void Enqueue (Ptr<Packet> packet, Mac48Address to);
-  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
-  bool SupportsSendFrom (void) const;
-  void SetAddress (Mac48Address address);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
+  void SetLinkUpCallback (Callback<void> linkUp) override;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
+  bool SupportsSendFrom (void) const override;
+  void SetAddress (Mac48Address address) override;
 
   /**
    * \param interval the interval between two beacon transmissions.
@@ -73,23 +72,7 @@ public:
    * \return the interval between two beacon transmissions.
    */
   Time GetBeaconInterval (void) const;
-  /**
-   * Determine whether short slot time should be enabled or not in the BSS.
-   * Typically, true is returned only when there is no non-ERP stations associated
-   * to the AP, and that short slot time is supported by the AP and by all other
-   * ERP stations that are associated to the AP. Otherwise, false is returned.
-   *
-   * \returns whether short slot time should be enabled or not in the BSS.
-   */
-  bool GetShortSlotTimeEnabled (void) const;
-  /**
-   * Determine whether short preamble should be enabled or not in the BSS.
-   * Typically, true is returned only when the AP and all associated
-   * stations support short PHY preamble.
-   *
-   * \returns whether short preamble should be enabled or not in the BSS.
-   */
-  bool GetShortPreambleEnabled (void) const;
+
   /**
    * Determine the VHT operational channel width (in MHz).
    *
@@ -160,7 +143,7 @@ public:
   uint8_t GetMaxBufferStatus (Mac48Address address) const;
 
 private:
-  void Receive (Ptr<WifiMacQueueItem> mpdu);
+  void Receive (Ptr<WifiMacQueueItem> mpdu)  override;
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an Ack from the receiver).  If the packet
@@ -190,7 +173,7 @@ private:
    *
    * \param mpdu the MPDU containing the A-MSDU.
    */
-  void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
+  void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu) override;
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
    * is a wrapper for ForwardDown with traffic id.
@@ -286,6 +269,21 @@ private:
    * \param enable enable or disable beacon generation
    */
   void SetBeaconGeneration (bool enable);
+
+  /**
+   * Update whether short slot time should be enabled or not in the BSS.
+   * Typically, short slot time is enabled only when there is no non-ERP station
+   * associated  to the AP, and that short slot time is supported by the AP and by all
+   * other ERP stations that are associated to the AP. Otherwise, it is disabled.
+   */
+  void UpdateShortSlotTimeEnabled (void);
+  /**
+   * Update whether short preamble should be enabled or not in the BSS.
+   * Typically, short preamble is enabled only when the AP and all associated
+   * stations support short PHY preamble. Otherwise, it is disabled.
+   */
+  void UpdateShortPreambleEnabled (void);
+
   /**
    * Return whether protection for non-ERP stations is used in the BSS.
    *
@@ -294,8 +292,8 @@ private:
    */
   bool GetUseNonErpProtection (void) const;
 
-  void DoDispose (void);
-  void DoInitialize (void);
+  void DoDispose (void) override;
+  void DoInitialize (void) override;
 
   /**
    * \return the next Association ID to be allocated by the AP
@@ -309,16 +307,33 @@ private:
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
-  //!< Maps MAC addresses of associated stations to their association ID
+  /// Maps MAC addresses of associated stations to their association ID
   std::unordered_map<Mac48Address, uint16_t, WifiAddressHash> m_addressIdMap;
-  std::list<Mac48Address> m_nonErpStations;  //!< List of all non-ERP stations currently associated to the AP
-  std::list<Mac48Address> m_nonHtStations;   //!< List of all non-HT stations currently associated to the AP
+  uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
+  uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
+  bool m_shortSlotTimeEnabled;               //!< Flag whether short slot time is enabled within the BSS
+  bool m_shortPreambleEnabled;               //!< Flag whether short preamble is enabled in the BSS
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
   Time m_bsrLifetime;                        //!< Lifetime of Buffer Status Reports
-  //!< store value and timestamp for each Buffer Status Report
-  typedef struct { uint8_t value; Time timestamp; } bsrType;
-  //!< Per (MAC address, TID) buffer status reports
+  /// store value and timestamp for each Buffer Status Report
+  typedef struct
+  {
+    uint8_t value;  //!< value of BSR
+    Time timestamp; //!< timestamp of BSR
+  } bsrType;
+  /// Per (MAC address, TID) buffer status reports
   std::unordered_map<WifiAddressTidPair, bsrType, WifiAddressTidHash> m_bufferStatus;
+
+  /**
+   * TracedCallback signature for association/deassociation events.
+   *
+   * \param aid the AID of the station
+   * \param address the MAC address of the station
+   */
+  typedef void (* AssociationCallback)(uint16_t aid, Mac48Address address);
+
+  TracedCallback<uint16_t /* AID */, Mac48Address> m_assocLogger;   ///< association logger
+  TracedCallback<uint16_t /* AID */, Mac48Address> m_deAssocLogger; ///< deassociation logger
 };
 
 } //namespace ns3

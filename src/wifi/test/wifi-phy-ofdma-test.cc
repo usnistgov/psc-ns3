@@ -53,6 +53,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhyOfdmaTest");
 
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
 static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
+static const WifiPhyBand DEFAULT_WIFI_BAND = WIFI_PHY_BAND_5GHZ;
 static const uint16_t DEFAULT_CHANNEL_WIDTH = 20; // MHz
 static const uint16_t DEFAULT_GUARD_WIDTH = DEFAULT_CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
@@ -136,9 +137,8 @@ public:
   OfdmaSpectrumWifiPhy (uint16_t staId);
   virtual ~OfdmaSpectrumWifiPhy ();
 
-  // Inherited
-  virtual void DoInitialize (void) override;
-  virtual void DoDispose (void) override;
+  void DoInitialize (void) override;
+  void DoDispose (void) override;
 
   using WifiPhy::Reset;
 
@@ -168,6 +168,8 @@ public:
 
   /**
    * Since we assume trigger frame was previously received from AP, this is used to set its UID
+   *
+   * \param uid the PPDU UID of the trigger frame
    */
   void SetTriggerFrameUid (uint64_t uid);
 
@@ -307,9 +309,9 @@ public:
   virtual ~TestDlOfdmaPhyTransmission ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Receive success function for STA 1
@@ -964,9 +966,9 @@ public:
   virtual ~TestUlOfdmaPpduUid ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Transmitted PPDU information function for AP
@@ -1344,9 +1346,9 @@ public:
   virtual ~TestMultipleHeTbPreambles ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Receive HE TB PPDU function.
@@ -1656,15 +1658,16 @@ public:
   virtual ~TestUlOfdmaPhyTransmission ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Get TXVECTOR for HE TB PPDU.
    * \param txStaId the ID of the TX STA
    * \param index the RU index used for the transmission
    * \param bssColor the BSS color of the TX STA
+   * \return the TXVECTOR for HE TB PPDU
    */
   WifiTxVector GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_t index, uint8_t bssColor) const;
   /**
@@ -1758,6 +1761,7 @@ private:
    * \param expectedState the expected state of the PHY
    */
   void CheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
+  /// \copydoc CheckPhyState
   void DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
   /**
@@ -2806,9 +2810,9 @@ public:
   virtual ~TestPhyPaddingExclusion ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Send HE TB PPDU function
@@ -2862,6 +2866,7 @@ private:
    * \param expectedState the expected state of the PHY
    */
   void CheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
+  /// \copydoc CheckPhyState
   void DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
   /**
@@ -3225,9 +3230,9 @@ public:
   virtual ~TestUlOfdmaPowerControl ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Send a MU BAR through the AP to the STAs listed in the provided vector.
@@ -3326,7 +3331,6 @@ TestUlOfdmaPowerControl::SetupBa (Address destination)
 void
 TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
 {
-#ifdef NOTYET
   NS_ASSERT (!staIds.empty () && staIds.size () <= 2);
 
   //Build MU-BAR trigger frame
@@ -3410,12 +3414,11 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
 
   Time nav = m_apDev->GetPhy ()->GetSifs ();
   uint16_t staId = staIds.front (); //either will do
-  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), muBar.GetHeTbTxVector (staId), DEFAULT_FREQUENCY, staId);
+  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), muBar.GetHeTbTxVector (staId), DEFAULT_WIFI_BAND, staId);
   psdu->SetDuration (nav);
   psdus.insert (std::make_pair (SU_STA_ID, psdu));
 
   m_phyAp->Send (psdus, txVector);
-#endif
 }
 
 void
@@ -3683,7 +3686,7 @@ WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite ()
   AddTestCase (new TestMultipleHeTbPreambles, TestCase::QUICK);
   AddTestCase (new TestUlOfdmaPhyTransmission, TestCase::QUICK);
   AddTestCase (new TestPhyPaddingExclusion, TestCase::QUICK);
-  AddTestCase (new TestUlOfdmaPowerControl, TestCase::QUICK); //FIXME: requires changes at MAC layer
+  AddTestCase (new TestUlOfdmaPowerControl, TestCase::QUICK);
 }
 
 static WifiPhyOfdmaTestSuite wifiPhyOfdmaTestSuite; ///< the test suite

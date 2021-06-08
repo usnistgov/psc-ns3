@@ -406,7 +406,6 @@ public:
   /**
    * \brief Get the bytes corresponding to the address.
    * \param buf buffer to store the data
-   * \return bytes of the address
    */
   void GetBytes (uint8_t buf[16]) const;
 
@@ -543,6 +542,12 @@ public:
    * \param buf buffer to store the data
    */
   void GetBytes (uint8_t buf[16]) const;
+
+  /**
+   * \brief Convert the Prefix into an IPv6 Address.
+   * \return an IPv6 address representing the prefix
+   */
+  Ipv6Address ConvertToIpv6Address () const;
 
   /**
    * \brief Get prefix length.

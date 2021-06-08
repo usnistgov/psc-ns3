@@ -72,7 +72,7 @@ const PhyEntity::ModulationLookupTable OfdmPhy::m_ofdmModulationLookupTable {
   { "OfdmRate13_5MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 64 } }
 };
 
-// OFDM rates in bits per second
+/// OFDM rates in bits per second for each bandwidth (MHz)
 const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
    {{ 20, // MHz
      {  6000000,  9000000, 12000000, 18000000,
@@ -86,6 +86,11 @@ const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
 
 /* *NS_CHECK_STYLE_ON* */
 
+/**
+ * Get the array of possible OFDM rates for each bandwidth (MHz).
+ *
+ * \return the OFDM rates in bits per second
+ */
 const std::map<uint16_t, std::array<uint64_t, 8> >& GetOfdmRatesBpsList (void)
 {
   return s_ofdmRatesBpsList;
@@ -444,35 +449,35 @@ OfdmPhy::Get ## x (void) \
 { \
   static WifiMode mode = CreateOfdmMode (#x, f); \
   return mode; \
-} \
+}; \
 
 // 20 MHz channel rates (default)
-GET_OFDM_MODE (OfdmRate6Mbps,  true );
-GET_OFDM_MODE (OfdmRate9Mbps,  false);
-GET_OFDM_MODE (OfdmRate12Mbps, true );
-GET_OFDM_MODE (OfdmRate18Mbps, false);
-GET_OFDM_MODE (OfdmRate24Mbps, true );
-GET_OFDM_MODE (OfdmRate36Mbps, false);
-GET_OFDM_MODE (OfdmRate48Mbps, false);
-GET_OFDM_MODE (OfdmRate54Mbps, false);
+GET_OFDM_MODE (OfdmRate6Mbps,  true)
+GET_OFDM_MODE (OfdmRate9Mbps,  false)
+GET_OFDM_MODE (OfdmRate12Mbps, true)
+GET_OFDM_MODE (OfdmRate18Mbps, false)
+GET_OFDM_MODE (OfdmRate24Mbps, true)
+GET_OFDM_MODE (OfdmRate36Mbps, false)
+GET_OFDM_MODE (OfdmRate48Mbps, false)
+GET_OFDM_MODE (OfdmRate54Mbps, false)
 // 10 MHz channel rates
-GET_OFDM_MODE (OfdmRate3MbpsBW10MHz,   true );
-GET_OFDM_MODE (OfdmRate4_5MbpsBW10MHz, false);
-GET_OFDM_MODE (OfdmRate6MbpsBW10MHz,   true );
-GET_OFDM_MODE (OfdmRate9MbpsBW10MHz,   false);
-GET_OFDM_MODE (OfdmRate12MbpsBW10MHz,  true );
-GET_OFDM_MODE (OfdmRate18MbpsBW10MHz,  false);
-GET_OFDM_MODE (OfdmRate24MbpsBW10MHz,  false);
-GET_OFDM_MODE (OfdmRate27MbpsBW10MHz,  false);
+GET_OFDM_MODE (OfdmRate3MbpsBW10MHz,   true)
+GET_OFDM_MODE (OfdmRate4_5MbpsBW10MHz, false)
+GET_OFDM_MODE (OfdmRate6MbpsBW10MHz,   true)
+GET_OFDM_MODE (OfdmRate9MbpsBW10MHz,   false)
+GET_OFDM_MODE (OfdmRate12MbpsBW10MHz,  true)
+GET_OFDM_MODE (OfdmRate18MbpsBW10MHz,  false)
+GET_OFDM_MODE (OfdmRate24MbpsBW10MHz,  false)
+GET_OFDM_MODE (OfdmRate27MbpsBW10MHz,  false)
 // 5 MHz channel rates
-GET_OFDM_MODE (OfdmRate1_5MbpsBW5MHz,  true );
-GET_OFDM_MODE (OfdmRate2_25MbpsBW5MHz, false);
-GET_OFDM_MODE (OfdmRate3MbpsBW5MHz,    true );
-GET_OFDM_MODE (OfdmRate4_5MbpsBW5MHz,  false);
-GET_OFDM_MODE (OfdmRate6MbpsBW5MHz,    true );
-GET_OFDM_MODE (OfdmRate9MbpsBW5MHz,    false);
-GET_OFDM_MODE (OfdmRate12MbpsBW5MHz,   false);
-GET_OFDM_MODE (OfdmRate13_5MbpsBW5MHz, false);
+GET_OFDM_MODE (OfdmRate1_5MbpsBW5MHz,  true)
+GET_OFDM_MODE (OfdmRate2_25MbpsBW5MHz, false)
+GET_OFDM_MODE (OfdmRate3MbpsBW5MHz,    true)
+GET_OFDM_MODE (OfdmRate4_5MbpsBW5MHz,  false)
+GET_OFDM_MODE (OfdmRate6MbpsBW5MHz,    true)
+GET_OFDM_MODE (OfdmRate9MbpsBW5MHz,    false)
+GET_OFDM_MODE (OfdmRate12MbpsBW5MHz,   false)
+GET_OFDM_MODE (OfdmRate13_5MbpsBW5MHz, false)
 #undef GET_OFDM_MODE
 
 WifiMode
