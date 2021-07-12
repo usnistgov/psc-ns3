@@ -57,15 +57,76 @@ public:
 
 
   /**
-   * RU Specification. Stores the information carried by the RU Allocation
-   * subfield of the User Info field of Trigger frames. Note that primary80MHz
-   * must be true if ruType is RU_2x996_TONE.
+   * RU Specification. Stores the information carried by the RU Allocation subfield
+   * of the User Info field of Trigger frames (see 9.3.1.22.1 of 802.11ax D8.0).
+   * Note that primary80MHz must be true if ruType is RU_2x996_TONE.
+   * Internally, this class also stores the RU PHY index (ranging from 1 to the number
+   * of RUs of the given type in a channel of the considered width), so that this class
+   * contains all the information needed to locate the RU in a 160 MHz channel.
    */
-  struct RuSpec
+  class RuSpec
   {
-    bool primary80MHz;   //!< true if the RU is allocated in the primary 80MHz channel
-    RuType ruType;       //!< RU type
-    std::size_t index;   //!< index (starting at 1)
+  public:
+    /**
+     * Default constructor
+     */
+    RuSpec ();
+    /**
+     * Constructor
+     *
+     * \param ruType the RU type
+     * \param index the RU index (starting at 1)
+     * \param primary80MHz whether the RU is allocated in the primary 80MHz channel
+     */
+    RuSpec (RuType ruType, std::size_t index, bool primary80MHz);
+
+    /**
+     * Get the RU type
+     *
+     * \return the RU type
+     */
+    RuType GetRuType (void) const;
+    /**
+     * Get the RU index
+     *
+     * \return the RU index
+     */
+    std::size_t GetIndex (void) const;
+    /**
+     * Get the primary 80 MHz flag
+     *
+     * \return true if the RU is in the primary 80 MHz channel and false otherwise
+     */
+    bool GetPrimary80MHz (void) const;
+    /**
+     * Set the RU PHY index
+     *
+     * \param bw the width of the channel of which the RU is part (in MHz)
+     * \param p20Index the index of the primary20 channel
+     */
+    void SetPhyIndex (uint16_t bw, uint8_t p20Index);
+    /**
+     * Return true if the RU PHY index has been set, false otherwise
+     *
+     * \return true if the RU PHY index has been set, false otherwise
+     */
+    bool IsPhyIndexSet (void) const;
+    /**
+     * Get the RU PHY index
+     *
+     * \return the RU PHY index
+     */
+    std::size_t GetPhyIndex (void) const;
+
+  private:
+    RuType m_ruType;         //!< RU type
+    std::size_t m_index;     /**< RU index (starting at 1) as defined by Tables 27-7
+                                  to 27-9 of 802.11ax D8.0 */
+    bool m_primary80MHz;     //!< true if the RU is allocated in the primary 80MHz channel
+    std::size_t m_phyIndex;  /**< the RU PHY index, which is used to indicate whether an
+                                  RU is located in the lower half or the higher half of
+                                  a 160MHz channel. For channel widths less than 160MHz,
+                                  the RU PHY index equals the RU index */
   };
 
 
@@ -100,20 +161,20 @@ public:
   static std::vector<HeRu::RuSpec> GetCentral26TonesRus (uint16_t bw, HeRu::RuType ruType);
 
   /**
-   * Get the subcarrier group of the RU having the given index among all the
+   * Get the subcarrier group of the RU having the given PHY index among all the
    * RUs of the given type (number of tones) available in a HE PPDU of the
    * given bandwidth. A subcarrier group is defined as one or more pairs
    * indicating the lowest frequency index and the highest frequency index.
    * Note that for channel width of 160 MHz the returned range is relative to
-   * the 160 MHz channel (i.e. -1012 to 1012). The index parameter is used to
-   * distinguish between primary and secondary 80 MHz subchannels.
+   * the 160 MHz channel (i.e. -1012 to 1012). The PHY index parameter is used to
+   * distinguish between lower and higher 80 MHz subchannels.
    *
    * \param bw the bandwidth (MHz) of the HE PPDU (20, 40, 80, 160)
    * \param ruType the RU type (number of tones)
-   * \param index the index (starting at 1) of the RU
+   * \param phyIndex the PHY index (starting at 1) of the RU
    * \return the subcarrier range of the specified RU
    */
-  static SubcarrierGroup GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t index);
+  static SubcarrierGroup GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t phyIndex);
 
   /**
    * Check whether the given RU overlaps with the given set of RUs.

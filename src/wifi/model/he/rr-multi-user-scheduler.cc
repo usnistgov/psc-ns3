@@ -110,6 +110,10 @@ RrMultiUserScheduler::DoInitialize (void)
                                        MakeCallback (&RrMultiUserScheduler::NotifyStationAssociated, this));
   m_apMac->TraceConnectWithoutContext ("DeAssociatedSta",
                                        MakeCallback (&RrMultiUserScheduler::NotifyStationDeassociated, this));
+  for (const auto& ac : wifiAcList)
+    {
+      m_staList.insert ({ac.first, {}});
+    }
   MultiUserScheduler::DoInitialize ();
 }
 
@@ -307,7 +311,7 @@ RrMultiUserScheduler::TrySendingBasicTf (void)
               uint16_t staId = candidateIt->second.first->aid;
               // AssignRuIndices will be called below to set RuSpec
               txVector.SetHeMuUserInfo (staId,
-                                        {{false, (i < count ? ruType : HeRu::RU_26_TONE), 1},
+                                        {{(i < count ? ruType : HeRu::RU_26_TONE), 1, false},
                                         GetDlMuInfo ().txParams.m_txVector.GetMode (staId),
                                         GetDlMuInfo ().txParams.m_txVector.GetNss (staId)});
 
@@ -330,7 +334,7 @@ RrMultiUserScheduler::TrySendingBasicTf (void)
               NS_ASSERT (userInfoIt != trigger.end ());
               // AssignRuIndices will be called below to set RuSpec
               txVector.SetHeMuUserInfo (staId,
-                                        {{false, (i < count ? ruType : HeRu::RU_26_TONE), 1},
+                                        {{(i < count ? ruType : HeRu::RU_26_TONE), 1, false},
                                         HePhy::GetHeMcs (userInfoIt->GetUlMcs ()),
                                         userInfoIt->GetNss ()});
 
@@ -537,10 +541,14 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
       tids.push_back (currTid);
     }
 
+  Ptr<HeConfiguration> heConfiguration = m_apMac->GetHeConfiguration ();
+  NS_ASSERT (heConfiguration != 0);
+
   m_txParams.Clear ();
   m_txParams.m_txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
   m_txParams.m_txVector.SetChannelWidth (m_apMac->GetWifiPhy ()->GetChannelWidth ());
-  m_txParams.m_txVector.SetGuardInterval (m_apMac->GetHeConfiguration ()->GetGuardInterval ().GetNanoSeconds ());
+  m_txParams.m_txVector.SetGuardInterval (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
+  m_txParams.m_txVector.SetBssColor (heConfiguration->GetBssColor ());
 
   // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
   // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
@@ -582,7 +590,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
                                txVectorCopy = m_txParams.m_txVector;
 
                   m_txParams.m_txVector.SetHeMuUserInfo (staIt->aid,
-                                                         {{false, currRuType, 1},
+                                                         {{currRuType, 1, false},
                                                           suTxVector.GetMode (),
                                                           suTxVector.GetNss ()});
 
@@ -660,6 +668,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
   dlMuInfo.txParams.m_txVector.SetPreambleType (m_txParams.m_txVector.GetPreambleType ());
   dlMuInfo.txParams.m_txVector.SetChannelWidth (m_txParams.m_txVector.GetChannelWidth ());
   dlMuInfo.txParams.m_txVector.SetGuardInterval (m_txParams.m_txVector.GetGuardInterval ());
+  dlMuInfo.txParams.m_txVector.SetBssColor (m_txParams.m_txVector.GetBssColor ());
 
   auto candidateIt = m_candidates.begin (); // iterator over the list of candidate receivers
 
@@ -670,7 +679,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       uint16_t staId = candidateIt->first->aid;
       // AssignRuIndices will be called below to set RuSpec
       dlMuInfo.txParams.m_txVector.SetHeMuUserInfo (staId,
-                                                    {{false, (i < nRusAssigned ? ruType : HeRu::RU_26_TONE), 1},
+                                                    {{(i < nRusAssigned ? ruType : HeRu::RU_26_TONE), 1, false},
                                                       m_txParams.m_txVector.GetMode (staId),
                                                       m_txParams.m_txVector.GetNss (staId)});
       candidateIt++;
@@ -796,7 +805,7 @@ RrMultiUserScheduler::AssignRuIndices (WifiTxVector& txVector)
   std::set<HeRu::RuType> ruTypeSet;
   for (const auto& userInfo : txVector.GetHeMuUserInfoMap ())
     {
-      ruTypeSet.insert (userInfo.second.ru.ruType);
+      ruTypeSet.insert (userInfo.second.ru.GetRuType ());
     }
 
   std::vector<HeRu::RuSpec> ruSet, central26TonesRus;
@@ -819,7 +828,7 @@ RrMultiUserScheduler::AssignRuIndices (WifiTxVector& txVector)
 
   for (const auto& userInfo : txVector.GetHeMuUserInfoMap ())
     {
-      if (userInfo.second.ru.ruType == *ruTypeSet.begin ())
+      if (userInfo.second.ru.GetRuType () == *ruTypeSet.begin ())
         {
           NS_ASSERT (ruSetIt != ruSet.end ());
           txVector.SetRu (*ruSetIt, userInfo.first);

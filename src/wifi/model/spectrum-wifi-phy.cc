@@ -179,14 +179,24 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
                     {
                       HeRu::RuType ruType = static_cast <HeRu::RuType> (type);
                       std::size_t nRus = HeRu::GetNRus (bw, ruType);
-                      for (std::size_t index = 1; index <= nRus; index++)
+                      for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
                         {
-                          HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (bw, ruType, index);
+                          HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (bw, ruType, phyIndex);
                           HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
                           WifiSpectrumBand band = ConvertHeRuSubcarriers (bw, GetGuardBandwidth (channelWidth),
                                                                           range, i);
-                          bool primary80 = (channelWidth < 160 || index <= nRus / 2);
-                          m_ruBands[channelWidth].insert ({band, HeRu::RuSpec {primary80, ruType, index}});
+                          std::size_t index = (bw == 160 && phyIndex > nRus / 2
+                                               ? phyIndex - nRus / 2 : phyIndex);
+                          bool primary80IsLower80 = (GetOperatingChannel ().GetPrimaryChannelIndex (20)
+                                                     < bw / 40);
+                          bool primary80 = (bw < 160
+                                            || ruType == HeRu::RU_2x996_TONE
+                                            || (primary80IsLower80 && phyIndex <= nRus / 2)
+                                            || (!primary80IsLower80 && phyIndex > nRus / 2));
+                          HeRu::RuSpec ru (ruType, index, primary80);
+                          ru.SetPhyIndex (bw, GetOperatingChannel ().GetPrimaryChannelIndex (20));
+                          NS_ABORT_IF (ru.GetPhyIndex () != phyIndex);
+                          m_ruBands[channelWidth].insert ({band, ru});
                         }
                     }
                 }
@@ -338,9 +348,9 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
         {
           Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), channelWidth, GetBandBandwidth (), GetGuardBandwidth (channelWidth), bandRuPair.first);
           SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
-          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for RU with type " << bandRuPair.second.ruType << " and index " << bandRuPair.second.index << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << Integral (filteredSignal));
+          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for RU with type " << bandRuPair.second.GetRuType () << " and index " << bandRuPair.second.GetIndex () << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << Integral (filteredSignal));
           double rxPowerPerBandW = Integral (filteredSignal) * DbToRatio (GetRxGain ());
-          NS_LOG_DEBUG ("Signal power received after antenna gain for RU with type " << bandRuPair.second.ruType << " and index " << bandRuPair.second.index << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
+          NS_LOG_DEBUG ("Signal power received after antenna gain for RU with type " << bandRuPair.second.GetRuType () << " and index " << bandRuPair.second.GetIndex () << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
           rxPowerW.insert ({bandRuPair.first, rxPowerPerBandW});
         }
     }
@@ -369,12 +379,13 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   // Do no further processing if signal is too weak
   // Current implementation assumes constant RX power over the PPDU duration
   // Compare received TX power per MHz to normalized RX sensitivity
-  uint16_t txWidth = GetPhyEntity (wifiRxParams->ppdu->GetModulation ())->GetTransmissionChannelWidth (wifiRxParams->ppdu);
+  uint16_t txWidth = wifiRxParams->ppdu->GetTransmissionChannelWidth ();
   if (totalRxPowerW < DbmToW (GetRxSensitivity ()) * (txWidth / 20.0))
     {
       NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (totalRxPowerW) << " dBm");
       return;
     }
+
   // Unless we are receiving a TB PPDU, do not sync with this signal if the PPDU
   // does not overlap with the receiver's primary20 channel
   if (wifiRxParams->txPhy != 0)
@@ -386,7 +397,14 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       uint16_t txChannelWidth = wifiRxParams->ppdu->GetTxVector ().GetChannelWidth ();
       uint16_t txCenterFreq = txPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txChannelWidth);
 
-      if (!GetPhyEntity (wifiRxParams->ppdu->GetModulation ())->CanReceivePpdu (wifiRxParams->ppdu, txCenterFreq))
+      // if the channel width is a multiple of 20 MHz, then we consider the primary20 channel
+      uint16_t width = (GetChannelWidth () % 20 == 0 ? 20 : GetChannelWidth ());
+      uint16_t p20MinFreq =
+          GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) - width / 2;
+      uint16_t p20MaxFreq =
+          GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) + width / 2;
+
+      if (!wifiRxParams->ppdu->CanBeReceived (txCenterFreq, p20MinFreq, p20MaxFreq))
         {
           NS_LOG_INFO ("Cannot receive the PPDU, consider it as interference");
           m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),

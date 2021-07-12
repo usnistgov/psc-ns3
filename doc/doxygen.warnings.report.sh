@@ -148,7 +148,9 @@ skip_intro=0
 filter_blacklist=1
 filter_examples=0
 filter_test=0
+explicit_m_option=0
 filter_module=""
+explicit_f_option=0
 filter_in=""
 filter_out=""
 
@@ -159,7 +161,9 @@ while getopts :bef:F:hilm:s:tvw option ; do
 
     (e)  filter_examples=1        ;;
 
-    (f)  filter_in="$OPTARG"      ;;
+    (f)  filter_in="$OPTARG"
+         explicit_f_option=1
+         ;;
 
     (F)  filter_out="$OPTARG"     ;;
 
@@ -169,7 +173,9 @@ while getopts :bef:F:hilm:s:tvw option ; do
 
     (l)  use_standard=1           ;;
 
-    (m)  filter_module="$OPTARG"  ;;
+    (m)  filter_module="$OPTARG"
+         explicit_m_option=1
+         ;;
 
     (s)  use_filearg=1
          logfile_arg="$OPTARG"
@@ -225,6 +231,10 @@ function REappend
     eval "${param}=\"${!param:-}${!param:+\\|}$token\""
 }
 
+# Explicit -f or -m with empty args should filter out all, not pass all
+[[ $explicit_f_option -eq 1 && "${filter_in:-}" == "" ]] && filter_out=".*"
+[[ $explicit_m_option -eq 1 && "${filter_module:-}" == "" ]] && filter_out=".*"
+
 # Filter in regular expression for -m and -f
 filter_inRE=""
 [[ "$filter_module" != "" ]] && REappend filter_inRE src/$filter_module
@@ -244,7 +254,7 @@ REappend filter_blacklistRE "ScheduleWithContext(uint32_t"
 REappend filter_blacklistRE "Schedule\\(Now\\|Destroy\\)(\\(MEM\\|void\\)"
 
 #   ATTRIBUTE_HELPER_CPP( and _HEADER(
-REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)("
+REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
 
 # Filter out regular expression for black list, -e, -t and -F
 filter_outRE=""
@@ -333,7 +343,8 @@ EOF
     fi
 
     # Waf insists on writing cruft to stdout
-    sed -i -E '/^Waf:/d' doc/$intro_h
+    sed -i.bak -E '/^Waf:/d' doc/$intro_h
+    rm doc/$intro_h.bak
 
     verbose -n "Rebuilding doxygen docs with full errors"
     (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
@@ -489,17 +500,28 @@ printf "%6d warnings\n" $warncount
 # Return status based on warnings
 exit_status=$((warncount > 0))
 
-if [ "${filter_inRE:-}" != "" ] ; then
-    if [ "$filterin" != "" ] ; then
-        echo
-        echo
-        echo "Filtered Warnings"
-        echo "========================================"
-        echo "$filterin"
-        exit_status=1
-    else
-        exit_status=0
-    fi
+# if [ "${filter_inRE:-}" != "" ] ; then
+#     if [ "$filterin" != "" ] ; then
+#         echo
+#         echo
+#         echo "Filtered Warnings"
+#         echo "========================================"
+#         echo "$filterin"
+#         exit_status=1
+#     else
+#         exit_status=0
+#     fi
+# fi
+
+if [ "$filterin" != "" ] ; then
+    echo
+    echo
+    echo "Filtered Warnings"
+    echo "========================================"
+    echo "$filterin"
+    exit_status=1
+else
+    exit_status=0
 fi
 
 status_report 0 $me
