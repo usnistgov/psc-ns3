@@ -221,8 +221,8 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, const Header&
         }
       else
         {
-          // substr (5):  trims leading 'ns3::'
-          m_outputFile << std::left << "    " << msg.GetInstanceTypeId ().GetName ().substr (5) << std::right;
+          // substr (10):  trims leading 'ns3::psc::'
+          m_outputFile << std::left << "    " << msg.GetInstanceTypeId ().GetName ().substr (10) << std::right;
         }
       m_outputFile << std::endl;
     }

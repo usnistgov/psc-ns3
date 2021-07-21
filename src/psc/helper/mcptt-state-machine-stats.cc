@@ -115,7 +115,7 @@ McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const s
   m_outputFile << std::setw (6) << userId;
   m_outputFile << std::setw (6) << callId;
   m_outputFile << std::setw (9) << selected;
-  m_outputFile << std::setw (40) << typeId.substr (5); // trim leading 'ns3::'
+  m_outputFile << std::setw (40) << typeId.substr (10); // trim leading 'ns3::psc::'
   m_outputFile << std::setw (36) << oldStateName;
   m_outputFile << std::setw (36)  << newStateName;
   m_outputFile << std::endl;
