@@ -445,7 +445,7 @@ McpttServerCallMachineGroupPrearrangedStateS4::ReceiveResponse (McpttServerCallM
 
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant;
   participant = machine.GetServerCall ()->GetArbitrator ()->GetParticipantByUserId (hdr.GetFrom ());
-  NS_ASSERT_MSG (participant, "Participant " << hdr.GetFrom () << " not found");
+  NS_ASSERT_MSG (participant, "Participant " << hdr.GetFrom () << " not found, call ID " << machine.GetServerCall ()->GetArbitrator ()->GetOwner ()->GetCallId ());
   participant->ChangeState (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ());
   bool found = machine.RemoveFromPending (hdr.GetFrom ());
   if (!found)

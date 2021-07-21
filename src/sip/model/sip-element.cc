@@ -264,7 +264,7 @@ SipElement::Receive (Ptr<Packet> p, Address from)
   auto receiveIt = m_receiveCallbacks.find (sipHeader.GetCallId ());
   if (eventIt == m_eventCallbacks.end () || receiveIt == m_receiveCallbacks.end ())
     {
-      NS_FATAL_ERROR ("CallId does not have callbacks set");
+      NS_FATAL_ERROR ("CallId " << sipHeader.GetCallId () << " does not have callbacks set");
     }
   if (sipHeader.GetMessageType () == SipHeader::SIP_RESPONSE)
     {

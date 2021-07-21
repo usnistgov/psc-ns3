@@ -204,9 +204,14 @@ public:
    */
   virtual void RejectCall (void);
   /**
-   * Releases a call.
+   * Release the selected call.
    */
   virtual void ReleaseCall (void);
+  /**
+   * Release the call specified by call ID.
+   * \param callId The ID of the call.
+   */
+  virtual void ReleaseCallByCallId (uint32_t callId);
   /**
    * Releases a floor request.
    */

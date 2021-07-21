@@ -291,7 +291,7 @@ McpttOnNetworkCallMachineClientStateS2::ReceiveResponse (McpttOnNetworkCallMachi
 
   // Originating client is responsible for scheduling the release of the call
   NS_ABORT_MSG_UNLESS (machine.GetCall ()->GetStopTime () >= Simulator::Now (), "Stop time in the past");
-  Simulator::Schedule (machine.GetCall ()->GetStopTime ()  - Simulator::Now (), &McpttPttApp::ReleaseCall, machine.GetCall ()->GetOwner ());
+  Simulator::Schedule (machine.GetCall ()->GetStopTime ()  - Simulator::Now (), &McpttPttApp::ReleaseCallByCallId, machine.GetCall ()->GetOwner (), machine.GetCall ()->GetCallId ());
   machine.SetState (McpttOnNetworkCallMachineClientStateS3::GetInstance ());
 }
 

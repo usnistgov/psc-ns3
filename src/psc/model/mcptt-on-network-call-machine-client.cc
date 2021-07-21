@@ -294,6 +294,7 @@ void
 McpttOnNetworkCallMachineClient::ReleaseCall (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("Release call for call ID " << GetCall ()->GetCallId () << " in state " << GetStateId ());
   m_state->ReleaseCall (*this);
 }
 

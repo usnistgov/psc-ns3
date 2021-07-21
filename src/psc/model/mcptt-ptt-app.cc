@@ -244,7 +244,7 @@ McpttPttApp::AddCall (Ptr<McpttCall> call)
   NS_ABORT_MSG_UNLESS (call->GetStartTime () >= Simulator::Now (), "Call start time in the past");
   Simulator::ScheduleWithContext (GetNode ()->GetId (), call->GetStartTime () - Simulator::Now (), &McpttPttApp::SelectCall, this, call->GetCallId (), call->GetPushOnSelect ());
   NS_ABORT_MSG_UNLESS (call->GetStopTime () >= Simulator::Now (), "Call stop time in the past");
-  Simulator::ScheduleWithContext (GetNode ()->GetId (), call->GetStopTime () - Simulator::Now (), &McpttPttApp::ReleaseCall, this);
+  Simulator::ScheduleWithContext (GetNode ()->GetId (), call->GetStopTime () - Simulator::Now (), &McpttPttApp::ReleaseCallByCallId, this, call->GetCallId ());
   m_calls.insert (std::pair<uint16_t, Ptr<McpttCall> > (call->GetCallId (), call));
 }
 
@@ -389,6 +389,26 @@ McpttPttApp::ReleaseCall (void)
   NS_LOG_FUNCTION (this);
 
   Ptr<McpttCall> call = GetSelectedCall ();
+  Ptr<McpttCallMachine> callMachine = 0;
+
+  if (call != 0)
+    {
+      callMachine = call->GetCallMachine ();
+      callMachine->ReleaseCall ();
+    }
+  if (m_pusher && m_isRunning)
+    {
+      NS_LOG_DEBUG ("Stopping pusher on call ID " << call->GetCallId ());
+      m_pusher->Stop ();
+    }
+}
+
+void
+McpttPttApp::ReleaseCallByCallId (uint32_t callId)
+{
+  NS_LOG_FUNCTION (this << callId);
+
+  Ptr<McpttCall> call = m_calls.find (callId)->second;
   Ptr<McpttCallMachine> callMachine = 0;
 
   if (call != 0)
@@ -916,6 +936,7 @@ McpttPttApp::OpenCallChannel (uint16_t port, Ptr<McpttCall> call, McpttCall::Net
     {
       NS_LOG_DEBUG ("Call channel exists for port " << port << "; increment reference count");
       m_callChannelReferenceCount[it->second]++;
+      m_sipAgent->SetCallbacks (call->GetCallId (), MakeCallback (&McpttCall::ReceiveSipMessage, call), MakeCallback (&McpttCall::ReceiveSipEvent, call));
     }
   else
     {
