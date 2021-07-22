@@ -472,7 +472,7 @@ McpttCallMsgGrpAnnoun::ReadData (Buffer::Iterator& buff)
       if (nextByte == McpttCallMsgFieldConfirmMode::GetIei ())
         {
           confirmMode = true;
-          confirmModeField.Deserialize (buff);
+          bytesRead += confirmModeField.Deserialize (buff);
         }
     }
 
@@ -482,7 +482,7 @@ McpttCallMsgGrpAnnoun::ReadData (Buffer::Iterator& buff)
       if (nextByte == McpttCallMsgFieldProbeResp::GetIei ())
         {
           probeResp = true;
-          probeRespField.Deserialize (buff);
+          bytesRead += probeRespField.Deserialize (buff);
         }
     }
 
