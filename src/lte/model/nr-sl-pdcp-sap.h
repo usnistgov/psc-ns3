@@ -106,6 +106,15 @@ public:
    */
   struct NrSlReceivePdcpSduParameters
   {
+    /**
+     * \brief NrSlReceivePdcpSduParameters constructor
+     * \param pdcpSdu The PDCP SDU
+     * \param rnti The C-RNTI identifying the UE
+     * \param lcId The logical channel id corresponding to the sending RLC instance
+     * \param srcL2Id Source L2 ID
+     * \param dstL2Id Destination L2 ID
+     * \param sduType SDU type for SLRB
+     */
     NrSlReceivePdcpSduParameters (Ptr<Packet> pdcpSdu, uint16_t rnti, uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t sduType)
     {
       this->pdcpSdu = pdcpSdu;
@@ -116,7 +125,7 @@ public:
       this->sduType = sduType;
     }
 
-    Ptr<Packet> pdcpSdu;  //!<the RRC PDU
+    Ptr<Packet> pdcpSdu;  //!< the RRC PDU
     uint16_t    rnti; //!< the C-RNTI identifying the UE
     uint8_t     lcId; //!< the logical channel id corresponding to the sending RLC instance
     uint32_t    srcL2Id {0};  //!< Source L2 ID (24 bits)

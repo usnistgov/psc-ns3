@@ -123,7 +123,7 @@ protected:
   /**
    * \brief Called by the MAC to notify the RLC of the reception of a new PDU
    *
-   * \param params the NrSlReceiveRlcPduParameters
+   * \param rxPduParams the NrSlReceiveRlcPduParameters
    */
   void DoReceiveNrSlRlcPdu (NrSlMacSapUser::NrSlReceiveRlcPduParameters rxPduParams);
 };

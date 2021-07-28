@@ -51,7 +51,7 @@ public:
    *
    * Adds transmission pool for NR Sidelink communication
    *
-   * \param pool The pointer to the NrSlCommResourcePool
+   * \param txPool The pointer to the NrSlCommResourcePool
    */
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
@@ -59,7 +59,7 @@ public:
    *
    * Adds reception pool for NR Sidelink communication
    *
-   * \param pool The pointer to the NrSlCommResourcePool
+   * \param rxPool The pointer to the NrSlCommResourcePool
    */
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**

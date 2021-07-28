@@ -264,7 +264,6 @@ public:
    * \brief Activate NR Sidelink bearer
    *
    * \param tft The bearer information
-   * \pram poolId The id of the pool used for TX and RX
    */
   void ActivateNrSlBearer (Ptr<LteSlTft> tft);
 

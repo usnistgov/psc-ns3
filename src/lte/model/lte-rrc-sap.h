@@ -927,6 +927,7 @@ public:
    */
   struct SubcarrierSpacing
   {
+    /// SubcarrierSpacing enumeration
     enum
     {
       kHZ15,
@@ -935,7 +936,7 @@ public:
       kHZ120,
       kHZ240,
       INVALID
-    } spacing {INVALID};
+    } spacing {INVALID}; //!< subcarrier spacing
   };
 
   /**
@@ -943,6 +944,7 @@ public:
    */
   struct SlLengthSymbols
   {
+    /// SlLengthSymbols enumeration
     enum
     {
       SYM7,
@@ -954,7 +956,7 @@ public:
       SYM13,
       SYM14,
       INVALID
-    } symbols {INVALID};
+    } symbols {INVALID}; //!< Number of symbols for Sidelink
   };
 
   /**
@@ -962,6 +964,7 @@ public:
    */
   struct SlStartSymbol
   {
+    /// SlStartSymbol enumeration
     enum
     {
       SYM0,
@@ -973,7 +976,7 @@ public:
       SYM6,
       SYM7,
       INVALID
-    } symbol {INVALID};
+    } symbol {INVALID}; //!< Starting symbol index for Sidelink
   };
 
   /**
@@ -981,12 +984,13 @@ public:
    */
   struct CyclicPrefix
   {
+    /// CyclicPrefix enumeration
     enum
     {
       NORMAL,
       EXTENDED,
       INVALID
-    } cp {INVALID};
+    } cp {INVALID}; //!< cyclic prefix
   };
 
   /**
@@ -994,13 +998,14 @@ public:
    */
   struct SlTimeResourcePscch
   {
+    /// SlTimeResourcePscch enumeration
     enum
     {
       N1, //!< 1 symbol //Added for modeling purpose
       N2, //!< 2 symbols
       N3, //!< 3 symbols
       INVALID
-    } resources {INVALID};
+    } resources {INVALID}; //!< Number of symbols for PSCCH
   };
 
   /**
@@ -1008,6 +1013,7 @@ public:
    */
   struct SlFreqResourcePscch
   {
+    /// SlFreqResourcePscch enumeration
     enum
     {
       N10, //!< 10 PRBS
@@ -1016,7 +1022,7 @@ public:
       N20,
       N25,
       INVALID
-    } resources {INVALID};
+    } resources {INVALID}; //!< Number of RBs for PSCCH
   };
 
   /**
@@ -1024,6 +1030,7 @@ public:
    */
   struct SlScaling
   {
+    /// SlScaling enumeration
     enum
     {
       F0P5,
@@ -1031,7 +1038,7 @@ public:
       F0P8,
       F1,
       INVALID
-    } scaling {INVALID};
+    } scaling {INVALID}; //!< scaling
   };
 
   /**
@@ -1039,6 +1046,7 @@ public:
    */
   struct SlSubchannelSize
   {
+    /// SlSubchannelSize enumeration
     enum
     {
       N10,
@@ -1049,21 +1057,22 @@ public:
       N75,
       N100,
       INVALID
-    } numPrbs {INVALID};
+    } numPrbs {INVALID}; //!< Sidelink subchannel size in PRBs
   };
 
-  /*
+  /**
    * \brief Struct for sl-MCS-Table enumeration
    */
   struct SlMcsTable
   {
+    /// SlMcsTable enumeration
     enum
     {
       QAM64,
       QAM256,
       //QAM64LOWSE, //TODO not supported by NR module
       INVALID
-    } mcsTable {INVALID};
+    } mcsTable {INVALID}; //!< MCS table to be used for Sidelink
   };
 
   /**
@@ -1071,12 +1080,13 @@ public:
    */
   struct SlSensingWindow
   {
+    /// SlSensingWindow enumeration
     enum
     {
       MS100,
       MS1100,
       INVALID
-    } windSize {INVALID};
+    } windSize {INVALID}; //!< Sidelink sensing window length in milliseconds
   };
 
   /**
@@ -1084,6 +1094,7 @@ public:
    */
   struct SlSelectionWindow
   {
+    /// SlSelectionWindow enumeration
     enum
     {
       N1,
@@ -1091,7 +1102,7 @@ public:
       N10,
       N20,
       INVALID
-    } windSize {INVALID};
+    } windSize {INVALID}; //!< Sidelink selection window length in slots
   };
 
   /**
@@ -1105,6 +1116,7 @@ public:
    */
   struct SlResourceReservePeriod
   {
+    /// SlResourceReservePeriod enumeration
     enum
     {
       MS0, //!< Milliseconds
@@ -1137,18 +1149,22 @@ public:
       MS950,
       MS1000,
       INVALID
-    } period {INVALID};
+    } period {INVALID}; //!< Sidelink resource reservation period in milliseconds.
   };
 
+  /**
+   * \brief struct for sl-MaxNumPerReserve-r16 enumeration
+   */
   struct SlMaxNumPerReserve
   {
+    /// SlMaxNumPerReserve enumeration
     enum
     {
       N1, //Added for modeling
       N2,
       N3,
       INVALID
-    } maxNumPerRes {INVALID};
+    } maxNumPerRes {INVALID}; //!< Sidelink MaxNumPerReserve in slots
   };
 
 
@@ -1436,7 +1452,7 @@ public:
     uint16_t numerology {99}; //!< The numerology
     uint16_t symbolsPerSlots {0}; //!< Total number of symbols per slot
     uint32_t rbPerRbg {0}; //!< Resource block per resource block group
-    uint16_t bandwidth {0};
+    uint16_t bandwidth {0}; //!< Bandwidth
 
   };
 
@@ -1445,7 +1461,7 @@ public:
    */
   struct SlBwpGeneric
   {
-    Bwp bwp;
+    Bwp bwp; //!< BWP information element
     SlLengthSymbols slLengthSymbols; //!< This field indicates the number of symbols used for sidelink in a slot without SL-SSB
     SlStartSymbol slStartSymbol; //!< This field indicates the starting symbol used for sidelink in a slot without SL-SSB
     //slFilterCoefficient; //!< Filter coefficient used for L3 filtering [not supported]
@@ -1456,13 +1472,13 @@ public:
    */
   struct SlPscchConfig
   {
-    //setuprelease enumeration
+    ///setuprelease enumeration
     enum
     {
       RELEASE,
       SETUP,
       INVALID
-    } setupRelease {INVALID}; ///< Indicates if it is allocating or releasing resources
+    } setupRelease {INVALID}; //!< Indicates if it is allocating or releasing resources
     SlTimeResourcePscch slTimeResourcePscch; //!< Indicates the number of symbols of PSCCH in a resource pool.
     SlFreqResourcePscch slFreqResourcePscch; //!< Indicates the number of PRBs for PSCCH in a resource pool where it is not greater than the number PRBs of the subchannel.
     //uint32_t slDmrsScreambleId {70000}; //TODO //!< Indicates the initialization value for PSCCH DMRS scrambling. Valid range [0, 65535]
@@ -1520,7 +1536,7 @@ public:
     SlPscchConfig slPscchConfig; //!< SL-PSCCH field
     SlSubchannelSize slSubchannelSize; //!< Sidelink subchannel size in PRBs
     SlUeSelectedConfigRp slUeSelectedConfigRp; //!< SL-UE-SelectedConfigRP
-    std::vector <std::bitset<1>> slTimeResource;
+    std::vector <std::bitset<1>> slTimeResource; //!< Sidelink bitmap
     //uint16_t slStartRbSubchannel {3000}; //!< First RB of a sidelink subchannel. Valid range [0, 265]
     //uint16_t slNumSubchannel {3000}; //!< Number of subchannels. Valid range [1, 27]
     //SlMcsTable slMcsTable; //It is configurable via error model attribute //!< Indicates the MCS table used for the resource pool.
@@ -1549,9 +1565,9 @@ public:
    */
   struct SlResourcePoolConfigNr
   {
-    bool haveSlResourcePoolConfigNr {false};
-    SlResourcePoolIdNr slResourcePoolId;
-    SlResourcePoolNr slResourcePool;
+    bool haveSlResourcePoolConfigNr {false}; //!< true if the fields in this IE are set, false otherwise
+    SlResourcePoolIdNr slResourcePoolId; //!< Sidelink pool id
+    SlResourcePoolNr slResourcePool; //!< Sidelink resource pool
   };
 
   /**
@@ -1569,9 +1585,9 @@ public:
    */
   struct SlBwpConfigCommonNr
   {
-    bool haveSlBwpGeneric {false};
+    bool haveSlBwpGeneric {false}; //!< true if slBwpGeneric is set, false otherwise.
     SlBwpGeneric slBwpGeneric; //!< This field indicates the generic parameters on the configured sidelink BWP
-    bool haveSlBwpPoolConfigCommonNr {false};
+    bool haveSlBwpPoolConfigCommonNr {false}; //!< true if slBwpPoolConfigCommonNr is set, false otherwise.
     SlBwpPoolConfigCommonNr slBwpPoolConfigCommonNr; //!< This field indicates the resource pool configurations on the configured sidelink BWP
   };
 
@@ -1613,7 +1629,7 @@ public:
    */
   struct SlPreconfigGeneralNr
   {
-    TddUlDlConfigCommon slTddConfig;
+    TddUlDlConfigCommon slTddConfig; //!< TDD pattern
     //BIT STRING (SIZE (2)) reservedBits-r16 //TODO
   };
 
@@ -1670,8 +1686,8 @@ public:
   struct SidelinkPreconfigNr
   {
     std::array <SlFreqConfigCommonNr, MAX_NUM_OF_FREQ_SL> slPreconfigFreqInfoList; //!< List containing per carrier configuration for NR sidelink communication
-    SlPreconfigGeneralNr slPreconfigGeneral;
-    SlUeSelectedConfig slUeSelectedPreConfig;
+    SlPreconfigGeneralNr slPreconfigGeneral; //!< SlPreconfigGeneralNr
+    SlUeSelectedConfig slUeSelectedPreConfig; //!< SlUeSelectedConfig
     /*
     sl-PreconfigNR-AnchorCarrierFreqList-r16
     sl-PreconfigEUTRA-AnchorCarrierFreqList-r16

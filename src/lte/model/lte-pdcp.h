@@ -44,7 +44,9 @@ class LtePdcp : public Object // SimpleRefCount<LtePdcp>
   /// allow LtePdcpSpecificLtePdcpSapProvider<LtePdcp> class friend access
   friend class LtePdcpSpecificLtePdcpSapProvider<LtePdcp>;
   //NR Sidelink
+  /// allow MemberNrSlPdcpSapProvider<LtePdcp> class friend access
   friend class MemberNrSlPdcpSapProvider<LtePdcp>;
+  /// allow MemberNrSlRlcSapUser<LtePdcp> class friend access
   friend class MemberNrSlRlcSapUser<LtePdcp>;
 public:
   LtePdcp ();

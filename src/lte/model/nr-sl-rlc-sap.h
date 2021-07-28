@@ -50,7 +50,7 @@ public:
      * \param rnti The C-RNTI identifying the UE
      * \param lcId The logical channel id corresponding to the sending RLC instance
      * \param srcL2Id Source L2 ID (24 bits)
-     * \param dstl2Id Destination L2 ID (24 bits)
+     * \param dstL2Id Destination L2 ID (24 bits)
      */
     NrSlTransmitPdcpPduParameters (Ptr<Packet> pdu, uint16_t rnti, uint8_t lcId,
                                    uint32_t srcL2Id,  uint32_t dstL2Id)

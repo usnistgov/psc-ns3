@@ -46,9 +46,9 @@ public:
      * \brief NrSlSlotInfo constructor
      * \param numSlPscchRbs Indicates the number of PRBs for PSCCH in a resource pool where it is not greater than the number PRBs of the subchannel.
      * \param slPscchSymStart Indicates the starting symbol used for sidelink PSCCH in a slot
-     * \param slPscchSymlength Indicates the total number of symbols available for sidelink PSCCH
+     * \param slPscchSymLength Indicates the total number of symbols available for sidelink PSCCH
      * \param slPsschSymStart Indicates the starting symbol used for sidelink PSSCH in a slot
-     * \param slPsschSymlength Indicates the total number of symbols available for sidelink PSSCH
+     * \param slPsschSymLength Indicates the total number of symbols available for sidelink PSSCH
      * \param slSubchannelSize Indicates the subchannel size in number of RBs
      * \param slMaxNumPerReserve Indicates the maximum number of reserved PSCCH/PSSCH resources that can be indicated by an SCI.
      * \param absSlotIndex Indicates the the absolute slot index
@@ -117,8 +117,8 @@ public:
    */
   struct BwpAndPoolIt
   {
-    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp;
-    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool;
+    NrSlCommResourcePool::PhySlPoolMap::const_iterator itBwp; //!< Iterator to the first map in PhySlPoolMap
+    std::unordered_map <uint16_t, std::vector <std::bitset<1>>>::const_iterator itPool; //!< Iterator to the second map in PhySlPoolMap
   };
 
   /**
@@ -167,7 +167,7 @@ public:
    * Therefore, we to subtract one more symbol from the PSSCH symbols, i.e.,
    * <b>2.</b> \f$Total number of PSSCH symbols = number of PSSCH symbols (from 1) - 1\f$
    *
-   * \param numAbsSlot The current absolute slot number
+   * \param absIndexCurretSlot The current absolute slot number
    * \param bwpId The bandwidth part id
    * \param numerology The numerology
    * \param poolId The pool id
@@ -219,7 +219,7 @@ public:
    * \brief Get the reservation period in slots
    * \param bwpId The bandwidth part id
    * \param poolId The poolId The pool id
-   * \param resPeriod The reservation period in ms
+   * \param resvPeriod The reservation period in ms
    * \param slotLength The slot length in time
    * \return The reservation period in slots
    */
@@ -242,6 +242,7 @@ public:
   uint16_t GetAbsPoolIndex (uint8_t bwpId, uint16_t poolId, uint64_t absSlotIndex) const;
   /**
    * \brief Set the TDD pattern.
+   * \param tddPattern The TDD pattern
    *
    * For example, a valid pattern would be "DL|DL|UL|UL|DL|DL|UL|UL|". The slot
    * types allowed are:
@@ -265,7 +266,7 @@ private:
    * \brief Get SlResourcePoolNr
    *
    * \param bwpId The BWP id
-   * \param pooI The pool id
+   * \param poolId The pool id
    * \return The \link LteRrcSap::SlResourcePoolNr \endlink, which holds the
    *         SL pool related configuration.
    */

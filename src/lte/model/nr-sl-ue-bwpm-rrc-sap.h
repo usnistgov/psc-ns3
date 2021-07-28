@@ -85,7 +85,7 @@ public:
   /**
    * \brief Set Bwp Id Container
    *
-   * \param The container of SL BWP ids
+   * \param bwpIdVec The container of SL BWP ids
    */
   virtual void SetBwpIdContainer (const std::set<uint8_t> &bwpIdVec) = 0;
 

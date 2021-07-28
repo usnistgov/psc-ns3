@@ -61,6 +61,12 @@ public:
     UL = 3,  //!< UL DATA + UL CTRL
   };
 
+  /**
+   * \brief Stream output operator
+   * \param os output stream
+   * \param item LteNrTddSlotType whose string equivalent to output
+   * \return updated stream
+   */
   friend std::ostream & operator<< (std::ostream & os, LteNrTddSlotType const & item);
   /**
    *  Register this type.
@@ -119,14 +125,50 @@ public:
 
 private:
   //NrSlUeRrcSapUser methods
+  /**
+   * \brief Get NR sidelink preconfiguration
+   *
+   * \return The sidelink preconfiguration
+   */
   const LteRrcSap::SidelinkPreconfigNr DoGetNrSlPreconfiguration ();
+  /**
+   * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
+   * \param slBitMap slBitMap The sidelink bitmap
+   * \return A vector representing the physical sidelink pool
+   */
   const std::vector <std::bitset<1>>
   DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
+  /**
+   * \brief Get Bwp Id Container
+   * \return The container of SL BWP ids
+   */
   const std::set <uint8_t> DoGetBwpIdContainer ();
+  /**
+   * \brief Add NR sidelink data radio bearer
+   * \param slDrb LteSidelinkRadioBearerInfo pointer
+   */
   void DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  /**
+   * \brief Add NR Reception sidelink data radio bearer
+   * \param slRxDrb LteSidelinkRadioBearerInfo pointer
+   */
   void DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
+  /**
+   * \brief Get NR Sidelink data radio bearer
+   * \param dstL2Id The remote/destination layer 2 id
+   * \return The NrSlDataRadioBearerInfo
+   */
   Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t dstL2Id);
+  /**
+   * \brief Get Source layer 2 id
+   * \return source layer 2 id
+   */
   uint32_t DoGetSourceL2Id ();
+  /**
+   * \brief Get next LCID for setting up NR SL DRB towards the given destination
+   * \param dstL2Id The destination layer 2 ID
+   * \return the next available NR SL DRB LCID
+   */
   uint8_t DoGetNextLcid (uint32_t dstL2Id);
 
   //Class internal private methods and member variables

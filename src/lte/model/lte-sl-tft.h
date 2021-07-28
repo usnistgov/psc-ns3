@@ -85,6 +85,7 @@ public:
    * \brief Constructor (sets remote address only)
    *
    * \param d The direction
+   * \param commType The communication type
    * \param remoteAddr The IPv4 address of the remote
    * \param dstL2Id The destination layer 2 id
    */
@@ -94,6 +95,7 @@ public:
    * \brief Constructor (sets remote address only)
    *
    * \param d The direction
+   * \param commType The communication type
    * \param remoteAddr The IPv6 address of the remote
    * \param dstL2Id The destination layer 2 id
    */

@@ -33,7 +33,7 @@ class NrSlMacSapUser;
 class NrSlCommResourcePool;
 
 /**
- * \group lte
+ * \ingroup lte
  *
  * \brief Service Access Point (SAP) offered by the UE MAC to the UE RRC for NR Sidelink
  *
@@ -90,7 +90,7 @@ public:
    *
    * Adds transmission pool for NR Sidelink communication
    *
-   * \param pool The pointer to the NrSlCommResourcePool
+   * \param txPool The pointer to the NrSlCommResourcePool
    */
   virtual void AddNrSlCommTxPool (Ptr<const NrSlCommResourcePool> txPool) = 0;
   /**
@@ -98,7 +98,7 @@ public:
    *
    * Adds reception pool for NR Sidelink communication
    *
-   * \param pool The pointer to the NrSlCommResourcePool
+   * \param rxPool The pointer to the NrSlCommResourcePool
    */
   virtual void AddNrSlCommRxPool (Ptr<const NrSlCommResourcePool> rxPool) = 0;
   /**

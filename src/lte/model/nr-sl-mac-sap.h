@@ -49,16 +49,16 @@ public:
      * \brief NrSlRlcPduParameters constructor
      * \param pdu Packet
      * \param rnti RNTI
-     * \param lcid Logical Channel ID
+     * \param lcId Logical Channel ID
      * \param layer Layer (used for MIMO)
      * \param harqProcessId HARQ process id
      * \param bwpId Bandwidth part id
      * \param srcL2Id Sidelink source L2 ID (24 bits)
-     * \param destL2Id Sidelink destination L2 ID (24 bits)
+     * \param dstL2Id Sidelink destination L2 ID (24 bits)
      */
     NrSlRlcPduParameters (Ptr<Packet> pdu, uint16_t rnti, uint8_t lcId,
-                               uint8_t layer, uint8_t harqProcessId,
-                               uint16_t bwpId, uint32_t srcL2Id,  uint32_t dstL2Id)
+                          uint8_t layer, uint8_t harqProcessId,
+                          uint16_t bwpId, uint32_t srcL2Id,  uint32_t dstL2Id)
     {
       this->pdu = pdu;
       this->rnti = rnti;
@@ -70,13 +70,13 @@ public:
     }
 
     Ptr<Packet> pdu;  //!<the RLC PDU
-    uint16_t    rnti {std::numeric_limits <uint16_t>::max ()}; //!<the C-RNTI identifying the UE
-    uint8_t     lcid {std::numeric_limits <uint8_t>::max ()}; //!<the logical channel id corresponding to the sending RLC instance
-    uint8_t     layer {std::numeric_limits <uint8_t>::max ()}; //!<the layer value that was passed by the MAC in the call to NotifyNrSlTxOpportunity that generated this PDU
-    uint8_t     harqProcessId {std::numeric_limits <uint8_t>::max ()}; //!<the HARQ process id that was passed by the MAC in the call to NotifyNrSlTxOpportunity that generated this PDU
-    uint8_t bwpId {std::numeric_limits <uint8_t>::max ()}; //!<the component carrier id corresponding to the sending Mac instance */
-    uint32_t srcL2Id {0};  //!<Source L2 ID (24 bits)
-    uint32_t dstL2Id {0};  //!<Destination L2 ID (24 bits)
+    uint16_t    rnti {std::numeric_limits <uint16_t>::max ()}; //!< the C-RNTI identifying the UE
+    uint8_t     lcid {std::numeric_limits <uint8_t>::max ()}; //!< the logical channel id corresponding to the sending RLC instance
+    uint8_t     layer {std::numeric_limits <uint8_t>::max ()}; //!< the layer value that was passed by the MAC in the call to NotifyNrSlTxOpportunity that generated this PDU
+    uint8_t     harqProcessId {std::numeric_limits <uint8_t>::max ()}; //!< the HARQ process id that was passed by the MAC in the call to NotifyNrSlTxOpportunity that generated this PDU
+    uint8_t bwpId {std::numeric_limits <uint8_t>::max ()}; //!< the component carrier id corresponding to the sending Mac instance */
+    uint32_t srcL2Id {0};  //!< Source L2 ID (24 bits)
+    uint32_t dstL2Id {0};  //!< Destination L2 ID (24 bits)
   };
 
   /**
@@ -96,13 +96,14 @@ public:
     /**
      * \brief NrSlReportBufferStatusParameters constructor
      * \param rnti RNTI
-     * \param lcid Logical Channel ID
+     * \param lcId Logical Channel ID
      * \param txQueueSize The current size of the RLC transmission queue
      * \param txQueueHolDelay The Head Of Line delay of the transmission queue
      * \param retxQueueSize The current size of the RLC retransmission queue
      * \param retxQueueHolDelay The Head Of Line delay of the retransmission queue
+     * \param statusPduSize The current size of the pending STATUS RLC  PDU message in bytes
      * \param srcL2Id Sidelink source L2 ID (24 bits)
-     * \param destL2Id Sidelink destination L2 ID (24 bits)
+     * \param dstL2Id Sidelink destination L2 ID (24 bits)
      */
     NrSlReportBufferStatusParameters (uint16_t rnti, uint8_t lcId,
                                       uint32_t txQueueSize, uint16_t txQueueHolDelay,
@@ -119,15 +120,15 @@ public:
       this->dstL2Id = dstL2Id;
     }
 
-    uint16_t rnti {std::numeric_limits <uint16_t>::max ()};  //!<the C-RNTI identifying the UE
-    uint8_t lcid {std::numeric_limits <uint8_t>::max ()};  //!<the logical channel id corresponding to the sending RLC instance
-    uint32_t txQueueSize {0};  //!<the current size of the RLC transmission queue
-    uint16_t txQueueHolDelay {std::numeric_limits <uint16_t>::max ()};  //!<the Head Of Line delay of the transmission queue
+    uint16_t rnti {std::numeric_limits <uint16_t>::max ()};  //!< the C-RNTI identifying the UE
+    uint8_t lcid {std::numeric_limits <uint8_t>::max ()};  //!< the logical channel id corresponding to the sending RLC instance
+    uint32_t txQueueSize {0};  //!< the current size of the RLC transmission queue
+    uint16_t txQueueHolDelay {std::numeric_limits <uint16_t>::max ()};  //!< the Head Of Line delay of the transmission queue
     uint32_t retxQueueSize {0};  //!< the current size of the RLC retransmission queue in bytes
     uint16_t retxQueueHolDelay {std::numeric_limits <uint16_t>::max ()};  //!< the Head Of Line delay of the retransmission queue
-    uint16_t statusPduSize {0};  //!<the current size of the pending STATUS RLC  PDU message in bytes
-    uint32_t srcL2Id {0};  //!<Source L2 ID (24 bits)
-    uint32_t dstL2Id {0};  //!<Destination L2 ID (24 bits)
+    uint16_t statusPduSize {0};  //!< the current size of the pending STATUS RLC  PDU message in bytes
+    uint32_t srcL2Id {0};  //!< Source L2 ID (24 bits)
+    uint32_t dstL2Id {0};  //!< Destination L2 ID (24 bits)
   };
 
   /**
@@ -213,7 +214,7 @@ public:
      * \param harqId HarqID
      * \param bwpId Bandwidth part ID
      * \param srcL2Id Sidelink source L2 ID (24 bits)
-     * \param destL2Id Sidelink destination L2 ID (24 bits)
+     * \param dstL2Id Sidelink destination L2 ID (24 bits)
      */
     NrSlTxOpportunityParameters (uint32_t bytes, uint16_t rnti, uint8_t lcId,
                                  uint8_t layer, uint8_t harqId, uint8_t bwpId,
@@ -258,7 +259,7 @@ public:
      * \param rnti RNTI
      * \param lcid Logical Channel ID
      * \param srcL2Id Sidelink source L2 ID
-     * \param destL2Id Sidelink destination L2 ID
+     * \param dstL2Id Sidelink destination L2 ID
      */
     NrSlReceiveRlcPduParameters (const Ptr<Packet> &p, uint16_t rnti, uint8_t lcid, uint32_t srcL2Id, uint32_t dstL2Id)
     {

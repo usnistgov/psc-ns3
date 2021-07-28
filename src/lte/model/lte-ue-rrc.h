@@ -1534,7 +1534,6 @@ private:
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id
    * \param lcid The logical channel id
-   * \param poolId The id of the pool used for TX and RX
    * \return The Sidelink radio bearer information
    */
   Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
