@@ -31,6 +31,7 @@
 namespace ns3 {
 
 class NrSlDataRadioBearerInfo;
+class NrSlSignallingRadioBearerInfo;
 
 /**
  * \ingroup lte
@@ -94,7 +95,7 @@ public:
    *
    * \param s the pointer of type NrSlUeRrcSapProvider
    */
-   void SetNrSlUeRrcSapProvider (NrSlUeRrcSapProvider* s);
+  void SetNrSlUeRrcSapProvider (NrSlUeRrcSapProvider* s);
   /**
    * \brief Set the NR Sidelink communication enabled flag
    * \param status True to enable. False to disable
@@ -122,6 +123,15 @@ public:
    * \param bwpId The active sidelink BWP id
    */
   void StoreSlBwpId (uint8_t bwpId);
+
+  /**
+   * Map between logical channel id and signalling radio bearer
+   */
+  typedef std::unordered_map <uint8_t, Ptr<NrSlSignallingRadioBearerInfo> > NrSlSrbMapPerLcId;
+  /**
+   * Map between L2 id, logical channel id and signalling radio bearer
+   */
+  typedef std::unordered_map <uint32_t, NrSlSrbMapPerLcId> NrSlSrbMapPerL2Id;
 
 private:
   //NrSlUeRrcSapUser methods
@@ -170,6 +180,10 @@ private:
    * \return the next available NR SL DRB LCID
    */
   uint8_t DoGetNextLcid (uint32_t dstL2Id);
+  void DoAddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
+  void DoAddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
+  Ptr<NrSlSignallingRadioBearerInfo> DoGetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+
 
   //Class internal private methods and member variables
 
@@ -223,6 +237,13 @@ private:
   NrSlDrbMapPerL2Id m_slRxDrbMap; /**< NR sidelink rx data radio bearer map
                                    * per source layer 2 id of the sender
                                    * for Group-Cast.
+                                   */
+
+  NrSlSrbMapPerL2Id m_slTxSrbMap; /**< NR SL transmission signalling radio
+                                   * bearer map per destination layer 2 id.
+                                   */
+  NrSlSrbMapPerL2Id m_slRxSrbMap; /**< NR SL reception signalling radio
+                                   * bearer map per peer (source) layer 2 id.
                                    */
 
 };     //end of NrSlUeRrc'class

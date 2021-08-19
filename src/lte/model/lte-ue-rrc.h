@@ -42,6 +42,8 @@
 #include <ns3/nr-sl-ue-cmac-sap.h>
 #include <ns3/nr-sl-ue-cphy-sap.h>
 #include <ns3/nr-sl-pdcp-sap.h>
+#include <ns3/nr-sl-ue-svc-rrc-sap.h>
+
 #include <vector>
 
 #include <map>
@@ -80,6 +82,7 @@ class LteDataRadioBearerInfo;
 class LteSignalingRadioBearerInfo;
 class NrSlDataRadioBearerInfo;
 class NrSlMacSapProvider;
+class NrSlSignallingRadioBearerInfo;
 
 /**
  *
@@ -113,6 +116,8 @@ class LteUeRrc : public Object
   friend class MemberNrSlUeCphySapUser<LteUeRrc>;
   /// allow MemberNrSlPdcpSapUser<LteUeRrc> class friend access
   friend class MemberNrSlPdcpSapUser<LteUeRrc>;
+  /// allow MemberNrSlUeSvcRrcSapProvider<LteUeRrc> class friend access
+  friend class MemberNrSlUeSvcRrcSapProvider<LteUeRrc>;
 
 public:
 
@@ -285,6 +290,21 @@ public:
    * \param s the pointer of type NrSlUeRrcSapUser
    */
    void SetNrSlUeRrcSapUser (NrSlUeRrcSapUser* s);
+
+   /**
+    * \brief Get the pointer of the UE service layer SAP Provider interface
+    *        offered to the service layer by this class
+    *
+    * \return the pointer of type NrSlUeSvcRrcSapProvider
+    */
+   NrSlUeSvcRrcSapProvider* GetNrSlUeSvcRrcSapProvider ();
+   /**
+    * \brief Set the pointer for the UE service layer SAP User interface
+    *        offered to this class by service layer class
+    *
+    * \param s the pointer of type NrSlUeSvcRrcSapUser
+    */
+   void SetNrSlUeSvcRrcSapUser (NrSlUeSvcRrcSapUser* s);
 
   /** 
    * 
@@ -1470,6 +1490,12 @@ public:
    * newly created RLC instances
    */
   void SetNrSlMacSapProvider (NrSlMacSapProvider* s);
+  /**
+   * \brief Get Sidelink source layer 2 id
+   *
+   * \return srcL2Id The Sidelink layer 2
+   */
+  uint32_t GetSourceL2Id ();
 
 private:
 
@@ -1560,6 +1586,59 @@ private:
    */
   void DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
 
+  /**
+   * \brief Activate NR sidelink signalling radio bearer (SL-SRB)
+   *
+   * \param dstL2Id the peer layer 2 id
+   * \param lcId the logical channel ID of the logical channel of the sidelink
+   *             signalling radio bearer to be activated
+   */
+  void ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId);
+
+  /**
+   * \brief Create and store a NR sidelink signalling radio bearer (SL-SRB)
+   *
+   * \param srcL2Id The sidelink source layer 2 id
+   * \param dstL2Id The sidelink destination layer 2 id
+   * \param lcId the logical channel ID of the logical channel of the sidelink
+   *             signalling radio bearer to be activated
+   * \param poolId The id of the pool used for TX and RX
+   * \return The Sidelink radio bearer information
+   */
+  Ptr<NrSlSignallingRadioBearerInfo> AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
+
+
+  //NrSlUeSvcRrcSapProvider methods
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) asking the RRC layer to instruct lower layers
+   *        to monitor messages directed to the layer 2 ID used by this UE
+   */
+  void DoMonitorSelfL2Id ();
+
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) to instruct the RRC layer to pass a SL signalling
+   *        message (e.g., PC5-S message) to lower layers for transmission
+   *
+   * \param packet the signalling message
+   * \param dstL2Id the destination layer 2 ID
+   * \param lcId the logical channel ID of the logical channel where the
+   *             message should be sent
+   */
+  void DoSendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId);
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) to instruct the RRC layer to activate a NR SL
+   *        signaling radio bearer (SL-SRB).
+   *
+   * \param dstL2Id the peer layer 2 ID
+   * \param lcId the logical channel ID of the logical channel of the sidelink
+   *             signalling radio bearer to be activated
+   */
+  void DoActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+
+
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc
   NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; //!< NR SL UE RRC SAP provider
@@ -1577,6 +1656,10 @@ private:
   NrSlPdcpSapUser *m_nrSlPdcpSapUser; //!< SAP interface to receive calls from PDCP instance
   NrSlMacSapProvider *m_nrSlMacSapProvider {nullptr}; //!< SAP interface to be given to newly created RLC instance of RLC
   uint32_t m_srcL2Id {std::numeric_limits <uint32_t>::max ()}; //!< The NR Sidelink Source L2 id;
+
+  //LteUeRrc<->Service layer (e.g., NrSlUeProse)
+  NrSlUeSvcRrcSapProvider* m_nrSlUeSvcRrcSapProvider; //!< SAP interface to receive calls from the service layer instance
+  NrSlUeSvcRrcSapUser* m_nrSlUeSvcRrcSapUser {nullptr}; //!< SAP interface to call methods of the service layer instance
 
 }; // end of class LteUeRrc
 

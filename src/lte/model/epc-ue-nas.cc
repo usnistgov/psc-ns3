@@ -71,6 +71,8 @@ EpcUeNas::EpcUeNas ()
 {
   NS_LOG_FUNCTION (this);
   m_asSapUser = new MemberLteAsSapUser<EpcUeNas> (this);
+  m_nrSlUeSvcNasSapProvider = new MemberNrSlUeSvcNasSapProvider<EpcUeNas> (this);
+
 }
 
 
@@ -84,6 +86,8 @@ EpcUeNas::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_asSapUser;
+  delete m_nrSlUeSvcNasSapProvider;
+
 }
 
 TypeId
@@ -443,6 +447,12 @@ EpcUeNas::DoNotifyNrSlRadioBearerActivated (uint32_t dstL2Id)
           //Found sidelink
           m_slBearersActivatedList.push_back (*it);
           it = m_pendingSlBearersList.erase (it);
+
+          //Notify the service layer if present
+          if (m_nrSlUeSvcNasSapUser != nullptr)
+            {
+              m_nrSlUeSvcNasSapUser->NotifySvcNrSlDataRadioBearerActivated (dstL2Id);
+            }
         }
       else
         {
@@ -451,6 +461,29 @@ EpcUeNas::DoNotifyNrSlRadioBearerActivated (uint32_t dstL2Id)
     }
 }
 
+NrSlUeSvcNasSapProvider*
+EpcUeNas::GetNrSlUeSvcNasSapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_nrSlUeSvcNasSapProvider;
+}
+
+void
+EpcUeNas::SetNrSlUeSvcNasSapUser (NrSlUeSvcNasSapUser* s)
+{
+  NS_LOG_FUNCTION (this);
+  m_nrSlUeSvcNasSapUser = s;
+}
+
+void
+EpcUeNas::DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+
+  m_pendingSlBearersList.push_back (tft);
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+
+}
 
 
 } // namespace ns3

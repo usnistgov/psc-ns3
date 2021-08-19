@@ -88,6 +88,17 @@ public:
    * \param bwpIdVec The container of SL BWP ids
    */
   virtual void SetBwpIdContainer (const std::set<uint8_t> &bwpIdVec) = 0;
+  /**
+   * \brief Add a new NR Sidelink Signalling Radio Bearer Logical Channel (LC)
+   *
+   * \param lcInfo is the Sidelink Logical Channel Information
+   * \param msu is the pointer to NrSlMacSapUser, which MAC uses to call RLC methods
+   * \return vector of LcsConfig contains the lc configuration for each MAC
+   *         the size of the vector is equal to the number of bandwidth part manager enabled.
+   */
+  virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu) = 0;
+
+  //TODO: RemoveNrSlSrbLc
 
 }; // end of class NrSlUeBwpmRrcSapProvider
 
@@ -117,6 +128,8 @@ public:
   virtual std::vector<uint8_t> RemoveNrSlDrbLc (uint8_t slLcId, uint32_t srcL2Id, uint32_t dstL2Id);
   virtual void ResetNrSlDrbLcMap ();
   virtual void SetBwpIdContainer (const std::set<uint8_t> &bwpIdVec);
+  virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu);
+
 private:
   C* m_owner; ///< the owner class
 };
@@ -151,6 +164,11 @@ void MemberNrSlUeBwpmRrcSapProvider<C>::SetBwpIdContainer (const std::set<uint8_
   return m_owner->DoSetBwpIdContainer (bwpIdVec);
 }
 
+template <class C>
+std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> MemberNrSlUeBwpmRrcSapProvider<C>::AddNrSlSrbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu)
+{
+  return m_owner->DoAddNrSlSrbLc (lcInfo, msu);
+}
 
 
 /**

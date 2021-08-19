@@ -25,6 +25,7 @@
 #include <ns3/object.h>
 #include <ns3/lte-as-sap.h>
 #include <ns3/epc-tft-classifier.h>
+#include <ns3/nr-sl-ue-svc-nas-sap.h>
 
 namespace ns3 {
 
@@ -36,6 +37,9 @@ class EpcUeNas : public Object
 {
   /// allow MemberLteAsSapUser<EpcUeNas> class friend access
   friend class MemberLteAsSapUser<EpcUeNas>;
+  /// allow MemberNrSlUeSvcNasSapProvider<LteUeRrc> class friend access
+  friend class MemberNrSlUeSvcNasSapProvider<EpcUeNas>;
+
 public:
 
   /** 
@@ -95,6 +99,22 @@ public:
    * \return the AS SAP user exported by this RRC
    */
   LteAsSapUser* GetAsSapUser ();
+
+  /**
+   * \brief Get the pointer of the UE service layer SAP Provider interface
+   *        offered to the service layer by this class
+   *
+   * \return the pointer of type NrSlUeSvcNasSapProvider
+   */
+  NrSlUeSvcNasSapProvider* GetNrSlUeSvcNasSapProvider ();
+
+  /**
+   * \brief Set the pointer for the UE service layer SAP User interface
+   *        offered to this class by service layer class
+   *
+   * \param s the pointer of type NrSlUeSvcNasSapUser
+   */
+  void SetNrSlUeSvcNasSapUser (NrSlUeSvcNasSapUser* s);
 
   /**
    * set the callback used to forward data packets up the stack
@@ -269,6 +289,7 @@ public:
 
 private:
 
+  //LteAsSapUser functions
   /**
    * \brief Notify Nr Sidelink radio bearer activated function
    *
@@ -279,6 +300,20 @@ private:
   std::list<Ptr<LteSlTft> > m_pendingSlBearersList; ///< pending NR Sidelink bearers list
 
   std::list<Ptr<LteSlTft> > m_slBearersActivatedList; ///< Sidelink NR bearers activated list
+
+  //Service layer <-> NAS interfaces
+  NrSlUeSvcNasSapProvider* m_nrSlUeSvcNasSapProvider; //!< SAP interface to receive calls from the service layer instance
+  NrSlUeSvcNasSapUser* m_nrSlUeSvcNasSapUser {nullptr}; //!< SAP interface to call methods of the service layer instance
+
+  //NrSlUeSvcNasSapProvider functions
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) to instruct the NAS to activate a sidelink data
+   *        radio bearer (SL-DRB)
+   *
+   * \param tft the SL TFT identifying the traffic that will go on this bearer
+   */
+  void DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
 
 };
 

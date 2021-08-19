@@ -287,7 +287,9 @@ NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
       NS_LOG_LOGIC ("First SL RX DRB for remote UE with source L2 id " << slRxDrb->m_sourceL2Id);
       NrSlDrbMapPerLcId mapPerRxLcId;
       mapPerRxLcId.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slRxDrb->m_logicalChannelIdentity, slRxDrb));
-      m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));
+      //m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));  TODO: Report bug.
+      m_slRxDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));
+
     }
   else
     {
@@ -398,5 +400,96 @@ operator<< (std::ostream &os, const NrSlUeRrc::LteNrTddSlotType &item)
   return os;
 }
 
+
+void
+NrSlUeRrc::DoAddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlSrbMapPerL2Id::iterator destIt = m_slTxSrbMap.find (slSrb->m_destinationL2Id);
+  if (destIt == m_slTxSrbMap.end ())
+    {
+      NS_LOG_LOGIC ("First SL-SRB for destination " << slSrb->m_destinationL2Id);
+      NrSlSrbMapPerLcId mapPerLcId;
+      mapPerLcId.insert (std::pair<uint8_t, Ptr<NrSlSignallingRadioBearerInfo> > (slSrb->m_logicalChannelIdentity, slSrb));
+      m_slTxSrbMap.insert (std::pair<uint32_t, NrSlSrbMapPerLcId> (slSrb->m_destinationL2Id, mapPerLcId));
+      NS_LOG_LOGIC ("Added SL-SRB with LCID " << (uint16_t) slSrb->m_logicalChannelIdentity << " for destination " << slSrb->m_destinationL2Id);
+    }
+  else
+    {
+      NrSlSrbMapPerLcId::iterator lcIt;
+      lcIt = destIt->second.find (slSrb->m_logicalChannelIdentity);
+      if (lcIt == destIt->second.end ())
+        {
+          //New bearer for the destination
+          destIt->second.insert (std::pair<uint8_t, Ptr<NrSlSignallingRadioBearerInfo> > (slSrb->m_logicalChannelIdentity, slSrb));
+          NS_LOG_LOGIC ("Added SL-SRB with LCID " << slSrb->m_logicalChannelIdentity << "for destination " << slSrb->m_destinationL2Id);
+        }
+      else
+        {
+          NS_FATAL_ERROR ("SL-SRB with LC id = " << (uint16_t) slSrb->m_logicalChannelIdentity << " already exists");
+        }
+    }
+}
+
+void
+NrSlUeRrc::DoAddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slRxSrb)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlSrbMapPerL2Id::iterator srcIt = m_slRxSrbMap.find (slRxSrb->m_sourceL2Id);
+  if (srcIt == m_slRxSrbMap.end ())
+    {
+      NS_LOG_LOGIC ("First SL RX SRB for peer UE with source L2 id " <<  slRxSrb->m_sourceL2Id << ", LCID " << (uint16_t) slRxSrb->m_logicalChannelIdentity);
+      NrSlSrbMapPerLcId mapPerRxLcId;
+      mapPerRxLcId.insert (std::pair<uint8_t, Ptr<NrSlSignallingRadioBearerInfo> > (slRxSrb->m_logicalChannelIdentity, slRxSrb));
+      m_slRxSrbMap.insert (std::pair<uint32_t, NrSlSrbMapPerLcId> (slRxSrb->m_sourceL2Id, mapPerRxLcId));
+    }
+  else
+    {
+      NrSlSrbMapPerLcId::iterator rxLcIt;
+      rxLcIt = srcIt->second.find (slRxSrb->m_logicalChannelIdentity);
+      if (rxLcIt == srcIt->second.end ())
+        {
+          //New Rx bearer for the remote UE
+          srcIt->second.insert (std::pair<uint8_t, Ptr<NrSlSignallingRadioBearerInfo> > (slRxSrb->m_logicalChannelIdentity, slRxSrb));
+          NS_LOG_LOGIC ("Added RX SL-SRB with LCID " << (uint16_t) slRxSrb->m_logicalChannelIdentity << "for peer source " << slRxSrb->m_sourceL2Id);
+        }
+      else
+        {
+          NS_FATAL_ERROR ("RX SL-SRB for peer source " << slRxSrb->m_sourceL2Id << " with LCID = "  << (uint16_t) slRxSrb->m_logicalChannelIdentity << " already exists");
+        }
+    }
+
+}
+
+Ptr<NrSlSignallingRadioBearerInfo>
+NrSlUeRrc::DoGetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<NrSlSignallingRadioBearerInfo> slSrb = nullptr;
+  NrSlSrbMapPerL2Id::iterator destIt = m_slTxSrbMap.find (dstL2Id);
+
+  if (destIt == m_slTxSrbMap.end ())
+    {
+      NS_FATAL_ERROR ("Unable to find any SL-SRB for destination L2 Id " << dstL2Id);
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Searching SL-SRB with LCID " << (uint16_t) lcId << " for destination L2 Id " << dstL2Id);
+
+      NrSlSrbMapPerLcId::iterator lcIt;
+      lcIt = destIt->second.find (lcId);
+      if (lcIt == destIt->second.end ())
+        {
+          NS_FATAL_ERROR ("SL-SRB with LCID = " << (uint16_t) lcId << " does not exist for destination L2 Id " << dstL2Id);
+        }
+      else
+        {
+          slSrb = lcIt->second;
+          NS_LOG_LOGIC ("Found SL-SRB with LCID " << (uint16_t) slSrb->m_logicalChannelIdentity
+                                                  << " for destination " << slSrb->m_destinationL2Id);
+        }
+    }
+  return slSrb;
+}
 
 } // namespace ns3

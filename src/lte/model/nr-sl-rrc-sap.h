@@ -25,6 +25,7 @@
 namespace ns3 {
 
 class NrSlDataRadioBearerInfo;
+class NrSlSignallingRadioBearerInfo;
 
 /**
  * \ingroup lte
@@ -98,6 +99,33 @@ public:
    * \return the next available NR SL DRB LCID
    */
   virtual uint8_t GetNextLcid (uint32_t dstL2Id) = 0;
+  /**
+   * \brief Add NR sidelink signalling radio bearer for transmission
+   *
+   * \param slSrb NrSlSignallingRadioBearerInfo pointer
+   */
+  virtual void AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb) = 0;
+  /**
+   * \brief Add NR sidelink signalling radio bearer for reception
+   *
+   * \param slSrb NrSlSignallingRadioBearerInfo pointer
+   */
+  virtual void AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb) = 0;
+  /**
+   * \brief Get NR Sidelink signalling radio bearer for transmission
+   *
+   * \param dstL2Id The peer layer 2 id
+   * \return The NrSlSignallingRadioBearerInfo
+   */
+  virtual Ptr<NrSlSignallingRadioBearerInfo> GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
+  /**
+    * \brief Get the UE layer 2 ID
+    *
+    * \return The layer 2 Id
+    */
+  virtual uint32_t GetSourceL2Id () = 0;
+
+
 };
 
 /**
@@ -167,7 +195,10 @@ public:
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
   virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
-
+  virtual void AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
+  virtual void AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
+  virtual Ptr<NrSlSignallingRadioBearerInfo> GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+  virtual uint32_t GetSourceL2Id ();
 
 private:
   MemberNrSlUeRrcSapUser ();
@@ -234,6 +265,34 @@ uint8_t
 MemberNrSlUeRrcSapUser<C>::GetNextLcid (uint32_t dstL2Id)
 {
   return m_owner->DoGetNextLcid (dstL2Id);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb)
+{
+  m_owner->DoAddTxNrSlSignallingRadioBearer (slSrb);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb)
+{
+  m_owner->DoAddRxNrSlSignallingRadioBearer (slSrb);
+}
+
+template <class C>
+Ptr<NrSlSignallingRadioBearerInfo>
+MemberNrSlUeRrcSapUser<C>::GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
+{
+  return m_owner->DoGetTxNrSlSignallingRadioBearer (dstL2Id, lcId);
+}
+
+template <class C>
+uint32_t
+MemberNrSlUeRrcSapUser<C>::GetSourceL2Id ()
+{
+  return m_owner->DoGetSourceL2Id ();
 }
 
 
