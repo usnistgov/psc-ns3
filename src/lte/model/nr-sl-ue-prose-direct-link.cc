@@ -697,6 +697,13 @@ NrSlUeProseDirectLink::RetransmitDirectLinkEstablishmentRequest ()
   uint8_t lcId = 0;  //pdlEsRq is an unprotected PC5 message to be sent in SL-SRB0 (TS 38.331 - Section 9.1.14)
   pdlEsRqPacket->AddHeader (m_pdlEsParam.rqMsgCopy);
 
+  //Add tag with selfIp for ease SL-DRB and TFTs configuration in the peer UE
+  //TODO: This is a shortcut to speed development and may be replaced
+  //      by proper IP configuration protocols in the future
+  Ipv4AddrTag ipTag;
+  ipTag.SetAddress (m_ipInfo.selfIpv4Addr);
+  pdlEsRqPacket->AddPacketTag (ipTag);
+
   SendNrSlPc5SMessage (pdlEsRqPacket, m_peerL2Id, lcId);
 }
 
