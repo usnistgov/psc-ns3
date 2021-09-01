@@ -620,7 +620,7 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentReject (uint8_t cause)
   //Fill the reject message with the appropriated information
   //TODO
 
-  uint8_t lcId = 2;  //pdlEsAc is a protected PC5 message to be sent in SL-SRB2 (TS 38.331 - Section 9.1.14)
+  uint8_t lcId = 2;  //pdlEsRj is a protected PC5 message to be sent in SL-SRB2 (TS 38.331 - Section 9.1.14)
   Ptr<Packet> pdlEsRjPacket = Create<Packet>();
   pdlEsRjPacket->AddHeader (pdlEsRjHeader);
   SendNrSlPc5SMessage (pdlEsRjPacket, m_peerL2Id, lcId);
