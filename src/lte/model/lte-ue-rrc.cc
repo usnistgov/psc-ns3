@@ -3590,7 +3590,7 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
       if (isTransmit)
         {
           Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
-          NS_LOG_INFO ("Created new TX SLRB for remote id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
+          NS_LOG_INFO ("Created new TX SL-DRB for dstL2id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
       if ((isTransmit && isReceive) || isReceive)
@@ -3607,7 +3607,7 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
       m_asSapUser->NotifyNrSlRadioBearerActivated (dstL2Id);
       //m_nrSlRrcSapUser->NotifyNrSlRadioBearerActivated (dstL2Id); I dont see the need of for now
       break;
-/*
+
     case IDLE_WAIT_SIB2:
     case IDLE_CONNECTING:
       NS_LOG_INFO ("Connecting, must wait to send message");
@@ -3617,23 +3617,45 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
     case CONNECTED_HANDOVER:
     case CONNECTED_PHY_PROBLEM:
     case CONNECTED_REESTABLISHING:
-      NS_LOG_INFO ("Considering in coverage");
-      if (tx)
+      NS_LOG_INFO ("Considering IMSI " << m_imsi << "RNTI " << m_rnti << " in coverage");
+      /**
+       * Currently, in-network UEs doing SL rely on preconfiguration.
+       * This part of the function should be modified/extended when the
+       * network will be involved in SL configuration and protocols.
+       */
+
+      //We are going to reuse RNTI assigned by the network for SL.
+      //TODO: verify downsides of this approach if any
+      {
+        std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
+        for (const auto &it:slBwpIds)
+          {
+            NS_LOG_INFO ("Communicating RNTI " << m_rnti  << " to PHY and MAC in  in BWP " << +it);
+            m_cphySapProvider.at (it)->SetRnti (m_rnti);
+            m_cmacSapProvider.at (it)->SetRnti (m_rnti);
+          }
+      }
+      //We use same SL-DRB creation and configuration logic than OOC
+      if (isTransmit)
         {
-          Ptr<LteSidelinkRadioBearerInfo> slDrbInfo = AddSlrb (m_sidelinkConfiguration->m_sourceL2Id, group, m_sidelinkConfiguration->GetNextLcid (group));
-          NS_LOG_INFO ("Created new TX SLRB for group " << group << " LCID=" << (slDrbInfo->m_logicalChannelIdentity & 0xF));
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
+          NS_LOG_INFO ("Created new TX SL-DRB for dstL2id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
-      if (rx)
+
+      if ((isTransmit && isReceive) || isReceive)
         {
-          //Add to the list of group to monitor for Sidelink
-          m_sidelinkConfiguration->m_rxGroup.push_back (group);
-          //tell the phy to listen for the group
-          m_cphySapProvider.at (0)->AddSlDestination (group);
-          m_cmacSapProvider.at (0)->AddSlDestination (group);
+          std::set <uint8_t> bwpIdsSl = m_nrSlRrcSapUser->GetBwpIdContainer ();
+          for (const auto &it:bwpIdsSl)
+            {
+              NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (dstL2Id);
+            }
         }
-      //Try to send to eNodeB
-      SendSidelinkUeInformation (tx, rx, false, false);
-      break;*/
+
+      //Notify NAS
+      m_asSapUser->NotifyNrSlRadioBearerActivated (dstL2Id);
+
+      break;
 
     default: // i.e. IDLE_RANDOM_ACCESS
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
@@ -3913,9 +3935,9 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
 
         slSrb = AddNrSlSrb (m_srcL2Id, dstL2Id, lcId);
         NS_LOG_INFO ("Inserted, dstL2Id " << slSrb->m_destinationL2Id << " lcId " <<  (uint32_t) slSrb->m_logicalChannelIdentity
-                     << " lcGroup " << (uint32_t) slSrb->m_logicalChannelConfig.logicalChannelGroup);
+                                          << " lcGroup " << (uint32_t) slSrb->m_logicalChannelConfig.logicalChannelGroup);
         break;
-      /*
+
       case IDLE_WAIT_SIB2:
       case IDLE_CONNECTING:
         NS_LOG_INFO ("Connecting, must wait to send message");
@@ -3925,11 +3947,32 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
       case CONNECTED_HANDOVER:
       case CONNECTED_PHY_PROBLEM:
       case CONNECTED_REESTABLISHING:
-        NS_LOG_INFO ("Considering in coverage");
 
-        TODO: What to do in coverage...
+        NS_LOG_INFO ("Considering IMSI " << m_imsi << " RNTI " << m_rnti << " in coverage");
+        /**
+         * Currently, in-network UEs doing SL rely on preconfiguration.
+         * This part of the function should be modified/extended when the
+         * network will be involved in SL configuration and protocols.
+         */
+
+        //We are going to reuse RNTI assigned by the network.
+        //TODO: verify downsides of this approach if any
+        {
+          std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
+          for (const auto &it:slBwpIds)
+            {
+              NS_LOG_INFO ("Communicating RNTI " << m_rnti  << " to PHY and MAC in  in BWP " << +it);
+              m_cphySapProvider.at (it)->SetRnti (m_rnti);
+              m_cmacSapProvider.at (it)->SetRnti (m_rnti);
+            }
+        }
+
+        //We use same SL-SRB creation and configuration logic than OOC
+        slSrb = AddNrSlSrb (m_srcL2Id, dstL2Id, lcId);
+        NS_LOG_INFO ("Inserted, dstL2Id " << slSrb->m_destinationL2Id << " lcId " <<  (uint32_t) slSrb->m_logicalChannelIdentity
+                                          << " lcGroup " << (uint32_t) slSrb->m_logicalChannelConfig.logicalChannelGroup);
+
         break;
-      */
 
       default: // i.e. IDLE_RANDOM_ACCESS
         NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
