@@ -52,11 +52,12 @@ public:
   };
 
   /**
-   * Send an RRC PDU to the PDCP for transmission
-   * This method is to be called
-   * when the upper RRC entity has an RRC PDU ready to send
+   * Send RRC PDU parameters to the PDCP for transmission
    *
-   * \param params
+   * This method is to be called when upper RRC entity has a
+   * RRC PDU ready to send
+   * 
+   * \param params 
    */
   virtual void TransmitPdcpSdu (TransmitPdcpSduParameters params) = 0;
 };

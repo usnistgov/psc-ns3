@@ -284,7 +284,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetSourceAddress (), ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetSource (), ipv6Header.GetDestination ()))
                   {
                     //Found sidelink
                     m_asSapProvider->SendDataToGroup (packet, (*it)->GetRemoteL2Address ());
@@ -296,7 +296,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_pendingSlBearersList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetSourceAddress (), ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetSource (), ipv6Header.GetDestination ()))
                   {
                     NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
                     return false;
@@ -347,7 +347,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetSourceAddress (), ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetSource (), ipv6Header.GetDestination ()))
                   {
                     //Found sidelink
                     m_asSapProvider->SendDataToGroup (packet, (*it)->GetRemoteL2Address ());
@@ -394,10 +394,10 @@ EpcUeNas::DoRecvData (Ptr<Packet> packet)
        it != m_slForwardUpCallbackList.end ();
        it++)
     {
-      if ((*it).tft->Matches (ipv6Header.GetDestinationAddress (), ipv6Header.GetSourceAddress ()))
+      if ((*it).tft->Matches (ipv6Header.GetDestination (), ipv6Header.GetSource ()))
         {
           //Found sidelink
-          NS_LOG_INFO ("Forwarding packet from " << ipv6Header.GetSourceAddress () << " to " << ipv6Header.GetDestinationAddress () << " on sidelink NetDevice");
+          NS_LOG_INFO ("Forwarding packet from " << ipv6Header.GetSource () << " to " << ipv6Header.GetDestination () << " on sidelink NetDevice");
           (*it).cb (packet);
           return;
         }

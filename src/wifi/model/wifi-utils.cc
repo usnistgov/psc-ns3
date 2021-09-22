@@ -24,8 +24,8 @@
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/he-configuration.h"
 #include "wifi-mode.h"
 #include "ampdu-subframe-header.h"
 
@@ -113,7 +113,7 @@ GetChannelWidthForTransmission (WifiMode mode, uint16_t maxSupportedChannelWidth
 }
 
 WifiPreamble
-GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble, bool useGreenfield)
+GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble)
 {
   if (modulation == WIFI_MOD_CLASS_HE)
     {
@@ -123,16 +123,11 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     {
       return WIFI_PREAMBLE_VHT_SU;
     }
-  else if (modulation == WIFI_MOD_CLASS_HT && useGreenfield)
-    {
-      //If protection for Greenfield is used we go for HT_MF preamble which is the default protection for GF format defined in the standard.
-      return WIFI_PREAMBLE_HT_GF;
-    }
   else if (modulation == WIFI_MOD_CLASS_HT)
     {
-      return WIFI_PREAMBLE_HT_MF;
+      return WIFI_PREAMBLE_HT_MF; // HT_GF has been removed
     }
-  else if (useShortPreamble)
+  else if (modulation == WIFI_MOD_CLASS_HR_DSSS && useShortPreamble) //ERP_DSSS is modeled through HR_DSSS (since same preamble and modulation)
     {
       return WIFI_PREAMBLE_SHORT;
     }
@@ -184,13 +179,30 @@ GetBlockAckSize (BlockAckType type)
 }
 
 uint32_t
-GetBlockAckRequestSize (BlockAckType type)
+GetBlockAckRequestSize (BlockAckReqType type)
 {
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_BACKREQ);
   CtrlBAckRequestHeader bar;
   bar.SetType (type);
   return hdr.GetSize () + bar.GetSerializedSize () + 4;
+}
+
+uint32_t
+GetMuBarSize (std::list<BlockAckReqType> types)
+{
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_TRIGGER);
+  CtrlTriggerHeader trigger;
+  trigger.SetType (MU_BAR_TRIGGER);
+  for (auto& t : types)
+    {
+      auto userInfo = trigger.AddUserInfoField ();
+      CtrlBAckRequestHeader bar;
+      bar.SetType (t);
+      userInfo.SetMuBarTriggerDepUserInfo (bar);
+    }
+  return hdr.GetSize () + trigger.GetSerializedSize () + 4;
 }
 
 uint32_t
@@ -245,21 +257,18 @@ GetPpduMaxTime (WifiPreamble preamble)
 
   switch (preamble)
     {
-    case WIFI_PREAMBLE_HT_GF:
-      duration = MicroSeconds (10000);
-      break;
-    case WIFI_PREAMBLE_HT_MF:
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_HE_ER_SU:
-    case WIFI_PREAMBLE_HE_MU:
-    case WIFI_PREAMBLE_HE_TB:
-      duration = MicroSeconds (5484);
-      break;
-    default:
-      duration = MicroSeconds (0);
-      break;
+      case WIFI_PREAMBLE_HT_MF:
+      case WIFI_PREAMBLE_VHT_SU:
+      case WIFI_PREAMBLE_VHT_MU:
+      case WIFI_PREAMBLE_HE_SU:
+      case WIFI_PREAMBLE_HE_ER_SU:
+      case WIFI_PREAMBLE_HE_MU:
+      case WIFI_PREAMBLE_HE_TB:
+        duration = MicroSeconds (5484);
+        break;
+      default:
+        duration = MicroSeconds (0);
+        break;
     }
   return duration;
 }
@@ -267,7 +276,7 @@ GetPpduMaxTime (WifiPreamble preamble)
 bool
 IsHt (WifiPreamble preamble)
 {
-   return (preamble == WIFI_PREAMBLE_HT_MF || preamble == WIFI_PREAMBLE_HT_GF);
+   return (preamble == WIFI_PREAMBLE_HT_MF);
 }
 
 bool

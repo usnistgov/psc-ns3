@@ -171,21 +171,21 @@ Parabolic3dAntennaModel::GetHorizontalGainDb (Angles a)
   NS_LOG_FUNCTION (this << a);
 
   // azimuth angle w.r.t. the reference system of the antenna
-  double phi = a.phi - m_orientationRadians;
+  double azimuth = a.GetAzimuth () - m_orientationRadians;
 
-  // make sure phi is in (-pi, pi]
-  while (phi <= -M_PI)
+  // make sure azimuth is in (-pi, pi]
+  while (azimuth <= -M_PI)
     {
-      phi += M_PI + M_PI;
+      azimuth += M_PI + M_PI;
     }
-  while (phi > M_PI)
+  while (azimuth > M_PI)
     {
-      phi -= M_PI + M_PI;
+      azimuth -= M_PI + M_PI;
     }
 
-  NS_LOG_LOGIC ("phi = " << phi );
+  NS_LOG_LOGIC ("azimuth = " << azimuth );
 
-  double gainDb = -std::min (12 * pow (phi / m_hBeamwidthRadians, 2), m_maxHAttenuation);
+  double gainDb = -std::min (12 * pow (azimuth / m_hBeamwidthRadians, 2), m_maxHAttenuation);
 
   NS_LOG_LOGIC ("Horizontal gain = " << gainDb);
   return gainDb;
@@ -195,15 +195,15 @@ double
 Parabolic3dAntennaModel::GetVerticalGainDb (Angles a)
 {
   NS_LOG_FUNCTION (this << a);
-  // azimuth angle w.r.t. the reference system of the antenna
-  double theta = a.theta - M_PI / 2 - (m_mTiltRadians + m_eTiltRadians);
+  // inclination angle w.r.t. the reference system of the antenna
+  double inclination = a.GetInclination () - M_PI / 2 - (m_mTiltRadians + m_eTiltRadians);
 
-  // make sure theta is in [-pi, pi]
-  NS_ASSERT (theta <= M_PI && theta >= -M_PI);
+  // make sure inclination is in [-pi, pi]
+  NS_ASSERT (inclination <= M_PI && inclination >= -M_PI);
 
-  NS_LOG_LOGIC ("theta = " << theta );
+  NS_LOG_LOGIC ("inclination = " << inclination );
 
-  double gainDb = -std::min (12 * pow (theta / m_vBeamwidthRadians, 2), m_maxVAttenuation);
+  double gainDb = -std::min (12 * pow (inclination / m_vBeamwidthRadians, 2), m_maxVAttenuation);
 
   NS_LOG_LOGIC ("Vertical gain = " << gainDb);
   return gainDb;

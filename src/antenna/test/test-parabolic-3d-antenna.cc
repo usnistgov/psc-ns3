@@ -64,7 +64,7 @@ private:
 std::string Parabolic3dAntennaModelTestCase::BuildNameString (Angles a, double hb, double o, double hg, double vb, double e, double m, double vg)
 {
   std::ostringstream oss;
-  oss <<  "theta=" << a.theta << " , phi=" << a.phi
+  oss <<  "inclination=" << a.GetInclination () << " , azimuth=" << a.GetAzimuth ()
       << ", horizontal beamdwidth=" << hb << " deg"
       << ", orientation=" << o
       << ", horizontal maxAttenuation=" << hg << " dB"
@@ -133,7 +133,7 @@ Parabolic3dAntennaModelTestSuite::Parabolic3dAntennaModelTestSuite ()
 
   // with a 60 deg beamwidth, gain is -20dB at +-77.460 degrees from boresight
   // testing horizontal plane
-  //                                                                         phi,                     theta, h beamwidth, orientation, h maxAttn, v beamwidth, etilt, mtilt, v maxAttn, expectedGain,   condition
+  //                                                                         azimuth,                     inclination, h beamwidth, orientation, h maxAttn, v beamwidth, etilt, mtilt, v maxAttn, expectedGain,   condition
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians    (0),    DegreesToRadians (90)),        60,           0,       25,           10,     0,     0,        20,            0,     EQUAL), TestCase::QUICK);
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians   (30),    DegreesToRadians (90)),        60,           0,       25,           10,     0,     0,        20,           -3,     EQUAL), TestCase::QUICK);
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians  (-30),    DegreesToRadians (90)),        60,           0,       25,           10,     0,     0,        20,           -3,     EQUAL), TestCase::QUICK);
@@ -175,7 +175,7 @@ Parabolic3dAntennaModelTestSuite::Parabolic3dAntennaModelTestSuite ()
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians   (30),    DegreesToRadians (90)),        80,         -150,       10,           10,     0,     0,        20,          -10,     EQUAL), TestCase::QUICK);
 
   // testing vertical plane
-  //                                                                         phi,                     theta, h beamwidth, orientation, h maxAttn, v beamwidth, etilt, mtilt, v maxAttn, expectedGain,   condition
+  //                                                                         azimuth,                     inclination, h beamwidth, orientation, h maxAttn, v beamwidth, etilt, mtilt, v maxAttn, expectedGain,   condition
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians    (0),  DegreesToRadians  (90)),        60,           0,       25,           10,     0,     0,        20,            0,     EQUAL), TestCase::QUICK);
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians    (0),  DegreesToRadians  (85)),        60,           0,       25,           10,     0,     0,        20,           -3,     EQUAL), TestCase::QUICK);
   AddTestCase (new Parabolic3dAntennaModelTestCase (Angles (DegreesToRadians    (0),  DegreesToRadians  (95)),        60,           0,       25,           10,     0,     0,        20,           -3,     EQUAL), TestCase::QUICK);

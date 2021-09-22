@@ -51,6 +51,75 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
+<h1>Changes from ns-3.34 to ns-3.35</h1>
+<h2>New API:</h2>
+<ul>
+<li>In class <b>Ipv6Header</b>, new functions SetSource (), SetDestination (), GetSource () and GetDestination () are added, consistent with <b>Ipv4Header</b>. The existing functions had "Address" suffix in each of the function names, and are are deprecated now.</li>
+<li>In class <b>Ipv4InterfaceAddress</b>, new functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively. This is done to keep consistency with <b>Ipv4InterfaceAddress</b>.</li>
+<li>With the new support for IPv6 Nix-Vector routing, we have all the new APIs corresponding to IPv4 Nix-Vector routing. Specific to the user, there is an Ipv6NixVectorHelper class which can be set in the InternetStackHelper, and works similar to Ipv4NixVectorHelper.</li>
+<li>In class <b>Ipv4InterfaceAddress</b>, a new function IsInSameSubnet () is added to check if both the IPv4 addresses are in the same subnet. Also, it is consistent with <b>Ipv6InterfaceAddress::IsInSameSubnet ()</b>.</li>
+<li>In class <b>ConfigStore</b>, a new Attribue <b>SaveDeprecated</b> allows to not save DEPRECATED Attributes. The default value is <b>false</b> (save DEPRECATED Attributes).</li>
+<li>In class <b>TracedCallback</b>, a new function <b>IsEmpty</b> allows to know if the TracedCallback will call any callback.</li>
+<li>A new specialization of std::hash for Ptr allows to use seamlessly Ptrs as keys in unordered_map and unordered_set.</li>
+<li>A new <b>GroupMobilityHelper</b> mobility helper has been added to ease the configuration of group mobility (a form of hierarchical mobility in which multiple child mobility models move with reference to an underlying parent mobility model).  New example programs and animation scripts are also added to both the buildings and mobility modules.</li>
+</ul>
+<h2>Changes to existing API:</h2>
+<ul>
+<li>In class <b>Ipv6Header</b>, the functions SetSourceAddress (), SetDestinationAddress (), GetSourceAddress () and GetDestinationAddress () are deprecated. New corresponding functions are added by removing the "Address" suffix. This change is made for having consistency with <b>Ipv4Header</b>.</li>
+<li><b>ipv4-nix-vector-helper.h</b> and <b>ipv4-nix-vector-routing.h</b> have been deprecated in favour of <b>nix-vector-helper.h</b> and <b>nix-vector-routing.h</b> respectively.</li>
+</ul>
+<h2>Changes to build system:</h2>
+<ul>
+<li>The default C++ standard is now C++17.</li>
+</ul>
+<h2>Changed behavior:</h2>
+<ul>
+<li>Nix-Vector routing supports topologies with multiple WiFi networks using the same WiFi channel object.</li>
+<li>ConfigStore does not save anymore OBSOLETE Attributes.</li>
+<li>The <b>Ipv4L3Protocol</b> Duplicate detection now accounts for transmitted packets, so a transmitting multicast node will not forward its own packets.</li>
+</ul>
+
+<hr>
+<h1>Changes from ns-3.33 to ns-3.34</h1>
+<h2>New features and API:</h2>
+<ul>
+<li>Support for Wi-Fi <b>802.11ax downlink and uplink OFDMA</b>, including multi-user OFDMA and a <b>round-robin multi-user scheduler</b>.</li>
+<li><b>FqCobalt</b> queue disc with L4S features and set associative hash.</li>
+<li><b>FqPIE</b> queue disc with L4S mode</li>
+<li><b>ThompsonSamplingWifiManager</b> Wi-Fi rate control algorithm.</li>
+<li>New <b>PhasedArrayModel</b>, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models.</li>
+<li>Added the ability to configure the <b>Wi-Fi primary 20 MHz channel</b> for 802.11 devices operating on channels of width greater than 20 MHz.</li>
+<li>A <b>TCP BBRv1</b> congestion control model.</li>
+<li><b>Improved support for bit fields</b> in header serialization/deserialization.</li>
+<li>Support for <b>IPv6 stateless address auto-configuration (SLAAC)</b>.</li>
+</ul>
+<h2>Changes to existing API:</h2>
+<ul>
+<li>The <b>WifiAckPolicySelector</b> class has been replaced by the <b>WifiAckManager</b> class. Correspondingly, the ConstantWifiAckPolicySelector has been replaced by the WifiDefaultAckManager class. A new WifiProtectionManager abstract base class and WifiDefaultProtectionManager concrete class have been added to implement different protection policies.</li>
+<li>The class <b>ThreeGppAntennaArrayModel</b> has been replaced by <b>UniformPlanarArray</b>, extending the PhasedArrayModel interface.</li>
+<li>The <b>Angles struct</b> is now a class, with robust setters and getters (public struct variables phi and theta are now private class variables m_azimuth and m_inclination), overloaded operator&lt;&lt; and operator&gt;&gt; and a number of utilities.</li>
+<li><b>AntennaModel</b> child classes have been extended to produce 3D radiation patterns. Attributes such as Beamwidth have thus been separated into Vertical/HorizontalBeamwidth.</li>
+<li>The attribute <b>UseVhtOnly</b> in <b>MinstrelHtWifiManager</b> has been replaced by a new attribute called <b>UseLatestAmendmentOnly</b>.
+<li> The wifi module has <b>removed HT Greenfield support, Holland (802.11a-like) PHY configuration, and Point Coordination Function (PCF)</b></li>
+<li> The wifi ErrorRateModel API has been extended to support <b>link-to-system models</b>.
+<li> <b>Nix-Vector routing</b> supports multiple interface addresses and can print out routing paths</b>.
+<li>The <b>TxOkHeader and TxErrHeader trace sources</b> of RegularWifiMac have been obsoleted and replaced by trace sources that better capture the result of a transmission: AckedMpdu (fired when an MPDU is successfully acknowledged, via either a Normal Ack or a Block Ack), NAckedMpdu (fired when an MPDU is negatively acknowledged via a Block Ack), DroppedMpdu (fired when an MPDU is dropped), MpduResponseTimeout (fired when a CTS is missing after an RTS or a Normal Ack is missing after an MPDU) and PsduResponseTimeout (fired when a BlockAck is missing after an A-MPDU or a BlockAckReq).</li>
+</ul>
+<h2>Changes to build system:</h2>
+<ul>
+<li> The handling of <b>Boost library/header dependencies</b> has been improved.</li>
+</ul>
+<h2>Changed behavior:</h2>
+<ul>
+<li>The default <b>TCP congestion control</b> has been changed from NewReno to CUBIC.</li>
+<li>The <b>PHY layer of the wifi module</b> has been refactored: the amendment-specific logic has been ported to <b>PhyEntity</b> classes and <b>WifiPpdu</b> classes.</li>
+<li>The <b>MAC layer of the wifi module</b> has been refactored. The MacLow class has been replaced by a hierarchy of FrameExchangeManager classes, each adding support for the frame exchange sequences introduced by a given amendment.</li>
+<li>The <b>wifi BCC AWGN error rate tables</b> have been aligned with the ones provided by MATLAB and users may note a few dB difference when using BCC at high SNR and high MCS.</li>
+<li><b>ThreeGppChannelModel has been fixed</b>: cluster and sub-cluster angles could have been generated with inclination angles outside the inclination range [0, pi], and have now been constrained to the correct range.</li>
+<li>The <b>LTE RLC Acknowledged Mode (AM) transmit buffer</b> is now limited by default to a size of (1024 * 10) bytes.  Configuration of unlimited behavior can still be made by passing the value of zero to the new attribute <b>MaxTxBufferSize</b>.</li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.32 to ns-3.33</h1>
 <h2>New API:</h2>
 <ul>
@@ -104,9 +173,9 @@ in order to support multi-users (MU) transmissions.
 <li>Added <b>Active/Inactive feature</b> to PIE queue disc</li>
 <li>Added <b>netmap</b> and <b>DPDK</b> emulation device variants</li>
 <li>Added capability to configure <b>STL pair and containers as attributes</b></li>
-<li> Added <b>CartesianToGeographic</b> coordinate conversion capability
-<li> Added <b>LollipopCounter</b>, a sequence number counter type 
-<li> Added <b>6 GHz band</b> support for Wi-Fi 802.11ax
+<li> Added <b>CartesianToGeographic</b> coordinate conversion capability</li>
+<li> Added <b>LollipopCounter</b>, a sequence number counter type</li>
+<li> Added <b>6 GHz band</b> support for Wi-Fi 802.11ax</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

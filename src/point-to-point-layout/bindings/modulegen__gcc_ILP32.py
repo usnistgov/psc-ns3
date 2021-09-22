@@ -93,6 +93,8 @@ def register_types(module):
     module.add_class('Ipv4Address', import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
     root_module['ns3::Ipv4Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressHash [class]
+    module.add_class('Ipv4AddressHash', import_from_module='ns.network')
     ## ipv4-address-helper.h (module 'internet'): ns3::Ipv4AddressHelper [class]
     module.add_class('Ipv4AddressHelper', import_from_module='ns.internet')
     ## ipv4-interface-address.h (module 'internet'): ns3::Ipv4InterfaceAddress [class]
@@ -110,6 +112,8 @@ def register_types(module):
     module.add_class('Ipv6Address', import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
     root_module['ns3::Ipv6Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressHash [class]
+    module.add_class('Ipv6AddressHash', import_from_module='ns.network')
     ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6AddressHelper [class]
     module.add_class('Ipv6AddressHelper', import_from_module='ns.internet')
     ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6InterfaceAddress [class]
@@ -180,7 +184,7 @@ def register_types(module):
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
     module.add_class('PcapHelper', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper::DataLinkType [enumeration]
-    module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
+    module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK', 'DLT_LORATAP'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', allow_subclassing=True, import_from_module='ns.network')
     ## internet-trace-helper.h (module 'internet'): ns3::PcapHelperForIpv4 [class]
@@ -485,8 +489,8 @@ def register_types(module):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
-    module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type='vector')
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
+    module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type='vector')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type='map')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & )', 'ns3::TimePrinter')
     typehandlers.add_type_alias('void ( * ) ( std::ostream & )*', 'ns3::TimePrinter*')
@@ -585,11 +589,13 @@ def register_methods(root_module):
     register_Ns3Inet6SocketAddress_methods(root_module, root_module['ns3::Inet6SocketAddress'])
     register_Ns3InetSocketAddress_methods(root_module, root_module['ns3::InetSocketAddress'])
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
+    register_Ns3Ipv4AddressHash_methods(root_module, root_module['ns3::Ipv4AddressHash'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceAddress_methods(root_module, root_module['ns3::Ipv4InterfaceAddress'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
+    register_Ns3Ipv6AddressHash_methods(root_module, root_module['ns3::Ipv6AddressHash'])
     register_Ns3Ipv6AddressHelper_methods(root_module, root_module['ns3::Ipv6AddressHelper'])
     register_Ns3Ipv6InterfaceAddress_methods(root_module, root_module['ns3::Ipv6InterfaceAddress'])
     register_Ns3Ipv6InterfaceContainer_methods(root_module, root_module['ns3::Ipv6InterfaceContainer'])
@@ -1864,6 +1870,18 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    [param('char const *', 'address')])
     return
 
+def register_Ns3Ipv4AddressHash_methods(root_module, cls):
+    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressHash::Ipv4AddressHash() [constructor]
+    cls.add_constructor([])
+    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressHash::Ipv4AddressHash(ns3::Ipv4AddressHash const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Ipv4AddressHash const &', 'arg0')])
+    ## ipv4-address.h (module 'network'): size_t ns3::Ipv4AddressHash::operator()(ns3::Ipv4Address const & x) const [member operator]
+    cls.add_method('operator()', 
+                   'size_t', 
+                   [param('ns3::Ipv4Address const &', 'x')], 
+                   custom_name='__call__', is_const=True)
+    return
+
 def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     ## ipv4-address-helper.h (module 'internet'): ns3::Ipv4AddressHelper::Ipv4AddressHelper(ns3::Ipv4AddressHelper const & arg0) [constructor]
     cls.add_constructor([param('ns3::Ipv4AddressHelper const &', 'arg0')])
@@ -2215,6 +2233,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
                    is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Prefix prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Prefix', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -2290,6 +2313,18 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    [param('uint8_t *', 'address')])
     return
 
+def register_Ns3Ipv6AddressHash_methods(root_module, cls):
+    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressHash::Ipv6AddressHash() [constructor]
+    cls.add_constructor([])
+    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressHash::Ipv6AddressHash(ns3::Ipv6AddressHash const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Ipv6AddressHash const &', 'arg0')])
+    ## ipv6-address.h (module 'network'): size_t ns3::Ipv6AddressHash::operator()(ns3::Ipv6Address const & x) const [member operator]
+    cls.add_method('operator()', 
+                   'size_t', 
+                   [param('ns3::Ipv6Address const &', 'x')], 
+                   custom_name='__call__', is_const=True)
+    return
+
 def register_Ns3Ipv6AddressHelper_methods(root_module, cls):
     ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6AddressHelper::Ipv6AddressHelper(ns3::Ipv6AddressHelper const & arg0) [constructor]
     cls.add_constructor([param('ns3::Ipv6AddressHelper const &', 'arg0')])
@@ -2305,12 +2340,16 @@ def register_Ns3Ipv6AddressHelper_methods(root_module, cls):
     cls.add_method('Assign', 
                    'ns3::Ipv6InterfaceContainer', 
                    [param('ns3::NetDeviceContainer const &', 'c'), param('std::vector< bool >', 'withConfiguration')])
-    ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6InterfaceContainer ns3::Ipv6AddressHelper::AssignManualAddress(ns3::NetDeviceContainer const & c, std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > addresses) [member function]
-    cls.add_method('AssignManualAddress', 
+    ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6InterfaceContainer ns3::Ipv6AddressHelper::Assign(ns3::NetDeviceContainer const & c, std::vector<bool, std::allocator<bool> > withConfiguration, std::vector<bool, std::allocator<bool> > onLink) [member function]
+    cls.add_method('Assign', 
                    'ns3::Ipv6InterfaceContainer', 
-                   [param('ns3::NetDeviceContainer const &', 'c'), param('std::vector< ns3::Ipv6Address >', 'addresses')])
+                   [param('ns3::NetDeviceContainer const &', 'c'), param('std::vector< bool >', 'withConfiguration'), param('std::vector< bool >', 'onLink')])
     ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6InterfaceContainer ns3::Ipv6AddressHelper::AssignWithoutAddress(ns3::NetDeviceContainer const & c) [member function]
     cls.add_method('AssignWithoutAddress', 
+                   'ns3::Ipv6InterfaceContainer', 
+                   [param('ns3::NetDeviceContainer const &', 'c')])
+    ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6InterfaceContainer ns3::Ipv6AddressHelper::AssignWithoutOnLink(ns3::NetDeviceContainer const & c) [member function]
+    cls.add_method('AssignWithoutOnLink', 
                    'ns3::Ipv6InterfaceContainer', 
                    [param('ns3::NetDeviceContainer const &', 'c')])
     ## ipv6-address-helper.h (module 'internet'): ns3::Ipv6Address ns3::Ipv6AddressHelper::NewAddress(ns3::Address addr) [member function]
@@ -2341,6 +2380,8 @@ def register_Ns3Ipv6InterfaceAddress_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv6Address', 'address')])
     ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6InterfaceAddress::Ipv6InterfaceAddress(ns3::Ipv6Address address, ns3::Ipv6Prefix prefix) [constructor]
     cls.add_constructor([param('ns3::Ipv6Address', 'address'), param('ns3::Ipv6Prefix', 'prefix')])
+    ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6InterfaceAddress::Ipv6InterfaceAddress(ns3::Ipv6Address address, ns3::Ipv6Prefix prefix, bool onLink) [constructor]
+    cls.add_constructor([param('ns3::Ipv6Address', 'address'), param('ns3::Ipv6Prefix', 'prefix'), param('bool', 'onLink')])
     ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6InterfaceAddress::Ipv6InterfaceAddress(ns3::Ipv6InterfaceAddress const & o) [constructor]
     cls.add_constructor([param('ns3::Ipv6InterfaceAddress const &', 'o')])
     ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6Address ns3::Ipv6InterfaceAddress::GetAddress() const [member function]
@@ -2351,6 +2392,11 @@ def register_Ns3Ipv6InterfaceAddress_methods(root_module, cls):
     ## ipv6-interface-address.h (module 'internet'): uint32_t ns3::Ipv6InterfaceAddress::GetNsDadUid() const [member function]
     cls.add_method('GetNsDadUid', 
                    'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-interface-address.h (module 'internet'): bool ns3::Ipv6InterfaceAddress::GetOnLink() const [member function]
+    cls.add_method('GetOnLink', 
+                   'bool', 
                    [], 
                    is_const=True)
     ## ipv6-interface-address.h (module 'internet'): ns3::Ipv6Prefix ns3::Ipv6InterfaceAddress::GetPrefix() const [member function]
@@ -2381,6 +2427,10 @@ def register_Ns3Ipv6InterfaceAddress_methods(root_module, cls):
     cls.add_method('SetNsDadUid', 
                    'void', 
                    [param('uint32_t', 'uid')])
+    ## ipv6-interface-address.h (module 'internet'): void ns3::Ipv6InterfaceAddress::SetOnLink(bool onLink) [member function]
+    cls.add_method('SetOnLink', 
+                   'void', 
+                   [param('bool', 'onLink')])
     ## ipv6-interface-address.h (module 'internet'): void ns3::Ipv6InterfaceAddress::SetScope(ns3::Ipv6InterfaceAddress::Scope_e scope) [member function]
     cls.add_method('SetScope', 
                    'void', 
@@ -2483,6 +2533,11 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv6Prefix const &', 'prefix')])
     ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix::Ipv6Prefix(ns3::Ipv6Prefix const * prefix) [constructor]
     cls.add_constructor([param('ns3::Ipv6Prefix const *', 'prefix')])
+    ## ipv6-address.h (module 'network'): ns3::Ipv6Address ns3::Ipv6Prefix::ConvertToIpv6Address() const [member function]
+    cls.add_method('ConvertToIpv6Address', 
+                   'ns3::Ipv6Address', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): void ns3::Ipv6Prefix::GetBytes(uint8_t * buf) const [member function]
     cls.add_method('GetBytes', 
                    'void', 
@@ -5236,10 +5291,10 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SetPriority', 
                    'void', 
                    [param('uint8_t', 'priority')])
-    ## socket.h (module 'network'): void ns3::Socket::SetRecvCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> arg0) [member function]
+    ## socket.h (module 'network'): void ns3::Socket::SetRecvCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> receivedData) [member function]
     cls.add_method('SetRecvCallback', 
                    'void', 
-                   [param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'arg0')])
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'receivedData')])
     ## socket.h (module 'network'): void ns3::Socket::SetRecvPktInfo(bool flag) [member function]
     cls.add_method('SetRecvPktInfo', 
                    'void', 
@@ -6674,10 +6729,10 @@ def register_Ns3Ipv6_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv6 const &', 'arg0')])
     ## ipv6.h (module 'internet'): ns3::Ipv6::Ipv6() [constructor]
     cls.add_constructor([])
-    ## ipv6.h (module 'internet'): bool ns3::Ipv6::AddAddress(uint32_t interface, ns3::Ipv6InterfaceAddress address) [member function]
+    ## ipv6.h (module 'internet'): bool ns3::Ipv6::AddAddress(uint32_t interface, ns3::Ipv6InterfaceAddress address, bool addOnLinkRoute=true) [member function]
     cls.add_method('AddAddress', 
                    'bool', 
-                   [param('uint32_t', 'interface'), param('ns3::Ipv6InterfaceAddress', 'address')], 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv6InterfaceAddress', 'address'), param('bool', 'addOnLinkRoute', default_value='true')], 
                    is_pure_virtual=True, is_virtual=True)
     ## ipv6.h (module 'internet'): uint32_t ns3::Ipv6::AddInterface(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('AddInterface', 
@@ -7012,10 +7067,10 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
                    'int32_t', 
                    [param('ns3::Ptr< ns3::NetDevice const >', 'device')], 
                    is_const=True, is_virtual=True)
-    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::AddAddress(uint32_t i, ns3::Ipv6InterfaceAddress address) [member function]
+    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::AddAddress(uint32_t i, ns3::Ipv6InterfaceAddress address, bool addOnLinkRoute=true) [member function]
     cls.add_method('AddAddress', 
                    'bool', 
-                   [param('uint32_t', 'i'), param('ns3::Ipv6InterfaceAddress', 'address')], 
+                   [param('uint32_t', 'i'), param('ns3::Ipv6InterfaceAddress', 'address'), param('bool', 'addOnLinkRoute', default_value='true')], 
                    is_virtual=True)
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6InterfaceAddress ns3::Ipv6L3Protocol::GetAddress(uint32_t interfaceIndex, uint32_t addressIndex) const [member function]
     cls.add_method('GetAddress', 
@@ -7146,6 +7201,10 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address', 'address'), param('uint32_t', 'interface')], 
                    is_const=True)
+    ## ipv6-l3-protocol.h (module 'internet'): bool ns3::Ipv6L3Protocol::ReachabilityHint(uint32_t ipInterfaceIndex, ns3::Ipv6Address address) [member function]
+    cls.add_method('ReachabilityHint', 
+                   'bool', 
+                   [param('uint32_t', 'ipInterfaceIndex'), param('ns3::Ipv6Address', 'address')])
     ## ipv6-l3-protocol.h (module 'internet'): void ns3::Ipv6L3Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -7546,10 +7605,6 @@ def register_Ns3Node_methods(root_module, cls):
     cls.add_method('RegisterProtocolHandler', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'promiscuous', default_value='false')])
-    ## node.h (module 'network'): void ns3::Node::RemoveDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
-    cls.add_method('RemoveDevice', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device')])
     ## node.h (module 'network'): void ns3::Node::UnregisterDeviceAdditionListener(ns3::Node::DeviceAdditionListener listener) [member function]
     cls.add_method('UnregisterDeviceAdditionListener', 
                    'void', 

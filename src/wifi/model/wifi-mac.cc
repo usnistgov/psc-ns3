@@ -24,9 +24,9 @@
 #include "txop.h"
 #include "ssid.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "vht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/vht-configuration.h"
+#include "ns3/he-configuration.h"
 
 namespace ns3 {
 
@@ -51,7 +51,10 @@ WifiMac::GetTypeId (void)
                      MakeTraceSourceAccessor (&WifiMac::m_macTxTrace),
                      "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacTxDrop",
-                     "A packet has been dropped in the MAC layer before transmission.",
+                     "A packet has been dropped in the MAC layer before being queued for transmission. "
+                     "This trace source is fired, e.g., when an AP's MAC receives from the upper layer "
+                     "a packet destined to a station that is not associated with the AP or a STA's MAC "
+                     "receives a packet from the upper layer while it is not associated with any AP.",
                      MakeTraceSourceAccessor (&WifiMac::m_macTxDropTrace),
                      "ns3::Packet::TracedCallback")
     .AddTraceSource ("MacPromiscRx",

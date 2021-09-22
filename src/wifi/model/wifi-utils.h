@@ -22,8 +22,9 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
-#include "wifi-preamble.h"
+#include "wifi-phy-common.h"
 #include "wifi-mode.h"
+#include <list>
 
 namespace ns3 {
 
@@ -89,11 +90,10 @@ uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInte
  *
  * \param modulation the modulation selected for the transmission
  * \param useShortPreamble whether short preamble should be used
- * \param useGreenfield whether HT Greenfield should be used
  *
  * \return the preamble to be used for the transmission
  */
-WifiPreamble GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble, bool useGreenfield);
+WifiPreamble GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble);
 /**
  * Return the channel width that corresponds to the selected mode (instead of
  * letting the PHY's default channel width). This is especially useful when using
@@ -134,7 +134,14 @@ uint32_t GetBlockAckSize (BlockAckType type);
  * \param type the BlockAckRequest type
  * \return the total BlockAckRequest size in bytes
  */
-uint32_t GetBlockAckRequestSize (BlockAckType type);
+uint32_t GetBlockAckRequestSize (BlockAckReqType type);
+/**
+ * Return the total MU-BAR size (including FCS trailer).
+ *
+ * \param types the list of Block Ack Request types of the individual BARs
+ * \return the total MU-BAR size in bytes
+ */
+uint32_t GetMuBarSize (std::list<BlockAckReqType> types);
 /**
  * Return the total RTS size (including FCS trailer).
  *

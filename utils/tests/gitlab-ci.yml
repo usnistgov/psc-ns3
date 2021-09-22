@@ -37,13 +37,22 @@ stages:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d $MODE
     - ./waf
-    - ./test.py
+    - if [ "$MODE" != "debug" ]; then ./test.py --nowaf; fi
   cache:
+    # Use separate key for each (debug/optimized/release) jobs because
+    # they run in parallel and will otherwise overwrite each other
+    # cache when they upload the cache archive at the end of the job,
+    # resulting in only the cache for the last finished configuration
+    # being stored.
+    #
+    # Do not distinguish between branches though to avoid
+    # recompilation of all the files when a new branch is created.
+    key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
-  timeout: 9h
+  timeout: 12h
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
 
@@ -55,7 +64,7 @@ per-commit-compile-debug:
       - $PYBINDGEN == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: debug
@@ -70,7 +79,7 @@ per-commit-compile-release:
       - $PYBINDGEN == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: release
@@ -85,7 +94,7 @@ per-commit-compile-optimized:
       - $PYBINDGEN == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: optimized

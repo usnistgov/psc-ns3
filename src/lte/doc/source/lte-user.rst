@@ -685,7 +685,7 @@ To do this, you just need to add the following code to your simulation
 program towards the end, right before the call to Simulator::Run ()::
 
   Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
-  remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
+  remHelper->SetAttribute ("Channel", PointerValue (lteHelper->GetDownlinkSpectrumChannel ()));
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
   remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
   remHelper->SetAttribute ("XMax", DoubleValue (400.0));
@@ -2605,19 +2605,25 @@ the throughput as shown in the Figure :ref:`fig-lena-radio-link-failure-one-enb-
 
    Downlink instantaneous throughput of UE in scenario A
 
-In this scenario, when using the *Ideal* RRC the UE after the RLF will connect
-and disconnect from the eNB several times. This is because it can
-synchronize (i.e., start reading system information) with an eNB at a low
-RSRP level, which is default to -140 dBm (see QRxLevMin attribute of eNB RRC).
-It enables the UE to start the random access procedure with the eNB. With the 
-*Ideal* RRC, the UE can complete the random access without any errors, since
-all the RRC messages are exchanged ideally between the eNB and the UE.
+In the simulator, a UE can synchronize (i.e., start reading system information)
+with an eNB at a low RSRP level, which defaults to -140 dBm (see QRxLevMin attribute of eNB RRC).
+It enables the UE to start the random access procedure with the eNB. In this scenario,
+when using the *Ideal* RRC the UE after the RLF will connect and disconnect from
+the eNB several times. This is because in the *Ideal* RRC mode, once the UE is
+able to receive Random Access Response (RAR) from the eNB, it can complete the
+RRC connection establishment procedure
+(:ref:`sec-rrc-connection-establishment`) without any
+errors, since all the RRC messages are exchanged ideally between the eNB and the UE.
 However, soon after the connection establishment, it ends up in RLF due to the
 poor channel quality. On the other hand, with the *Real* RRC the UE after the RLF
-will not be able to complete the random access procedure due to the poor channel
-conditions, thus, will not be able to establish the connection with the eNB.
-Therefore, in both the cases the UE throughput drops to zero as shown in the
-Figure :ref:`fig-lena-radio-link-failure-one-enb-thrput`.
+will not be able to complete the RRC connection establishment procedure due to
+the loss of RRC messages. Thus, it will not be able to establish the connection
+with the eNB. Therefore, in both the cases the UE throughput drops to zero as shown in the
+Figure :ref:`fig-lena-radio-link-failure-one-enb-thrput`. It is also worthwhile
+to mention that towards the end of the simulation (using *Ideal* or *Real* RRC)
+there are occasions where RAR timer at the UE MAC would timeout due to the
+increased distance between the eNB and the UE, which causes errors while decoding
+this message at the UE (Note: the downlink control error model is enabled by default).
 
 
 .. _lena-radio-link-failure-two-enb:
