@@ -55,7 +55,7 @@ NS_OBJECT_ENSURE_REGISTERED (PscVideoStreaming);
 TypeId
 PscVideoStreaming::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::PscVideoStreaming")
+  static TypeId tid = TypeId ("ns3::psc::PscVideoStreaming")
     .SetParent <Application> ()
     .AddConstructor <PscVideoStreaming> ()
     .AddAttribute ("Distribution",
@@ -92,7 +92,7 @@ PscVideoStreaming::GetTypeId (void)
     .AddTraceSource ("Tx",
                      "Trace with packets transmitted",
                      MakeTraceSourceAccessor (&PscVideoStreaming::m_txTrace),
-                     "ns3::PscVideoStreaming::TxTracedCallback")
+                     "ns3::psc::PscVideoStreaming::TxTracedCallback")
   ;
 
   return tid;

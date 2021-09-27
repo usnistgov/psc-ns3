@@ -120,7 +120,7 @@ SipHeader::~SipHeader ()
 TypeId
 SipHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SipHeader")
+  static TypeId tid = TypeId ("ns3::sip::SipHeader")
     .SetParent<Header> ()
     .SetGroupName ("Sip")
     .AddConstructor<SipHeader> ()

@@ -2728,7 +2728,7 @@ const uint8_t McpttCallMsgPrivateAccept::CODE = 10;
 TypeId
 McpttCallMsgPrivateAccept::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("McpttCallMsgPrivateAccept")
+  static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateAccept")
     .SetParent<McpttCallMsg> ()
     .AddConstructor<McpttCallMsgPrivateAccept> ()
   ;

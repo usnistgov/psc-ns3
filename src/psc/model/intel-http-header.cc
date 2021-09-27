@@ -59,7 +59,7 @@ TypeId
 IntelHttpHeader::GetTypeId (void)
 {
   static TypeId tid =
-      TypeId ("ns3::psc:IntelHttpHeader").SetParent<Header> ().AddConstructor<IntelHttpHeader> ();
+      TypeId ("ns3::psc::IntelHttpHeader").SetParent<Header> ().AddConstructor<IntelHttpHeader> ();
 
   return tid;
 }

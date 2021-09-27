@@ -32,7 +32,7 @@ NS_OBJECT_ENSURE_REGISTERED (SipProxy);
 TypeId
 SipProxy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SipProxy")
+  static TypeId tid = TypeId ("ns3::sip::SipProxy")
     .SetParent<SipElement> ()
     .SetGroupName ("Sip")
     .AddConstructor<SipProxy> ()

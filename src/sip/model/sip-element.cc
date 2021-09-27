@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED (SipElement);
 TypeId
 SipElement::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SipElement")
+  static TypeId tid = TypeId ("ns3::sip::SipElement")
     .SetParent<Object> ()
     .SetGroupName ("Sip")
     .AddConstructor<SipElement> ()
