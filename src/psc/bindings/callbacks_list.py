@@ -23,6 +23,7 @@ callback_classes = [
     ['void', 'unsigned int', 'unsigned short', 'const std::basic_string<char> &', 'const std::basic_string<char> &', 'const std::basic_string<char> &', 'const std::basic_string<char> &', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'const ns3::psc::McpttEntityId &', 'const ns3::psc::McpttEntityId &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
+    ['void', 'ns3::Ptr<const ns3::Application>', 'unsigned short', 'ns3::Ptr<const ns3::Packet>', 'const ns3::TypeId &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<ns3::psc::McpttCall>', 'ns3::Ptr<ns3::psc::McpttCall>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'unsigned int', 'unsigned short', 'const std::basic_string<char> &', 'const char *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'bool', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
