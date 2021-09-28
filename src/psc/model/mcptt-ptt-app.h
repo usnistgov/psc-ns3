@@ -266,16 +266,18 @@ public:
   /**
    * Trace the transmission of a message for a given callId
    * \param callId The call that the message is for
-   * \param hdr Message sent
+   * \param pkt Packet with serialized header
+   * \param headerType TypeId of outer header in packet
    */
-  void TraceMessageSend (uint16_t callId, const Header& hdr);
+  void TraceMessageSend (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
   /**
    * Trace the reception of a message for a given callId
    * \param callId The call that the message is for
-   * \param hdr Message received
+   * \param pkt Packet with serialized header
+   * \param headerType TypeId of outer header in pack
    */
-  void TraceMessageReceive (uint16_t callId, const Header& hdr);
+  void TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
 protected:
   /**
@@ -298,10 +300,11 @@ protected:
    */
   virtual void ReceiveOffNetworkCallPacket (Ptr<Packet>  pkt, Address from);
   /**
-   * Receives a call control message.
+   * Distributes a received off-network call control packet to all off network calls.
+   * \param pkt The call control packet that was received.
    * \param msg The message that was received.
    */
-  virtual void Receive (const McpttCallMsg& msg);
+  virtual void Receive (Ptr<Packet> pkt, const McpttCallMsg& msg);
   /**
    * Starts the McpttPttApp application.
    */
@@ -311,12 +314,13 @@ protected:
    */
   virtual void StopApplication (void);
   /**
-   * TracedCallback signature for McpttMsg transmission or reception events
-   * \param [in] app Ptr<Application>
+   * TracedCallback signature for message transmission or reception events
+   * \param [in] app pointer to the MCPTT application involved
    * \param [in] callId Call ID
-   * \param [in] msg The SIP header or specialized McpttMsg header sent or received
+   * \param [in] pkt The packet sent or received
+   * \param [in] headerType TypeId of the first header in the packet
    */
-  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
+  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   /**
    * TracedCallback signature for event reporting
    * \param [in] userId MCPTT user ID
@@ -342,11 +346,11 @@ private:
   Callback<void, uint16_t> m_newCallCb; //!< The new call callback.
   bool m_pushOnStart; //!< The flag that indicates if the pusher should be started when the application starts.
   Ptr<McpttPusher> m_pusher; //!< The object that calls the Pushed() function.
-  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
+  TracedCallback<Ptr<const Application>, uint16_t, Ptr<const Packet>, const TypeId&> m_rxTrace; //!< The Rx trace
   Ptr<McpttCall> m_selectedCall; //!< The currently selected call.
   Callback<void, Ptr<McpttCall>, Ptr<McpttCall> > m_selectedCallChangeCb; //!< The selected call change CB.
   uint32_t m_userId; //!< The MCPTT user ID.
-  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
+  TracedCallback<Ptr<const Application>, uint16_t, Ptr<const Packet>, const TypeId&> m_txTrace; //!< The Tx trace.
   TracedCallback<uint32_t, uint16_t, const std::string&, const char* > m_eventTrace; //!< Event trace
 
 public:

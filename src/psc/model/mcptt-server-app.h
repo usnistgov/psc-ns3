@@ -119,16 +119,18 @@ public:
   /**
    * Trace the transmission of a message for a given callId
    * \param callId The call that the message is for
-   * \param hdr Message sent
+   * \param pkt Packet with serialized header
+   * \param headerType TypeId of outer header in pack
    */
-  void TraceMessageSend (uint16_t callId, const Header& hdr);
+  void TraceMessageSend (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
   /**
    * Trace the reception of a message for a given callId
    * \param callId The call that the message is for
-   * \param hdr Message received
+   * \param pkt Packet with serialized header
+   * \param headerType TypeId of outer header in pack
    */
-  void TraceMessageReceive (uint16_t callId, const Header& hdr);
+  void TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
 protected:
   /**
@@ -148,9 +150,10 @@ protected:
    * TracedCallback signature for McpttMsg transmission or reception events
    * \param [in] app Ptr<Application>
    * \param [in] callId Call ID
-   * \param [in] msg Header
+   * \param [in] pkt The packet sent or received
+   * \param [in] headerType TypeId of the first header in the packet
    */
-  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, const Header& msg);
+  typedef void (* TxRxTracedCallback) (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
 private:
   static uint16_t s_callId; //!< Call ID counter
@@ -160,8 +163,8 @@ private:
   uint16_t m_callPort; //!< The port on which call control messages will flow.
   Ptr<McpttChannel> m_callChannel; //!< The channel for call control messages.
   Ptr<sip::SipProxy> m_sipProxy; //!< The SIP proxy agent
-  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_rxTrace; //!< The Rx trace.
-  TracedCallback<Ptr<const Application>, uint16_t, const Header&> m_txTrace; //!< The Tx trace.
+  TracedCallback<Ptr<const Application>, uint16_t, Ptr<const Packet>, const TypeId&> m_rxTrace; //!< The Rx trace.
+  TracedCallback<Ptr<const Application>, uint16_t, Ptr<const Packet>, const TypeId&> m_txTrace; //!< The Tx trace.
   bool m_isRunning; //!< Flag to mark if the application is running
 };
 

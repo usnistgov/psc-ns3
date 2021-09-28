@@ -185,8 +185,8 @@ std::vector< Ptr<netsimulyzer::Decoration> > eNodebAntennas;
  */
 struct MessagesTracer
 {
-  void RxTrace (Ptr<const Application> app, uint16_t callId, const Header& header); ///< Trace sink function
-  void TxTrace (Ptr<const Application> app, uint16_t callId, const Header& header); ///< Trace sink function
+  void RxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType); ///< Trace sink function
+  void TxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType); ///< Trace sink function
   void RsrpMeasurementTrace (uint64_t imsi, uint16_t cellId, double rsrp); ///< Trace sink function
   void FloorControlStateTrace (uint32_t mcpttUserId, uint16_t callId, const std::string& selected, const std::string& typeIdName, const std::string& oldStateName, const std::string& newStateName); ///< Trace sink for floor participant state change
   void PusherStateTrace (bool oldValue, bool newValue); ///< The pusher state trace.
@@ -234,9 +234,9 @@ struct ServerCallTracer
  * application layer.
  */
 void
-MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg)
+MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
+  if (headerType == McpttMediaMsg::GetTypeId ())
     {
       // CallIDs 1 and 3 are allocated to the on-network and relay calls
       // CallID for the off network will be initially 2 (on network), then a randomly generated one
@@ -250,9 +250,11 @@ MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Head
         }
 
 #ifdef HAS_NETSIMULYZER
+      McpttMediaMsg msg;
+      pkt->PeekHeader (pkt);
       if (m_mediaDelaySeries != nullptr)
         {
-          Time timestamp = MicroSeconds (dynamic_cast<const McpttMediaMsg&> (msg).GetHeader ().GetTimestamp () * 10);
+          Time timestamp = MicroSeconds (msg.GetHeader ().GetTimestamp () * 10);
           m_mediaDelaySeries->Append (Simulator::Now ().GetSeconds (), (Simulator::Now () - timestamp).GetMilliSeconds ());
         }
 #endif
@@ -271,9 +273,9 @@ MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Head
  * application layer.
  */
 void
-MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg)
+MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
+  if (headerType == McpttMediaMsg::GetTypeId ())
     {
       // CallIDs 1 and 3 are allocated to the on-network and relay calls
       // CallID for the off network will be initially 2 (on network), then a randomly generated one

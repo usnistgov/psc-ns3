@@ -128,7 +128,10 @@ void
 McpttServerCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipProxy::TransactionState state)
 {
   NS_LOG_FUNCTION (this << pkt << hdr << state);
-  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
+  // SIP layer removes SIP header; add it back for tracing
+  Ptr<Packet> pktCopy = pkt->Copy ();
+  pktCopy->AddHeader (hdr);
+  GetOwner ()->TraceMessageReceive (GetCallId (), pktCopy, hdr.GetInstanceTypeId ());
   GetCallMachine ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -146,7 +149,7 @@ McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, 
   if (m_owner->IsRunning ())
     {
       m_owner->SendCallControlPacket (pkt, toAddr);
-      GetOwner ()->TraceMessageSend (GetCallId (), hdr);
+      GetOwner ()->TraceMessageSend (GetCallId (), pkt, hdr.GetInstanceTypeId ());
     }
   else
     {

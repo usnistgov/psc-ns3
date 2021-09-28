@@ -58,10 +58,10 @@ public:
 protected:
   virtual void Configure (void);
   virtual void Execute (void);
-  virtual void ServerRxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
-  virtual void ServerTxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
-  virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
-  virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg);
+  virtual void ServerRxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
+  virtual void ServerTxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
+  virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
+  virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
 private:
   struct TestEvent
@@ -204,16 +204,18 @@ McpttTestCasePreArrangedGroupCO::Execute (void)
 }
 
 void
-McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
+McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
   NS_LOG_DEBUG ("UE1 receive message");
-  if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId ())
+  if (headerType == sip::SipHeader::GetTypeId ())
     {
-      sip::SipHeader::SipMessageType messageType = static_cast<const sip::SipHeader &> (msg).GetMessageType ();
+      sip::SipHeader msg;
+      pkt->PeekHeader (msg);
+      sip::SipHeader::SipMessageType messageType = msg.GetMessageType ();
       uint16_t statusCode = 0;
       if (messageType == sip::SipHeader::SIP_RESPONSE)
         {
-          statusCode = static_cast<const sip::SipHeader &> (msg).GetStatusCode ();
+          statusCode = msg.GetStatusCode ();
           if (statusCode == 200 && m_step == 2)
             {
               NS_LOG_DEBUG ("Step 5 <-- SIP 200 (OK)");
@@ -229,7 +231,7 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
           NS_LOG_DEBUG ("SIP Request not yet expected");
         }
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgAck::GetTypeId ())
+  else if (headerType == McpttFloorMsgAck::GetTypeId ())
     {
       if (m_step == 9)
         {
@@ -238,7 +240,7 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
           m_step = 10;
         }
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgIdle::GetTypeId ())
+  else if (headerType == McpttFloorMsgIdle::GetTypeId ())
     {
       if (m_step == 10)
         {
@@ -250,16 +252,18 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
 }
 
 void
-McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
+McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
   NS_LOG_DEBUG ("UE1 send message");
-  if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId ())
+  if (headerType == sip::SipHeader::GetTypeId ())
     {
-      sip::SipHeader::SipMessageType messageType = static_cast<const sip::SipHeader &> (msg).GetMessageType ();
+      sip::SipHeader msg;
+      pkt->PeekHeader (msg);
+      sip::SipHeader::SipMessageType messageType = msg.GetMessageType ();
       sip::SipHeader::SipMethod method;
       if (messageType == sip::SipHeader::SIP_REQUEST)
         {
-          method = static_cast<const sip::SipHeader &> (msg).GetMethod ();
+          method = msg.GetMethod ();
           if (method == sip::SipHeader::INVITE && m_step == 1)
             {
               NS_LOG_DEBUG ("Step 2 --> SIP INVITE");
@@ -278,7 +282,7 @@ McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t c
           NS_LOG_DEBUG ("SIP Response not yet expected");
         }
     }
-  else if (msg.GetInstanceTypeId () == McpttFloorMsgRelease::GetTypeId ())
+  else if (headerType == McpttFloorMsgRelease::GetTypeId ())
     {
       if (m_step == 6)
         {
@@ -290,13 +294,13 @@ McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t c
 }
 
 void
-McpttTestCasePreArrangedGroupCO::ServerRxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
+McpttTestCasePreArrangedGroupCO::ServerRxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
   NS_LOG_DEBUG ("Server receive message");
   // Note:  In TS 36.579-2, events are ordered from the perspective of
   // the UE, testing against a black box EPC, so only log observed events
   // on the UE, and just print debug log statements here
-  if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId ())
+  if (headerType == sip::SipHeader::GetTypeId ())
     {
       NS_LOG_DEBUG ("Received SIP message on server after step " << m_step);
     }
@@ -307,13 +311,13 @@ McpttTestCasePreArrangedGroupCO::ServerRxCb (Ptr<const Application> app, uint16_
 }
 
 void
-McpttTestCasePreArrangedGroupCO::ServerTxCb (Ptr<const Application> app, uint16_t callId, const Header& msg)
+McpttTestCasePreArrangedGroupCO::ServerTxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
   NS_LOG_DEBUG ("Server send message");
   // Note:  In TS 36.579-2, events are ordered from the perspective of
   // the UE, testing against a black box EPC, so only log observed events
   // on the UE, and just print debug log statements here
-  if (msg.GetInstanceTypeId () == sip::SipHeader::GetTypeId ())
+  if (headerType == sip::SipHeader::GetTypeId ())
     {
       NS_LOG_DEBUG ("Sent SIP message on server after step " << m_step);
     }

@@ -131,14 +131,16 @@ McpttTraceHelper::DisableStateMachineTraces (void)
 }
 
 void
-McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, const Header& msg)
+McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  NS_LOG_FUNCTION (this << app << callId);
-  if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
+  NS_LOG_FUNCTION (this << app << callId << pkt << headerType);
+  if (headerType == McpttMediaMsg::GetTypeId ())
     {
+      McpttMediaMsg msg;
+      pkt->PeekHeader (msg);
       std::pair<uint32_t, uint16_t> key = std::make_pair (app->GetNode ()->GetId (), callId);
-      Time talkSpurtStart = dynamic_cast<const McpttMediaMsg&> (msg).GetTalkSpurtStart ();
-      uint32_t ssrc = dynamic_cast<const McpttMediaMsg&> (msg).GetSsrc ();
+      Time talkSpurtStart = msg.GetTalkSpurtStart ();
+      uint32_t ssrc = msg.GetSsrc ();
       auto it = m_mouthToEarLatencyMap.find (key);
       if (it == m_mouthToEarLatencyMap.end ())
         {

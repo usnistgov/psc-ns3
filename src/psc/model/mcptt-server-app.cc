@@ -156,9 +156,9 @@ McpttServerApp::DoDispose (void)
 }
 
 void
-McpttServerApp::TraceMessageReceive (uint16_t callId, const Header& msg)
+McpttServerApp::TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  m_rxTrace (this, callId, msg);
+  m_rxTrace (this, callId, pkt, headerType);
 }
 
 void
@@ -203,9 +203,9 @@ McpttServerApp::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr)
 }
 
 void
-McpttServerApp::TraceMessageSend (uint16_t callId, const Header& msg)
+McpttServerApp::TraceMessageSend (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  m_txTrace (this, callId, msg);
+  m_txTrace (this, callId, pkt, headerType);
 }
 
 Address

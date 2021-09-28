@@ -731,122 +731,122 @@ McpttPttApp::ReceiveOffNetworkCallPacket (Ptr<Packet> pkt, Address from)
   if (code == McpttCallMsgGrpProbe::CODE)
     {
       McpttCallMsgGrpProbe probeMsg;
-      pkt->RemoveHeader (probeMsg);
-      Receive (probeMsg);
+      pkt->PeekHeader (probeMsg);
+      Receive (pkt, probeMsg);
     }
   else if (code == McpttCallMsgGrpAnnoun::CODE)
     {
       McpttCallMsgGrpAnnoun grpAnnounMsg;
-      pkt->RemoveHeader (grpAnnounMsg);
-      Receive (grpAnnounMsg);
+      pkt->PeekHeader (grpAnnounMsg);
+      Receive (pkt, grpAnnounMsg);
     }
   else if (code == McpttCallMsgGrpAccept::CODE)
     {
       McpttCallMsgGrpAccept grpAcceptMsg;
-      pkt->RemoveHeader (grpAcceptMsg);
-      Receive (grpAcceptMsg);
+      pkt->PeekHeader (grpAcceptMsg);
+      Receive (pkt, grpAcceptMsg);
     }
   else if (code == McpttCallMsgGrpImmPerilEnd::CODE)
     {
       McpttCallMsgGrpImmPerilEnd grpImmPerilEndMsg;
-      pkt->RemoveHeader (grpImmPerilEndMsg);
-      Receive (grpImmPerilEndMsg);
+      pkt->PeekHeader (grpImmPerilEndMsg);
+      Receive (pkt, grpImmPerilEndMsg);
     }
   else if (code == McpttCallMsgGrpEmergEnd::CODE)
     {
       McpttCallMsgGrpEmergEnd grpEmergEndMsg;
-      pkt->RemoveHeader (grpEmergEndMsg);
-      Receive (grpEmergEndMsg);
+      pkt->PeekHeader (grpEmergEndMsg);
+      Receive (pkt, grpEmergEndMsg);
     }
   else if (code == McpttCallMsgGrpEmergAlert::CODE)
     {
       McpttCallMsgGrpEmergAlert grpEmergAlertMsg;
-      pkt->RemoveHeader (grpEmergAlertMsg);
-      Receive (grpEmergAlertMsg);
+      pkt->PeekHeader (grpEmergAlertMsg);
+      Receive (pkt, grpEmergAlertMsg);
     }
   else if (code == McpttCallMsgGrpEmergAlertAck::CODE)
     {
       McpttCallMsgGrpEmergAlertAck grpEmergAlertAckMsg;
-      pkt->RemoveHeader (grpEmergAlertAckMsg);
-      Receive (grpEmergAlertAckMsg);
+      pkt->PeekHeader (grpEmergAlertAckMsg);
+      Receive (pkt, grpEmergAlertAckMsg);
     }
   else if (code == McpttCallMsgGrpEmergAlertCancel::CODE)
     {
       McpttCallMsgGrpEmergAlertCancel grpEmergAlertCancelMsg;
-      pkt->RemoveHeader (grpEmergAlertCancelMsg);
-      Receive (grpEmergAlertCancelMsg);
+      pkt->PeekHeader (grpEmergAlertCancelMsg);
+      Receive (pkt, grpEmergAlertCancelMsg);
     }
   else if (code == McpttCallMsgGrpEmergAlertCancelAck::CODE)
     {
       McpttCallMsgGrpEmergAlertCancelAck emergAlertCancelAckMsg;
-      pkt->RemoveHeader (emergAlertCancelAckMsg);
-      Receive (emergAlertCancelAckMsg);
+      pkt->PeekHeader (emergAlertCancelAckMsg);
+      Receive (pkt, emergAlertCancelAckMsg);
     }
   else if (code == McpttCallMsgGrpBroadcast::CODE)
     {
       McpttCallMsgGrpBroadcast grpBroadcastMsg;
-      pkt->RemoveHeader (grpBroadcastMsg);
-      Receive (grpBroadcastMsg);
+      pkt->PeekHeader (grpBroadcastMsg);
+      Receive (pkt, grpBroadcastMsg);
     }
   else if (code == McpttCallMsgGrpBroadcastEnd::CODE)
     {
       McpttCallMsgGrpBroadcastEnd grpBroadcastEndMsg;
-      pkt->RemoveHeader (grpBroadcastEndMsg);
-      Receive (grpBroadcastEndMsg);
+      pkt->PeekHeader (grpBroadcastEndMsg);
+      Receive (pkt, grpBroadcastEndMsg);
     }
   else if (code == McpttCallMsgPrivateSetupReq::CODE)
     {
       McpttCallMsgPrivateSetupReq privateSetupReqMsg;
-      pkt->RemoveHeader (privateSetupReqMsg);
-      Receive (privateSetupReqMsg);
+      pkt->PeekHeader (privateSetupReqMsg);
+      Receive (pkt, privateSetupReqMsg);
     }
   else if (code == McpttCallMsgPrivateRinging::CODE)
     {
       McpttCallMsgPrivateRinging privateRingingMsg;
-      pkt->RemoveHeader (privateRingingMsg);
-      Receive (privateRingingMsg);
+      pkt->PeekHeader (privateRingingMsg);
+      Receive (pkt, privateRingingMsg);
     }
   else if (code == McpttCallMsgPrivateAccept::CODE)
     {
       McpttCallMsgPrivateAccept privateAcceptMsg;
-      pkt->RemoveHeader (privateAcceptMsg);
-      Receive (privateAcceptMsg);
+      pkt->PeekHeader (privateAcceptMsg);
+      Receive (pkt, privateAcceptMsg);
     }
   else if (code == McpttCallMsgPrivateReject::CODE)
     {
       McpttCallMsgPrivateReject privateRejectMsg;
-      pkt->RemoveHeader (privateRejectMsg);
-      Receive (privateRejectMsg);
+      pkt->PeekHeader (privateRejectMsg);
+      Receive (pkt, privateRejectMsg);
     }
   else if (code == McpttCallMsgPrivateRelease::CODE)
     {
       McpttCallMsgPrivateRelease privateReleaseMsg;
-      pkt->RemoveHeader (privateReleaseMsg);
-      Receive (privateReleaseMsg);
+      pkt->PeekHeader (privateReleaseMsg);
+      Receive (pkt, privateReleaseMsg);
     }
   else if (code == McpttCallMsgPrivateReleaseAck::CODE)
     {
       McpttCallMsgPrivateReleaseAck privateReleaseAckMsg;
-      pkt->RemoveHeader (privateReleaseAckMsg);
-      Receive (privateReleaseAckMsg);
+      pkt->PeekHeader (privateReleaseAckMsg);
+      Receive (pkt, privateReleaseAckMsg);
     }
   else if (code == McpttCallMsgPrivateAcceptAck::CODE)
     {
       McpttCallMsgPrivateAcceptAck privateAcceptAckMsg;
-      pkt->RemoveHeader (privateAcceptAckMsg);
-      Receive (privateAcceptAckMsg);
+      pkt->PeekHeader (privateAcceptAckMsg);
+      Receive (pkt, privateAcceptAckMsg);
     }
   else if (code == McpttCallMsgPrivateEmergCancel::CODE)
     {
       McpttCallMsgPrivateEmergCancel privateEmergCancelMsg;
-      pkt->RemoveHeader (privateEmergCancelMsg);
-      Receive (privateEmergCancelMsg);
+      pkt->PeekHeader (privateEmergCancelMsg);
+      Receive (pkt, privateEmergCancelMsg);
     }
   else if (code == McpttCallMsgPrivateEmergCancelAck::CODE)
     {
       McpttCallMsgPrivateEmergCancelAck privateEmergCancelAckMsg;
-      pkt->RemoveHeader (privateEmergCancelAckMsg);
-      Receive (privateEmergCancelAckMsg);
+      pkt->PeekHeader (privateEmergCancelAckMsg);
+      Receive (pkt, privateEmergCancelAckMsg);
     }
   else
     {
@@ -855,21 +855,22 @@ McpttPttApp::ReceiveOffNetworkCallPacket (Ptr<Packet> pkt, Address from)
 }
 
 void
-McpttPttApp::Receive (const McpttCallMsg& msg)
+McpttPttApp::Receive (Ptr<Packet> pkt, const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
   for (auto it = m_offNetworkCalls.begin (); it != m_offNetworkCalls.end (); it++)
     {
+      TraceMessageReceive (it->second->GetCallId (), pkt, msg.GetInstanceTypeId ());
       it->second->Receive (msg);
     }
 }
 
 void
-McpttPttApp::TraceMessageReceive (uint16_t callId, const Header& msg)
+McpttPttApp::TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  NS_LOG_FUNCTION (this << callId << &msg);
-  m_rxTrace (this, callId, msg);
+  NS_LOG_FUNCTION (this << callId << pkt << headerType);
+  m_rxTrace (this, callId, pkt, headerType);
 }
 
 void
@@ -918,10 +919,10 @@ McpttPttApp::StopApplication (void)
 }
 
 void
-McpttPttApp::TraceMessageSend (uint16_t callId, const Header& msg)
+McpttPttApp::TraceMessageSend (uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  NS_LOG_FUNCTION (this << callId << &msg);
-  m_txTrace (this, callId, msg);
+  NS_LOG_FUNCTION (this << callId << pkt << headerType);
+  m_txTrace (this, callId, pkt, headerType);
 }
 
 void

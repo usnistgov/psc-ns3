@@ -143,8 +143,8 @@ uint32_t RELAY_SERVICE_CODE = 33;
  */
 struct MessagesTracer
 {
-  void RxTrace (Ptr<const Application> app, uint16_t callId, const Header& header); ///< Trace sink function
-  void TxTrace (Ptr<const Application> app, uint16_t callId, const Header& header); ///< Trace sink function
+  void RxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType); ///< Trace sink function
+  void TxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType); ///< Trace sink function
 
   uint32_t m_ueIdx; ///< UE index
   uint32_t m_ueNodeId; ///< Node ID
@@ -194,9 +194,9 @@ struct ServerCallTracer
  * application layer.
  */
 void
-MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg)
+MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
+  if (headerType == McpttMediaMsg::GetTypeId ())
     {
       // CallIDs 1 and 2 are allocated to the on-network and relay calls
       // CallID for the off network will be a randomly generated one
@@ -216,9 +216,9 @@ MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, const Head
  * application layer.
  */
 void
-MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, const Header& msg)
+MessagesTracer::TxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
+  if (headerType == McpttMediaMsg::GetTypeId ())
     {
       // CallIDs 1 and 2 are allocated to the on-network and relay calls
       // CallID for the off network will be a randomly generated one

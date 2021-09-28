@@ -233,13 +233,7 @@ protected:
    */
   void DoDispose (void);
   /**
-   * Handles the receieved call control packet.
-   * \param pkt The packet that was received.
-   * \param from The source address of the packet
-   */
-  void ReceiveCallPkt (Ptr<Packet>  pkt, Address from);
-  /**
-   * Handles the receieved floor control packet.
+   * Handles the received floor control packet.
    * \param pkt The packet that was received.
    * \param from The source address of the packet
    */

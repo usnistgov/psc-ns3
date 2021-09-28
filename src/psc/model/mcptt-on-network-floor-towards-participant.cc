@@ -195,7 +195,7 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
   Ptr<Packet> pkt = Create<Packet> ();
   pkt->AddHeader (msg);
 
-  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageSend (GetOwner ()->GetOwner ()->GetCallId (), msg);
+  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageSend (GetOwner ()->GetOwner ()->GetCallId (), pkt, msg.GetInstanceTypeId ());
 
   if (msg.IsA (McpttFloorMsg::GetTypeId ()))
     {
@@ -276,8 +276,6 @@ McpttOnNetworkFloorTowardsParticipant::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), msg);
-
   msg.Visit (*this);
 }
 
@@ -285,8 +283,6 @@ void
 McpttOnNetworkFloorTowardsParticipant::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
-
-  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), msg);
 
   msg.Visit (*this);
 }
@@ -442,6 +438,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
   if (subtype == McpttFloorMsgRequest::SUBTYPE)
     {
       McpttFloorMsgRequest reqMsg;
+      GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), pkt, reqMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (reqMsg);
       Receive (reqMsg);
     }
@@ -449,6 +446,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
            || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
       McpttFloorMsgGranted grantedMsg;
+      GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), pkt, grantedMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (grantedMsg);
       Receive (grantedMsg);
     }
@@ -456,6 +454,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
            || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
       McpttFloorMsgDeny denyMsg;
+      GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), pkt, denyMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (denyMsg);
       Receive (denyMsg);
     }
@@ -463,6 +462,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveFloorPkt (Ptr<Packet>  pkt, Addres
            || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgRelease releaseMsg;
+      GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), pkt, releaseMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (releaseMsg);
       Receive (releaseMsg);
     }
@@ -506,6 +506,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt (Ptr<Packet>  pkt, Addres
   NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttMediaMsg msg;
+  GetOwner ()->GetOwner ()->GetOwner ()->TraceMessageReceive (GetOwner ()->GetOwner ()->GetCallId (), pkt, msg.GetInstanceTypeId ());
   pkt->RemoveHeader (msg);
   Receive (msg);
 }

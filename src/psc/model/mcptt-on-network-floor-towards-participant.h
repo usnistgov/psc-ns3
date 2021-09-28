@@ -218,7 +218,7 @@ protected:
    */
   virtual void ExpiryOfT8 (void);
   /**
-   * Handles the receieved floor control packet.
+   * Handles the received floor control packet.
    * \param pkt The packet that was received.
    * \param from The source address of the packet.
    */

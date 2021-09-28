@@ -83,7 +83,9 @@ McpttTestCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
   NS_LOG_FUNCTION (this << pkt << hdr);
   NS_ASSERT_MSG (hdr.GetCallId () == GetCallId (), "Received message for wrong call ID");
   NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
-  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
+  Ptr<Packet> pktCopy = pkt->Copy ();
+  pktCopy->AddHeader (hdr);
+  GetOwner ()->TraceMessageReceive (GetCallId (), pktCopy, hdr.GetInstanceTypeId ());
   GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -97,7 +99,6 @@ McpttTestCall::Receive (const McpttCallMsg& msg)
       NS_LOG_DEBUG ("Dropping McpttCallMsg");
       return;
     }
-  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   GetCallMachine ()->Receive (msg);
 }
 
@@ -112,7 +113,6 @@ McpttTestCall::Receive (const McpttFloorMsg& msg)
       return;
     }
 
-  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   GetFloorMachine ()->Receive (msg);
 }
 
@@ -127,7 +127,6 @@ McpttTestCall::Receive (const McpttMediaMsg& msg)
       return;
     }
 
-  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   GetCallMachine ()->Receive (msg);
   GetFloorMachine ()->Receive (msg);
 }

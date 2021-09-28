@@ -241,7 +241,10 @@ void
 McpttCall::ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr, sip::SipAgent::TransactionState state)
 {
   NS_LOG_FUNCTION (this << pkt << hdr << state);
-  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
+  // SIP layer removes SIP header; add it back for tracing
+  Ptr<Packet> pktCopy = pkt->Copy ();
+  pktCopy->AddHeader (hdr);
+  GetOwner ()->TraceMessageReceive (GetCallId (), pktCopy, hdr.GetInstanceTypeId ());
   GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -256,13 +259,16 @@ void
 McpttCall::Receive (Ptr<Packet> pkt, const sip::SipHeader& hdr)
 {
   NS_LOG_FUNCTION (this << pkt);
+  // SIP layer removes SIP header; add it back for tracing
+  Ptr<Packet> pktCopy = pkt->Copy ();
+  pktCopy->AddHeader (hdr);
   if (hdr.GetCallId () != GetCallId ())
     {
       NS_LOG_DEBUG ("Discarding SIP packet for call ID " << hdr.GetCallId ());
       return;
     }
   NS_LOG_DEBUG ("Received SIP packet for call ID " << GetCallId ());
-  GetOwner ()->TraceMessageReceive (GetCallId (), hdr);
+  GetOwner ()->TraceMessageReceive (GetCallId (), pktCopy, hdr.GetInstanceTypeId ());
   GetCallMachine ()->GetObject<McpttOnNetworkCallMachineClient> ()->ReceiveCallPacket (pkt, hdr);
 }
 
@@ -271,7 +277,6 @@ McpttCall::Receive (const McpttCallMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
   callMachine->Receive (msg);
 }
@@ -281,7 +286,6 @@ McpttCall::Receive (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
   Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
   floorMachine->Receive (msg);
 }
@@ -290,8 +294,6 @@ void
 McpttCall::Receive (const McpttMediaMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
-
-  GetOwner ()->TraceMessageReceive (GetCallId (), msg);
 
   Ptr<McpttCallMachine> callMachine = GetCallMachine ();
   Ptr<McpttFloorParticipant> floorMachine = GetFloorMachine ();
@@ -339,12 +341,12 @@ McpttCall::SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipH
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
       GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (Ipv4Address::ConvertFrom (m_peerAddress), m_callPort));
-      GetOwner ()->TraceMessageSend (GetCallId (), hdr);
+      GetOwner ()->TraceMessageSend (GetCallId (), pkt, hdr.GetInstanceTypeId ());
     }
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_callPort));
-      GetOwner ()->TraceMessageSend (GetCallId (), hdr);
+      GetOwner ()->TraceMessageSend (GetCallId (), pkt, hdr.GetInstanceTypeId ());
     }
   else
     {
@@ -366,13 +368,13 @@ McpttCall::Send (const McpttCallMsg& msg)
     {
       Ipv4Address peer = Ipv4Address::ConvertFrom (m_peerAddress);
       GetCallChannel ()->SendTo (pkt, 0, InetSocketAddress (peer, m_callPort));
-      GetOwner ()->TraceMessageSend (GetCallId (), msg);
+      GetOwner ()->TraceMessageSend (GetCallId (), pkt, msg.GetInstanceTypeId ());
     }
   else if (Ipv6Address::IsMatchingType (m_peerAddress))
     {
       Ipv6Address peer = Ipv6Address::ConvertFrom (m_peerAddress);
       GetCallChannel ()->SendTo (pkt, 0, Inet6SocketAddress (peer, m_callPort));
-      GetOwner ()->TraceMessageSend (GetCallId (), msg);
+      GetOwner ()->TraceMessageSend (GetCallId (), pkt, msg.GetInstanceTypeId ());
     }
 }
 
@@ -381,13 +383,12 @@ McpttCall::Send (const McpttFloorMsg& msg)
 {
   NS_LOG_FUNCTION (this << &msg);
 
-  GetOwner ()->TraceMessageSend (GetCallId (), msg);
-
   Ptr<Packet> pkt = Create<Packet> ();
   Ptr<McpttChannel> floorChannel = GetFloorChannel ();
 
   pkt->AddHeader (msg);
 
+  GetOwner ()->TraceMessageSend (GetCallId (), pkt, msg.GetInstanceTypeId ());
   floorChannel->Send (pkt);
 }
 
@@ -403,9 +404,8 @@ McpttCall::Send (const McpttMediaMsg& msg)
   McpttMediaMsg txMsg (msg);
 
   floorMachine->MediaReady (txMsg);
-  GetOwner ()->TraceMessageSend (GetCallId (), msg);
-
   pkt->AddHeader (txMsg);
+  GetOwner ()->TraceMessageSend (GetCallId (), pkt, msg.GetInstanceTypeId ());
 
   mediaChannel->Send (pkt);
 }
@@ -461,146 +461,6 @@ McpttCall::DoDispose (void)
 }
 
 void
-McpttCall::ReceiveCallPkt (Ptr<Packet> pkt, Address from)
-{
-  NS_LOG_FUNCTION (this << pkt << from);
-
-  NS_LOG_LOGIC ("Call received " << pkt->GetSize () << " byte(s).");
-
-  NS_LOG_LOGIC ("Handling off-network call control packet");
-  McpttCallMsg temp;
-  pkt->PeekHeader (temp);
-
-  McpttCallMsgFieldMsgType msgType = temp.GetMsgType ();
-  uint8_t code = msgType.GetType ();
-
-  if (code == McpttCallMsgGrpProbe::CODE)
-    {
-      McpttCallMsgGrpProbe probeMsg;
-      pkt->RemoveHeader (probeMsg);
-      Receive (probeMsg);
-    }
-  else if (code == McpttCallMsgGrpAnnoun::CODE)
-    {
-      McpttCallMsgGrpAnnoun grpAnnounMsg;
-      pkt->RemoveHeader (grpAnnounMsg);
-      Receive (grpAnnounMsg);
-    }
-  else if (code == McpttCallMsgGrpAccept::CODE)
-    {
-      McpttCallMsgGrpAccept grpAcceptMsg;
-      pkt->RemoveHeader (grpAcceptMsg);
-      Receive (grpAcceptMsg);
-    }
-  else if (code == McpttCallMsgGrpImmPerilEnd::CODE)
-    {
-      McpttCallMsgGrpImmPerilEnd grpImmPerilEndMsg;
-      pkt->RemoveHeader (grpImmPerilEndMsg);
-      Receive (grpImmPerilEndMsg);
-    }
-  else if (code == McpttCallMsgGrpEmergEnd::CODE)
-    {
-      McpttCallMsgGrpEmergEnd grpEmergEndMsg;
-      pkt->RemoveHeader (grpEmergEndMsg);
-      Receive (grpEmergEndMsg);
-    }
-  else if (code == McpttCallMsgGrpEmergAlert::CODE)
-    {
-      McpttCallMsgGrpEmergAlert grpEmergAlertMsg;
-      pkt->RemoveHeader (grpEmergAlertMsg);
-      Receive (grpEmergAlertMsg);
-    }
-  else if (code == McpttCallMsgGrpEmergAlertAck::CODE)
-    {
-      McpttCallMsgGrpEmergAlertAck grpEmergAlertAckMsg;
-      pkt->RemoveHeader (grpEmergAlertAckMsg);
-      Receive (grpEmergAlertAckMsg);
-    }
-  else if (code == McpttCallMsgGrpEmergAlertCancel::CODE)
-    {
-      McpttCallMsgGrpEmergAlertCancel grpEmergAlertCancelMsg;
-      pkt->RemoveHeader (grpEmergAlertCancelMsg);
-      Receive (grpEmergAlertCancelMsg);
-    }
-  else if (code == McpttCallMsgGrpEmergAlertCancelAck::CODE)
-    {
-      McpttCallMsgGrpEmergAlertCancelAck emergAlertCancelAckMsg;
-      pkt->RemoveHeader (emergAlertCancelAckMsg);
-      Receive (emergAlertCancelAckMsg);
-    }
-  else if (code == McpttCallMsgGrpBroadcast::CODE)
-    {
-      McpttCallMsgGrpBroadcast grpBroadcastMsg;
-      pkt->RemoveHeader (grpBroadcastMsg);
-      Receive (grpBroadcastMsg);
-    }
-  else if (code == McpttCallMsgGrpBroadcastEnd::CODE)
-    {
-      McpttCallMsgGrpBroadcastEnd grpBroadcastEndMsg;
-      pkt->RemoveHeader (grpBroadcastEndMsg);
-      Receive (grpBroadcastEndMsg);
-    }
-  else if (code == McpttCallMsgPrivateSetupReq::CODE)
-    {
-      McpttCallMsgPrivateSetupReq privateSetupReqMsg;
-      pkt->RemoveHeader (privateSetupReqMsg);
-      Receive (privateSetupReqMsg);
-    }
-  else if (code == McpttCallMsgPrivateRinging::CODE)
-    {
-      McpttCallMsgPrivateRinging privateRingingMsg;
-      pkt->RemoveHeader (privateRingingMsg);
-      Receive (privateRingingMsg);
-    }
-  else if (code == McpttCallMsgPrivateAccept::CODE)
-    {
-      McpttCallMsgPrivateAccept privateAcceptMsg;
-      pkt->RemoveHeader (privateAcceptMsg);
-      Receive (privateAcceptMsg);
-    }
-  else if (code == McpttCallMsgPrivateReject::CODE)
-    {
-      McpttCallMsgPrivateReject privateRejectMsg;
-      pkt->RemoveHeader (privateRejectMsg);
-      Receive (privateRejectMsg);
-    }
-  else if (code == McpttCallMsgPrivateRelease::CODE)
-    {
-      McpttCallMsgPrivateRelease privateReleaseMsg;
-      pkt->RemoveHeader (privateReleaseMsg);
-      Receive (privateReleaseMsg);
-    }
-  else if (code == McpttCallMsgPrivateReleaseAck::CODE)
-    {
-      McpttCallMsgPrivateReleaseAck privateReleaseAckMsg;
-      pkt->RemoveHeader (privateReleaseAckMsg);
-      Receive (privateReleaseAckMsg);
-    }
-  else if (code == McpttCallMsgPrivateAcceptAck::CODE)
-    {
-      McpttCallMsgPrivateAcceptAck privateAcceptAckMsg;
-      pkt->RemoveHeader (privateAcceptAckMsg);
-      Receive (privateAcceptAckMsg);
-    }
-  else if (code == McpttCallMsgPrivateEmergCancel::CODE)
-    {
-      McpttCallMsgPrivateEmergCancel privateEmergCancelMsg;
-      pkt->RemoveHeader (privateEmergCancelMsg);
-      Receive (privateEmergCancelMsg);
-    }
-  else if (code == McpttCallMsgPrivateEmergCancelAck::CODE)
-    {
-      McpttCallMsgPrivateEmergCancelAck privateEmergCancelAckMsg;
-      pkt->RemoveHeader (privateEmergCancelAckMsg);
-      Receive (privateEmergCancelAckMsg);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Could not resolve message code = " << (uint32_t)code << ".");
-    }
-}
-
-void
 McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
 {
   NS_LOG_FUNCTION (this << &pkt << from);
@@ -613,6 +473,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
   if (subtype == McpttFloorMsgRequest::SUBTYPE)
     {
       McpttFloorMsgRequest reqMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, reqMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (reqMsg);
       Receive (reqMsg);
     }
@@ -620,6 +481,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
            || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
       McpttFloorMsgGranted grantedMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, grantedMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (grantedMsg);
       Receive (grantedMsg);
     }
@@ -627,6 +489,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
            || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
       McpttFloorMsgDeny denyMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, denyMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (denyMsg);
       Receive (denyMsg);
     }
@@ -634,6 +497,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
            || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
       McpttFloorMsgRelease releaseMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, releaseMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (releaseMsg);
       Receive (releaseMsg);
     }
@@ -641,6 +505,7 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
            || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
     {
       McpttFloorMsgIdle idleMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, idleMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (idleMsg);
       Receive (idleMsg);
     }
@@ -648,18 +513,21 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
            || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
       McpttFloorMsgTaken takenMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, takenMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (takenMsg);
       Receive (takenMsg);
     }
   else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
     {
       McpttFloorMsgRevoke revokeMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, revokeMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (revokeMsg);
       Receive (revokeMsg);
     }
   else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
     {
       McpttFloorMsgQueuePositionRequest queuePositionRequestMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, queuePositionRequestMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (queuePositionRequestMsg);
       Receive (queuePositionRequestMsg);
     }
@@ -667,12 +535,14 @@ McpttCall::ReceiveFloorPkt (Ptr<Packet>  pkt, Address from)
            || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
       McpttFloorMsgQueuePositionInfo queueInfoMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, queueInfoMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (queueInfoMsg);
       Receive (queueInfoMsg);
     }
   else if (subtype == McpttFloorMsgAck::SUBTYPE)
     {
       McpttFloorMsgAck ackMsg;
+      GetOwner ()->TraceMessageReceive (GetCallId (), pkt, ackMsg.GetInstanceTypeId ());
       pkt->RemoveHeader (ackMsg);
       Receive (ackMsg);
     }
@@ -688,6 +558,7 @@ McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
   NS_LOG_FUNCTION (this << &pkt << from);
 
   McpttMediaMsg msg;
+  GetOwner ()->TraceMessageReceive (GetCallId (), pkt, msg.GetInstanceTypeId ());
 
   pkt->RemoveHeader (msg);
 
