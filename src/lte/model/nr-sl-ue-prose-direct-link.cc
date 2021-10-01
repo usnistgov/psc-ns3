@@ -170,14 +170,17 @@ NrSlUeProseDirectLink::NrSlUeProseDirectLink ()
 
 }
 
-NrSlUeProseDirectLink::NrSlUeProseDirectLink (uint32_t selfL2Id, uint32_t peerL2Id, bool isInitiating, bool ideal, Ipv4Address selfIp)
+NrSlUeProseDirectLink::NrSlUeProseDirectLink (uint32_t selfL2Id, uint32_t peerL2Id,
+                                              bool isInitiating, bool isRelayConn,
+                                              bool isIdeal, Ipv4Address selfIp)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << selfL2Id << peerL2Id << isInitiating << isRelayConn << isIdeal << selfIp);
   m_nrSlUeProseDirLnkSapProvider = new MemberNrSlUeProseDirLnkSapProvider<NrSlUeProseDirectLink> (this);
   m_selfL2Id = selfL2Id;
   m_peerL2Id = peerL2Id;
   m_isInitiating = isInitiating;
-  m_ideal = ideal;
+  m_isRelayConn = isRelayConn;
+  m_isIdeal = isIdeal;
   m_state = INIT;
   //Establishment parameters
   m_pdlEsParam.t5080 = new Timer ();
@@ -227,7 +230,7 @@ void
 NrSlUeProseDirectLink::SendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId)
 {
   NS_LOG_FUNCTION (this);
-  if (m_ideal)
+  if (m_isIdeal)
     {
       //Use m_peerNrSlUeProseDirLnkSapProvider
     }
@@ -292,7 +295,25 @@ NrSlUeProseDirectLink::SwitchToState (DirectLinkState newState)
         break;
       case NrSlUeProseDirectLink::ESTABLISHED:
         info.ipInfo.peerIpv4Addr = m_ipInfo.peerIpv4Addr;
+        info.ipInfo.selfIpv4Addr = m_ipInfo.selfIpv4Addr;
 
+        if (m_isRelayConn)
+          {
+            NS_LOG_INFO ("Relay");
+
+            info.relayInfo.isRelayConn = true;
+            if (m_isInitiating)
+              {
+                NS_LOG_INFO ("-> Role: Remote UE");
+                info.relayInfo.role = NrSlUeProseDirLnkSapUser::RemoteUe;
+              }
+            else
+              {
+                NS_LOG_INFO ("-> Role: Relay UE");
+                info.relayInfo.role = NrSlUeProseDirLnkSapUser::RelayUe;
+              }
+          }
+        break;
       case NrSlUeProseDirectLink::RELEASING:
       case NrSlUeProseDirectLink::RELEASED:
         break;
@@ -317,8 +338,9 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
   NS_LOG_DEBUG ("Message content: " << oss.str ());
   oss.str ("");
 
-  bool accept;
-  uint8_t cause;
+  bool accept = false;
+  uint8_t cause = 0;
+
 
   switch (m_state)
     {
@@ -332,16 +354,36 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
         //Security procedures are not currently implemented.
         //Security procedures are assumed to be completed successfully.
 
-        // TODO Verify Preconditions to accept direct link connection
-
-        accept = true;
-        cause = 0;
+        if (m_isRelayConn && pdlEsRqHeader.GetRelayServiceCode () != 0)
+          {
+            uint32_t relaySC = pdlEsRqHeader.GetRelayServiceCode ();
+            NS_LOG_INFO (" Direct Link connection for Relay - DirectLinkEstablishmentRequest has Relay Service Code: " << relaySC);
+            if (m_isRelayConn && !m_isInitiating            //1. This UE is a Relay UE
+                && relaySC == 1 /*HardCoded ATM TODO */     //2. It provides the service pointed by the relay service code
+                /*Not implemented yet TODO */               //3. It can accept a new connection
+                )
+              {
+                NS_LOG_INFO (" UE does provide this service and can accept the connection");
+                accept = true;
+              }
+            else
+              {
+                NS_LOG_INFO (" UE does not provide this service or cannot accept this service");
+                cause = 1; //TODO: Implement the cause parameter configuration
+              }
+          }
+        else
+          {
+            NS_LOG_INFO (" Direct Link connection for Unicast");
+            // TODO Verify Preconditions to accept direct link connection for unicast
+            // For the moment we always accept
+            accept = true;
+          }
 
         if (!accept)
           {
             //Preconditions no satisfied. Reject.
             NS_LOG_INFO ("Direct Link cannot be established");
-
 
             //Send reject message to the peer UE
             SendDirectLinkEstablishmentReject (cause);
@@ -353,8 +395,6 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
           {
             //Preconditions satisfied. Accept.
             NS_LOG_INFO ("Direct Link can be established");
-
-
 
             //Retrieve tag with Ip of the peer UE and store it.
             //TODO: This is a shortcut to speed development and may be replaced
@@ -568,6 +608,13 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentRequest ()
 
   //Fill the request message with the appropriated information
   //TODO
+
+  if (m_isRelayConn && m_isInitiating)
+    {
+      NS_LOG_INFO ("Remote UE sending DirectLinkEstablishmentRequest");
+      uint32_t relaySC = 1; //HardCoded ATM TODO Obtain Relay Service Code from the appropriate configuration
+      pdlEsRqHeader.SetRelayServiceCode (relaySC);
+    }
 
   //Store it for retransmission
   m_pdlEsParam.rqMsgCopy = pdlEsRqHeader;

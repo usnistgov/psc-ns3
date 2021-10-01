@@ -361,7 +361,15 @@ void
 EpcUeNas::DoRecvData (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
-  m_forwardUpCallback (packet);
+
+  if (m_u2nRelayConfig.relaying)
+    {
+      ClassifyRecvPacketForU2nRelay (packet);
+    }
+  else
+    {
+      m_forwardUpCallback (packet);
+    }
 }
 
 void 
@@ -482,6 +490,156 @@ EpcUeNas::DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
 
   m_pendingSlBearersList.push_back (tft);
   m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+
+}
+
+void
+EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                      enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                      NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                      uint8_t relayDrbId)
+{
+  NS_LOG_FUNCTION (this << peerL2Id << role << ipInfo.peerIpv4Addr << +relayDrbId);
+  uint16_t nReconfigPfs = 0;
+
+  switch (role)
+    {
+      case NrSlUeProseDirLnkSapUser::RemoteUe:
+        NS_LOG_INFO ("Role: Remote UE. Peer UE (Relay UE) L2ID: " << peerL2Id);
+
+        //For each active UL bearer
+        //(The active UL bearers info is stored in m_bearersToBeActivatedListForReconnection)
+        for (std::list<BearerToBeActivated>::iterator itBe = m_bearersToBeActivatedListForReconnection.begin ();
+             itBe != m_bearersToBeActivatedListForReconnection.end ();
+             itBe++)
+          {
+            std::list<EpcTft::PacketFilter> pfList = itBe->tft->GetPacketFilters ();
+            for (std::list<EpcTft::PacketFilter>::iterator itPf = pfList.begin (); itPf != pfList.end (); ++itPf)
+              {
+                //Currently, we can only reconfigure UL DRBs with configured remoteAddress
+                //in the packet filter (as LteSlTft do the match by destination address)
+                //It is important to configure this in the scenario
+                if (itPf->remoteAddress.IsInitialized ())
+                  {
+                    nReconfigPfs++;
+                    if (nReconfigPfs > 1)
+                      {
+                        NS_FATAL_ERROR ("Currently supporting only one SL data radio bearer per Remote UE. "
+                                        "Hence only one bearer/tft/packet filter/remoteAddress should be "
+                                        "configured in the scenario for the Remote UEs.");
+                      }
+
+                    //Create a SL bearer for this traffic
+                    Ptr<LteSlTft> slTft;
+                    slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
+                                              LteSlTft::CommType::Unicast,
+                                              itPf->remoteAddress, //Packets to this address
+                                              peerL2Id); //Go towards the Relay UE
+                    DoActivateSvcNrSlDataRadioBearer (slTft);
+
+                    NS_LOG_INFO ("Reconfigured UL data bearer with remoteAddress: " << itPf->remoteAddress);
+
+                  }
+              }
+          }
+        if (nReconfigPfs == 0)
+          {
+            NS_FATAL_ERROR ("No bearer/tft/packet filter was reconfigured. Check Remote UE UL data bearer configuration. "
+                            "Did you forget to configure the remoteAddress on the UL EpcTft::PacketFilter?");
+          }
+        break;
+      case NrSlUeProseDirLnkSapUser::RelayUe:
+        NS_LOG_INFO ("Role: Relay UE. Peer UE (Remote UE) L2ID: " << peerL2Id);
+
+        //Configure U2N Relay values used for packet classification upon reception
+        if (m_u2nRelayConfig.relaying == false)
+          {
+            //First time configuration
+            m_u2nRelayConfig.relaying = true;
+            m_u2nRelayConfig.selfIpv4Addr = ipInfo.selfIpv4Addr;
+            m_u2nRelayConfig.relayDrbId = relayDrbId;
+          }
+
+        //Ask RRC to create and activate a SL data bearer to transmit to the Remote UE
+        {
+          Ptr<LteSlTft> slTft;
+          slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
+                                    LteSlTft::CommType::Unicast,
+                                    ipInfo.peerIpv4Addr,
+                                    peerL2Id);
+          DoActivateSvcNrSlDataRadioBearer (slTft);
+        }
+        break;
+      default:
+        NS_FATAL_ERROR ("Invalid role " << role);
+    }
+}
+
+void
+EpcUeNas::ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet)
+{
+  NS_LOG_FUNCTION (this);
+
+  bool classified = false;
+  Ptr<Packet> pCopy = packet->Copy ();
+  Ipv4Header ipv4Header;
+  pCopy->RemoveHeader (ipv4Header);
+
+  NS_LOG_DEBUG ("My IPv4 address: " << m_u2nRelayConfig.selfIpv4Addr <<
+                ", Packet IPv4 destination address : " << ipv4Header.GetDestination () <<
+                " Packet IPv4 source address: " << ipv4Header.GetSource ());
+
+  //Check for SL involvement - iterate over the active SL data radio bearers
+  for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+       it != m_slBearersActivatedList.end (); it++)
+    {
+      if ((*it)->Matches (ipv4Header.GetDestination ()))
+        {
+          //U2N relay case - Downward packet - From network to the Remote UE - Send on the SL
+          NS_LOG_INFO ("Relaying packet to SL");
+          m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
+          return;
+        }
+      if ((*it)->Matches (ipv4Header.GetSource ()))
+        {
+          if (ipv4Header.GetDestination () != m_u2nRelayConfig.selfIpv4Addr)
+            {
+              //U2N relay case - Upward packet -> From the Remote UE to the network - Send on the UL
+              if (m_u2nRelayConfig.relayDrbId != 0)
+                {
+                  NS_LOG_INFO ("Relaying packet to UL");
+                  m_asSapProvider->SendData (packet, m_u2nRelayConfig.relayDrbId);
+                  return;
+                }
+              else
+                {
+                  NS_FATAL_ERROR ("UL data bearer ID of bearer used for U2N relay has not been configured");
+                }
+            }
+          else
+            {
+              //SL Unicast only case - Packet directed to this UE - Pass to upper layer
+              NS_LOG_INFO ("Passing packet to upper layer");
+              m_forwardUpCallback (packet);
+              return;
+            }
+        }
+    }
+
+
+  //At this point SL is not involved, should be DL
+  if (ipv4Header.GetDestination () == m_u2nRelayConfig.selfIpv4Addr)
+    {
+      //DL case - Packet directed to this UE - Pass to upper layer
+      NS_LOG_INFO ("Passing packet to upper layer");
+      m_forwardUpCallback (packet);
+      return;
+    }
+
+  if (!classified)
+    {
+      NS_FATAL_ERROR ("Unable to classify packet for U2N relay. Missing a case to handle? ");
+    }
 
 }
 

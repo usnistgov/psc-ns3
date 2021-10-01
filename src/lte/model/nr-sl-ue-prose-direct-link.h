@@ -115,10 +115,11 @@ public:
    * \param selfL2Id layer 2 ID of this UE
    * \param peerL2Id layer 2 ID of the peer UE
    * \param isInitiating true if the UE is the one initiating the direct link establishment
-   * \param ideal true if the protocol is ideal (no exchange of messages over the SL)
+   * \param isRelayConn true if the direct link is part of a relay connection
+   * \param isIdeal true if the protocol is ideal (no exchange of messages over the SL)
    * \param selfIp the Ipv4 address this UE is using
    */
-  NrSlUeProseDirectLink (uint32_t selfL2Id, uint32_t peerL2Id, bool isInitiating, bool ideal, Ipv4Address selfIp);
+  NrSlUeProseDirectLink (uint32_t selfL2Id, uint32_t peerL2Id, bool isInitiating, bool isRelayConn, bool isIdeal, Ipv4Address selfIp);
 
   /**
    * \brief Get the pointer of the ProSe Direct Link SAP provider interface
@@ -169,13 +170,14 @@ public:
   //IDs
   uint32_t m_selfL2Id; ///< L2Id of the UE where this direct link object is installed
   uint32_t m_peerL2Id; ///< L2Id of the peer UE for this direct link
-  uint32_t m_Pc5LinkId; ///< Not used for the moment
+  //uint32_t m_Pc5LinkId; ///< Not used for the moment
 
   //Role
-  bool m_isInitiating;
+  bool m_isInitiating; ///< Indicates if the UE is the initiating UE of the direct link
+  bool m_isRelayConn;  ///< Indicates if the direct link is part of a relay connection
 
   //Type of link
-  bool m_ideal;
+  bool m_isIdeal;
 
   //State
   DirectLinkState m_state;

@@ -26,6 +26,7 @@
 #include <ns3/lte-as-sap.h>
 #include <ns3/epc-tft-classifier.h>
 #include <ns3/nr-sl-ue-svc-nas-sap.h>
+#include <ns3/nr-sl-ue-prose-dir-lnk-sap.h>
 
 namespace ns3 {
 
@@ -314,6 +315,42 @@ private:
    * \param tft the SL TFT identifying the traffic that will go on this bearer
    */
   void DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
+  /**
+   * Implementation of the method called by the service layer (e.g., ProSe
+   * layer) to instruct the NAS to (re)configure the data bearers (UL and SL
+   * where it applies) to have the data packets flowing in the appropriate path
+   * after the UEs establish a connection for UE-to-Network (U2N) relay.
+   *
+   * \param peerL2Id the layer 2 ID of the peer UE
+   * \param role the role of this UE in the U2N link (remote UE or relay UE)
+   * \param ipInfo the IP configuration associated to the link
+   * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   */
+  void DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                   enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                   NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                   uint8_t relayDrbId);
+  /**
+   * \brief Function that moves the received packet through the correct path
+   *        when the UE is a UE-to-Network (U2N) relay UE
+   *
+   * \param packet the received packet
+   */
+  void ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet);
+
+  /**
+   * Parameters related to the UE-to-Network relay configuration used in this
+   * layer
+   */
+  struct U2nRelayNasConfig
+  {
+    Ipv4Address selfIpv4Addr;
+    bool relaying = false;
+    uint8_t relayDrbId = 0;
+
+  };
+
+  U2nRelayNasConfig m_u2nRelayConfig;  ///< UE-to-Network Relay parameters
 
 };
 

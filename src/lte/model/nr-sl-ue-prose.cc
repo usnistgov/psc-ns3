@@ -51,6 +51,7 @@
 #include <algorithm>
 
 #include <ns3/nr-sl-pc5-signalling-header.h>
+#include <ns3/nr-point-to-point-epc-helper.h>
 
 namespace ns3 {
 
@@ -95,6 +96,8 @@ NrSlUeProse::NrSlUeProse ()
   m_nrSlUeSvcRrcSapUser = new MemberNrSlUeSvcRrcSapUser<NrSlUeProse> (this);
   m_nrSlUeSvcNasSapUser = new MemberNrSlUeSvcNasSapUser<NrSlUeProse> (this);
   m_nrSlUeProseDirLnkSapUser = new MemberNrSlUeProseDirLnkSapUser<NrSlUeProse> (this);
+  m_relayDrbId = 0; //TODO: is ID = 0 a valid data radio bearer ID?
+  m_imsi = 0;
 }
 
 
@@ -174,11 +177,11 @@ void NrSlUeProse::ConfigureUnicast ()
 
 
 void
-NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id, bool isInitiating)
+NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id, bool isInitiating, bool isRelayConn)
 {
-  NS_LOG_FUNCTION (this << selfL2Id << selfIp << peerL2Id << isInitiating);
+  NS_LOG_FUNCTION (this << selfL2Id << selfIp << peerL2Id << isInitiating << isRelayConn);
 
-  bool ideal = false;
+  bool isIdeal = false;
 
   //TODO: Verifications
   //Is it possible to create this link?
@@ -190,7 +193,7 @@ NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uin
   Ptr<NrSlUeProseDirLinkContext> context = CreateObject <NrSlUeProseDirLinkContext> ();
 
   //Create Direct Link instance
-  Ptr<NrSlUeProseDirectLink> link = CreateObject <NrSlUeProseDirectLink> (selfL2Id, peerL2Id, isInitiating, ideal, selfIp);
+  Ptr<NrSlUeProseDirectLink> link = CreateObject <NrSlUeProseDirectLink> (selfL2Id, peerL2Id, isInitiating, isRelayConn, isIdeal, selfIp);
 
   //Connect SAPs
   link->SetNrSlUeProseDirLnkSapUser (GetNrSlUeProseDirLnkSapUser ());
@@ -310,8 +313,21 @@ NrSlUeProse::DoNotifyChangeOfDirectLinkState (uint32_t peerL2Id, NrSlUeProseDirL
 
         if (!it->second->m_hasActiveSlDrb && !it->second->m_hasPendingSlDrb)
           {
-            NS_LOG_INFO ("Instructing activation of SL-DRB with peer Ipv4 address " << info.ipInfo.peerIpv4Addr);
-            ActivateDirectLinkDataRadioBearer (peerL2Id, info.ipInfo);
+
+            if (info.relayInfo.isRelayConn)
+              {
+                NS_LOG_INFO ("info.ipInfo.selfIpv4Addr: " << info.ipInfo.selfIpv4Addr);
+
+                //Depending on the UE Role, we need to tell the NAS to (re)configure the data bearers
+                //to have the data packets flowing in the appropriate path
+                ConfigureDataRadioBearersForU2NRelay (peerL2Id, info.relayInfo.role, info.ipInfo);
+              }
+            else
+              {
+                NS_LOG_INFO ("Instructing activation of SL-DRB with peer Ipv4 address " << info.ipInfo.peerIpv4Addr);
+                ActivateDirectLinkDataRadioBearer (peerL2Id, info.ipInfo);
+              }
+
           }
 
         break;
@@ -351,6 +367,48 @@ NrSlUeProse::ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDi
     }
 }
 
+void
+NrSlUeProse::ConfigureDataRadioBearersForU2NRelay (uint32_t peerL2Id,
+                                                   enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                   NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo)
+{
+  NS_LOG_FUNCTION (this << peerL2Id << role << ipInfo.peerIpv4Addr);
 
+  if (role == NrSlUeProseDirLnkSapUser::RelayUe)
+    {
+      //Tell the EPC helper to configure the EpcPgwApplication to route the packets
+      //directed to the remote UE towards the relay UE
+      m_epcHelper->AddRemoteUe (m_imsi, ipInfo.peerIpv4Addr);
+    }
+
+  //Tell the NAS to (re)configure the UL and SL data bearers to have the data packets
+  //flowing in the appropriate path
+  m_nrSlUeSvcNasSapProvider->ConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, m_relayDrbId);
+
+}
+
+void
+NrSlUeProse::SetU2nRelayDrbId (uint8_t drbId)
+{
+  NS_LOG_FUNCTION (this << drbId);
+  m_relayDrbId = drbId;
+
+}
+
+void
+NrSlUeProse::SetImsi (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this << imsi);
+  m_imsi = imsi;
+
+}
+
+void
+NrSlUeProse::SetEpcHelper (const Ptr<NrPointToPointEpcHelper> &epcHelper)
+{
+  NS_LOG_FUNCTION (this);
+  m_epcHelper = epcHelper;
+
+}
 
 } // namespace ns3

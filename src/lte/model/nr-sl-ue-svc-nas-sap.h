@@ -37,6 +37,7 @@
 #define NR_SL_UE_SVC_NAS_SAP_H
 
 #include <ns3/lte-sl-tft.h>
+#include <ns3/nr-sl-ue-prose-dir-lnk-sap.h>
 
 namespace ns3 {
 
@@ -94,6 +95,20 @@ public:
    *            data radio bearer to be activated
    */
   virtual void ActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft) = 0;
+  /**
+   * Instruct the NAS to (re)configure the data bearers (UL and SL where it
+   * applies) to have the data packets flowing in the appropriate path after
+   * the UEs establish a connection for UE-to-Network (U2N) relay.
+   *
+   * \param peerL2Id the layer 2 ID of the peer UE
+   * \param role the role of this UE in the U2N link (remote UE or relay UE)
+   * \param ipInfo the IP configuration associated to the link
+   * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   */
+  virtual void ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                         enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                         NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                         uint8_t relayDrbId) = 0;
 };
 
 /**
@@ -154,6 +169,10 @@ public:
 
   // inherited from NrSlUeSvcNasSapProvider
   virtual void ActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
+  virtual void ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                         enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                         NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                         uint8_t relayDrbId);
 
 private:
   MemberNrSlUeSvcNasSapProvider ();
@@ -174,6 +193,16 @@ void
 MemberNrSlUeSvcNasSapProvider<C>::ActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
 {
   m_owner->DoActivateSvcNrSlDataRadioBearer (tft);
+}
+
+template <class C>
+void
+MemberNrSlUeSvcNasSapProvider<C>::ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                                            enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                                            NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                                            uint8_t relayDrbId)
+{
+  m_owner->DoConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, relayDrbId);
 }
 
 }

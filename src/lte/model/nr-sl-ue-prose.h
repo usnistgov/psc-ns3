@@ -46,6 +46,9 @@
 
 namespace ns3 {
 
+class NrPointToPointEpcHelper;
+
+
 /**
  * Store information of the active direct link instance
  * * \ingroup lte
@@ -153,8 +156,10 @@ public:
    * \param peerL2Id the layer 2 UD of the peer UE
    * \param isInitiating flag indicating if the UE is initiating the procedure (true)
    *                     or adding the link as result of a request by the peer UE (false)
+   * \param isRelayConn flag indicating if the direct link is for a relay connection (true)
+   *
    */
-  void AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id, bool isInitiating);
+  void AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id, bool isInitiating, bool isRelayConn);
 
 
   /**
@@ -168,6 +173,25 @@ public:
    * Bit set to 1 means the SL-SRB of the corresponding LcId is active
    */
   typedef std::unordered_map <uint32_t, std::bitset<4> > NrSlSingalingRadioBearersPerPeerL2Id;
+
+  /**
+   * \brief Set the UL data radio bearer ID to be used for L3 UE-to-Network relay
+   *
+   * \param drbId the data radio bearer ID
+   */
+  void SetU2nRelayDrbId (uint8_t drbId);
+  /**
+   * \brief Set the IMSI used by the UE
+   *
+   * \param imsi the IMSI of the UE
+   */
+  void SetImsi (uint64_t imsi);
+  /**
+   * \brief Set EPC helper
+   *
+   * \param epcHelper Ptr of type NrPointToPointEpcHelper
+   */
+  void SetEpcHelper (const Ptr<NrPointToPointEpcHelper> &epcHelper);
 
 private:
   //NrSlUeSvcRrcSapUser methods
@@ -192,6 +216,13 @@ private:
   NrSlSingalingRadioBearersPerPeerL2Id m_activeSlSrbs;
 
   void ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
+  void ConfigureDataRadioBearersForU2NRelay (uint32_t peerL2Id, enum NrSlUeProseDirLnkSapUser::U2nRole role, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
+
+  uint8_t m_relayDrbId; //!< the UL data radio bearer ID to be used for L3 UE-to-Network relay
+  uint64_t m_imsi;  //!< the IMSI used by the UE
+
+  Ptr<NrPointToPointEpcHelper> m_epcHelper; //!< pointer to the EPC helper
+
 
 };//end of NrSlUeProse class definition
 

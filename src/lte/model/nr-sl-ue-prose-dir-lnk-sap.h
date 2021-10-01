@@ -71,6 +71,24 @@ public:
     Ipv4Address peerIpv4Addr;
     Ipv6Address peerIpv6Addr;
   };
+  /**
+   * The UE-to-Network relay role of the UE
+   */
+  enum U2nRole
+  {
+    RemoteUe = 0,
+    RelayUe
+  };
+  /**
+    * Structure to store the UE-to-Network Relay configuration of the UE if
+    * the direct link is part of a relay connection
+    */
+  struct DirectLinkRelayInfo
+  {
+    bool isRelayConn = false;
+    U2nRole role;
+
+  };
 
   /**
    * Structure to exchange relevant information during the change of state
@@ -81,6 +99,7 @@ public:
     uint16_t newStateEnum; ///< new state
     std::string newStateStr; ///< new state
     DirectLinkIpInfo ipInfo; ///< IP addresses of the link
+    DirectLinkRelayInfo relayInfo; ///< UE-to-Network relay configuration
   };
 
   //Methods
