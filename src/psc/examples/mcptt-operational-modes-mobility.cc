@@ -251,7 +251,7 @@ MessagesTracer::RxTrace (Ptr<const Application> app, uint16_t callId, Ptr<const 
 
 #ifdef HAS_NETSIMULYZER
       McpttMediaMsg msg;
-      pkt->PeekHeader (pkt);
+      pkt->PeekHeader (msg);
       if (m_mediaDelaySeries != nullptr)
         {
           Time timestamp = MicroSeconds (msg.GetHeader ().GetTimestamp () * 10);
