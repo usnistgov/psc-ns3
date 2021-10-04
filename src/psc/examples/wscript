@@ -16,6 +16,10 @@ def build(bld):
                                  ['psc'])
     obj.source = 'example-intel-http.cc'
     
+    obj = bld.create_ns3_program('example-psc-application',
+                                 ['psc'])
+    obj.source = 'example-psc-application.cc'
+
     obj = bld.create_ns3_program('camad-2019-communication',
                                  ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
     obj.source = [
@@ -35,6 +39,22 @@ def build(bld):
     obj.source = [
         'camad-2019/camad-2019-discovery.cc',
         'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]
+
+    psc_schoolshooting_modules = ['psc', 'netanim']
+    if 'HAS_NETSIMULYZER' in bld.env:
+        psc_schoolshooting_modules.append('netsimulyzer')
+
+    obj = bld.create_ns3_program('psc-schoolshooting',
+                                 psc_schoolshooting_modules)
+    obj.source = [
+        'schoolshooting/psc-schoolshooting.cc',
+        'schoolshooting/schoolshooting-definition-helper.cc',
+        'schoolshooting/schoolshooting-lte-helper.cc',
+        'schoolshooting/schoolshooting-network-technology-helper.cc',
+        'schoolshooting/schoolshooting-application-helper.cc',
+        'schoolshooting/schoolshooting-application-trace-helper.cc',
+        'schoolshooting/schoolshooting-lte-vis-helper.cc',
     ]
 
     obj = bld.create_ns3_program('example-video-streaming',

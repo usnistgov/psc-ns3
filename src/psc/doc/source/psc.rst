@@ -18,4 +18,6 @@ Public Safety Communications
    uav-mobility-energy
    intel-http
    video-models
+   psc-application
+   psc-scenario
    psc-references

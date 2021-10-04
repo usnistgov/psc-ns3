@@ -36,6 +36,8 @@ The ``psc`` module also includes:
 3) an energy consumption model for flying a (single/multi)rotor unmanned aerial vehicle (UAV).
 4) a new HTTP application.  
 5) a video streaming model.
+6) a configurable generic client/server application
+7) a framework to develop incident scenarios and a detailed large scale example
 
 There is no support for legacy public safety communications such as
 land mobile radio system (LMRS).  While LTE sidelink supports both
@@ -47,8 +49,9 @@ Acknowledgments
 
 Public safety communications features are based on development led by the
 Wireless Networks Division of the U.S. National Institute of Standards
-and Technology (NIST), described in publications ([NIST2016]_, [NIST2017]_, and [NIST2019]_).
+and Technology (NIST), described in publications ([NIST2016]_, [NIST2017]_, [NIST2019]_, and [NIST2021]_).
 Users of the D2D features of |ns3| are requested to cite [NIST2017]_
+in academic publications based on these models. Users of the MCPTTfeatures of |ns3| are requested to cite [NIST2021]_
 in academic publications based on these models. 
 
 The integration of the initial ProSe module with the LTE and buildings module,

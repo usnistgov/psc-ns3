@@ -34,6 +34,8 @@ SOURCES = \
 	$(SRC)/psc/doc/source/mcptt.rst \
 	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/video-models.rst \
+	$(SRC)/psc/doc/source/psc-application.rst \
+	$(SRC)/psc/doc/source/psc-scenario.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 
 # list all model library figure files that need to be copied to 
@@ -84,6 +86,9 @@ SOURCEFIGS = \
 	$(SRC)/psc/doc/source/figures/mcptt-ptt-duration-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-session-duration-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-pusher-model-example.png \
+	$(SRC)/psc/doc/source/figures/psc-application-client.png \
+	$(SRC)/psc/doc/source/figures/psc-application-server.png \
+	$(SRC)/psc/doc/source/figures/psc-schoolshooting.png \
 
 # specify figures from which .png and .pdf figures need to be
 # generated (all dia and eps figures)

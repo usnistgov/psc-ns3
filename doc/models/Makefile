@@ -68,10 +68,11 @@ SOURCES = \
 	$(SRC)/psc/doc/source/udp-group-echo.rst \
 	$(SRC)/psc/doc/source/uav-mobility-energy.rst \
 	$(SRC)/psc/doc/source/mcptt.rst \
-	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/psc-references.rst \
 	$(SRC)/psc/doc/source/intel-http.rst \
 	$(SRC)/psc/doc/source/video-models.rst \
+	$(SRC)/psc/doc/source/psc-application.rst \
+	$(SRC)/psc/doc/source/psc-scenario.rst \
 	$(SRC)/network/doc/network-overview.rst \
 	$(SRC)/network/doc/packets.rst \
 	$(SRC)/network/doc/error-model.rst \
@@ -387,6 +388,9 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
 	$(SRC)/psc/doc/source/figures/intel-http.png \
 	$(SRC)/psc/doc/source/figures/sample-video-cdf.png \
+	$(SRC)/psc/doc/source/figures/psc-application-client.png \
+	$(SRC)/psc/doc/source/figures/psc-application-server.png \
+	$(SRC)/psc/doc/source/figures/psc-schoolshooting.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-scenario.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-access-cdf.png \
 	$(SRC)/psc/doc/source/figures/mcptt-operational-modes-static-m2e-cdf.png \

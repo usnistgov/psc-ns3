@@ -27,4 +27,6 @@ This is the stand-alone version of the ns-3 PSC module documentation.
    mcptt
    intel-http
    video-models
+   psc-application
+   psc-scenario
    psc-references
