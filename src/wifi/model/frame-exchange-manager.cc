@@ -281,7 +281,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
     }
 
   m_dcf->NotifyChannelAccessed ();
-  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPairs ().front ().it;
+  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIterator ();
   NS_ASSERT (mpdu != 0);
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());
 
@@ -327,15 +327,15 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
     {
       NS_LOG_DEBUG ("Fragmenting the MSDU");
       m_fragmentedPacket = mpdu->GetPacket ()->Copy ();
+      AcIndex ac = mpdu->GetQueueAc ();
       // dequeue the MSDU
-      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPairs ().front ();
-      queueIt.queue->Dequeue (queueIt.it);
+      DequeueMpdu (mpdu);
       // create the first fragment
       mpdu->GetHeader ().SetMoreFragments ();
       Ptr<Packet> fragment = m_fragmentedPacket->CreateFragment (0, m_mac->GetWifiRemoteStationManager ()->GetFragmentSize (mpdu, 0));
       // enqueue the first fragment
       Ptr<WifiMacQueueItem> item = Create<WifiMacQueueItem> (fragment, mpdu->GetHeader (), mpdu->GetTimeStamp ());
-      queueIt.queue->PushFront (item);
+      m_mac->GetTxopQueue (ac)->PushFront (item);
       return item;
     }
   return mpdu;
@@ -395,6 +395,13 @@ FrameExchangeManager::SendMpdu (void)
   if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
       Simulator::Schedule (txDuration, &FrameExchangeManager::TransmissionSucceeded, this);
+
+      if (!m_mpdu->GetHeader ().IsQosData ()
+          || m_mpdu->GetHeader ().GetQosAckPolicy () == WifiMacHeader::NO_ACK)
+        {
+          // No acknowledgment, hence dequeue the MPDU if it is stored in a queue
+          DequeueMpdu (m_mpdu);
+        }
     }
   else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NORMAL_ACK)
     {
@@ -436,22 +443,17 @@ FrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector&
 {
   NS_LOG_FUNCTION (this << *mpdu << txVector);
 
-  // The MPDU is about to be transmitted, we can now dequeue it if it is stored in a queue
-  DequeueMpdu (mpdu);
-
   m_phy->Send (Create<WifiPsdu> (mpdu, false), txVector);
 }
 
 void
-FrameExchangeManager::DequeueMpdu (Ptr<WifiMacQueueItem> mpdu)
+FrameExchangeManager::DequeueMpdu (Ptr<const WifiMacQueueItem> mpdu)
 {
   NS_LOG_DEBUG (this << *mpdu);
 
   if (mpdu->IsQueued ())
     {
-      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPairs ().front ();
-      NS_ASSERT (*queueIt.it == mpdu);
-      queueIt.queue->Dequeue (queueIt.it);
+      m_mac->GetTxopQueue (mpdu->GetQueueAc ())->DequeueIfQueued (mpdu);
     }
 }
 
@@ -775,6 +777,8 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTx
     {
       NS_LOG_DEBUG ("Missed Ack, discard MPDU");
       NotifyPacketDiscarded (mpdu);
+      // Dequeue the MPDU if it is stored in a queue
+      DequeueMpdu (mpdu);
       m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
       m_dcf->ResetCw ();
     }
@@ -794,9 +798,6 @@ void
 FrameExchangeManager::RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
-
-  // insert the MPDU in the DCF queue again
-  m_dcf->GetWifiMacQueue ()->PushFront (mpdu);
 }
 
 void
@@ -865,47 +866,9 @@ FrameExchangeManager::NotifyInternalCollision (Ptr<Txop> txop)
         {
           NS_LOG_DEBUG ("reset DCF");
           m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
+          DequeueMpdu (mpdu);
           NotifyPacketDiscarded (mpdu);
           txop->ResetCw ();
-          // We have to discard mpdu, but first we have to determine whether mpdu
-          // is stored in the Block Ack Manager retransmit queue or in the AC queue
-          Mac48Address receiver = mpdu->GetHeader ().GetAddr1 ();
-          WifiMacQueue::ConstIterator testIt;
-          bool found = false;
-
-          if (mpdu->GetHeader ().IsQosData () && qosTxop != nullptr
-              && qosTxop->GetBaAgreementEstablished (receiver, mpdu->GetHeader ().GetQosTid ()))
-            {
-              uint8_t tid = mpdu->GetHeader ().GetQosTid ();
-              testIt = qosTxop->GetBaManager ()->GetRetransmitQueue ()->PeekByTidAndAddress (tid, receiver);
-
-              if (testIt != qosTxop->GetBaManager ()->GetRetransmitQueue ()->end ())
-                {
-                  found = true;
-                  // if not null, the test packet must equal the peeked packet
-                  NS_ASSERT ((*testIt)->GetPacket () == mpdu->GetPacket ());
-                  qosTxop->GetBaManager ()->GetRetransmitQueue ()->Remove (testIt);
-                }
-            }
-
-          if (!found)
-            {
-              if (mpdu->GetHeader ().IsQosData ())
-                {
-                  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
-                  testIt = txop->GetWifiMacQueue ()->PeekByTidAndAddress (tid, receiver);
-                  NS_ASSERT (testIt != txop->GetWifiMacQueue ()->end () && (*testIt)->GetPacket () == mpdu->GetPacket ());
-                  txop->GetWifiMacQueue ()->Remove (testIt);
-                }
-              else
-                {
-                  // the peeked packet is a non-QoS Data frame (e.g., a DELBA Request), hence
-                  // it was not peeked by TID, hence it must be the head of the queue
-                  Ptr<WifiMacQueueItem> item;
-                  item = txop->GetWifiMacQueue ()->Dequeue ();
-                  NS_ASSERT (item != 0 && item->GetPacket () == mpdu->GetPacket ());
-                }
-            }
         }
       else
         {
@@ -1178,6 +1141,9 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
   // The CW shall be reset to aCWmin after every successful attempt to transmit
   // a frame containing all or part of an MSDU or MMPDU (sec. 10.3.3 of 802.11-2016)
   m_dcf->ResetCw ();
+
+  // The MPDU has been acknowledged, we can now dequeue it if it is stored in a queue
+  DequeueMpdu (mpdu);
 
   if (mpdu->GetHeader ().IsMoreFragments ())
     {

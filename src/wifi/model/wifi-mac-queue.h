@@ -64,7 +64,14 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  WifiMacQueue ();
+
+  /**
+   * Constructor
+   *
+   * \param ac the Access Category of the packets stored in this queue
+   */
+  WifiMacQueue (AcIndex ac = AC_UNDEF);
+
   ~WifiMacQueue ();
 
   /// drop policy
@@ -122,61 +129,11 @@ public:
    */
   Ptr<WifiMacQueueItem> Dequeue (void) override;
   /**
-   * Search and return, if present in the queue, the first packet (either Data
-   * frame or QoS Data frame) having the receiver address equal to <i>addr</i>.
-   * This method removes the packet from the queue.
-   * It is typically used by ns3::Txop during the CF period.
+   * Dequeue the given MPDU if it is stored in this queue.
    *
-   * \param dest the given destination
-   *
-   * \return the packet
+   * \param mpdu the given MPDU
    */
-  Ptr<WifiMacQueueItem> DequeueByAddress (Mac48Address dest);
-  /**
-   * Search and return, if present in the queue, the first packet having the
-   * TID equal to <i>tid</i>.
-   * This method removes the packet from the queue.
-   *
-   * \param tid the given TID
-   *
-   * \return the packet
-   */
-  Ptr<WifiMacQueueItem> DequeueByTid (uint8_t tid);
-  /**
-   * Search and return, if present in the queue, the first packet having the
-   * address indicated by <i>type</i> equal to <i>addr</i>, and TID
-   * equal to <i>tid</i>. This method removes the packet from the queue.
-   * It is typically used by ns3::QosTxop in order to perform correct MSDU
-   * aggregation (A-MSDU).
-   *
-   * \param tid the given TID
-   * \param dest the given destination
-   *
-   * \return the packet
-   */
-  Ptr<WifiMacQueueItem> DequeueByTidAndAddress (uint8_t tid,
-                                                Mac48Address dest);
-  /**
-   * Return first available packet for transmission. A packet could be no available
-   * if it is a QoS packet with a TID and an address1 fields equal to <i>tid</i> and <i>addr</i>
-   * respectively that index a pending agreement in the BlockAckManager object.
-   * So that packet must not be transmitted until reception of an ADDBA response frame from station
-   * addressed by <i>addr</i>. This method removes the packet from queue.
-   *
-   * \param blockedPackets the destination address & TID pairs that are waiting for a BlockAck response
-   *
-   * \return the packet
-   */
-  Ptr<WifiMacQueueItem> DequeueFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets = nullptr);
-  /**
-   * Dequeue the item at position <i>pos</i> in the queue. Return a null
-   * pointer if the given iterator is invalid, the queue is empty or the
-   * lifetime of the item pointed to by the given iterator is expired.
-   *
-   * \param pos the position of the item to be dequeued
-   * \return the dequeued item, if any
-   */
-  Ptr<WifiMacQueueItem> Dequeue (WifiMacQueue::ConstIterator pos);
+  void DequeueIfQueued (Ptr<const WifiMacQueueItem> mpdu);
   /**
    * Peek the packet in the front of the queue. The packet is not removed.
    *
@@ -327,10 +284,6 @@ public:
    */
   uint32_t GetNBytes (void);
 
-  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
-
-
-private:
   /**
    * Remove the item pointed to by the iterator <i>it</i> if it has been in the
    * queue for too long. If the item is removed, the iterator is updated to
@@ -341,6 +294,11 @@ private:
    * \return true if the item is removed, false otherwise
    */
   inline bool TtlExceeded (ConstIterator &it, const Time& now);
+
+  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
+
+
+private:
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
@@ -372,7 +330,7 @@ private:
 
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
-  mutable bool m_expiredPacketsPresent;     //!< True if expired packets are in the queue
+  AcIndex m_ac;                             //!< the access category
 
   /// Per (MAC address, TID) pair queued packets
   std::unordered_map<WifiAddressTidPair, uint32_t, WifiAddressTidHash> m_nQueuedPackets;
@@ -384,6 +342,25 @@ private:
 
   NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
 };
+
+
+/**
+ * Implementation of inline functions
+ */
+
+bool
+WifiMacQueue::TtlExceeded (ConstIterator &it, const Time& now)
+{
+  if (now > (*it)->GetTimeStamp () + m_maxDelay)
+    {
+      NS_LOG_DEBUG ("Removing packet that stayed in the queue for too long (" <<
+                    now - (*it)->GetTimeStamp () << ")");
+      auto curr = it++;
+      m_traceExpired (DoRemove (curr));
+      return true;
+    }
+  return false;
+}
 
 } //namespace ns3
 

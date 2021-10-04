@@ -36,7 +36,6 @@ class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class RegularWifiMac;
 enum WifiMacDropReason : uint8_t;  // opaque enum declaration
-enum AcIndex : uint8_t;
 
 /**
  * \brief Handle packet fragmentation and retransmissions
@@ -45,9 +44,9 @@ enum AcIndex : uint8_t;
  *
  * This class implements the packet fragmentation and
  * retransmission policy for data and management frames.
- * It uses the ns3::MacLow and ns3::ChannelAccessManager helper
- * classes to respectively send packets and decide when
- * to send them. Packets are stored in a ns3::WifiMacQueue
+ * It uses the ns3::ChannelAccessManager helper
+ * class to decide when to send a packet.
+ * Packets are stored in a ns3::WifiMacQueue
  * until they can be sent.
  *
  * The policy currently implemented uses a simple fragmentation
@@ -65,10 +64,15 @@ enum AcIndex : uint8_t;
 class Txop : public Object
 {
 public:
-  /// allow MacLowTransmissionListener class access
-  friend class MacLowTransmissionListener;
-
   Txop ();
+
+  /**
+   * Constructor
+   *
+   * \param queue the wifi MAC queue
+   */
+  Txop (Ptr<WifiMacQueue> queue);
+
   virtual ~Txop ();
 
   /**
@@ -98,12 +102,6 @@ public:
    * \returns true if QoS TXOP.
    */
   virtual bool IsQosTxop () const;
-  /**
-   * Get the access category.
-   *
-   * \return the access category.
-   */
-  virtual AcIndex GetAccessCategory (void) const;
 
   /**
    * Set ChannelAccessManager this Txop is associated to.

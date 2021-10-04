@@ -37,6 +37,7 @@
 #include <cmath>
 #include "ns3/he-frame-exchange-manager.h"
 #include "channel-access-manager.h"
+#include "wifi-mac-queue.h"
 
 namespace ns3 {
 
@@ -463,7 +464,7 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
   //already configured.
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
-  Ptr<QosTxop> edca = CreateObject<QosTxop> ();
+  Ptr<QosTxop> edca = CreateObject<QosTxop> (ac);
   edca->SetChannelAccessManager (m_channelAccessManager);
   edca->SetWifiMac (this);
   edca->SetTxMiddle (m_txMiddle);
@@ -473,7 +474,6 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
                                                             &m_nackedMpduCallback));
   edca->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
                                               &m_droppedMpduCallback));
-  edca->SetAccessCategory (ac);
 
   m_edca.insert (std::make_pair (ac, edca));
 }
@@ -531,6 +531,17 @@ Ptr<QosTxop>
 RegularWifiMac::GetBKQueue () const
 {
   return m_edca.find (AC_BK)->second;
+}
+
+Ptr<WifiMacQueue>
+RegularWifiMac::GetTxopQueue (AcIndex ac) const
+{
+  if (ac == AC_BE_NQOS)
+    {
+      return m_txop->GetWifiMacQueue ();
+    }
+  NS_ASSERT (ac == AC_BE || ac == AC_BK || ac == AC_VI || ac == AC_VO);
+  return m_edca.find (ac)->second->GetWifiMacQueue ();
 }
 
 void

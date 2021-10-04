@@ -41,12 +41,14 @@ WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & h
 WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header, Time tstamp)
   : m_packet (p),
     m_header (header),
-    m_tstamp (tstamp)
+    m_tstamp (tstamp),
+    m_queueAc (AC_UNDEF)
 {
   if (header.IsQosData () && header.IsQosAmsdu ())
     {
       m_msduList = MsduAggregator::Deaggregate (p->Copy ());
     }
+  m_inFlight = false;
 }
 
 WifiMacQueueItem::~WifiMacQueueItem ()
@@ -123,7 +125,6 @@ WifiMacQueueItem::Aggregate (Ptr<const WifiMacQueueItem> msdu)
       // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
       Ptr<const WifiMacQueueItem> firstMsdu = Create<const WifiMacQueueItem> (*this);
       m_packet = Create<Packet> ();
-      m_queueIts.clear ();
       DoAggregate (firstMsdu);
 
       m_header.SetQosAmsdu ();
@@ -170,7 +171,6 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
   hdr.SetLength (static_cast<uint16_t> (msdu->GetPacket ()->GetSize ()));
 
   m_msduList.push_back ({msdu->GetPacket (), hdr});
-  m_queueIts.insert (m_queueIts.end (), msdu->m_queueIts.begin (), msdu->m_queueIts.end ());
 
   // build the A-MSDU
   NS_ASSERT (m_packet);
@@ -204,13 +204,39 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
 bool
 WifiMacQueueItem::IsQueued (void) const
 {
-  return !m_queueIts.empty ();
+  return m_queueAc != AC_UNDEF;
 }
 
-const std::list<WifiMacQueueItem::QueueIteratorPair>&
-WifiMacQueueItem::GetQueueIteratorPairs (void) const
+AcIndex
+WifiMacQueueItem::GetQueueAc (void) const
 {
-  return m_queueIts;
+  NS_ASSERT (IsQueued ());
+  return m_queueAc;
+}
+
+WifiMacQueueItem::ConstIterator
+WifiMacQueueItem::GetQueueIterator (void) const
+{
+  NS_ASSERT (IsQueued ());
+  return m_queueIt;
+}
+
+void
+WifiMacQueueItem::SetInFlight (void)
+{
+  m_inFlight = true;
+}
+
+void
+WifiMacQueueItem::ResetInFlight (void)
+{
+  m_inFlight = false;
+}
+
+bool
+WifiMacQueueItem::IsInFlight (void) const
+{
+  return m_inFlight;
 }
 
 WifiMacQueueItem::DeaggregatedMsdusCI
@@ -250,7 +276,9 @@ WifiMacQueueItem::Print (std::ostream& os) const
           os << ", ack=BlockAck";
         }
     }
-  os << ", packet=" << m_packet;
+  os << ", packet=" << m_packet
+     << ", queued=" << IsQueued ()
+     << ", inflight=" << IsInFlight ();
 }
 
 std::ostream & operator << (std::ostream &os, const WifiMacQueueItem &item)

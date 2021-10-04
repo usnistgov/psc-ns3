@@ -35,6 +35,7 @@
 #include "amsdu-subframe-header.h"
 #include "wifi-phy.h"
 #include "wifi-net-device.h"
+#include "wifi-mac-queue.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/he-configuration.h"
 
@@ -103,7 +104,7 @@ ApWifiMac::ApWifiMac ()
     m_shortPreambleEnabled (false)
 {
   NS_LOG_FUNCTION (this);
-  m_beaconTxop = CreateObject<Txop> ();
+  m_beaconTxop = CreateObject<Txop> (CreateObject<WifiMacQueue> (AC_BEACON));
   m_beaconTxop->SetWifiMac (this);
   m_beaconTxop->SetAifsn (1);
   m_beaconTxop->SetMinCw (0);
@@ -140,6 +141,16 @@ ApWifiMac::SetAddress (Mac48Address address)
   //overriding this function and setting both in our parent class.
   RegularWifiMac::SetAddress (address);
   RegularWifiMac::SetBssid (address);
+}
+
+Ptr<WifiMacQueue>
+ApWifiMac::GetTxopQueue (AcIndex ac) const
+{
+  if (ac == AC_BEACON)
+    {
+      return m_beaconTxop->GetWifiMacQueue ();
+    }
+  return RegularWifiMac::GetTxopQueue (ac);
 }
 
 void

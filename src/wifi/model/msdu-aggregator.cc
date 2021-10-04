@@ -84,14 +84,13 @@ MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
 
 Ptr<WifiMacQueueItem>
 MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
-                              Time availableTime, WifiMacQueueItem::QueueIteratorPair& queueIt) const
+                              Time availableTime, WifiMacQueueItem::ConstIterator& queueIt) const
 {
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime);
 
-  NS_ASSERT (peekedItem->IsQueued ());
-  NS_ASSERT (peekedItem->GetQueueIteratorPairs ().size () == 1);
-  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPairs ().front ();
-  NS_ASSERT ((*peekedIt.it)->GetPacket () == peekedItem->GetPacket ());
+  Ptr<WifiMacQueue> queue = m_mac->GetTxopQueue (peekedItem->GetQueueAc ());
+  auto it = peekedItem->GetQueueIterator ();
+  NS_ASSERT ((*it)->GetPacket () == peekedItem->GetPacket ());
 
   uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
@@ -120,16 +119,28 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
       return nullptr;
     }
 
-  Ptr<WifiMacQueueItem> amsdu = Copy (peekedItem);
+  Ptr<WifiMacQueueItem> amsdu = *it;  // amsdu points to the peeked MPDU, but it's non-const
   uint8_t nMsdu = 1;
 
-  peekedIt.it++;
+  it++;
 
-  while ((peekedIt.it = peekedIt.queue->PeekByTidAndAddress (tid, recipient, peekedIt.it)) != peekedIt.queue->end ()
-         && m_htFem->TryAggregateMsdu (*peekedIt.it, txParams, availableTime))
+  while ((it = queue->PeekByTidAndAddress (tid, recipient, it)) != queue->end ()
+         && m_htFem->TryAggregateMsdu (*it, txParams, availableTime))
     {
-      amsdu->Aggregate (*peekedIt.it);
-      peekedIt.it++;
+      // dequeue the MSDU being aggregated and advance the current iterator
+      // before it is invalidated
+      Ptr<WifiMacQueueItem> msdu = *it++;
+      queue->DequeueIfQueued (msdu);
+
+      auto pos = std::next (amsdu->GetQueueIterator ());
+      queue->DequeueIfQueued (amsdu);
+
+      amsdu->Aggregate (msdu);
+      bool ret = queue->Insert (pos, amsdu);
+      // The size of a WifiMacQueue is measured as number of packets. We dequeued
+      // two packets, so there is certainly room for inserting one packet
+      NS_ABORT_IF (!ret);
+
       nMsdu++;
     }
 
@@ -140,7 +151,7 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
     }
 
   // Aggregation succeeded
-  queueIt = peekedIt;
+  queueIt = it;
 
   return amsdu;
 }

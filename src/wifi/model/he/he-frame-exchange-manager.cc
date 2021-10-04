@@ -593,9 +593,6 @@ HeFrameExchangeManager::ForwardPsduMapDown (WifiConstPsduMap psduMap, WifiTxVect
   for (const auto& psdu : psduMap)
     {
       NotifyTxToEdca (psdu.second);
-
-      // the PSDU is about to be transmitted, we can now dequeue the MPDUs
-      DequeuePsdu (psdu.second);
     }
   if (psduMap.size () > 1 || psduMap.begin ()->second->IsAggregate () || psduMap.begin ()->second->IsSingle ())
     {
@@ -1194,7 +1191,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, c
       // otherwise, check if a suitable data frame is available
       if ((mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())) != 0)
         {
-          WifiMacQueueItem::QueueIteratorPair queueIt;
+          WifiMacQueueItem::ConstIterator queueIt;
           Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false, queueIt);
 
           if (item != 0)
