@@ -304,7 +304,7 @@ McpttRtpHeader::Serialize (Buffer::Iterator start) const
   uint8_t secondByte = 0;
   secondByte += (marker << 7);
   secondByte += (payloadType);
-  start.WriteU8 (firstByte);
+  start.WriteU8 (secondByte);
 
   start.WriteHtonU16 (seqNum);
   start.WriteHtonU32 (timestamp);
