@@ -29,7 +29,7 @@ The methodology for implementing scenarios involves the following steps:
 
 #. Configure the applications: deploy applications in the nodes with appropriate start and stop time based on the scenario events. 
 
-This methodology was used to implement the fictional school shooting scenario described in [TBD]_ and whose implementation is located in ``psc/example/schoolshooting``.
+This methodology was used to implement the fictional school shooting scenario described in [NIST2021c]_ and whose implementation is located in ``psc/example/schoolshooting``.
 
 
 To assist with the description of scenarios and provide consistent information,
@@ -208,7 +208,7 @@ SchoolShootingLteHelper
 * ``DlBandwidth``: the number of RBs in the downlink. The default is 50 RBs.
 * ``UlBandwidth``: the number of RBs in the uplink. The default is 50 RBs.
 * ``DlEarfcn``: the Downlink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) as per 3GPP 36.101. The default is 5330 (LTE Band 14).
-* ``UlEarfcn``: the Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) as per 3GPP 36.101. The default is 23330 (LTE Band 14).
+* ``UlEarfcn``: the Uplink E-UTRA Absolute Radio Frequency Channel Number (EARFCN) as per 3GPP 36.101. The default is 23 330 (LTE Band 14).
 * ``UeAntennaHeight``: the height of the UEs. The default is 1.5 m.
 * ``EnbAntennaHeight``: the height of the eNodeBs. The default is 30 m.
 * ``UeTransmissionPower``: the UE transmit power. The default is 23 dBm.
@@ -280,7 +280,7 @@ listed by using the‘—PrintHelp’ option shown below:
   $ ./waf --run 'psc-schoolshooting --PrintHelp'
 
   Program Options:
-    --duration:         Duration (in Seconds) of the simulation [+4.08333h]
+    --duration:         Duration (in Seconds) of the simulation [+4.0833h]
     --enableLte:        Flag to enable LTE deployment [true]
     --enableLteTraces:  Flag to enable LTE traces [true]
     --enableGuiTraces:  Flag to enable the visualization traces [false]
