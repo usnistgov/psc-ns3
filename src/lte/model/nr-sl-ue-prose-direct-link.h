@@ -110,16 +110,23 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * \brief Parameterized constructor to be used to create the direct link
+   * \brief Set parameters of the direct link
    *
    * \param selfL2Id layer 2 ID of this UE
    * \param peerL2Id layer 2 ID of the peer UE
    * \param isInitiating true if the UE is the one initiating the direct link establishment
    * \param isRelayConn true if the direct link is part of a relay connection
+   * \param relayServiceCode the relay service code associated to this direct link
    * \param isIdeal true if the protocol is ideal (no exchange of messages over the SL)
    * \param selfIp the Ipv4 address this UE is using
    */
-  NrSlUeProseDirectLink (uint32_t selfL2Id, uint32_t peerL2Id, bool isInitiating, bool isRelayConn, bool isIdeal, Ipv4Address selfIp);
+  void SetParameters (uint32_t selfL2Id,
+                      uint32_t peerL2Id,
+                      bool isInitiating,
+                      bool isRelayConn,
+                      uint32_t relayServiceCode,
+                      bool isIdeal,
+                      Ipv4Address selfIp);
 
   /**
    * \brief Get the pointer of the ProSe Direct Link SAP provider interface
@@ -166,21 +173,6 @@ public:
     RELEASED, //TODO: Do we need it?
     NUM_STATES
   };
-
-  //IDs
-  uint32_t m_selfL2Id; ///< L2Id of the UE where this direct link object is installed
-  uint32_t m_peerL2Id; ///< L2Id of the peer UE for this direct link
-  //uint32_t m_Pc5LinkId; ///< Not used for the moment
-
-  //Role
-  bool m_isInitiating; ///< Indicates if the UE is the initiating UE of the direct link
-  bool m_isRelayConn;  ///< Indicates if the direct link is part of a relay connection
-
-  //Type of link
-  bool m_isIdeal;
-
-  //State
-  DirectLinkState m_state;
 
   /**
    * \brief Parameters for the ProSe direct link establishment procedure
@@ -240,9 +232,23 @@ private:
   void SendDirectLinkEstablishmentReject (uint8_t cause);  ///< Send a DirectLink Establishment Reject message
   void RetransmitDirectLinkEstablishmentRequest (); ///< Retransmit a DirectLink Establishment Request message
 
+  //IDs
+  uint32_t m_selfL2Id; ///< L2Id of the UE where this direct link object is installed
+  uint32_t m_peerL2Id; ///< L2Id of the peer UE for this direct link
+  //uint32_t m_Pc5LinkId; ///< Not used for the moment
 
-  //IP configuration
-  NrSlUeProseDirLnkSapUser::DirectLinkIpInfo m_ipInfo;
+  bool m_isInitiating; ///< Indicates if the UE is the initiating UE of the direct link
+  bool m_isRelayConn;  ///< Indicates if the direct link is part of a relay connection
+
+  uint32_t m_relayServiceCode; ///< The relay service code associated with this direct link
+
+  bool m_isIdeal; ///< Type of link
+
+  DirectLinkState m_state; ///< State of this direct link
+
+  NrPc5SignallingHeaderSequenceNumber m_pc5SigMsgSeqNum; ///< Unique sequence number generator for PC5-S messages to be transmitted
+
+  NrSlUeProseDirLnkSapUser::DirectLinkIpInfo m_ipInfo; ///< IP configuration
 
   //Parameters and functions depending on the procedure
 

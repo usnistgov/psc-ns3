@@ -79,15 +79,16 @@ public:
     RemoteUe = 0,
     RelayUe
   };
+
   /**
     * Structure to store the UE-to-Network Relay configuration of the UE if
     * the direct link is part of a relay connection
     */
   struct DirectLinkRelayInfo
   {
-    bool isRelayConn = false;
-    U2nRole role;
-
+    bool isRelayConn = false; ///< flag set to true if the direct link is part of a relay connection
+    U2nRole role; ///< role of the UE in the direct link for U2N relay (remote UE or relay UE)
+    uint32_t relayServiceCode; ///< the service code of the associated relay service
   };
 
   /**

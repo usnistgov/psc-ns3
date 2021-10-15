@@ -70,6 +70,7 @@ public:
   NrSlUeProseDirLnkSapUser::DirectLinkIpInfo m_ipInfo; ///< The IP addresses used by the peers in the link
   bool m_hasPendingSlDrb;
   bool m_hasActiveSlDrb;
+  uint32_t m_relayServiceCode; ///< the relay service code associated to this direct link
 
 };
 
@@ -157,9 +158,10 @@ public:
    * \param isInitiating flag indicating if the UE is initiating the procedure (true)
    *                     or adding the link as result of a request by the peer UE (false)
    * \param isRelayConn flag indicating if the direct link is for a relay connection (true)
-   *
+   * \param relayServiceCode the relay service code associated to this direct link
    */
-  void AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id, bool isInitiating, bool isRelayConn);
+  void AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id,
+                                bool isInitiating, bool isRelayConn,  uint32_t relayServiceCode);
 
 
   /**
@@ -175,11 +177,27 @@ public:
   typedef std::unordered_map <uint32_t, std::bitset<4> > NrSlSingalingRadioBearersPerPeerL2Id;
 
   /**
-   * \brief Set the UL data radio bearer ID to be used for L3 UE-to-Network relay
-   *
-   * \param drbId the data radio bearer ID
+   * Parameters for L3 UE-to-Network relay configuration
    */
-  void SetU2nRelayDrbId (uint8_t drbId);
+  struct NrSlL3U2nServiceConfiguration
+  {
+    uint8_t relayDrbId; //!< the UL data radio bearer ID to be used for L3 UE-to-Network relay
+  };
+
+  /**
+   * Map to store L3 UE-to-Network relay configurations indexed by relay service code
+   */
+  typedef std::unordered_map <uint32_t, NrSlL3U2nServiceConfiguration > NrSlL3U2nRelayServices;
+
+
+  /**
+   * \brief Add a L3 UE-to-Network relay service that the UE in the role of relay UE will provide.
+   *
+   * \param relayServiceCode the relay service code associated to the service
+   * \param config the parameters associated to the service
+   */
+  void AddU2nRelayServiceConfiguration (uint32_t relayServiceCode, NrSlL3U2nServiceConfiguration config);
+
   /**
    * \brief Set the IMSI used by the UE
    *
@@ -212,17 +230,15 @@ private:
   NrSlUeProseDirLnkSapUser * m_nrSlUeProseDirLnkSapUser; ///< ProSe Direct Link SAP User
 
   //Class internal private methods and member variables
-  NrSlDirectLinkContextMapPerPeerL2Id m_unicastDirectLinks;
-  NrSlSingalingRadioBearersPerPeerL2Id m_activeSlSrbs;
+  NrSlDirectLinkContextMapPerPeerL2Id m_unicastDirectLinks;  ///< Active direct link contexts map
+  NrSlSingalingRadioBearersPerPeerL2Id m_activeSlSrbs;  ///< Active SL signalling radio bearers
+  NrSlL3U2nRelayServices m_l3U2nRelayProvidedSvcs; ///< UE-to-Network Relay services provided by the UE
 
-  void ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
-  void ConfigureDataRadioBearersForU2NRelay (uint32_t peerL2Id, enum NrSlUeProseDirLnkSapUser::U2nRole role, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
-
-  uint8_t m_relayDrbId; //!< the UL data radio bearer ID to be used for L3 UE-to-Network relay
   uint64_t m_imsi;  //!< the IMSI used by the UE
-
   Ptr<NrPointToPointEpcHelper> m_epcHelper; //!< pointer to the EPC helper
 
+  void ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
+  void ConfigureDataRadioBearersForU2nRelay (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkRelayInfo relayInfo, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
 
 };//end of NrSlUeProse class definition
 

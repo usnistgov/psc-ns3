@@ -49,17 +49,13 @@ NS_OBJECT_ENSURE_REGISTERED (ProseDirectLinkEstablishmentReject);
 
 
 // Initialize static member
-uint64_t NrPc5SignallingHeaderSequenceNumber::s_seqNum = 0;
+uint8_t NrPc5SignallingHeaderSequenceNumber::s_seqNum = 0;
 
 /** Size of the Nonce field */
 static const uint8_t NonceSize = 16;
 
-/** Size of the signature field */
-static const uint8_t SignatureSize = 129;
-
 /** Size of the link local IPv6 address field */
 static const uint8_t LinkLocalIpv6AddressSize = 16;
-
 
 /** Map message type value to acronym */
 static const std::vector<std::string> s_acronyms
@@ -175,27 +171,26 @@ NrSlPc5SignallingMessageType::SetMessageType (uint8_t msgType)
 ProseDirectLinkEstablishmentRequest::ProseDirectLinkEstablishmentRequest ()
 {
   m_msgId = 1;
-
-  m_seqNum = 0; //m_seqNum = seq;
-
-  m_userInfo = 0;
-  m_userInfoType = 0;
-  m_ipAddressConfig = 0;
-  m_maxInactivityPeriod = 0;
+  m_seqNum = 0;
+  m_proseAppIds.clear ();
+  m_proseAppIds.assign (1, 0);
+  m_srcUserInfo = 0;
+  m_secCapabilities.clear ();
+  m_secCapabilities.assign (2, 0);
+  m_ueSigSecPolicy = 0;
+  m_keyEsInfoContainer = 0;
+  m_hasKeyEsInfoContainer = false;
   m_nonce1.clear ();
-  m_nonce1.assign (NonceSize,0);
-  m_ueSecurityCapabilities = 0;
+  m_nonce1.assign (NonceSize, 0);
+  m_hasNonce1 = false;
   m_msb = 0;
-  m_hasKdId = false;
-  m_kdId = 0;
-  m_hasRelayServiceCode = false;
+  m_hasMsb = false;
+  m_tgtUserInfo = 0;
+  m_hasTgtUserInfo = false;
+  m_knrpId = 0;
+  m_hasKnrpId = false;
   m_relayServiceCode = 0;
-  m_hasSignature = false;
-  m_signature.clear ();
-  m_signature.assign (SignatureSize,0);
-  m_hasLinkLocalIpv6Address = false;
-  m_linkLocalIpv6Address.clear ();
-  m_linkLocalIpv6Address.assign (LinkLocalIpv6AddressSize,0);
+  m_hasRelayServiceCode = false;
 }
 
 ProseDirectLinkEstablishmentRequest::~ProseDirectLinkEstablishmentRequest ()
@@ -220,45 +215,48 @@ ProseDirectLinkEstablishmentRequest::GetInstanceTypeId (void) const
 void
 ProseDirectLinkEstablishmentRequest::Print (std::ostream &os) const
 {
+
   os << "msgId: " << (uint16_t) m_msgId << " "
-     << "seqNum: " << m_seqNum << " userInfoType: " << (uint16_t) m_userInfoType << " userInfo: " << m_userInfo << " ";
-  os << "ipAddressConfig: " << (uint16_t) m_ipAddressConfig << " "
-     << "maxInactivityPeriod: " << m_maxInactivityPeriod << " nonce1: ";
-
-  for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin (); it != m_nonce1.end (); ++it)
+     << "seqNum: " << +m_seqNum << " ";
+  os << " proseAppIds: ";
+  for (std::vector<uint32_t>::const_iterator it = m_proseAppIds.begin (); it != m_proseAppIds.end (); ++it)
     {
-      os << (uint16_t) *it << " ";
+      os << (*it) << " ";
     }
-
-  os << "ueSecurityCapabilities: " << m_ueSecurityCapabilities << " "
-     << "msb: " << (uint16_t) m_msb << " ";
-
-  if (m_hasKdId)
+  os << "srcUserInfo: " << m_srcUserInfo << " ";
+  os << "secCapabilities: ";
+  for (std::vector<uint8_t>::const_iterator it = m_secCapabilities.begin (); it != m_secCapabilities.end (); ++it)
     {
-      os << "kdId: " << m_kdId << " ";
+      os << +(*it) << " ";
     }
-
+  os << "ueSigSecPolicy: " << +m_ueSigSecPolicy << " ";
+  if (m_hasKeyEsInfoContainer)
+    {
+      os << "keyEsInfoContainer: " << +m_keyEsInfoContainer << " ";
+    }
+  if (m_hasNonce1)
+    {
+      os << " nonce1: ";
+      for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin (); it != m_nonce1.end (); ++it)
+        {
+          os << +(*it) << " ";
+        }
+    }
+  if (m_hasMsb)
+    {
+      os << "msb: " << +m_msb << " ";
+    }
+  if (m_hasTgtUserInfo)
+    {
+      os << "tgtUserInfo: " << +m_tgtUserInfo << " ";
+    }
+  if (m_hasKnrpId)
+    {
+      os << "knrpId: " << m_knrpId << " ";
+    }
   if (m_hasRelayServiceCode)
     {
       os << "relayServiceCode: " << m_relayServiceCode << " ";
-    }
-
-  if (m_hasSignature)
-    {
-      os << "signature: ";
-      for (std::vector<uint8_t>::const_iterator it = m_signature.begin (); it != m_signature.end (); ++it)
-        {
-          os << (uint16_t) *it << " ";
-        }
-    }
-
-  if (m_hasLinkLocalIpv6Address)
-    {
-      os << "linkLocalIpv6Address: ";
-      for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin (); it != m_linkLocalIpv6Address.end (); ++it)
-        {
-          os << (uint16_t) *it << " ";
-        }
     }
 }
 
@@ -269,29 +267,54 @@ ProseDirectLinkEstablishmentRequest::GetSerializedSize (void) const
   size = size
     + sizeof (m_msgId)
     + sizeof (m_seqNum)
-    + 1
-    + sizeof (m_userInfoType)
-    + sizeof (m_userInfo)
-    + sizeof (m_ipAddressConfig)
-    + sizeof (m_maxInactivityPeriod)
-    + NonceSize
-    + sizeof (m_ueSecurityCapabilities)
-    + sizeof (m_msb); //1 for the 8 bits of size of userInfo
-  if  (m_hasKdId)
+    + 1   // ProSe application identifier IEI octet
+    + 1   // Length of ProSe application identifier content octet
+    + m_proseAppIds.size () * sizeof (uint32_t)  //ProSe application identifier contents
+    + 1   // Application layer ID IEI octet (Source user info)
+    + 1   // Length of Application layer ID content octet (Source user info)
+    + sizeof (m_srcUserInfo)   // Application layer ID contents (Source user info)
+    + 1   // UE security capabilities  IEI octet
+    + 1   // Length of UE security capabilities  content octet
+    + m_secCapabilities.size () * sizeof (uint8_t)  //UE security capabilities contents
+    + 1   // UE PC5 unicast signalling security policy IEI octet
+    + sizeof (m_ueSigSecPolicy);   // UE PC5 unicast signalling security policy
+  if (m_hasKeyEsInfoContainer)
     {
-      size += (1 + sizeof (m_kdId)); //1 for the type
+      size = size
+        + 1   // Key establishment information container IEI octet
+        + 1   // Length of Key establishment information container content octet
+        + sizeof (m_keyEsInfoContainer);   // Key establishment information container contents
+    }
+  if (m_hasNonce1)
+    {
+      size = size
+        + 1   // Nonce IEI octet
+        + NonceSize;   // Nonce IEI contents
+    }
+  if (m_hasMsb)
+    {
+      size = size
+        + 1   // Most significant bits of the KNRP-sess ID IEI octet
+        + sizeof (m_msb);   // Most significant bits of the KNRP-sess ID IEI contents
+    }
+  if (m_hasTgtUserInfo)
+    {
+      size = size
+        + 1   // Application layer ID IEI octet (Target user info)
+        + 1   // Length of Application layer ID content octet (Target user info)
+        + sizeof (m_tgtUserInfo);   // Application layer ID contents (Target user info)
+    }
+  if  (m_hasKnrpId)
+    {
+      size = size
+        + 1   // Knrp ID IEI octet
+        + sizeof (m_knrpId);   // Knrp ID content
     }
   if (m_hasRelayServiceCode)
     {
-      size += (1 + 3); //1 for the type and 3 for the 24 bits of m_relayServiceCode
-    }
-  if (m_hasSignature)
-    {
-      size += (1 + SignatureSize); //1 for the type
-    }
-  if (m_hasLinkLocalIpv6Address)
-    {
-      size += (1 + LinkLocalIpv6AddressSize); //1 for the type
+      size = size
+        + 1   // Relay service code IEI octet
+        + 3;   // Relay service code content
     }
   return size;
 }
@@ -302,45 +325,70 @@ ProseDirectLinkEstablishmentRequest::Serialize (Buffer::Iterator start) const
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   i.WriteU8 (m_msgId);
-  i.WriteHtonU16 (m_seqNum);
-  i.WriteU8 (sizeof(m_userInfo));
-  i.WriteU8 (m_userInfoType);
-  i.WriteU64 (m_userInfo);
-  i.WriteU8 (m_ipAddressConfig);
-  i.WriteHtonU32 (m_maxInactivityPeriod);
-  for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin (); it != m_nonce1.end (); ++it)
+  i.WriteU8 (m_seqNum);
+
+  i.WriteU8 (0); // ProSe application identifier IEI octet //TODO: Not defined in the standard ATM
+  i.WriteU8 (m_proseAppIds.size () * sizeof (uint32_t)); // Length of ProSe application identifier content octet
+
+  // ProSe application identifier content:
+  for (std::vector<uint32_t>::const_iterator it = m_proseAppIds.begin (); it != m_proseAppIds.end (); ++it)
+    {
+      i.WriteU32 (*it);
+    }
+
+  i.WriteU8 (0); // Application layer ID IEI octet (Source user info) //TODO: Not defined in the standard ATM
+  i.WriteU8 (sizeof (m_srcUserInfo)); // Length of Application layer ID content octet (Source user info)
+  i.WriteU32 (m_srcUserInfo); // Application layer ID contents (Source user info)
+
+  i.WriteU8 (0); // UE security capabilities  IEI octet //TODO: Not defined in the standard ATM
+  i.WriteU8 (m_secCapabilities.size () * sizeof (uint8_t)); // Length of UE security capabilities  content octet
+
+  //UE security capabilities contents:
+  for (std::vector<uint8_t>::const_iterator it = m_secCapabilities.begin (); it != m_secCapabilities.end (); ++it)
     {
       i.WriteU8 (*it);
     }
-  i.WriteHtonU16 (m_ueSecurityCapabilities);
-  i.WriteU8 (m_msb);
-  if (m_hasKdId)
+
+  i.WriteU8 (0); // UE PC5 unicast signalling security policy IEI octet //TODO: Not defined in the standard ATM
+  i.WriteU8 (m_ueSigSecPolicy); // UE PC5 unicast signalling security policy
+
+  if (m_hasKeyEsInfoContainer)
     {
-      i.WriteU8 (17);
-      i.WriteHtonU32 (m_kdId);
+      i.WriteU8 (74); // Key establishment information container IEI octet
+      i.WriteU8 (sizeof (m_keyEsInfoContainer)); // Length of Key establishment information container content octet
+      i.WriteU8 (m_keyEsInfoContainer); // Key establishment information container contents
+    }
+  if (m_hasNonce1)
+    {
+      i.WriteU8 (53); // Nonce IEI octet
+      // // Nonce IEI contents:
+      for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin (); it != m_nonce1.end (); ++it)
+        {
+          i.WriteU8 (*it);
+        }
+    }
+  if (m_hasMsb)
+    {
+      i.WriteU8 (54); // Most significant bits of the KNRP-sess ID IEI octet
+      i.WriteU8 (m_msb); // Most significant bits of the KNRP-sess ID contents
+    }
+  if (m_hasTgtUserInfo)
+    {
+      i.WriteU8 (28); // Application layer ID IEI octet (Target user info)
+      i.WriteU8 (sizeof (m_tgtUserInfo)); // Length of Application layer ID content octet (Target user info)
+      i.WriteU32 (m_tgtUserInfo); // Application layer ID contents (Target user info)
+    }
+  if  (m_hasKnrpId)
+    {
+      i.WriteU8 (52); // Knrp ID IEI octet
+      i.WriteU32 (m_knrpId); // Knrp ID IEI contents
     }
   if (m_hasRelayServiceCode)
     {
-      i.WriteU8 (25);
+      i.WriteU8 (25); // Relay service code IEI octet //TODO: Not defined in the standard ATM, using LTE value
       i.WriteU8 ((m_relayServiceCode >> 0) & 0xff);
       i.WriteU8 ((m_relayServiceCode >> 8) & 0xff);
       i.WriteU8 ((m_relayServiceCode >> 16) & 0xff);
-    }
-  if (m_hasSignature)
-    {
-      i.WriteU8 (22);
-      for (std::vector<uint8_t>::const_iterator it = m_signature.begin (); it != m_signature.end (); ++it)
-        {
-          i.WriteU8 (*it);
-        }
-    }
-  if (m_hasLinkLocalIpv6Address)
-    {
-      i.WriteU8 (3);
-      for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin (); it != m_linkLocalIpv6Address.end (); ++it)
-        {
-          i.WriteU8 (*it);
-        }
     }
 }
 
@@ -348,22 +396,34 @@ uint32_t
 ProseDirectLinkEstablishmentRequest::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this << &start);
+  uint8_t size_in_bytes;
+
   Buffer::Iterator i = start;
   m_msgId = i.ReadU8 ();
-  m_seqNum = i.ReadNtohU16 ();
-  i.ReadU8 (); //userInfoLength
-  m_userInfoType = i.ReadU8 ();
-  m_userInfo = i.ReadU64 ();
-  m_ipAddressConfig =  i.ReadU8 ();
-  m_maxInactivityPeriod = i.ReadNtohU32 ();
+  m_seqNum = i.ReadU8 ();
 
-  for (uint8_t index = 0; index < NonceSize; index++)
+  i.ReadU8 ();// ProSe application identifier IEI octet
+  size_in_bytes = i.ReadU8 (); // Length of ProSe application identifier content octet
+  // ProSe application identifier content:
+  for (uint8_t index = 0; index < (size_in_bytes / sizeof (uint32_t)); index++)
     {
-      m_nonce1[index] = i.ReadU8 ();
+      m_proseAppIds[index] = i.ReadU32 ();
     }
 
-  m_ueSecurityCapabilities = i.ReadNtohU16 ();
-  m_msb = i.ReadU8 ();
+  i.ReadU8 (); // Application layer ID IEI octet (Source user info)
+  i.ReadU8 (); // Length of Application layer ID content octet (Source user info)
+  m_srcUserInfo = i.ReadU32 (); // Application layer ID contents (Source user info)
+
+  i.ReadU8 ();  // UE security capabilities  IEI octet
+  size_in_bytes = i.ReadU8 ();  // Length of UE security capabilities content octet
+  // UE security capabilities contents:
+  for (uint8_t index = 0; index < size_in_bytes; index++)
+    {
+      m_secCapabilities[index] = i.ReadU8 ();
+    }
+
+  i.ReadU8 ();// UE PC5 unicast signalling security policy IEI octet
+  m_ueSigSecPolicy =  i.ReadU8 (); // UE PC5 unicast signalling security policy
 
   uint8_t opt_vars_iei = 0;
   uint8_t byte0, byte1, byte2;
@@ -373,9 +433,30 @@ ProseDirectLinkEstablishmentRequest::Deserialize (Buffer::Iterator start)
       opt_vars_iei = i.ReadU8 ();
       switch (opt_vars_iei)
         {
-          case 17:
-            m_hasKdId = true;
-            m_kdId = i.ReadNtohU32 ();
+          case 74: // Key establishment information container IEI
+            i.ReadU8 (); // Length of Key establishment information container content octet
+            m_keyEsInfoContainer = i.ReadU8 ();
+            m_hasKeyEsInfoContainer = true;
+            break;
+          case 53: // Nonce IEI
+            for (uint8_t index = 0; index < NonceSize; index++)
+              {
+                m_nonce1[index] = i.ReadU8 ();
+              }
+            m_hasNonce1 = true;
+            break;
+          case 54: // Most significant bits of the KNRP-sess ID IEI
+            m_msb = i.ReadU8 ();
+            m_hasMsb = true;
+            break;
+          case 28: // Application layer ID IEI octet (Target user info)
+            i.ReadU8 (); // Length of Application layer ID content octet (Target user info)
+            m_tgtUserInfo = i.ReadU32 ();
+            m_hasTgtUserInfo = true;
+            break;
+          case 52:
+            m_knrpId = i.ReadU32 ();
+            m_hasKnrpId = true;
             break;
           case 25:
             byte0 = i.ReadU8 ();
@@ -389,54 +470,62 @@ ProseDirectLinkEstablishmentRequest::Deserialize (Buffer::Iterator start)
             m_relayServiceCode = relayServiceCode_dummy;
             m_hasRelayServiceCode = true;
             break;
-          case 22:
-            for (uint8_t index = 0; index < SignatureSize; index++)
-              {
-                m_signature[index] = i.ReadU8 ();
-              }
-            m_hasSignature = true;
-            break;
-          case 3:
-            for (uint8_t index = 0; index < LinkLocalIpv6AddressSize; index++)
-              {
-                m_linkLocalIpv6Address[index] = i.ReadU8 ();
-              }
-            m_hasLinkLocalIpv6Address = true;
-            break;
           default:
             break;
         }
     }
-
   return GetSerializedSize ();
 }
 
 void
 ProseDirectLinkEstablishmentRequest::SetParameters (
-  uint8_t userInfoType,
-  uint64_t userInfo,
-  uint8_t ipAddressConfig,
-  uint32_t maxInactivityPeriod,
+  uint8_t seq,
+  std::vector<uint32_t> proseAppIds,
+  uint32_t srcUserInfo,
+  std::vector<uint8_t> secCapabilities,
+  uint8_t ueSigSecPolicy,
+  uint8_t keyEsInfoContainer,
   std::vector<uint8_t> nonce1,
-  uint16_t ueSecurityCapabilities,
   uint8_t msb,
-  int32_t kdId,
-  uint32_t relayServiceCode,
-  std::vector<uint8_t> signature,
-  std::vector<uint8_t> linkLocalIpv6Address
+  uint32_t tgtUserInfo,
+  uint32_t knrpId,
+  uint32_t relayServiceCode
   )
 {
-  SetUserInfo (userInfoType, userInfo);
-  SetIpAddressConfig (ipAddressConfig);
-  SetMaximumInactivityPeriod (maxInactivityPeriod);
-  SetNonce1 (nonce1);
-  SetUeSecurityCapabilities (ueSecurityCapabilities);
-  SetMsbKdId (msb);
-  SetKdId (kdId);
-  SetRelayServiceCode (relayServiceCode);
-  SetSignature (signature);
-  SetLinkLocalIpv6Address (linkLocalIpv6Address);
+  //Mandatory IEs
+  SetSequenceNumber (seq);
+  SetProseApplicationIds (proseAppIds);
+  SetSourceUserInfo (srcUserInfo);
+  SetUeSecurityCapabilities (secCapabilities);
+  SetUeSignallingSecurityPolicy (ueSigSecPolicy);
+
+  //Optional IEs
+  if (keyEsInfoContainer != 0)
+    {
+      SetKeyEstablishmentInfoContainer (keyEsInfoContainer);
+    }
+  if (nonce1.size () > 0)
+    {
+      SetNonce1 (nonce1);
+    }
+  if (msb != 0)
+    {
+      SetMsbKdId (msb);
+    }
+  if (tgtUserInfo != 0)
+    {
+      SetTargetUserInfo (tgtUserInfo);
+    }
+  if (knrpId != 0)
+    {
+      SetKnrpId (knrpId);
+    }
+  if (relayServiceCode != 0)
+    {
+      SetRelayServiceCode (relayServiceCode);
+    }
 }
+
 
 uint8_t
 ProseDirectLinkEstablishmentRequest::GetMessageIdentifier ()
@@ -451,72 +540,87 @@ ProseDirectLinkEstablishmentRequest::GetSequenceNumber ()
 }
 
 void
-ProseDirectLinkEstablishmentRequest::SetSequenceNumber (uint32_t seq)
+ProseDirectLinkEstablishmentRequest::SetSequenceNumber (uint8_t seq)
 {
   m_seqNum = seq;
 }
 
-
 void
-ProseDirectLinkEstablishmentRequest::SetUserInfo (uint8_t userInfoType, uint64_t userInfo)
+ProseDirectLinkEstablishmentRequest::SetProseApplicationIds (std::vector<uint32_t> proseAppIds)
 {
-  NS_ASSERT_MSG ( userInfoType == 3, "Only User Info Type = 3 (IMSI) supported"); //Refer 24.334 Section 12.5.1.3
-  m_userInfoType = userInfoType;
-  m_userInfo = userInfo;
+  m_proseAppIds.clear ();
+  m_proseAppIds.assign (proseAppIds.size (), 0);
+  for (uint16_t i = 0; i < proseAppIds.size (); i++)
+    {
+      m_proseAppIds[i] = proseAppIds[i];
+    }
 }
 
-uint64_t
-ProseDirectLinkEstablishmentRequest::GetUserInfo ()
+std::vector<uint32_t>
+ProseDirectLinkEstablishmentRequest::GetProseApplicationIds ()
 {
-  return m_userInfo;
-}
-
-uint8_t
-ProseDirectLinkEstablishmentRequest::GetUserInfoType ()
-{
-  return m_userInfoType;
+  return m_proseAppIds;
 }
 
 void
-ProseDirectLinkEstablishmentRequest::SetImsi (uint64_t imsi)
+ProseDirectLinkEstablishmentRequest::SetSourceUserInfo (uint32_t srcUserInfo)
 {
-  SetUserInfo (3, imsi);
-}
-
-uint64_t
-ProseDirectLinkEstablishmentRequest::GetImsi ()
-{
-  return m_userInfo;
-}
-
-void
-ProseDirectLinkEstablishmentRequest::SetIpAddressConfig (uint8_t ipAddressConfig)
-{
-  m_ipAddressConfig = ipAddressConfig;
-}
-
-uint8_t
-ProseDirectLinkEstablishmentRequest::GetIpAddressConfig ()
-{
-  return m_ipAddressConfig;
-}
-
-void
-ProseDirectLinkEstablishmentRequest::SetMaximumInactivityPeriod (uint32_t maxInactivityPeriod)
-{
-  m_maxInactivityPeriod = maxInactivityPeriod;
+  m_srcUserInfo = srcUserInfo;
 }
 
 uint32_t
-ProseDirectLinkEstablishmentRequest::GetMaximumInactivityPeriod ()
+ProseDirectLinkEstablishmentRequest::GetSourceUserInfo ()
 {
-  return m_maxInactivityPeriod;
+  return m_srcUserInfo;
+}
+
+void
+ProseDirectLinkEstablishmentRequest::SetUeSecurityCapabilities (std::vector<uint8_t> secCapabilities)
+{
+  m_secCapabilities.clear ();
+  m_secCapabilities.assign (secCapabilities.size (), 0);
+  for (uint16_t i = 0; i < secCapabilities.size (); i++)
+    {
+      m_secCapabilities[i] = secCapabilities[i];
+    }
+}
+
+std::vector<uint8_t>
+ProseDirectLinkEstablishmentRequest::GetUeSecurityCapabilities ()
+{
+  return m_secCapabilities;
+}
+
+void
+ProseDirectLinkEstablishmentRequest::SetUeSignallingSecurityPolicy (uint8_t ueSigSecPolicy)
+{
+  m_ueSigSecPolicy = ueSigSecPolicy;
+}
+
+uint8_t
+ProseDirectLinkEstablishmentRequest::GetUeSignallingSecurityPolicy ()
+{
+  return m_ueSigSecPolicy;
+}
+
+void
+ProseDirectLinkEstablishmentRequest::SetKeyEstablishmentInfoContainer (uint8_t keyEsInfoContainer)
+{
+  m_hasKeyEsInfoContainer = true;
+  m_keyEsInfoContainer = keyEsInfoContainer;
+}
+
+uint8_t
+ProseDirectLinkEstablishmentRequest::GetKeyEstablishmentInfoContainer ()
+{
+  return m_keyEsInfoContainer;
 }
 
 void
 ProseDirectLinkEstablishmentRequest::SetNonce1 (std::vector<uint8_t> nonce1)
 {
-  m_nonce1.assign (NonceSize,0);
+  m_hasNonce1 = true;
+  m_nonce1.assign (NonceSize, 0);
   for (uint16_t i = 0; i < nonce1.size (); i++)
     {
       m_nonce1[i] = nonce1[i];
@@ -530,20 +634,9 @@ ProseDirectLinkEstablishmentRequest::GetNonce1 ()
 }
 
 void
-ProseDirectLinkEstablishmentRequest::SetUeSecurityCapabilities (uint16_t ueSecurityCapabilities)
-{
-  m_ueSecurityCapabilities = ueSecurityCapabilities;
-}
-
-uint16_t
-ProseDirectLinkEstablishmentRequest::GetUeSecurityCapabilities ()
-{
-  return m_ueSecurityCapabilities;
-}
-
-void
 ProseDirectLinkEstablishmentRequest::SetMsbKdId (uint8_t msb)
 {
+  m_hasMsb = true;
   m_msb = msb;
 }
 
@@ -554,16 +647,29 @@ ProseDirectLinkEstablishmentRequest::GetMsbKdId ()
 }
 
 void
-ProseDirectLinkEstablishmentRequest::SetKdId (uint32_t kdId)
+ProseDirectLinkEstablishmentRequest::SetTargetUserInfo (uint32_t tgtUserInfo)
 {
-  m_hasKdId = true;
-  m_kdId = kdId;
+  m_hasTgtUserInfo = true;
+  m_tgtUserInfo = tgtUserInfo;
 }
 
 uint32_t
-ProseDirectLinkEstablishmentRequest::GetKdId ()
+ProseDirectLinkEstablishmentRequest::GetTargetUserInfo ()
 {
-  return m_kdId;
+  return m_tgtUserInfo;
+}
+
+void
+ProseDirectLinkEstablishmentRequest::SetKnrpId (uint32_t knrpId)
+{
+  m_hasKnrpId = true;
+  m_knrpId = knrpId;
+}
+
+uint32_t
+ProseDirectLinkEstablishmentRequest::GetKnrpId ()
+{
+  return m_knrpId;
 }
 
 void
@@ -579,52 +685,23 @@ ProseDirectLinkEstablishmentRequest::GetRelayServiceCode ()
   return m_relayServiceCode;
 }
 
-void
-ProseDirectLinkEstablishmentRequest::SetSignature (std::vector<uint8_t> signature)
-{
-  m_hasSignature = true;
-  m_signature.assign (SignatureSize,0);
-  for (uint16_t i = 0; i < signature.size (); i++)
-    {
-      m_signature[i] = signature[i];
-    }
-}
-
-std::vector<uint8_t>
-ProseDirectLinkEstablishmentRequest::GetSignature ()
-{
-  return m_signature;
-}
-
-void
-ProseDirectLinkEstablishmentRequest::SetLinkLocalIpv6Address (std::vector<uint8_t> linkLocalIpv6Address)
-{
-  m_hasLinkLocalIpv6Address = true;
-  m_linkLocalIpv6Address.assign (LinkLocalIpv6AddressSize,0);
-  for (uint16_t i = 0; i < linkLocalIpv6Address.size (); i++)
-    {
-      m_linkLocalIpv6Address[i] = linkLocalIpv6Address[i];
-    }
-}
-
-std::vector<uint8_t>
-ProseDirectLinkEstablishmentRequest::GetLinkLocalIpv6Address ()
-{
-  return m_linkLocalIpv6Address;
-}
-
 /*****     ProseDirectLinkEstablishmentAccept Message       *****/
 
 ProseDirectLinkEstablishmentAccept::ProseDirectLinkEstablishmentAccept ()
 {
+  //Mandatory IEs
   m_msgId = 2;
-
-  m_seqNum = 0; //m_seqNum = seq;
-
+  m_seqNum = 0;
+  m_srcUserInfo = 0;
+  m_qosFlowDescriptions.clear ();
+  m_qosFlowDescriptions.assign (3, 0);
+  m_userPlaneSecConfig = 0;
+  //Optional IEs
+  m_hasIpAddressConfig = false;
   m_ipAddressConfig = 0;
   m_hasLinkLocalIpv6Address = false;
   m_linkLocalIpv6Address.clear ();
-  m_linkLocalIpv6Address.assign (LinkLocalIpv6AddressSize,0);
+  m_linkLocalIpv6Address.assign (LinkLocalIpv6AddressSize, 0);
 }
 
 ProseDirectLinkEstablishmentAccept::~ProseDirectLinkEstablishmentAccept ()
@@ -649,16 +726,25 @@ ProseDirectLinkEstablishmentAccept::GetInstanceTypeId (void) const
 void
 ProseDirectLinkEstablishmentAccept::Print (std::ostream &os) const
 {
-  os << "msgId: " << (uint16_t) m_msgId << " "
-     << "seqNum: " << m_seqNum << " "
-     << "ipAddressConfig: " << (uint16_t) m_ipAddressConfig;
-
+  os << "msgId: " << +m_msgId << " "
+     << "seqNum: " << +m_seqNum << " "
+     << "srcUserInfo: " << m_srcUserInfo << " ";
+  os << "qosFlowDescriptions: ";
+  for (std::vector<uint8_t>::const_iterator it = m_qosFlowDescriptions.begin (); it != m_qosFlowDescriptions.end (); ++it)
+    {
+      os << +(*it) << " ";
+    }
+  os << "userPlaneSecConfig: " << +m_userPlaneSecConfig << " ";
+  if (m_hasIpAddressConfig)
+    {
+      os << "ipAddressConfig: " << +m_ipAddressConfig;
+    }
   if (m_hasLinkLocalIpv6Address)
     {
       os << " linkLocalIpv6Address: ";
       for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin (); it != m_linkLocalIpv6Address.end (); ++it)
         {
-          os << (uint16_t) *it << " ";
+          os << +(*it) << " ";
         }
     }
 }
@@ -667,10 +753,29 @@ uint32_t
 ProseDirectLinkEstablishmentAccept::GetSerializedSize (void) const
 {
   uint32_t  size = 0;
-  size = sizeof (m_msgId) + sizeof (m_seqNum) + sizeof (m_ipAddressConfig);
+  size = size
+    + sizeof (m_msgId)
+    + sizeof (m_seqNum)
+    + 1  // Source user info IEs
+    + 1  // Source user info contents length
+    + sizeof (m_srcUserInfo)  // Source user info contents
+    + 1   // PC5 QoS flow descriptions IEI
+    + 2   // PC5 QoS flow descriptions contents length
+    + m_qosFlowDescriptions.size () * sizeof (uint8_t)//PC5 QoS flow descriptions contents
+    + 1   // Configuration of UE PC5 unicast user plane security protection IEI
+    + sizeof (m_userPlaneSecConfig);  // Configuration of UE PC5 unicast user plane security protection contents
+
+  if (m_hasIpAddressConfig)
+    {
+      size = size
+        + 1     // IP address configuration IEI
+        + sizeof (m_ipAddressConfig);   //IP address configuration contents
+    }
   if (m_hasLinkLocalIpv6Address)
     {
-      size += (1 + LinkLocalIpv6AddressSize); //1 for the type
+      size = size
+        +  1   // link-local IPv6 address IEI
+        + LinkLocalIpv6AddressSize;   // link-local IPv6 address contents
     }
   return size;
 }
@@ -681,11 +786,32 @@ ProseDirectLinkEstablishmentAccept::Serialize (Buffer::Iterator start) const
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   i.WriteU8 (m_msgId);
-  i.WriteHtonU16 (m_seqNum);
-  i.WriteU8 (m_ipAddressConfig);
+  i.WriteU8 (m_seqNum);
+
+  i.WriteU8 (0); // Application layer ID IEI octet (Source user info) //TODO: Not defined in the standard ATM
+  i.WriteU8 (sizeof (m_srcUserInfo)); // Length of Application layer ID content octet (Source user info)
+  i.WriteU32 (m_srcUserInfo); // Application layer ID contents (Source user info)
+
+  i.WriteU8 (0); // PC5 QoS flow descriptions IEI //TODO: Not defined in the standard ATM
+  i.WriteU16 (m_qosFlowDescriptions.size () * sizeof (uint8_t));// PC5 QoS flow descriptions contents length
+
+  //UE security capabilities contents:
+  for (std::vector<uint8_t>::const_iterator it = m_qosFlowDescriptions.begin (); it != m_qosFlowDescriptions.end (); ++it)
+    {
+      i.WriteU8 (*it);
+    }
+
+  i.WriteU8 (0); // Configuration of UE PC5 unicast user plane security protection IEI //TODO: Not defined in the standard ATM
+  i.WriteU8 (m_userPlaneSecConfig); // Configuration of UE PC5 unicast user plane security protectio contents
+
+  if (m_hasIpAddressConfig)
+    {
+      i.WriteU8 (57);
+      i.WriteU8 (m_ipAddressConfig);
+    }
   if (m_hasLinkLocalIpv6Address)
     {
-      i.WriteU8 (3);
+      i.WriteU8 (58);
       for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin (); it != m_linkLocalIpv6Address.end (); ++it)
         {
           i.WriteU8 (*it);
@@ -698,9 +824,24 @@ ProseDirectLinkEstablishmentAccept::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
+
   m_msgId = i.ReadU8 ();
-  m_seqNum = i.ReadNtohU16 ();
-  m_ipAddressConfig = i.ReadU8 ();
+  m_seqNum = i.ReadU8 ();
+
+  i.ReadU8 (); // Application layer ID IEI  (Source user info)
+  i.ReadU8 (); // Application layer ID length (Source user info)
+  m_srcUserInfo = i.ReadU32 (); // Application layer ID contents (Source user info)
+
+  i.ReadU8 (); // PC5 QoS flow descriptions IEI
+  uint16_t size_in_bytes = i.ReadU16 (); // PC5 QoS flow descriptions length
+  // PC5 QoS flow descriptions contents:
+  for (uint8_t index = 0; index < size_in_bytes; index++)
+    {
+      m_qosFlowDescriptions[index] = i.ReadU8 ();
+    }
+
+  i.ReadU8 (); // Configuration of UE PC5 unicast user plane security protection IEI
+  m_userPlaneSecConfig = i.ReadU8 (); // Configuration of UE PC5 unicast user plane security protection contents
 
   uint8_t opt_vars_iei = 0;
   while (!i.IsEnd ())
@@ -708,7 +849,11 @@ ProseDirectLinkEstablishmentAccept::Deserialize (Buffer::Iterator start)
       opt_vars_iei = i.ReadU8 ();
       switch (opt_vars_iei)
         {
-          case 3:
+          case 57: // IP address configuration IEI
+            m_ipAddressConfig = i.ReadU8 ();
+            m_hasIpAddressConfig = true;
+            break;
+          case 58: // link-local IPv6 address IEI
             for (uint8_t index = 0; index < LinkLocalIpv6AddressSize; index++)
               {
                 m_linkLocalIpv6Address[index] = i.ReadU8 ();
@@ -724,8 +869,18 @@ ProseDirectLinkEstablishmentAccept::Deserialize (Buffer::Iterator start)
 }
 
 void
-ProseDirectLinkEstablishmentAccept::SetParameters (uint8_t ipAddressConfig, std::vector<uint8_t> linkLocalIpv6Address)
+ProseDirectLinkEstablishmentAccept::SetParameters (
+  uint8_t seq,
+  uint32_t srcUserInfo,
+  std::vector<uint8_t> qosFlowDescriptions,
+  uint8_t userPlaneSecConfig,
+  uint8_t ipAddressConfig,
+  std::vector<uint8_t> linkLocalIpv6Address)
 {
+  SetSequenceNumber (seq);
+  SetSourceUserInfo (srcUserInfo);
+  SetPc5QoSFlowDescriptions (qosFlowDescriptions);
+  SetUserPlaneSecurityProtectionConfiguration (userPlaneSecConfig);
   SetIpAddressConfig (ipAddressConfig);
   SetLinkLocalIpv6Address (linkLocalIpv6Address);
 }
@@ -743,14 +898,56 @@ ProseDirectLinkEstablishmentAccept::GetSequenceNumber ()
 }
 
 void
-ProseDirectLinkEstablishmentAccept::SetSequenceNumber (uint32_t seq)
+ProseDirectLinkEstablishmentAccept::SetSequenceNumber (uint8_t seq)
 {
   m_seqNum = seq;
 }
 
 void
+ProseDirectLinkEstablishmentAccept::SetSourceUserInfo (uint32_t srcUserInfo)
+{
+  m_srcUserInfo = srcUserInfo;
+}
+
+uint32_t
+ProseDirectLinkEstablishmentAccept::GetSourceUserInfo ()
+{
+  return m_srcUserInfo;
+}
+
+void
+ProseDirectLinkEstablishmentAccept::SetPc5QoSFlowDescriptions (std::vector<uint8_t> qosFlowDescriptions)
+{
+  m_qosFlowDescriptions.clear ();
+  m_qosFlowDescriptions.assign (qosFlowDescriptions.size (), 0);
+  for (uint16_t i = 0; i < qosFlowDescriptions.size (); i++)
+    {
+      m_qosFlowDescriptions[i] = qosFlowDescriptions[i];
+    }
+}
+
+std::vector<uint8_t>
+ProseDirectLinkEstablishmentAccept::GetPc5QoSFlowDescriptions ()
+{
+  return m_qosFlowDescriptions;
+}
+
+void
+ProseDirectLinkEstablishmentAccept::SetUserPlaneSecurityProtectionConfiguration (uint8_t userPlaneSecConfig)
+{
+  m_userPlaneSecConfig = userPlaneSecConfig;
+}
+
+uint16_t
+ProseDirectLinkEstablishmentAccept::GetUserPlaneSecurityProtectionConfiguration ()
+{
+  return m_userPlaneSecConfig;
+}
+
+void
 ProseDirectLinkEstablishmentAccept::SetIpAddressConfig (uint8_t ipAddressConfig)
 {
+  m_hasIpAddressConfig = true;
   m_ipAddressConfig = ipAddressConfig;
 }
 
@@ -764,6 +961,7 @@ void
 ProseDirectLinkEstablishmentAccept::SetLinkLocalIpv6Address (std::vector<uint8_t> linkLocalIpv6Address)
 {
   m_hasLinkLocalIpv6Address = true;
+  m_linkLocalIpv6Address.clear ();
   m_linkLocalIpv6Address.assign (LinkLocalIpv6AddressSize,0);
   for (uint16_t i = 0; i < linkLocalIpv6Address.size (); i++)
     {
@@ -783,10 +981,8 @@ ProseDirectLinkEstablishmentAccept::GetLinkLocalIpv6Address ()
 ProseDirectLinkEstablishmentReject::ProseDirectLinkEstablishmentReject ()
 {
   m_msgId = 3;
-
-  m_seqNum = 0; //m_seqNum = seq;
-
-  m_pc5SignallingCauseValue = 0;
+  m_seqNum = 0;
+  m_pc5SignallingProtocolCause = 0;
 }
 
 ProseDirectLinkEstablishmentReject::~ProseDirectLinkEstablishmentReject ()
@@ -797,8 +993,7 @@ ProseDirectLinkEstablishmentReject::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ProseDirectLinkEstablishmentReject")
     .SetParent<Header> ()
-    .AddConstructor<ProseDirectLinkEstablishmentReject> ()
-  ;
+    .AddConstructor<ProseDirectLinkEstablishmentReject> ();
   return tid;
 }
 
@@ -812,8 +1007,8 @@ void
 ProseDirectLinkEstablishmentReject::Print (std::ostream &os) const
 {
   os << "msgId: " << (uint16_t) m_msgId << " "
-     << "seqNum: " << m_seqNum << " "
-     << "pc5SignallingCauseValue: " << (uint16_t) m_pc5SignallingCauseValue;
+     << "seqNum: " << +m_seqNum << " "
+     << "pc5SignallingCauseValue: " << +m_pc5SignallingProtocolCause;
 }
 
 uint32_t
@@ -822,8 +1017,7 @@ ProseDirectLinkEstablishmentReject::GetSerializedSize (void) const
   return
     sizeof (m_msgId) +
     sizeof (m_seqNum) +
-    sizeof (m_pc5SignallingCauseValue)
-  ;
+    sizeof (m_pc5SignallingProtocolCause);
 }
 
 void
@@ -832,8 +1026,8 @@ ProseDirectLinkEstablishmentReject::Serialize (Buffer::Iterator start) const
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   i.WriteU8 (m_msgId);
-  i.WriteHtonU16 (m_seqNum);
-  i.WriteU8 (m_pc5SignallingCauseValue);
+  i.WriteU8 (m_seqNum);
+  i.WriteU8 (m_pc5SignallingProtocolCause);
 }
 
 uint32_t
@@ -842,8 +1036,8 @@ ProseDirectLinkEstablishmentReject::Deserialize (Buffer::Iterator start)
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   m_msgId = i.ReadU8 ();
-  m_seqNum = i.ReadNtohU16 ();
-  m_pc5SignallingCauseValue = i.ReadU8 ();
+  m_seqNum = i.ReadU8 ();
+  m_pc5SignallingProtocolCause = i.ReadU8 ();
   return GetSerializedSize ();
 }
 
@@ -860,25 +1054,22 @@ ProseDirectLinkEstablishmentReject::GetSequenceNumber ()
 }
 
 void
-ProseDirectLinkEstablishmentReject::SetSequenceNumber (uint32_t seq)
+ProseDirectLinkEstablishmentReject::SetSequenceNumber (uint8_t seq)
 {
   m_seqNum = seq;
 }
 
-
 void
-ProseDirectLinkEstablishmentReject::SetPc5SignallingCauseValue (uint8_t pc5SignallingCauseValue)
+ProseDirectLinkEstablishmentReject::SetPc5SignallingProtocolCause (uint8_t pc5SignallingProtocolCause)
 {
-  m_pc5SignallingCauseValue = pc5SignallingCauseValue;
+  m_pc5SignallingProtocolCause = pc5SignallingProtocolCause;
 }
 
 uint8_t
-ProseDirectLinkEstablishmentReject::GetPc5SignallingCauseValue ()
+ProseDirectLinkEstablishmentReject::GetPc5SignallingProtocolCause ()
 {
-  return m_pc5SignallingCauseValue;
+  return m_pc5SignallingProtocolCause;
 }
-
-
 
 } // namespace ns3
 

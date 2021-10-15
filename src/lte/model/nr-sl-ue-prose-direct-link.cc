@@ -151,8 +151,9 @@ TypeId NrSlUeProseDirectLink::GetTypeId (void)
     .SetGroupName ("Lte")
     .AddConstructor<NrSlUeProseDirectLink> ()
     .AddAttribute ("T5080",
-                   "Duration of Timer T5080 (Prose Direct Link Establishment Request Retransmission) in seconds",
-                   TimeValue (Seconds (1.0)),
+                   "Duration of Timer T5080 (Prose Direct Link Establishment Request Retransmission) in seconds. "
+                   "Default value = 8 s, as per TS 24.554 Table 12.3.1 ",
+                   TimeValue (Seconds (8.0)),
                    MakeTimeAccessor (&NrSlUeProseDirectLink::SetT5080),
                    MakeTimeChecker ())
     .AddAttribute ("PdlEsRqRtxMax",
@@ -166,30 +167,23 @@ TypeId NrSlUeProseDirectLink::GetTypeId (void)
 NrSlUeProseDirectLink::NrSlUeProseDirectLink ()
 {
   NS_LOG_FUNCTION (this);
-  NS_FATAL_ERROR ("Please use the parameterized constructor ");
 
-}
+  m_selfL2Id = 0;
+  m_peerL2Id = 0;
+  m_isInitiating = false;
+  m_isRelayConn = false;
+  m_relayServiceCode = 0;
+  m_isIdeal = false;
 
-NrSlUeProseDirectLink::NrSlUeProseDirectLink (uint32_t selfL2Id, uint32_t peerL2Id,
-                                              bool isInitiating, bool isRelayConn,
-                                              bool isIdeal, Ipv4Address selfIp)
-{
-  NS_LOG_FUNCTION (this << selfL2Id << peerL2Id << isInitiating << isRelayConn << isIdeal << selfIp);
-  m_nrSlUeProseDirLnkSapProvider = new MemberNrSlUeProseDirLnkSapProvider<NrSlUeProseDirectLink> (this);
-  m_selfL2Id = selfL2Id;
-  m_peerL2Id = peerL2Id;
-  m_isInitiating = isInitiating;
-  m_isRelayConn = isRelayConn;
-  m_isIdeal = isIdeal;
   m_state = INIT;
+  m_nrSlUeProseDirLnkSapProvider = new MemberNrSlUeProseDirLnkSapProvider<NrSlUeProseDirectLink> (this);
+
   //Establishment parameters
   m_pdlEsParam.t5080 = new Timer ();
   m_pdlEsParam.t5080->SetFunction (&NrSlUeProseDirectLink::T5080Expiry, this);
   m_pdlEsParam.rtxCounter = 0;
-  m_pdlEsParam.rtxMax = 0;
-  //Ip parameters
-  m_ipInfo.selfIpv4Addr = selfIp;
 }
+
 
 NrSlUeProseDirectLink::~NrSlUeProseDirectLink (void)
 {
@@ -203,6 +197,22 @@ NrSlUeProseDirectLink::DoDispose ()
   delete m_nrSlUeProseDirLnkSapProvider;
   m_pdlEsParam.t5080->Cancel ();
   delete m_pdlEsParam.t5080;
+}
+
+void
+NrSlUeProseDirectLink::SetParameters (uint32_t selfL2Id, uint32_t peerL2Id,
+                                      bool isInitiating, bool isRelayConn,
+                                      uint32_t relayServiceCode,
+                                      bool isIdeal, Ipv4Address selfIp)
+{
+  NS_LOG_FUNCTION (this << selfL2Id << peerL2Id << isInitiating << isRelayConn << relayServiceCode << isIdeal << selfIp);
+  m_selfL2Id = selfL2Id;
+  m_peerL2Id = peerL2Id;
+  m_isInitiating = isInitiating;
+  m_isRelayConn = isRelayConn;
+  m_relayServiceCode = relayServiceCode;
+  m_isIdeal = isIdeal;
+  m_ipInfo.selfIpv4Addr = selfIp;
 }
 
 NrSlUeProseDirLnkSapProvider*
@@ -245,8 +255,6 @@ NrSlUeProseDirectLink::DoReceiveNrSlPc5Message (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this);
 
-  //Here we will have the logic to differentiate between different type of signaling messages
-  //and what entity/function take care of which
   NrSlPc5SignallingMessageType pc5smt;
   packet->PeekHeader (pc5smt);
 
@@ -302,6 +310,7 @@ NrSlUeProseDirectLink::SwitchToState (DirectLinkState newState)
             NS_LOG_INFO ("Relay");
 
             info.relayInfo.isRelayConn = true;
+            info.relayInfo.relayServiceCode = m_relayServiceCode;
             if (m_isInitiating)
               {
                 NS_LOG_INFO ("-> Role: Remote UE");
@@ -359,8 +368,8 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
             uint32_t relaySC = pdlEsRqHeader.GetRelayServiceCode ();
             NS_LOG_INFO (" Direct Link connection for Relay - DirectLinkEstablishmentRequest has Relay Service Code: " << relaySC);
             if (m_isRelayConn && !m_isInitiating            //1. This UE is a Relay UE
-                && relaySC == 1 /*HardCoded ATM TODO */     //2. It provides the service pointed by the relay service code
-                /*Not implemented yet TODO */               //3. It can accept a new connection
+                && relaySC == m_relayServiceCode            //2. It provides the service pointed by the relay service code
+                /*Not implemented at the moment TODO */     //3. It can accept a new connection
                 )
               {
                 NS_LOG_INFO (" UE does provide this service and can accept the connection");
@@ -369,13 +378,13 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
             else
               {
                 NS_LOG_INFO (" UE does not provide this service or cannot accept this service");
-                cause = 1; //TODO: Implement the cause parameter configuration
+                cause = 1; // PC5 signalling cause value 00000001 = 'Direct communication to the target UE not allowed'
               }
           }
         else
           {
             NS_LOG_INFO (" Direct Link connection for Unicast");
-            // TODO Verify Preconditions to accept direct link connection for unicast
+            // TODO: Verify Preconditions to accept direct link connection for unicast
             // For the moment we always accept
             accept = true;
           }
@@ -467,6 +476,9 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentAccept (Ptr<Packet> packet)
   ProseDirectLinkEstablishmentAccept pdlEsAcHeader;
   packet->PeekHeader (pdlEsAcHeader);
 
+  //Process message and store info
+  //TODO: No field is really used at the moment.
+
   // Examine content for debug
   std::ostringstream oss (std::ostringstream::out);
   pdlEsAcHeader.Print (oss);
@@ -483,12 +495,6 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentAccept (Ptr<Packet> packet)
       case NrSlUeProseDirectLink::ESTABLISHING:
         //Normal case
 
-        //Process message and store info
-        //TODO
-
-        //Cancel request retransmission timer
-        m_pdlEsParam.t5080->Remove ();
-
         {
           //Retrieve tag with Ip of the peer UE and store it.
           //TODO: This is a shortcut to speed development and may be replaced
@@ -499,6 +505,9 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentAccept (Ptr<Packet> packet)
           ipTag.Print (oss);
           NS_LOG_DEBUG ("Peer Ipv4 address: " << oss.str ());
         }
+
+        //Cancel request retransmission timer
+        m_pdlEsParam.t5080->Remove ();
 
         //Change of state and notify ProSe layer about change of state
         SwitchToState (ESTABLISHED);
@@ -530,6 +539,9 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentReject (Ptr<Packet> packet)
   NS_LOG_DEBUG ("Message content: " << oss.str ());
   oss.str ("");
 
+  //Process message and store info if needed
+  uint8_t cause =  pdlEsRjHeader.GetPc5SignallingProtocolCause ();
+
   NS_LOG_INFO ("In state: " << ToString (m_state) );
   switch (m_state)
     {
@@ -538,8 +550,55 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentReject (Ptr<Packet> packet)
       case NrSlUeProseDirectLink::ESTABLISHING:
         //Normal case
 
-        //Process message and store info if needed
-        //TODO
+        //Causes from TS 24.554 Table 11.3.8.1
+        switch (cause)
+          {
+            case 1:
+              NS_LOG_INFO ("Direct communication to the target UE not allowed");
+              break;
+            case 2:
+              NS_LOG_INFO ("Direct communication to the target UE no longer needed");
+              break;
+            case 3:
+              NS_LOG_INFO ("Conflict of layer-2 ID for unicast communication is detected");
+              break;
+            case 4:
+              NS_LOG_INFO ("Direct connection is not available anymore");
+              break;
+            case 5:
+              NS_LOG_INFO ("Lack of resources for PC5 unicast link");
+              break;
+            case 6:
+              NS_LOG_INFO ("Authentication failure");
+              break;
+            case 7:
+              NS_LOG_INFO ("Integrity failure");
+              break;
+            case 8:
+              NS_LOG_INFO ("UE security capabilities mismatch");
+              break;
+            case 9:
+              NS_LOG_INFO ("LSB of KNRP-sess ID conflict");
+              break;
+            case 10:
+              NS_LOG_INFO ("UE PC5 unicast signalling security policy mismatch");
+              break;
+            case 11:
+              NS_LOG_INFO (" Required service not allowed");
+              break;
+            case 12:
+              NS_LOG_INFO ("Security policy not aligned");
+              break;
+            case 111:
+              NS_LOG_INFO ("Protocol error, unspecified");
+              break;
+            default:
+              NS_FATAL_ERROR ("Invalid PC5 Signalling Protocol Cause: " << +cause);
+          }
+
+        //Cancel request retransmission timer
+        m_pdlEsParam.t5080->Remove ();
+
 
         //Change of state and notify ProSe layer about change of state
         SwitchToState (RELEASED);
@@ -567,15 +626,10 @@ NrSlUeProseDirectLink::StartConnectionEstablishment ()
 {
   NS_LOG_FUNCTION (this);
 
-  ProseDirectLinkEstablishmentRequest pdlEsRqHeader;
-  Ptr<Packet> pdlEsRqPacket = Create<Packet>();
-
-
   NS_LOG_INFO ("In state: " << ToString (m_state) );
   switch (m_state)
     {
       case NrSlUeProseDirectLink::INIT:
-        //Normal case
 
         //Send the request
         SendDirectLinkEstablishmentRequest ();
@@ -603,21 +657,39 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentRequest ()
 {
   NS_LOG_FUNCTION (this);
 
-  ProseDirectLinkEstablishmentRequest pdlEsRqHeader;
+  uint8_t lcId = 0;  //pdlEsRq is an unprotected PC5 message to be sent in SL-SRB0 (TS 38.331 - Section 9.1.14)
+
+  //Create packet
   Ptr<Packet> pdlEsRqPacket = Create<Packet>();
 
-  //Fill the request message with the appropriated information
-  //TODO
+  //Fill the request message header with the appropriated information
+  ProseDirectLinkEstablishmentRequest pdlEsRqHeader;
+  //Mandatory IEs
+  pdlEsRqHeader.SetSequenceNumber (m_pc5SigMsgSeqNum.GenerateSeqNum ());
+  pdlEsRqHeader.SetSourceUserInfo (m_selfL2Id);
 
+  std::vector<uint32_t> proseAppIds;
+  proseAppIds.assign (1, 0); //Not used
+  pdlEsRqHeader.SetProseApplicationIds (proseAppIds);
+  std::vector<uint8_t> secCapabilities;
+  secCapabilities.assign (1, 0); //Not used
+  pdlEsRqHeader.SetUeSecurityCapabilities (secCapabilities);
+  uint8_t ueSigSecPolicy = 0; //Not used
+  pdlEsRqHeader.SetUeSignallingSecurityPolicy (ueSigSecPolicy);
+
+  //Optional IEs
+  pdlEsRqHeader.SetTargetUserInfo (m_peerL2Id);
   if (m_isRelayConn && m_isInitiating)
     {
       NS_LOG_INFO ("Remote UE sending DirectLinkEstablishmentRequest");
-      uint32_t relaySC = 1; //HardCoded ATM TODO Obtain Relay Service Code from the appropriate configuration
-      pdlEsRqHeader.SetRelayServiceCode (relaySC);
+      pdlEsRqHeader.SetRelayServiceCode (m_relayServiceCode);
     }
 
   //Store it for retransmission
   m_pdlEsParam.rqMsgCopy = pdlEsRqHeader;
+
+  //Add header to packet
+  pdlEsRqPacket->AddHeader (pdlEsRqHeader);
 
   //Add tag with selfIp for ease SL-DRB and TFTs configuration in the peer UE
   //TODO: This is a shortcut to speed development and may be replaced
@@ -627,8 +699,6 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentRequest ()
   pdlEsRqPacket->AddPacketTag (ipTag);
 
 
-  uint8_t lcId = 0;  //pdlEsRq is an unprotected PC5 message to be sent in SL-SRB0 (TS 38.331 - Section 9.1.14)
-  pdlEsRqPacket->AddHeader (pdlEsRqHeader);
 
   //Send it
   SendNrSlPc5SMessage (pdlEsRqPacket, m_peerL2Id, lcId);
@@ -639,12 +709,23 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentAccept ()
 {
   NS_LOG_FUNCTION (this);
 
-  ProseDirectLinkEstablishmentAccept pdlEsAcHeader;
-  //Fill the accept message with the appropriated information
-  //TODO
-
   uint8_t lcId = 2;  //pdlEsAc is a protected PC5 message to be sent in SL-SRB2 (TS 38.331 - Section 9.1.14)
+
+  //Create the packet
   Ptr<Packet> pdlEsAcPacket = Create<Packet>();
+
+  //Fill the accept message  header with the appropriated information
+  ProseDirectLinkEstablishmentAccept pdlEsAcHeader;
+  //Mandatory IEs
+  pdlEsAcHeader.SetSequenceNumber (m_pc5SigMsgSeqNum.GenerateSeqNum ());
+  pdlEsAcHeader.SetSourceUserInfo (m_selfL2Id);
+  std::vector<uint8_t> qosFlowDescriptions;
+  qosFlowDescriptions.assign (3, 0); //Not used
+  pdlEsAcHeader.SetPc5QoSFlowDescriptions (qosFlowDescriptions);
+  uint8_t secConfig = 0; //Not used
+  pdlEsAcHeader.SetUserPlaneSecurityProtectionConfiguration (secConfig);
+
+  //Add header to packet
   pdlEsAcPacket->AddHeader (pdlEsAcHeader);
 
   //Add tag with selfIp for ease SL-DRB and TFTs configuration in the peer UE
@@ -654,7 +735,6 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentAccept ()
   ipTag.SetAddress (m_ipInfo.selfIpv4Addr);
   pdlEsAcPacket->AddPacketTag (ipTag);
 
-
   //Send it
   SendNrSlPc5SMessage (pdlEsAcPacket, m_peerL2Id, lcId);
 }
@@ -663,13 +743,21 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentReject (uint8_t cause)
 {
   NS_LOG_FUNCTION (this);
 
-  ProseDirectLinkEstablishmentReject pdlEsRjHeader;
-  //Fill the reject message with the appropriated information
-  //TODO
-
   uint8_t lcId = 2;  //pdlEsRj is a protected PC5 message to be sent in SL-SRB2 (TS 38.331 - Section 9.1.14)
+
+  //Create the packet
   Ptr<Packet> pdlEsRjPacket = Create<Packet>();
+
+  //Fill the reject message with the appropriated information
+  ProseDirectLinkEstablishmentReject pdlEsRjHeader;
+  //All fields are mandatory fields in the reject message
+  pdlEsRjHeader.SetSequenceNumber (m_pc5SigMsgSeqNum.GenerateSeqNum ());
+  pdlEsRjHeader.SetPc5SignallingProtocolCause (cause);
+
+  //Add header to packet
   pdlEsRjPacket->AddHeader (pdlEsRjHeader);
+
+  //Send it
   SendNrSlPc5SMessage (pdlEsRjPacket, m_peerL2Id, lcId);
 
 }

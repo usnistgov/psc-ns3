@@ -64,6 +64,7 @@ NrSlUeProseDirLinkContext::NrSlUeProseDirLinkContext (void)
   NS_LOG_FUNCTION (this);
   m_hasActiveSlDrb = false;
   m_hasPendingSlDrb = false;
+  m_relayServiceCode = 0;
 }
 
 NrSlUeProseDirLinkContext::~NrSlUeProseDirLinkContext (void)
@@ -96,7 +97,6 @@ NrSlUeProse::NrSlUeProse ()
   m_nrSlUeSvcRrcSapUser = new MemberNrSlUeSvcRrcSapUser<NrSlUeProse> (this);
   m_nrSlUeSvcNasSapUser = new MemberNrSlUeSvcNasSapUser<NrSlUeProse> (this);
   m_nrSlUeProseDirLnkSapUser = new MemberNrSlUeProseDirLnkSapUser<NrSlUeProse> (this);
-  m_relayDrbId = 0; //TODO: is ID = 0 a valid data radio bearer ID?
   m_imsi = 0;
 }
 
@@ -177,23 +177,35 @@ void NrSlUeProse::ConfigureUnicast ()
 
 
 void
-NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id, bool isInitiating, bool isRelayConn)
+NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp,
+                                      uint32_t peerL2Id, bool isInitiating,
+                                      bool isRelayConn, uint32_t relayServiceCode)
 {
-  NS_LOG_FUNCTION (this << selfL2Id << selfIp << peerL2Id << isInitiating << isRelayConn);
+  NS_LOG_FUNCTION (this << selfL2Id << selfIp << peerL2Id << isInitiating << isRelayConn << relayServiceCode);
 
   bool isIdeal = false;
 
-  //TODO: Verifications
-  //Is it possible to create this link?
-  //No. Errors. Return.
+  auto it = m_unicastDirectLinks.find (peerL2Id);
+  NS_ASSERT_MSG (it == m_unicastDirectLinks.end (), "Direct link " << selfL2Id << "<-->" << peerL2Id << "already exist. "
+                 "We currently support only one direct link connection, which should be configured from the scenario once.");
 
-  //Yes. Continue
+  if (isRelayConn && !isInitiating)  //Relay UE
+    {
+      auto it = m_l3U2nRelayProvidedSvcs.find (relayServiceCode);
+      if (it == m_l3U2nRelayProvidedSvcs.end ())
+        {
+          NS_FATAL_ERROR ("Could not find the U2N relay service configuration for relay service code: " <<
+                          relayServiceCode << ". " <<
+                          "Did you configure the service for the relay UEs in the scenario?");
+        }
+    }
 
   //Create context to maintain here in the ProSe layer
   Ptr<NrSlUeProseDirLinkContext> context = CreateObject <NrSlUeProseDirLinkContext> ();
 
-  //Create Direct Link instance
-  Ptr<NrSlUeProseDirectLink> link = CreateObject <NrSlUeProseDirectLink> (selfL2Id, peerL2Id, isInitiating, isRelayConn, isIdeal, selfIp);
+  //Create Direct Link instance and set parameters
+  Ptr<NrSlUeProseDirectLink> link = CreateObject <NrSlUeProseDirectLink> ();
+  link->SetParameters (selfL2Id, peerL2Id, isInitiating, isRelayConn, relayServiceCode, isIdeal, selfIp);
 
   //Connect SAPs
   link->SetNrSlUeProseDirLnkSapUser (GetNrSlUeProseDirLnkSapUser ());
@@ -202,16 +214,19 @@ NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uin
   context->m_nrSlUeProseDirLnkSapProvider = link->GetNrSlUeProseDirLnkSapProvider ();
   context->m_ipInfo.selfIpv4Addr = selfIp;
 
+  if (isRelayConn)
+    {
+      context->m_relayServiceCode = relayServiceCode;
+    }
+
   //Store context
   m_unicastDirectLinks.insert (std::pair <uint32_t, Ptr<NrSlUeProseDirLinkContext> > (peerL2Id, context));
-
 
   //Initiate connection establishment procedure if this UE is the initiating UE
   if (isInitiating)
     {
       context->m_link->StartConnectionEstablishment ();
     }
-
 }
 
 
@@ -269,13 +284,12 @@ NrSlUeProse::DoReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id)
   if (it == m_unicastDirectLinks.end ())
     {
       NS_LOG_INFO ("Unrecognized peer L2 ID...");
-      NS_FATAL_ERROR ("This case is not handled yet. You should configure both UEs in the "
-                      "link from the scenario.");
-      //This will be the case when the Relay UE receives a request from the Remote UE.
-      //The Relay UE should:
-      //1. Create the corresponding context and link.
-      //    TODO: provision selfL2Id,  selfIp in the class
-      //    AddDirectLinkConnection (selfL2Id, selfIp, srcL2Id, false);
+      NS_FATAL_ERROR ("This case is not handled yet. You should configure both UEs on the "
+                      "direct link from the scenario.");
+      //This will be the case e.g. when the Relay UE receives a request from the Remote UE
+      //after the relay discovery procedure.
+      //In that case, the Relay UE should:
+      //1. Create the corresponding context and direct link instance.
       //2. Pass the packet to the corresponding direct link instance
     }
   else
@@ -320,7 +334,7 @@ NrSlUeProse::DoNotifyChangeOfDirectLinkState (uint32_t peerL2Id, NrSlUeProseDirL
 
                 //Depending on the UE Role, we need to tell the NAS to (re)configure the data bearers
                 //to have the data packets flowing in the appropriate path
-                ConfigureDataRadioBearersForU2NRelay (peerL2Id, info.relayInfo.role, info.ipInfo);
+                ConfigureDataRadioBearersForU2nRelay (peerL2Id, info.relayInfo, info.ipInfo);
               }
             else
               {
@@ -368,32 +382,55 @@ NrSlUeProse::ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDi
 }
 
 void
-NrSlUeProse::ConfigureDataRadioBearersForU2NRelay (uint32_t peerL2Id,
-                                                   enum NrSlUeProseDirLnkSapUser::U2nRole role,
+NrSlUeProse::ConfigureDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                   NrSlUeProseDirLnkSapUser::DirectLinkRelayInfo relayInfo,
                                                    NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo)
 {
-  NS_LOG_FUNCTION (this << peerL2Id << role << ipInfo.peerIpv4Addr);
+  NS_LOG_FUNCTION (this << peerL2Id << relayInfo.role << ipInfo.peerIpv4Addr);
 
-  if (role == NrSlUeProseDirLnkSapUser::RelayUe)
+  uint8_t relayDrbId = 0;
+  if (relayInfo.role == NrSlUeProseDirLnkSapUser::RelayUe)
     {
       //Tell the EPC helper to configure the EpcPgwApplication to route the packets
       //directed to the remote UE towards the relay UE
       m_epcHelper->AddRemoteUe (m_imsi, ipInfo.peerIpv4Addr);
+
+      //Find data relay radio bearer id for the service
+      auto it = m_l3U2nRelayProvidedSvcs.find (relayInfo.relayServiceCode);
+      if (it == m_l3U2nRelayProvidedSvcs.end ())
+        {
+          NS_FATAL_ERROR ("Could not find the U2N relay service with relay service code :" << relayInfo.relayServiceCode);
+        }
+      else
+        {
+          relayDrbId = it->second.relayDrbId;
+        }
     }
 
   //Tell the NAS to (re)configure the UL and SL data bearers to have the data packets
   //flowing in the appropriate path
-  m_nrSlUeSvcNasSapProvider->ConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, m_relayDrbId);
+  m_nrSlUeSvcNasSapProvider->ConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, relayInfo.role, ipInfo, relayDrbId);
 
 }
 
 void
-NrSlUeProse::SetU2nRelayDrbId (uint8_t drbId)
+NrSlUeProse::AddU2nRelayServiceConfiguration (uint32_t relayServiceCode, NrSlL3U2nServiceConfiguration config)
 {
-  NS_LOG_FUNCTION (this << drbId);
-  m_relayDrbId = drbId;
+  NS_LOG_FUNCTION (this << relayServiceCode << config.relayDrbId);
 
+  auto it = m_l3U2nRelayProvidedSvcs.find (relayServiceCode);
+  if (it == m_l3U2nRelayProvidedSvcs.end ())
+    {
+      //First time
+      m_l3U2nRelayProvidedSvcs.insert (std::pair<uint32_t, NrSlL3U2nServiceConfiguration> (relayServiceCode, config));
+    }
+  else
+    {
+      //Update
+      it->second.relayDrbId = config.relayDrbId;
+    }
 }
+
 
 void
 NrSlUeProse::SetImsi (uint64_t imsi)
