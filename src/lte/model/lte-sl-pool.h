@@ -60,8 +60,8 @@ public:
   /** Identify the location of a subframe by its frame number and subframe number */
   struct SubframeInfo
   {
-    uint32_t frameNo; ///< The frame number
-    uint32_t subframeNo; ///< The subframe number
+    uint32_t frameNo {std::numeric_limits <uint32_t>::max ()}; ///< The frame number
+    uint32_t subframeNo {std::numeric_limits <uint32_t>::max ()}; ///< The subframe number
 
     /**
      * Adds two subframe locations and return the new location

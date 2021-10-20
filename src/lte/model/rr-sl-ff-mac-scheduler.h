@@ -412,7 +412,7 @@ private:
     Ptr<SidelinkCommResourcePool> m_pool; ///< the pool
     SidelinkCommResourcePool::SubframeInfo m_currentScPeriod; ///< start of current period
     SidelinkCommResourcePool::SubframeInfo m_nextScPeriod; ///< start of next period
-    uint32_t m_npscch; ///< number of PSCCH available in the pool
+    uint32_t m_npscch = 0; ///< number of PSCCH available in the pool
 
     std::map <uint16_t,uint32_t> m_ceSlBsrRxed; ///< map the RNTI and Sidelink BSR request
 

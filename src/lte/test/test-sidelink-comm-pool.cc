@@ -343,8 +343,8 @@ void SidelinkCommPoolSubframeOpportunityTestCase::DoRun ()
 
   bool flag = true;
   int ctr = 0;
-  int32_t actualPscchSubframeOp1;
-  int32_t actualPscchSubframeOp2;
+  int32_t actualPscchSubframeOp1 = -1;
+  int32_t actualPscchSubframeOp2 = -1;
 
   if (rbs.size () > 0)
     {
