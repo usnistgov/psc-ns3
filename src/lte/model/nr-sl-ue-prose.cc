@@ -87,6 +87,10 @@ TypeId NrSlUeProse::GetTypeId (void)
   static TypeId  tid = TypeId ("ns3::NrSlUeProse")
     .SetParent<NrSlUeService> ()
     .AddConstructor<NrSlUeProse> ()
+    .AddTraceSource ("PC5SignallingPacketTrace",
+                     "Trace fired upon transmission and reception of PC5 Signalling messages",
+                     MakeTraceSourceAccessor (&NrSlUeProse::m_pc5SignallingPacketTrace),
+                     "ns3::NrSlUeProse::PC5SignallingPacketTracedCallback")
   ;
   return tid;
 }
@@ -98,6 +102,7 @@ NrSlUeProse::NrSlUeProse ()
   m_nrSlUeSvcNasSapUser = new MemberNrSlUeSvcNasSapUser<NrSlUeProse> (this);
   m_nrSlUeProseDirLnkSapUser = new MemberNrSlUeProseDirLnkSapUser<NrSlUeProse> (this);
   m_imsi = 0;
+  m_l2Id = 0;
 }
 
 
@@ -185,6 +190,8 @@ NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp,
 
   bool isIdeal = false;
 
+  NS_ASSERT_MSG (selfL2Id == m_l2Id, "L2Id mismatch.");
+
   auto it = m_unicastDirectLinks.find (peerL2Id);
   NS_ASSERT_MSG (it == m_unicastDirectLinks.end (), "Direct link " << selfL2Id << "<-->" << peerL2Id << "already exist. "
                  "We currently support only one direct link connection, which should be configured from the scenario once.");
@@ -265,6 +272,7 @@ NrSlUeProse::DoSendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8
           it->second [lcId] = true;
         }
     }
+  m_pc5SignallingPacketTrace (m_l2Id, dstL2Id, true, packet);
 
   //Pass the message to the RRC
   m_nrSlUeSvcRrcSapProvider->SendNrSlSignalling (packet, dstL2Id, lcId);
@@ -295,6 +303,8 @@ NrSlUeProse::DoReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id)
   else
     {
       NS_LOG_INFO ("Context found!");
+      m_pc5SignallingPacketTrace (srcL2Id, m_l2Id, false, packet);
+
       //Pass the packet to the corresponding direct link instance
       it->second->m_nrSlUeProseDirLnkSapProvider->ReceiveNrSlPc5Message (packet);
     }
@@ -437,7 +447,13 @@ NrSlUeProse::SetImsi (uint64_t imsi)
 {
   NS_LOG_FUNCTION (this << imsi);
   m_imsi = imsi;
+}
 
+void
+NrSlUeProse::SetL2Id (uint32_t l2Id)
+{
+  NS_LOG_FUNCTION (this << l2Id);
+  m_l2Id = l2Id;
 }
 
 void
@@ -445,7 +461,6 @@ NrSlUeProse::SetEpcHelper (const Ptr<NrPointToPointEpcHelper> &epcHelper)
 {
   NS_LOG_FUNCTION (this);
   m_epcHelper = epcHelper;
-
 }
 
 } // namespace ns3

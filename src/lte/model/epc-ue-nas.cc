@@ -101,6 +101,10 @@ EpcUeNas::GetTypeId (void)
                      "fired upon every UE NAS state transition",
                      MakeTraceSourceAccessor (&EpcUeNas::m_stateTransitionCallback),
                      "ns3::EpcUeNas::StateTracedCallback")
+    .AddTraceSource ("NrSlRelayRxPacketTrace",
+                     "Trace fired upon reception of data packet by a UE acting as UE-to-Network relay UE",
+                     MakeTraceSourceAccessor (&EpcUeNas::m_relayRxPacketTrace),
+                     "ns3::EpcUeNas::NrSlRelayNasRxPacketTracedCallback")
   ;
   return tid;
 }
@@ -597,6 +601,8 @@ EpcUeNas::ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet)
         {
           //U2N relay case - Downward packet - From network to the Remote UE - Send on the SL
           NS_LOG_INFO ("Relaying packet to SL");
+          m_relayRxPacketTrace (m_u2nRelayConfig.selfIpv4Addr,
+                                ipv4Header.GetSource (), ipv4Header.GetDestination (), "DL", "SL",  packet);
           m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
           return;
         }
@@ -608,6 +614,8 @@ EpcUeNas::ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet)
               if (m_u2nRelayConfig.relayDrbId != 0)
                 {
                   NS_LOG_INFO ("Relaying packet to UL");
+                  m_relayRxPacketTrace (m_u2nRelayConfig.selfIpv4Addr,
+                                        ipv4Header.GetSource (), ipv4Header.GetDestination (), "SL", "UL",  packet);
                   m_asSapProvider->SendData (packet, m_u2nRelayConfig.relayDrbId);
                   return;
                 }

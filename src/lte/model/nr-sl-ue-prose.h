@@ -42,6 +42,7 @@
 #include <ns3/nr-sl-ue-prose-dir-lnk-sap.h>
 #include <unordered_map>
 #include <ns3/nr-sl-ue-prose-direct-link.h>
+#include <ns3/traced-callback.h>
 
 
 namespace ns3 {
@@ -204,12 +205,29 @@ public:
    * \param imsi the IMSI of the UE
    */
   void SetImsi (uint64_t imsi);
+
+  /**
+   * \brief Set the Layer 2 ID used by the UE
+   *
+   * \param l2Id the Layer 2 ID  of the UE
+   */
+  void SetL2Id (uint32_t l2Id);
   /**
    * \brief Set EPC helper
    *
    * \param epcHelper Ptr of type NrPointToPointEpcHelper
    */
   void SetEpcHelper (const Ptr<NrPointToPointEpcHelper> &epcHelper);
+
+  /**
+    * TracedCallback signature for transmission and reception of PC5-S messages.
+    *
+    * \param [in] srcL2Id the layer 2 ID of the source of the message
+    * \param [in] dstL2Id the layer 2 ID of the destination of the message
+    * \param [in] isTx flag indicating if the trace was called upon a transmission
+    * \param [in] p the PC5-S message
+    */
+  typedef void (* PC5SignallingPacketTracedCallback)(uint32_t srcL2Id, uint32_t dstL2Id, bool isTx, Ptr<Packet> p);
 
 private:
   //NrSlUeSvcRrcSapUser methods
@@ -219,6 +237,12 @@ private:
   //NrSlUeProseDirLnkSapUser methods
   void DoSendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId);
   void DoNotifyChangeOfDirectLinkState (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::ChangeOfStateNotification info);
+
+  /**
+   * Trace information upon transmission and reception of PC5-S messages
+   */
+  TracedCallback< uint32_t, uint32_t, bool, Ptr<Packet> > m_pc5SignallingPacketTrace;
+
 
   //SAP pointers
   NrSlUeSvcNasSapUser* m_nrSlUeSvcNasSapUser; ///< NR SL UE SERVICE NAS SAP user
@@ -235,6 +259,8 @@ private:
   NrSlL3U2nRelayServices m_l3U2nRelayProvidedSvcs; ///< UE-to-Network Relay services provided by the UE
 
   uint64_t m_imsi;  //!< the IMSI used by the UE
+  uint32_t m_l2Id; ///< the L2Id used by this UE
+
   Ptr<NrPointToPointEpcHelper> m_epcHelper; //!< pointer to the EPC helper
 
   void ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);

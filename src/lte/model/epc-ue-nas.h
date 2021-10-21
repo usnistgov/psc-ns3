@@ -288,6 +288,20 @@ public:
    */
   void ActivateNrSlBearer (Ptr<LteSlTft> tft);
 
+  /**
+   * TracedCallback signature for reception of data packets by a UE acting as UE-to-Network relay
+   *
+   * \param [in] nodeIp the Ipv4 address of this UE
+   * \param [in] srcIp the source Ipv4 address of the data packet
+   * \param [in] dstIp the destination Ipv4 address of the data packet
+   * \param [in] srcLink the link in which the data packet was received
+   * \param [in] dstLink the link to which the data packet was relayed
+   * \param [in] p the data packet
+   */
+  typedef void (* NrSlRelayNasRxPacketTracedCallback)(Ipv4Address nodeIp, Ipv4Address srcIp, Ipv4Address dstIp,
+                                                      std::string srcLink, std::string dstLink,
+                                                      Ptr<Packet> p);
+
 private:
 
   //LteAsSapUser functions
@@ -351,6 +365,11 @@ private:
   };
 
   U2nRelayNasConfig m_u2nRelayConfig;  ///< UE-to-Network Relay parameters
+
+  /**
+   * Trace for reception of data packets by a UE acting as UE-to-Network relay
+   */
+  TracedCallback<Ipv4Address, Ipv4Address, Ipv4Address, std::string, std::string, Ptr<Packet> > m_relayRxPacketTrace;
 
 };
 
