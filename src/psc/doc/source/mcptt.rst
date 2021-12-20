@@ -1074,8 +1074,12 @@ receiving application will check whether the packet contains a newer
 first RTP packet of a new talk spurt from a sender.  The latency of all
 such talk spurts, traced from the perspective of each receiving application,
 can be traced using the helper method 
-``ns3::psc::McpttHelper::EnableMouthToEarLatencyTrace()`` which takes a single
-argument, the trace filename.  The output file is formatted as follows.
+``ns3::psc::McpttHelper::EnableMouthToEarLatencyTrace()``. This method can be
+called with no arguments so that mouth-to-ear latency samples can be
+captured in the simulation via the
+``ns3::psc::McpttHelper::MouthToEarLatencyTrace`` traced callback, or a single
+argument, the trace filename, can be provided so that the collected samples
+are also written to a file. The output file is formatted as follows.
 
 .. sourcecode:: text
 
@@ -1102,8 +1106,11 @@ fails, either due to the user (pusher) abandoning the request, or the end
 of the call, or some other reason.
 
 The latency and outcomes of access requests can be traced using the helper
-method ``ns3::psc::McpttHelper::EnableAccessTimeTrace()`` which takes a single
-argument, the trace filename.  The output file is formatted as follows.
+method ``ns3::psc::McpttHelper::EnableAccessTimeTrace()``. If no arguments
+are provided to this method, then samples can be captured in the simulation
+via the ``ns3::psc::McpttHelper::AccessTimeTrace`` traced callback, or if a
+single argument, the trace filename, is provided then the collected samples
+will also be written to a file. The output file is formatted as follows.
 
 .. sourcecode:: text
 

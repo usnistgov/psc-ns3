@@ -1263,11 +1263,11 @@ int main (int argc, char *argv[])
   lteHelper->EnableUlMacTraces ();
   lteHelper->EnableDlMacTraces ();
 
-  McpttTraceHelper traceHelper;
-  traceHelper.EnableMsgTraces ();
-  traceHelper.EnableStateMachineTraces ();
-  traceHelper.EnableMouthToEarLatencyTrace ("mcptt-operational-modes-mobility-m2e-latency.dat");
-  traceHelper.EnableAccessTimeTrace ("mcptt-operational-modes-mobility-access-time.dat");
+  Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper> ();
+  traceHelper->EnableMsgTraces ();
+  traceHelper->EnableStateMachineTraces ();
+  traceHelper->EnableMouthToEarLatencyTrace ("mcptt-operational-modes-mobility-m2e-latency.dat");
+  traceHelper->EnableAccessTimeTrace ("mcptt-operational-modes-mobility-access-time.dat");
 
   //Configure visualization
 #ifdef HAS_NETSIMULYZER

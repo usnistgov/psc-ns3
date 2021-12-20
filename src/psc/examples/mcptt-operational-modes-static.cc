@@ -787,11 +787,11 @@ int main (int argc, char *argv[])
 
   //End scenario configuration
 
-  McpttTraceHelper traceHelper;
-  traceHelper.EnableMsgTraces ();
-  traceHelper.EnableStateMachineTraces ();
-  traceHelper.EnableMouthToEarLatencyTrace ("mcptt-operational-modes-static-m2e-latency.dat");
-  traceHelper.EnableAccessTimeTrace ("mcptt-operational-modes-static-access-time.dat");
+  Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper> ();
+  traceHelper->EnableMsgTraces ();
+  traceHelper->EnableStateMachineTraces ();
+  traceHelper->EnableMouthToEarLatencyTrace ("mcptt-operational-modes-static-m2e-latency.dat");
+  traceHelper->EnableAccessTimeTrace ("mcptt-operational-modes-static-access-time.dat");
 
   if (showProgress)
     {

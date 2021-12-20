@@ -364,7 +364,7 @@ private:
   /**
    * The MCPTT trace helper
    */
-  McpttTraceHelper m_mcpttTraceHelper; 
+  Ptr<McpttTraceHelper> m_mcpttTraceHelper; 
 
   /**
    * Whether MCPTT traces are enabled

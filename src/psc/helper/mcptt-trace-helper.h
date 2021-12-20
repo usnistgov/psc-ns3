@@ -41,6 +41,8 @@
 
 #include <ns3/ptr.h>
 #include <ns3/nstime.h>
+#include <ns3/object.h>
+#include <ns3/callback.h>
 
 namespace ns3 {
 
@@ -56,11 +58,16 @@ class McpttStateMachineStats;
  * \ingroup psc
  * \brief A helper for creating, configuring, and installing MCPTT apps.
  */
-class McpttTraceHelper
+class McpttTraceHelper : public Object
 {
 public:
   /**
-   * \brief Creates an instance of the McpttHelper class.
+   * Gets the TypeId of the McpttTraceHelper.
+   * \returns The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  /**
+   * \brief Creates an instance of the McpttTraceHelper class.
    */
   McpttTraceHelper (void);
   /**
@@ -85,6 +92,10 @@ public:
   virtual void DisableStateMachineTraces (void);
   /**
    * Enables a trace for MCPTT access time statistics
+   */
+  virtual void EnableAccessTimeTrace (void);
+  /**
+   * Enables a trace for MCPTT access time statistics
    * \param filename Filename to open for writing the trace
    */
   virtual void EnableAccessTimeTrace (std::string filename);
@@ -92,6 +103,10 @@ public:
    * Disables any traces for MCPTT access time statistics
    */
   virtual void DisableAccessTimeTrace (void);
+  /**
+   * Enables a trace for MCPTT mouth-to-ear latency statistics
+   */
+  virtual void EnableMouthToEarLatencyTrace (void);
   /**
    * Enables a trace for MCPTT mouth-to-ear latency statistics
    * \param filename Filename to open for writing the trace
@@ -102,6 +117,30 @@ public:
    */
   virtual void DisableMouthToEarLatencyTrace (void);
 
+protected:
+  /**
+   * Releases resources.
+   */
+  virtual void DoDispose (void) override;
+  /**
+   * TracedCallback signature for an access time trace sample
+   * \param [in] ts The time at which the sample was reported
+   * \param [in] userId The MCPTT User ID of the application
+   * \param [in] callId The MCPTT call ID of the call
+   * \param [in] result The access request outcome
+   * \param [in] latency The access request delay
+   */
+  typedef void (* AccessTimeTracedCallback) (Time ts, uint32_t userId, uint16_t callId, std::string result, Time latency);
+  /**
+   * TracedCallback signature for a mouth-to-ear latency trace sample
+   * \param [in] ts The time at which the sample was reported
+   * \param [in] ssrc The SSRC of the RTP media source
+   * \param [in] callId The MCPTT call ID of the call
+   * \param [in] nodeId The ID of the node that received the new talk spurt
+   * \param [in] latency The delay from when the talk spurt started until it was first received
+   */
+  typedef void (* MouthToEarLatencyTracedCallback) (Time ts, uint32_t ssrc, uint64_t nodeId, uint16_t callId, Time latency);
+
 private:
   Ptr<McpttMsgStats> m_msgTracer; //!< The object used to trace MCPTT messages.
   Ptr<McpttStateMachineStats> m_stateMachineTracer; //!< The object used to trace MCPTT state machine traces.
@@ -109,10 +148,15 @@ private:
   std::map<std::pair<uint32_t, uint16_t>, std::pair<Time, std::string> > m_accessTimeMap; //!< state tracker
   std::ofstream m_mouthToEarLatencyTraceFile; //!< file stream for latency trace
   std::ofstream m_accessTimeTraceFile; //!< file stream for the access time trace
+  TracedCallback<Time, uint32_t, uint16_t, std::string, Time> m_accessTimeTrace; //!< The access time trace source.
+  TracedCallback<Time, uint32_t, uint64_t, uint16_t, Time> m_mouthToEarLatencyTrace; //!< The mouth-to-ear latency trace source.
 
   void TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   void TraceStatesForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName);
   void TraceEventsForAccessTime (uint32_t userId, uint16_t callId, const std::string& selected, const char* description);
+
+  void RecordAccessTime (Time ts, uint32_t userId, uint16_t callId, std::string result, Time latency);
+  void RecordMouthToEarLatency (Time ts, uint32_t ssrc, uint64_t nodeId, uint16_t callId, Time latency);
 };
 
 } // namespace psc

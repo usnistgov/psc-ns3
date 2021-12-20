@@ -305,9 +305,9 @@ int main (int argc, char *argv[])
   if (s_trace)
     {
       NS_LOG_INFO ("Enabling MCPTT traces...");
-      McpttTraceHelper traceHelper;
-      traceHelper.EnableMsgTraces ();
-      traceHelper.EnableStateMachineTraces ();
+      Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper> ();
+      traceHelper->EnableMsgTraces ();
+      traceHelper->EnableStateMachineTraces ();
     }
 
   NS_LOG_INFO ("Starting simulation...");

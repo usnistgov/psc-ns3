@@ -260,11 +260,11 @@ main (int argc, char *argv[])
   callHelper.AddCall (clientAppContainer2, serverApp, groupId, callType, Seconds (18), Seconds (34));
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
-  McpttTraceHelper traceHelper;
-  traceHelper.EnableMsgTraces ();
-  traceHelper.EnableStateMachineTraces ();
-  traceHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
-  traceHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
+  Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper> ();
+  traceHelper->EnableMsgTraces ();
+  traceHelper->EnableStateMachineTraces ();
+  traceHelper->EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+  traceHelper->EnableAccessTimeTrace ("mcptt-access-time.txt");
 
   // Uncomment to enable PCAP tracing
   // p2ph.EnablePcap("example-mcptt-on-network-two-calls.ims.pcap", imsHelper->GetImsGmDevice (), true, true);

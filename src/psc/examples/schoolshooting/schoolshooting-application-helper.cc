@@ -69,6 +69,7 @@ SchoolShootingApplicationHelper::SchoolShootingApplicationHelper ()
 
   m_genericApplicationHelper = CreateObject<PscApplicationHelper> ();
   m_traceHelper = CreateObject<SchoolShootingApplicationTraceHelper> (this);
+  m_mcpttTraceHelper = CreateObject<McpttTraceHelper> ();
 }
 
 SchoolShootingApplicationHelper::~SchoolShootingApplicationHelper ()
@@ -79,9 +80,10 @@ SchoolShootingApplicationHelper::~SchoolShootingApplicationHelper ()
   m_enabledApps.clear ();
   if (m_mcpttTracesEnabled)
     {
-      m_mcpttTraceHelper.DisableMsgTraces ();
-      m_mcpttTraceHelper.DisableStateMachineTraces ();
-      m_mcpttTraceHelper.DisableMouthToEarLatencyTrace ();
+      m_mcpttTraceHelper->DisableMsgTraces ();
+      m_mcpttTraceHelper->DisableStateMachineTraces ();
+      m_mcpttTraceHelper->DisableMouthToEarLatencyTrace ();
+      m_mcpttTraceHelper->DisableAccessTimeTrace ();
     }
 }
 
@@ -2698,10 +2700,10 @@ SchoolShootingApplicationHelper::EnableApplicationTraces (SchoolSchootingApplica
 void
 SchoolShootingApplicationHelper::EnableMcpttTraces (void)
 {
-  m_mcpttTraceHelper.EnableMsgTraces ();
-  m_mcpttTraceHelper.EnableStateMachineTraces ();
-  m_mcpttTraceHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
-  m_mcpttTraceHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
+  m_mcpttTraceHelper->EnableMsgTraces ();
+  m_mcpttTraceHelper->EnableStateMachineTraces ();
+  m_mcpttTraceHelper->EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+  m_mcpttTraceHelper->EnableAccessTimeTrace ("mcptt-access-time.txt");
   m_mcpttTracesEnabled = true;
 }
 

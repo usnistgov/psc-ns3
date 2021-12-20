@@ -315,11 +315,11 @@ main (int argc, char *argv[])
   Simulator::Schedule (secondSwitchTime, &McpttPttApp::SelectCall, pttApp, 1, true);
 
   NS_LOG_INFO ("Enabling MCPTT traces...");
-  McpttTraceHelper traceHelper;
-  traceHelper.EnableMsgTraces ();
-  traceHelper.EnableStateMachineTraces ();
-  traceHelper.EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
-  traceHelper.EnableAccessTimeTrace ("mcptt-access-time.txt");
+  Ptr<McpttTraceHelper> traceHelper = CreateObject<McpttTraceHelper> ();
+  traceHelper->EnableMsgTraces ();
+  traceHelper->EnableStateMachineTraces ();
+  traceHelper->EnableMouthToEarLatencyTrace ("mcptt-m2e-latency.txt");
+  traceHelper->EnableAccessTimeTrace ("mcptt-access-time.txt");
 
   // Uncomment to enable PCAP tracing
   // p2ph.EnablePcap("example-mcptt-on-network-two-simultaneous-calls.ims.pcap", imsHelper->GetImsGmDevice (), true, true);
