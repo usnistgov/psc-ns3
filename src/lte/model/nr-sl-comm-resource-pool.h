@@ -272,10 +272,19 @@ public:
    *
    * \param absIndexCurrentSlot absolute slot count from simulation time 0
    * \param bwpId bandwith part ID (to identify the pool)
-   * \param poolId POOL ID
+   * \param poolId pool ID
    * \return true if the indicated slot has PSFCH, false otherwise
    */
   bool SlotHasPsfch (uint64_t absIndexCurrentSlot, uint8_t bwpId, uint16_t poolId) const;
+
+  /**
+   * Return the MinTimeGapPsfch associated with the BWP and pool
+   *
+   * \param bwpId bandwith part ID (to identify the pool)
+   * \param poolId pool ID
+   * \return value of the MinTimeGapPsfch, in slots
+   */
+  uint8_t GetMinTimeGapPsfch (uint8_t bwpId, uint16_t poolId) const;
 
 private:
   /**
