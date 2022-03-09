@@ -286,6 +286,15 @@ public:
    */
   uint8_t GetMinTimeGapPsfch (uint8_t bwpId, uint16_t poolId) const;
 
+  /**
+   * Return the PsfchPeriod associated with the BWP and pool
+   *
+   * \param bwpId bandwith part ID (to identify the pool)
+   * \param poolId pool ID
+   * \return value of the PsfchPeriod, in slots
+   */
+  uint8_t GetPsfchPeriod (uint8_t bwpId, uint16_t poolId) const;
+
 private:
   /**
    * \brief Get SlResourcePoolNr
