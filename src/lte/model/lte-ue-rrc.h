@@ -1502,9 +1502,11 @@ private:
    * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
-   * \param isUnicast True if the bearer is for unicast communication
+   * \param castType Type of communication
+   * \param harqEnabled True if HARQ is enabled
+   * \param delayBudget Packet Delay Budget (PDB)
    */
-  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, LteSlTft::CastType castType, bool harqEnabled, Time delayBudget);
   /**
    * \brief Send sidelink data packet to RRC.
    *
@@ -1538,8 +1540,11 @@ private:
    * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
+   * \param castType The type of communication
+   * \param harqEnabled Whether HARQ is enabled
+   * \param delayBudget Packet delay budget
    */
-  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive);
+  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive, LteSlTft::CastType castType, bool harqEnabled, Time delayBudget);
 
   /**
    * \brief set out-of-coverage UE RNTI
@@ -1551,14 +1556,20 @@ private:
   void SetOutofCovrgUeRnti ();
 
   /**
-   * \brief Add Nr sidelink data radio bearer
+   * \brief Add Nr sidelink data radio bearer.
+   *
+   * This method may be called for the transmit or receive direction.  When
+   * called in the receive direction, the last three arguments may be omitted. 
    *
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id
    * \param lcid The logical channel id
+   * \param castType The type of communication (tx only)
+   * \param harqEnabled Whether HARQ is enabled (tx only)
+   * \param delayBudget Packet delay budget (tx only)
    * \return The Sidelink radio bearer information
    */
-  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
+  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid, LteSlTft::CastType castType = LteSlTft::CastType::Invalid, bool harqEnabled = false, Time delayBudget = Seconds (0));
 
   /**
    * \brief Populate NR SL Pool to lower layers

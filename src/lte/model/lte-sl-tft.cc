@@ -41,49 +41,52 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteSlTft");
 
-LteSlTft::LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t dstL2Id)
+LteSlTft::LteSlTft (Direction d, CastType castType, Ipv4Address remoteAddr, uint32_t dstL2Id, bool harqEnabled, Time delayBudget)
+ :  m_direction (d),
+    m_castType (castType),
+    m_remoteAddress (remoteAddr),
+    m_dstL2Id (dstL2Id),
+    m_harqEnabled (harqEnabled),
+    m_delayBudget (delayBudget)
 {
   NS_LOG_FUNCTION (this);
-  m_direction = d;
-  m_commType = commType;
-  m_hasRemoteAddress = true;
-  m_remoteAddress = remoteAddr;
-  m_remoteMask = Ipv4Mask::GetOnes ();
-
   NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
   NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
-  m_dstL2Id = dstL2Id;
+  m_hasRemoteAddress = true;
+  m_remoteMask = Ipv4Mask::GetOnes ();
 }
 
-LteSlTft::LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t dstL2Id)
+LteSlTft::LteSlTft (Direction d, CastType castType, Ipv6Address remoteAddr, uint32_t dstL2Id, bool harqEnabled, Time delayBudget)
+ :  m_direction (d),
+    m_castType (castType),
+    m_remoteAddress6 (remoteAddr),
+    m_dstL2Id (dstL2Id),
+    m_harqEnabled (harqEnabled),
+    m_delayBudget (delayBudget)
 {
   NS_LOG_FUNCTION (this);
-  m_direction = d;
-  m_commType = commType;
-  m_hasRemoteAddress = true;
-  m_remoteAddress6 = remoteAddr;
-  m_remoteMask6 = Ipv6Prefix::GetOnes ();
-
   NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
   NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
-  m_dstL2Id = dstL2Id;
+  m_hasRemoteAddress = true;
+  m_remoteMask6 = Ipv6Prefix::GetOnes ();
 }
 
 LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
-
   m_direction = tft->m_direction;
-  m_commType = tft->m_commType;
+  m_castType = tft->m_castType;
   m_remoteAddress = tft->m_remoteAddress;
   m_remoteAddress6 = tft->m_remoteAddress6;
   m_remoteMask = tft->m_remoteMask;
   m_remoteMask6 = tft->m_remoteMask6;
   m_dstL2Id = tft->m_dstL2Id;
+  m_harqEnabled = tft->m_harqEnabled;
+  m_delayBudget = tft->m_delayBudget;
 }
 
 bool
-LteSlTft::Matches (Ipv4Address ra)
+LteSlTft::Matches (Ipv4Address ra) const
 {
   NS_LOG_FUNCTION (this << ra);
   bool ok = false;
@@ -93,7 +96,7 @@ LteSlTft::Matches (Ipv4Address ra)
 }
 
 bool
-LteSlTft::Matches (Ipv6Address ra)
+LteSlTft::Matches (Ipv6Address ra) const
 {
   NS_LOG_FUNCTION (this << ra);
   bool ok = false;
@@ -103,17 +106,20 @@ LteSlTft::Matches (Ipv6Address ra)
 }
 
 bool
-LteSlTft::Equals (Ptr<LteSlTft> tft)
+LteSlTft::Equals (Ptr<LteSlTft> tft) const
 {
   NS_LOG_FUNCTION (this);
   bool equals = true;
 
   if (m_direction != tft->m_direction
-      && m_remoteAddress != tft->m_remoteAddress
-      && m_remoteAddress6 != tft->m_remoteAddress6
-      && m_remoteMask != tft->m_remoteMask
-      && m_remoteMask6 != tft->m_remoteMask6
-      && m_dstL2Id != tft->m_dstL2Id)
+      || m_castType != tft->m_castType
+      || m_remoteAddress != tft->m_remoteAddress
+      || m_remoteAddress6 != tft->m_remoteAddress6
+      || m_remoteMask != tft->m_remoteMask
+      || m_remoteMask6 != tft->m_remoteMask6
+      || m_dstL2Id != tft->m_dstL2Id
+      || m_harqEnabled != tft->m_harqEnabled
+      || m_delayBudget != tft->m_delayBudget)
     {
       equals = false;
     }
@@ -122,13 +128,13 @@ LteSlTft::Equals (Ptr<LteSlTft> tft)
 }
 
 uint32_t
-LteSlTft::GetDstL2Id()
+LteSlTft::GetDstL2Id() const
 {
   return m_dstL2Id;
 }
 
 bool
-LteSlTft::isReceive ()
+LteSlTft::IsReceive () const
 {
   //receiving if RECEIVE or BIDIRECTIONAL
   NS_ASSERT_MSG (m_direction != LteSlTft::Direction::INVALID, "Invalid TFT direction");
@@ -136,18 +142,30 @@ LteSlTft::isReceive ()
 }
 
 bool
-LteSlTft::isTransmit ()
+LteSlTft::IsTransmit () const
 {
   //transmitting if TRANSMIT or BIDIRECTIONAL
   NS_ASSERT_MSG (m_direction != LteSlTft::Direction::INVALID, "Invalid TFT direction");
   return m_direction != LteSlTft::Direction::RECEIVE;
 }
 
-bool
-LteSlTft::isUnicast ()
+LteSlTft::CastType
+LteSlTft::GetCastType () const
 {
-  NS_ASSERT_MSG (m_commType != LteSlTft::CommType::INVALID, "Invalid TFT communication type");
-  return (m_commType != LteSlTft::CommType::Broadcast && m_commType != LteSlTft::CommType::GroupCast);
+  NS_ASSERT_MSG (m_castType != LteSlTft::CastType::Invalid, "Invalid TFT communication type");
+  return m_castType;
+}
+
+bool
+LteSlTft::IsHarqEnabled () const
+{
+  return m_harqEnabled;
+}
+
+Time
+LteSlTft::GetDelayBudget () const
+{
+  return m_delayBudget;
 }
 
 } // namespace ns3

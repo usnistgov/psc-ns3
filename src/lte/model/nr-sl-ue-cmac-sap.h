@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 #include <limits>
-
+#include <ns3/lte-sl-tft.h>
 
 namespace ns3 {
 
@@ -60,6 +60,9 @@ public:
     bool     isGbr {false};   //!< true if the bearer is GBR, false if the bearer is NON-GBR
     uint64_t mbr {0};   //!< maximum bitrate
     uint64_t gbr {0};   //!< guaranteed bitrate
+    LteSlTft::CastType castType {LteSlTft::CastType::Invalid}; //!< Cast type per TS 38.212
+    bool harqEnabled {false}; //!< Whether HARQ should be enabled
+    Time delayBudget {Seconds (0)}; //!< Packet delay budget (PDB)
   };
 
 

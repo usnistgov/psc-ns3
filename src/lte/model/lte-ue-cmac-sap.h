@@ -25,6 +25,7 @@
 #include <ns3/ff-mac-common.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-common.h>
+#include <ns3/lte-sl-tft.h>
 
 namespace ns3 {
 
@@ -83,6 +84,9 @@ public:
     uint16_t prioritizedBitRateKbps; ///< prioritize bit rate Kbps
     uint16_t bucketSizeDurationMs; ///< bucket size duration ms
     uint8_t logicalChannelGroup; ///< logical channel group
+    LteSlTft::CastType castType; ///< Type of communication
+    bool harqEnabled; ///< whether HARQ is enabled
+    Time delayBudget; ///< Packet delay budget
   };
   
   /** 

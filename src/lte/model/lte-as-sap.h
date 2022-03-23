@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <ns3/ptr.h>
 #include <ns3/packet.h>
+#include <ns3/lte-sl-tft.h>
 
 namespace ns3 {
 
@@ -98,9 +99,11 @@ public:
    * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
-   * \param isUnicast True if the bearer is for unicast communication
+   * \param castType Type of communication
+   * \param harqEnabled True if HARQ enabled
+   * \param delayBudget Packet delay budget
    */
-  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast) = 0;
+  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, LteSlTft::CastType castType, bool harqEnabled, Time delayBudget) = 0;
 
   /**
    * \brief Send sidelink data packet to RRC.
@@ -188,7 +191,7 @@ public:
   virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
-  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, LteSlTft::CastType castType, bool isHarqEnabled, Time delayBudget);
   virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
 
 private:
@@ -251,9 +254,9 @@ MemberLteAsSapProvider<C>::Disconnect ()
 
 template <class C>
 void
-MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, LteSlTft::CastType castType, bool harqEnabled, Time delayBudget)
 {
-  m_owner->DoActivateNrSlRadioBearer (dstL2Id, isTransmit, isReceive, isUnicast);
+  m_owner->DoActivateNrSlRadioBearer (dstL2Id, isTransmit, isReceive, castType, harqEnabled, delayBudget);
 }
 
 template <class C>

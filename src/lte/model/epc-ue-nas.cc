@@ -443,7 +443,7 @@ EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft)
   //for in coverage case, it will trigger communication with the gNodeb
   //for out of coverage, it will trigger the use of preconfiguration
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->IsTransmit (), tft->IsReceive (), tft->GetCastType (), tft->IsHarqEnabled (), tft->GetDelayBudget ());
 }
 
 void
