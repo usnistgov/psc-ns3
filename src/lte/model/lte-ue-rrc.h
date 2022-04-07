@@ -83,6 +83,7 @@ class LteSignalingRadioBearerInfo;
 class NrSlDataRadioBearerInfo;
 class NrSlMacSapProvider;
 class NrSlSignallingRadioBearerInfo;
+class NrSlDiscoveryRadioBearerInfo;
 
 /**
  *
@@ -1618,6 +1619,15 @@ private:
 
   /**
    * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) asking the RRC layer to instruct lower layers
+   *        to monitor messages directed to the layer 2 ID used by UE
+   *  
+   * \param dstL2Id destination layer 2 ID
+   */
+  void DoMonitorL2Id (uint32_t dstL2Id);
+
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
    *        ProSe layer) to instruct the RRC layer to pass a SL signalling
    *        message (e.g., PC5-S message) to lower layers for transmission
    *
@@ -1638,6 +1648,39 @@ private:
    */
   void DoActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
 
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) to instruct the RRC layer to pass a SL discovery
+   *        message to lower layers for transmission
+   *
+   * \param packet the discovery message
+   * \param dstL2Id the destination layer 2 ID
+   */
+  void DoSendNrSlDiscoveryMessage (Ptr<Packet> packet, uint32_t dstL2Id);
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) to instruct the RRC layer to activate a NR SL
+   *        discovery radio bearer (SL-SRB).
+   *
+   * \param dstL2Id the peer layer 2 ID
+   */
+  void DoActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id);
+
+  /**
+   * \brief Activate NR sidelink discovery radio bearer (SL-SRB)
+   *
+   * \param dstL2Id the peer layer 2 id
+   */
+  void ActivateNrSlDiscoveryRb (uint32_t dstL2Id);
+
+  /**
+   * \brief Create and store a NR sidelink discovery radio bearer (SL-SRB)
+   *
+   * \param srcL2Id The sidelink source layer 2 id
+   * \param dstL2Id The sidelink destination layer 2 id
+   * \return The Sidelink discovery radio bearer information
+   */
+  Ptr<NrSlDiscoveryRadioBearerInfo> AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id);
 
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc

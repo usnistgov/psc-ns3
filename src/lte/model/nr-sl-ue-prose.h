@@ -43,6 +43,7 @@
 #include <unordered_map>
 #include <ns3/nr-sl-ue-prose-direct-link.h>
 #include <ns3/traced-callback.h>
+#include <ns3/nr-sl-discovery-header.h>
 
 
 namespace ns3 {
@@ -75,7 +76,6 @@ public:
 
 };
 
-
 /**
  * \ingroup lte
  *
@@ -94,6 +94,34 @@ class NrSlUeProse : public NrSlUeService
 public:
   NrSlUeProse ();
   virtual ~NrSlUeProse (void);
+
+  ///< The types of discovery role
+  enum DiscoveryRole
+  {
+    Monitoring = 0, ///< Model A: The UE receiving discovery messages
+    Announcing,     ///< Model A: The UE sending discovery messages
+    Discoveree,     ///< Model B: The UE responding to requests
+    Discoverer,     ///< Model B:The UE sending requests
+    RemoteUE,
+    RelayUE
+  };
+
+  ///< The discovery models supported
+  enum DiscoveryModel
+  {
+    ModelA = 0,     ///< announce
+    ModelB          ///< request/response
+  };
+
+  ///< Information for application discovery
+  struct DiscoveryInfo
+  {
+    DiscoveryModel model; ///< discovery model used
+    DiscoveryRole role; ///< role in the discovery 
+    uint32_t appCode; ///< application code 
+    uint32_t dstL2Id; ///< destination L2 ID
+  };
+
 
 protected:
   virtual void DoDispose ();
@@ -151,6 +179,11 @@ public:
   void ConfigureUnicast ();
 
   /**
+   * \brief Configure the parameters required by the UE to perform ProSe discovery
+   */
+  void MonitorL2Id (uint32_t dstL2Id);
+
+  /**
    * \brief Add a new direct link connection with the given peer if possible
    *
    * \param selfL2Id the layer 2 ID of this UE
@@ -163,8 +196,6 @@ public:
    */
   void AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp, uint32_t peerL2Id,
                                 bool isInitiating, bool isRelayConn,  uint32_t relayServiceCode);
-
-
   /**
    * Map to store direct link context instances indexed by direct link id
    */
@@ -212,6 +243,7 @@ public:
    * \param l2Id the Layer 2 ID  of the UE
    */
   void SetL2Id (uint32_t l2Id);
+
   /**
    * \brief Set EPC helper
    *
@@ -228,6 +260,91 @@ public:
     * \param [in] p the PC5-S message
     */
   typedef void (* PC5SignallingPacketTracedCallback)(uint32_t srcL2Id, uint32_t dstL2Id, bool isTx, Ptr<Packet> p);
+  
+  /**
+    * TracedCallback signature for transmission of discovery messages.
+    *
+    * \param [in] senderL2Id the layer 2 ID of the source of the message
+    * \param [in] receiverL2Id the layer 2 ID of the destination of the message
+    * \param [in] discHeader the discovery message
+    */
+  typedef void (* DiscoveryTraceTracedCallback)(uint32_t senderL2Id, uint32_t receiverL2Id, NrSlDiscoveryHeader discHeader);
+  
+  /**
+   * \brief Add discovery application
+   * Add payload depending on the interest (monitoring or announcing)
+   * \param appCode application code to be announced or monitored
+   * \param dstL2Id destination layer 2 ID to be set for this appCode
+   * \param role Indicates if announcing or monitoring
+   */
+  void AddDiscoveryApp (uint32_t appCode, uint32_t dstL2Id, DiscoveryRole role);
+
+  /**
+   * \brief Remove Sidelink discovery applications
+   * Remove application from discovery map
+   * \param appCode application code to be removed
+   * \param role Indicates if announcing or monitoring
+   */
+  void RemoveDiscoveryApp (uint32_t appCode, DiscoveryRole role);
+
+  /**
+   * Checks if the given app must be discovered
+   * \param msgType The message type
+   * \param appCode The application code
+   * \return true if the node is monitoring for this message type and appCode
+   */
+  bool IsMonitoringApp (uint8_t msgType, uint32_t appCode);
+
+  /**
+   * \brief Send discovery message
+   * \param appCode Application code
+   * \param dstL2Id destination L2 ID
+   */
+  void SendDiscovery (uint32_t appCode, uint32_t dstL2Id);
+
+  /**
+   * \brief Add discovery relay
+   * Add relay code depending on the interest (relay or remote)
+   * \param relayCode relay code to consider
+   * \param dstL2Id destination layer 2 ID 
+   * \param model can be model A or model B
+   * \param role Indicates if the UE acts as relay or remote
+   */
+  void AddRelayDiscovery (uint32_t relayCode, uint32_t dstL2Id, DiscoveryModel model, DiscoveryRole role);
+
+  /**
+   * \brief Remove Sidelink discovery relay
+   * Remove relay code from list
+   * \param relayCode relay code
+   * \param role role can be relay or remote
+   */
+  void RemoveRelayDiscovery (uint32_t relayCode, DiscoveryRole role);
+
+  /**
+   * Indicates if the device is monitoring messages for the given relay code
+   * \param msgType The message type received
+   * \param relayCode relay code to use
+   * \return true if the node is monitoring for this message type and relayCode
+   */
+  bool IsMonitoringRelay (uint8_t msgType, uint32_t relayCode);
+
+  /**
+   * \brief Initiate relay discovery
+   * \param relayCode relay code to consider
+   * \param dstL2Id destination layer 2 ID 
+   */
+  void SendRelayDiscovery (uint32_t relayCode, uint32_t dstL2Id);
+  
+  /**
+   * Map to keep track of the active SL Discovery RBs. 
+   * A bit set of 4 bit representing each of the 4 LcIds of the SL-SRBs is stored per peerL2Id.
+   * Bit set to 1 means the SL-SRB of the corresponding LcId is active
+   */
+  typedef std::list <uint32_t> NrSlDiscoveryRadioBearers;
+
+  ///< Frequency of Discovery messages in seconds
+  Time m_discoveryInterval;
+
 
 private:
   //NrSlUeSvcRrcSapUser methods
@@ -243,6 +360,14 @@ private:
    */
   TracedCallback< uint32_t, uint32_t, bool, Ptr<Packet> > m_pc5SignallingPacketTrace;
 
+  void DoSendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id);
+  void DoReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id);
+
+  /**
+   * Track the transmission of discovery message
+   * Exporting sender L2 ID, receiver L2 ID, transmission or not flag, and discovery message.
+   */
+  TracedCallback<uint32_t, uint32_t, bool, NrSlDiscoveryHeader> m_discoveryTrace;
 
   //SAP pointers
   NrSlUeSvcNasSapUser* m_nrSlUeSvcNasSapUser; ///< NR SL UE SERVICE NAS SAP user
@@ -262,6 +387,15 @@ private:
   uint32_t m_l2Id; ///< the L2Id used by this UE
 
   Ptr<NrPointToPointEpcHelper> m_epcHelper; //!< pointer to the EPC helper
+
+  ///< List of active discovery RBs
+  NrSlDiscoveryRadioBearers m_activeSlDiscoveryRbs;
+
+   ///< list of IDs of applications to announce/response
+  std::map <uint32_t, DiscoveryInfo> m_discoveryMap;
+
+  ///< List of relay codes 
+  std::map <uint32_t, DiscoveryInfo> m_relayMap;
 
   void ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
   void ConfigureDataRadioBearersForU2nRelay (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkRelayInfo relayInfo, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);

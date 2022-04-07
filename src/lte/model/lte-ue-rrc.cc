@@ -45,6 +45,7 @@
 #include <array>
 #include <bitset>
 #include <unordered_map>
+#include <algorithm>
 
 namespace ns3 {
 
@@ -3499,6 +3500,11 @@ LteUeRrc::DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParamet
       //Signalling, pass it to the service layer
       m_nrSlUeSvcRrcSapUser->ReceiveNrSlSignalling (params.pdcpSdu, params.srcL2Id);
     }
+  else if (params.lcId == 4)
+    {
+      //Discovery
+      m_nrSlUeSvcRrcSapUser->ReceiveNrSlDiscovery (params.pdcpSdu, params.srcL2Id);
+    }
   else
     {
       //Data, pass it to the AS layer
@@ -3691,6 +3697,12 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
       //SL-SRB
       Ptr<NrSlSignallingRadioBearerInfo> slbInfo = AddNrSlSrb (srcL2Id, dstL2Id, lcId);
       NS_LOG_INFO ("Created new RX SL-SRB for dstL2Id " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
+    }
+  else if (lcId == 4)
+    {
+      //Discovery
+      Ptr<NrSlDiscoveryRadioBearerInfo> slbInfo = AddNrSlDiscoveryRb (srcL2Id, dstL2Id);
+      NS_LOG_INFO ("Created new RX SL Discovery RB for dstL2Id " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
     }
   else
     {
@@ -3887,6 +3899,20 @@ LteUeRrc::DoMonitorSelfL2Id ()
 }
 
 void
+LteUeRrc::DoMonitorL2Id (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+
+  std::set <uint8_t> bwpIdsSl = m_nrSlRrcSapUser->GetBwpIdContainer ();
+  for (const auto &it:bwpIdsSl)
+    {
+      NS_LOG_INFO ("Communicating L2Id (" << dstL2Id << ") to the MAC of SL BWP " << static_cast<uint16_t> (it));
+      m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (dstL2Id);
+    }
+
+}
+
+void
 LteUeRrc::DoSendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId)
 {
   NS_LOG_FUNCTION (this);
@@ -3967,7 +3993,7 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
             }
         }
 
-        //We use same SL-SRB creation and configuration logic than OOC
+        //We use same SL-SRB creation and configuration logic as OOC
         slSrb = AddNrSlSrb (m_srcL2Id, dstL2Id, lcId);
         NS_LOG_INFO ("Inserted, dstL2Id " << slSrb->m_destinationL2Id << " lcId " <<  (uint32_t) slSrb->m_logicalChannelIdentity
                                           << " lcGroup " << (uint32_t) slSrb->m_logicalChannelConfig.logicalChannelGroup);
@@ -3981,7 +4007,6 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
     }
 
 }
-
 
 Ptr<NrSlSignallingRadioBearerInfo>
 LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
@@ -4081,6 +4106,198 @@ LteUeRrc::GetSourceL2Id ()
   return m_nrSlRrcSapUser->GetSourceL2Id ();
 }
 
+void
+LteUeRrc::DoSendNrSlDiscoveryMessage (Ptr<Packet> packet, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<NrSlDiscoveryRadioBearerInfo> slSrbAf = m_nrSlRrcSapUser->GetTxNrSlDiscoveryRadioBearer (dstL2Id);
+
+  NS_LOG_INFO ("dstL2Id " << slSrbAf->m_destinationL2Id << " lcId " <<  (uint32_t) slSrbAf->m_logicalChannelIdentity
+                          << " lcGroup " << (uint32_t) slSrbAf->m_logicalChannelConfig.logicalChannelGroup);
+
+  auto params = NrSlPdcpSapProvider::NrSlTransmitPdcpSduParameters (packet, m_rnti,
+                                                                    slSrbAf->m_logicalChannelIdentity,
+                                                                    NrSlPdcpSapUser::PC5_DISCOVERY_SDU);
+  slSrbAf->m_pdcp->GetNrSlPdcpSapProvider ()->TransmitNrSlPdcpSdu (params);
+}
+
+void
+LteUeRrc::DoActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << dstL2Id);
+  ActivateNrSlDiscoveryRb (dstL2Id);
+}
+
+void
+LteUeRrc::ActivateNrSlDiscoveryRb (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << dstL2Id);
+  Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb;
+
+  switch (m_state)
+    {
+      case IDLE_START:
+      case IDLE_CELL_SEARCH:
+      case IDLE_WAIT_MIB_SIB1:
+      case IDLE_WAIT_MIB:
+      case IDLE_WAIT_SIB1:
+      case IDLE_CAMPED_NORMALLY:
+
+        NS_LOG_INFO ("Considering IMSI " << m_imsi << " out of network");
+
+        if (m_rnti == 0)
+          {
+            SetOutofCovrgUeRnti ();
+          }
+
+        {
+          std::set <uint8_t> bwpIdsSl = m_nrSlRrcSapUser->GetBwpIdContainer ();
+          for (const auto &it:bwpIdsSl)
+            {
+              NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (dstL2Id);
+            }
+        }
+
+        slDiscRb = AddNrSlDiscoveryRb (m_srcL2Id, dstL2Id);
+        NS_LOG_INFO ("Inserted, dstL2Id " << slDiscRb->m_destinationL2Id << " lcId " <<  (uint32_t) slDiscRb->m_logicalChannelIdentity
+                                          << " lcGroup " << (uint32_t) slDiscRb->m_logicalChannelConfig.logicalChannelGroup);
+        break;
+
+      case IDLE_WAIT_SIB2:
+      case IDLE_CONNECTING:
+        NS_LOG_INFO ("Connecting, must wait to send message");
+        break;
+
+      case CONNECTED_NORMALLY:
+      case CONNECTED_HANDOVER:
+      case CONNECTED_PHY_PROBLEM:
+      case CONNECTED_REESTABLISHING:
+
+        NS_LOG_INFO ("Considering IMSI " << m_imsi << " RNTI " << m_rnti << " in coverage");
+        /**
+         * Currently, in-network UEs doing SL rely on preconfiguration.
+         * This part of the function should be modified/extended when the
+         * network will be involved in SL configuration and protocols.
+         */
+
+        //We are going to reuse RNTI assigned by the network.
+        //TODO: verify downsides of this approach if any
+        {
+          std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
+          for (const auto &it:slBwpIds)
+            {
+              NS_LOG_INFO ("Communicating RNTI " << m_rnti  << " to PHY and MAC in  in BWP " << +it);
+              m_cphySapProvider.at (it)->SetRnti (m_rnti);
+              m_cmacSapProvider.at (it)->SetRnti (m_rnti);
+            }
+        }
+
+        //We use same SL-SRB creation and configuration logic as OOC
+        slDiscRb = AddNrSlDiscoveryRb (m_srcL2Id, dstL2Id);
+        NS_LOG_INFO ("Inserted, dstL2Id " << slDiscRb->m_destinationL2Id << " lcId " <<  (uint32_t) slDiscRb->m_logicalChannelIdentity
+                                          << " lcGroup " << (uint32_t) slDiscRb->m_logicalChannelConfig.logicalChannelGroup);
+        break;
+
+      default: // i.e. IDLE_RANDOM_ACCESS
+        NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+        break;
+
+    }
+
+}
+
+Ptr<NrSlDiscoveryRadioBearerInfo>
+LteUeRrc::AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
+
+  NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo lcInfo;
+  lcInfo.srcL2Id = srcL2Id;
+  lcInfo.dstL2Id = dstL2Id;
+  uint8_t lcid = 4; //discovery
+  lcInfo.lcId = lcid;
+  //The discovery bearer configuration is using random values since they have not being stated in the standard. 
+  //TODO: These values need to be re-evaluated.
+  lcInfo.lcGroup = 0; // SL Discovery RBs belong to lcGroup ?
+  lcInfo.priority = 2; // SL Discovery RBs have priority ?
+  lcInfo.pqi = 65;
+  lcInfo.isGbr = false;
+  lcInfo.gbr = 65535; //bits/s 
+  lcInfo.mbr = lcInfo.gbr;
+ 
+  Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRbInfo = CreateObject <NrSlDiscoveryRadioBearerInfo> ();
+  slDiscRbInfo->m_sourceL2Id = lcInfo.srcL2Id;
+  slDiscRbInfo->m_destinationL2Id = lcInfo.dstL2Id;
+  slDiscRbInfo->m_logicalChannelIdentity = lcInfo.lcId;
+  slDiscRbInfo->m_logicalChannelConfig.logicalChannelGroup = lcInfo.lcGroup;
+  slDiscRbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
+  slDiscRbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
+  slDiscRbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
+
+  if (m_srcL2Id == srcL2Id)
+    {
+      //Bearer for transmission
+      m_nrSlRrcSapUser->AddTxNrSlDiscoveryRadioBearer (slDiscRbInfo);
+    }
+  else
+    {
+      //Bearer for reception
+      m_nrSlRrcSapUser->AddRxNrSlDiscoveryRadioBearer (slDiscRbInfo);
+    }
+
+  //create PDCP/RLC stack
+  ObjectFactory rlcObjectFactory;
+  rlcObjectFactory.SetTypeId (LteRlcUm::GetTypeId ());
+  Ptr<LteRlc> rlc = rlcObjectFactory.Create ()->GetObject<LteRlc> ();
+  rlc->SetNrSlMacSapProvider (m_nrSlMacSapProvider);
+  rlc->SetRnti (m_rnti);
+  rlc->SetLcId (slDiscRbInfo->m_logicalChannelIdentity);
+  rlc->SetSourceL2Id (slDiscRbInfo->m_sourceL2Id);
+  rlc->SetDestinationL2Id (slDiscRbInfo->m_destinationL2Id);
+  rlc->SetRlcChannelType (LteRlc::STCH);
+
+  slDiscRbInfo->m_rlc = rlc;
+
+  Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
+  pdcp->SetRnti (m_rnti);
+  pdcp->SetLcId (slDiscRbInfo->m_logicalChannelIdentity);
+  pdcp->SetSourceL2Id (slDiscRbInfo->m_sourceL2Id);
+  pdcp->SetDestinationL2Id (slDiscRbInfo->m_destinationL2Id);
+  pdcp->SetNrSlPdcpSapUser (m_nrSlPdcpSapUser);
+  pdcp->SetNrSlRlcSapProvider (rlc->GetNrSlRlcSapProvider ());
+  rlc->SetNrSlRlcSapUser (pdcp->GetNrSlRlcSapUser ());
+
+  slDiscRbInfo->m_pdcp = pdcp;
+
+  //Configure BWP manager and MAC logical channel
+  std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> slLcOnBwpMapping;
+  slLcOnBwpMapping = m_nrSlUeBwpmRrcSapProvider->AddNrSlDiscoveryRbLc (lcInfo, rlc->GetNrSlMacSapUser ());
+
+  uint8_t numOfBwpsByBwpm = slLcOnBwpMapping.size ();
+
+  NS_ASSERT_MSG (numOfBwpsByBwpm != 0, "SL BWP manager failed to add SL LC for SL radio bearer");
+
+  uint8_t numOfSlBwps = m_nrSlRrcSapUser->GetBwpIdContainer ().size ();
+  NS_ASSERT_MSG (numOfSlBwps == numOfBwpsByBwpm, " Bwp manager configured SL LC for incorrect number of SL BWPs : " << numOfBwpsByBwpm);
+
+  NS_LOG_DEBUG ("Size of slLcOnBwpMapping vector " << slLcOnBwpMapping.size ());
+
+  std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm>::iterator itSlLcOnBwpMapping;
+
+  for (itSlLcOnBwpMapping = slLcOnBwpMapping.begin (); itSlLcOnBwpMapping != slLcOnBwpMapping.end (); ++itSlLcOnBwpMapping)
+    {
+      NS_LOG_DEBUG ("RNTI " << m_rnti
+                            << " LCG id " << +itSlLcOnBwpMapping->lcInfo.lcGroup
+                            << " BWP Id " << +itSlLcOnBwpMapping->bwpId);
+      uint8_t bwpId = itSlLcOnBwpMapping->bwpId;
+      m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlLc (itSlLcOnBwpMapping->lcInfo, itSlLcOnBwpMapping->msu);
+    }
+
+  return slDiscRbInfo;
+}
 
 } // namespace ns3
 

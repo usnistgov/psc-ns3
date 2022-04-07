@@ -68,6 +68,15 @@ public:
    */
   virtual void ReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id) = 0;
 
+  /**
+   * \brief The RRC passes a NR SL discovery message from a given source
+   *        to the service layer.
+   *
+   * \param packet the NR SL discovery message
+   * \param srcL2Id the source layer 2 ID that sent the message
+   */
+  virtual void ReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id) = 0;
+
 };
 
 /**
@@ -101,6 +110,19 @@ public:
   virtual void MonitorSelfL2Id () = 0;
 
   /**
+   * \brief Function to instruct the RRC that the UE should monitor messages
+   *        directed to the layer 2 ID
+   *
+   * This function is used when the UE expects to receive messages directed to
+   * a specific L2 ID, e.g., when participating in ProSe Unicast communication.
+   * It instruct the RRC and lower layers to monitor messages with the UE's
+   * layer 2 ID as destination.
+   * 
+   * \param dstL2Id destination Layer 2 ID
+   */
+  virtual void MonitorL2Id (uint32_t dstL2Id) = 0;
+
+  /**
    * \brief The service layer passes a NR SL signalling message to the RRC for
    *        transmission to a given destination using a given logical channel
    *
@@ -119,6 +141,23 @@ public:
    * \param lcId the logical channel ID
    */
   virtual void ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
+
+  /**
+   * \brief The service layer passes a NR SL disocvery message to the RRC for
+   *        transmission to a given destination using a given logical channel
+   *
+   * \param packet the NR SL discovery message
+   * \param dstL2Id the destination layer 2 ID
+   */
+  virtual void SendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id) = 0;
+  
+  /**
+   * \brief The service layer instrucs the RRC to activate a NR SL discovery
+   *        radio bearer for a given destination and logical channel
+   *
+   * \param dstL2Id the destination layer 2 ID
+   */
+  virtual void ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id) = 0;
 
 };
 
@@ -140,6 +179,7 @@ public:
 
   // inherited from NrSlUeSvcRrcSapUser
   virtual void ReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id);
+  virtual void ReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id);
 
 private:
   MemberNrSlUeSvcRrcSapUser ();
@@ -162,6 +202,12 @@ MemberNrSlUeSvcRrcSapUser<C>::ReceiveNrSlSignalling (Ptr<Packet> packet, uint32_
   m_owner->DoReceiveNrSlSignalling (packet, srcL2Id);
 }
 
+template <class C>
+void
+MemberNrSlUeSvcRrcSapUser<C>::ReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id)
+{
+  m_owner->DoReceiveNrSlDiscovery (packet, srcL2Id);
+}
 
 /**
  * Template for the implementation of the NrSlUeSvcRrcSapProvider as a member
@@ -181,8 +227,11 @@ public:
 
   // inherited from NrSlUeSvcRrcSapProvider
   virtual void MonitorSelfL2Id ();
+  virtual void MonitorL2Id (uint32_t dstL2Id);
   virtual void SendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId);
   virtual void ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+  virtual void SendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id);
+  virtual void ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id);
 
 private:
   MemberNrSlUeSvcRrcSapProvider ();
@@ -208,6 +257,13 @@ MemberNrSlUeSvcRrcSapProvider<C>::MonitorSelfL2Id ()
 
 template <class C>
 void
+MemberNrSlUeSvcRrcSapProvider<C>::MonitorL2Id (uint32_t dstL2Id)
+{
+  m_owner->DoMonitorL2Id (dstL2Id);
+}
+
+template <class C>
+void
 MemberNrSlUeSvcRrcSapProvider<C>::SendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId)
 {
   m_owner->DoSendNrSlSignalling (packet, dstL2Id, lcId);
@@ -218,6 +274,20 @@ void
 MemberNrSlUeSvcRrcSapProvider<C>::ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
 {
   m_owner->DoActivateNrSlSignallingRadioBearer (dstL2Id, lcId);
+}
+
+template <class C>
+void
+MemberNrSlUeSvcRrcSapProvider<C>::SendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id)
+{
+  m_owner->DoSendNrSlDiscoveryMessage (packet, dstL2Id);
+}
+
+template <class C>
+void
+MemberNrSlUeSvcRrcSapProvider<C>::ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
+{
+  m_owner->DoActivateNrSlDiscoveryRadioBearer (dstL2Id);
 }
 
 }

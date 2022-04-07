@@ -87,10 +87,19 @@ TypeId NrSlUeProse::GetTypeId (void)
   static TypeId  tid = TypeId ("ns3::NrSlUeProse")
     .SetParent<NrSlUeService> ()
     .AddConstructor<NrSlUeProse> ()
+    .AddAttribute ("DiscoveryInterval",
+                   "Discovery interval in seconds",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&NrSlUeProse::m_discoveryInterval),
+                   MakeTimeChecker ())
     .AddTraceSource ("PC5SignallingPacketTrace",
                      "Trace fired upon transmission and reception of PC5 Signalling messages",
                      MakeTraceSourceAccessor (&NrSlUeProse::m_pc5SignallingPacketTrace),
                      "ns3::NrSlUeProse::PC5SignallingPacketTracedCallback")
+    .AddTraceSource ("DiscoveryTrace",
+                     "Trace to track the transmission/reception of discovery messages",
+                     MakeTraceSourceAccessor (&NrSlUeProse::m_discoveryTrace),
+                     "ns3::NrSlUeProse::DiscoveryTraceTracedCallback")
   ;
   return tid;
 }
@@ -180,6 +189,16 @@ void NrSlUeProse::ConfigureUnicast ()
 
 }
 
+void NrSlUeProse::MonitorL2Id (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << dstL2Id);
+
+  //Tell the RRC to inform the MAC to monitor the UE's own L2Id
+  m_nrSlUeSvcRrcSapProvider->MonitorSelfL2Id ();
+
+  //Tell the RRC to inform the MAC to monitor the UE's L2Id
+  m_nrSlUeSvcRrcSapProvider->MonitorL2Id (dstL2Id);
+}
 
 void
 NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp,
@@ -279,13 +298,285 @@ NrSlUeProse::DoSendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8
 
 }
 
+void 
+NrSlUeProse::AddDiscoveryApp (uint32_t appCode, uint32_t dstL2Id, DiscoveryRole role)
+{
+  NS_LOG_FUNCTION (this);
+    
+  DiscoveryInfo info;
+  info.role = role;
+  info.appCode = appCode;
+  info.dstL2Id = dstL2Id;
+
+  NS_LOG_DEBUG ("Adding app code");
+  m_discoveryMap.insert ( std::pair <uint32_t, DiscoveryInfo> (appCode, info) );
+
+  if (role == Announcing || role == Discoverer)
+  {
+    SendDiscovery (appCode, dstL2Id);
+  }
+  //It instructs the MAC layer (and PHY therefore) to monitor packets directed the UE's own and other Layer 2 IDs
+  MonitorL2Id (dstL2Id);
+}
+
+void
+NrSlUeProse::RemoveDiscoveryApp (uint32_t appCode, DiscoveryRole role)
+{
+  NS_LOG_FUNCTION (this);
+  std::map <uint32_t, DiscoveryInfo>::iterator itInfo;
+  itInfo = m_discoveryMap.find (appCode);
+  if (itInfo != m_discoveryMap.end ())
+    {
+       NS_ASSERT_MSG (itInfo->second.role == role, "Wrong role.");
+      //found app to remove
+      NS_LOG_DEBUG ("Removing app code");
+      m_discoveryMap.erase (itInfo);
+    }
+}
+
+bool
+NrSlUeProse::IsMonitoringApp (uint8_t msgType, uint32_t appCode)
+{
+  NS_LOG_FUNCTION (this);
+  //the device is interested in announcement if monitoring, in request if acting as discoveree, and in response if acting as discoverer
+  std::map <uint32_t, DiscoveryInfo>::iterator itInfo = m_discoveryMap.find (appCode);
+  if (itInfo != m_discoveryMap.end ())
+    {
+      return ( (msgType == NrSlDiscoveryHeader::DISC_OPEN_ANNOUNCEMENT && itInfo->second.role == Monitoring)
+               || (msgType == NrSlDiscoveryHeader::DISC_RESTRICTED_QUERY && itInfo->second.role == Discoveree)
+               || (msgType == NrSlDiscoveryHeader::DISC_RESTRICTED_RESPONSE && itInfo->second.role == Discoverer) );
+    }
+  return false;
+}
+
+void
+NrSlUeProse::SendDiscovery (uint32_t appCode, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+
+  std::map <uint32_t, DiscoveryInfo>::iterator it;
+
+  it = m_discoveryMap.find (appCode);
+
+  if (it != m_discoveryMap.end ())
+  {
+    
+    NrSlDiscoveryHeader discHeader;
+
+    if (it->second.role == Announcing)
+    {
+      discHeader.SetOpenDiscoveryAnnounceParameters (appCode);
+    
+      //reschedule
+      Simulator::Schedule (m_discoveryInterval, &NrSlUeProse::SendDiscovery, this, appCode, dstL2Id);
+
+    }
+    else if (it->second.role == Discoverer)
+    {
+      discHeader.SetRestrictedDiscoveryQueryParameters (appCode);
+    
+      //reschedule
+      Simulator::Schedule (m_discoveryInterval, &NrSlUeProse::SendDiscovery, this, appCode, dstL2Id);
+    }
+
+    else if (it->second.role == Discoveree)
+    {
+      discHeader.SetRestrictedDiscoveryResponseParameters (appCode);
+
+      //no reschedule
+    }
+  
+    //build message to transmit
+    Ptr<Packet> discoveryPacket = Create<Packet>();
+    discoveryPacket->AddHeader (discHeader);
+
+    DoSendNrSlDiscovery (discoveryPacket, dstL2Id);   
+    m_discoveryTrace (m_l2Id, dstL2Id, true, discHeader); 
+  }
+}
+
+void
+NrSlUeProse::AddRelayDiscovery (uint32_t relayCode, uint32_t dstL2Id, DiscoveryModel model, DiscoveryRole role)
+{
+  NS_LOG_FUNCTION (this << relayCode << dstL2Id << model << role);
+  NS_ASSERT_MSG (m_relayMap.find (relayCode) == m_relayMap.end (), "Cannot add already existing service " << relayCode);
+
+  DiscoveryInfo info;
+  info.model = model;
+  info.role = role;
+  info.appCode = relayCode;
+  info.dstL2Id = dstL2Id;
+  
+  m_relayMap.insert ( std::pair <uint32_t, DiscoveryInfo> (relayCode, info) );
+
+  if ((model == ModelA && role == RelayUE) || (model == ModelB && role == RemoteUE))
+  {
+    SendRelayDiscovery (relayCode, dstL2Id);
+  }
+ 
+  //It instructs the MAC layer (and PHY therefore) to monitor packets directed the UE's own and other Layer 2 IDs
+  MonitorL2Id (dstL2Id);
+}
+
+void
+NrSlUeProse::RemoveRelayDiscovery (uint32_t relayCode, DiscoveryRole role)
+{
+  NS_LOG_FUNCTION (this << relayCode);
+
+  std::map <uint32_t, DiscoveryInfo>::iterator it = m_relayMap.find (relayCode);
+  if (it != m_relayMap.end ())
+    {
+      NS_ASSERT_MSG (it->second.role == role, "Wrong role.");
+      m_relayMap.erase (it);
+    }
+}
+
+bool
+NrSlUeProse::IsMonitoringRelay (uint8_t msgType, uint32_t relayCode)
+{
+  NS_LOG_FUNCTION (this << relayCode);
+  std::map <uint32_t, DiscoveryInfo>::iterator it;
+  it = m_relayMap.find (relayCode);
+
+  if (it != m_relayMap.end())
+  {
+    return ( (msgType == NrSlDiscoveryHeader::DISC_RELAY_ANNOUNCEMENT && it->second.model == ModelA && it->second.role == RemoteUE)
+              || (msgType == NrSlDiscoveryHeader::DISC_RELAY_SOLICITATION && it->second.model == ModelB && it->second.role == RelayUE)
+              || (msgType == NrSlDiscoveryHeader::DISC_RELAY_RESPONSE && it->second.model == ModelB && it->second.role == RemoteUE) );
+  }
+  return false;
+}
+
+void
+NrSlUeProse::SendRelayDiscovery (uint32_t relayCode, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << relayCode);
+
+  std::map <uint32_t, DiscoveryInfo>::iterator it;
+
+  it = m_relayMap.find (relayCode);
+  if (it != m_relayMap.end ())
+  {
+    //build message to transmit
+    NrSlDiscoveryHeader discHeader;
+
+    if (it->second.model == ModelA && it->second.role == RelayUE)
+      {
+        discHeader.SetRelayAnnouncementParameters (relayCode, m_imsi, m_l2Id, 1);
+        //reschedule
+        Simulator::Schedule (m_discoveryInterval, &NrSlUeProse::SendRelayDiscovery, this, relayCode, dstL2Id);
+      }
+
+    else if (it->second.model == ModelB && it->second.role == RemoteUE)
+      {
+        discHeader.SetRelaySoliciationParameters (relayCode, m_imsi, m_l2Id);
+        //reschedule
+        Simulator::Schedule (m_discoveryInterval, &NrSlUeProse::SendRelayDiscovery, this, relayCode, dstL2Id); 
+      }
+        
+    else if (it->second.model == ModelB && it->second.role == RelayUE)
+      {
+        discHeader.SetRelayResponseParameters (relayCode, m_imsi, m_l2Id, 1);
+        //no reschedule
+      }
+      
+      //send
+      Ptr<Packet> discoveryPacket = Create<Packet>();
+      discoveryPacket->AddHeader (discHeader);
+      DoSendNrSlDiscovery (discoveryPacket, dstL2Id);   
+      m_discoveryTrace (m_l2Id, dstL2Id, true, discHeader);
+  }
+}
+
+void
+NrSlUeProse::DoSendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+
+  //Activate the corresponding SL Discovery RB for the logical channel, if not active
+  auto it = std::find (m_activeSlDiscoveryRbs.begin(), m_activeSlDiscoveryRbs.end(), dstL2Id);
+  if (it == m_activeSlDiscoveryRbs.end ()) //First SL Discovery RB for this destination
+    {
+      //Instruct the RRC to activate the SL Disocvery RB
+      m_nrSlUeSvcRrcSapProvider->ActivateNrSlDiscoveryRadioBearer (dstL2Id);
+
+      //Keep track of it
+      m_activeSlDiscoveryRbs.push_front (dstL2Id);
+    }
+  
+  //Pass the message to the RRC
+  m_nrSlUeSvcRrcSapProvider->SendNrSlDiscovery (packet, dstL2Id);
+
+}
+
+void
+NrSlUeProse::DoReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlDiscoveryHeader discHeader;
+  packet->RemoveHeader (discHeader);
+
+  uint8_t msgType = discHeader.GetDiscoveryMsgType ();
+
+  //Discovery
+  if (msgType == NrSlDiscoveryHeader::DISC_OPEN_ANNOUNCEMENT 
+      || msgType == NrSlDiscoveryHeader::DISC_RESTRICTED_QUERY 
+      || msgType == NrSlDiscoveryHeader::DISC_RESTRICTED_RESPONSE)
+  { 
+    uint32_t appCode = discHeader.GetApplicationCode ();
+
+    //open or restricted announcement
+    if (IsMonitoringApp (msgType, appCode))
+      {
+        //Check if this is a request I am interested in
+        std::map <uint32_t, DiscoveryInfo>::iterator itInfo = m_discoveryMap.find (appCode);
+        if (itInfo != m_discoveryMap.end ())
+          {
+            NS_LOG_INFO ("Discovery message received by " << m_l2Id << " from " << srcL2Id);
+            m_discoveryTrace (srcL2Id, m_l2Id, false, discHeader);
+
+            //check if this is a request message for an app for which this UE is a Discoveree
+            if (msgType == NrSlDiscoveryHeader::DISC_RESTRICTED_QUERY && itInfo->second.role == Discoveree)
+              {
+                SendDiscovery (appCode, srcL2Id);
+              }
+          }
+      }
+  }
+  //Relay Discovery
+  else if (msgType == NrSlDiscoveryHeader::DISC_RELAY_ANNOUNCEMENT 
+      || msgType == NrSlDiscoveryHeader::DISC_RELAY_RESPONSE
+      || msgType == NrSlDiscoveryHeader::DISC_RELAY_SOLICITATION)
+  {
+    uint32_t relayCode = discHeader.GetRelayServiceCode ();
+
+    if (IsMonitoringRelay (msgType, relayCode))
+    {
+      //Check if this is a relay announcement or relay response/solicitation I am interested in
+      std::map <uint32_t, DiscoveryInfo>::iterator itInfo = m_relayMap.find (relayCode);
+      if (itInfo != m_relayMap.end ())
+      {
+        NS_LOG_INFO ("Relay message received by " << m_l2Id << " from " << srcL2Id);
+        m_discoveryTrace (srcL2Id, m_l2Id, false, discHeader);
+        
+        if (msgType == NrSlDiscoveryHeader::DISC_RELAY_SOLICITATION && itInfo->second.role == RelayUE)
+        {
+          SendRelayDiscovery (relayCode, srcL2Id);
+        }
+        else
+        {
+          //StartRelayDirectCommunication
+          //TODO: Stop relay discovery retransmission (for the next discovery interval)
+        }
+      }
+    }
+  }
+}
+
 void
 NrSlUeProse::DoReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id)
 {
   NS_LOG_FUNCTION (this);
-
-  //This can be PC5-S or a discovery message
-  //TODO: How to differentiate them here?
 
   //If PC5-S for unicast communication:
   auto it = m_unicastDirectLinks.find (srcL2Id);
@@ -309,7 +600,6 @@ NrSlUeProse::DoReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id)
       it->second->m_nrSlUeProseDirLnkSapProvider->ReceiveNrSlPc5Message (packet);
     }
 }
-
 
 void
 NrSlUeProse::DoNotifyChangeOfDirectLinkState (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::ChangeOfStateNotification info)

@@ -32,6 +32,7 @@ namespace ns3 {
 
 class NrSlDataRadioBearerInfo;
 class NrSlSignallingRadioBearerInfo;
+class NrSlDiscoveryRadioBearerInfo;
 
 /**
  * \ingroup lte
@@ -133,6 +134,11 @@ public:
    */
   typedef std::unordered_map <uint32_t, NrSlSrbMapPerLcId> NrSlSrbMapPerL2Id;
 
+  /**
+   * Map between L2 id and discovery radio bearer
+   */
+  typedef std::unordered_map <uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > NrSlDiscoveryRbMapPerL2Id;
+
 private:
   //NrSlUeRrcSapUser methods
   /**
@@ -183,7 +189,9 @@ private:
   void DoAddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
   void DoAddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
   Ptr<NrSlSignallingRadioBearerInfo> DoGetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
-
+  void DoAddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slTxDiscRb);
+  void DoAddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slRxDiscRb);
+  Ptr<NrSlDiscoveryRadioBearerInfo> DoGetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id);
 
   //Class internal private methods and member variables
 
@@ -246,6 +254,12 @@ private:
                                    * bearer map per peer (source) layer 2 id.
                                    */
 
+  NrSlDiscoveryRbMapPerL2Id m_slTxDiscoveryRbMap; /**< NR SL transmission discovery radio
+                                                   * bearer map per destination layer 2 id.
+                                                   */
+  NrSlDiscoveryRbMapPerL2Id m_slRxDiscoveryRbMap; /**< NR SL reception discovery radio
+                                                   * bearer map per peer (source) layer 2 id.
+                                                   */
 };     //end of NrSlUeRrc'class
 
 } // namespace ns3

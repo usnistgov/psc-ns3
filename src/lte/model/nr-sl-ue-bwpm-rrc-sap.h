@@ -100,6 +100,16 @@ public:
 
   //TODO: RemoveNrSlSrbLc
 
+  /**
+   * \brief Add a new NR Sidelink Discovery Radio Bearer Logical Channel (LC)
+   *
+   * \param lcInfo is the Sidelink Logical Channel Information
+   * \param msu is the pointer to NrSlMacSapUser, which MAC uses to call RLC methods
+   * \return vector of LcsConfig contains the lc configuration for each MAC
+   *         the size of the vector is equal to the number of bandwidth part manager enabled.
+   */
+  virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlDiscoveryRbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu) = 0;
+
 }; // end of class NrSlUeBwpmRrcSapProvider
 
 /**
@@ -129,6 +139,7 @@ public:
   virtual void ResetNrSlDrbLcMap ();
   virtual void SetBwpIdContainer (const std::set<uint8_t> &bwpIdVec);
   virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu);
+  virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlDiscoveryRbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu);
 
 private:
   C* m_owner; ///< the owner class
@@ -170,6 +181,11 @@ std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> MemberNrSlUeBwpmRrcSapProvid
   return m_owner->DoAddNrSlSrbLc (lcInfo, msu);
 }
 
+template <class C>
+std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> MemberNrSlUeBwpmRrcSapProvider<C>::AddNrSlDiscoveryRbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu)
+{
+  return m_owner->DoAddNrSlDiscoveryRbLc (lcInfo, msu);
+}
 
 /**
  * \ingroup lte

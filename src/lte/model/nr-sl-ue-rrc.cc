@@ -349,7 +349,8 @@ NrSlUeRrc::DoGetNextLcid (uint32_t dstL2Id)
   if (destIt == m_slDrbMap.end ())
     {
       //first time creating a LC for this destination
-      lcid = 4;
+      //LCIDs for traffic channels start at 5
+      lcid = 5;
     }
   else
     {
@@ -360,7 +361,7 @@ NrSlUeRrc::DoGetNextLcid (uint32_t dstL2Id)
           NS_FATAL_ERROR ("All the 16 LC ids are allocated");
         }
       // find an id not being used
-      for (uint8_t lcidTmp = 4; lcidTmp < 20; lcidTmp++)
+      for (uint8_t lcidTmp = 5; lcidTmp < 20; lcidTmp++)
         {
           NrSlDrbMapPerLcId::iterator lcIt;
           lcIt = destIt->second.find (lcidTmp);
@@ -490,6 +491,59 @@ NrSlUeRrc::DoGetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
         }
     }
   return slSrb;
+}
+
+void
+NrSlUeRrc::DoAddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slTxDiscRb)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlDiscoveryRbMapPerL2Id::iterator destIt = m_slTxDiscoveryRbMap.find (slTxDiscRb->m_destinationL2Id);
+  if (destIt == m_slTxDiscoveryRbMap.end ())
+    {
+      NS_LOG_LOGIC ("First SL Discovery RB for destination " << slTxDiscRb->m_destinationL2Id);
+      m_slTxDiscoveryRbMap.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo>> (slTxDiscRb->m_destinationL2Id, slTxDiscRb));
+      NS_LOG_LOGIC ("Added SL Discovery RB for destination " << slTxDiscRb->m_destinationL2Id);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("SL Discovery RB already exists for destination " << slTxDiscRb->m_destinationL2Id);
+    }
+}
+
+void
+NrSlUeRrc::DoAddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slRxDiscRb)
+{
+  NS_LOG_FUNCTION (this);
+  NrSlDiscoveryRbMapPerL2Id::iterator srcIt = m_slRxDiscoveryRbMap.find (slRxDiscRb->m_sourceL2Id);
+
+  if (srcIt == m_slRxDiscoveryRbMap.end ())
+    {
+      NS_LOG_LOGIC ("First SL RX Discovery RB for peer UE with source L2 id " <<  slRxDiscRb->m_sourceL2Id);
+      m_slRxDiscoveryRbMap.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > (slRxDiscRb->m_sourceL2Id, slRxDiscRb));
+    }
+  else
+    {
+      NS_FATAL_ERROR ("RX SL-SRB for peer source " << slRxDiscRb->m_sourceL2Id << " already exists");
+    }
+}
+
+Ptr<NrSlDiscoveryRadioBearerInfo>
+NrSlUeRrc::DoGetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb = nullptr;
+  NrSlDiscoveryRbMapPerL2Id::iterator destIt = m_slTxDiscoveryRbMap.find (dstL2Id);
+
+  if (destIt == m_slTxDiscoveryRbMap.end ())
+    {
+      NS_FATAL_ERROR ("Unable to find any SL discovery RB for destination L2 Id " << dstL2Id);
+    }
+  else
+    {
+      slDiscRb = destIt->second;
+      NS_LOG_LOGIC ("Found SL discovery RB for destination " << slDiscRb->m_destinationL2Id);
+    }
+  return slDiscRb;
 }
 
 } // namespace ns3

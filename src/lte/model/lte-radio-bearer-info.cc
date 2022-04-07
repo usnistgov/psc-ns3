@@ -173,4 +173,34 @@ NrSlSignallingRadioBearerInfo::GetTypeId (void)
   return tid;
 }
 
+TypeId
+NrSlDiscoveryRadioBearerInfo::GetTypeId (void)
+{
+  static TypeId
+    tid =
+    TypeId ("ns3::NrSlDiscoveryRadioBearerInfo")
+    .SetParent<LteRadioBearerInfo> ()
+    .AddConstructor<NrSlDiscoveryRadioBearerInfo> ()
+    .AddAttribute ("DestinationL2Id", "The destination identifier for the discovery",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (0), // unused (attribute is read-only)
+                   MakeUintegerAccessor (&NrSlDiscoveryRadioBearerInfo::m_destinationL2Id),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("logicalChannelIdentity", "The id of the Logical Channel corresponding to this discovery Radio Bearer",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   UintegerValue (0), // unused (attribute is read-only)
+                   MakeUintegerAccessor (&NrSlDiscoveryRadioBearerInfo::m_logicalChannelIdentity),
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("LteRlc", "RLC instance of the radio bearer.",
+                   PointerValue (),
+                   MakePointerAccessor (&LteRadioBearerInfo::m_rlc),
+                   MakePointerChecker<LteRlc> ())
+    .AddAttribute ("LtePdcp", "PDCP instance of the radio bearer.",
+                   PointerValue (),
+                   MakePointerAccessor (&LteRadioBearerInfo::m_pdcp),
+                   MakePointerChecker<LtePdcp> ())
+  ;
+  return tid;
+}
+
 } // namespace ns3
