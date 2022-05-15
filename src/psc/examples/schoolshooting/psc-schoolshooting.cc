@@ -189,7 +189,7 @@ main (int argc, char *argv [])
           guiHelper = CreateObject <SchoolShootingLteVisHelper> (scenarioDefinitionHelper->GetScenarioDefinition ());
         }
 
-      guiHelper->SetOrchestratorAttribute ("TimeStep", netsimulyzer::OptionalValue<int> (guiResolution));
+      guiHelper->GetOrchestrator()->SetTimeStep (MilliSeconds (guiResolution), Time::Unit::MS);
       guiHelper->SetOrchestratorAttribute ("MobilityPollInterval", TimeValue (MilliSeconds (guiResolution)));
       guiHelper->EnableKeyEventLog ();
     }

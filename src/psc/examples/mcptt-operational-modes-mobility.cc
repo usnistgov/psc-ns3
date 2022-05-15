@@ -1285,7 +1285,7 @@ int main (int argc, char *argv[])
       const auto teamThreeColor = netsimulyzer::BLUE_VALUE;
 
       orchestrator = CreateObject<netsimulyzer::Orchestrator> ("mcptt-operational-modes-mobility.json");
-      orchestrator->SetAttribute ("TimeStep", OptionalValue<int> (guiResolution));
+      orchestrator->SetTimeStep (MilliSeconds (guiResolution), Time::Unit::MS);
       orchestrator->SetAttribute ("MobilityPollInterval", TimeValue (MilliSeconds (guiResolution)));
 
       auto team1Area = CreateObject<netsimulyzer::RectangularArea> (orchestrator, Rectangle{395, 403, -25, -15});
