@@ -1512,7 +1512,7 @@ McpttCallMsgFieldUserLoc::Serialize (Buffer::Iterator& buff) const
 {
   NS_LOG_FUNCTION (this << &buff);
 
-  double temp;
+  double temp = 0;
   char bytes[sizeof(double)];
   Vector loc = GetLoc ();
   uint8_t iei = McpttCallMsgFieldUserLoc::GetIei ();
