@@ -48,7 +48,7 @@ static const struct FfrEnhancedDownlinkDefaultConfiguration
   uint8_t cellId; ///< cell ID
   uint8_t dlBandwidth; ///< DL bandwidth
   uint8_t dlSubBandOffset; ///< DL subband offset
-  uint8_t dlReuse3SubBandwidth; ///< reuse 3 subbandwidth 
+  uint8_t dlReuse3SubBandwidth; ///< reuse 3 subbandwidth
   uint8_t dlReuse1SubBandwidth; ///< reuse 1 subbandwidth
 } g_ffrEnhancedDownlinkDefaultConfiguration[] = {
   { 1, 25, 0, 4, 4},
@@ -695,7 +695,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo (const struct FfMacSchedSapProvider::
             }
           NS_LOG_INFO (this << " RNTI " << rnti << " RBG  " << i << " DL-CQI: " << (int)rbgCqi);
 
-          bool rbgAvailable = (rbgCqi > m_dlCqiThreshold) ? true : false;
+          bool rbgAvailable = (rbgCqi > m_dlCqiThreshold);
 
           bool isSecondarySegmentRbg = false;
           if (i < m_dlSecondarySegmentRbgMap.size ())
@@ -861,8 +861,8 @@ LteFfrEnhancedAlgorithm::DoReportUeMeas (uint16_t rnti,
 {
   NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
   NS_LOG_INFO ("RNTI :" << rnti << " MeasId: " << (uint16_t) measResults.measId
-                        << " RSRP: " << (uint16_t)measResults.rsrpResult
-                        << " RSRQ: " << (uint16_t)measResults.rsrqResult);
+                        << " RSRP: " << (uint16_t)measResults.measResultPCell.rsrpResult
+                        << " RSRQ: " << (uint16_t)measResults.measResultPCell.rsrqResult);
 
   if (measResults.measId != m_measId)
     {
@@ -877,7 +877,7 @@ LteFfrEnhancedAlgorithm::DoReportUeMeas (uint16_t rnti,
         }
 
       it = m_ues.find (rnti);
-      if (measResults.rsrqResult < m_rsrqThreshold)
+      if (measResults.measResultPCell.rsrqResult < m_rsrqThreshold)
         {
           if (it->second != EdgeArea)
             {

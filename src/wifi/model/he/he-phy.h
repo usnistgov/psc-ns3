@@ -108,12 +108,19 @@ public:
   uint8_t GetBssColor (void) const;
 
   /**
+   * Compute the L-SIG length value corresponding to the given HE TB PPDU duration.
+   * If the latter is not a feasible duration (considering the selected guard interval),
+   * a proper duration is computed and returned along with the L-SIG length value.
+   *
    * \param ppduDuration the duration of the HE TB PPDU
+   * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
    * \param band the frequency band being used
    *
-   * \return the L-SIG length value corresponding to that HE TB PPDU duration.
+   * \return the L-SIG length value and the adjusted HE TB PPDU duration.
    */
-  static uint16_t ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band);
+  static std::pair<uint16_t, Time> ConvertHeTbPpduDurationToLSigLength (Time ppduDuration,
+                                                                        const WifiTxVector& txVector,
+                                                                        WifiPhyBand band);
   /**
    * \param length the L-SIG length value
    * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
@@ -170,6 +177,15 @@ public:
    * \return the UID of the HE TB PPDU being received
    */
   uint64_t GetCurrentHeTbPpduUid (void) const;
+
+  /**
+   * Set the TRIGVECTOR and the associated expiration time. A TRIGVECTOR shall expire
+   * when the TX timer associated with the transmission of the Trigger Frame expires.
+   *
+   * \param trigVector the TRIGVECTOR
+   * \param validity the amount of time (from now) until expiration of the TRIGVECTOR
+   */
+  void SetTrigVector (const WifiTxVector& trigVector, Time validity);
 
   /**
    * Get the center frequency of the non-OFDMA part of the current TxVector for the
@@ -357,15 +373,13 @@ public:
    */
   static uint64_t GetNonHtReferenceRate (uint8_t mcsValue);
   /**
-   * Check whether the combination of <MCS, channel width, NSS> is allowed.
-   * This function is used as a callback for WifiMode operation, and always
-   * returns true since there is no limitation for any MCS in HePhy.
+   * Check whether the combination in TXVECTOR is allowed.
+   * This function is used as a callback for WifiMode operation.
    *
-   * \param channelWidth the considered channel width in MHz
-   * \param nss the considered number of streams
-   * \returns true.
+   * \param txVector the TXVECTOR
+   * \returns true if this combination is allowed, false otherwise.
    */
-  static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
+  static bool IsAllowed (const WifiTxVector& txVector);
 
 protected:
   PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
@@ -416,6 +430,8 @@ protected:
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
 
   EndOfHeSigACallback m_endOfHeSigACallback; //!< end of HE-SIG-A callback
+  WifiTxVector m_trigVector;                 //!< the TRIGVECTOR
+  Time m_trigVectorExpirationTime;           //!< expiration time of the TRIGVECTOR
 
 private:
   void BuildModeList (void) override;
@@ -431,6 +447,19 @@ private:
    * \return an HE MCS
    */
   static WifiMode CreateHeMcs (uint8_t index);
+
+  /**
+   * Given a PPDU duration value, the TXVECTOR used to transmit the PPDU and
+   * the PHY band, compute a valid PPDU duration considering the number and
+   * duration of symbols, the preamble duration and the guard interval.
+   *
+   * \param ppduDuration the given PPDU duration
+   * \param txVector the given TXVECTOR
+   * \param band the PHY band
+   * \return a valid PPDU duration
+   */
+  static Time GetValidPpduDuration (Time ppduDuration, const WifiTxVector& txVector,
+                                    WifiPhyBand band);
 
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
 }; //class HePhy

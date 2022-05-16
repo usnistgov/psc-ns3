@@ -7,45 +7,31 @@ import shutil
 
 from pathlib import Path
 
-WSCRIPT_TEMPLATE = '''# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+CMAKELISTS_TEMPLATE = '''\
+check_include_file_cxx(stdint.h HAVE_STDINT_H)
+if(HAVE_STDINT_H)
+    add_definitions(-DHAVE_STDINT_H)
+endif()
 
-# def options(opt):
-#     pass
+set(examples_as_tests_sources)
+if(${{ENABLE_EXAMPLES}})
+    set(examples_as_tests_sources    
+        #test/{MODULE}-examples-test-suite.cc
+        )
+endif()    
 
-# def configure(conf):
-#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
-
-def build(bld):
-    module = bld.create_ns3_module({MODULE!r}, ['core'])
-    module.source = [
-        'model/{MODULE}.cc',
-        'helper/{MODULE}-helper.cc',
-        ]
-
-    module_test = bld.create_ns3_module_test_library('{MODULE}')
-    module_test.source = [
-        'test/{MODULE}-test-suite.cc',
-        ]
-    # Tests encapsulating example programs should be listed here
-    if (bld.env['ENABLE_EXAMPLES']):
-        module_test.source.extend([
-        #    'test/{MODULE}-examples-test-suite.cc',
-             ])
-
-    headers = bld(features='ns3header')
-    headers.module = {MODULE!r}
-    headers.source = [
-        'model/{MODULE}.h',
-        'helper/{MODULE}-helper.h',
-        ]
-
-    if bld.env.ENABLE_EXAMPLES:
-        bld.recurse('examples')
-
-    # bld.ns3_python_bindings()
-
+build_lib(
+    LIBNAME {MODULE}
+    SOURCE_FILES model/{MODULE}.cc
+                 helper/{MODULE}-helper.cc 
+    HEADER_FILES model/{MODULE}.h
+                 helper/{MODULE}-helper.h
+    LIBRARIES_TO_LINK ${{libcore}}
+    TEST_SOURCES test/{MODULE}-test-suite.cc
+                 ${{examples_as_tests_sources}}
+)
+    
 '''
-
 
 
 MODEL_CC_TEMPLATE = '''/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
@@ -111,11 +97,12 @@ namespace ns3 {{
 '''
 
 
-EXAMPLES_WSCRIPT_TEMPLATE = '''# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
-def build(bld):
-    obj = bld.create_ns3_program('{MODULE}-example', [{MODULE!r}])
-    obj.source = '{MODULE}-example.cc'
+EXAMPLES_CMAKELISTS_TEMPLATE = '''\
+build_lib_example(
+    NAME {MODULE}-example
+    SOURCE_FILES {MODULE}-example.cc
+    LIBRARIES_TO_LINK ${{lib{MODULE}}}
+)
 
 '''
 
@@ -326,11 +313,14 @@ def create_file(path, template, **kwargs):
     with artifact_path.open("wt") as f:
         f.write(template.format(**kwargs))
 
-def make_wscript(moduledir, modname):
-    path = Path(moduledir, 'wscript')
-    create_file(path, WSCRIPT_TEMPLATE, MODULE=modname)
+
+def make_cmakelists(moduledir, modname):
+    path = Path(moduledir, 'CMakeLists.txt')
+    macro = "build_lib"
+    create_file(path, CMAKELISTS_TEMPLATE, MODULE=modname)
 
     return True 
+
 
 def make_model(moduledir, modname):
     modelpath = Path(moduledir, "model")
@@ -379,8 +369,8 @@ def make_examples(moduledir, modname):
     examplespath = Path(moduledir, "examples")
     examplespath.mkdir(parents=True)
 
-    wscriptpath = Path(examplespath, 'wscript')
-    create_file(wscriptpath, EXAMPLES_WSCRIPT_TEMPLATE, MODULE=modname)
+    cmakelistspath = Path(examplespath, 'CMakeLists.txt')
+    create_file(cmakelistspath, EXAMPLES_CMAKELISTS_TEMPLATE, MODULE=modname)
 
     examplesfile_path = examplespath.joinpath(modname+'-example').with_suffix('.cc')
     create_file(examplesfile_path, EXAMPLE_CC_TEMPLATE, MODULE=modname)
@@ -398,10 +388,10 @@ def make_doc(moduledir, modname):
 
     file_name = '{}.rst'.format(modname)
     file_path = Path(docpath, file_name)
-    create_file(file_path, DOC_RST_TEMPLATE, MODULE=modname,
-                MODULE_DIR=mod_relpath)
+    create_file(file_path, DOC_RST_TEMPLATE, MODULE=modname, MODULE_DIR=mod_relpath)
 
     return True 
+
 
 def make_module(modpath, modname):
     modulepath = Path(modpath, modname)
@@ -412,7 +402,7 @@ def make_module(modpath, modname):
 
     print("Creating module {}".format(modulepath))
 
-    functions = (make_wscript, make_model, make_test, 
+    functions = (make_cmakelists, make_model, make_test,
                  make_helper, make_examples, make_doc)
 
     try:
@@ -438,17 +428,17 @@ def create_argument_parser():
 
 Generates the directory structure and skeleton files required for an ns-3
 module.  All of the generated files are valid C/C++ and will compile successfully
-out of the box.  waf configure must be run after creating new modules in order
+out of the box.  ns3 configure must be run after creating new modules in order
 to integrate them into the ns-3 build system.
 
 The following directory structure is generated under the contrib directory:
 <modname>
- |-- wscript
+ |-- CMakeLists.txt
  |-- doc
      |-- <modname>.rst
  |-- examples
      |-- <modname>-example.cc
-     |-- wscript
+     |-- CMakeLists.txt
  |-- helper
      |-- <modname>-helper.cc
      |-- <modname>-helper.h
@@ -622,7 +612,7 @@ def main(argv):
     if all(make_module(*module) for module in modules):
         print()
         print("Successfully created new modules")
-        print("Run './waf configure' to include them in the build")
+        print("Run './ns3 configure' to include them in the build")
         
     return 0
 

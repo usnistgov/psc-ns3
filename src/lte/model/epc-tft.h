@@ -195,9 +195,8 @@ public:
 		  uint8_t typeOfService);
 
   /**
-   * Get the list of packet filters
-   * 
-   * \return the list of packet filters 
+   * Get the packet filters
+   * \return a containter of packet filters
    */
   std::list<PacketFilter> GetPacketFilters () const;
 

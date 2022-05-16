@@ -55,153 +55,179 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpVariantsComparison");
 
-static bool firstCwnd = true;
-static bool firstSshThr = true;
-static bool firstRtt = true;
-static bool firstRto = true;
-static Ptr<OutputStreamWrapper> cWndStream;
-static Ptr<OutputStreamWrapper> ssThreshStream;
-static Ptr<OutputStreamWrapper> rttStream;
-static Ptr<OutputStreamWrapper> rtoStream;
-static Ptr<OutputStreamWrapper> nextTxStream;
-static Ptr<OutputStreamWrapper> nextRxStream;
-static Ptr<OutputStreamWrapper> inFlightStream;
-static uint32_t cWndValue;
-static uint32_t ssThreshValue;
+static std::map<uint32_t, bool> firstCwnd;
+static std::map<uint32_t, bool> firstSshThr;
+static std::map<uint32_t, bool> firstRtt;
+static std::map<uint32_t, bool> firstRto;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> cWndStream;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> ssThreshStream;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> rttStream;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> rtoStream;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> nextTxStream;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> nextRxStream;
+static std::map<uint32_t, Ptr<OutputStreamWrapper>> inFlightStream;
+static std::map<uint32_t, uint32_t> cWndValue;
+static std::map<uint32_t, uint32_t> ssThreshValue;
 
-
-static void
-CwndTracer (uint32_t oldval, uint32_t newval)
+static uint32_t
+GetNodeIdFromContext (std::string context)
 {
-  if (firstCwnd)
-    {
-      *cWndStream->GetStream () << "0.0 " << oldval << std::endl;
-      firstCwnd = false;
-    }
-  *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
-  cWndValue = newval;
-
-  if (!firstSshThr)
-    {
-      *ssThreshStream->GetStream () << Simulator::Now ().GetSeconds () << " " << ssThreshValue << std::endl;
-    }
+  std::size_t const n1 = context.find_first_of ("/", 1);
+  std::size_t const n2 = context.find_first_of ("/", n1 + 1);
+  return std::stoul (context.substr (n1 + 1, n2 - n1 - 1));
 }
 
 static void
-SsThreshTracer (uint32_t oldval, uint32_t newval)
+CwndTracer (std::string context,  uint32_t oldval, uint32_t newval)
 {
-  if (firstSshThr)
-    {
-      *ssThreshStream->GetStream () << "0.0 " << oldval << std::endl;
-      firstSshThr = false;
-    }
-  *ssThreshStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
-  ssThreshValue = newval;
+  uint32_t nodeId = GetNodeIdFromContext (context);
 
-  if (!firstCwnd)
+  if (firstCwnd[nodeId])
     {
-      *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << cWndValue << std::endl;
+      *cWndStream[nodeId]->GetStream () << "0.0 " << oldval << std::endl;
+      firstCwnd[nodeId] = false;
+    }
+  *cWndStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
+  cWndValue[nodeId] = newval;
+
+  if (!firstSshThr[nodeId])
+    {
+      *ssThreshStream[nodeId]->GetStream ()
+          << Simulator::Now ().GetSeconds () << " " << ssThreshValue[nodeId] << std::endl;
     }
 }
 
 static void
-RttTracer (Time oldval, Time newval)
+SsThreshTracer (std::string context, uint32_t oldval, uint32_t newval)
 {
-  if (firstRtt)
+  uint32_t nodeId = GetNodeIdFromContext (context);
+
+  if (firstSshThr[nodeId])
     {
-      *rttStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
-      firstRtt = false;
+      *ssThreshStream[nodeId]->GetStream () << "0.0 " << oldval << std::endl;
+      firstSshThr[nodeId] = false;
     }
-  *rttStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
-}
+  *ssThreshStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
+  ssThreshValue[nodeId] = newval;
 
-static void
-RtoTracer (Time oldval, Time newval)
-{
-  if (firstRto)
+  if (!firstCwnd[nodeId])
     {
-      *rtoStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
-      firstRto = false;
+      *cWndStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << cWndValue[nodeId] << std::endl;
     }
-  *rtoStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
 }
 
 static void
-NextTxTracer (SequenceNumber32 old, SequenceNumber32 nextTx)
+RttTracer (std::string context, Time oldval, Time newval)
 {
-  NS_UNUSED (old);
-  *nextTxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextTx << std::endl;
+  uint32_t nodeId = GetNodeIdFromContext (context);
+
+  if (firstRtt[nodeId])
+    {
+      *rttStream[nodeId]->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
+      firstRtt[nodeId] = false;
+    }
+  *rttStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
 }
 
 static void
-InFlightTracer (uint32_t old, uint32_t inFlight)
+RtoTracer (std::string context, Time oldval, Time newval)
 {
-  NS_UNUSED (old);
-  *inFlightStream->GetStream () << Simulator::Now ().GetSeconds () << " " << inFlight << std::endl;
+  uint32_t nodeId = GetNodeIdFromContext (context);
+
+  if (firstRto[nodeId])
+    {
+      *rtoStream[nodeId]->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
+      firstRto[nodeId] = false;
+    }
+  *rtoStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
 }
 
 static void
-NextRxTracer (SequenceNumber32 old, SequenceNumber32 nextRx)
+NextTxTracer (std::string context, [[maybe_unused]] SequenceNumber32 old, SequenceNumber32 nextTx)
 {
-  NS_UNUSED (old);
-  *nextRxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextRx << std::endl;
+  uint32_t nodeId = GetNodeIdFromContext (context);
+
+  *nextTxStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << nextTx << std::endl;
 }
 
 static void
-TraceCwnd (std::string cwnd_tr_file_name)
+InFlightTracer (std::string context, [[maybe_unused]] uint32_t old, uint32_t inFlight)
 {
-  AsciiTraceHelper ascii;
-  cWndStream = ascii.CreateFileStream (cwnd_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeCallback (&CwndTracer));
+  uint32_t nodeId = GetNodeIdFromContext (context);
+
+  *inFlightStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << inFlight << std::endl;
 }
 
 static void
-TraceSsThresh (std::string ssthresh_tr_file_name)
+NextRxTracer (std::string context, [[maybe_unused]] SequenceNumber32 old, SequenceNumber32 nextRx)
 {
-  AsciiTraceHelper ascii;
-  ssThreshStream = ascii.CreateFileStream (ssthresh_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/SlowStartThreshold", MakeCallback (&SsThreshTracer));
+  uint32_t nodeId = GetNodeIdFromContext (context);
+
+  *nextRxStream[nodeId]->GetStream () << Simulator::Now ().GetSeconds () << " " << nextRx << std::endl;
 }
 
 static void
-TraceRtt (std::string rtt_tr_file_name)
-{
-  AsciiTraceHelper ascii;
-  rttStream = ascii.CreateFileStream (rtt_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT", MakeCallback (&RttTracer));
-}
-
-static void
-TraceRto (std::string rto_tr_file_name)
-{
-  AsciiTraceHelper ascii;
-  rtoStream = ascii.CreateFileStream (rto_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTO", MakeCallback (&RtoTracer));
-}
-
-static void
-TraceNextTx (std::string &next_tx_seq_file_name)
+TraceCwnd (std::string cwnd_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  nextTxStream = ascii.CreateFileStream (next_tx_seq_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/NextTxSequence", MakeCallback (&NextTxTracer));
+  cWndStream[nodeId] = ascii.CreateFileStream (cwnd_tr_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+                   MakeCallback (&CwndTracer));
 }
 
 static void
-TraceInFlight (std::string &in_flight_file_name)
+TraceSsThresh (std::string ssthresh_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  inFlightStream = ascii.CreateFileStream (in_flight_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/BytesInFlight", MakeCallback (&InFlightTracer));
+  ssThreshStream[nodeId] = ascii.CreateFileStream (ssthresh_tr_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/SlowStartThreshold",
+                   MakeCallback (&SsThreshTracer));
 }
 
-
 static void
-TraceNextRx (std::string &next_rx_seq_file_name)
+TraceRtt (std::string rtt_tr_file_name, uint32_t nodeId)
 {
   AsciiTraceHelper ascii;
-  nextRxStream = ascii.CreateFileStream (next_rx_seq_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/2/$ns3::TcpL4Protocol/SocketList/1/RxBuffer/NextRxSequence", MakeCallback (&NextRxTracer));
+  rttStream[nodeId] = ascii.CreateFileStream (rtt_tr_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/RTT",
+                   MakeCallback (&RttTracer));
+}
+
+static void
+TraceRto (std::string rto_tr_file_name, uint32_t nodeId)
+{
+  AsciiTraceHelper ascii;
+  rtoStream[nodeId] = ascii.CreateFileStream (rto_tr_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/RTO",
+                   MakeCallback (&RtoTracer));
+}
+
+static void
+TraceNextTx (std::string &next_tx_seq_file_name, uint32_t nodeId)
+{
+  AsciiTraceHelper ascii;
+  nextTxStream[nodeId] = ascii.CreateFileStream (next_tx_seq_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/NextTxSequence",
+                   MakeCallback (&NextTxTracer));
+}
+
+static void
+TraceInFlight (std::string &in_flight_file_name, uint32_t nodeId)
+{
+  AsciiTraceHelper ascii;
+  inFlightStream[nodeId] = ascii.CreateFileStream (in_flight_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/0/BytesInFlight",
+                   MakeCallback (&InFlightTracer));
+}
+
+static void
+TraceNextRx (std::string &next_rx_seq_file_name, uint32_t nodeId)
+{
+  AsciiTraceHelper ascii;
+  nextRxStream[nodeId] = ascii.CreateFileStream (next_rx_seq_file_name.c_str ());
+  Config::Connect ("/NodeList/" + std::to_string (nodeId) +
+                       "/$ns3::TcpL4Protocol/SocketList/1/RxBuffer/NextRxSequence",
+                   MakeCallback (&NextRxTracer));
 }
 
 int main (int argc, char *argv[])
@@ -416,13 +442,34 @@ int main (int argc, char *argv[])
                                             std::ios::out);
       stack.EnableAsciiIpv4All (ascii_wrap);
 
-      Simulator::Schedule (Seconds (0.00001), &TraceCwnd, prefix_file_name + "-cwnd.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceSsThresh, prefix_file_name + "-ssth.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceRtt, prefix_file_name + "-rtt.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceRto, prefix_file_name + "-rto.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceNextTx, prefix_file_name + "-next-tx.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceInFlight, prefix_file_name + "-inflight.data");
-      Simulator::Schedule (Seconds (0.1), &TraceNextRx, prefix_file_name + "-next-rx.data");
+      for (uint16_t index = 0; index < num_flows; index++)
+        {
+          std::string flowString ("");
+          if (num_flows>1)
+            {
+              flowString = "-flow" + std::to_string (index);
+            }
+
+          firstCwnd[index+1] = true;
+          firstSshThr[index+1] = true;
+          firstRtt[index+1] = true;
+          firstRto[index+1] = true;
+
+          Simulator::Schedule (Seconds (start_time * index + 0.00001), &TraceCwnd,
+                               prefix_file_name + flowString + "-cwnd.data", index+1);
+          Simulator::Schedule (Seconds (start_time * index + 0.00001), &TraceSsThresh,
+                               prefix_file_name + flowString + "-ssth.data", index+1);
+          Simulator::Schedule (Seconds (start_time * index + 0.00001), &TraceRtt,
+                               prefix_file_name + flowString + "-rtt.data", index+1);
+          Simulator::Schedule (Seconds (start_time * index + 0.00001), &TraceRto,
+                               prefix_file_name + flowString + "-rto.data", index+1);
+          Simulator::Schedule (Seconds (start_time * index + 0.00001), &TraceNextTx,
+                               prefix_file_name + flowString + "-next-tx.data", index+1);
+          Simulator::Schedule (Seconds (start_time * index + 0.00001), &TraceInFlight,
+                               prefix_file_name + flowString + "-inflight.data", index+1);
+          Simulator::Schedule (Seconds (start_time * index + 0.1), &TraceNextRx,
+                               prefix_file_name + flowString + "-next-rx.data", num_flows+index+1);
+        }
     }
 
   if (pcap)

@@ -37,9 +37,10 @@ stages:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d $MODE
-    - ./waf
-    - if [ "$MODE" != "debug" ]; then ./test.py --nowaf; fi
+    - export MPI_CI=1
+    - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
+    - ./ns3 build
+    - if [ "$MODE" != "debug" ]; then ./test.py -n; fi
   cache:
     # Use separate key for each (debug/optimized/release) jobs because
     # they run in parallel and will otherwise overwrite each other
@@ -70,7 +71,7 @@ per-commit-compile-debug:
     MODE: debug
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 per-commit-compile-release:
   extends: .base-build
@@ -85,7 +86,7 @@ per-commit-compile-release:
     MODE: release
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 per-commit-compile-optimized:
   extends: .base-build
@@ -100,7 +101,7 @@ per-commit-compile-optimized:
     MODE: optimized
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Sy base-devel python ccache gsl gtk3 boost ninja cmake --noconfirm
 
 # Weekly jobs for other distribution and compilers
 include:

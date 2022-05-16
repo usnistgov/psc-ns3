@@ -51,10 +51,10 @@ public:
 
   /**
    * Assignment operator
-   *
+   * \param value value to assign
    * \returns X2IfaceInfo& 
    */
-  X2IfaceInfo& operator= (const X2IfaceInfo &);
+  X2IfaceInfo& operator= (const X2IfaceInfo &value);
 
 public:
   Ipv4Address   m_remoteIpAddr; ///< remote IP address
@@ -72,22 +72,22 @@ public:
   /**
    * Constructor
    *
-   * \param localCellId local cell ID
-   * \param remoteCellId remote cell ID
+   * \param localCellIds local cell IDs
+   * \param remoteCellIds remote cell IDs
    */
-  X2CellInfo (uint16_t localCellId, uint16_t remoteCellId);
+  X2CellInfo (std::vector<uint16_t> localCellIds, std::vector<uint16_t> remoteCellIds);
   virtual ~X2CellInfo (void);
 
   /**
    * Assignment operator
-   *
+   * \param value value to assign
    * \returns X2CellInfo&  
    */
-  X2CellInfo& operator= (const X2CellInfo &);
+  X2CellInfo& operator= (const X2CellInfo &value);
 
 public:
-  uint16_t m_localCellId; ///< local cell ID
-  uint16_t m_remoteCellId; ///< remote cell ID
+  std::vector<uint16_t> m_localCellIds; ///< local cell IDs
+  std::vector<uint16_t> m_remoteCellIds; ///< remote cell IDs
 };
 
 
@@ -135,11 +135,11 @@ public:
    * Add an X2 interface to this EPC X2 entity
    * \param enb1CellId the cell ID of the current eNodeB
    * \param enb1X2Address the address of the current eNodeB
-   * \param enb2CellId the cell ID of the neighbouring eNodeB
+   * \param enb2CellIds the cell IDs of the neighbouring eNodeB
    * \param enb2X2Address the address of the neighbouring eNodeB
    */
   void AddX2Interface (uint16_t enb1CellId, Ipv4Address enb1X2Address,
-                       uint16_t enb2CellId, Ipv4Address enb2X2Address);
+                       std::vector<uint16_t> enb2CellIds, Ipv4Address enb2X2Address);
 
 
   /** 

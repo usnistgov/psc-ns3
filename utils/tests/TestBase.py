@@ -42,7 +42,7 @@ def print_cmds(cmds):
 
 def set_workdir():
     dir_files = [ f for f in os.listdir('.') if os.path.exists(f) ]
-    if not 'VERSION' in dir_files and not 'waf' in dir_files:
+    if not 'VERSION' in dir_files and not 'ns3' in dir_files:
         if os.path.split(os.path.abspath('.'))[1] == 'tests' and os.path.split(os.path.abspath(os.pardir))[1] == 'utils':
                 os.chdir('../../')
         else:
@@ -70,7 +70,6 @@ class TestBaseClass:
         @param argv argument list
         @param desc description
         @param mode test mode
-        @return none
         """
         self.my_env = os.environ
         set_workdir()

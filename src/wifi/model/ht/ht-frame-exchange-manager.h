@@ -60,7 +60,7 @@ public:
   virtual ~HtFrameExchangeManager ();
 
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
-  void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
+  void SetWifiMac (const Ptr<WifiMac> mac) override;
   void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
 
   /**
@@ -145,7 +145,7 @@ public:
    * \param startingSeq Sequence number of the first MPDU of all
    *        packets for which block ack was negotiated.
    *
-   * This function is typically invoked only by ns3::RegularWifiMac
+   * This function is typically invoked only by ns3::WifiMac
    * when the STA (which may be non-AP in ESS, or in an IBSS) has
    * received an ADDBA Request frame and is transmitting an ADDBA
    * Response frame. At this point the frame exchange manager must
@@ -198,6 +198,16 @@ public:
    */
   BlockAckType GetBlockAckType (Mac48Address originator, uint8_t tid) const;
 
+  /**
+   * Sends DELBA frame to cancel a block ack agreement with STA
+   * addressed by <i>addr</i> for TID <i>tid</i>.
+   *
+   * \param addr address of the recipient.
+   * \param tid traffic ID.
+   * \param byOriginator flag to indicate whether this is set by the originator.
+   */
+  void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
+
 protected:
   void DoDispose () override;
 
@@ -208,7 +218,7 @@ protected:
   void NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu) override;
   void NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu) override;
   void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const override;
-  void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const override;
+  void ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const override;
   void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
   void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
   void TransmissionSucceeded (void) override;
@@ -333,16 +343,6 @@ protected:
    */
   void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t startingSeq,
                          uint16_t timeout, bool immediateBAck);
-
-  /**
-   * Sends DELBA frame to cancel a block ack agreement with STA
-   * addressed by <i>addr</i> for TID <i>tid</i>.
-   *
-   * \param addr address of the recipient.
-   * \param tid traffic ID.
-   * \param byOriginator flag to indicate whether this is set by the originator.
-   */
-  void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
 
   /**
    * Create a BlockAck frame with header equal to <i>blockAck</i> and start its transmission.

@@ -80,13 +80,8 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
 
   m_stop = false;
   m_running = false;
-  // uids are allocated from 4.
-  // uid 0 is "invalid" events
-  // uid 1 is "now" events
-  // uid 2 is "destroy" events
-  m_uid = 4;
-  // before ::Run is entered, the m_currentUid will be zero
-  m_currentUid = 0;
+  m_uid = EventId::UID::VALID;
+  m_currentUid = EventId::UID::INVALID;
   m_currentTs = 0;
   m_currentContext = Simulator::NO_CONTEXT;
   m_unscheduledEvents = 0;
@@ -330,6 +325,10 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
     NS_ASSERT_MSG (m_events->IsEmpty () == false,
                    "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
     next = m_events->RemoveNext ();
+
+    PreEventHook (EventId (next.impl, next.key.m_ts, 
+                           next.key.m_context, next.key.m_uid));
+
     m_unscheduledEvents--;
     m_eventCount++;
 
@@ -579,21 +578,7 @@ EventId
 RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 {
   NS_LOG_FUNCTION (this << impl);
-  Scheduler::Event ev;
-  {
-    CriticalSection cs (m_mutex);
-
-    ev.impl = impl;
-    ev.key.m_ts = m_currentTs;
-    ev.key.m_context = GetContext ();
-    ev.key.m_uid = m_uid;
-    m_uid++;
-    m_unscheduledEvents++;
-    m_events->Insert (ev);
-    m_synchronizer->Signal ();
-  }
-
-  return EventId (impl, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
+  return Schedule (Time (0), impl);
 }
 
 Time
@@ -683,10 +668,11 @@ RealtimeSimulatorImpl::ScheduleDestroy (EventImpl *impl)
 
     //
     // Time doesn't really matter here (especially in realtime mode).  It is
-    // overridden by the uid of 2 which identifies this as an event to be
+    // overridden by the uid of DESTROY which identifies this as an event to be
     // executed at Simulator::Destroy time.
     //
-    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 0xffffffff, 2);
+    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 0xffffffff, 
+                  EventId::UID::DESTROY);
     m_destroyEvents.push_back (id);
     m_uid++;
   }
@@ -712,7 +698,7 @@ RealtimeSimulatorImpl::GetDelayLeft (const EventId &id) const
 void
 RealtimeSimulatorImpl::Remove (const EventId &id)
 {
-  if (id.GetUid () == 2)
+  if (id.GetUid () == EventId::UID::DESTROY)
     {
       // destroy events.
       for (DestroyEvents::iterator i = m_destroyEvents.begin ();
@@ -760,7 +746,7 @@ RealtimeSimulatorImpl::Cancel (const EventId &id)
 bool
 RealtimeSimulatorImpl::IsExpired (const EventId &id) const
 {
-  if (id.GetUid () == 2)
+  if (id.GetUid () == EventId::UID::DESTROY)
     {
       if (id.PeekEventImpl () == 0
           || id.PeekEventImpl ()->IsCancelled ())

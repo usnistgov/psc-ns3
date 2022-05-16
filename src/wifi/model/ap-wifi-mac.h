@@ -23,7 +23,7 @@
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -38,6 +38,7 @@ class HtOperation;
 class VhtOperation;
 class HeOperation;
 class CfParameterSet;
+class UniformRandomVariable;
 
 /**
  * \brief Wi-Fi AP state machine
@@ -46,7 +47,7 @@ class CfParameterSet;
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.
  */
-class ApWifiMac : public RegularWifiMac
+class ApWifiMac : public WifiMac
 {
 public:
   /**
@@ -59,6 +60,7 @@ public:
   virtual ~ApWifiMac ();
 
   void SetLinkUpCallback (Callback<void> linkUp) override;
+  bool CanForwardPacketsTo (Mac48Address to) const override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
   bool SupportsSendFrom (void) const override;
@@ -162,9 +164,8 @@ private:
    *
    * \param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
    * \param mpdu the MPDU that we failed to sent
-   * \param txVector the TX vector used to send the MPDU
    */
-  void TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
+  void TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu);
 
   /**
    * This method is called to de-aggregate an A-MSDU and forward the

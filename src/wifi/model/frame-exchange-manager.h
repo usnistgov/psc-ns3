@@ -25,7 +25,7 @@
 #include "qos-txop.h"
 #include "wifi-tx-vector.h"
 #include "wifi-psdu.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "wifi-phy.h"
@@ -96,7 +96,7 @@ public:
    *
    * \param mac the MAC layer to use
    */
-  virtual void SetWifiMac (const Ptr<RegularWifiMac> mac);
+  virtual void SetWifiMac (const Ptr<WifiMac> mac);
   /**
    * Set the MAC TX Middle to use.
    *
@@ -226,7 +226,7 @@ public:
    * the MAC layer that a channel switching occurred. When a channel switching
    * occurs, pending MAC transmissions (RTS, CTS, Data and Ack) are cancelled.
    */
-  void NotifySwitchingStartNow (Time duration);
+  virtual void NotifySwitchingStartNow (Time duration);
 
   /**
    * This method is typically invoked by the PhyListener to notify
@@ -329,11 +329,12 @@ protected:
   virtual void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * Retransmit an MPDU that was not sent because a CTS was not received.
+   * Make the sequence number of the given MPDU available again if the MPDU has
+   * never been transmitted.
    *
-   * \param mpdu the MPDU to retransmit
+   * \param mpdu the given MPDU
    */
-  virtual void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const;
+  virtual void ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
    * Pass the given MPDU, discarded because of the max retry limit was reached,
@@ -375,10 +376,21 @@ protected:
    */
   void UpdateTxDuration (Mac48Address receiver, WifiTxParameters& txParams) const;
 
+  /**
+   * Get the size in bytes of the given MPDU, which is to be transmitted with the
+   * given TXVECTOR. The purpose of this method is that it can be overridden to
+   * compute the size of an S-MPDU.
+   *
+   * \param mpdu the given MPDU
+   * \param txVector the given TXVECTOR
+   * \return the size of the MPDU
+   */
+  virtual uint32_t GetPsduSize (Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const;
+
   Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
   WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
   EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
-  Ptr<RegularWifiMac> m_mac;                        //!< the MAC layer on this station
+  Ptr<WifiMac> m_mac;                               //!< the MAC layer on this station
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MAC TX Middle on this station
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< the MAC RX Middle on this station
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
@@ -510,7 +522,7 @@ protected:
    * \param mpdu the MPDU that solicited a Normal Ack response
    * \param txVector the TXVECTOR used to transmit the frame soliciting the Normal Ack
    */
-  void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
+  virtual void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
 
   /**
    * Called when the CTS timeout expires.
@@ -519,6 +531,13 @@ protected:
    * \param txVector the TXVECTOR used to transmit the RTS frame
    */
   virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector);
+  /**
+   * Take required actions when the CTS timer fired after sending an RTS to
+   * protect the given PSDU expires.
+   *
+   * \param psdu the PSDU protected by the failed RTS
+   */
+  void DoCtsTimeout (Ptr<WifiPsdu> psdu);
 
 private:
   /**

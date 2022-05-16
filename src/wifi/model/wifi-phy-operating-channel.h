@@ -50,6 +50,8 @@ public:
 
   virtual ~WifiPhyOperatingChannel ();
 
+  static const std::set<FrequencyChannelInfo> m_frequencyChannels;  //!< Available frequency channels
+
   /**
    * Return true if a valid channel has been set, false otherwise.
    *
@@ -66,21 +68,32 @@ public:
    * \param number the channel number (use 0 to leave it unspecified)
    * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
    * \param width the channel width in MHz (use 0 to leave it unspecified)
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    */
   void Set (uint8_t number, uint16_t frequency, uint16_t width,
-            WifiPhyStandard standard, WifiPhyBand band);
+            WifiStandard standard, WifiPhyBand band);
   /**
-   * Set the default channel of the given width and for the given PHY standard and band.
+   * Set the default channel of the given width and for the given standard and band.
    * If the channel width is a multiple of 20 MHz, the primary 20 MHz channel
    * is set to the 20 MHz subchannel with the lowest center frequency.
    *
    * \param width the channel width in MHz
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    */
-  void SetDefault (uint16_t width, WifiPhyStandard standard, WifiPhyBand band);
+  void SetDefault (uint16_t width, WifiStandard standard, WifiPhyBand band);
+
+  /**
+   * Get the default channel number of the given width and for the given standard
+   * and band.
+   *
+   * \param width the channel width in MHz
+   * \param standard the standard
+   * \param band the PHY band
+   * \return the default channel number
+   */
+  static uint8_t GetDefaultChannelNumber (uint16_t width, WifiStandard standard, WifiPhyBand band);
 
   /**
    * Return the channel number identifying the whole operating channel.
@@ -125,7 +138,6 @@ public:
    */
   uint16_t GetPrimaryChannelCenterFrequency (uint16_t primaryChannelWidth) const;
 
-private:
   /// Typedef for a const iterator pointing to a channel in the set of available channels
   typedef std::set<FrequencyChannelInfo>::const_iterator ConstIterator;
 
@@ -135,16 +147,26 @@ private:
    * \param number the channel number (use 0 to leave it unspecified)
    * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
    * \param width the channel width in MHz (use 0 to leave it unspecified)
-   * \param standard the PHY standard
+   * \param standard the standard
    * \param band the PHY band
    * \param start an iterator pointing to the channel to start the search with
    * \return an iterator pointing to the found channel, if any, or to past-the-end
    *         of the set of available channels
    */
-  ConstIterator FindFirst (uint8_t number, uint16_t frequency, uint16_t width,
-                           WifiPhyStandard standard, WifiPhyBand band,
-                           ConstIterator start) const;
+  static ConstIterator FindFirst (uint8_t number, uint16_t frequency, uint16_t width,
+                                  WifiStandard standard, WifiPhyBand band,
+                                  ConstIterator start = m_frequencyChannels.begin ());
 
+  /**
+   * Get channel number of the primary channel
+   * \param primaryChannelWidth the width of the primary channel (MHz)
+   * \param standard the standard
+   *
+   * \return channel number of the primary channel
+   */
+  uint8_t GetPrimaryChannelNumber (uint16_t primaryChannelWidth, WifiStandard standard) const;
+
+private:
   ConstIterator m_channelIt;   //!< const iterator pointing to the configured frequency channel
   uint8_t m_primary20Index;    /**< index of the primary20 channel (0 indicates the 20 MHz
                                     subchannel with the lowest center frequency) */

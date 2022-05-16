@@ -32,6 +32,7 @@
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/qos-utils.h"
+#include "ns3/qos-txop.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
@@ -103,7 +104,7 @@ AsciiPhyReceiveSinkWithContext (
   WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << "" << context << " " << *p << std::endl;
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << context << " " << *p << std::endl;
 }
 
 /**
@@ -711,10 +712,11 @@ WifiHelper::~WifiHelper ()
 }
 
 WifiHelper::WifiHelper ()
-  : m_standard (WIFI_STANDARD_80211a),
-    m_selectQueueCallback (&SelectQueueByDSField)
+  : m_standard (WIFI_STANDARD_80211ax),
+    m_selectQueueCallback (&SelectQueueByDSField),
+    m_enableFlowControl (true)
 {
-  SetRemoteStationManager ("ns3::ArfWifiManager");
+  SetRemoteStationManager ("ns3::IdealWifiManager");
 }
 
 void
@@ -770,6 +772,12 @@ WifiHelper::SetStandard (WifiStandard standard)
 }
 
 void
+WifiHelper::DisableFlowControl (void)
+{
+  m_enableFlowControl = false;
+}
+
+void
 WifiHelper::SetSelectQueueCallback (SelectQueueCallback f)
 {
   m_selectQueueCallback = f;
@@ -786,36 +794,41 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-      auto it = wifiStandards.find (m_standard);
-      if (it == wifiStandards.end ())
+      device->SetStandard (m_standard);
+      if (m_standard == WIFI_STANDARD_UNSPECIFIED)
         {
-          NS_FATAL_ERROR ("Selected standard is not defined!");
+          NS_FATAL_ERROR ("No standard specified!");
           return devices;
         }
-      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211n)
+      if (m_standard >= WIFI_STANDARD_80211n)
         {
           Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
           device->SetHtConfiguration (htConfiguration);
         }
-      if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ac) && (it->second.phyBand != WIFI_PHY_BAND_2_4GHZ))
+      if (m_standard >= WIFI_STANDARD_80211ac)
         {
+          // Create the VHT Configuration object even if the PHY band is 2.4GHz
+          // (WifiNetDevice::GetVhtConfiguration() checks the PHY band being used).
+          // This approach allows us not to worry about deleting this object when
+          // the PHY band is switched from 5GHz to 2.4GHz and creating this object
+          // when the PHY band is switched from 2.4GHz to 5GHz.
           Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration> ();
           device->SetVhtConfiguration (vhtConfiguration);
         }
-      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax)
+      if (m_standard >= WIFI_STANDARD_80211ax)
         {
           Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
           device->SetHeConfiguration (heConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-      phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
+      phy->ConfigureStandard (m_standard);
       device->SetPhy (phy);
       Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       device->SetMac (mac);
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
-      if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
+      if ((m_standard >= WIFI_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
         {
           Ptr<ObssPdAlgorithm> obssPdAlgorithm = m_obssPdAlgorithm.Create<ObssPdAlgorithm> ();
           device->AggregateObject (obssPdAlgorithm);
@@ -823,22 +836,20 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         }
       devices.Add (device);
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
-      // Aggregate a NetDeviceQueueInterface object if a RegularWifiMac is installed
-      Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-      if (rmac)
+      if (m_enableFlowControl)
         {
           Ptr<NetDeviceQueueInterface> ndqi;
           BooleanValue qosSupported;
           Ptr<WifiMacQueue> wmq;
 
-          rmac->GetAttributeFailSafe ("QosSupported", qosSupported);
+          mac->GetAttributeFailSafe ("QosSupported", qosSupported);
           if (qosSupported.Get ())
             {
               ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> ("NTxQueues",
                                                                           UintegerValue (4));
               for (auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
                 {
-                  Ptr<QosTxop> qosTxop = rmac->GetQosTxop (ac);
+                  Ptr<QosTxop> qosTxop = mac->GetQosTxop (ac);
                   wmq = qosTxop->GetWifiMacQueue ();
                   ndqi->GetTxQueue (static_cast<std::size_t> (ac))->ConnectQueueTraces (wmq);
                 }
@@ -848,7 +859,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
             {
               ndqi = CreateObject<NetDeviceQueueInterface> ();
 
-              wmq = rmac->GetTxop ()->GetWifiMacQueue ();
+              wmq = mac->GetTxop ()->GetWifiMacQueue ();
               ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
             }
           device->AggregateObject (ndqi);
@@ -933,7 +944,6 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("PhyEntity", LOG_LEVEL_ALL);
   LogComponentEnable ("QosFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("QosTxop", LOG_LEVEL_ALL);
-  LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("RrMultiUserScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("RrpaaWifiManager", LOG_LEVEL_ALL);
@@ -996,36 +1006,37 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 
           //Handle any random numbers in the MAC objects.
           Ptr<WifiMac> mac = wifi->GetMac ();
-          Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-          if (rmac)
+          PointerValue ptr;
+          if (!mac->GetQosSupported ())
             {
-              PointerValue ptr;
-              rmac->GetAttribute ("Txop", ptr);
+              mac->GetAttribute ("Txop", ptr);
               Ptr<Txop> txop = ptr.Get<Txop> ();
               currentStream += txop->AssignStreams (currentStream);
-
-              rmac->GetAttribute ("VO_Txop", ptr);
+            }
+          else
+            {
+              mac->GetAttribute ("VO_Txop", ptr);
               Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
               currentStream += vo_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("VI_Txop", ptr);
+              mac->GetAttribute ("VI_Txop", ptr);
               Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
               currentStream += vi_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("BE_Txop", ptr);
+              mac->GetAttribute ("BE_Txop", ptr);
               Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
               currentStream += be_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("BK_Txop", ptr);
+              mac->GetAttribute ("BK_Txop", ptr);
               Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
               currentStream += bk_txop->AssignStreams (currentStream);
+            }
 
-              //if an AP, handle any beacon jitter
-              Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (rmac);
-              if (apmac)
-                {
-                  currentStream += apmac->AssignStreams (currentStream);
-                }
+          //if an AP, handle any beacon jitter
+          Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (mac);
+          if (apmac)
+            {
+              currentStream += apmac->AssignStreams (currentStream);
             }
         }
     }

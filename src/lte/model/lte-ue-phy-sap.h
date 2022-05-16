@@ -88,8 +88,9 @@ public:
 
 
   /**
-  * \brief Send The MAC PDU to the channel
-  * \param p The MAC PDU to send
+   * \brief Send the MAC PDU to the channel
+   *
+   * \param p the MAC PDU to send
    */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 

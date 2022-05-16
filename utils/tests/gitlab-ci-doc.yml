@@ -5,7 +5,7 @@
   stage: documentation
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Sy base-devel ninja cmake python ccache gsl gtk3 boost --noconfirm
     - pacman -Sy git doxygen graphviz imagemagick dia texlive-core texlive-bin texlive-latexextra python-sphinx --noconfirm
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
@@ -23,19 +23,16 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d release
-    - ./waf
+    - CXX=$COMPILER ./ns3 configure --enable-examples --enable-tests --enable-asserts -d release
+    - ./ns3 build
 #    - mkdir -p public/doxygen
-    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
-    - git fetch ns-3-origin
-#    - doc/doxygen.warnings.report.sh -f "$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
-    - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
-    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
-#    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES" || EXIT_CODE=$?
-#    - if [ -z $EXIT_CODE ]; then export EXIT_CODE=0; fi;
-#    - if [ $EXIT_CODE -ne 0 ]; then if [ -z $CHANGED_FILES ]; then exit 0; fi; fi;
-#    - exit $EXIT_CODE
-
+# The following four lines were needed when ns-3 had warnings, and
+# it was necessary to have a filter to check only the files tocuhed by a MR.
+#    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
+#    - git fetch ns-3-origin
+#    - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
+#    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
+    - doc/doxygen.warnings.report.sh
 #    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
   cache:

@@ -75,7 +75,7 @@ HtFrameExchangeManager::DoDispose (void)
 }
 
 void
-HtFrameExchangeManager::SetWifiMac (const Ptr<RegularWifiMac> mac)
+HtFrameExchangeManager::SetWifiMac (const Ptr<WifiMac> mac)
 {
   m_msduAggregator->SetWifiMac (mac);
   m_mpduAggregator->SetWifiMac (mac);
@@ -185,7 +185,12 @@ HtFrameExchangeManager::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16
   txParams.m_acknowledgment = GetAckManager ()->TryAddMpdu (mpdu, txParams);
 
   // Push the MPDU to the front of the queue and transmit it
-  m_mac->GetQosTxop (tid)->GetWifiMacQueue ()->PushFront (mpdu);
+  auto queue = m_mac->GetQosTxop (tid)->GetWifiMacQueue ();
+  if (!queue->PushFront (mpdu))
+    {
+      NS_LOG_DEBUG ("Queue is full, replace the oldest frame with the ADDBA Request frame");
+      queue->Replace (queue->Peek (), mpdu);
+    }
   SendMpduWithProtection (mpdu, txParams);
 }
 
@@ -219,7 +224,7 @@ HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
     }
   respHdr.SetTid (reqHdr->GetTid ());
 
-  respHdr.SetBufferSize (GetSupportedBaBufferSize () - 1);
+  respHdr.SetBufferSize (GetSupportedBaBufferSize ());
   respHdr.SetTimeout (reqHdr->GetTimeout ());
 
   WifiActionHeader actionHdr;
@@ -288,9 +293,9 @@ HtFrameExchangeManager::CreateBlockAckAgreement (const MgtAddBaResponseHeader *r
 {
   NS_LOG_FUNCTION (this << *respHdr << originator << startingSeq);
   uint8_t tid = respHdr->GetTid ();
-  
+
   RecipientBlockAckAgreement agreement (originator, respHdr->IsAmsduSupported (), tid,
-                                        respHdr->GetBufferSize () + 1, respHdr->GetTimeout (),
+                                        respHdr->GetBufferSize (), respHdr->GetTimeout (),
                                         startingSeq,
                                         m_mac->GetWifiRemoteStationManager ()->GetHtSupported ()
                                         && m_mac->GetWifiRemoteStationManager ()->GetHtSupported (originator));
@@ -313,7 +318,6 @@ HtFrameExchangeManager::CreateBlockAckAgreement (const MgtAddBaResponseHeader *r
     }
 
   m_agreements.insert ({{originator, tid}, agreement});
-  GetBaManager (tid)->SetBlockAckInactivityCallback (MakeCallback (&HtFrameExchangeManager::SendDelbaFrame, this));
 }
 
 void
@@ -431,7 +435,7 @@ HtFrameExchangeManager::SendMpduFromBaManager (Ptr<QosTxop> edca, Time available
 
   // we can transmit the BlockAckReq frame
   Ptr<const WifiMacQueueItem> mpdu = edca->GetBaManager ()->GetBar ();
-  SendPsduWithProtection (Create<WifiPsdu> (mpdu, false), txParams);
+  SendPsduWithProtection (GetWifiPsdu (Copy (mpdu), txParams.m_txVector), txParams);
   return true;
 }
 
@@ -447,8 +451,7 @@ HtFrameExchangeManager::SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
   Ptr<QosTxop> edca = m_mac->GetQosTxop (peekedItem->GetHeader ().GetQosTid ());
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (peekedItem->GetHeader ());
-  WifiMacQueueItem::ConstIterator queueIt;
-  Ptr<WifiMacQueueItem> mpdu = edca->GetNextMpdu (peekedItem, txParams, availableTime, initialFrame, queueIt);
+  Ptr<WifiMacQueueItem> mpdu = edca->GetNextMpdu (peekedItem, txParams, availableTime, initialFrame);
 
   if (mpdu == nullptr)
     {
@@ -458,7 +461,7 @@ HtFrameExchangeManager::SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
 
   // try A-MPDU aggregation
   std::vector<Ptr<WifiMacQueueItem>> mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, txParams,
-                                                                                availableTime, queueIt);
+                                                                                availableTime);
   NS_ASSERT (txParams.m_acknowledgment);
 
   if (mpduList.size () > 1)
@@ -650,7 +653,7 @@ HtFrameExchangeManager::RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu
 }
 
 void
-HtFrameExchangeManager::RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const
+HtFrameExchangeManager::ReleaseSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
@@ -679,7 +682,7 @@ HtFrameExchangeManager::RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu
           return;
         }
     }
-  QosFrameExchangeManager::RetransmitMpduAfterMissedCts (mpdu);
+  QosFrameExchangeManager::ReleaseSequenceNumber (mpdu);
 }
 
 Time
@@ -765,32 +768,8 @@ HtFrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVecto
       return;
     }
 
-  NS_ASSERT (m_psdu->GetNMpdus () > 1);
-  m_mac->GetWifiRemoteStationManager ()->ReportRtsFailed (m_psdu->GetHeader (0));
-
-  if (!m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (*m_psdu->begin ()))
-    {
-      NS_LOG_DEBUG ("Missed CTS, discard MPDUs");
-      m_mac->GetWifiRemoteStationManager ()->ReportFinalRtsFailed (m_psdu->GetHeader (0));
-      // Dequeue the MPDUs if they are stored in a queue
-      DequeuePsdu (m_psdu);
-      for (const auto& mpdu : *PeekPointer (m_psdu))
-        {
-          NotifyPacketDiscarded (mpdu);
-        }
-      m_edca->ResetCw ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Missed CTS, retransmit MPDUs");
-      for (const auto& mpdu : *PeekPointer (m_psdu))
-        {
-          RetransmitMpduAfterMissedCts (mpdu);
-        }
-      m_edca->UpdateFailedCw ();
-    }
-  m_psdu = 0;
-  TransmissionFailed ();
+  DoCtsTimeout (m_psdu);
+  m_psdu = nullptr;
 }
 
 void
@@ -942,7 +921,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpd
 {
   NS_ASSERT (mpdu != 0);
   NS_LOG_FUNCTION (this << *mpdu << &txParams << ppduDurationLimit);
-  
+
   Mac48Address receiver = mpdu->GetHeader ().GetAddr1 ();
   uint32_t ampduSize = txParams.GetSizeIfAddMpdu (mpdu);
 
@@ -1362,7 +1341,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           mpdu->GetPacket ()->PeekHeader (blockAckReq);
           NS_ABORT_MSG_IF (blockAckReq.IsMultiTid (), "Multi-TID BlockAckReq not supported");
           uint8_t tid = blockAckReq.GetTidInfo ();
-          
+
           auto agreementIt = m_agreements.find ({sender, tid});
 
           if (agreementIt == m_agreements.end ())

@@ -97,6 +97,7 @@ SOURCES = \
 	$(SRC)/wifi/doc/source/wifi-design.rst \
 	$(SRC)/wifi/doc/source/wifi-user.rst \
 	$(SRC)/wifi/doc/source/wifi-testing.rst \
+	$(SRC)/wifi/doc/source/wifi-changelog.rst \
 	$(SRC)/wifi/doc/source/wifi-references.rst \
 	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
@@ -386,6 +387,7 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/RoutingTables.pdf \
 	$(SRC)/netanim/doc/figures/PacketTimeline.png \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
+	$(SRC)/nix-vector-routing/doc/figures/nms.png \
 	$(SRC)/psc/doc/source/figures/intel-http.png \
 	$(SRC)/psc/doc/source/figures/sample-video-cdf.png \
 	$(SRC)/psc/doc/source/figures/psc-application-client.png \

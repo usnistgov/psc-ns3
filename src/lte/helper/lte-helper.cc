@@ -586,7 +586,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
                    "CC map size (" << m_componentCarrierPhyParams.size () <<
                    ") must be equal to number of carriers (" <<
                    m_noOfCcs << ")");
-
   // create component carrier map for this eNb device
   std::map<uint8_t,Ptr<ComponentCarrierBaseStation> > ccMap;
   for (std::map<uint8_t, ComponentCarrier >::iterator it = m_componentCarrierPhyParams.begin ();
@@ -811,7 +810,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   if (m_epcHelper != 0)
     {
       NS_LOG_INFO ("adding this eNB to the EPC");
-      m_epcHelper->AddEnb (n, dev, dev->GetCellId ());
+      m_epcHelper->AddEnb (n, dev, dev->GetCellIds ());
       Ptr<EpcEnbApplication> enbApp = n->GetApplication (0)->GetObject<EpcEnbApplication> ();
       NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
 
@@ -847,7 +846,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
                    "CC map size (" << m_componentCarrierPhyParams.size () <<
                    ") must be equal to number of carriers (" <<
                    m_noOfCcs << ")");
-
   std::map<uint8_t, Ptr<ComponentCarrierUe> > ueCcMap;
 
   for (std::map< uint8_t, ComponentCarrier >::iterator it = m_componentCarrierPhyParams.begin ();
@@ -1150,7 +1148,7 @@ LteHelper::Attach (NetDeviceContainer ueDevices, Ptr<NetDevice> enbDevice)
 }
 
 void
-LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
+LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this);
   //enbRrc->SetCellId (enbDevice->GetObject<LteEnbNetDevice> ()->GetCellId ());
@@ -1159,7 +1157,8 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteEnbNetDevice> enbLteDevice = enbDevice->GetObject<LteEnbNetDevice> ();
 
   Ptr<EpcUeNas> ueNas = ueLteDevice->GetNas ();
-  ueNas->Connect (enbLteDevice->GetCellId (), enbLteDevice->GetDlEarfcn ());
+  Ptr<ComponentCarrierEnb> componentCarrier = DynamicCast<ComponentCarrierEnb> (enbLteDevice->GetCcMap ().at (componentCarrierId));
+  ueNas->Connect (componentCarrier->GetCellId (), componentCarrier->GetDlEarfcn ());
 
   if (m_epcHelper != 0)
     {

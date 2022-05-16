@@ -23,6 +23,7 @@
 
 #include "ns3/net-device.h"
 #include "ns3/traced-callback.h"
+#include "wifi-standards.h"
 
 namespace ns3 {
 
@@ -61,6 +62,23 @@ public:
 
   WifiNetDevice ();
   virtual ~WifiNetDevice ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  WifiNetDevice (const WifiNetDevice &o) = delete;
+  WifiNetDevice &operator = (const WifiNetDevice &) = delete;
+
+  /**
+   * Set the Wifi standard.
+   *
+   * \param standard the Wifi standard
+   */
+  void SetStandard (WifiStandard standard);
+  /**
+   * Get the Wifi standard.
+   *
+   * \return the Wifi standard
+   */
+  WifiStandard GetStandard (void) const;
 
   /**
    * \param mac the MAC layer to use.
@@ -154,23 +172,6 @@ protected:
 
 private:
   /**
-   * \brief Copy constructor
-   * \param o object to copy
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  WifiNetDevice (const WifiNetDevice &o);
-
-  /**
-   * \brief Assignment operator
-   * \param o object to copy
-   * \returns the copied object
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  WifiNetDevice &operator = (const WifiNetDevice &o);
-
-  /**
    * Set that the link is up. A link is always up in ad-hoc mode.
    * For a STA, a link is up when the STA is associated with an AP.
    */
@@ -198,6 +199,7 @@ private:
   TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger; //!< receive trace callback
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger; //!< transmit trace callback
 
+  WifiStandard m_standard; //!< Wifi standard
   uint32_t m_ifIndex; //!< IF index
   bool m_linkUp; //!< link up
   TracedCallback<> m_linkChanges; //!< link change callback

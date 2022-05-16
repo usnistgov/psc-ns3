@@ -283,6 +283,15 @@ private:
    */
   bool m_slUeDchFirstWrite;
 
+  /**
+   * Downlink output trace file
+   */
+  std::ofstream m_dlOutFile;
+
+  /**
+   * Uplink output trace file
+   */
+  std::ofstream m_ulOutFile;
 };
 
 } // namespace ns3

@@ -27,7 +27,6 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 #include "ns3/traced-value.h"
-#include "ns3/unused.h"
 #include "ns3/log.h"
 #include "ns3/queue-size.h"
 #include "ns3/queue-item.h"
@@ -178,6 +177,15 @@ public:
    * \return the maximum size of this queue
    */
   QueueSize GetMaxSize (void) const;
+
+  /**
+   * \brief Check if the queue would overflow with additional bytes or packets
+   * Note: the check is performed according to the queue's operating mode (bytes or packets).
+   * \param nPackets number of additional packets
+   * \param nBytes number of additional bytes
+   * \return true if the queue should overflow, false otherwise.
+   */
+  bool WouldOverflow (uint32_t nPackets, uint32_t nBytes) const;
 
 #if 0
   // average calculation requires keeping around
@@ -457,7 +465,7 @@ TypeId
 Queue<Item>::GetTypeId (void)
 {
   std::string name = GetTypeParamName<Queue<Item> > ();
-  static TypeId tid = TypeId (("ns3::Queue<" + name + ">").c_str ())
+  static TypeId tid = TypeId ("ns3::Queue<" + name + ">")
     .SetParent<QueueBase> ()
     .SetGroupName ("Network")
     .AddTraceSource ("Enqueue", "Enqueue a packet in the queue.",

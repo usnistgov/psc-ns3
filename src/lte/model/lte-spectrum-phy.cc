@@ -532,6 +532,13 @@ LteSpectrumPhy::Reset ()
   m_slssId = 0;
   m_halfDuplexPhy = 0;
   m_ulDataSlCheck = false;
+
+  // Detach from the channel, because receiving any signal without
+  // spectrum model is an error.
+  if (m_channel)
+    {
+      m_channel->RemoveRx (this);
+    }
 }
 
 
@@ -621,8 +628,8 @@ LteSpectrumPhy::SetLtePhyRxPsdchSdRsrpCallback (LtePhyRxPsdchSdRsrpCallback c)
   m_ltePhyRxPsdchSdRsrpCallback = c;
 }
 
-Ptr<AntennaModel>
-LteSpectrumPhy::GetRxAntenna () const
+Ptr<Object>
+LteSpectrumPhy::GetAntenna () const
 {
   return m_antenna;
 }
@@ -1696,7 +1703,7 @@ LteSpectrumPhy::EndRxData ()
             }
           TbStats_t tbStats = LteMiErrorModel::GetTbDecodificationStats (m_sinrPerceived, (*itTb).second.rbBitmap, (*itTb).second.size, (*itTb).second.mcs, harqInfoList);
           (*itTb).second.mi = tbStats.mi;
-          (*itTb).second.corrupt = m_random->GetValue () > tbStats.tbler ? false : true;
+          (*itTb).second.corrupt = !(m_random->GetValue () > tbStats.tbler);
           NS_LOG_DEBUG (this << "RNTI " << (*itTb).first.m_rnti << " size " << (*itTb).second.size << " mcs " << (uint32_t)(*itTb).second.mcs << " bitmap " << (*itTb).second.rbBitmap.size () << " layer " << (uint16_t)(*itTb).first.m_layer << " TBLER " << tbStats.tbler << " corrupted " << (*itTb).second.corrupt);
           // fire traces on DL/UL reception PHY stats
           PhyReceptionStatParameters params;
@@ -2025,7 +2032,7 @@ LteSpectrumPhy::RxSlPscch (std::vector<uint32_t> pktIndexes)
               //Average gain for SIMO based on [CatreuxMIMO] --> m_slSinrPerceived[i] * 2.51189
               NS_LOG_DEBUG (this << " Average gain for SIMO = " << m_slRxGain << " Watts");
               errorRate = LteNistErrorModel::GetPscchBler (m_fadingModel,LteNistErrorModel::SISO, GetMeanSinr (m_slSinrPerceived[pktIndex] * m_slRxGain,m_rxPacketInfo.at (pktIndex).rbBitmap)).tbler;
-              corrupt = m_random->GetValue () > errorRate ? false : true;
+              corrupt = !(m_random->GetValue () > errorRate);
               NS_LOG_DEBUG (this << " PSCCH Decoding, errorRate " << errorRate << " error " << corrupt);
             }
         }
@@ -2213,7 +2220,7 @@ LteSpectrumPhy::RxSlPssch (std::vector<uint32_t> pktIndexes)
                   else
                     {
                       double rndVal = m_random->GetValue ();
-                      (*itTb).second.corrupt = rndVal > tbStats.tbler ? false : true;
+                      (*itTb).second.corrupt = !(rndVal > tbStats.tbler);
                     }
                 }
 
@@ -2481,7 +2488,7 @@ LteSpectrumPhy::RxSlPsdch (std::vector<uint32_t> pktIndexes)
                 {
                   double rndVal = m_random->GetValue ();
                   NS_LOG_DEBUG ("TBLER is " << tbStats.tbler << " random number drawn is " << rndVal);
-                  (*itTbDisc).second.corrupt = rndVal > tbStats.tbler ? false : true;
+                  (*itTbDisc).second.corrupt = !(rndVal > tbStats.tbler);
                   NS_LOG_DEBUG ("Is TB marked as corrupted after tossing the coin? " << (*itTbDisc).second.corrupt);
                 }
             }
@@ -2710,7 +2717,7 @@ LteSpectrumPhy::RxSlPsbch (std::vector<uint32_t> pktIndexes)
               double  errorRate;
               //Average gain for SIMO based on [CatreuxMIMO] --> m_slSinrPerceived[i] * 2.51189
               errorRate = LteNistErrorModel::GetPsbchBler (m_fadingModel,LteNistErrorModel::SISO, GetMeanSinr (m_slSinrPerceived[pktIndex] * m_slRxGain, m_rxPacketInfo[pktIndex].rbBitmap)).tbler;
-              corrupt = m_random->GetValue () > errorRate ? false : true;
+              corrupt = !(m_random->GetValue () > errorRate);
               NS_LOG_DEBUG (this << " PSBCH Decoding, errorRate " << errorRate << " error " << corrupt);
             }
         }
@@ -2811,7 +2818,7 @@ LteSpectrumPhy::EndRxDlCtrl ()
   if (m_ctrlErrorModelEnabled)
     {
       double  errorRate = LteMiErrorModel::GetPcfichPdcchError (m_sinrPerceived);
-      error = m_random->GetValue () > errorRate ? false : true;
+      error = !(m_random->GetValue () > errorRate);
       NS_LOG_DEBUG (this << " PCFICH-PDCCH Decodification, errorRate " << errorRate << " error " << error);
     }
 

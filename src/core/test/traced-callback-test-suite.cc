@@ -18,10 +18,25 @@
 
 #include "ns3/test.h"
 #include "ns3/traced-callback.h"
-#include "ns3/unused.h"
 
 using namespace ns3;
 
+/**
+ * \file
+ * \ingroup tracedcallback-tests
+ * TracedCallback test suite
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup tracedcallback-tests TracedCallback class tests
+ */
+
+/**
+ * \ingroup tracedcallback-tests
+ * 
+ * TracedCallback Test case, check basic TracedCallback operation.
+ */
 class BasicTracedCallbackTestCase : public TestCase
 {
 public:
@@ -32,11 +47,21 @@ public:
 private:
   virtual void DoRun (void);
 
+  /**
+   * First callback.
+   * \param a First parameter.
+   * \param b Second parameter.
+   */
   void CbOne (uint8_t a, double b);
+  /**
+   * Second callback.
+   * \param a First parameter.
+   * \param b Second parameter.
+   */
   void CbTwo (uint8_t a, double b);
 
-  bool m_one;
-  bool m_two;
+  bool m_one; //!< Variable set by the first callback.
+  bool m_two; //!< Variable set by the second callback.
 };
 
 BasicTracedCallbackTestCase::BasicTracedCallbackTestCase ()
@@ -44,18 +69,14 @@ BasicTracedCallbackTestCase::BasicTracedCallbackTestCase ()
 {}
 
 void
-BasicTracedCallbackTestCase::CbOne (uint8_t a, double b)
+BasicTracedCallbackTestCase::CbOne ([[maybe_unused]] uint8_t a, [[maybe_unused]] double b)
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   m_one = true;
 }
 
 void
-BasicTracedCallbackTestCase::CbTwo (uint8_t a, double b)
+BasicTracedCallbackTestCase::CbTwo ([[maybe_unused]] uint8_t a, [[maybe_unused]] double b)
 {
-  NS_UNUSED (a);
-  NS_UNUSED (b);
   m_two = true;
 }
 
@@ -113,6 +134,11 @@ BasicTracedCallbackTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_two, true, "Callback CbTwo not called");
 }
 
+/**
+ * \ingroup tracedcallback-tests
+ *  
+ * \brief The traced callback Test Suite.
+ */
 class TracedCallbackTestSuite : public TestSuite
 {
 public:
@@ -125,4 +151,4 @@ TracedCallbackTestSuite::TracedCallbackTestSuite ()
   AddTestCase (new BasicTracedCallbackTestCase, TestCase::QUICK);
 }
 
-static TracedCallbackTestSuite tracedCallbackTestSuite;
+static TracedCallbackTestSuite g_tracedCallbackTestSuite; //!< Static variable for test initialization

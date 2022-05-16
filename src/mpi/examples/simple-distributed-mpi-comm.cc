@@ -77,16 +77,20 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimpleDistributedMpiComm");
 
-// Tag for whether this rank should go into a new communicator
-// ns-3 ranks will have color == 1.
+/**
+ * Tag for whether this rank should go into a new communicator
+ * ns-3 ranks will have color == 1.
+ * @{
+ */
 const int NS_COLOR = 1;
 const int NOT_NS_COLOR = NS_COLOR + 1;
+/** @} */
 
 /**
  * Report my rank, in both MPI_COMM_WORLD and the split communicator.
  *
  * \param [in] color My role, either ns-3 rank or other rank.
- * \param [in] spitComm The split communicator.
+ * \param [in] splitComm The split communicator.
  */
 void
 ReportRank (int color, MPI_Comm splitComm)
@@ -123,7 +127,7 @@ main (int argc, char *argv[])
   bool testing = false;
 
   // Parse command line
-  CommandLine cmd;
+  CommandLine cmd(__FILE__);
   cmd.AddValue ("nix", "Enable the use of nix-vector or global routing", nix);
   cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization (instead of granted time window)", nullmsg);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);

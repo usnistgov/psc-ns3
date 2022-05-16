@@ -48,7 +48,7 @@ std::ostream& operator<< (std::ostream& os, const HePpdu::TxPsdFlag &flag)
 }
 
 HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration,
-                WifiPhyBand band, uint64_t uid, TxPsdFlag flag)
+                WifiPhyBand band, uint64_t uid, TxPsdFlag flag, uint8_t p20Index)
   : OfdmPpdu (psdus.begin ()->second, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band << uid << flag);
@@ -59,7 +59,13 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Ti
   m_psdus = psdus;
   if (IsMu ())
     {
-      m_muUserInfos = txVector.GetHeMuUserInfoMap ();
+      for (auto heMuUserInfo : txVector.GetHeMuUserInfoMap ())
+        {
+          // Set RU PHY index
+          heMuUserInfo.second.ru.SetPhyIndex (txVector.GetChannelWidth (), p20Index);
+          auto [it, ret] = m_muUserInfos.emplace (heMuUserInfo);
+          NS_ABORT_MSG_IF (!ret, "STA-ID " << heMuUserInfo.first << " already present");
+        }
     }
 
   SetPhyHeaders (txVector, ppduDuration);
@@ -128,6 +134,7 @@ HePpdu::DoGetTxVector (void) const
   txVector.SetNss (m_heSig.GetNStreams ());
   txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
   txVector.SetBssColor (m_heSig.GetBssColor ());
+  txVector.SetLength (m_lSig.GetLength ());
   txVector.SetAggregation (m_psdus.size () > 1 || m_psdus.begin ()->second->IsAggregate ());
   for (auto const& muUserInfo : m_muUserInfos)
     {
@@ -159,7 +166,7 @@ HePpdu::GetTxDuration (void) const
 Ptr<WifiPpdu>
 HePpdu::Copy (void) const
 {
-  return Create<HePpdu> (m_psdus, GetTxVector (), GetTxDuration (), m_band, m_uid, m_txPsdFlag);
+  return ns3::Copy (Ptr (this));
 }
 
 WifiPpduType

@@ -287,6 +287,12 @@ public:
   uint16_t GetCellId () const;
 
   /**
+   * \param cellId cell identifier
+   * \return true if cellId is the serving cell for this UE
+   */
+  bool IsServingCell (uint16_t cellId) const;
+
+  /**
    * \return the uplink bandwidth in RBs
    */
   uint8_t GetUlBandwidth () const;
@@ -319,12 +325,18 @@ public:
    */
   uint16_t GetPreviousCellId () const;
 
-  /** 
+  /**
    *
    *
    * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
    */
   void SetUseRlcSm (bool val);
+
+  /**
+   * \param s The UE RRC state.
+   * \return The string representation of the given state.
+   */
+  static const std::string ToString (LteUeRrc::State s);
 
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
@@ -844,6 +856,7 @@ private:
    * \param rsrp measured RSRP value to be saved (in dBm)
    * \param rsrq measured RSRQ value to be saved (in dB)
    * \param useLayer3Filtering
+   * \param componentCarrierId
    * \todo Remove the useLayer3Filtering argument
    *
    * Implements Section 5.5.3.2 "Layer 3 filtering" of 3GPP TS 36.331. *Layer-3
@@ -860,7 +873,7 @@ private:
    * \sa LteUeRrc::m_storedMeasValues
    */
   void SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
-                           bool useLayer3Filtering);
+                           bool useLayer3Filtering, uint8_t componentCarrierId);
 
   /**
    * \brief keep the given measurement result as the latest measurement figures,
@@ -1317,7 +1330,7 @@ private:
   {
     double rsrp; ///< Measured RSRP in dBm.
     double rsrq; ///< Measured RSRQ in dB.
-    Time timestamp; ///< Not used. \todo Should be removed.
+    uint32_t carrierFreq; ///< Measurement object frequency
   };
 
   /**

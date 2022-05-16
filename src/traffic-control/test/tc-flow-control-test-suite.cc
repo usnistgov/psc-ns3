@@ -55,22 +55,16 @@ public:
    */
   QueueDiscTestItem (Ptr<Packet> p);
   virtual ~QueueDiscTestItem ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  QueueDiscTestItem (const QueueDiscTestItem &) = delete;
+  QueueDiscTestItem & operator = (const QueueDiscTestItem &) = delete;
+
   virtual void AddHeader (void);
   virtual bool Mark(void);
 
 private:
   QueueDiscTestItem ();
-  /**
-   * \brief Copy constructor
-   * Disable default implementation to avoid misuse
-   */
-  QueueDiscTestItem (const QueueDiscTestItem &);
-  /**
-   * \brief Assignment operator
-   * \return this object
-   * Disable default implementation to avoid misuse
-   */
-  QueueDiscTestItem &operator = (const QueueDiscTestItem &);
 };
 
 QueueDiscTestItem::QueueDiscTestItem (Ptr<Packet> p)
@@ -106,6 +100,8 @@ public:
    * Constructor
    *
    * \param tt the test type
+   * \param deviceQueueLength the queue length of the device
+   * \param totalTxPackets the toal number of packets to transmit
    */
   TcFlowControlTestCase (QueueSizeUnit tt, uint32_t deviceQueueLength, uint32_t totalTxPackets);
   virtual ~TcFlowControlTestCase ();
@@ -138,9 +134,9 @@ private:
    * \param msg the message to print if a different number of packets are stored
    */
   void CheckPacketsInQueueDisc (Ptr<NetDevice> dev, uint16_t nPackets, const std::string msg);
-  QueueSizeUnit m_type;       //!< the test type
-  uint32_t m_deviceQueueLength;
-  uint32_t m_totalTxPackets;
+  QueueSizeUnit m_type;         //!< the test type
+  uint32_t m_deviceQueueLength; //!< the queue length of the device
+  uint32_t m_totalTxPackets;    //!< the toal number of packets to transmit
 };
 
 TcFlowControlTestCase::TcFlowControlTestCase (QueueSizeUnit tt, uint32_t deviceQueueLength, uint32_t totalTxPackets)

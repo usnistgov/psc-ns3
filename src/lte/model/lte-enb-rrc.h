@@ -205,8 +205,9 @@ public:
    */
   LteRrcSap::RadioResourceConfigDedicated GetRadioResourceConfigForHandoverPreparationInfo ();
 
-  /**
-   *
+  /** 
+   * \param componentCarrierId target component carrier ID
+   * 
    * \return retrieve the data that the target eNB needs to send to the source
    * eNB as the Handover Command in the X2-based handover
    * procedure.
@@ -214,7 +215,7 @@ public:
    * \note mobility control info is not expected to be filled in
    * (shall be filled in by the caller).
    */
-  LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover ();
+  LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover (uint8_t componentCarrierId);
 
   /**
    * Send a data packet over the appropriate Data Radio Bearer.
@@ -430,7 +431,7 @@ private:
    * \return an NonCriticalExtensionConfiguration struct built based on the
    * current configuration
    */
-  LteRrcSap::NonCriticalExtensionConfiguration BuildNonCriticalExtentionConfigurationCa ();
+  LteRrcSap::NonCriticalExtensionConfiguration BuildNonCriticalExtensionConfigurationCa ();
 
   /**
    *
@@ -895,16 +896,16 @@ public:
   /**
    * \brief Add a new UE measurement reporting configuration
    * \param config the new reporting configuration
-   * \return the measurement ID (measId) referring to the newly added
+   * \return the measurement IDs (measId) referring to the newly added
    *         reporting configuration
    *
    * Assuming intra-frequency environment, the new measurement reporting
-   * configuration will be automatically associated to the only measurement
-   * object (i.e., a new measurement identity will be automatically created).
+   * configuration will be automatically associated to measurement
+   * objects corresponding to serving cell frequencies.
    *
    * Can only be called before the start of simulation.
    */
-  uint8_t AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config);
+  std::vector<uint8_t> AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config);
 
   /**
    * \brief Configure cell-specific parameters.
@@ -970,6 +971,12 @@ public:
   uint16_t ComponentCarrierToCellId (uint8_t componentCarrierId);
 
   /**
+   * \param cellId cell ID
+   * \return true if cellId is served by this eNB
+   */
+  bool HasCellId (uint16_t cellId) const;
+
+  /** 
    * Enqueue an IP data packet on the proper bearer for downlink
    * transmission. Normally expected to be called by the NetDevice
    * forwarding a packet coming from the EpcEnbApplication
@@ -1288,7 +1295,7 @@ private:
    * \param reportConfig LteRrcSap::ReportConfigEutra
    * \returns measure ID
    */
-  uint8_t DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
+  std::vector<uint8_t> DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
   /**
    * Add UE measure report config for component carrier function
    *

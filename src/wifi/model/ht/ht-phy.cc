@@ -549,14 +549,13 @@ HtPhy::CreateHtMcs (uint8_t index)
   return WifiModeFactory::CreateWifiMcs ("HtMcs" + std::to_string (index),
                                          index,
                                          WIFI_MOD_CLASS_HT,
+                                         false,
                                          MakeBoundCallback (&GetHtCodeRate, index),
                                          MakeBoundCallback (&GetHtConstellationSize, index),
-                                         MakeBoundCallback (&GetPhyRate, index),
                                          MakeCallback (&GetPhyRateFromTxVector),
-                                         MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
-                                         MakeCallback (&IsModeAllowed));
+                                         MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -763,7 +762,7 @@ HtPhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellatio
 }
 
 bool
-HtPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+HtPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 {
   return true;
 }

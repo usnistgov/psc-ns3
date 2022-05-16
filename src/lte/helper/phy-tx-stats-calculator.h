@@ -143,6 +143,16 @@ private:
    * files have not been opened yet
    */
   bool m_ulTxFirstWrite;
+
+  /**
+   * DL TX PHY statistics output trace file
+   */
+  std::ofstream m_dlTxOutFile;
+
+  /**
+   * UL TX PHY statistics output trace file
+   */
+  std::ofstream m_ulTxOutFile;
 };
 
 } // namespace ns3

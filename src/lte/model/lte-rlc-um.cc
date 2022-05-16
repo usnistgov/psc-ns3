@@ -153,7 +153,6 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   // Build Data field
   uint32_t nextSegmentSize = txOpParams.bytes - 2;
   uint32_t nextSegmentId = 1;
-  uint32_t dataFieldTotalSize = 0;
   uint32_t dataFieldAddedSize = 0;
   std::vector < Ptr<Packet> > dataField;
 
@@ -252,7 +251,6 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 
           // Add Segment to Data field
           dataFieldAddedSize = newSegment->GetSize ();
-          dataFieldTotalSize += dataFieldAddedSize;
           dataField.push_back (newSegment);
           newSegment = 0;
 
@@ -274,7 +272,6 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("    IF nextSegmentSize - firstSegment->GetSize () <= 2 || txBuffer.size == 0");
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
-          dataFieldTotalSize += dataFieldAddedSize;
           dataField.push_back (firstSegment);
           firstSegment = 0;
 
@@ -304,7 +301,6 @@ LteRlcUm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("    IF firstSegment < NextSegmentSize && txBuffer.size > 0");
           // Add txBuffer.FirstBuffer to DataField
           dataFieldAddedSize = firstSegment->GetSize ();
-          dataFieldTotalSize += dataFieldAddedSize;
           dataField.push_back (firstSegment);
 
           // ExtensionBit (Next_Segment - 1) = 1

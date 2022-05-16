@@ -850,8 +850,8 @@ private:
   LteRrcSap::MobilityControlInfo m_mobilityControlInfo; ///< the mobility control info
   bool m_haveRadioResourceConfigDedicated; ///< have radio resource config dedicated?
   LteRrcSap::RadioResourceConfigDedicated m_radioResourceConfigDedicated; ///< the radio resource config dedicated
-  bool m_haveNonCriticalExtension; ///< Have critical extension
-  LteRrcSap::NonCriticalExtensionConfiguration m_nonCriticalExtension; ///< the critical extension
+  bool m_haveNonCriticalExtension; ///< Have non-critical extension
+  LteRrcSap::NonCriticalExtensionConfiguration m_nonCriticalExtension; ///< the non-critical extension
   bool m_haveSlCommConfig; ///< have dedicated Sidelink communication configuration
   LteRrcSap::SlCommConfig m_slCommConfig; ///< dedicated configuration for Sidelink direct communication
   bool m_haveSlDiscConfig; ///< have dedicated Sidelink discovery configuration

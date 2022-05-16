@@ -106,6 +106,9 @@ public:
   double getSqrSum () const { return m_squareTotal; }
 
 protected:
+  /**
+   * Dispose of this Object.
+   */
   virtual void DoDispose (void);
 
   uint32_t m_count;      //!< Count value of MinMaxAvgTotalCalculator
@@ -160,9 +163,9 @@ template <typename T>
 TypeId
 MinMaxAvgTotalCalculator<T>::GetTypeId (void)
 {
-  static TypeId tid = TypeId ( ("ns3::MinMaxAvgTotalCalculator<"
-                                + TypeNameGet<T> ()
-                                + ">").c_str () )
+  static TypeId tid = TypeId ("ns3::MinMaxAvgTotalCalculator<"
+                              + TypeNameGet<T> ()
+                              + ">")
     .SetParent<Object> ()
     .SetGroupName ("Stats")
     .AddConstructor<MinMaxAvgTotalCalculator<T> > ()
@@ -299,6 +302,9 @@ public:
   virtual void Output (DataOutputCallback &callback) const;
 
 protected:
+  /**
+   * Dispose of this Object.
+   */
   virtual void DoDispose (void);
 
   T m_count; //!< Count value of CounterCalculator
@@ -323,9 +329,9 @@ template <typename T>
 TypeId
 CounterCalculator<T>::GetTypeId (void)
 {
-  static TypeId tid = TypeId ( ("ns3::CounterCalculator<"
-                                + TypeNameGet<T> ()
-                                + ">").c_str () )
+  static TypeId tid = TypeId ("ns3::CounterCalculator<"
+                              + TypeNameGet<T> ()
+                              + ">")
     .SetParent<Object> ()
     .SetGroupName ("Stats")
     .AddConstructor<CounterCalculator<T> > ()

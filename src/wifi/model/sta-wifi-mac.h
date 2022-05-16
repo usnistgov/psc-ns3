@@ -23,7 +23,7 @@
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "mgt-headers.h"
 
 class TwoLevelAggregationTest;
@@ -103,7 +103,7 @@ struct ApInfo
  * 7. The transition from Associated to Unassociated occurs if the number
  *    of missed beacons exceeds the threshold.
  */
-class StaWifiMac : public RegularWifiMac
+class StaWifiMac : public WifiMac
 {
 public:
   /// Allow test cases to access private members
@@ -130,6 +130,7 @@ public:
    * access is granted to this MAC.
    */
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
+  bool CanForwardPacketsTo (Mac48Address to) const override;
 
   /**
    * \param phy the physical layer attached to this MAC.
@@ -149,6 +150,8 @@ public:
    * \return the association ID
    */
   uint16_t GetAssociationId (void) const;
+
+  void NotifyChannelSwitching (void) override;
 
 private:
   /**
@@ -267,6 +270,10 @@ private:
    * \param delay the delay before the watchdog fires
    */
   void RestartBeaconWatchdog (Time delay);
+  /**
+   * Take actions after disassociation.
+   */
+  void Disassociated (void);
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.
