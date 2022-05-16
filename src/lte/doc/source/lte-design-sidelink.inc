@@ -360,8 +360,6 @@ messages, upon which, Rx pools are updated and also populated to the MAC and PHY
 layers. On the other hand, if the UE is out-of-coverage it uses a pre-configured
 pool and MODE 2 for resource allocation.
 
-.. raw:: latex
-
 Sidelink direct discovery
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

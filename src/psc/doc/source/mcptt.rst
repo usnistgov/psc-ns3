@@ -210,7 +210,7 @@ Several MCPTT identifiers are used throughout the code, as follows.
     is usually assigned explicitly by the simulation user as part of
     call definition.
 
-   * ``SSRC (synchronization source)`` This 32-bit identifier is defined
+  * ``SSRC (synchronization source)`` This 32-bit identifier is defined
     for RTP (see RFC 3550) and is, in practice, supposed to be assigned
     randomly so as to avoid collisions.  The SSRC is associated with a
     media stream component, and the identifier is carried in RTP and
@@ -574,6 +574,7 @@ There are two off-network MCPTT examples in the 'psc/examples' folder:
     using the |ns3| WiFi module in Adhoc mode
   * ``mcptt-lte-sl-out-of-covrg-comm.cc`` is an adaptation of the LTE Sidelink
     example ``lte-sl-out-of-covrg-comm`` Mode 2 ProSe example
+
 ..
    Note: the below is commented out until this program is made available
 

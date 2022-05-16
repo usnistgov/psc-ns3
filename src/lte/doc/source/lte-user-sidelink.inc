@@ -1,5 +1,5 @@
 ------------
-﻿LTE Sidelink
+LTE Sidelink
 ------------
 
 A new directory "d2d-examples" in the LTE module examples directory holds the

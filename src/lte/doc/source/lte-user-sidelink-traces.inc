@@ -2,7 +2,7 @@
 .. _sec-sidelink-simulation-output:
 
 --------------------------
-﻿Sidelink simulation output
+Sidelink simulation output
 --------------------------
 
 Similarly, for the Sidelink the LTE model currently supports the output to file
@@ -108,6 +108,7 @@ Similarly, the file containing the PSDCH MAC KPIs have the following content:
 
 The names of the files used for Sidelink MAC KPI output can be customized via
 the ns-3 attributes:
+
  * ``ns3::MacStatsCalculator::SlCchOutputFilename``
  * ``ns3::MacStatsCalculator::SlSchOutputFilename``
  * ``ns3::MacStatsCalculator::SlDchOutputFilename``
