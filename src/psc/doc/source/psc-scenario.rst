@@ -277,7 +277,7 @@ listed by using the‘—PrintHelp’ option shown below:
 
 ::
 
-  $ ./waf --run 'psc-schoolshooting --PrintHelp'
+  $ ./ns3 run 'psc-schoolshooting --PrintHelp'
 
   Program Options:
     --duration:         Duration (in Seconds) of the simulation [+4.0833h]

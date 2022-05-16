@@ -377,7 +377,7 @@ function ProcessSet {
 
 if [ "$1" != "" ]; then
   # Compiling
-  ./waf
+  ./ns3 build
   # Running evaluation
   RunEvaluation "$1"
 else

@@ -15292,7 +15292,7 @@ def register_Ns3FrameExchangeManager_methods(root_module, cls):
     cls.add_method('NormalAckTimeout', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'mpdu'), param('ns3::WifiTxVector const &', 'txVector')], 
-                   visibility='protected')
+                   is_virtual=True, visibility='protected')
     ## frame-exchange-manager.h (module 'wifi'): void ns3::FrameExchangeManager::NotifyPacketDiscarded(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
     cls.add_method('NotifyPacketDiscarded', 
                    'void', 

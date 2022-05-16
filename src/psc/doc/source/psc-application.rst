@@ -174,7 +174,7 @@ and the level of output. The list of arguments is listed by using the
 
 ::
 
-  $ ./waf --run 'example-psc-application --PrintHelp'
+  $ ./ns3 --run 'example-psc-application --PrintHelp'
 
   Program Options:
     --echoClient:    Set EchoClient attribute [true]

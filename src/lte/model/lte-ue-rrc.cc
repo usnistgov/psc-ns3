@@ -4280,7 +4280,8 @@ LteUeRrc::ApplySidelinkDedicatedConfiguration (LteRrcSap::SlDiscConfig config)
                   NS_ASSERT_MSG ((lowRsrp != 7)and (highRsrp != 0), "invalid RSRP limits values");
 
                   // apply the layer 3 filter before checking the pool
-                  SaveUeMeasurements (m_cellId, m_storedMeasValues[m_cellId].rsrp, m_storedMeasValues[m_cellId].rsrq, true);
+                  uint8_t componentCarrierId = 0; // Assumes only single carrier
+                  SaveUeMeasurements (m_cellId, m_storedMeasValues[m_cellId].rsrp, m_storedMeasValues[m_cellId].rsrq, true, componentCarrierId);
 
                   //low = -infinity
                   if (lowRsrp == 0)

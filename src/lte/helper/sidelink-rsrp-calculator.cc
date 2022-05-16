@@ -160,15 +160,16 @@ SidelinkRsrpCalculator::DoCalcRsrp (Ptr<PropagationLossModel> propagationLoss, P
   Ptr<MobilityModel> rxMobility = rxPhy->GetMobility ();
 
   double pathLossDb = 0;
-  if (txPhy->GetRxAntenna () != 0)
+  Ptr<AntennaModel> txAntenna = DynamicCast<AntennaModel> (txPhy->GetAntenna ());
+  if (txAntenna)
     {
       Angles txAngles (rxMobility->GetPosition (), txMobility->GetPosition ());
-      double txAntennaGain = txPhy->GetRxAntenna ()->GetGainDb (txAngles);
+      double txAntennaGain = txAntenna->GetGainDb (txAngles);
       NS_LOG_DEBUG ("txAntennaGain = " << txAntennaGain << " dB");
       pathLossDb -= txAntennaGain;
     }
-  Ptr<AntennaModel> rxAntenna = rxPhy->GetRxAntenna ();
-  if (rxAntenna != 0)
+  Ptr<AntennaModel> rxAntenna = DynamicCast<AntennaModel> (rxPhy->GetAntenna ());
+  if (rxAntenna)
     {
       Angles rxAngles (txMobility->GetPosition (), rxMobility->GetPosition ());
       double rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
@@ -220,15 +221,16 @@ SidelinkRsrpCalculator::DoCalcRsrp (Ptr<PropagationLossModel> propagationLoss, d
   Ptr<MobilityModel> rxMobility = rxPhy->GetMobility ();
 
   double pathLossDb = 0;
-  if (txPhy->GetRxAntenna () != 0)
+  Ptr<AntennaModel> txAntenna = DynamicCast<AntennaModel> (txPhy->GetAntenna ());
+  if (txAntenna)
     {
       Angles txAngles (rxMobility->GetPosition (), txMobility->GetPosition ());
-      double txAntennaGain = txPhy->GetRxAntenna ()->GetGainDb (txAngles);
+      double txAntennaGain = txAntenna->GetGainDb (txAngles);
       NS_LOG_DEBUG ("txAntennaGain = " << txAntennaGain << " dB");
       pathLossDb -= txAntennaGain;
     }
-  Ptr<AntennaModel> rxAntenna = rxPhy->GetRxAntenna ();
-  if (rxAntenna != 0)
+  Ptr<AntennaModel> rxAntenna = DynamicCast<AntennaModel> (rxPhy->GetAntenna ());
+  if (rxAntenna)
     {
       Angles rxAngles (txMobility->GetPosition (), rxMobility->GetPosition ());
       double rxAntennaGain = rxAntenna->GetGainDb (rxAngles);

@@ -21,9 +21,11 @@ set(source_files
     ${emu_sources}
     helper/cc-helper.cc
     helper/epc-helper.cc
+    helper/lte-3gpp-hex-grid-enb-topology-helper.cc
     helper/lte-global-pathloss-database.cc
     helper/lte-helper.cc
     helper/lte-hex-grid-enb-topology-helper.cc
+    helper/lte-sidelink-helper.cc
     helper/lte-stats-calculator.cc
     helper/mac-stats-calculator.cc
     helper/no-backhaul-epc-helper.cc
@@ -34,6 +36,8 @@ set(source_files
     helper/radio-bearer-stats-calculator.cc
     helper/radio-bearer-stats-connector.cc
     helper/radio-environment-map-helper.cc
+    helper/rrc-stats-calculator.cc
+    helper/sidelink-rsrp-calculator.cc
     model/a2-a4-rsrq-handover-algorithm.cc
     model/a3-rsrp-handover-algorithm.cc
     model/component-carrier-enb.cc
@@ -99,6 +103,7 @@ set(source_files
     model/lte-mac-sap.cc
     model/lte-mi-error-model.cc
     model/lte-net-device.cc
+    model/lte-nist-error-model.cc
     model/lte-pdcp-header.cc
     model/lte-pdcp-sap.cc
     model/lte-pdcp-tag.cc
@@ -121,6 +126,27 @@ set(source_files
     model/lte-rrc-protocol-ideal.cc
     model/lte-rrc-protocol-real.cc
     model/lte-rrc-sap.cc
+    model/lte-sl-basic-ue-controller.cc
+    model/lte-sl-chunk-processor.cc
+    model/lte-sl-disc-preconfig-pool-factory.cc
+    model/lte-sl-disc-resource-pool-factory.cc
+    model/lte-sl-enb-rrc.cc
+    model/lte-sl-harq-phy.cc
+    model/lte-sl-header.cc
+    model/lte-sl-interference.cc
+    model/lte-sl-o2o-comm-params.cc
+    model/lte-sl-pc5-signalling-header.cc
+    model/lte-sl-pdcp-header.cc
+    model/lte-sl-pool.cc
+    model/lte-sl-pool-factory.cc
+    model/lte-sl-preconfig-pool-factory.cc
+    model/lte-sl-resource-pool-factory.cc
+    model/lte-sl-tag.cc
+    model/lte-sl-tft.cc
+    model/lte-sl-ue-controller.cc
+    model/lte-sl-ue-ctrl-sap.cc
+    model/lte-sl-ue-net-device.cc
+    model/lte-sl-ue-rrc.cc
     model/lte-spectrum-phy.cc
     model/lte-spectrum-signal-parameters.cc
     model/lte-spectrum-value-helper.cc
@@ -141,6 +167,7 @@ set(source_files
     model/pss-ff-mac-scheduler.cc
     model/rem-spectrum-phy.cc
     model/rr-ff-mac-scheduler.cc
+    model/rr-sl-ff-mac-scheduler.cc
     model/simple-ue-component-carrier-manager.cc
     model/tdbet-ff-mac-scheduler.cc
     model/tdmt-ff-mac-scheduler.cc
@@ -152,9 +179,11 @@ set(header_files
     ${emu_headers}
     helper/cc-helper.h
     helper/epc-helper.h
+    helper/lte-3gpp-hex-grid-enb-topology-helper.h
     helper/lte-global-pathloss-database.h
     helper/lte-helper.h
     helper/lte-hex-grid-enb-topology-helper.h
+    helper/lte-sidelink-helper.h
     helper/lte-stats-calculator.h
     helper/mac-stats-calculator.h
     helper/no-backhaul-epc-helper.h
@@ -165,6 +194,8 @@ set(header_files
     helper/radio-bearer-stats-calculator.h
     helper/radio-bearer-stats-connector.h
     helper/radio-environment-map-helper.h
+    helper/rrc-stats-calculator.h
+    helper/sidelink-rsrp-calculator.h
     model/a2-a4-rsrq-handover-algorithm.h
     model/a3-rsrp-handover-algorithm.h
     model/component-carrier-enb.h
@@ -230,6 +261,7 @@ set(header_files
     model/lte-mac-sap.h
     model/lte-mi-error-model.h
     model/lte-net-device.h
+    model/lte-nist-error-model.h
     model/lte-pdcp-header.h
     model/lte-pdcp-sap.h
     model/lte-pdcp-tag.h
@@ -252,6 +284,27 @@ set(header_files
     model/lte-rrc-protocol-ideal.h
     model/lte-rrc-protocol-real.h
     model/lte-rrc-sap.h
+    model/lte-sl-basic-ue-controller.h
+    model/lte-sl-chunk-processor.h
+    model/lte-sl-disc-preconfig-pool-factory.h
+    model/lte-sl-disc-resource-pool-factory.h
+    model/lte-sl-enb-rrc.h
+    model/lte-sl-harq-phy.h
+    model/lte-sl-header.h
+    model/lte-sl-interference.h
+    model/lte-sl-o2o-comm-params.h
+    model/lte-sl-pc5-signalling-header.h
+    model/lte-sl-pdcp-header.h
+    model/lte-sl-pool-factory.h
+    model/lte-sl-pool.h
+    model/lte-sl-preconfig-pool-factory.h
+    model/lte-sl-resource-pool-factory.h
+    model/lte-sl-tag.h
+    model/lte-sl-tft.h
+    model/lte-sl-ue-controller.h
+    model/lte-sl-ue-ctrl-sap.h
+    model/lte-sl-ue-net-device.h
+    model/lte-sl-ue-rrc.h
     model/lte-spectrum-phy.h
     model/lte-spectrum-signal-parameters.h
     model/lte-spectrum-value-helper.h
@@ -272,6 +325,7 @@ set(header_files
     model/pss-ff-mac-scheduler.h
     model/rem-spectrum-phy.h
     model/rr-ff-mac-scheduler.h
+    model/rr-sl-ff-mac-scheduler.h
     model/simple-ue-component-carrier-manager.h
     model/tdbet-ff-mac-scheduler.h
     model/tdmt-ff-mac-scheduler.h
@@ -336,10 +390,34 @@ set(test_sources
     test/test-lte-epc-e2e-data.cc
     test/test-lte-handover-delay.cc
     test/test-lte-handover-target.cc
+    test/test-lte-pc5-signalling-header.cc
     test/test-lte-rlc-header.cc
     test/test-lte-rrc.cc
     test/test-lte-x2-handover-measures.cc
     test/test-lte-x2-handover.cc
+    test/test-nist-phy-error-model.cc
+    test/test-sidelink-comm-pool.cc
+    test/test-sidelink-disc-pool.cc
+    test/test-sidelink-in-coverage-comm.cc
+    test/test-sidelink-out-of-coverage-comm.cc
+    test/test-sidelink-synch.cc
+    test/test-sl-in-covrg-1relay-1remote-disconnect-relay.cc
+    test/test-sl-in-covrg-1relay-1remote-disconnect-remote.cc
+    test/test-sl-in-covrg-1relay-1remote-keepalive.cc
+    test/test-sl-in-covrg-1relay-1remote-reconnect-relay.cc
+    test/test-sl-in-covrg-1relay-1remote-reconnect-remote.cc
+    test/test-sl-in-covrg-1relay-1remote-regular.cc
+    test/test-sl-in-covrg-1relay-2remote-regular.cc
+    test/test-sl-in-covrg-2relay-1remote-disconnect-relay.cc
+    test/test-sl-in-covrg-2relay-1remote-regular.cc
+    test/test-sl-in-covrg-discovery-1relay-1remote.cc
+    test/test-sl-in-covrg-discovery-multi-app.cc
+    test/test-sl-in-covrg-discovery-regular.cc
+    test/test-sl-ooc-1relay-1remote-misaligned.cc
+    test/test-sl-ooc-1relay-1remote-regular.cc
+    test/test-sl-ooc-relay-generic-traffic-rm2rh.cc
+    test/test-sl-ooc-relay-generic-traffic-rm2rm.cc
+    test/test-wrap-around-hex-topology.cc
 )
 
 build_lib(

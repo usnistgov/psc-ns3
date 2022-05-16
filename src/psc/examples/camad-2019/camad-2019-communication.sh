@@ -68,7 +68,7 @@ nThreads=20
 function RunEvaluation {
 
   #Compiling
-  ./waf 
+  ./ns3 build
 
   appDurationTime="10"
   slPeriodArray="40 80 120 160 240 280 320"

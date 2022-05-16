@@ -4643,7 +4643,7 @@ def register_Ns3BuildingsPropagationLossModel_methods(root_module, cls):
     cls.add_method('EvaluateSigma', 
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='protected')
+                   is_const=True, visibility='protected')
     ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::ExternalWallLoss(ns3::Ptr<ns3::MobilityBuildingInfo> a) const [member function]
     cls.add_method('ExternalWallLoss', 
                    'double', 
@@ -6861,7 +6861,7 @@ def register_Ns3ScmUrbanMacroCellPropagationLossModel_methods(root_module, cls):
     cls.add_method('EvaluateSigma', 
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
-                   is_const=True, is_virtual=True)
+                   is_const=True)
     ## scm-urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::ScmUrbanMacroCellPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('GetLoss', 
                    'double', 
@@ -7149,7 +7149,7 @@ def register_Ns3UrbanMacroCellPropagationLossModel_methods(root_module, cls):
     cls.add_method('EvaluateSigma', 
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'a'), param('ns3::Ptr< ns3::MobilityBuildingInfo >', 'b')], 
-                   is_const=True, is_virtual=True)
+                   is_const=True)
     ## urbanmacrocell-propagation-loss-model.h (module 'buildings'): double ns3::UrbanMacroCellPropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('GetLoss', 
                    'double', 

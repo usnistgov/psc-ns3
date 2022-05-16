@@ -6,6 +6,7 @@ build_lib(
     model/cosine-antenna-model.cc
     model/isotropic-antenna-model.cc
     model/parabolic-antenna-model.cc
+    model/parabolic-3d-antenna-model.cc
     model/phased-array-model.cc
     model/three-gpp-antenna-model.cc
     model/uniform-planar-array.cc
@@ -15,6 +16,7 @@ build_lib(
     model/cosine-antenna-model.h
     model/isotropic-antenna-model.h
     model/parabolic-antenna-model.h
+    model/parabolic-3d-antenna-model.h
     model/phased-array-model.h
     model/three-gpp-antenna-model.h
     model/uniform-planar-array.h
@@ -25,5 +27,6 @@ build_lib(
     test/test-isotropic-antenna.cc
     test/test-cosine-antenna.cc
     test/test-parabolic-antenna.cc
+    test/test-parabolic-3d-antenna.cc
     test/test-uniform-planar-array.cc
 )

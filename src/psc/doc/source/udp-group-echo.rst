@@ -94,7 +94,7 @@ some of the configuration of the server:
 
 ::
 
-  $ ./waf --run 'example-udp-group-echo --PrintHelp'
+  $ ./ns3 run 'example-udp-group-echo --PrintHelp'
 
   Program Options:
     --nExtra:      Number of "extra" CSMA nodes/devices [0]
@@ -115,7 +115,7 @@ as:
 
 ::
 
-  $ ./waf --run 'example-udp-group-echo'
+  $ ./ns3 run 'example-udp-group-echo'
   ...
 
   8.7006 server received 41 bytes from 10.1.2.1 port 49153
@@ -134,7 +134,7 @@ back to the client.  Running with the option ``--nExtra=2`` shows:
 
 ::
 
-  $ ./waf --run 'example-udp-group-echo --nExtra=2'
+  $ ./ns3 run 'example-udp-group-echo --nExtra=2'
   
   ...
 
@@ -162,7 +162,7 @@ set the mode to 'TimeoutLimited', we can suppress the response to node
 
 ::
 
-  $ ./waf --run 'example-udp-group-echo --nExtra=2 --timeout=5ms --mode=TimeoutLimited'
+  $ ./ns3 run 'example-udp-group-echo --nExtra=2 --timeout=5ms --mode=TimeoutLimited'
 
   ...
 
