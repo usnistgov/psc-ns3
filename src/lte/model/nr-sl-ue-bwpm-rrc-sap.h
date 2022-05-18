@@ -98,8 +98,6 @@ public:
    */
   virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu) = 0;
 
-  //TODO: RemoveNrSlSrbLc
-
   /**
    * \brief Add a new NR Sidelink Discovery Radio Bearer Logical Channel (LC)
    *

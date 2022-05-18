@@ -168,8 +168,6 @@ NrSlUeProse::DoNotifySvcNrSlDataRadioBearerActivated (uint32_t peerL2Id)
   auto it = m_unicastDirectLinks.find (peerL2Id);
   if (it == m_unicastDirectLinks.end ())
     {
-      //TODO: Can this happen and should be handled? e.g., Release link before bearer setup completion?
-      //      To verify when release procedure is implemented
       NS_FATAL_ERROR ("Could not find the direct link");
     }
   else
@@ -189,7 +187,7 @@ void NrSlUeProse::ConfigureUnicast ()
 
 }
 
-void NrSlUeProse::MonitorL2Id (uint32_t dstL2Id)
+void NrSlUeProse::ConfigureL2IdMonitoringForDiscovery (uint32_t dstL2Id)
 {
   NS_LOG_FUNCTION (this << dstL2Id);
 
@@ -206,8 +204,6 @@ NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp,
                                       bool isRelayConn, uint32_t relayServiceCode)
 {
   NS_LOG_FUNCTION (this << selfL2Id << selfIp << peerL2Id << isInitiating << isRelayConn << relayServiceCode);
-
-  bool isIdeal = false;
 
   NS_ASSERT_MSG (selfL2Id == m_l2Id, "L2Id mismatch.");
 
@@ -231,7 +227,7 @@ NrSlUeProse::AddDirectLinkConnection (uint32_t selfL2Id, Ipv4Address selfIp,
 
   //Create Direct Link instance and set parameters
   Ptr<NrSlUeProseDirectLink> link = CreateObject <NrSlUeProseDirectLink> ();
-  link->SetParameters (selfL2Id, peerL2Id, isInitiating, isRelayConn, relayServiceCode, isIdeal, selfIp);
+  link->SetParameters (selfL2Id, peerL2Id, isInitiating, isRelayConn, relayServiceCode, selfIp);
 
   //Connect SAPs
   link->SetNrSlUeProseDirLnkSapUser (GetNrSlUeProseDirLnkSapUser ());
@@ -316,7 +312,7 @@ NrSlUeProse::AddDiscoveryApp (uint32_t appCode, uint32_t dstL2Id, DiscoveryRole 
     SendDiscovery (appCode, dstL2Id);
   }
   //It instructs the MAC layer (and PHY therefore) to monitor packets directed the UE's own and other Layer 2 IDs
-  MonitorL2Id (dstL2Id);
+  ConfigureL2IdMonitoringForDiscovery (dstL2Id);
 }
 
 void
@@ -415,7 +411,7 @@ NrSlUeProse::AddRelayDiscovery (uint32_t relayCode, uint32_t dstL2Id, DiscoveryM
   }
  
   //It instructs the MAC layer (and PHY therefore) to monitor packets directed the UE's own and other Layer 2 IDs
-  MonitorL2Id (dstL2Id);
+  ConfigureL2IdMonitoringForDiscovery (dstL2Id);
 }
 
 void
@@ -714,7 +710,7 @@ NrSlUeProse::ConfigureDataRadioBearersForU2nRelay (uint32_t peerL2Id,
 }
 
 void
-NrSlUeProse::AddU2nRelayServiceConfiguration (uint32_t relayServiceCode, NrSlL3U2nServiceConfiguration config)
+NrSlUeProse::AddL3U2nRelayServiceConfiguration (uint32_t relayServiceCode, NrSlL3U2nServiceConfiguration config)
 {
   NS_LOG_FUNCTION (this << relayServiceCode << config.relayDrbId);
 

@@ -1603,7 +1603,6 @@ private:
    * \param dstL2Id The sidelink destination layer 2 id
    * \param lcId the logical channel ID of the logical channel of the sidelink
    *             signalling radio bearer to be activated
-   * \param poolId The id of the pool used for TX and RX
    * \return The Sidelink radio bearer information
    */
   Ptr<NrSlSignallingRadioBearerInfo> AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
@@ -1620,7 +1619,7 @@ private:
   /**
    * \brief Implementation of the method called by the service layer (e.g.,
    *        ProSe layer) asking the RRC layer to instruct lower layers
-   *        to monitor messages directed to the layer 2 ID used by UE
+   *        to monitor messages directed to the specified layer 2 ID
    *  
    * \param dstL2Id destination layer 2 ID
    */
@@ -1674,7 +1673,7 @@ private:
   void ActivateNrSlDiscoveryRb (uint32_t dstL2Id);
 
   /**
-   * \brief Create and store a NR sidelink discovery radio bearer (SL-SRB)
+   * \brief Create and store a NR sidelink discovery radio bearer (SL-SRB4)
    *
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id

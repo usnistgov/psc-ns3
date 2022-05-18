@@ -3502,7 +3502,7 @@ LteUeRrc::DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParamet
     }
   else if (params.lcId == 4)
     {
-      //Discovery
+      //Discovery, pass it to the service layer
       m_nrSlUeSvcRrcSapUser->ReceiveNrSlDiscovery (params.pdcpSdu, params.srcL2Id);
     }
   else
@@ -3631,7 +3631,6 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
        */
 
       //We are going to reuse RNTI assigned by the network for SL.
-      //TODO: verify downsides of this approach if any
       {
         std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
         for (const auto &it:slBwpIds)
@@ -3982,7 +3981,6 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
          */
 
         //We are going to reuse RNTI assigned by the network.
-        //TODO: verify downsides of this approach if any
         {
           std::set<uint8_t> slBwpIds = m_nrSlRrcSapUser->GetBwpIdContainer ();
           for (const auto &it:slBwpIds)

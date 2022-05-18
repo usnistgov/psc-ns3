@@ -566,6 +566,7 @@ NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4
   m_sgwApp->AddEnb (cellId, enbAddress, sgwAddress);
   enbApp->SetS1apSapMme (m_mmeApp->GetS1apSapMme ());
 }
+
 void
 NoBackhaulEpcHelper::AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr)
 {

@@ -287,9 +287,7 @@ NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
       NS_LOG_LOGIC ("First SL RX DRB for remote UE with source L2 id " << slRxDrb->m_sourceL2Id);
       NrSlDrbMapPerLcId mapPerRxLcId;
       mapPerRxLcId.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slRxDrb->m_logicalChannelIdentity, slRxDrb));
-      //m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));  TODO: Report bug.
       m_slRxDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));
-
     }
   else
     {

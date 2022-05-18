@@ -358,9 +358,9 @@ private:
    */
   struct U2nRelayNasConfig
   {
-    Ipv4Address selfIpv4Addr;
-    bool relaying = false;
-    uint8_t relayDrbId = 0;
+    Ipv4Address selfIpv4Addr;  ///< Ipv4 address of this UE
+    bool relaying = false;     ///< True if the UE is acting as UE-to-Network Relay, false otherwise
+    uint8_t relayDrbId = 0;    ///< The data radio bearer ID used for relay
 
   };
 

@@ -67,9 +67,8 @@ public:
   struct DirectLinkIpInfo
   {
     Ipv4Address selfIpv4Addr;
-    Ipv6Address selfIpv6Addr;
     Ipv4Address peerIpv4Addr;
-    Ipv6Address peerIpv6Addr;
+
   };
   /**
    * The UE-to-Network relay role of the UE

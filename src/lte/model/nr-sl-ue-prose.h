@@ -70,8 +70,8 @@ public:
   Ptr<NrSlUeProseDirectLink> m_link; ///< Pointer to the direct link instance
   NrSlUeProseDirLnkSapProvider*  m_nrSlUeProseDirLnkSapProvider; ///< The pointer to the SAP in which the direct link receives calls from the ProSe layer
   NrSlUeProseDirLnkSapUser::DirectLinkIpInfo m_ipInfo; ///< The IP addresses used by the peers in the link
-  bool m_hasPendingSlDrb;
-  bool m_hasActiveSlDrb;
+  bool m_hasPendingSlDrb; ///< Flag to indicate if the UE is having a SL-DRB pending for activation
+  bool m_hasActiveSlDrb; ///< Flag to indicate if the UE has an active SL-DRB
   uint32_t m_relayServiceCode; ///< the relay service code associated to this direct link
 
 };
@@ -179,9 +179,12 @@ public:
   void ConfigureUnicast ();
 
   /**
-   * \brief Configure the parameters required by the UE to perform ProSe discovery
+   * \brief Configure the monitoring of layer 2 IDs required by the UE to
+   *        perform ProSe discovery
+   *
+   * \param dstL2Id a destination layer 2 ID to monitor
    */
-  void MonitorL2Id (uint32_t dstL2Id);
+  void ConfigureL2IdMonitoringForDiscovery (uint32_t dstL2Id);
 
   /**
    * \brief Add a new direct link connection with the given peer if possible
@@ -228,7 +231,7 @@ public:
    * \param relayServiceCode the relay service code associated to the service
    * \param config the parameters associated to the service
    */
-  void AddU2nRelayServiceConfiguration (uint32_t relayServiceCode, NrSlL3U2nServiceConfiguration config);
+  void AddL3U2nRelayServiceConfiguration (uint32_t relayServiceCode, NrSlL3U2nServiceConfiguration config);
 
   /**
    * \brief Set the IMSI used by the UE
@@ -350,18 +353,18 @@ private:
   //NrSlUeSvcRrcSapUser methods
   void DoReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id);
   void DoNotifySvcNrSlDataRadioBearerActivated (uint32_t peerL2Id);
+  void DoReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id);
 
   //NrSlUeProseDirLnkSapUser methods
   void DoSendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId);
   void DoNotifyChangeOfDirectLinkState (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::ChangeOfStateNotification info);
+  void DoSendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id);
 
   /**
    * Trace information upon transmission and reception of PC5-S messages
    */
   TracedCallback< uint32_t, uint32_t, bool, Ptr<Packet> > m_pc5SignallingPacketTrace;
 
-  void DoSendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id);
-  void DoReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id);
 
   /**
    * Track the transmission of discovery message
@@ -397,7 +400,23 @@ private:
   ///< List of relay codes 
   std::map <uint32_t, DiscoveryInfo> m_relayMap;
 
+  /**
+   * \brief Creates the TFT and instruct the activation of the corresponding
+   *        data radior bearer for a direct link
+   *
+   * \param peerL2Id the L2 ID of the peer UE in the link
+   * \param ipInfo the IP configuration to use
+   */
   void ActivateDirectLinkDataRadioBearer (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
+
+  /**
+   * \brief Instruct the (re)configuration of the corresponding data radio
+   * bearer when the UE is participating in a UE-to-Network relay service
+   *
+   * \param peerL2Id the L2 ID of the peer UE in the link
+   * \param relayInfo the UE-to-Network relay configuration to use
+   * \param ipInfo the IP configuration to use
+   */
   void ConfigureDataRadioBearersForU2nRelay (uint32_t peerL2Id, NrSlUeProseDirLnkSapUser::DirectLinkRelayInfo relayInfo, NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo);
 
 };//end of NrSlUeProse class definition

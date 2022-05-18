@@ -52,8 +52,7 @@ namespace ns3 {
  * \ingroup lte
  *
  * Packet tag used to exchange IPv4 address information between peer UEs of the
- * direct link during establishment procedure. Used for speeding up initial
- * implementation.
+ * direct link during establishment procedure.
  */
 class Ipv4AddrTag : public Tag
 {
@@ -117,7 +116,6 @@ public:
    * \param isInitiating true if the UE is the one initiating the direct link establishment
    * \param isRelayConn true if the direct link is part of a relay connection
    * \param relayServiceCode the relay service code associated to this direct link
-   * \param isIdeal true if the protocol is ideal (no exchange of messages over the SL)
    * \param selfIp the Ipv4 address this UE is using
    */
   void SetParameters (uint32_t selfL2Id,
@@ -125,7 +123,6 @@ public:
                       bool isInitiating,
                       bool isRelayConn,
                       uint32_t relayServiceCode,
-                      bool isIdeal,
                       Ipv4Address selfIp);
 
   /**
@@ -145,20 +142,6 @@ public:
   void SetNrSlUeProseDirLnkSapUser (NrSlUeProseDirLnkSapUser* s);
 
   /**
-   * \brief Set the pointer for the Prose Direct Link SAP provider interface
-   *        of the Direct Link Object on the peer UE. This is used only when
-   *        the link is ideal.
-   *
-   *  This function is used to connect this direct link instance in this UE
-   *  directly to the direct link instance on the peer UE. Thus, signalling
-   *  messages are directly exchange between the instances without going over
-   *  the SL.
-   *
-   * \param s the pointer of type NrSlUeProseDirLnkSapProvider
-   */
-  void SetPeerNrSlUeProseDirLnkSapProvider (NrSlUeProseDirLnkSapProvider* s);
-
-  /**
    * \brief Start the ProSe direct link establishment procedure
    *
    */
@@ -170,7 +153,7 @@ public:
     ESTABLISHING,
     ESTABLISHED,
     RELEASING,
-    RELEASED, //TODO: Do we need it?
+    RELEASED,
     NUM_STATES
   };
 
@@ -193,9 +176,6 @@ private:
   NrSlUeProseDirLnkSapUser* m_nrSlUeProseDirLnkSapUser {nullptr};         ///< ProSe Direct Link SAP user
   NrSlUeProseDirLnkSapProvider* m_nrSlUeProseDirLnkSapProvider {nullptr}; ///< ProSe Direct Link SAP provider
 
-  //m_peerNrSlUeProseDirLnkSapProvider is To be used only when the link is ideal
-  NrSlUeProseDirLnkSapProvider* m_peerNrSlUeProseDirLnkSapProvider {nullptr}; ///< Peer ProSe Direct Link SAP provider
-
   //NrSlUeProseDirLnkSapProvider methods
   void DoReceiveNrSlPc5Message (Ptr<Packet> packet);
 
@@ -213,8 +193,6 @@ private:
    *
    * When the direct link is real, this function will pass the message to the
    * ProSe layer to be sent on the appropriated SL-SRB and over the SL.
-   * When the direct link is ideal, this function will pass the message
-   * directly to the peer UE direct link instance.
    *
    * \param packet the NR SL PC5-S message
    * \param dstL2Id the layer 2 ID of the peer UE
@@ -242,8 +220,6 @@ private:
 
   uint32_t m_relayServiceCode; ///< The relay service code associated with this direct link
 
-  bool m_isIdeal; ///< Type of link
-
   DirectLinkState m_state; ///< State of this direct link
 
   NrPc5SignallingHeaderSequenceNumber m_pc5SigMsgSeqNum; ///< Unique sequence number generator for PC5-S messages to be transmitted
@@ -258,26 +234,7 @@ private:
   void SetPdlEsRqRtxMax (uint32_t max);  ///< Set the maximum number of Establishment Request Retransmissions
   void T5080Expiry ();
 
-
-  //Keep alive procedure
-
-  //as initiating
-  //T5084 // periodic initation of keepalive procedure
-  // maximum inactivity period value
-  // T5085 // keepalive request retransmission timer
-  // keep alive counter
-  // max # of rtx
-
-  //as target
-  // T5086 // inactivity period timer
-  // current keep alive counter
-
-  //Release procedure
-  // T5091
-  // T5087 //release request retransmission timer
-  // max # of rtx
-
-};     //end of NrSlUeProseDirectLink
+};//end of NrSlUeProseDirectLink
 
 } // namespace ns3
 

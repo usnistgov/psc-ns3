@@ -111,11 +111,11 @@ public:
 
   /**
    * \brief Function to instruct the RRC that the UE should monitor messages
-   *        directed to the layer 2 ID
+   *        directed to a given layer 2 ID
    *
    * This function is used when the UE expects to receive messages directed to
-   * a specific L2 ID, e.g., when participating in ProSe Unicast communication.
-   * It instruct the RRC and lower layers to monitor messages with the UE's
+   * a specific L2 ID, e.g., when participating in ProSe direct discovery.
+   * It instruct the RRC and lower layers to monitor messages with the given
    * layer 2 ID as destination.
    * 
    * \param dstL2Id destination Layer 2 ID
@@ -134,7 +134,7 @@ public:
   virtual void SendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId) = 0;
 
   /**
-   * \brief The service layer instrucs the RRC to activate a NR SL signalling
+   * \brief The service layer instructs the RRC to activate a NR SL signalling
    *        radio bearer for a given destination and logical channel
    *
    * \param dstL2Id the destination layer 2 ID
@@ -143,8 +143,8 @@ public:
   virtual void ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
 
   /**
-   * \brief The service layer passes a NR SL disocvery message to the RRC for
-   *        transmission to a given destination using a given logical channel
+   * \brief The service layer passes a NR SL discovery message to the RRC for
+   *        transmission to a given destination
    *
    * \param packet the NR SL discovery message
    * \param dstL2Id the destination layer 2 ID
@@ -152,8 +152,8 @@ public:
   virtual void SendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id) = 0;
   
   /**
-   * \brief The service layer instrucs the RRC to activate a NR SL discovery
-   *        radio bearer for a given destination and logical channel
+   * \brief The service layer instructs the RRC to activate a NR SL discovery
+   *        radio bearer for a given destination
    *
    * \param dstL2Id the destination layer 2 ID
    */
