@@ -1,5 +1,3 @@
-include_directories(${Python3_INCLUDE_DIRS})
-
 build_lib(
   LIBNAME visualizer
   SOURCE_FILES model/pyviz.cc

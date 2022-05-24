@@ -13,6 +13,41 @@ Note that users who upgrade the simulator across versions, or who work directly 
 
 This file is a best-effort approach to solving this issue; we will do our best but can guarantee that there will be things that fall through the cracks, unfortunately. If you, as a user, can suggest improvements to this file based on your experience, please contribute a patch or drop us a note on ns-developers mailing list.
 
+Changes from ns-3.36 to ns-3.37
+-------------------------------
+
+### New API
+
+### Changes to existing API
+
+### Changes to build system
+
+### Changed behavior
+
+Changes from ns-3.36 to ns-3.36.1
+---------------------------------
+
+### New API
+
+None.
+
+### Changes to existing API
+
+* The PTHREAD-dependent classes (mutex, thread and condition variables) were removed and replaced with C++ STL libraries. The API of the STL libraries is very similar to the equivalent ns-3 classes. The main API differences are as follows:
+  * `ns-3::SystemMutex` should be refactored to `std::mutex`.
+  * `ns-3::CriticalSection cs (m_mutex)` should be refactored to `std::unique_lock lock {m_mutex}`.
+  * `ns-3::SystemThread` should be refactored to `std::thread`, which, unlike SystemThread, starts the thread immediately.
+  * `ns-3::SystemCondition` should be refactored to `std::condition_variable`, which relies on a companion `std::mutex`.
+* The macro for optionally including sqlite3-dependent code has been changed from STATS_HAVE_SQLITE3 to HAVE_SQLITE3, and is now defined globally.  
+
+### Changes to build system
+
+The build system API has not changed since ns-3.36.  Several bugs were fixed and behavioral improvements were made; see the RELEASE_NOTES for details.
+
+### Changed behavior
+
+Apart from the bugs fixed (listed in the RELEASE_NOTES), the simulation model behavior should not have changed since ns-3.36.
+
 Changes from ns-3.35 to ns-3.36
 -------------------------------
 
@@ -38,8 +73,9 @@ Changes from ns-3.35 to ns-3.36
     
 ### Changes to build system
 
-* The Waf build system has been replaced by CMake and a Python program that provides a Waf-like API.
+* The Waf build system has been replaced by CMake and a Python program called 'n3' that provides a Waf-like API.
 * g++ version 8 is now the minimum g++ compiler version supported.
+* The default build profile has been changed from 'debug' to a new 'default'.  Two key differences are that the new default has optimizations enabled (-O2 vs. previous -O0), and the -Werror flag is disabled.  Select the 'debug' profile to disable optimizations and enable warnings as errors.
 
 ### Changed behavior
 

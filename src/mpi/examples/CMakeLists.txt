@@ -1,4 +1,3 @@
-include_directories(${MPI_CXX_INCLUDE_DIRS})
 link_libraries(${MPI_CXX_LIBRARIES})
 
 set(base_examples

@@ -223,10 +223,8 @@ public:
   void SwitchToSleep (void);
   /**
    * Switch from sleep mode.
-   *
-   * \param duration the duration of CCA busy state
    */
-  void SwitchFromSleep (Time duration);
+  void SwitchFromSleep (void);
   /**
    * Abort current reception
    */
@@ -237,10 +235,8 @@ public:
   void SwitchToOff (void);
   /**
    * Switch from off mode.
-   *
-   * \param duration the duration of CCA busy state
    */
-  void SwitchFromOff (Time duration);
+  void SwitchFromOff (void);
 
   /**
    * TracedCallback signature for state changes.
@@ -287,13 +283,9 @@ private:
    * typedef for a list of WifiPhyListeners
    */
   typedef std::vector<WifiPhyListener *> Listeners;
-  /**
-   * typedef for a list of WifiPhyListeners iterator
-   */
-  typedef std::vector<WifiPhyListener *>::iterator ListenersI;
 
   /**
-   * Log the ideal and CCA states.
+   * Log the idle and CCA busy states.
    */
   void LogPreviousIdleAndCcaBusyStates (void);
 

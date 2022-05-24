@@ -27,6 +27,7 @@
 #include "frame-capture-model.h"
 #include "wifi-utils.h"
 #include "wifi-spectrum-signal-parameters.h"
+#include "interference-helper.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
@@ -170,6 +171,7 @@ PhyEntity::GetNextField (WifiPpduField currentField, WifiPreamble preamble) cons
     {
       NS_FATAL_ERROR ("Unsupported preamble " << preamble << " for the provided PPDU formats");
     }
+  return WifiPpduField::WIFI_PPDU_FIELD_PREAMBLE; // Silence compiler warning
 }
 
 Time
@@ -250,7 +252,7 @@ PhyEntity::SnrPer
 PhyEntity::GetPhyHeaderSnrPer (WifiPpduField field, Ptr<Event> event) const
 {
   uint16_t measurementChannelWidth = GetMeasurementChannelWidth (event->GetPpdu ());
-  return m_wifiPhy->m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, m_wifiPhy->GetPrimaryBand (measurementChannelWidth),
+  return m_wifiPhy->m_interference->CalculatePhyHeaderSnrPer (event, measurementChannelWidth, m_wifiPhy->GetPrimaryBand (measurementChannelWidth),
                                                              field);
 }
 
@@ -360,7 +362,7 @@ PhyEntity::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
 
 void
 PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
-                                 Time /* rxDuration */)
+                                 Time rxDuration)
 {
   //The total RX power corresponds to the maximum over all the bands
   auto it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
@@ -368,7 +370,6 @@ PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& 
                                 return p1.second < p2.second;
                               });
   NS_LOG_FUNCTION (this << ppdu << it->second);
-  Time rxDuration = ppdu->GetTxDuration (); //the actual duration of the PPDU should be considered
 
   Ptr<Event> event = DoGetEvent (ppdu, rxPowersW);
   if (event == nullptr)
@@ -639,7 +640,7 @@ PhyEntity::EndReceivePayload (Ptr<Event> event)
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
   uint16_t staId = GetStaId (ppdu);
   const auto & channelWidthAndBand = GetChannelWidthAndBand (event->GetTxVector (), staId);
-  double snr = m_wifiPhy->m_interference.CalculateSnr (event, channelWidthAndBand.first, txVector.GetNss (staId), channelWidthAndBand.second);
+  double snr = m_wifiPhy->m_interference->CalculateSnr (event, channelWidthAndBand.first, txVector.GetNss (staId), channelWidthAndBand.second);
 
   Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
   m_wifiPhy->NotifyRxEnd (psdu);
@@ -686,7 +687,7 @@ PhyEntity::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint1
 {
   NS_LOG_FUNCTION (this << *psdu << *event << staId << relativeMpduStart << mpduDuration);
   const auto & channelWidthAndBand = GetChannelWidthAndBand (event->GetTxVector (), staId);
-  SnrPer snrPer = m_wifiPhy->m_interference.CalculatePayloadSnrPer (event, channelWidthAndBand.first, channelWidthAndBand.second, staId,
+  SnrPer snrPer = m_wifiPhy->m_interference->CalculatePayloadSnrPer (event, channelWidthAndBand.first, channelWidthAndBand.second, staId,
                                                                     std::make_pair (relativeMpduStart, relativeMpduStart + mpduDuration));
 
   WifiMode mode = event->GetTxVector ().GetMode (staId);
@@ -750,19 +751,19 @@ PhyEntity::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPo
 Ptr<Event>
 PhyEntity::CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower, bool isStartOfdmaRxing /* = false */)
 {
-  return m_wifiPhy->m_interference.Add (ppdu, txVector, duration, rxPower, isStartOfdmaRxing);
+  return m_wifiPhy->m_interference->Add (ppdu, txVector, duration, rxPower, isStartOfdmaRxing);
 }
 
 void
 PhyEntity::UpdateInterferenceEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower)
 {
-  m_wifiPhy->m_interference.UpdateEvent (event, rxPower);
+  m_wifiPhy->m_interference->UpdateEvent (event, rxPower);
 }
 
 void
 PhyEntity::NotifyInterferenceRxEndAndClear (bool reset)
 {
-  m_wifiPhy->m_interference.NotifyRxEnd (Simulator::Now ());
+  m_wifiPhy->m_interference->NotifyRxEnd (Simulator::Now ());
   m_signalNoiseMap.clear ();
   m_statusPerMpduMap.clear ();
   for (const auto & endOfMpduEvent : m_endOfMpduEvents)
@@ -789,7 +790,7 @@ PhyEntity::StartPreambleDetectionPeriod (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   NS_LOG_DEBUG ("Sync to signal (power=" << WToDbm (GetRxPowerWForPpdu (event)) << "dBm)");
-  m_wifiPhy->m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
+  m_wifiPhy->m_interference->NotifyRxStart (); //We need to notify it now so that it starts recording events
   m_endPreambleDetectionEvents.push_back (Simulator::Schedule (m_wifiPhy->GetPreambleDetectionDuration (), &PhyEntity::EndPreambleDetectionPeriod, this, event));
 }
 
@@ -824,15 +825,15 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
       auto it = m_wifiPhy->m_currentPreambleEvents.find (std::make_pair (event->GetPpdu ()->GetUid (), event->GetPpdu ()->GetPreamble ()));
       m_wifiPhy->m_currentPreambleEvents.erase (it);
       //This is needed to cleanup the m_firstPowerPerBand so that the first power corresponds to the power at the start of the PPDU
-      m_wifiPhy->m_interference.NotifyRxEnd (maxEvent->GetStartTime ());
+      m_wifiPhy->m_interference->NotifyRxEnd (maxEvent->GetStartTime ());
       //Make sure InterferenceHelper keeps recording events
-      m_wifiPhy->m_interference.NotifyRxStart ();
+      m_wifiPhy->m_interference->NotifyRxStart ();
       return;
     }
 
   m_wifiPhy->m_currentEvent = event;
 
-  double snr = m_wifiPhy->m_interference.CalculateSnr (m_wifiPhy->m_currentEvent, measurementChannelWidth, 1, measurementBand);
+  double snr = m_wifiPhy->m_interference->CalculateSnr (m_wifiPhy->m_currentEvent, measurementChannelWidth, 1, measurementBand);
   NS_LOG_DEBUG ("SNR(dB)=" << RatioToDb (snr) << " at end of preamble detection period");
 
   if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW > 0.0)
@@ -854,7 +855,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
                 {
                   reason = PREAMBLE_DETECTION_PACKET_SWITCH;
                   //This is needed to cleanup the m_firstPowerPerBand so that the first power corresponds to the power at the start of the PPDU
-                  m_wifiPhy->m_interference.NotifyRxEnd (m_wifiPhy->m_currentEvent->GetStartTime ());
+                  m_wifiPhy->m_interference->NotifyRxEnd (m_wifiPhy->m_currentEvent->GetStartTime ());
                 }
               else
                 {
@@ -870,7 +871,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
         }
 
       //Make sure InterferenceHelper keeps recording events
-      m_wifiPhy->m_interference.NotifyRxStart ();
+      m_wifiPhy->m_interference->NotifyRxStart ();
 
       m_wifiPhy->NotifyRxBegin (GetAddressedPsduInPpdu (m_wifiPhy->m_currentEvent->GetPpdu ()), m_wifiPhy->m_currentEvent->GetRxPowerWPerBand ());
       m_wifiPhy->m_timeLastPreambleDetected = Simulator::Now ();
@@ -889,7 +890,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
       if (m_wifiPhy->m_currentPreambleEvents.empty ())
         {
           //Do not erase events if there are still pending preamble events to be processed
-          m_wifiPhy->m_interference.NotifyRxEnd (Simulator::Now ());
+          m_wifiPhy->m_interference->NotifyRxEnd (Simulator::Now ());
         }
       m_wifiPhy->m_currentEvent = 0;
       //Cancel preamble reception

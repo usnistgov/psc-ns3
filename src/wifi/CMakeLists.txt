@@ -1,6 +1,5 @@
 set(gsl_libraries)
 if(${GSL_FOUND})
-  include_directories(${GSL_INCLUDE_DIRS})
   set(gsl_libraries
       ${GSL_LIBRARIES}
   )

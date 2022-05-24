@@ -295,22 +295,6 @@ endfunction()
 macro(process_options)
   clear_global_cached_variables()
 
-  # check if the include directory exists in the output directory
-  if((EXISTS ${CMAKE_OUTPUT_DIRECTORY}) AND (EXISTS
-                                             ${CMAKE_OUTPUT_DIRECTORY}/include)
-  )
-    # if it does, delete it to make sure we only have relevant header stubs
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
-      set(delete_directory_cmd rm -R) # introduced in CMake 3.17
-    else()
-      set(delete_directory_cmd remove_directory) # deprecated in CMake 3.17
-    endif()
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E ${delete_directory_cmd}
-              ${CMAKE_OUTPUT_DIRECTORY}/include
-    )
-  endif()
-
   # make sure to default to RelWithDebInfo if no build type is specified
   if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "default" CACHE STRING "Choose the type of build."
@@ -327,9 +311,6 @@ macro(process_options)
   string(TOLOWER ${CMAKE_BUILD_TYPE} cmakeBuildType)
   set(build_profile "${cmakeBuildType}" CACHE INTERNAL "")
   if(${cmakeBuildType} STREQUAL "debug")
-    string(REPLACE "-g" "-Og -g" CMAKE_CXX_FLAGS_DEBUG
-                   "${CMAKE_CXX_FLAGS_DEBUG}"
-    )
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "relwithdebinfo" OR ${cmakeBuildType}
                                                         STREQUAL "default"
@@ -555,6 +536,8 @@ macro(process_options)
 
     if(${SQLite3_FOUND})
       set(ENABLE_SQLITE True)
+      add_definitions(-DHAVE_SQLITE3)
+      include_directories(${SQLite3_INCLUDE_DIRS})
     else()
       message(${HIGHLIGHTED_STATUS} "SQLite was not found")
     endif()
@@ -654,6 +637,7 @@ macro(process_options)
           )
         else()
           message(STATUS "GTK3 was found.")
+          include_directories(${GTK3_INCLUDE_DIRS} ${HarfBuzz_INCLUDE_DIRS})
         endif()
       endif()
 
@@ -679,6 +663,7 @@ macro(process_options)
     else()
       message(STATUS "LibXML2 was found.")
       add_definitions(-DHAVE_LIBXML2)
+      include_directories(${LIBXML2_INCLUDE_DIR})
     endif()
 
     # LibRT
@@ -704,13 +689,8 @@ macro(process_options)
 
   set(THREADS_PREFER_PTHREAD_FLAG)
   find_package(Threads QUIET)
-  if(${CMAKE_USE_PTHREADS_INIT})
-    include_directories(${THREADS_PTHREADS_INCLUDE_DIR})
-    set(HAVE_PTHREAD_H TRUE) # for core-config.h
-    set(THREADS_ENABLED TRUE)
-    set(THREADS_FOUND TRUE)
-  else()
-    message(FATAL_ERROR Pthreads are required by ns-3)
+  if(NOT ${Threads_FOUND})
+    message(FATAL_ERROR Threads are required by ns-3)
   endif()
 
   set(Python3_LIBRARIES)
@@ -759,6 +739,7 @@ macro(process_options)
           set(CMAKE_INSTALL_RPATH "${DEVELOPER_DIR}" CACHE STRING "")
         endif()
       endif()
+      include_directories(${Python3_INCLUDE_DIRS})
     else()
       message(${HIGHLIGHTED_STATUS}
               "Python: development libraries were not found"
@@ -797,7 +778,8 @@ macro(process_options)
   endif()
 
   # Disable the below warning from bindings built in debug mode with clang++:
-  # "expression with side effects will be evaluated despite being used as an operand to 'typeid'"
+  # "expression with side effects will be evaluated despite being used as an
+  # operand to 'typeid'"
   if(${ENABLE_PYTHON_BINDINGS} AND ${CLANG})
     add_compile_options(-Wno-potentially-evaluated-expression)
   endif()
@@ -886,6 +868,7 @@ macro(process_options)
     else()
       message(STATUS "MPI was found.")
       add_definitions(-DNS3_MPI)
+      include_directories(${MPI_CXX_INCLUDE_DIRS})
       set(ENABLE_MPI TRUE)
     endif()
   endif()
@@ -914,6 +897,7 @@ macro(process_options)
     else()
       message(STATUS "GSL was found.")
       add_definitions(-DHAVE_GSL)
+      include_directories(${GSL_INCLUDE_DIRS})
     endif()
   endif()
 
@@ -1153,7 +1137,6 @@ macro(process_options)
   check_include_file_cxx("stdlib.h" "HAVE_STDLIB_H")
   check_include_file_cxx("signal.h" "HAVE_SIGNAL_H")
   check_include_file_cxx("netpacket/packet.h" "HAVE_PACKETH")
-  check_include_file_cxx("semaphore.h" "HAVE_SEMAPHORE_H")
   check_function_exists("getenv" "HAVE_GETENV")
 
   configure_file(
@@ -1392,6 +1375,12 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
     get_filename_component(
       header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header} NAME
     )
+
+    # If header already exists, skip symlinking/stub header creation
+    if(EXISTS ${outputdir}/${header_name})
+      continue()
+    endif()
+
     # CMake 3.13 cannot create symlinks on Windows, so we use stub headers as a
     # fallback
     if(WIN32 AND (${CMAKE_VERSION} VERSION_LESS "3.13.0"))
@@ -1751,8 +1740,20 @@ function(parse_ns3rc enabled_modules examples_enabled tests_enabled)
         string(REPLACE "'" "" ${enabled_modules} "${${enabled_modules}}")
         string(REPLACE "\"" "" ${enabled_modules} "${${enabled_modules}}")
         string(REPLACE " " "" ${enabled_modules} "${${enabled_modules}}")
+        string(REPLACE "\n" ";" ${enabled_modules} "${${enabled_modules}}")
+        list(SORT ${enabled_modules})
+
+        # Remove possibly empty entry
+        list(REMOVE_ITEM ${enabled_modules} "")
+        foreach(element ${${enabled_modules}})
+          # Inspect each element for comments
+          if(${element} MATCHES "#.*")
+            list(REMOVE_ITEM ${enabled_modules} ${element})
+          endif()
+        endforeach()
       endif()
     endif()
+
     # Match examples_enabled flag
     if(ns3rc_contents MATCHES "examples_enabled = (True|False)")
       set(${examples_enabled} ${CMAKE_MATCH_1})
@@ -2046,7 +2047,7 @@ function(find_external_library)
   endif()
 
   # If we find both library and header, we export their values
-  if((NOT not_found_libraries}) AND (NOT not_found_headers))
+  if((NOT not_found_libraries) AND (NOT not_found_headers))
     set(${name}_INCLUDE_DIRS "${include_dirs}" PARENT_SCOPE)
     set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
     set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
@@ -2085,6 +2086,7 @@ endfunction()
 function(get_target_includes target output)
   set(include_directories)
   get_target_property(include_dirs ${target} INCLUDE_DIRECTORIES)
+  list(REMOVE_DUPLICATES include_dirs)
   foreach(include_dir ${include_dirs})
     if(include_dir MATCHES "<")
       # Skip CMake build and install interface includes

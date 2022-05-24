@@ -24,7 +24,6 @@
 
 #include "ns3/error-model.h"
 #include "wifi-standards.h"
-#include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
 #include "phy-entity.h"
 #include "wifi-phy-operating-channel.h"
@@ -39,6 +38,8 @@ class FrameCaptureModel;
 class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
+class InterferenceHelper;
+class ErrorRateModel;
 
 /**
  * \brief 802.11 PHY layer model
@@ -887,11 +888,18 @@ public:
   bool GetShortPhyPreambleSupported (void) const;
 
   /**
+   * Sets the interference helper.
+   *
+   * \param helper the interference helper
+   */
+  virtual void SetInterferenceHelper (const Ptr<InterferenceHelper> helper);
+
+  /**
    * Sets the error rate model.
    *
-   * \param rate the error rate model
+   * \param model the error rate model
    */
-  void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
+  void SetErrorRateModel (const Ptr<ErrorRateModel> model);
   /**
    * Attach a receive ErrorModel to the WifiPhy.
    *
@@ -1131,7 +1139,8 @@ protected:
    */
   void AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
 
-  InterferenceHelper m_interference;   //!< the class handling interference computations
+  Ptr<InterferenceHelper> m_interference; //!< Pointer to a helper responsible for interference computations
+
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper
 
@@ -1370,6 +1379,8 @@ private:
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
+
+  double m_noiseFigureDb; //!< The noise figure in dB
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
 

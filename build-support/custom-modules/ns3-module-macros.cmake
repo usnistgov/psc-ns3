@@ -110,7 +110,8 @@ function(build_lib)
   endif()
 
   # Split ns and non-ns libraries to manage their propagation properly
-  set(non_ns_libraries_to_link)
+  set(non_ns_libraries_to_link ${CMAKE_THREAD_LIBS_INIT})
+
   set(ns_libraries_to_link)
 
   foreach(library ${BLIB_LIBRARIES_TO_LINK})
@@ -487,7 +488,6 @@ function(build_lib_example)
 
   # Get path src/module or contrib/module
   string(REPLACE "${PROJECT_SOURCE_DIR}/" "" FOLDER "${CMAKE_CURRENT_SOURCE_DIR}")
-  get_filename_component(FOLDER ${FOLDER} DIRECTORY)
 
   # cmake-format: on
   check_for_missing_libraries(
@@ -523,7 +523,7 @@ function(build_lib_example)
 
     set_runtime_outputdirectory(
       ${BLIB_EXAMPLE_NAME}
-      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/examples/ ""
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/ ""
     )
   endif()
 endfunction()
@@ -567,5 +567,14 @@ function(write_module_header name header_files)
   list(APPEND contents "
 #endif "
   )
+  if(EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h)
+    file(READ ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h oldcontents)
+    string(REPLACE ";" "" contents "${contents}")
+    # If the header-module.h already exists and is the exact same, do not
+    # overwrite it to preserve timestamps
+    if("${contents}" STREQUAL "${oldcontents}")
+      return()
+    endif()
+  endif()
   file(WRITE ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h ${contents})
 endfunction()

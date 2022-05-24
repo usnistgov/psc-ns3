@@ -1,5 +1,3 @@
-include_directories(${MPI_CXX_INCLUDE_DIRS})
-
 set(example_as_test_suite)
 if(${ENABLE_EXAMPLES})
   set(example_as_test_suite

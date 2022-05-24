@@ -9,10 +9,6 @@ if(${GTK3_FOUND})
   set(gtk3_headers
       model/gtk-config-store.h
   )
-  include_directories(
-    ${GTK3_INCLUDE_DIRS}
-    ${HarfBuzz_INCLUDE_DIRS}
-  )
   set(gtk_libraries
       ${GTK3_LIBRARIES}
   )
@@ -28,7 +24,6 @@ if(${LIBXML2_FOUND})
   set(xml2_libraries
       ${LIBXML2_LIBRARIES}
   )
-  include_directories(${LIBXML2_INCLUDE_DIR})
 endif()
 
 build_lib(

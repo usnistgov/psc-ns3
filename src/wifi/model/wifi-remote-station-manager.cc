@@ -545,7 +545,17 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       txVector.SetMode (mgtMode);
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled ()));
       txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
-      txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
+      uint16_t channelWidth = m_wifiPhy->GetChannelWidth ();
+      if (!header.GetAddr1 ().IsGroup ())
+        {
+          if (uint16_t rxWidth = GetChannelWidthSupported (header.GetAddr1 ());
+              rxWidth < channelWidth)
+            {
+              channelWidth = rxWidth;
+            }
+        }
+
+      txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, channelWidth));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, m_wifiPhy->GetDevice ()));
     }
   else
@@ -1439,6 +1449,31 @@ WifiMode
 WifiRemoteStationManager::GetDefaultMcs (void) const
 {
   return m_defaultTxMcs;
+}
+
+WifiMode
+WifiRemoteStationManager::GetDefaultModeForSta (const WifiRemoteStation *st) const
+{
+  NS_LOG_FUNCTION (this << st);
+
+  if (!GetHtSupported () || !GetHtSupported (st))
+    {
+      return GetDefaultMode ();
+    }
+
+  // find the highest modulation class supported by both stations
+  WifiModulationClass modClass = WIFI_MOD_CLASS_HT;
+  if (GetHeSupported () && GetHeSupported (st))
+    {
+      modClass = WIFI_MOD_CLASS_HE;
+    }
+  else if (GetVhtSupported () && GetVhtSupported (st))
+    {
+      modClass = WIFI_MOD_CLASS_VHT;
+    }
+
+  // return the MCS with lowest index
+  return *m_wifiPhy->GetPhyEntity (modClass)->begin ();
 }
 
 void

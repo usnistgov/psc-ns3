@@ -20,7 +20,6 @@
 #define REALTIME_SIMULATOR_IMPL_H
 
 #include "simulator-impl.h"
-#include "system-thread.h"
 
 #include "scheduler.h"
 #include "synchronizer.h"
@@ -29,9 +28,10 @@
 #include "ptr.h"
 #include "assert.h"
 #include "log.h"
-#include "system-mutex.h"
 
 #include <list>
+#include <mutex>
+#include <thread>
 
 /**
  * \file
@@ -218,7 +218,7 @@ private:
   /**@}*/
 
   /** Mutex to control access to key state. */
-  mutable SystemMutex m_mutex;
+  mutable std::mutex m_mutex;
 
   /** The synchronizer in use to track real time. */
   Ptr<Synchronizer> m_synchronizer;
@@ -229,8 +229,8 @@ private:
   /** The maximum allowable drift from real-time in SYNC_HARD_LIMIT mode. */
   Time m_hardLimit;
 
-  /** Main SystemThread. */
-  SystemThread::ThreadId m_main;
+  /** Main thread. */
+  std::thread::id m_main;
 };
 
 } // namespace ns3

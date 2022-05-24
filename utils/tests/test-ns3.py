@@ -560,12 +560,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertIn("ns3-wifi", enabled_modules)
 
         # Try enabling only core
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules='core' --enable-python-bindings")
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules='core'")
         self.config_ok(return_code, stdout)
         self.assertIn("ns3-core", get_enabled_modules())
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
-        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules='' --disable-python-bindings")
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-modules=''")
         self.config_ok(return_code, stdout)
 
         # At this point we should have the same amount of modules that we had when we started.
@@ -672,7 +672,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertTrue(get_test_enabled())
         self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
 
-        # Replace the ns3rc file
+        # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
         with open(ns3rc_script, "w") as f:
             f.write(ns3rc_template.format(modules="'wifi'", examples="True", tests="False"))
 
@@ -685,6 +685,45 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
         self.assertIn("ns3-wifi", enabled_modules)
         self.assertFalse(get_test_enabled())
+        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+        # Replace the ns3rc file with multiple modules
+        with open(ns3rc_script, "w") as f:
+            f.write(ns3rc_template.format(modules="'core','network'", examples="True", tests="False"))
+
+        # Reconfigure
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+        self.config_ok(return_code, stdout)
+
+        # Check
+        enabled_modules = get_enabled_modules()
+        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+        self.assertIn("ns3-core", enabled_modules)
+        self.assertIn("ns3-network", enabled_modules)
+        self.assertFalse(get_test_enabled())
+        self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
+
+        # Replace the ns3rc file with multiple modules,
+        # in various different ways and with comments
+        with open(ns3rc_script, "w") as f:
+            f.write(ns3rc_template.format(modules="""'core', #comment
+            'lte',
+            #comment2,
+            #comment3
+            'network', 'internet','wimax'""", examples="True", tests="True"))
+
+        # Reconfigure
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\"")
+        self.config_ok(return_code, stdout)
+
+        # Check
+        enabled_modules = get_enabled_modules()
+        self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
+        self.assertIn("ns3-core", enabled_modules)
+        self.assertIn("ns3-internet", enabled_modules)
+        self.assertIn("ns3-lte", enabled_modules)
+        self.assertIn("ns3-wimax", enabled_modules)
+        self.assertTrue(get_test_enabled())
         self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
 
         # Then we roll back by removing the ns3rc config file
@@ -822,7 +861,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         return_code, stdout, stderr = run_ns3("show config")
         self.assertEqual(return_code, 0)
-        self.assertIn("Summary of optional NS-3 features", stdout)
+        self.assertIn("Summary of optional ns-3 features", stdout)
 
     def test_11_CheckProfile(self):
         """!
@@ -838,6 +877,9 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         Test passing 'show version' argument to ns3 to get the build version
         @return None
         """
+        if shutil.which("git") is None:
+            self.skipTest("git is not available")
+
         return_code, _, _ = run_ns3("configure -G \"Unix Makefiles\" --enable-build-version")
         self.assertEqual(return_code, 0)
 
@@ -924,7 +966,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Skip test if mpi is not installed
         if shutil.which("mpiexec") is None:
-            return
+            self.skipTest("Mpi is not available")
 
         # Ensure sample simulator was built
         return_code, stdout, stderr = run_ns3("build sample-simulator")
@@ -1365,11 +1407,17 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # specifying ns3-01 (text version with 'dev' is not supported)
         # and specifying ns3-00 (a wrong version)
         for version in ["", "3.01", "3.00"]:
-            find_package_import = """
+            ns3_import_methods = []
+
+            # Import ns-3 libraries with as a CMake package
+            cmake_find_package_import = """
                                   list(APPEND CMAKE_PREFIX_PATH ./{lib}/cmake/ns3)
                                   find_package(ns3 {version} COMPONENTS libcore)
                                   target_link_libraries(test PRIVATE ns3::libcore)
                                   """.format(lib=("lib64" if lib64 else "lib"), version=version)
+            ns3_import_methods.append(cmake_find_package_import)
+
+            # Import ns-3 as pkg-config libraries
             pkgconfig_import = """
                                list(APPEND CMAKE_PREFIX_PATH ./)
                                include(FindPkgConfig)
@@ -1378,13 +1426,18 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                """.format(lib=("lib64" if lib64 else "lib"),
                                           version="=" + version if version else ""
                                           )
+            if shutil.which("pkg-config"):
+                ns3_import_methods.append(pkgconfig_import)
 
-            for import_type in [pkgconfig_import, find_package_import]:
+            # Test the multiple ways of importing ns-3 libraries
+            for import_method in ns3_import_methods:
                 test_cmake_project = """
                                      cmake_minimum_required(VERSION 3.10..3.10)
                                      project(ns3_consumer CXX)
+                                     set(CMAKE_CXX_STANDARD 17)
+                                     set(CMAKE_CXX_STANDARD_REQUIRED ON)
                                      add_executable(test main.cpp)
-                                     """ + import_type
+                                     """ + import_method
 
                 test_cmake_project_file = os.sep.join([install_prefix, "CMakeLists.txt"])
                 with open(test_cmake_project_file, "w") as f:
@@ -1397,10 +1450,10 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                                           cwd=install_prefix)
                 if version == "3.00":
                     self.assertEqual(return_code, 1)
-                    if import_type == find_package_import:
+                    if import_method == cmake_find_package_import:
                         self.assertIn('Could not find a configuration file for package "ns3" that is compatible',
                                       stderr.replace("\n", ""))
-                    elif import_type == pkgconfig_import:
+                    elif import_method == pkgconfig_import:
                         self.assertIn('A required package was not found',
                                       stderr.replace("\n", ""))
                     else:
@@ -1625,6 +1678,27 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Remove second
         os.remove("./scratch/second.cc")
+
+        NS3BuildBaseTestCase.cleaned_once = False
+
+    def test_12_StaticBuilds(self):
+        """!
+        Test if we can build a static ns-3 library and link it to static programs
+        @return None
+        """
+        # First enable examples and static build
+        return_code, stdout, stderr = run_ns3("configure -G \"Unix Makefiles\" --enable-examples --disable-gtk --enable-static")
+
+        # If configuration passes, we are half way done
+        self.assertEqual(return_code, 0)
+
+        # Then try to build one example
+        return_code, stdout, stderr = run_ns3('build sample-simulator')
+        self.assertEqual(return_code, 0)
+        self.assertIn("Built target", stdout)
+
+        # Maybe check the built binary for shared library references? Using objdump, otool, etc
+        NS3BuildBaseTestCase.cleaned_once = False
 
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
