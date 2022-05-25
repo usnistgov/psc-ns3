@@ -237,31 +237,31 @@ public:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
 private:
-  bool m_ue3RxFloorTaken;
-  bool m_ue2RxFloorTaken;
-  bool m_ue2TxFloorRequest;
-  bool m_ue2RxFloorDeny;
-  bool m_ue2TxFloorAck2;
-  bool m_ue3TxFloorRequest;
-  bool m_ue3RxFloorGranted;
-  bool m_ue3TxFloorAck;
-  bool m_ue1RxFloorIdle; 
-  bool m_ue2RxFloorIdle;
-  bool m_ue2TxFloorAck;
-  bool m_ue1RxFloorTaken1;
-  bool m_ue2RxFloorTaken2; 
-  bool m_ue2TxFloorAck3; 
-  bool m_ue1TxFloorRelease;
-  bool m_ue1RxFloorAck;
-  bool m_ue2RxFloorIdle2;
-  bool m_ue2TxFloorAck4;
-  bool m_ue3RxFloorIdle;
-  bool m_ue3TxFloorAck2;
-  bool m_ue3TxFloorRelease;
-  bool m_ue3RxFloorAck;
-  bool m_ue1RxFloorTaken2;
-  bool m_ue2RxFloorTaken3;
-  bool m_ue2TxFloorAck5;
+  bool m_ue3RxFloorTaken {false};
+  bool m_ue2RxFloorTaken {false};
+  bool m_ue2TxFloorRequest {false};
+  bool m_ue2RxFloorDeny {false};
+  bool m_ue2TxFloorAck2 {false};
+  bool m_ue3TxFloorRequest {false};
+  bool m_ue3RxFloorGranted {false};
+  bool m_ue3TxFloorAck {false};
+  bool m_ue1RxFloorIdle {false}; 
+  bool m_ue2RxFloorIdle {false};
+  bool m_ue2TxFloorAck {false};
+  bool m_ue1RxFloorTaken1 {false};
+  bool m_ue2RxFloorTaken2 {false}; 
+  bool m_ue2TxFloorAck3 {false}; 
+  bool m_ue1TxFloorRelease {false};
+  bool m_ue1RxFloorAck {false};
+  bool m_ue2RxFloorIdle2 {false};
+  bool m_ue2TxFloorAck4 {false};
+  bool m_ue3RxFloorIdle {false};
+  bool m_ue3TxFloorAck2 {false};
+  bool m_ue3TxFloorRelease {false};
+  bool m_ue3RxFloorAck {false};
+  bool m_ue1RxFloorTaken2 {false};
+  bool m_ue2RxFloorTaken3 {false};
+  bool m_ue2TxFloorAck5 {false};
 };
 
 class McpttTestSuiteFloorControlOnNetwork : public TestSuite

@@ -127,6 +127,7 @@ McpttMsgStats::ResolveCallMsgType (Ptr<const Packet> pkt)
   pkt->PeekHeader (*temp);
   McpttCallMsgFieldMsgType msgType = temp->GetMsgType ();
   uint8_t code = msgType.GetType ();
+  delete temp;
 
   if (code == McpttCallMsgGrpProbe::CODE)
     {
@@ -249,7 +250,7 @@ McpttMsgStats::ResolveCallMsgType (Ptr<const Packet> pkt)
       return privateEmergCancelAckMsg;
     }
   NS_FATAL_ERROR ("Could not resolve message code = " << (uint32_t)code << ".");
-  return temp;
+  return nullptr;
 }
 
 McpttFloorMsg*
@@ -259,6 +260,7 @@ McpttMsgStats::ResolveFloorMsgType (Ptr<const Packet> pkt)
 
   pkt->PeekHeader (*temp);
   uint8_t subtype = temp->GetSubtype ();
+  delete temp;
 
   if (subtype == McpttFloorMsgRequest::SUBTYPE)
     {
@@ -327,7 +329,7 @@ McpttMsgStats::ResolveFloorMsgType (Ptr<const Packet> pkt)
       return ackMsg;
     }
   NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
-  return temp;
+  return nullptr;
 }
 
 void

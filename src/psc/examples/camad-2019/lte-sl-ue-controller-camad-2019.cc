@@ -59,6 +59,7 @@ LteSlUeControllerCamad2019::LteSlUeControllerCamad2019 ()
 LteSlUeControllerCamad2019::~LteSlUeControllerCamad2019 ()
 {
   NS_LOG_FUNCTION (this);
+  delete m_slUeCtrlSapProvider;
 }
 
 TypeId
