@@ -44,6 +44,26 @@ land mobile radio system (LMRS).  While LTE sidelink supports both
 IPv4 and IPv6, the UE-to-Network Relay feature only supports IPv6.
 
 ---------------
+Release History
+---------------
+More complete release notes can be viewed also on GitHub_.
+
+.. _GitHub: https://github.com/usnistgov/psc-ns3/releases
+
+======= ============ =========================================================
+Release Date         Summary of features
+======= ============ =========================================================
+v1.0    Aug 17, 2018 Release 1.0 based on ns-3.29
+v1.0.1  Sep 10, 2018 Minor ns-3.29 release alignment
+v1.0.2  Sep 17, 2018 Minor update for Python bindings
+v2.0    Sep 6, 2019  Off-network MCPTT, UAV mobility energy, HTTP, discovery
+v3.0    Apr 25, 2020 LTE UE-to-Network Relay, D2D partial coverage examples
+v3.0.1  Jul 29, 2020 Aligned to ns-3.31, UE-to-Network Relay fixes
+v4.0    Apr 16, 2021 On-network MCPTT, video streaming models
+v5.0    Oct 20, 2021 Aligned to ns-3.35, large scale scenario and applications
+======= ============ =========================================================
+
+---------------
 Acknowledgments
 ---------------
 
