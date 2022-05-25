@@ -51,7 +51,8 @@ Public safety communications features are based on development led by the
 Wireless Networks Division of the U.S. National Institute of Standards
 and Technology (NIST), described in publications ([NIST2016]_, [NIST2017]_, [NIST2019]_, and [NIST2021]_).
 Users of the D2D features of |ns3| are requested to cite [NIST2017]_
-in academic publications based on these models. Users of the MCPTTfeatures of |ns3| are requested to cite [NIST2021]_
+in academic publications based on these models. Users of the MCPTT
+features of |ns3| are requested to cite [NIST2021]_
 in academic publications based on these models. 
 
 The integration of the initial ProSe module with the LTE and buildings module,
@@ -64,15 +65,15 @@ Commerce, National Institute of Standards and Technology.
 The following individuals are authors of the public safety communications
 extensions:
 
-* Zoraze Ali (zoraze.ali@cttc.es)
-* Aziza Ben-Mosbah (aziza.ben.mosbah@gmail.com)
-* Evan Black (evan.black@nist.gov)
-* Fernando J. Cintron (fernando.cintron@nist.gov)
-* Samantha Gamboa (samantha.gamboa@nist.gov)
-* Wesley Garey (wesley.garey@nist.gov)
-* Tom Henderson (tomhend@uw.edu)
-* Antonio Izquierdo Manzanares (antonio.izquierdomanzanares@nist.gov)
-* Manuel Requena (manuel.requena@cttc.es)
-* Richard Rouil (richard.rouil@nist.gov)
-* Raghav Thanigaivel (Raghav.Thanigaivel@colorado.edu)
+* Zoraze Ali (CTTC)
+* Aziza Ben-Mosbah (NIST)
+* Evan Black (NIST)
+* Fernando J. Cintron (NIST)
+* Samantha Gamboa (NIST)
+* Wesley Garey (NIST)
+* Tom Henderson (Univ. of Washington)
+* Antonio Izquierdo Manzanares (NIST)
+* Manuel Requena (CTTC)
+* Richard Rouil (NIST)
+* Raghav Thanigaivel (NIST)
 
