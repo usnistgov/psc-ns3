@@ -3523,16 +3523,7 @@ void
 LteUeRrc::DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, LteSlTft::CastType castType, bool harqEnabled, Time delayBudget)
 {
   NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive << static_cast<uint16_t> (castType) << harqEnabled << delayBudget.As (Time::MS));
-  if (castType != LteSlTft::CastType::Unicast)
-    {
-      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive, castType, harqEnabled, delayBudget);
-    }
-  else
-    {
-      //At the moment we don't have a different behavior for unicast data bearers
-      //We kept the if in case we need to differentiate behaviors in the future
-      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive);
-    }
+  ActivateNrSlDrb (dstL2Id, isTransmit, isReceive, castType, harqEnabled, delayBudget);
 }
 
 void
