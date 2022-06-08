@@ -139,6 +139,34 @@ public:
    */
   typedef std::unordered_map <uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > NrSlDiscoveryRbMapPerL2Id;
 
+  /**
+   * \brief Convert a string representation of a TDD pattern to a vector of
+   *        enum type
+   *
+   * For example, a valid pattern would be "DL|DL|UL|UL|DL|DL|UL|UL|". The slot
+   * types allowed are:
+   *
+   * - "DL" for downlink only
+   * - "UL" for uplink only
+   * - "F" for flexible (dl and ul)
+   * - "S" for special slot (LTE-compatibility)
+   *
+   * This function is copied from mmwave-enb-phy class
+   *
+   * \param tddPattern The TDD pattern specified such as "DL|UL|F|S"
+   * \return the vector representation of the TDD pattern
+   */
+  static std::vector<NrSlUeRrc::LteNrTddSlotType> ConvertTddPattern (std::string tddPattern);
+
+  /**
+   * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
+   * \param slBitMap slBitMap The sidelink bitmap
+   * \param tddPattern The TDD pattern
+   * \return A vector representing the physical sidelink pool
+   */
+  static std::vector <std::bitset<1>>
+  GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap, std::vector<NrSlUeRrc::LteNrTddSlotType> m_tddPattern);
+
 private:
   //NrSlUeRrcSapUser methods
   /**
@@ -195,21 +223,6 @@ private:
 
   //Class internal private methods and member variables
 
-  /**
-   * \brief Set the TDD pattern that the this UE RRC will utilize to compute
-   *        physical SL pool.
-   *
-   * For example, a valid pattern would be "DL|DL|UL|UL|DL|DL|UL|UL|". The slot
-   * types allowed are:
-   *
-   * - "DL" for downlink only
-   * - "UL" for uplink only
-   * - "F" for flexible (dl and ul)
-   * - "S" for special slot (LTE-compatibility)
-   *
-   * This function is copied from mmwave-enb-phy class
-   */
-  void SetTddPattern ();
   /**
    * \brief Get NR Sidelink data radio bearer
    *
