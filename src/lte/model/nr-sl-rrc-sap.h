@@ -116,6 +116,7 @@ public:
    * \brief Get NR Sidelink signalling radio bearer for transmission
    *
    * \param dstL2Id The peer layer 2 id
+   * \param lcId the logical channel id
    * \return The NrSlSignallingRadioBearerInfo
    */
   virtual Ptr<NrSlSignallingRadioBearerInfo> GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
@@ -128,13 +129,13 @@ public:
   /**
    * \brief Add NR sidelink discovery radio bearer for transmission
    *
-   * \param slSrb NrSlDiscoveryRadioBearerInfo pointer
+   * \param slDiscRb NrSlDiscoveryRadioBearerInfo pointer
    */
   virtual void AddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb) = 0;
   /**
    * \brief Add NR sidelink discovery radio bearer for reception
    *
-   * \param slSrb NrSlDiscoveryRadioBearerInfo pointer
+   * \param slDiscRb NrSlDiscoveryRadioBearerInfo pointer
    */
   virtual void AddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb) = 0;
   /**

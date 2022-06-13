@@ -60,7 +60,7 @@ public:
   virtual ~NrSlUeSvcRrcSapUser ();
 
   /**
-   * \brief The RRC passes a NR SL signalling message from a given source
+   * \brief The RRC passes an NR SL signalling message from a given source
    *        to the service layer.
    *
    * \param packet the NR SL signaling message
@@ -69,7 +69,7 @@ public:
   virtual void ReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id) = 0;
 
   /**
-   * \brief The RRC passes a NR SL discovery message from a given source
+   * \brief The RRC passes an NR SL discovery message from a given source
    *        to the service layer.
    *
    * \param packet the NR SL discovery message

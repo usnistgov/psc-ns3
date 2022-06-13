@@ -533,7 +533,7 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                         "configured in the scenario for the Remote UEs.");
                       }
 
-                    //Create a SL bearer for this traffic
+                    //Create an SL bearer for this traffic
                     Ptr<LteSlTft> slTft;
                     slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
                                               LteSlTft::CommType::Unicast,
@@ -564,7 +564,7 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
             m_u2nRelayConfig.relayDrbId = relayDrbId;
           }
 
-        //Ask RRC to create and activate a SL data bearer to transmit to the Remote UE
+        //Ask RRC to create and activate an SL data bearer to transmit to the Remote UE
         {
           Ptr<LteSlTft> slTft;
           slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,

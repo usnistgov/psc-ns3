@@ -360,7 +360,7 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
         else
           {
             NS_LOG_INFO (" Direct Link connection for Unicast");
-            // Here we verify Preconditions to accept direct link connection for unicast
+            // Here we verify preconditions to accept direct link connection for unicast
             // At the moment we always accept
             accept = true;
           }
@@ -400,6 +400,7 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
       case NrSlUeProseDirectLink::ESTABLISHING:
         NS_LOG_INFO ("ESTABLISHING");
         //This should not happen, as ESTABLISHING is an internal state to this function
+        NS_FATAL_ERROR ("Invalid state " << ToString (m_state));
         break;
       case NrSlUeProseDirectLink::ESTABLISHED:
         NS_LOG_INFO ("ESTABLISHED");

@@ -79,7 +79,7 @@ public:
 /**
  * \ingroup lte
  *
- * This class implements a NR SL service layer providing Proximity Services (ProSe)
+ * This class implements an NR SL service layer providing Proximity Services (ProSe)
  */
 class NrSlUeProse : public NrSlUeService
 {
@@ -101,7 +101,7 @@ public:
     Monitoring = 0, ///< Model A: The UE receiving discovery messages
     Announcing,     ///< Model A: The UE sending discovery messages
     Discoveree,     ///< Model B: The UE responding to requests
-    Discoverer,     ///< Model B:The UE sending requests
+    Discoverer,     ///< Model B: The UE sending requests
     RemoteUE,
     RelayUE
   };
@@ -226,7 +226,7 @@ public:
 
 
   /**
-   * \brief Add a L3 UE-to-Network relay service that the UE in the role of relay UE will provide.
+   * \brief Add an L3 UE-to-Network relay service that the UE in the role of relay UE will provide.
    *
    * \param relayServiceCode the relay service code associated to the service
    * \param config the parameters associated to the service
@@ -340,7 +340,7 @@ public:
   
   /**
    * Map to keep track of the active SL Discovery RBs. 
-   * A bit set of 4 bit representing each of the 4 LcIds of the SL-SRBs is stored per peerL2Id.
+   * A bit set of 4 bits representing each of the 4 LcIds of the SL-SRBs is stored per peerL2Id.
    * Bit set to 1 means the SL-SRB of the corresponding LcId is active
    */
   typedef std::list <uint32_t> NrSlDiscoveryRadioBearers;
@@ -401,7 +401,7 @@ private:
   std::map <uint32_t, DiscoveryInfo> m_relayMap;
 
   /**
-   * \brief Creates the TFT and instruct the activation of the corresponding
+   * \brief Creates the TFT and instructs the activation of the corresponding
    *        data radior bearer for a direct link
    *
    * \param peerL2Id the L2 ID of the peer UE in the link

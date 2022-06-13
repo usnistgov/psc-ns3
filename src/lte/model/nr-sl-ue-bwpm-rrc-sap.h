@@ -93,7 +93,7 @@ public:
    *
    * \param lcInfo is the Sidelink Logical Channel Information
    * \param msu is the pointer to NrSlMacSapUser, which MAC uses to call RLC methods
-   * \return vector of LcsConfig contains the lc configuration for each MAC
+   * \return vector of SlLcInfoBwpm contains the LC configuration for each MAC
    *         the size of the vector is equal to the number of bandwidth part manager enabled.
    */
   virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlSrbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu) = 0;
@@ -103,7 +103,7 @@ public:
    *
    * \param lcInfo is the Sidelink Logical Channel Information
    * \param msu is the pointer to NrSlMacSapUser, which MAC uses to call RLC methods
-   * \return vector of LcsConfig contains the lc configuration for each MAC
+   * \return vector of SlLcInfoBwpm contains the LC configuration for each MAC
    *         the size of the vector is equal to the number of bandwidth part manager enabled.
    */
   virtual std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> AddNrSlDiscoveryRbLc (const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo &lcInfo, NrSlMacSapUser* msu) = 0;

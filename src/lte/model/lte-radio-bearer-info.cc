@@ -153,12 +153,12 @@ NrSlSignallingRadioBearerInfo::GetTypeId (void)
     .AddConstructor<NrSlSignallingRadioBearerInfo> ()
     .AddAttribute ("DestinationL2Id", "The destination identifier for the communication",
                    TypeId::ATTR_GET, // allow only getting it.
-                   UintegerValue (0), // unused (attribute is read-only
+                   UintegerValue (0), // unused (attribute is read-only)
                    MakeUintegerAccessor (&NrSlSignallingRadioBearerInfo::m_destinationL2Id),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("logicalChannelIdentity", "The id of the Logical Channel corresponding to this Data Radio Bearer",
                    TypeId::ATTR_GET, // allow only getting it.
-                   UintegerValue (0), // unused (attribute is read-only
+                   UintegerValue (0), // unused (attribute is read-only)
                    MakeUintegerAccessor (&NrSlSignallingRadioBearerInfo::m_logicalChannelIdentity),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("LteRlc", "RLC instance of the radio bearer.",

@@ -192,7 +192,7 @@ private:
    * \brief Send a NR SL PC5-S message
    *
    * When the direct link is real, this function will pass the message to the
-   * ProSe layer to be sent on the appropriated SL-SRB and over the SL.
+   * ProSe layer to be sent on the appropriate SL-SRB and over the SL.
    *
    * \param packet the NR SL PC5-S message
    * \param dstL2Id the layer 2 ID of the peer UE
@@ -213,7 +213,6 @@ private:
   //IDs
   uint32_t m_selfL2Id; ///< L2Id of the UE where this direct link object is installed
   uint32_t m_peerL2Id; ///< L2Id of the peer UE for this direct link
-  //uint32_t m_Pc5LinkId; ///< Not used for the moment
 
   bool m_isInitiating; ///< Indicates if the UE is the initiating UE of the direct link
   bool m_isRelayConn;  ///< Indicates if the direct link is part of a relay connection
