@@ -104,7 +104,7 @@ public:
    *
    * This function is used when the UE expects to receive messages directed to
    * his own L2 ID, e.g., when participating in ProSe Unicast communication.
-   * It instruct the RRC and lower layers to monitor messages with the UE's
+   * It instructs the RRC and lower layers to monitor messages with the UE's
    * layer 2 ID as destination.
    */
   virtual void MonitorSelfL2Id () = 0;
@@ -115,7 +115,7 @@ public:
    *
    * This function is used when the UE expects to receive messages directed to
    * a specific L2 ID, e.g., when participating in ProSe direct discovery.
-   * It instruct the RRC and lower layers to monitor messages with the given
+   * It instructs the RRC and lower layers to monitor messages with the given
    * layer 2 ID as destination.
    * 
    * \param dstL2Id destination Layer 2 ID
@@ -123,7 +123,7 @@ public:
   virtual void MonitorL2Id (uint32_t dstL2Id) = 0;
 
   /**
-   * \brief The service layer passes a NR SL signalling message to the RRC for
+   * \brief The service layer passes an NR SL signalling message to the RRC for
    *        transmission to a given destination using a given logical channel
    *
    * \param packet the NR SL signaling message
@@ -134,7 +134,7 @@ public:
   virtual void SendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId) = 0;
 
   /**
-   * \brief The service layer instructs the RRC to activate a NR SL signalling
+   * \brief The service layer instructs the RRC to activate an NR SL signalling
    *        radio bearer for a given destination and logical channel
    *
    * \param dstL2Id the destination layer 2 ID
