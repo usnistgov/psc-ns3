@@ -118,7 +118,7 @@ public:
 
   /**
    * The states of the UE RRC entity
-   * 
+   *
    */
   enum State
   {
@@ -195,26 +195,26 @@ public:
 
   /**
    * set the CMAC SAP this RRC should interact with
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \param s the CMAC SAP Provider to be used by this RRC
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s);
   /**
    * set the CMAC SAP this RRC should interact with
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \param s the CMAC SAP Provider to be used by this RRC
    * \param index the index
    */
   void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s, uint8_t index);
 
   /**
-   * \brief This function is overloaded to maintain backward compatibility 
+   * \brief This function is overloaded to maintain backward compatibility
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser ();
   /**
    * \brief This function is overloaded to maintain backward compatibility
-   * \param index the index  
+   * \param index the index
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteUeCmacSapUser* GetLteUeCmacSapUser (uint8_t index);
@@ -243,16 +243,16 @@ public:
    */
   void SetLteMacSapProvider (LteMacSapProvider* s);
 
-  /** 
+  /**
    * Set the AS SAP user to interact with the NAS entity
-   * 
+   *
    * \param s the AS SAP user
    */
   void SetAsSapUser (LteAsSapUser* s);
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \return the AS SAP provider exported by this RRC
    */
   LteAsSapProvider* GetAsSapProvider ();
@@ -317,12 +317,18 @@ public:
    */
   uint16_t GetCellId () const;
 
-  /** 
+  /**
+   * \param cellId cell identifier
+   * \return true if cellId is the serving cell for this UE
+   */
+  bool IsServingCell (uint16_t cellId) const;
+
+  /**
    * \return the uplink bandwidth in RBs
    */
   uint8_t GetUlBandwidth () const;
 
-  /** 
+  /**
    * \return the downlink bandwidth in RBs
    */
   uint8_t GetDlBandwidth () const;
@@ -332,7 +338,7 @@ public:
    */
   uint32_t GetDlEarfcn () const;
 
-  /** 
+  /**
    * \return the uplink carrier frequency (EARFCN)
    */
   uint32_t GetUlEarfcn () const;
@@ -350,12 +356,18 @@ public:
    */
   uint16_t GetPreviousCellId () const;
 
-  /** 
-   * 
-   * 
+  /**
+   *
+   *
    * \param val true if RLC SM is to be used, false if RLC UM/AM are to be used
    */
   void SetUseRlcSm (bool val);
+
+  /**
+   * \param s The UE RRC state.
+   * \return The string representation of the given state.
+   */
+  static const std::string ToString (LteUeRrc::State s);
 
   /**
    * TracedCallback signature for imsi, cellId and rnti events.
@@ -458,7 +470,7 @@ private:
   void DoNotifyRandomAccessSuccessful ();
   /// Notify random access failed function
   void DoNotifyRandomAccessFailed ();
- 
+
   // LTE AS SAP methods
   /**
    * Set CSG white list function
@@ -564,7 +576,7 @@ private:
    */
   void DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
- 
+
   // INTERNAL METHODS
 
   /**
@@ -657,6 +669,7 @@ private:
    * \param rsrp measured RSRP value to be saved (in dBm)
    * \param rsrq measured RSRQ value to be saved (in dB)
    * \param useLayer3Filtering
+   * \param componentCarrierId
    * \todo Remove the useLayer3Filtering argument
    *
    * Implements Section 5.5.3.2 "Layer 3 filtering" of 3GPP TS 36.331. *Layer-3
@@ -673,26 +686,8 @@ private:
    * \sa LteUeRrc::m_storedMeasValues
    */
   void SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
-                           bool useLayer3Filtering);
+                           bool useLayer3Filtering, uint8_t componentCarrierId);
 
-  /**
-   * \brief keep the given measurement result as the latest measurement figures,
-   *        to be utilised by UE RRC functions.
-   * \param cellId the cell ID of the measured cell
-   * \param rsrp measured RSRP value to be saved (in dBm)
-   * \param rsrq measured RSRQ value to be saved (in dB)
-   * \param useLayer3Filtering
-   * \param componentCarrierId
-   * \todo Remove the useLayer3Filtering argument
-   *
-   * As for SaveUeMeasurements, this function aims to store the latest measurements
-   * related to the secondary component carriers.
-   * in the current implementation it saves only measurements related on the serving 
-   * secondary carriers while, measurements related to the Neighbor Cell are filtered
-   */
-
-  void SaveScellUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
-                                bool useLayer3Filtering, uint16_t componentCarrierId);
   /**
    * \brief Evaluate the reporting criteria of a measurement identity and
    *        invoke some reporting actions based on the result.
@@ -1098,7 +1093,7 @@ private:
   {
     double rsrp; ///< Measured RSRP in dBm.
     double rsrq; ///< Measured RSRQ in dB.
-    Time timestamp; ///< Not used. \todo Should be removed.
+    uint32_t carrierFreq; ///< Measurement object frequency
   };
 
   /**
@@ -1123,7 +1118,7 @@ private:
 
   /**
    * \brief Internal storage of the latest measurement results from all detected
-   *        detected Secondary carrier component, indexed by the carrier component ID 
+   *        detected Secondary carrier component, indexed by the carrier component ID
    *        where the measurement was taken from.
    *
    * Each *measurement result* comprises of RSRP (in dBm) and RSRQ (in dB).
@@ -1370,7 +1365,7 @@ private:
   void ResetRlfParams ();
 
 public:
-  /** 
+  /**
    * The number of component carriers.
    */
   uint16_t m_numberOfComponentCarriers;

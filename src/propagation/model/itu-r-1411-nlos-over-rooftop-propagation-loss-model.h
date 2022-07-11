@@ -53,6 +53,10 @@ public:
   ItuR1411NlosOverRooftopPropagationLossModel ();
   virtual ~ItuR1411NlosOverRooftopPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ItuR1411NlosOverRooftopPropagationLossModel (const ItuR1411NlosOverRooftopPropagationLossModel &) = delete;
+  ItuR1411NlosOverRooftopPropagationLossModel & operator = (const ItuR1411NlosOverRooftopPropagationLossModel &) = delete;
+
   /** 
    * Set the operating frequency
    * 
@@ -72,25 +76,11 @@ public:
   double GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ItuR1411NlosOverRooftopPropagationLossModel (const ItuR1411NlosOverRooftopPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  ItuR1411NlosOverRooftopPropagationLossModel & operator = (const ItuR1411NlosOverRooftopPropagationLossModel &);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
-  
   double m_frequency; //!< frequency in MHz
   double m_lambda; //!< wavelength
   EnvironmentType m_environment; //!< Environment Scenario
@@ -107,4 +97,3 @@ private:
 
 
 #endif // ITU_R_1411_NLOS_OVER_ROOFTOP_PROPAGATION_LOSS_MODEL_H
-

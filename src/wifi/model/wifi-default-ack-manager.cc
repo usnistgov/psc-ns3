@@ -152,7 +152,7 @@ WifiDefaultAckManager::IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
   if (m_baThreshold > 0
       && GetMaxDistFromStartingSeq (mpdu, txParams) < m_baThreshold * edca->GetBaBufferSize (receiver, tid)
       && (edca->GetWifiMacQueue ()->GetNPackets (tid, receiver)
-         + edca->GetBaManager ()->GetRetransmitQueue ()->GetNPackets (tid, receiver) > 1)
+          - edca->GetBaManager ()->GetNBufferedPackets (receiver, tid) > 1)
       && !(edca->GetTxopLimit ().IsStrictlyPositive ()
            && edca->GetRemainingTxop () == edca->GetTxopLimit ()
            && !(txParams.m_protection && txParams.m_protection->method == WifiProtection::RTS_CTS)))
@@ -654,7 +654,6 @@ WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
     {
       // the only supported ack method for now is through a multi-STA BlockAck frame
       WifiUlMuMultiStaBa* acknowledgment = new WifiUlMuMultiStaBa;
-      acknowledgment->baType.m_variant = BlockAckType::MULTI_STA;
 
       for (const auto& userInfo : trigger)
         {

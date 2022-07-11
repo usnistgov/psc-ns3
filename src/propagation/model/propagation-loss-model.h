@@ -33,7 +33,12 @@ namespace ns3 {
 
 /**
  * \defgroup propagation Propagation Models
- *
+ */
+
+/**
+ * \ingroup propagation
+ * \ingroup tests
+ * \defgroup propagation-tests Propagation module tests
  */
 
 class MobilityModel;
@@ -58,6 +63,10 @@ public:
 
   PropagationLossModel ();
   virtual ~PropagationLossModel ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  PropagationLossModel (const PropagationLossModel &) = delete;
+  PropagationLossModel & operator = (const PropagationLossModel &) = delete;
 
   /**
    * \brief Enables a chain of loss models to act on the signal
@@ -101,28 +110,25 @@ public:
    * together, this method will also assign streams to the
    * downstream models.
    *
-   * \param stream
+   * \param stream the stream index offset start
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
 
+protected:
+  /**
+   * Assign a fixed random variable stream number to the random variables used by this model.
+   * 
+   * Subclasses must implement this; those not using random variables
+   * can return zero.
+   * 
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t DoAssignStreams (int64_t stream) = 0;
+
 private:
   /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  PropagationLossModel (const PropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  PropagationLossModel &operator = (const PropagationLossModel &);
-
-  /**
-   * Returns the Rx Power taking into account only the particular
    * PropagationLossModel.
    *
    * \param txPowerDbm current transmission power (in dBm)
@@ -133,12 +139,6 @@ private:
   virtual double DoCalcRxPower (double txPowerDbm,
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const = 0;
-
-  /**
-   * Subclasses must implement this; those not using random variables
-   * can return zero
-   */
-  virtual int64_t DoAssignStreams (int64_t stream) = 0;
 
   Ptr<PropagationLossModel> m_next; //!< Next propagation loss model in the list
 };
@@ -160,24 +160,16 @@ public:
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  RandomPropagationLossModel (const RandomPropagationLossModel &) = delete;
+  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &) = delete;
+
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  RandomPropagationLossModel (const RandomPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  RandomPropagationLossModel & operator = (const RandomPropagationLossModel &);
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
+
   Ptr<RandomVariableStream> m_variable; //!< random generator
 };
 
@@ -267,6 +259,11 @@ public:
    */
   static TypeId GetTypeId (void);
   FriisPropagationLossModel ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  FriisPropagationLossModel (const FriisPropagationLossModel &) = delete;
+  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &) = delete;
+
   /**
    * \param frequency (Hz)
    *
@@ -304,24 +301,10 @@ public:
   double GetSystemLoss (void) const;
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  FriisPropagationLossModel (const FriisPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  FriisPropagationLossModel & operator = (const FriisPropagationLossModel &);
-
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
 
   /**
    * Transforms a Dbm value to Watt
@@ -381,6 +364,10 @@ public:
   static TypeId GetTypeId (void);
   TwoRayGroundPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &) = delete;
+  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &) = delete;
+
   /**
    * \param frequency (Hz)
    *
@@ -424,24 +411,10 @@ public:
   void SetHeightAboveZ (double heightAboveZ);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &);
-
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+  int64_t DoAssignStreams (int64_t stream) override;
 
   /**
    * Transforms a Dbm value to Watt
@@ -494,6 +467,10 @@ public:
   static TypeId GetTypeId (void);
   LogDistancePropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &) = delete;
+  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &) = delete;
+
   /**
    * \param n the path loss exponent.
    * Set the path loss exponent.
@@ -512,24 +489,11 @@ public:
   void SetReference (double referenceDistance, double referenceLoss);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  LogDistancePropagationLossModel (const LogDistancePropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  LogDistancePropagationLossModel & operator = (const LogDistancePropagationLossModel &);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  int64_t DoAssignStreams (int64_t stream) override;
 
   /**
    *  Creates a default reference loss model
@@ -592,27 +556,18 @@ public:
   static TypeId GetTypeId (void);
   ThreeLogDistancePropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel &) = delete;
+  ThreeLogDistancePropagationLossModel & operator = (const ThreeLogDistancePropagationLossModel &) = delete;
+
   // Parameters are all accessible via attributes.
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  ThreeLogDistancePropagationLossModel (const ThreeLogDistancePropagationLossModel&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  ThreeLogDistancePropagationLossModel& operator= (const ThreeLogDistancePropagationLossModel&);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  int64_t DoAssignStreams (int64_t stream) override;
 
   double m_distance0; //!< Beginning of the first (near) distance field
   double m_distance1; //!< Beginning of the second (middle) distance field.
@@ -663,27 +618,18 @@ public:
 
   NakagamiPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  NakagamiPropagationLossModel (const NakagamiPropagationLossModel &) = delete;
+  NakagamiPropagationLossModel & operator = (const NakagamiPropagationLossModel &) = delete;
+
   // Parameters are all accessible via attributes.
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  NakagamiPropagationLossModel (const NakagamiPropagationLossModel&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  NakagamiPropagationLossModel& operator= (const NakagamiPropagationLossModel&);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
+  int64_t DoAssignStreams (int64_t stream) override;
 
   double m_distance1; //!< Distance1
   double m_distance2; //!< Distance2
@@ -720,6 +666,11 @@ public:
 
   FixedRssLossModel ();
   virtual ~FixedRssLossModel ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  FixedRssLossModel (const FixedRssLossModel &) = delete;
+  FixedRssLossModel & operator = (const FixedRssLossModel &) = delete;
+
   /**
    * \param rss (dBm) the received signal strength
    *
@@ -728,25 +679,12 @@ public:
   void SetRss (double rss);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  FixedRssLossModel (const FixedRssLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  FixedRssLossModel & operator = (const FixedRssLossModel &);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
+  int64_t DoAssignStreams (int64_t stream) override;
 
-  virtual int64_t DoAssignStreams (int64_t stream);
   double m_rss; //!< the received signal strength
 };
 
@@ -769,6 +707,10 @@ public:
   MatrixPropagationLossModel ();
   virtual ~MatrixPropagationLossModel ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  MatrixPropagationLossModel (const MatrixPropagationLossModel &) = delete;
+  MatrixPropagationLossModel & operator = (const MatrixPropagationLossModel &) = delete;
+
   /**
    * \brief Set loss (in dB, positive) between pair of ns-3 objects
    * (typically, nodes).
@@ -787,26 +729,12 @@ public:
   void SetDefaultLoss (double defaultLoss);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  MatrixPropagationLossModel (const MatrixPropagationLossModel &);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  MatrixPropagationLossModel &operator = (const MatrixPropagationLossModel &);
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
 
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
+  int64_t DoAssignStreams (int64_t stream) override;
 
-  virtual int64_t DoAssignStreams (int64_t stream);
-private:
   double m_default; //!< default loss
 
   /// Typedef: Mobility models pair
@@ -834,25 +762,18 @@ public:
    */
   static TypeId GetTypeId (void);
   RangePropagationLossModel ();
+
+  // Delete copy constructor and assignment operator to avoid misuse
+  RangePropagationLossModel (const RangePropagationLossModel &) = delete;
+  RangePropagationLossModel & operator = (const RangePropagationLossModel &) = delete;
+
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  RangePropagationLossModel (const RangePropagationLossModel&);
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  RangePropagationLossModel& operator= (const RangePropagationLossModel&);
-  virtual double DoCalcRxPower (double txPowerDbm,
-                                Ptr<MobilityModel> a,
-                                Ptr<MobilityModel> b) const;
-  virtual int64_t DoAssignStreams (int64_t stream);
-private:
+  double DoCalcRxPower (double txPowerDbm,
+                        Ptr<MobilityModel> a,
+                        Ptr<MobilityModel> b) const override;
+
+  int64_t DoAssignStreams (int64_t stream) override;
+
   double m_range; //!< Maximum Transmission Range (meters)
 };
 

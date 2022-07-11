@@ -112,7 +112,7 @@ public:
    * \return number of bits remaining in the
    *         nix-vector (ie m_total - m_used)
    */
-  uint32_t GetRemainingBits (void);
+  uint32_t GetRemainingBits (void) const;
   /**
    * \return the number of bytes required for serialization
    */
@@ -150,6 +150,17 @@ public:
    */
   uint32_t BitCount (uint32_t numberOfNeighbors) const;
 
+  /**
+   * Set the NixVector Epoch
+   * \param epoch the NixVector Epoch
+   */
+  void SetEpoch (uint32_t epoch);
+
+  /**
+   * Get the NixVector Epoch
+   * \return the NixVector Epoch
+   */
+  uint32_t GetEpoch () const;
 
 private:
   /// Typedef: the NixVector bits storage.
@@ -159,8 +170,9 @@ private:
    * \brief Print the NixVector.
    *
    * \param os the output stream
+   * 
+   * \note: this could be greatly simplified by using std::format (but it's C++20).
    */
-  /* for printing of nix-vector */
   void DumpNixVector (std::ostream &os) const;
 
   /**
@@ -176,26 +188,12 @@ private:
   uint32_t m_used; //!< For tracking where we are in the nix-vector
 
   /**
-   * For tracking how many bits we
-   * have used in the current vector
-   * entry. need this in order to
-   * expand the vector passed 32bits
-   */
-  uint32_t m_currentVectorBitSize;
-
-  /**
    * A counter of how total bits are in
    * the nix-vector
    */
   uint32_t m_totalBitSize;
 
-  /**
-   * Internal for pretty printing of nix-vector (fill)
-   * \param decimalNum decimal divider
-   * \param bitCount bit counter
-   * \param os output stream
-   */
-  void PrintDec2BinNixFill (uint32_t decimalNum, uint32_t bitCount, std::ostream &os) const;
+  uint32_t m_epoch; //!< Epoch of the Nix-vector creation
 
   /**
    * Internal for pretty printing of nix-vector (no fill)

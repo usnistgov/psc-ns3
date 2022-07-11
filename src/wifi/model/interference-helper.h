@@ -38,14 +38,15 @@ class Event : public SimpleRefCount<Event>
 {
 public:
   /**
-   * Create an Event with the given parameters.
+   * Create an Event with the given parameters. Note that <i>rxPower</i> will
+   * be moved into this object.
    *
    * \param ppdu the PPDU
    * \param txVector the TXVECTOR
    * \param duration duration of the PPDU
    * \param rxPower the received power per band (W)
    */
-  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower);
+  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration,  RxPowerWattPerChannelBand&& rxPower);
   ~Event ();
 
   /**
@@ -90,7 +91,7 @@ public:
    *
    * \return the received power (W) for all bands.
    */
-  RxPowerWattPerChannelBand GetRxPowerWPerBand (void) const;
+  const RxPowerWattPerChannelBand& GetRxPowerWPerBand (void) const;
   /**
    * Return the TXVECTOR of the PPDU.
    *
@@ -103,7 +104,7 @@ public:
    *
    * \param rxPower the received power (W) for all bands.
    */
-  void UpdateRxPowerW (RxPowerWattPerChannelBand rxPower);
+  void UpdateRxPowerW (const RxPowerWattPerChannelBand& rxPower);
 
 
 private:
@@ -128,11 +129,17 @@ std::ostream& operator<< (std::ostream& os, const Event &event);
  * \ingroup wifi
  * \brief handles interference calculations
  */
-class InterferenceHelper
+class InterferenceHelper : public Object
 {
 public:
   InterferenceHelper ();
-  ~InterferenceHelper ();
+  virtual ~InterferenceHelper ();
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
 
   /**
    * Add a frequency band.
@@ -194,14 +201,14 @@ public:
    *
    * \return Event
    */
-  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
+  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower, bool isStartOfdmaRxing = false);
 
   /**
    * Add a non-Wifi signal to interference helper.
    * \param duration the duration of the signal
    * \param rxPower received power per band (W)
    */
-  void AddForeignSignal (Time duration, RxPowerWattPerChannelBand rxPower);
+  void AddForeignSignal (Time duration, RxPowerWattPerChannelBand& rxPower);
   /**
    * Calculate the SNIR at the start of the payload and accumulate
    * all SNIR changes in the SNIR vector for each MPDU of an A-MPDU.
@@ -265,10 +272,11 @@ public:
    * \param event the event to be updated
    * \param rxPower the received power (W) per band to be added to the current event
    */
-  void UpdateEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
-
+  void UpdateEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower);
 
 protected:
+  void DoDispose (void) override;
+
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
    *
@@ -312,7 +320,7 @@ private:
    */
   class NiChange
   {
-public:
+  public:
     /**
      * Create a NiChange at the given time and the amount of NI change.
      *
@@ -340,8 +348,7 @@ public:
      */
     Ptr<Event> GetEvent (void) const;
 
-
-private:
+  private:
     double m_power; ///< power in watts
     Ptr<Event> m_event; ///< event
   };
@@ -431,18 +438,18 @@ private:
    * Returns an iterator to the first NiChange that is later than moment
    *
    * \param moment time to check from
-   * \param band identify the band to check
+   * \param niIt iterator of the band to check
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::iterator GetNextPosition (Time moment, WifiSpectrumBand band);
+  NiChanges::iterator GetNextPosition (Time moment, NiChangesPerBand::iterator niIt);
   /**
    * Returns an iterator to the last NiChange that is before than moment
    *
    * \param moment time to check from
-   * \param band identify the band to check
+   * \param niIt iterator of the band to check
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::iterator GetPreviousPosition (Time moment, WifiSpectrumBand band);
+  NiChanges::iterator GetPreviousPosition (Time moment, NiChangesPerBand::iterator niIt);
 
   /**
    * Add NiChange to the list at the appropriate position and
@@ -450,10 +457,10 @@ private:
    *
    * \param moment time to check from
    * \param change the NiChange to add
-   * \param band identify the band to check
+   * \param niIt iterator of the band to check
    * \returns the iterator of the new event
    */
-  NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change, WifiSpectrumBand band);
+  NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change, NiChangesPerBand::iterator niIt);
 };
 
 } //namespace ns3

@@ -47,6 +47,12 @@ QosFrameExchangeManager::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&QosFrameExchangeManager::m_pifsRecovery),
                    MakeBooleanChecker ())
+    .AddAttribute ("SetQueueSize",
+                   "Whether to set the Queue Size subfield of the QoS Control field "
+                   "of QoS data frames sent by non-AP stations",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&QosFrameExchangeManager::m_setQosQueueSize),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -271,8 +277,7 @@ QosFrameExchangeManager::StartFrameExchange (Ptr<QosTxop> edca, Time availableTi
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader ());
 
-  WifiMacQueueItem::QueueIteratorPair queueIt;
-  Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame, queueIt);
+  Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, availableTime, initialFrame);
 
   if (item == nullptr)
     {
@@ -450,13 +455,15 @@ QosFrameExchangeManager::GetFrameDurationId (const WifiMacHeader& header, uint32
       return FrameExchangeManager::GetFrameDurationId (header, size, txParams, fragmentedPacket);
     }
 
+  NS_ASSERT (txParams.m_acknowledgment && txParams.m_acknowledgment->acknowledgmentTime != Time::Min ());
+
   // under multiple protection settings, if the TXOP limit is not null, Duration/ID
   // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
   // of 802.11-2016)
   return std::max (m_edca->GetRemainingTxop ()
                    - m_phy->CalculateTxDuration (size, txParams.m_txVector, m_phy->GetPhyBand ()),
-                   Seconds (0));
+                   txParams.m_acknowledgment->acknowledgmentTime);
 }
 
 Time
@@ -508,6 +515,23 @@ QosFrameExchangeManager::GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector
   return std::max (m_edca->GetRemainingTxop ()
                    - m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, m_phy->GetPhyBand ()),
                    Seconds (0));
+}
+
+void
+QosFrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << *mpdu << txVector);
+
+  WifiMacHeader& hdr = mpdu->GetHeader ();
+
+  if (hdr.IsQosData () && m_mac->GetTypeOfStation () == STA
+      && (m_setQosQueueSize || hdr.IsQosEosp ()))
+    {
+      uint8_t tid = hdr.GetQosTid ();
+      hdr.SetQosEosp ();
+      hdr.SetQosQueueSize (m_mac->GetQosTxop (tid)->GetQosQueueSize (tid, hdr.GetAddr1 ()));
+    }
+  FrameExchangeManager::ForwardMpduDown (mpdu, txVector);
 }
 
 void

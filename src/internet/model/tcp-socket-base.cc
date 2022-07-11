@@ -860,9 +860,8 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
 
 /* Inherit from Socket class: In TcpSocketBase, it is same as Send() call */
 int
-TcpSocketBase::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
+TcpSocketBase::SendTo (Ptr<Packet> p, uint32_t flags, [[maybe_unused]] const Address &address)
 {
-  NS_UNUSED (address);
   return Send (p, flags); // SendTo() and Send() are the same
 }
 
@@ -1184,8 +1183,8 @@ TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
                 " to " << m_endPoint6->GetLocalAddress () <<
                 ":" << m_endPoint6->GetLocalPort ());
 
-  Address fromAddress = Inet6SocketAddress (header.GetSourceAddress (), port);
-  Address toAddress = Inet6SocketAddress (header.GetDestinationAddress (),
+  Address fromAddress = Inet6SocketAddress (header.GetSource (), port);
+  Address toAddress = Inet6SocketAddress (header.GetDestination (),
                                           m_endPoint6->GetLocalPort ());
 
   TcpHeader tcpHeader;
@@ -2304,9 +2303,9 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 /* Received a packet upon SYN_RCVD */
 void
 TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
-                               const Address& fromAddress, const Address& toAddress)
+                               const Address& fromAddress, 
+                               [[maybe_unused]] const Address& toAddress)
 {
-  NS_UNUSED (toAddress);
   NS_LOG_FUNCTION (this << tcpHeader);
 
   // Extract the flags. PSH, URG, CWR and ECE are disregarded.
@@ -2865,7 +2864,7 @@ TcpSocketBase::SetupEndpoint6 ()
   // Create a dummy packet, then ask the routing function for the best output
   // interface's address
   Ipv6Header header;
-  header.SetDestinationAddress (m_endPoint6->GetPeerAddress ());
+  header.SetDestination (m_endPoint6->GetPeerAddress ());
   Socket::SocketErrno errno_;
   Ptr<Ipv6Route> route;
   Ptr<NetDevice> oif = m_boundnetdevice;
@@ -2886,11 +2885,10 @@ TcpSocketBase::SetupEndpoint6 ()
    TcpSocketBase cloned, allocate a new end point to handle the incoming
    connection and send a SYN+ACK to complete the handshake. */
 void
-TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
+TcpSocketBase::CompleteFork ([[maybe_unused]] Ptr<Packet> p, const TcpHeader& h,
                              const Address& fromAddress, const Address& toAddress)
 {
   NS_LOG_FUNCTION (this << p << h << fromAddress << toAddress);
-  NS_UNUSED (p);
   // Get port and address from peer (connecting host)
   if (InetSocketAddress::IsMatchingType (toAddress))
     {

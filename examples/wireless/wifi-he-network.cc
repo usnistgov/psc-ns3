@@ -74,6 +74,8 @@ int main (int argc, char *argv[])
   double frequency {5}; //whether 2.4, 5 or 6 GHz
   std::size_t nStations {1};
   std::string dlAckSeqType {"NO-OFDMA"};
+  bool enableUlOfdma {false};
+  bool enableBsrp {false};
   int mcs {-1}; // -1 indicates an unset value
   uint32_t payloadSize = 700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
   std::string phyModel {"Yans"};
@@ -90,6 +92,8 @@ int main (int argc, char *argv[])
   cmd.AddValue ("nStations", "Number of non-AP HE stations", nStations);
   cmd.AddValue ("dlAckType", "Ack sequence type for DL OFDMA (NO-OFDMA, ACK-SU-FORMAT, MU-BAR, AGGR-MU-BAR)",
                 dlAckSeqType);
+  cmd.AddValue ("enableUlOfdma", "Enable UL OFDMA (useful if DL OFDMA is enabled and TCP is used)", enableUlOfdma);
+  cmd.AddValue ("enableBsrp", "Enable BSRP (useful if DL and UL OFDMA are enabled and TCP is used)", enableBsrp);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
   cmd.AddValue ("payloadSize", "The application payload size in bytes", payloadSize);
   cmd.AddValue ("phyModel", "PHY model to use when OFDMA is disabled (Yans or Spectrum). If OFDMA is enabled then Spectrum is automatically selected", phyModel);
@@ -167,19 +171,23 @@ int main (int argc, char *argv[])
               NetDeviceContainer apDevice, staDevices;
               WifiMacHelper mac;
               WifiHelper wifi;
+              std::string channelStr ("{0, " + std::to_string (channelWidth) + ", ");
 
               if (frequency == 6)
                 {
-                  wifi.SetStandard (WIFI_STANDARD_80211ax_6GHZ);
+                  wifi.SetStandard (WIFI_STANDARD_80211ax);
+                  channelStr += "BAND_6GHZ, 0}";
                   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (48));
                 }
               else if (frequency == 5)
                 {
-                  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+                  wifi.SetStandard (WIFI_STANDARD_80211ax);
+                  channelStr += "BAND_5GHZ, 0}";
                 }
               else if (frequency == 2.4)
                 {
-                  wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
+                  wifi.SetStandard (WIFI_STANDARD_80211ax);
+                  channelStr += "BAND_2_4GHZ, 0}";
                   Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40));
                 }
               else
@@ -210,19 +218,18 @@ int main (int argc, char *argv[])
 
                   mac.SetType ("ns3::StaWifiMac",
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  phy.Set ("ChannelSettings", StringValue (channelStr));
                   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
                   if (dlAckSeqType != "NO-OFDMA")
                     {
                       mac.SetMultiUserScheduler ("ns3::RrMultiUserScheduler",
-                                                "EnableUlOfdma", BooleanValue (false),
-                                                "EnableBsrp", BooleanValue (false));
+                                                "EnableUlOfdma", BooleanValue (enableUlOfdma),
+                                                "EnableBsrp", BooleanValue (enableBsrp));
                     }
                   mac.SetType ("ns3::ApWifiMac",
                               "EnableBeaconJitter", BooleanValue (false),
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
                   apDevice = wifi.Install (phy, mac, wifiApNode);
                 }
               else
@@ -234,13 +241,12 @@ int main (int argc, char *argv[])
 
                   mac.SetType ("ns3::StaWifiMac",
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  phy.Set ("ChannelSettings", StringValue (channelStr));
                   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
                   mac.SetType ("ns3::ApWifiMac",
                               "EnableBeaconJitter", BooleanValue (false),
                               "Ssid", SsidValue (ssid));
-                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
                   apDevice = wifi.Install (phy, mac, wifiApNode);
                 }
 
@@ -380,7 +386,7 @@ int main (int argc, char *argv[])
                 {
                   previous = throughput;
                 }
-              else
+              else if (throughput > 0)
                 {
                   NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                   exit (1);
@@ -390,7 +396,7 @@ int main (int argc, char *argv[])
                 {
                   prevThroughput [index] = throughput;
                 }
-              else
+              else if (throughput > 0)
                 {
                   NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                   exit (1);

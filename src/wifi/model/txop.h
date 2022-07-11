@@ -34,9 +34,8 @@ class WifiMacQueue;
 class WifiMacQueueItem;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
-class WifiRemoteStationManager;
+class WifiMac;
 enum WifiMacDropReason : uint8_t;  // opaque enum declaration
-enum AcIndex : uint8_t;
 
 /**
  * \brief Handle packet fragmentation and retransmissions
@@ -45,9 +44,9 @@ enum AcIndex : uint8_t;
  *
  * This class implements the packet fragmentation and
  * retransmission policy for data and management frames.
- * It uses the ns3::MacLow and ns3::ChannelAccessManager helper
- * classes to respectively send packets and decide when
- * to send them. Packets are stored in a ns3::WifiMacQueue
+ * It uses the ns3::ChannelAccessManager helper
+ * class to decide when to send a packet.
+ * Packets are stored in a ns3::WifiMacQueue
  * until they can be sent.
  *
  * The policy currently implemented uses a simple fragmentation
@@ -65,10 +64,15 @@ enum AcIndex : uint8_t;
 class Txop : public Object
 {
 public:
-  /// allow MacLowTransmissionListener class access
-  friend class MacLowTransmissionListener;
-
   Txop ();
+
+  /**
+   * Constructor
+   *
+   * \param queue the wifi MAC queue
+   */
+  Txop (Ptr<WifiMacQueue> queue);
+
   virtual ~Txop ();
 
   /**
@@ -98,12 +102,6 @@ public:
    * \returns true if QoS TXOP.
    */
   virtual bool IsQosTxop () const;
-  /**
-   * Get the access category.
-   *
-   * \return the access category.
-   */
-  virtual AcIndex GetAccessCategory (void) const;
 
   /**
    * Set ChannelAccessManager this Txop is associated to.
@@ -112,11 +110,11 @@ public:
    */
   void SetChannelAccessManager (const Ptr<ChannelAccessManager> manager);
   /**
-   * Set WifiRemoteStationsManager this Txop is associated to.
+   * Set the wifi MAC this Txop is associated to.
    *
-   * \param remoteManager WifiRemoteStationManager to associate.
+   * \param mac associated wifi MAC
    */
-  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
+  virtual void SetWifiMac (const Ptr<WifiMac> mac);
   /**
    * Set MacTxMiddle this Txop is associated to.
    *
@@ -166,19 +164,19 @@ public:
    *
    * \return the minimum contention window size.
    */
-  uint32_t GetMinCw (void) const;
+  virtual uint32_t GetMinCw (void) const;
   /**
    * Return the maximum contention window size.
    *
    * \return the maximum contention window size.
    */
-  uint32_t GetMaxCw (void) const;
+  virtual uint32_t GetMaxCw (void) const;
   /**
    * Return the number of slots that make up an AIFS.
    *
    * \return the number of slots that make up an AIFS.
    */
-  uint8_t GetAifsn (void) const;
+  virtual uint8_t GetAifsn (void) const;
   /**
    * Return the TXOP limit.
    *
@@ -199,10 +197,6 @@ public:
    */
   void UpdateFailedCw (void);
 
-  /**
-   * When a channel switching occurs, enqueued packets are removed.
-   */
-  virtual void NotifyChannelSwitching (void);
   /**
    * When sleep operation occurs, if there is a pending packet transmission,
    * it will be reinserted to the front of the queue.
@@ -280,10 +274,6 @@ protected:
    * Notify that access request has been received.
    */
   virtual void NotifyAccessRequested (void);
-  /**
-   * Notify the Txop that internal collision has occurred.
-   */
-  virtual void NotifyInternalCollision (void);
 
   /**
    * Check if the Txop has frames to transmit.
@@ -332,7 +322,7 @@ protected:
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
-  Ptr<WifiRemoteStationManager> m_stationManager;   //!< the wifi remote station manager
+  Ptr<WifiMac> m_mac;                               //!< the wifi MAC
   Ptr<UniformRandomVariable> m_rng;                 //!< the random stream
 
   uint32_t m_cwMin;              //!< the minimum contention window

@@ -20,7 +20,7 @@
 
 // This program can be used to benchmark packet serialization/deserialization
 // operations using Headers and Tags, for various numbers of packets 'n'
-// Sample usage:  ./waf --run 'bench-packets --n=10000'
+// Sample usage:  ./ns3 run 'bench-packets --n=10000'
 
 #include "ns3/command-line.h"
 #include "ns3/system-wall-clock-ms.h"
@@ -94,7 +94,7 @@ template <int N>
 TypeId 
 BenchHeader<N>::GetTypeId (void)
 {
-  static TypeId tid = TypeId (GetTypeName ().c_str ())
+  static TypeId tid = TypeId (GetTypeName ())
     .SetParent<Header> ()
     .SetGroupName ("Utils")
     .HideFromDocumentation ()
@@ -161,7 +161,7 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void) {
-    static TypeId tid = TypeId (GetName ().c_str ())
+    static TypeId tid = TypeId (GetName ())
       .SetParent<Tag> ()
       .SetGroupName ("Utils")
       .HideFromDocumentation ()

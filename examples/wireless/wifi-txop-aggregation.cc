@@ -57,7 +57,7 @@
 //
 // The user can select the distance between the stations and the APs, can enable/disable the RTS/CTS mechanism
 // and can modify the duration of a TXOP.
-// Example: ./waf --run "wifi-txop-aggregation --distance=10 --enableRts=0 --simulationTime=20"
+// Example: ./ns3 run "wifi-txop-aggregation --distance=10 --enableRts=0 --simulationTime=20"
 //
 // The output prints the throughput and the maximum TXOP duration measured for the 4 cases/networks
 // described above. When default aggregation parameters are enabled, the
@@ -79,8 +79,14 @@ NS_LOG_COMPONENT_DEFINE ("TxopMpduAggregation");
  */
 struct TxopDurationTracer
 {
+  /**
+   * Callback connected to TXOP duration trace source.
+   *
+   * \param startTime TXOP start time
+   * \param duration TXOP duration
+   */
   void Trace (Time startTime, Time duration);
-  Time m_max {Seconds (0)};
+  Time m_max {Seconds (0)};     //!< maximum TXOP duration
 };
 
 void
@@ -125,7 +131,7 @@ int main (int argc, char *argv[])
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("HtMcs7"), "ControlMode", StringValue ("HtMcs0"));
   WifiMacHelper mac;
 
@@ -134,7 +140,7 @@ int main (int argc, char *argv[])
 
   // Network A
   ssid = Ssid ("network-A");
-  phy.Set ("ChannelNumber", UintegerValue (36));
+  phy.Set ("ChannelSettings", StringValue ("{36, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
   staDeviceA = wifi.Install (phy, mac, wifiStaNodes.Get (0));
@@ -159,7 +165,7 @@ int main (int argc, char *argv[])
 
   // Network B
   ssid = Ssid ("network-B");
-  phy.Set ("ChannelNumber", UintegerValue (40));
+  phy.Set ("ChannelSettings", StringValue ("{40, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
 
@@ -191,7 +197,7 @@ int main (int argc, char *argv[])
 
   // Network C
   ssid = Ssid ("network-C");
-  phy.Set ("ChannelNumber", UintegerValue (44));
+  phy.Set ("ChannelSettings", StringValue ("{44, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
 
@@ -225,7 +231,7 @@ int main (int argc, char *argv[])
 
   // Network D
   ssid = Ssid ("network-D");
-  phy.Set ("ChannelNumber", UintegerValue (48));
+  phy.Set ("ChannelSettings", StringValue ("{48, 0, BAND_5GHZ, 0}"));
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid));
 

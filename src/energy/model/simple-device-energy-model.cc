@@ -104,16 +104,16 @@ SimpleDeviceEnergyModel::SetCurrentA (double current)
 
   double energyToDecrease = 0.0;
   double supplyVoltage = m_source->GetSupplyVoltage ();
-  energyToDecrease = duration.GetSeconds () * current * supplyVoltage;
+  energyToDecrease = duration.GetSeconds () * m_actualCurrentA * supplyVoltage;
 
   // update total energy consumption
   m_totalEnergyConsumption += energyToDecrease;
   // update last update time stamp
   m_lastUpdateTime = Simulator::Now ();
-  // notify energy source
-  m_source->UpdateEnergySource ();
   // update the current drain
   m_actualCurrentA = current;
+  // notify energy source
+  m_source->UpdateEnergySource ();
 }
 
 void

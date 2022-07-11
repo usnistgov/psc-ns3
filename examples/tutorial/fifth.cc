@@ -18,8 +18,9 @@
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/point-to-point-module.h"
+#include "tutorial-app.h"
 
 using namespace ns3;
 
@@ -59,106 +60,7 @@ NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
 // install in the source node.
 // ===========================================================================
 //
-class MyApp : public Application 
-{
-public:
 
-  MyApp ();
-  virtual ~MyApp();
-
-  void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
-
-private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
-
-  void ScheduleTx (void);
-  void SendPacket (void);
-
-  Ptr<Socket>     m_socket;
-  Address         m_peer;
-  uint32_t        m_packetSize;
-  uint32_t        m_nPackets;
-  DataRate        m_dataRate;
-  EventId         m_sendEvent;
-  bool            m_running;
-  uint32_t        m_packetsSent;
-};
-
-MyApp::MyApp ()
-  : m_socket (0), 
-    m_peer (), 
-    m_packetSize (0), 
-    m_nPackets (0), 
-    m_dataRate (0), 
-    m_sendEvent (), 
-    m_running (false), 
-    m_packetsSent (0)
-{
-}
-
-MyApp::~MyApp()
-{
-  m_socket = 0;
-}
-
-void
-MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
-{
-  m_socket = socket;
-  m_peer = address;
-  m_packetSize = packetSize;
-  m_nPackets = nPackets;
-  m_dataRate = dataRate;
-}
-
-void
-MyApp::StartApplication (void)
-{
-  m_running = true;
-  m_packetsSent = 0;
-  m_socket->Bind ();
-  m_socket->Connect (m_peer);
-  SendPacket ();
-}
-
-void 
-MyApp::StopApplication (void)
-{
-  m_running = false;
-
-  if (m_sendEvent.IsRunning ())
-    {
-      Simulator::Cancel (m_sendEvent);
-    }
-
-  if (m_socket)
-    {
-      m_socket->Close ();
-    }
-}
-
-void 
-MyApp::SendPacket (void)
-{
-  Ptr<Packet> packet = Create<Packet> (m_packetSize);
-  m_socket->Send (packet);
-
-  if (++m_packetsSent < m_nPackets)
-    {
-      ScheduleTx ();
-    }
-}
-
-void 
-MyApp::ScheduleTx (void)
-{
-  if (m_running)
-    {
-      Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
-      m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
-    }
-}
 
 static void
 CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
@@ -177,6 +79,16 @@ main (int argc, char *argv[])
 {
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
+
+  // In the following three lines, TCP NewReno is used as the congestion
+  // control algorithm, the initial congestion window of a TCP connection is
+  // set to 1 packet, and the classic fast recovery algorithm is used. Note
+  // that this configuration is used only to demonstrate how TCP parameters
+  // can be configured in ns-3. Otherwise, it is recommended to use the default
+  // settings of TCP in ns-3.
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue ("ns3::TcpNewReno"));
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
+  Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType", TypeIdValue (TypeId::LookupByName ("ns3::TcpClassicRecovery")));
   
   NodeContainer nodes;
   nodes.Create (2);
@@ -209,7 +121,7 @@ main (int argc, char *argv[])
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), TcpSocketFactory::GetTypeId ());
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
 
-  Ptr<MyApp> app = CreateObject<MyApp> ();
+  Ptr<TutorialApp> app = CreateObject<TutorialApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.));

@@ -28,6 +28,7 @@
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/wifi-utils.h"
+#include "ns3/interference-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -68,7 +69,8 @@ const PhyEntity::PpduFormats HePhy::m_hePpduFormats { //Ignoring PE (Packet Exte
 /* *NS_CHECK_STYLE_ON* */
 
 HePhy::HePhy (bool buildModeList /* = true */)
-  : VhtPhy (false) //don't add VHT modes to list
+  : VhtPhy (false), //don't add VHT modes to list
+    m_trigVectorExpirationTime (Seconds (0))
 {
   NS_LOG_FUNCTION (this << buildModeList);
   m_bssMembershipSelector = HE_PHY;
@@ -106,8 +108,9 @@ HePhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
   switch (field)
     {
       case WIFI_PPDU_FIELD_TRAINING: //consider SIG-A (SIG-B) mode for training for the time being for SU/ER-SU/TB (MU) (useful for InterferenceHelper)
-        if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+        if (txVector.IsDlMu ())
           {
+            NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
             //Training comes after SIG-B
             return GetSigBMode (txVector);
           }
@@ -130,7 +133,7 @@ HePhy::GetSigAMode (void) const
 WifiMode
 HePhy::GetSigBMode (const WifiTxVector& txVector) const
 {
-  NS_ABORT_MSG_IF (txVector.GetPreambleType () != WIFI_PREAMBLE_HE_MU, "HE-SIG-B only available for HE MU");
+  NS_ABORT_MSG_IF (!txVector.IsDlMu () || (txVector.GetModulationClass () != WIFI_MOD_CLASS_HE), "HE-SIG-B only available for HE MU");
   /**
    * Get smallest HE MCS index among station's allocations and use the
    * VHT version of the index. This enables to have 800 ns GI, 52 data
@@ -177,7 +180,16 @@ HePhy::GetTrainingDuration (const WifiTxVector& txVector,
                             uint8_t nDataLtf, uint8_t nExtensionLtf /* = 0 */) const
 {
   Time ltfDuration = MicroSeconds (8); //TODO extract from TxVector when available
-  Time stfDuration = (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB) ? MicroSeconds (8) : MicroSeconds (4);
+  Time stfDuration;
+  if (txVector.IsUlMu ())
+    {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+      stfDuration = MicroSeconds (8);
+    }
+  else
+    {
+      stfDuration = MicroSeconds (4);
+    }
   NS_ABORT_MSG_IF (nDataLtf > 8, "Unsupported number of LTFs " << +nDataLtf << " for HE");
   NS_ABORT_MSG_IF (nExtensionLtf > 0, "No extension LTFs expected for HE");
   return stfDuration + ltfDuration * nDataLtf; //HE-STF + HE-LTFs
@@ -192,8 +204,9 @@ HePhy::GetSigADuration (WifiPreamble preamble) const
 Time
 HePhy::GetSigBDuration (const WifiTxVector& txVector) const
 {
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU) //See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
+  if (txVector.IsDlMu ()) //See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
     {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
       /*
        * Compute the number of bits used by common field.
        * Assume that compression bit in HE-SIG-A is not set (i.e. not
@@ -246,42 +259,45 @@ HePhy::GetSigBDuration (const WifiTxVector& txVector) const
     }
 }
 
-uint16_t
-HePhy::ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band)
+Time
+HePhy::GetValidPpduDuration (Time ppduDuration, const WifiTxVector& txVector,
+                             WifiPhyBand band)
 {
-  uint8_t sigExtension = 0;
-  if (band == WIFI_PHY_BAND_2_4GHZ)
-    {
-      sigExtension = 6;
-    }
+  Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
+  Time preambleDuration = WifiPhy::GetStaticPhyEntity (WIFI_MOD_CLASS_HE)->CalculatePhyPreambleAndHeaderDuration (txVector); //this is quite convoluted but only way of keeping the method static
+  uint8_t sigExtension = (band == WIFI_PHY_BAND_2_4GHZ ? 6 : 0);
+  uint32_t nSymbols = floor (static_cast<double> ((ppduDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
+  return preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
+}
+
+std::pair<uint16_t, Time>
+HePhy::ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, const WifiTxVector& txVector,
+                                            WifiPhyBand band)
+{
+  NS_ABORT_IF (!txVector.IsUlMu () || (txVector.GetModulationClass () != WIFI_MOD_CLASS_HE));
+  // update ppduDuration so that it is a valid PPDU duration
+  ppduDuration = GetValidPpduDuration (ppduDuration, txVector, band);
+  uint8_t sigExtension = (band == WIFI_PHY_BAND_2_4GHZ ? 6 : 0);
   uint8_t m = 2; //HE TB PPDU so m is set to 2
   uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
-  return length;
+  return {length, ppduDuration};
 }
 
 Time
 HePhy::ConvertLSigLengthToHeTbPpduDuration (uint16_t length, const WifiTxVector& txVector, WifiPhyBand band)
 {
-  NS_ABORT_IF (txVector.GetPreambleType () != WIFI_PREAMBLE_HE_TB);
-  Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
-  Time preambleDuration = WifiPhy::GetStaticPhyEntity (WIFI_MOD_CLASS_HE)->CalculatePhyPreambleAndHeaderDuration (txVector); //this is quite convoluted but only way of keeping the method static
-  uint8_t sigExtension = 0;
-  if (band == WIFI_PHY_BAND_2_4GHZ)
-    {
-      sigExtension = 6;
-    }
+  NS_ABORT_IF (!txVector.IsUlMu () || (txVector.GetModulationClass () != WIFI_MOD_CLASS_HE));
+  uint8_t sigExtension = (band == WIFI_PHY_BAND_2_4GHZ ? 6 : 0);
   uint8_t m = 2; //HE TB PPDU so m is set to 2
   //Equation 27-11 of IEEE P802.11ax/D4.0
   Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (length + 3 + m) / 3)) * 4) + 20 + sigExtension);
-  uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
-  Time ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
-  return ppduDuration;
+  return GetValidPpduDuration (calculatedDuration, txVector, band);
 }
 
 Time
 HePhy::CalculateNonOfdmaDurationForHeTb (const WifiTxVector& txVector) const
 {
-  NS_ABORT_IF (txVector.GetPreambleType () != WIFI_PREAMBLE_HE_TB);
+  NS_ABORT_IF (!txVector.IsUlMu () || (txVector.GetModulationClass () != WIFI_MOD_CLASS_HE));
   Time duration = GetDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector)
     + GetDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector)
     + GetDuration (WIFI_PPDU_FIELD_SIG_A, txVector);
@@ -302,19 +318,35 @@ HePhy::GetSymbolDuration (const WifiTxVector& txVector) const
   return NanoSeconds (12800 + gi);
 }
 
+void
+HePhy::SetTrigVector (const WifiTxVector& trigVector, Time validity)
+{
+  m_trigVector = trigVector;
+  m_trigVectorExpirationTime = Simulator::Now () + validity;
+  NS_LOG_FUNCTION (this << m_trigVector << m_trigVectorExpirationTime.As (Time::US));
+}
+
 Ptr<WifiPpdu>
 HePhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
-  HePpdu::TxPsdFlag flag = (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB) ?
-    HePpdu::PSD_HE_TB_NON_OFDMA_PORTION :
-    HePpdu::PSD_NON_HE_TB;
+  HePpdu::TxPsdFlag flag;
+  if (txVector.IsUlMu ())
+    {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+      flag = HePpdu::PSD_HE_TB_NON_OFDMA_PORTION;
+    }
+  else
+    {
+      flag = HePpdu::PSD_NON_HE_TB;
+    }
   return Create<HePpdu> (psdus, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
-                         ObtainNextUid (txVector), flag);
+                         ObtainNextUid (txVector), flag,
+                         m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
 }
 
 void
-HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
                              Time rxDuration)
 {
   NS_LOG_FUNCTION (this << ppdu << rxDuration);
@@ -322,9 +354,9 @@ HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPow
   auto hePpdu = DynamicCast<HePpdu> (ppdu);
   NS_ASSERT (hePpdu);
   HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag ();
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
-      && psdFlag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
+  if (txVector.IsUlMu () && psdFlag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
     {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
       if (m_currentHeTbPpduUid == ppdu->GetUid ()
           && GetCurrentEvent () != 0)
         {
@@ -349,7 +381,7 @@ HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPow
     }
   else
     {
-      PhyEntity::StartReceivePreamble (ppdu, rxPowersW, rxDuration);
+      PhyEntity::StartReceivePreamble (ppdu, rxPowersW, ppdu->GetTxDuration ()); // The actual duration of the PPDU should be used
     }
 }
 
@@ -399,7 +431,7 @@ HePhy::DoResetReceive (Ptr<Event> event)
 }
 
 Ptr<Event>
-HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW)
+HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW)
 {
   Ptr<Event> event;
   //We store all incoming preamble events, and a decision is made at the end of the preamble detection window.
@@ -416,23 +448,10 @@ HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW
         {
           NS_LOG_DEBUG ("Received another HE TB PPDU for UID " << ppdu->GetUid () << " from STA-ID " << ppdu->GetStaId () << " and BSS color " << +txVector.GetBssColor ());
           event = it->second;
-          if (Simulator::Now () - event->GetStartTime () > NanoSeconds (400))
-            {
-              //Section 27.3.14.3 from 802.11ax Draft 4.0: Pre-correction accuracy requirements.
-              //A STA that transmits an HE TB PPDU, non-HT PPDU, or non-HT duplicate PPDU in response to a triggering PPDU
-              //shall ensure that the transmission start time of the HE TB PPDU, non-HT PPDU, or non-HT duplicate PPDU is
-              //within ±0.4 µs + 16 µs from the end, at the STA’s antenna connector, of the last OFDM symbol of the triggering
-              //PPDU (if it contains no PE field) or of the PE field of the triggering PPDU (if the PE field is present).
-              //As a result, if an HE TB PPDU arrives later than 0.4 µs, it is added as an interference but PPDU is dropped.
-              event = CreateInterferenceEvent (ppdu, txVector, rxDuration, rxPowersW);
-              NS_LOG_DEBUG ("Drop packet because not received within the 400ns window");
-              m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), HE_TB_PPDU_TOO_LATE);
-            }
-          else
-            {
-              //Update received power of the event associated to that UL MU transmission
-              UpdateInterferenceEvent (event, rxPowersW);
-            }
+
+          //Update received power of the event associated to that UL MU transmission
+          UpdateInterferenceEvent (event, rxPowersW);
+
           if ((GetCurrentEvent () != 0) && (GetCurrentEvent ()->GetPpdu ()->GetUid () != ppdu->GetUid ()))
             {
               NS_LOG_DEBUG ("Drop packet because already receiving another HE TB PPDU");
@@ -470,10 +489,9 @@ uint8_t
 HePhy::GetBssColor (void) const
 {
   uint8_t bssColor = 0;
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-  if (device)
+  if (m_wifiPhy->GetDevice () != nullptr)
     {
-      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+      Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice ()->GetHeConfiguration ();
       if (heConfiguration)
         {
           bssColor = heConfiguration->GetBssColor ();
@@ -491,14 +509,10 @@ HePhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
     }
   else if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU)
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      if (device)
+      Ptr<StaWifiMac> mac = DynamicCast<StaWifiMac> (m_wifiPhy->GetDevice ()->GetMac ());
+      if (mac && mac->IsAssociated ())
         {
-          Ptr<StaWifiMac> mac = DynamicCast<StaWifiMac> (device->GetMac ());
-          if (mac && mac->IsAssociated ())
-            {
-              return mac->GetAssociationId ();
-            }
+          return mac->GetAssociationId ();
         }
     }
   return PhyEntity::GetStaId (ppdu);
@@ -509,25 +523,66 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
 {
   NS_LOG_FUNCTION (this << *event << status);
   //Notify end of SIG-A (in all cases)
+  WifiTxVector txVector = event->GetTxVector ();
   HeSigAParameters params;
   params.rssiW = GetRxPowerWForPpdu (event);
-  params.bssColor = event->GetTxVector ().GetBssColor ();
+  params.bssColor = txVector.GetBssColor ();
   NotifyEndOfHeSigA (params); //if OBSS_PD CCA_RESET, set power restriction first and wait till field is processed before switching to IDLE
 
   if (status.isSuccess)
     {
       //Check if PPDU is filtered based on the BSS color
       uint8_t myBssColor = GetBssColor ();
-      uint8_t rxBssColor = event->GetTxVector ().GetBssColor ();
+      uint8_t rxBssColor = txVector.GetBssColor ();
       if (myBssColor != 0 && rxBssColor != 0 && myBssColor != rxBssColor)
         {
           NS_LOG_DEBUG ("The BSS color of this PPDU (" << +rxBssColor << ") does not match the device's (" << +myBssColor << "). The PPDU is filtered.");
           return PhyFieldRxStatus (false, FILTERED, DROP);
         }
 
-      Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
-      if (event->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+      // When SIG-A is decoded, we know the type of frame being received. If we stored a
+      // valid TRIGVECTOR and we are not receiving a TB PPDU, we drop the frame.
+      if (m_trigVectorExpirationTime >= Simulator::Now () && !txVector.IsUlMu ())
         {
+          NS_LOG_DEBUG ("Expected an HE TB PPDU, receiving a " << txVector.GetPreambleType ());
+          return PhyFieldRxStatus (false, FILTERED, DROP);
+        }
+
+      Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+      if (txVector.IsUlMu ())
+        {
+          NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+          // check that the stored TRIGVECTOR is still valid
+          if (m_trigVectorExpirationTime < Simulator::Now ())
+            {
+              NS_LOG_DEBUG ("No valid TRIGVECTOR, the PHY was not expecting a TB PPDU");
+              return PhyFieldRxStatus (false, FILTERED, DROP);
+            }
+          // We expected a TB PPDU and we are receiving a TB PPDU. However, despite
+          // the previous check on BSS Color, we may be receiving a TB PPDU from an
+          // OBSS, as BSS Colors are not guaranteed to be different for all APs in
+          // range (an example is when BSS Color is 0). We can detect this situation
+          // by comparing the TRIGVECTOR with the TXVECTOR of the TB PPDU being received
+          if (m_trigVector.GetChannelWidth () != txVector.GetChannelWidth ())
+            {
+              NS_LOG_DEBUG ("Received channel width different than in TRIGVECTOR");
+              return PhyFieldRxStatus (false, FILTERED, DROP);
+            }
+          if (m_trigVector.GetLength () != txVector.GetLength ())
+            {
+              NS_LOG_DEBUG ("Received UL Length (" << txVector.GetLength () <<
+                            ") different than in TRIGVECTOR (" << m_trigVector.GetLength ()
+                            << ")");
+              return PhyFieldRxStatus (false, FILTERED, DROP);
+            }
+          uint16_t staId = ppdu->GetStaId ();
+          if (m_trigVector.GetHeMuUserInfoMap ().find (staId) == m_trigVector.GetHeMuUserInfoMap ().end ()
+              || m_trigVector.GetHeMuUserInfo (staId) != txVector.GetHeMuUserInfo (staId))
+            {
+              NS_LOG_DEBUG ("User Info map of TB PPDU being received differs from that of TRIGVECTOR");
+              return PhyFieldRxStatus (false, FILTERED, DROP);
+            }
+
           m_currentHeTbPpduUid = ppdu->GetUid (); //to be able to correctly schedule start of OFDMA payload
         }
 
@@ -579,8 +634,9 @@ HePhy::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
   uint16_t staId = GetStaId (ppdu);
   WifiMode txMode = txVector.GetMode (staId);
   uint8_t nss = txVector.GetNssMax ();
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+  if (txVector.IsDlMu ())
     {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
       for (auto info : txVector.GetHeMuUserInfoMap ())
         {
           if (info.first == staId)
@@ -610,10 +666,10 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
   NS_LOG_FUNCTION (this << *event);
   const WifiTxVector& txVector = event->GetTxVector ();
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+  if (txVector.IsUlMu ())
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      bool isAp = device != 0 && (DynamicCast<ApWifiMac> (device->GetMac ()) != 0);
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+      bool isAp = (DynamicCast<ApWifiMac> (m_wifiPhy->GetDevice ()->GetMac ()) != 0);
       if (!isAp)
         {
           NS_LOG_DEBUG ("Ignore HE TB PPDU payload received by STA but keep state in Rx");
@@ -633,15 +689,12 @@ HePhy::DoStartReceivePayload (Ptr<Event> event)
           uint16_t staId = GetStaId (ppdu);
           m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
           m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
-          if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+          //for HE TB PPDUs, ScheduleEndOfMpdus and EndReceive are scheduled by StartReceiveOfdmaPayload
+          NS_ASSERT (isAp);
+          NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty ());
+          for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
             {
-              //for HE TB PPDUs, ScheduleEndOfMpdus and EndReceive are scheduled by StartReceiveOfdmaPayload
-              NS_ASSERT (isAp);
-              NS_ASSERT (!m_beginOfdmaPayloadRxEvents.empty ());
-              for (auto & beginOfdmaPayloadRxEvent : m_beginOfdmaPayloadRxEvents)
-                {
-                  NS_ASSERT (beginOfdmaPayloadRxEvent.second.IsRunning ());
-                }
+              NS_ASSERT (beginOfdmaPayloadRxEvent.second.IsRunning ());
             }
         }
     }
@@ -685,12 +738,18 @@ void
 HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
 {
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
-  RxPowerWattPerChannelBand rxPowersW = event->GetRxPowerWPerBand ();
-  //The total RX power corresponds to the maximum over all the bands
-  auto it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
-                              [] (const std::pair<WifiSpectrumBand, double> &p1, const std::pair<WifiSpectrumBand, double> &p2) {
-                                return p1.second < p2.second;
-                              });
+  const RxPowerWattPerChannelBand& rxPowersW = event->GetRxPowerWPerBand ();
+  //The total RX power corresponds to the maximum over all the bands.
+  //Only perform this computation if the result needs to be logged.
+  auto it = rxPowersW.end ();
+  if (g_log.IsEnabled (ns3::LOG_FUNCTION))
+    {
+      it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
+                             [] (const std::pair<WifiSpectrumBand, double> &p1, const std::pair<WifiSpectrumBand, double> &p2) {
+                               return p1.second < p2.second;
+                             });
+
+    }
   NS_LOG_FUNCTION (this << *event << it->second);
   NS_ASSERT (GetCurrentEvent () != 0);
   auto itEvent = m_beginOfdmaPayloadRxEvents.find (GetStaId (ppdu));
@@ -708,6 +767,8 @@ HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
   m_endRxPayloadEvents.push_back (Simulator::Schedule (payloadDuration, &PhyEntity::EndReceivePayload, this, event));
   m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), SignalNoiseDbm ()});
   m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), std::vector<bool> ()});
+  // Notify the MAC about the start of a new HE TB PPDU, so that it can reschedule the timeout
+  NotifyPayloadBegin (ppdu->GetTxVector (), payloadDuration);
 }
 
 std::pair<uint16_t, WifiSpectrumBand>
@@ -761,7 +822,7 @@ HePhy::GetRuBandForRx (const WifiTxVector& txVector, uint16_t staId) const
 WifiSpectrumBand
 HePhy::GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const
 {
-  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB);
+  NS_ASSERT (txVector.IsUlMu () && (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE));
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_ASSERT (channelWidth <= m_wifiPhy->GetChannelWidth ());
 
@@ -819,8 +880,9 @@ HePhy::ObtainNextUid (const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << txVector);
   uint64_t uid;
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+  if (txVector.IsUlMu ())
     {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
       //Use UID of PPDU containing trigger frame to identify resulting HE TB PPDUs, since the latter should immediately follow the former
       uid = m_wifiPhy->GetPreviouslyRxPpduUid ();
       NS_ASSERT (uid != UINT64_MAX);
@@ -870,7 +932,7 @@ uint16_t
 HePhy::GetCenterFrequencyForNonOfdmaPart (const WifiTxVector& txVector, uint16_t staId) const
 {
   NS_LOG_FUNCTION (this << txVector << staId);
-  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB);
+  NS_ASSERT (txVector.IsUlMu () && (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE));
   uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
   uint16_t currentWidth = txVector.GetChannelWidth ();
 
@@ -914,16 +976,18 @@ HePhy::StartTx (Ptr<WifiPpdu> ppdu)
 Time
 HePhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const
 {
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+  if (txVector.IsUlMu ())
     {
+      NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
       return ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (), txVector, band);
     }
 
   Time maxDuration = Seconds (0);
   for (auto & staIdPsdu : psduMap)
     {
-      if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+      if (txVector.IsDlMu ())
         {
+          NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
           WifiTxVector::HeMuUserInfoMap userInfoMap = txVector.GetHeMuUserInfoMap ();
           NS_ABORT_MSG_IF (userInfoMap.find (staIdPsdu.first) == userInfoMap.end (), "STA-ID in psduMap (" << staIdPsdu.first << ") should be referenced in txVector");
         }
@@ -1004,14 +1068,13 @@ HePhy::CreateHeMcs (uint8_t index)
   return WifiModeFactory::CreateWifiMcs ("HeMcs" + std::to_string (index),
                                          index,
                                          WIFI_MOD_CLASS_HE,
+                                         false,
                                          MakeBoundCallback (&GetCodeRate, index),
                                          MakeBoundCallback (&GetConstellationSize, index),
-                                         MakeBoundCallback (&GetPhyRate, index),
                                          MakeCallback (&GetPhyRateFromTxVector),
-                                         MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
-                                         MakeCallback (&IsModeAllowed));
+                                         MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -1142,7 +1205,7 @@ HePhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellatio
 }
 
 bool
-HePhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+HePhy::IsAllowed (const WifiTxVector& /*txVector*/)
 {
   return true;
 }

@@ -1052,8 +1052,8 @@ PrintAllAttributes (std::ostream & os)
   NS_LOG_FUNCTION_NOARGS ();
   os << commentStart << page << "AttributeList All Attributes\n"
      << std::endl;
-  os << "This is a list of all" << reference << "ns3::Attributes by class.  "
-     << "For more information see the" << reference << "ns3:Attributes "
+  os << "This is a list of all" << reference << "attributes classes.  "
+     << "For more information see the" << reference << "attributes "
      << "section of this API documentation and the Attributes sections "
      << "in the Tutorial and Manual.\n"
      << std::endl;
@@ -1263,7 +1263,7 @@ PrintAllTraceSources (std::ostream & os)
  *
  * In doxygen form this will print a comment block with
  * \verbatim
- *   \ingroup attribute
+ *   \ingroup attributes
  *   \defgroup attribute_<name>Value <name>Value
  * \endverbatim
  *
@@ -1279,12 +1279,12 @@ PrintAttributeValueSection (std::ostream & os,
   NS_LOG_FUNCTION (name);
   std::string section = "attribute_" + name;
 
-  // \ingroup attribute
+  // \ingroup attributes
   // \defgroup attribute_<name>Value <name> Attribute
-  os << commentStart << sectionStart << "attribute\n"
+  os << commentStart << sectionStart << "attributes\n"
      <<   subSectionStart << "attribute_" << name << " "
      <<     name << " Attribute\n"
-     <<     "Attribute implementation for " << name << "\n";
+     <<     "AttributeValue implementation for " << name << "\n";
   if (seeBase)
     {
       // Some classes don't live in ns3::.  Yuck
@@ -1524,11 +1524,13 @@ PrintAttributeImplementations (std::ostream & os)
       { "OrganizationIdentifier",
                           "OrganizationIdentifier",
                                             true,  "vendor-specific-action.h" },
+      { "Priomap",        "Priomap",        true,  "prio-queue-disc.h"  },
+      { "QueueSize",      "QueueSize",      true,  "queue-size.h"       },
       { "Rectangle",      "Rectangle",      true,  "rectangle.h"        },
       { "Ssid",           "Ssid",           true,  "ssid.h"             },
       { "TypeId",         "TypeId",         true,  "type-id.h"          },
       { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
-      // { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
+      { "ValueClassTest", "ValueClassTest", false, "attribute-test-suite.cc" /* core/test/ */  },
       { "Vector",         "Vector",         true,  "vector.h"           },
       { "Vector2D",       "Vector2D",       true,  "vector.h"           },
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
@@ -1576,8 +1578,13 @@ PrintAttributeImplementations (std::ostream & os)
   PrintAttributeValueWithName (os, "Pair", "std::pair<A, B>", "pair.h");
   PrintMakeChecker            (os, "Pair",  "pair.h");
   
-  PrintAttributeValueSection  (os, "AttributeContainer", false);
-  PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer", "attribute-container.h");
+  PrintAttributeValueSection  (os, "Tuple", false);
+  PrintAttributeValueWithName (os, "Tuple", "std::tuple<Args...>", "tuple.h");
+  PrintMakeChecker            (os, "Tuple", "tuple.h");
+
+  // AttributeContainer is already documented.
+  // PrintAttributeValueSection  (os, "AttributeContainer", false);
+  // PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer", "attribute-container.h");
   PrintMakeChecker            (os, "AttributeContainer",  "attribute-container.h");
 }  // PrintAttributeImplementations ()
 

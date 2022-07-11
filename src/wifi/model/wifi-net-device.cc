@@ -88,7 +88,8 @@ WifiNetDevice::GetTypeId (void)
 }
 
 WifiNetDevice::WifiNetDevice ()
-  : m_configComplete (false)
+  : m_standard (WIFI_STANDARD_UNSPECIFIED),
+    m_configComplete (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -174,6 +175,19 @@ WifiNetDevice::CompleteConfig (void)
   m_stationManager->SetupPhy (m_phy);
   m_stationManager->SetupMac (m_mac);
   m_configComplete = true;
+}
+
+void
+WifiNetDevice::SetStandard (WifiStandard standard)
+{
+  NS_ABORT_MSG_IF (m_standard != WIFI_STANDARD_UNSPECIFIED, "Wifi standard already set");
+  m_standard = standard;
+}
+
+WifiStandard
+WifiNetDevice::GetStandard (void) const
+{
+  return m_standard;
 }
 
 void
@@ -455,7 +469,7 @@ WifiNetDevice::SetHtConfiguration (Ptr<HtConfiguration> htConfiguration)
 Ptr<HtConfiguration>
 WifiNetDevice::GetHtConfiguration (void) const
 {
-  return m_htConfiguration;
+  return (m_standard >= WIFI_STANDARD_80211n ? m_htConfiguration : nullptr);
 }
 
 void
@@ -467,7 +481,8 @@ WifiNetDevice::SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration)
 Ptr<VhtConfiguration>
 WifiNetDevice::GetVhtConfiguration (void) const
 {
-  return m_vhtConfiguration;
+  return (m_standard >= WIFI_STANDARD_80211ac && m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ
+          ? m_vhtConfiguration : nullptr);
 }
 
 void
@@ -479,7 +494,7 @@ WifiNetDevice::SetHeConfiguration (Ptr<HeConfiguration> heConfiguration)
 Ptr<HeConfiguration>
 WifiNetDevice::GetHeConfiguration (void) const
 {
-  return m_heConfiguration;
+  return (m_standard >= WIFI_STANDARD_80211ax ? m_heConfiguration : nullptr);
 }
 
 } //namespace ns3

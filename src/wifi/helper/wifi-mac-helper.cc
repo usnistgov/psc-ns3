@@ -18,7 +18,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/net-device.h"
+#include "ns3/wifi-net-device.h"
 #include "wifi-mac-helper.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-protection-manager.h"
@@ -30,9 +30,8 @@ namespace ns3 {
 
 WifiMacHelper::WifiMacHelper ()
 {
-  //By default, we create an AdHoc MAC layer without QoS.
-  SetType ("ns3::AdhocWifiMac",
-           "QosSupported", BooleanValue (false));
+  //By default, we create an AdHoc MAC layer (without QoS).
+  SetType ("ns3::AdhocWifiMac");
 
   m_protectionManager.SetTypeId ("ns3::WifiDefaultProtectionManager");
   m_ackManager.SetTypeId ("ns3::WifiDefaultAckManager");
@@ -43,32 +42,37 @@ WifiMacHelper::~WifiMacHelper ()
 }
 
 Ptr<WifiMac>
-WifiMacHelper::Create (Ptr<NetDevice> device, WifiStandard standard) const
+WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
 {
-  auto standardIt = wifiStandards.find (standard);
-  NS_ABORT_MSG_IF (standardIt == wifiStandards.end (), "Selected standard is not defined!");
+  NS_ABORT_MSG_IF (standard == WIFI_STANDARD_UNSPECIFIED, "No standard specified!");
 
-  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  // this is a const method, but we need to force the correct QoS setting
+  ObjectFactory macObjectFactory = m_mac;
+  if (standard >= WIFI_STANDARD_80211n)
+    {
+      macObjectFactory.Set ("QosSupported", BooleanValue (true));
+    }
+
+  Ptr<WifiMac> mac = macObjectFactory.Create<WifiMac> ();
   mac->SetDevice (device);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (standard);
 
-  Ptr<RegularWifiMac> wifiMac = DynamicCast<RegularWifiMac> (mac);
-  Ptr<FrameExchangeManager> fem;
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
 
-  if (wifiMac != 0 && (fem = wifiMac->GetFrameExchangeManager ()) != 0)
+  if (fem != nullptr)
     {
       Ptr<WifiProtectionManager> protectionManager = m_protectionManager.Create<WifiProtectionManager> ();
-      protectionManager->SetWifiMac (wifiMac);
+      protectionManager->SetWifiMac (mac);
       fem->SetProtectionManager (protectionManager);
 
       Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager> ();
-      ackManager->SetWifiMac (wifiMac);
+      ackManager->SetWifiMac (mac);
       fem->SetAckManager (ackManager);
 
       // create and install the Multi User Scheduler if this is an HE AP
       Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (mac);
-      if (apMac != nullptr && standardIt->second.macStandard >= WIFI_MAC_STANDARD_80211ax
+      if (apMac != nullptr && standard >= WIFI_STANDARD_80211ax
           && m_muScheduler.IsTypeIdSet ())
         {
           Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler> ();

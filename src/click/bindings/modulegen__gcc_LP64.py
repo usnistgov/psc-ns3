@@ -67,6 +67,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## event-id.h (module 'core'): ns3::EventId::UID [enumeration]
+    module.add_enum('UID', ['INVALID', 'NOW', 'DESTROY', 'RESERVED', 'VALID'], outer_class=root_module['ns3::EventId'], import_from_module='ns.core')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## inet6-socket-address.h (module 'network'): ns3::Inet6SocketAddress [class]
@@ -113,8 +115,6 @@ def register_types(module):
     module.add_class('Mac8Address', import_from_module='ns.network')
     ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
-    ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
-    module.add_class('NonCopyable', destructor_visibility='protected', import_from_module='ns.core')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -473,7 +473,6 @@ def register_methods(root_module):
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
     register_Ns3Mac8Address_methods(root_module, root_module['ns3::Mac8Address'])
-    register_Ns3NonCopyable_methods(root_module, root_module['ns3::NonCopyable'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3PacketMetadata_methods(root_module, root_module['ns3::PacketMetadata'])
@@ -1396,11 +1395,6 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsEqual(ns3::Ipv4Address const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv4Address const &', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsInitialized() const [member function]
     cls.add_method('IsInitialized', 
                    'bool', 
@@ -1473,6 +1467,11 @@ def register_Ns3Ipv4InterfaceAddress_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv4Address', 'local'), param('ns3::Ipv4Mask', 'mask')])
     ## ipv4-interface-address.h (module 'internet'): ns3::Ipv4InterfaceAddress::Ipv4InterfaceAddress(ns3::Ipv4InterfaceAddress const & o) [constructor]
     cls.add_constructor([param('ns3::Ipv4InterfaceAddress const &', 'o')])
+    ## ipv4-interface-address.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4InterfaceAddress::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
     ## ipv4-interface-address.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4InterfaceAddress::GetBroadcast() const [member function]
     cls.add_method('GetBroadcast', 
                    'ns3::Ipv4Address', 
@@ -1493,11 +1492,20 @@ def register_Ns3Ipv4InterfaceAddress_methods(root_module, cls):
                    'ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e', 
                    [], 
                    is_const=True)
+    ## ipv4-interface-address.h (module 'internet'): bool ns3::Ipv4InterfaceAddress::IsInSameSubnet(ns3::Ipv4Address const b) const [member function]
+    cls.add_method('IsInSameSubnet', 
+                   'bool', 
+                   [param('ns3::Ipv4Address const', 'b')], 
+                   is_const=True)
     ## ipv4-interface-address.h (module 'internet'): bool ns3::Ipv4InterfaceAddress::IsSecondary() const [member function]
     cls.add_method('IsSecondary', 
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv4-interface-address.h (module 'internet'): void ns3::Ipv4InterfaceAddress::SetAddress(ns3::Ipv4Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'address')])
     ## ipv4-interface-address.h (module 'internet'): void ns3::Ipv4InterfaceAddress::SetBroadcast(ns3::Ipv4Address broadcast) [member function]
     cls.add_method('SetBroadcast', 
                    'void', 
@@ -1566,11 +1574,6 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
                    'ns3::Ipv4Mask', 
                    [], 
                    is_static=True)
-    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsEqual(ns3::Ipv4Mask other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv4Mask', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Mask::IsMatch(ns3::Ipv4Address a, ns3::Ipv4Address b) const [member function]
     cls.add_method('IsMatch', 
                    'bool', 
@@ -1687,11 +1690,6 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsEqual(ns3::Ipv6Address const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv6Address const &', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsInitialized() const [member function]
     cls.add_method('IsInitialized', 
                    'bool', 
@@ -1884,11 +1882,6 @@ def register_Ns3Ipv6Prefix_methods(root_module, cls):
                    'ns3::Ipv6Prefix', 
                    [], 
                    is_static=True)
-    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsEqual(ns3::Ipv6Prefix const & other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ipv6Prefix const &', 'other')], 
-                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Prefix::IsMatch(ns3::Ipv6Address a, ns3::Ipv6Address b) const [member function]
     cls.add_method('IsMatch', 
                    'bool', 
@@ -2066,12 +2059,6 @@ def register_Ns3Mac8Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
                    is_static=True)
-    return
-
-def register_Ns3NonCopyable_methods(root_module, cls):
-    ## non-copyable.h (module 'core'): ns3::NonCopyable::NonCopyable() [constructor]
-    cls.add_constructor([], 
-                        visibility='protected')
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
@@ -2936,14 +2923,14 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('>=')
     cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
-    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
     cls.add_unary_numeric_operator('-')
+    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t() [constructor]
     cls.add_constructor([])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(double const value) [constructor]
@@ -2962,6 +2949,8 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_constructor([param('long unsigned int const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(long long unsigned int const v) [constructor]
     cls.add_constructor([param('long long unsigned int const', 'v')])
+    ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int128_t const v) [constructor]
+    cls.add_constructor([param('int128_t const', 'v')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(int64_t const hi, uint64_t const lo) [constructor]
     cls.add_constructor([param('int64_t const', 'hi'), param('uint64_t const', 'lo')])
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::int64x64_t(ns3::int64x64_t const & o) [constructor]

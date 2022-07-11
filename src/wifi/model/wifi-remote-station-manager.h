@@ -22,6 +22,7 @@
 #define WIFI_REMOTE_STATION_MANAGER_H
 
 #include <array>
+#include <unordered_map>
 #include "ns3/traced-callback.h"
 #include "ns3/object.h"
 #include "ns3/data-rate.h"
@@ -92,6 +93,8 @@ struct WifiRemoteStationState
   WifiModeList m_operationalRateSet; //!< operational rate set
   WifiModeList m_operationalMcsSet;  //!< operational MCS set
   Mac48Address m_address;            //!< Mac48Address of the remote station
+  uint16_t m_aid;                    /**< AID of the remote station (unused if this object
+                                          is installed on a non-AP station) */
   WifiRemoteStationInfo m_info;      //!< remote station info
   bool m_dsssSupported;              //!< Flag if DSSS is supported by the remote station
   bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
@@ -134,13 +137,13 @@ public:
   };
 
   /**
-   * A vector of WifiRemoteStations
+   * A map of WifiRemoteStations with Mac48Address as key
    */
-  typedef std::vector <WifiRemoteStation *> Stations;
+  using Stations = std::unordered_map <Mac48Address, WifiRemoteStation *, WifiAddressHash>;
   /**
-   * A vector of WifiRemoteStationStates
+   * A map of WifiRemoteStationStates with Mac48Address as key
    */
-  typedef std::vector <WifiRemoteStationState *> StationStates;
+  using StationStates = std::unordered_map <Mac48Address, WifiRemoteStationState *, WifiAddressHash>;
 
   /**
    * Set up PHY associated with this device since it is the object that
@@ -200,6 +203,13 @@ public:
    */
   void SetFragmentationThreshold (uint32_t threshold);
 
+  /**
+   * Record the AID of a remote station. Should only be called by APs.
+   *
+   * \param remoteAddress the MAC address of the remote station
+   * \param aid the Association ID
+   */
+  void SetAssociationId (Mac48Address remoteAddress, uint16_t aid);
   /**
    * Records QoS support of the remote station.
    *
@@ -422,6 +432,13 @@ public:
    */
   bool GetQosSupported (Mac48Address address) const;
   /**
+   * Get the AID of a remote station. Should only be called by APs.
+   *
+   * \param remoteAddress the MAC address of the remote station
+   * \return the Association ID if the station is associated, SU_STA_ID otherwise
+   */
+  uint16_t GetAssociationId (Mac48Address remoteAddress) const;
+  /**
    * Add a given Modulation and Coding Scheme (MCS) index to
    * the set of basic MCS.
    *
@@ -434,6 +451,13 @@ public:
    * \return the default WifiMode
    */
   WifiMode GetDefaultMcs (void) const;
+  /**
+   * Return the default MCS to use to transmit frames to the given station.
+   *
+   * \param st the given station
+   * \return the default MCS to use to transmit frames to the given station
+   */
+  WifiMode GetDefaultModeForSta (const WifiRemoteStation *st) const;
   /**
    * Return the number of basic MCS index.
    *

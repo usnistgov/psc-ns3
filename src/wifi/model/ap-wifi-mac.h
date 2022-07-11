@@ -23,7 +23,7 @@
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -33,10 +33,12 @@ class CapabilityInformation;
 class DsssParameterSet;
 class ErpInformation;
 class EdcaParameterSet;
+class MuEdcaParameterSet;
 class HtOperation;
 class VhtOperation;
 class HeOperation;
 class CfParameterSet;
+class UniformRandomVariable;
 
 /**
  * \brief Wi-Fi AP state machine
@@ -45,7 +47,7 @@ class CfParameterSet;
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.
  */
-class ApWifiMac : public RegularWifiMac
+class ApWifiMac : public WifiMac
 {
 public:
   /**
@@ -57,12 +59,13 @@ public:
   ApWifiMac ();
   virtual ~ApWifiMac ();
 
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
   void SetLinkUpCallback (Callback<void> linkUp) override;
+  bool CanForwardPacketsTo (Mac48Address to) const override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
   bool SupportsSendFrom (void) const override;
   void SetAddress (Mac48Address address) override;
+  Ptr<WifiMacQueue> GetTxopQueue (AcIndex ac) const override;
 
   /**
    * \param interval the interval between two beacon transmissions.
@@ -72,13 +75,6 @@ public:
    * \return the interval between two beacon transmissions.
    */
   Time GetBeaconInterval (void) const;
-
-  /**
-   * Determine the VHT operational channel width (in MHz).
-   *
-   * \returns the VHT operational channel width (in MHz).
-   */
-  uint16_t GetVhtOperationalChannelWidth (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -161,9 +157,8 @@ private:
    *
    * \param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
    * \param mpdu the MPDU that we failed to sent
-   * \param txVector the TX vector used to send the MPDU
    */
-  void TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
+  void TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu);
 
   /**
    * This method is called to de-aggregate an A-MSDU and forward the
@@ -232,6 +227,12 @@ private:
    * \return the EDCA Parameter Set that we support
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
+  /**
+   * Return the MU EDCA Parameter Set of the current AP.
+   *
+   * \return the MU EDCA Parameter Set that we support
+   */
+  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
   /**
    * Return the HT operation of the current AP.
    *
@@ -307,8 +308,6 @@ private:
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
-  /// Maps MAC addresses of associated stations to their association ID
-  std::unordered_map<Mac48Address, uint16_t, WifiAddressHash> m_addressIdMap;
   uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
   uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
   bool m_shortSlotTimeEnabled;               //!< Flag whether short slot time is enabled within the BSS

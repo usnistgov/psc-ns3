@@ -99,6 +99,10 @@ public:
    */
   virtual ~Ipv6L3Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Ipv6L3Protocol (const Ipv6L3Protocol &) = delete;
+  Ipv6L3Protocol & operator = (const Ipv6L3Protocol &) = delete;
+
   /**
    * \brief Set node associated with this stack.
    * \param node node to set
@@ -372,20 +376,19 @@ public:
    * TracedCallback signature for packet sent, forwarded or
    * local-delivered events.
    *
-   * \param [in] header The Ipv6Header.
-   * \param [in] packet The packet.
-   * \param [in] interface
+   * \param [in] header the Ipv6Header.
+   * \param [in] packet the packet.
+   * \param [in] interface the IP-level interface index
    */
   typedef void (* SentTracedCallback)
     (const Ipv6Header & header, Ptr<const Packet> packet, uint32_t interface);
-   
+
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
-   * \param [in] header The Ipv6Header.
-   * \param [in] packet The packet.
-   * \param [in] ipv6
-   * \param [in] interface
+   * \param [in] packet the packet.
+   * \param [in] ipv6 the Ipv6 protocol
+   * \param [in] interface the IP-level interface index
    * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
    * and will be changed to \c Ptr<const Ipv6> in a future release.
    */
@@ -395,11 +398,11 @@ public:
   /**
    * TracedCallback signature for packet drop events.
    *
-   * \param [in] header The Ipv6Header.
-   * \param [in] packet The packet.
-   * \param [in] reason The reason the packet was dropped.
-   * \param [in] ipv6
-   * \param [in] interface
+   * \param [in] header the Ipv6Header.
+   * \param [in] packet the packet.
+   * \param [in] reason the reason the packet was dropped.
+   * \param [in] ipv6 the Ipv6 protocol
+   * \param [in] interface the IP-level interface index
    * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
    * and will be changed to \c Ptr<const Ipv6> in a future release.
    */
@@ -533,7 +536,7 @@ private:
    * \param ipHeader the IP header that will be added to the packet
    * \param packet the packet
    * \param ipv6 the Ipv6 protocol
-   * \param interface the interface index
+   * \param interface the IP-level interface index
    *
    * Note: If the TracedCallback API ever is extended, we could consider
    * to check for connected functions before adding the header
@@ -567,21 +570,6 @@ private:
   TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
   /// Trace of locally delivered packets
   TracedCallback<const Ipv6Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   */
-  Ipv6L3Protocol (const Ipv6L3Protocol&);
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   * \returns the copied object
-   */
-  Ipv6L3Protocol &operator = (const Ipv6L3Protocol&);
 
   /**
    * \brief Construct an IPv6 header.

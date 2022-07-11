@@ -360,10 +360,22 @@ MgtProbeResponseHeader::SetEdcaParameterSet (EdcaParameterSet edcaParameters)
   m_edcaParameterSet = edcaParameters;
 }
 
+void
+MgtProbeResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameters)
+{
+  m_muEdcaParameterSet = muEdcaParameters;
+}
+
 EdcaParameterSet
 MgtProbeResponseHeader::GetEdcaParameterSet (void) const
 {
   return m_edcaParameterSet;
+}
+
+MuEdcaParameterSet
+MgtProbeResponseHeader::GetMuEdcaParameterSet (void) const
+{
+  return m_muEdcaParameterSet;
 }
 
 TypeId
@@ -403,6 +415,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_vhtOperation.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
   size += m_heOperation.GetSerializedSize ();
+  size += m_muEdcaParameterSet.GetSerializedSize ();
   return size;
 }
 
@@ -450,6 +463,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_vhtOperation.Serialize (i);
   i = m_heCapability.Serialize (i);
   i = m_heOperation.Serialize (i);
+  i = m_muEdcaParameterSet.Serialize (i);
 }
 
 uint32_t
@@ -473,6 +487,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_vhtOperation.DeserializeIfPresent (i);
   i = m_heCapability.DeserializeIfPresent (i);
   i = m_heOperation.DeserializeIfPresent (i);
+  i = m_muEdcaParameterSet.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -1045,10 +1060,22 @@ MgtAssocResponseHeader::SetEdcaParameterSet (EdcaParameterSet edcaparameters)
   m_edcaParameterSet = edcaparameters;
 }
 
+void
+MgtAssocResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameters)
+{
+  m_muEdcaParameterSet = muEdcaParameters;
+}
+
 EdcaParameterSet
 MgtAssocResponseHeader::GetEdcaParameterSet (void) const
 {
   return m_edcaParameterSet;
+}
+
+MuEdcaParameterSet
+MgtAssocResponseHeader::GetMuEdcaParameterSet (void) const
+{
+  return m_muEdcaParameterSet;
 }
 
 TypeId
@@ -1086,6 +1113,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += m_vhtOperation.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
   size += m_heOperation.GetSerializedSize ();
+  size += m_muEdcaParameterSet.GetSerializedSize ();
   return size;
 }
 
@@ -1123,6 +1151,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_vhtOperation.Serialize (i);
   i = m_heCapability.Serialize (i);
   i = m_heOperation.Serialize (i);
+  i = m_muEdcaParameterSet.Serialize (i);
 }
 
 uint32_t
@@ -1143,6 +1172,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_vhtOperation.DeserializeIfPresent (i);
   i = m_heCapability.DeserializeIfPresent (i);
   i = m_heOperation.DeserializeIfPresent (i);
+  i = m_muEdcaParameterSet.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -1551,7 +1581,7 @@ MgtAddBaRequestHeader::GetTid (void) const
 bool
 MgtAddBaRequestHeader::IsImmediateBlockAck (void) const
 {
-  return (m_policy == 1) ? true : false;
+  return m_policy == 1;
 }
 
 uint16_t
@@ -1569,7 +1599,7 @@ MgtAddBaRequestHeader::GetBufferSize (void) const
 bool
 MgtAddBaRequestHeader::IsAmsduSupported (void) const
 {
-  return (m_amsduSupport == 1) ? true : false;
+  return m_amsduSupport == 1;
 }
 
 uint16_t
@@ -1731,7 +1761,7 @@ MgtAddBaResponseHeader::GetTid (void) const
 bool
 MgtAddBaResponseHeader::IsImmediateBlockAck (void) const
 {
-  return (m_policy == 1) ? true : false;
+  return m_policy == 1;
 }
 
 uint16_t
@@ -1749,7 +1779,7 @@ MgtAddBaResponseHeader::GetBufferSize (void) const
 bool
 MgtAddBaResponseHeader::IsAmsduSupported (void) const
 {
-  return (m_amsduSupport == 1) ? true : false;
+  return m_amsduSupport == 1;
 }
 
 uint16_t
@@ -1835,7 +1865,7 @@ MgtDelBaHeader::Deserialize (Buffer::Iterator start)
 bool
 MgtDelBaHeader::IsByOriginator (void) const
 {
-  return (m_initiator == 1) ? true : false;
+  return m_initiator == 1;
 }
 
 uint8_t

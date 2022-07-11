@@ -319,7 +319,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   //We search within the Supported rate set the mode with the
   //highest data rate for which the SNR threshold is smaller than m_lastSnr
   //to ensure correct packet delivery.
-  WifiMode maxMode = GetDefaultMode ();
+  WifiMode maxMode = GetDefaultModeForSta (st);
   WifiTxVector txVector;
   WifiMode mode;
   uint64_t bestRate = 0;
@@ -525,12 +525,14 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     {
       guardInterval = 800;
     }
-  if (m_currentRate != maxMode.GetDataRate (channelWidth, guardInterval, selectedNss))
+  WifiTxVector bestTxVector {maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled ()), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station)};
+  uint64_t maxDataRate = maxMode.GetDataRate (bestTxVector);
+  if (m_currentRate != maxDataRate)
     {
-      NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, guardInterval, selectedNss));
-      m_currentRate = maxMode.GetDataRate (channelWidth, guardInterval, selectedNss);
+      NS_LOG_DEBUG ("New datarate: " << maxDataRate);
+      m_currentRate = maxDataRate;
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled ()), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station));
+  return bestTxVector;
 }
 
 WifiTxVector

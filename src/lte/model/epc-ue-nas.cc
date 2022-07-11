@@ -257,7 +257,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetDestination ()))
                   {
                     //Found sidelink
                     m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
@@ -269,7 +269,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_pendingSlBearersList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetDestination ()))
                   {
                     NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
                     return false;
@@ -320,7 +320,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestinationAddress ()))
+                if ((*it)->Matches (ipv6Header.GetDestination ()))
                   {
                     //Found sidelink
                     m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());

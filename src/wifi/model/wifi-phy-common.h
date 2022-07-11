@@ -25,6 +25,7 @@
 
 #include <ostream>
 #include "ns3/fatal-error.h"
+#include "ns3/ptr.h"
 
 /**
  * \file
@@ -38,6 +39,10 @@
  */
 
 namespace ns3 {
+
+class WifiNetDevice;
+class WifiMode;
+class Time;
 
 /**
  * These constants define the various convolutional coding rates
@@ -262,6 +267,8 @@ enum WifiPhyRxfailureReason
   RXING,
   TXING,
   SLEEPING,
+  POWERED_OFF,
+  TRUNCATED_TX,
   BUSY_DECODING_PREAMBLE,
   PREAMBLE_DETECT_FAILURE,
   RECEPTION_ABORTED_BY_TX,
@@ -297,6 +304,10 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason 
         return (os << "TXING");
       case SLEEPING:
         return (os << "SLEEPING");
+      case POWERED_OFF:
+        return (os << "OFF");
+      case TRUNCATED_TX:
+        return (os << "TRUNCATED_TX");
       case BUSY_DECODING_PREAMBLE:
         return (os << "BUSY_DECODING_PREAMBLE");
       case PREAMBLE_DETECT_FAILURE:
@@ -327,6 +338,108 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason 
         return (os << "UNKNOWN");
     }
 }
+
+/**
+ * Convert the guard interval to nanoseconds based on the WifiMode.
+ *
+ * \param mode the WifiMode
+ * \param device pointer to the WifiNetDevice object
+ *
+ * \return the guard interval duration in nanoseconds
+ */
+uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, const Ptr<WifiNetDevice> device);
+
+/**
+ * Convert the guard interval to nanoseconds based on the WifiMode.
+ *
+ * \param mode the WifiMode
+ * \param htShortGuardInterval whether HT/VHT short guard interval is enabled
+ * \param heGuardInterval the HE guard interval duration
+ *
+ * \return the guard interval duration in nanoseconds
+ */
+uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Time heGuardInterval);
+
+/**
+ * Return the preamble to be used for the transmission.
+ *
+ * \param modulation the modulation selected for the transmission
+ * \param useShortPreamble whether short preamble should be used
+ *
+ * \return the preamble to be used for the transmission
+ */
+WifiPreamble GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble);
+
+/**
+ * Return the channel width that is allowed based on the selected mode and the given
+ * maximum channel width. This is especially useful when using non-HT modes with
+ * HT/VHT/HE capable stations (with default width above 20 MHz).
+ *
+ * \param mode selected WifiMode
+ * \param maxAllowedChannelWidth maximum channel width allowed for the transmission
+ * \return channel width adapted to the selected mode
+ */
+uint16_t GetChannelWidthForTransmission (WifiMode mode, uint16_t maxAllowedChannelWidth);
+/**
+ * Return the channel width that is allowed based on the selected mode, the current
+ * width of the operating channel and the maximum channel width supported by the
+ * receiver. This is especially useful when using non-HT modes with HT/VHT/HE
+ * capable stations (with default width above 20 MHz).
+ *
+ * \param mode selected WifiMode
+ * \param operatingChannelWidth operating channel width
+ * \param maxSupportedChannelWidth maximum channel width supported by the receiver
+ * \return channel width adapted to the selected mode
+ */
+uint16_t GetChannelWidthForTransmission (WifiMode mode, uint16_t operatingChannelWidth,
+                                         uint16_t maxSupportedChannelWidth);
+
+/**
+ * Return whether the modulation class of the selected mode for the
+ * control answer frame is allowed.
+ *
+ * \param modClassReq modulation class of the request frame
+ * \param modClassAnswer modulation class of the answer frame
+ *
+ * \return true if the modulation class of the selected mode for the
+ * control answer frame is allowed, false otherwise
+ */
+bool IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer);
+
+/**
+ * Get the maximum PPDU duration (see Section 10.14 of 802.11-2016) for
+ * the PHY layers defining the aPPDUMaxTime characteristic (HT, VHT and HE).
+ * Return zero otherwise.
+ *
+ * \param preamble the preamble type
+ *
+ * \return the maximum PPDU duration, if defined, and zero otherwise
+ */
+Time GetPpduMaxTime (WifiPreamble preamble);
+
+/**
+ * Return true if a preamble corresponds to a multi-user transmission.
+ *
+ * \param preamble the preamble
+ * \return true if the provided preamble corresponds to a multi-user transmission
+ */
+bool IsMu (WifiPreamble preamble);
+
+/**
+ * Return true if a preamble corresponds to a downlink multi-user transmission.
+ *
+ * \param preamble the preamble
+ * \return true if the provided preamble corresponds to a downlink multi-user transmission
+ */
+bool IsDlMu (WifiPreamble preamble);
+
+/**
+ * Return true if a preamble corresponds to a uplink multi-user transmission.
+ *
+ * \param preamble the preamble
+ * \return true if the provided preamble corresponds to a uplink multi-user transmission
+ */
+bool IsUlMu (WifiPreamble preamble);
 
 } //namespace ns3
 

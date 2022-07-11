@@ -113,13 +113,13 @@
 // validation cases (and syntax of how to run):
 // ------------
 // Case 'dctcp-10ms':  DCTCP single flow, 10ms base RTT, 50 Mbps link, ECN enabled, CoDel:
-//     ./waf --run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=1 --validation=dctcp-10ms'
+//     ./ns3 run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=1 --validation=dctcp-10ms'
 //    - Throughput between 48 Mbps and 49 Mbps for time greater than 5.6s
 //    - DCTCP alpha below 0.1 for time greater than 5.4s
 //    - DCTCP alpha between 0.06 and 0.085 for time greater than 7s
 //
 // Case 'dctcp-80ms': DCTCP single flow, 80ms base RTT, 50 Mbps link, ECN enabled, CoDel:
-//     ./waf --run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=1 --validation=dctcp-80ms'
+//     ./ns3 run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=1 --validation=dctcp-80ms'
 //    - Throughput less than 20 Mbps for time less than 14s
 //    - Throughput less than 48 Mbps for time less than 30s
 //    - Throughput between 47.5 Mbps and 48.5 for time greater than 32s
@@ -128,14 +128,14 @@
 //    - DCTCP alpha between 0.015 and 0.025 for time greater than 34
 //
 // Case 'cubic-50ms-no-ecn': CUBIC single flow, 50ms base RTT, 50 Mbps link, ECN disabled, CoDel:
-//     ./waf --run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
+//     ./ns3 run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
 //    - Maximum value of cwnd is 511 segments at 5.4593 seconds
 //    - cwnd decreases to 173 segments at 5.80304 seconds
 //    - cwnd reaches another local maxima around 14.2815 seconds of 236 segments
 //    - cwnd reaches a second maximum around 18.048 seconds of 234 segments
 //
 // Case 'cubic-50ms-ecn': CUBIC single flow, 50ms base RTT, 50 Mbps link, ECN enabled, CoDel:
-//     ./waf --run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
+//     ./ns3 run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
 //    - Maximum value of cwnd is 511 segments at 5.4593 seconds
 //    - cwnd decreases to 173 segments at 5.7939 seconds
 //    - cwnd reaches another local maxima around 14.3477 seconds of 236 segments
@@ -181,18 +181,22 @@ TraceFirstCwnd (std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
       double cwnd = static_cast<double> (newCwnd) / 1448;
       if ((now > 5.43) && (now < 5.465) && (cwnd < 500))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected >= 500)");
           g_validationFailed = true;
         }
       else if ((now > 5.795) && (now < 6) && (cwnd > 190))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected <= 190)");
           g_validationFailed = true;
         }
-      else if ((now > 14) && (now < 14.328) && (cwnd < 225))
+      else if ((now > 14) && (now < 14.197) && (cwnd < 224))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected >= 224)");
           g_validationFailed = true;
         }
-      else if ((now > 17) && (now < 18.2) && (cwnd < 225))
+      else if ((now > 17) && (now < 18.026) && (cwnd < 212))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " cwnd " << cwnd << " (expected >= 212)");
           g_validationFailed = true;
         }
     }
@@ -211,14 +215,17 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
       double now = Simulator::Now ().GetSeconds ();
       if ((now < 7.5) && (alpha < 0.1))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected >= 0.1)");
           g_validationFailed = true;
         }
       else if ((now > 11) && (now < 30) && (alpha > 0.01))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected <= 0.01)");
           g_validationFailed = true;
         }
       else if ((now > 34) && (alpha < 0.015) && (alpha > 0.025))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected 0.015 <= alpha <= 0.025)");
           g_validationFailed = true;
         }
     }
@@ -227,10 +234,12 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
       double now = Simulator::Now ().GetSeconds ();
       if ((now > 5.6) && (alpha > 0.1))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected <= 0.1)");
           g_validationFailed = true;
         }
       if ((now > 7) && ((alpha > 0.09) || (alpha < 0.055)))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " alpha " << alpha << " (expected 0.09 <= alpha <= 0.055)");
           g_validationFailed = true;
         }
     }
@@ -351,14 +360,17 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
       double now = Simulator::Now ().GetSeconds ();
       if ((now < 14) && (throughput > 20))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected <= 20)");
           g_validationFailed = true;
         }
       if ((now < 30) && (throughput > 48))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected <= 48)");
           g_validationFailed = true;
         }
       if ((now > 32) && ((throughput < 47.5) || (throughput > 48.5)))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected 47.5 <= throughput <= 48.5)");
           g_validationFailed = true;
         }
     }
@@ -367,6 +379,7 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
       double now = Simulator::Now ().GetSeconds ();
       if ((now > 5.6) && ((throughput < 48) || (throughput > 49)))
         {
+          NS_LOG_WARN ("now " << Now ().As (Time::S) << " throughput " << throughput << " (expected 48 <= throughput <= 49)");
           g_validationFailed = true;
         }
     }
@@ -485,7 +498,7 @@ main (int argc, char *argv[])
   ////////////////////////////////////////////////////////////
   // command-line argument parsing                          //
   ////////////////////////////////////////////////////////////
-  CommandLine cmd;
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("firstTcpType", "first TCP type (cubic, dctcp, or reno)", firstTcpType);
   cmd.AddValue ("secondTcpType", "second TCP type (cubic, dctcp, or reno)", secondTcpType);
   cmd.AddValue ("queueType", "bottleneck queue type (fq, codel, pie, or red)", queueType);
@@ -628,8 +641,15 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("On"));
 
   // Report on configuration
-  NS_LOG_DEBUG ("first TCP: " << firstTcpTypeId.GetName () << "; second TCP: " << secondTcpTypeId.GetName () << "; queue: " << queueTypeId.GetName () << "; ceThreshold: " << ceThreshold.GetSeconds () * 1000 << "ms");
-
+  if (enableSecondTcp)
+    {
+      NS_LOG_DEBUG ("first TCP: " << firstTcpTypeId.GetName () << "; second TCP: " << secondTcpTypeId.GetName () << "; queue: " << queueTypeId.GetName () << "; ceThreshold: " << ceThreshold.GetSeconds () * 1000 << "ms");
+    }
+  else 
+    {
+      NS_LOG_DEBUG ("first TCP: " << firstTcpTypeId.GetName () << "; queue: " << queueTypeId.GetName () << "; ceThreshold: " << ceThreshold.GetSeconds () * 1000 << "ms");
+    }
+  
   // Write traces only if we are not in validation mode (g_validate == "")
   std::ofstream pingOfStream;
   std::ofstream firstTcpRttOfStream;

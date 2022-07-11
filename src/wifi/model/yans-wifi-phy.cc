@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "yans-wifi-phy.h"
 #include "yans-wifi-channel.h"
+#include "interference-helper.h"
 
 namespace ns3 {
 
@@ -44,11 +45,17 @@ YansWifiPhy::GetTypeId (void)
 YansWifiPhy::YansWifiPhy ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+YansWifiPhy::SetInterferenceHelper (const Ptr<InterferenceHelper> helper)
+{
+  WifiPhy::SetInterferenceHelper (helper);
   //add dummy band for Yans
   WifiSpectrumBand band;
   band.first = 0;
   band.second = 0;
-  m_interference.AddBand (band);
+  m_interference->AddBand (band);
 }
 
 YansWifiPhy::~YansWifiPhy ()

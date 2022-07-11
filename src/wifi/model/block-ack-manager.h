@@ -32,7 +32,6 @@
 
 namespace ns3 {
 
-class WifiRemoteStationManager;
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
@@ -79,6 +78,15 @@ private:
    */
   BlockAckManager& operator= (const BlockAckManager& block);
 
+  /**
+   * Enumeration for the statuses of a buffered MPDU
+   */
+  enum MpduStatus : uint8_t
+  {
+    STAY_INFLIGHT = 0,
+    TO_RETRANSMIT,
+    ACKNOWLEDGED
+  };
 
 public:
   /**
@@ -90,12 +98,6 @@ public:
   BlockAckManager ();
   ~BlockAckManager ();
 
-  /**
-   * Set up WifiRemoteStationManager associated with this BlockAckManager.
-   *
-   * \param manager WifiRemoteStationManager associated with this BlockAckManager
-   */
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -121,11 +123,12 @@ public:
   /**
    * \param reqHdr Relative Add block ack request (action frame).
    * \param recipient Address of peer station involved in block ack mechanism.
+   * \param htSupported Whether both originator and recipient support HT
    *
    * Creates a new block ack agreement in pending state. When a ADDBA response
    * with a successful status code is received, the relative agreement becomes established.
    */
-  void CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient);
+  void CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient, bool htSupported = true);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid traffic ID of transmitted packet.
@@ -165,14 +168,6 @@ public:
   Ptr<const WifiMacQueueItem> GetBar (bool remove = true, uint8_t tid = 8,
                                       Mac48Address recipient = Mac48Address::GetBroadcast ());
   /**
-   * Returns true if there are packets that need of retransmission or at least a
-   * BAR is scheduled. Returns false otherwise.
-   *
-   * \return true if there are packets that need of retransmission or at least a BAR is scheduled,
-   *         false otherwise
-   */
-  bool HasPackets (void);
-  /**
    * Invoked upon receipt of an Ack frame after the transmission of a QoS data frame
    * sent under an established block ack agreement. Remove the acknowledged frame
    * from the outstanding packets and update the starting sequence number of the
@@ -194,11 +189,10 @@ public:
    * \param blockAck The received BlockAck frame.
    * \param recipient Sender of BlockAck frame.
    * \param tids the set of TIDs the acknowledged MPDUs belong to
-   * \param rxSnr received SNR of the BlockAck frame itself
-   * \param dataSnr data SNR reported by remote station
-   * \param dataTxVector the TXVECTOR used to send the Data
    * \param index the index of the Per AID TID Info subfield, in case of Multi-STA
    *              Block Ack, or 0, otherwise
+   * \return a pair of values indicating the number of successfully received MPDUs
+   *         and the number of failed MPDUs
    *
    * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
    * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
@@ -207,9 +201,9 @@ public:
    * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
    * using All-ack context.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac48Address recipient,
-                          const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
-                          const WifiTxVector& dataTxVector, size_t index = 0);
+  std::pair<uint16_t,uint16_t> NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck,
+                                                  Mac48Address recipient, const std::set<uint8_t>& tids,
+                                                  size_t index = 0);
   /**
    * \param recipient Sender of the expected BlockAck frame.
    * \param tid Traffic ID.
@@ -219,15 +213,6 @@ public:
    * with ack policy set to Block Ack, should be placed in the retransmission queue.
    */
   void NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid);
-  /**
-   * \param recipient outstanding frames' receiver.
-   * \param tid Traffic ID.
-   *
-   * Discard all the outstanding MPDUs destined to the given receiver and belonging
-   * to the given TID. Typically, this function is called by ns3::QosTxop object
-   * when it gives up retransmitting either a BlockAckRequest or the Data frames.
-   */
-  void DiscardOutstandingMpdus (Mac48Address recipient, uint8_t tid);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -279,12 +264,6 @@ public:
    * and buffered packets) is greater of <i>nPackets</i>, they are transmitted using block ack mechanism.
    */
   void SetBlockAckThreshold (uint8_t nPackets);
-  /**
-   * \return the retransmit queue.
-   *
-   * Return the retransmit queue.
-   */
-  Ptr<WifiMacQueue> GetRetransmitQueue (void);
 
   /**
    * \param queue The WifiMacQueue object.
@@ -378,6 +357,11 @@ public:
    */
   typedef Callback <void, Ptr<const WifiMacQueueItem>> TxFailed;
   /**
+   * typedef for a callback to invoke when an MPDU is dropped.
+   */
+  typedef Callback <void, Ptr<const WifiMacQueueItem>> DroppedOldMpdu;
+
+  /**
    * \param callback the callback to invoke when a
    * packet transmission was completed successfully.
    */
@@ -387,6 +371,10 @@ public:
    * packet transmission was completed unsuccessfully.
    */
   void SetTxFailedCallback (TxFailed callback);
+  /**
+   * \param callback the callback to invoke when an old MPDU is dropped
+   */
+  void SetDroppedOldMpduCallback (DroppedOldMpdu callback);
 
   /**
    * TracedCallback signature for state changes.
@@ -431,6 +419,9 @@ public:
    */
   void ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued = false);
 
+protected:
+  void DoDispose () override;
+
 private:
   /**
    * Inactivity timeout function
@@ -438,18 +429,6 @@ private:
    * \param tid Traffic ID
    */
   void InactivityTimeout (Mac48Address recipient, uint8_t tid);
-
-  /**
-   * Remove packets from the retransmit queue and from the queue of outstanding
-   * packets that become old after setting the starting sequence number for the
-   * agreement with recipient equal to <i>recipient</i> and TID equal to <i>tid</i>
-   * to the given <i>startingSeq</i>.
-   *
-   * \param recipient the recipient MAC address
-   * \param tid Traffic ID
-   * \param startingSeq the new starting sequence number
-   */
-  void RemoveOldPackets (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
 
   /**
    * typedef for a list of WifiMacQueueItem.
@@ -480,33 +459,21 @@ private:
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
 
   /**
-   * \param mpdu the packet to insert in the retransmission queue
+   * Handle the given in flight MPDU based on its given status. If the status is
+   * ACKNOWLEDGED, the MPDU is removed from both the EDCA queue and the queue of
+   * in flight MPDUs. If the status is TO_RETRANSMIT, the MPDU is only removed
+   * from the queue of in flight MPDUs. Note that the MPDU is removed from both
+   * queues (independently of the status) if the MPDU is not stored in the EDCA
+   * queue, is an old packet or its lifetime expired.
    *
-   * Insert <i>mpdu</i> in retransmission queue.
-   * This method ensures packets are retransmitted in the correct order.
+   * \param mpduIt an iterator pointing to the MPDU in the queue of in flight MPDUs
+   * \param status the status of the in flight MPDU
+   * \param it iterator pointing to the Block Ack agreement
+   * \param now the current time
+   * \return an iterator pointing to the next MPDU in the queue of in flight MPDUs
    */
-  void InsertInRetryQueue (Ptr<WifiMacQueueItem> mpdu);
-
-  /**
-   * Remove an item from retransmission queue.
-   * This method should be called when packets are acknowledged.
-   *
-   * \param address recipient MAC address of the packet to be removed
-   * \param tid Traffic ID of the packet to be removed
-   * \param seq sequence number of the packet to be removed
-   */
-  void RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16_t seq);
-
-  /**
-   * Remove a range of items from retransmission queue.
-   * This method should be called when packets are acknowledged.
-   *
-   * \param address recipient MAC address of the packet to be removed
-   * \param tid Traffic ID of the packet to be removed
-   * \param startSeq sequence number of the first packet to be removed
-   * \param endSeq sequence number of the last packet to be removed
-   */
-  void RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16_t startSeq, uint16_t endSeq);
+  PacketQueueI HandleInFlightMpdu (PacketQueueI mpduIt, MpduStatus status,
+                                    const AgreementsI& it, const Time& now);
 
   /**
    * This data structure contains, for each block ack agreement (recipient, TID), a set of packets
@@ -516,12 +483,6 @@ private:
    */
   Agreements m_agreements;
 
-  /**
-   * This list contains all iterators to stored packets that need to be retransmitted.
-   * A packet needs retransmission if it's indicated as not correctly received in a BlockAck
-   * frame.
-   */
-  Ptr<WifiMacQueue> m_retryPackets;
   std::list<Bar> m_bars; ///< list of BARs
 
   uint8_t m_blockAckThreshold; ///< block ack threshold
@@ -531,7 +492,7 @@ private:
   Callback<void, Mac48Address, uint8_t> m_unblockPackets; ///< unblock packets callback
   TxOk m_txOkCallback;                                    ///< transmit OK callback
   TxFailed m_txFailedCallback;                            ///< transmit failed callback
-  Ptr<WifiRemoteStationManager> m_stationManager;         ///< the station manager
+  DroppedOldMpdu m_droppedOldMpduCallback;                ///< the dropped MPDU callback
 
   /**
    * The trace source fired when a state transition occurred.

@@ -25,7 +25,7 @@
 #include "qos-txop.h"
 #include "wifi-remote-station-manager.h"
 #include "ns3/ht-capabilities.h"
-#include "regular-wifi-mac.h"
+#include "wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 #include "ns3/ht-frame-exchange-manager.h"
@@ -66,7 +66,7 @@ MsduAggregator::DoDispose ()
 }
 
 void
-MsduAggregator::SetWifiMac (const Ptr<RegularWifiMac> mac)
+MsduAggregator::SetWifiMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;
@@ -84,14 +84,11 @@ MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
 
 Ptr<WifiMacQueueItem>
 MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
-                              Time availableTime, WifiMacQueueItem::QueueIteratorPair& queueIt) const
+                              Time availableTime) const
 {
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime);
 
-  NS_ASSERT (peekedItem->IsQueued ());
-  NS_ASSERT (peekedItem->GetQueueIteratorPairs ().size () == 1);
-  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPairs ().front ();
-  NS_ASSERT ((*peekedIt.it)->GetPacket () == peekedItem->GetPacket ());
+  Ptr<WifiMacQueue> queue = m_mac->GetTxopQueue (peekedItem->GetQueueAc ());
 
   uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
@@ -120,16 +117,24 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
       return nullptr;
     }
 
-  Ptr<WifiMacQueueItem> amsdu = Copy (peekedItem);
+  Ptr<WifiMacQueueItem> amsdu = peekedItem->GetItem ();  // amsdu points to the peeked MPDU, but it's non-const
   uint8_t nMsdu = 1;
+  peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
 
-  peekedIt.it++;
-
-  while ((peekedIt.it = peekedIt.queue->PeekByTidAndAddress (tid, recipient, peekedIt.it)) != peekedIt.queue->end ()
-         && m_htFem->TryAggregateMsdu (*peekedIt.it, txParams, availableTime))
+  while (peekedItem != nullptr
+         && m_htFem->TryAggregateMsdu (peekedItem, txParams, availableTime))
     {
-      amsdu->Aggregate (*peekedIt.it);
-      peekedIt.it++;
+      // find the next MPDU before dequeuing the current one
+      Ptr<const WifiMacQueueItem> msdu = peekedItem;
+      peekedItem = queue->PeekByTidAndAddress (tid, recipient, peekedItem);
+      queue->DequeueIfQueued (msdu);
+
+      // perform A-MSDU aggregation
+      queue->Transform (amsdu, [&msdu](Ptr<WifiMacQueueItem> amsdu)
+                               {
+                                 amsdu->Aggregate (msdu);
+                               });
+
       nMsdu++;
     }
 
@@ -140,8 +145,6 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
     }
 
   // Aggregation succeeded
-  queueIt = peekedIt;
-
   return amsdu;
 }
 
@@ -160,28 +163,7 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
   AcIndex ac = QosUtilsMapTidToAc (tid);
 
   // Find the A-MSDU max size configured on this device
-  UintegerValue size;
-
-  switch (ac)
-    {
-      case AC_BE:
-        m_mac->GetAttribute ("BE_MaxAmsduSize", size);
-        break;
-      case AC_BK:
-        m_mac->GetAttribute ("BK_MaxAmsduSize", size);
-        break;
-      case AC_VI:
-        m_mac->GetAttribute ("VI_MaxAmsduSize", size);
-        break;
-      case AC_VO:
-        m_mac->GetAttribute ("VO_MaxAmsduSize", size);
-        break;
-      default:
-        NS_ABORT_MSG ("Unknown AC " << ac);
-        return 0;
-    }
-
-  uint16_t maxAmsduSize = size.Get ();
+  uint16_t maxAmsduSize = m_mac->GetMaxAmsduSize (ac);
 
   if (maxAmsduSize == 0)
     {

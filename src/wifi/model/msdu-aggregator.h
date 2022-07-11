@@ -33,7 +33,7 @@ namespace ns3 {
 class Packet;
 class QosTxop;
 class WifiTxVector;
-class RegularWifiMac;
+class WifiMac;
 class HtFrameExchangeManager;
 class WifiTxParameters;
 
@@ -88,19 +88,18 @@ public:
    * acknowledgment, as specified by the given TX parameters, does not exceed the
    * given available time (if distinct from Time::Min ())
    *
-   * If it is not possible to aggregate at least two MSDUs, no MSDU is dequeued
-   * from the EDCA queue and a null pointer is returned.
+   * If aggregation succeeds (it was possible to aggregate at least an MSDU to the
+   * given MSDU), all the aggregated MSDUs are dequeued and an MPDU containing the
+   * A-MSDU is enqueued in the queue (replacing the given MPDU) and returned.
+   * Otherwise, no MSDU is dequeued from the EDCA queue and a null pointer is returned.
    *
    * \param peekedItem the MSDU which we attempt to aggregate other MSDUs to
    * \param txParams the TX parameters for the current frame
    * \param availableTime the time available for the frame exchange
-   * \param[out] queueIt a QueueIteratorPair pointing to the queue item following the
-   *                     last item used to prepare the returned A-MSDU, if any; otherwise,
-   *                     its value is unchanged
    * \return the resulting A-MSDU, if aggregation is possible, a null pointer otherwise.
    */
   Ptr<WifiMacQueueItem> GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
-                                      Time availableTime, WifiMacQueueItem::QueueIteratorPair& queueIt) const;
+                                      Time availableTime) const;
 
   /**
    * Determine the maximum size for an A-MSDU of the given TID that can be sent
@@ -126,7 +125,7 @@ public:
    *
    * \param mac the MAC layer to use
    */
-  void SetWifiMac (const Ptr<RegularWifiMac> mac);
+  void SetWifiMac (const Ptr<WifiMac> mac);
 
   /**
    * Calculate how much padding must be added to the end of an A-MSDU of the
@@ -143,7 +142,7 @@ protected:
   void DoDispose () override;
 
 private:
-  Ptr<RegularWifiMac> m_mac;            //!< the MAC of this station
+  Ptr<WifiMac> m_mac;                   //!< the MAC of this station
   Ptr<HtFrameExchangeManager> m_htFem;  //!< the HT Frame Exchange Manager of this station
 };
 

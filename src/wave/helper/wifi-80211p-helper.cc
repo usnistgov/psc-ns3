@@ -26,7 +26,6 @@
 #include <typeinfo>
 #include "wave-mac-helper.h"
 #include "wifi-80211p-helper.h"
-#include "ns3/unused.h"
 
 namespace ns3 {
 
@@ -63,20 +62,6 @@ Wifi80211pHelper::SetStandard (enum WifiStandard standard)
     }
 }
 
-// NS_DEPRECATED_3_32
-void
-Wifi80211pHelper::SetStandard (enum WifiPhyStandard standard)
-{
-  if ((standard == WIFI_PHY_STANDARD_80211a) || (standard == WIFI_PHY_STANDARD_80211_10MHZ))
-    {
-      WifiHelper::SetStandard (WIFI_STANDARD_80211p);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("802.11p only use 802.11 standard with 10MHz or 20MHz");
-    }
-}
-
 void
 Wifi80211pHelper::EnableLogComponents (void)
 {
@@ -89,19 +74,17 @@ Wifi80211pHelper::EnableLogComponents (void)
 NetDeviceContainer
 Wifi80211pHelper::Install (const WifiPhyHelper &phyHelper, const WifiMacHelper &macHelper, NodeContainer c) const
 {
-  QosWaveMacHelper const * qosMac = dynamic_cast <QosWaveMacHelper const *> (&macHelper);
+  [[maybe_unused]] QosWaveMacHelper const * qosMac = dynamic_cast <QosWaveMacHelper const *> (&macHelper);
   if (qosMac == 0)
     {
-      NqosWaveMacHelper const * nqosMac = dynamic_cast <NqosWaveMacHelper const *> (&macHelper);
+      [[maybe_unused]] NqosWaveMacHelper const * nqosMac = dynamic_cast <NqosWaveMacHelper const *> (&macHelper);
       if (nqosMac == 0)
         {
           NS_FATAL_ERROR ("the macHelper should be either QosWaveMacHelper or NqosWaveMacHelper"
                           ", or should be the subclass of QosWaveMacHelper or NqosWaveMacHelper");
         }
-      NS_UNUSED (nqosMac);
     }
 
-  NS_UNUSED (qosMac);
   return WifiHelper::Install (phyHelper, macHelper, c);
 }
 
