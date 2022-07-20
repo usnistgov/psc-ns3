@@ -1597,13 +1597,12 @@ private:
   void ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId);
 
   /**
-   * \brief Create and store a NR sidelink signalling radio bearer (SL-SRB)
+   * \brief Create and store an NR sidelink signalling radio bearer (SL-SRB)
    *
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id
    * \param lcId the logical channel ID of the logical channel of the sidelink
    *             signalling radio bearer to be activated
-   * \param poolId The id of the pool used for TX and RX
    * \return The Sidelink radio bearer information
    */
   Ptr<NrSlSignallingRadioBearerInfo> AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
@@ -1620,7 +1619,7 @@ private:
   /**
    * \brief Implementation of the method called by the service layer (e.g.,
    *        ProSe layer) asking the RRC layer to instruct lower layers
-   *        to monitor messages directed to the layer 2 ID used by UE
+   *        to monitor messages directed to the specified layer 2 ID
    *  
    * \param dstL2Id destination layer 2 ID
    */
@@ -1628,7 +1627,7 @@ private:
 
   /**
    * \brief Implementation of the method called by the service layer (e.g.,
-   *        ProSe layer) to instruct the RRC layer to pass a SL signalling
+   *        ProSe layer) to instruct the RRC layer to pass an SL signalling
    *        message (e.g., PC5-S message) to lower layers for transmission
    *
    * \param packet the signalling message
@@ -1650,7 +1649,7 @@ private:
 
   /**
    * \brief Implementation of the method called by the service layer (e.g.,
-   *        ProSe layer) to instruct the RRC layer to pass a SL discovery
+   *        ProSe layer) to instruct the RRC layer to pass an SL discovery
    *        message to lower layers for transmission
    *
    * \param packet the discovery message
@@ -1659,7 +1658,7 @@ private:
   void DoSendNrSlDiscoveryMessage (Ptr<Packet> packet, uint32_t dstL2Id);
   /**
    * \brief Implementation of the method called by the service layer (e.g.,
-   *        ProSe layer) to instruct the RRC layer to activate a NR SL
+   *        ProSe layer) to instruct the RRC layer to activate an NR SL
    *        discovery radio bearer (SL-SRB).
    *
    * \param dstL2Id the peer layer 2 ID
@@ -1674,7 +1673,7 @@ private:
   void ActivateNrSlDiscoveryRb (uint32_t dstL2Id);
 
   /**
-   * \brief Create and store a NR sidelink discovery radio bearer (SL-SRB)
+   * \brief Create and store an NR sidelink discovery radio bearer (SL-SRB4)
    *
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id

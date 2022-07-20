@@ -1537,9 +1537,26 @@ public:
     SlSubchannelSize slSubchannelSize; //!< Sidelink subchannel size in PRBs
     SlUeSelectedConfigRp slUeSelectedConfigRp; //!< SL-UE-SelectedConfigRP
     std::vector <std::bitset<1>> slTimeResource; //!< Sidelink bitmap
-    //uint16_t slStartRbSubchannel {3000}; //!< First RB of a sidelink subchannel. Valid range [0, 265]
-    //uint16_t slNumSubchannel {3000}; //!< Number of subchannels. Valid range [1, 27]
-    //SlMcsTable slMcsTable; //It is configurable via error model attribute //!< Indicates the MCS table used for the resource pool.
+    // TODO: support flexible subchannel range.  The current code assumes
+    // that all RBs of a sidelink slot in a BWP are used for sidelink, and
+    // that there is no need to store the range in this structure because
+    // the starting RB is always 0 and the number of subchannels for a pool
+    // can be found in NrUeMac::GetTotalSubCh (poolId).
+    // If future code relaxes this restriction, the actual range can be stored
+    // in the below two commented-out variables.
+    //uint16_t slStartRbSubchannel {65535}; //!< First RB of a sidelink subchannel. Valid range [0, 265]
+    //uint16_t slNumSubchannel {65535}; //!< Number of subchannels. Valid range [1, 27]
+    // TODO: support configuration of an NR MCS table type per resource pool.
+    // The current code assumes that the same MCS table is used for all the
+    // configured resource pools.  The current assumption was made due to
+    // how the error model and MCS table are configured in the NR module.
+    // That is, the object of an error model that depends on the MCS table
+    // is created only once before calling Simulator::Run ().  Therefore, in
+    // the future if slMcsTable variable has to be included, one should pay
+    // extra care as to how to configure a proper error model for each
+    // sidelink resource pool.
+    //SlMcsTable slMcsTable; //!< Indicates the MCS table used for the resource pool.
+    // TODO:  remaining variables are for further study
     //SlPsschConfig slPsschHConfig; //!< SL-PSSCH field
     //sl-PSFCH-Config-r16 //TODO
     //sl-SyncAllowed-r16 //TODO

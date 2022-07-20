@@ -67,9 +67,8 @@ public:
   struct DirectLinkIpInfo
   {
     Ipv4Address selfIpv4Addr;
-    Ipv6Address selfIpv6Addr;
     Ipv4Address peerIpv4Addr;
-    Ipv6Address peerIpv6Addr;
+
   };
   /**
    * The UE-to-Network relay role of the UE
@@ -105,7 +104,7 @@ public:
 
   //Methods
   /**
-    * \brief The direct link instructs the ProSe layer to send a NR SL PC5-S
+    * \brief The direct link instructs the ProSe layer to send an NR SL PC5-S
     * message to a given destination in a given logical channel
     *
     * \param packet the NR SL PC5-S message
@@ -114,7 +113,7 @@ public:
     */
   virtual void SendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId) = 0;
   /**
-    * \brief The direct link notifies the PRoSe layer that the direct link changed
+    * \brief The direct link notifies the ProSe layer that the direct link changed
     *        of state and provides relevant information if any
     *
     * \param peerL2Id the layer 2 ID of the peer UE in the link
@@ -139,7 +138,7 @@ public:
   virtual ~NrSlUeProseDirLnkSapProvider ();
   //Methods
   /**
-   * \brief The ProSe layer passes a NR SL PC5-S message to the direct link
+   * \brief The ProSe layer passes an NR SL PC5-S message to the direct link
    *        instance
    *
    * \param packet the NR SL PC5-S message

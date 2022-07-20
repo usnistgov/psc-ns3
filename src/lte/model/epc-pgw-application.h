@@ -155,7 +155,7 @@ public:
   void SetUeAddress6 (uint64_t imsi, Ipv6Address ueAddr);
 
   /**
-   * Register a newly connected remote UE
+   * Register a remote UE that connected to a UE-to-Network relay UE
    *
    * \param relayImsi IMSI of the relay UE
    * \param ueAddr The IPv4 address of the remote UE
@@ -322,7 +322,7 @@ private:
   std::map<uint64_t, Ptr<UeInfo> > m_ueInfoByImsiMap;
 
   /**
-   * Relay UE info by remote UE IPv4 address
+   * UE-to-Network relay UE info indexed by remote UE IPv4 address
    */
   std::map<Ipv4Address, Ptr<UeInfo> > m_ueInfoByRemoteUeAddrMap;
 

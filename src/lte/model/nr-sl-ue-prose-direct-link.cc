@@ -121,10 +121,6 @@ Ipv4AddrTag::Print (std::ostream &os) const
   os << "[" << m_addr << "] ";
 }
 
-
-
-
-
 // Map each of direct link state to its string representation.
 static const std::string g_dirLinkStateName[NrSlUeProseDirectLink::NUM_STATES] =
 {
@@ -173,7 +169,6 @@ NrSlUeProseDirectLink::NrSlUeProseDirectLink ()
   m_isInitiating = false;
   m_isRelayConn = false;
   m_relayServiceCode = 0;
-  m_isIdeal = false;
 
   m_state = INIT;
   m_nrSlUeProseDirLnkSapProvider = new MemberNrSlUeProseDirLnkSapProvider<NrSlUeProseDirectLink> (this);
@@ -202,16 +197,14 @@ NrSlUeProseDirectLink::DoDispose ()
 void
 NrSlUeProseDirectLink::SetParameters (uint32_t selfL2Id, uint32_t peerL2Id,
                                       bool isInitiating, bool isRelayConn,
-                                      uint32_t relayServiceCode,
-                                      bool isIdeal, Ipv4Address selfIp)
+                                      uint32_t relayServiceCode, Ipv4Address selfIp)
 {
-  NS_LOG_FUNCTION (this << selfL2Id << peerL2Id << isInitiating << isRelayConn << relayServiceCode << isIdeal << selfIp);
+  NS_LOG_FUNCTION (this << selfL2Id << peerL2Id << isInitiating << isRelayConn << relayServiceCode << selfIp);
   m_selfL2Id = selfL2Id;
   m_peerL2Id = peerL2Id;
   m_isInitiating = isInitiating;
   m_isRelayConn = isRelayConn;
   m_relayServiceCode = relayServiceCode;
-  m_isIdeal = isIdeal;
   m_ipInfo.selfIpv4Addr = selfIp;
 }
 
@@ -230,25 +223,11 @@ NrSlUeProseDirectLink::SetNrSlUeProseDirLnkSapUser (NrSlUeProseDirLnkSapUser* s)
 }
 
 void
-NrSlUeProseDirectLink::SetPeerNrSlUeProseDirLnkSapProvider (NrSlUeProseDirLnkSapProvider* s)
-{
-  NS_LOG_FUNCTION (this);
-  m_peerNrSlUeProseDirLnkSapProvider = s;
-}
-
-void
 NrSlUeProseDirectLink::SendNrSlPc5SMessage (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId)
 {
   NS_LOG_FUNCTION (this);
-  if (m_isIdeal)
-    {
-      //Use m_peerNrSlUeProseDirLnkSapProvider
-    }
-  else
-    {
-      // Use ProSe layer
-      m_nrSlUeProseDirLnkSapUser->SendNrSlPc5SMessage (packet, dstL2Id, lcId);
-    }
+  m_nrSlUeProseDirLnkSapUser->SendNrSlPc5SMessage (packet, dstL2Id, lcId);
+
 }
 void
 NrSlUeProseDirectLink::DoReceiveNrSlPc5Message (Ptr<Packet> packet)
@@ -282,8 +261,6 @@ NrSlUeProseDirectLink::DoReceiveNrSlPc5Message (Ptr<Packet> packet)
         break;
     }
 }
-
-
 
 void
 NrSlUeProseDirectLink::SwitchToState (DirectLinkState newState)
@@ -329,7 +306,6 @@ NrSlUeProseDirectLink::SwitchToState (DirectLinkState newState)
       default:
         NS_FATAL_ERROR ("Invalid state " << ToString (m_state));
     }
-
   m_nrSlUeProseDirLnkSapUser->NotifyChangeOfDirectLinkState (m_peerL2Id, info);
 }
 
@@ -369,7 +345,7 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
             NS_LOG_INFO (" Direct Link connection for Relay - DirectLinkEstablishmentRequest has Relay Service Code: " << relaySC);
             if (m_isRelayConn && !m_isInitiating            //1. This UE is a Relay UE
                 && relaySC == m_relayServiceCode            //2. It provides the service pointed by the relay service code
-                /*Not implemented at the moment TODO */     //3. It can accept a new connection
+                /*Not implemented at the moment */          //3. It can accept a new connection
                 )
               {
                 NS_LOG_INFO (" UE does provide this service and can accept the connection");
@@ -384,8 +360,8 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
         else
           {
             NS_LOG_INFO (" Direct Link connection for Unicast");
-            // TODO: Verify Preconditions to accept direct link connection for unicast
-            // For the moment we always accept
+            // Here we verify preconditions to accept direct link connection for unicast
+            // At the moment we always accept
             accept = true;
           }
 
@@ -406,14 +382,12 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
             NS_LOG_INFO ("Direct Link can be established");
 
             //Retrieve tag with Ip of the peer UE and store it.
-            //TODO: This is a shortcut to speed development and may be replaced
-            //      by proper IP configuration protocols in the future
+            //This may be replaced by proper IP configuration protocols in the future
             Ipv4AddrTag ipTag;
             packet->PeekPacketTag (ipTag);
             m_ipInfo.peerIpv4Addr = ipTag.GetAddress ();
             ipTag.Print (oss);
             NS_LOG_DEBUG ("Peer Ipv4 address: " << oss.str ());
-
 
             //Send accept message to the peer UE
             SendDirectLinkEstablishmentAccept ();
@@ -426,10 +400,11 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
       case NrSlUeProseDirectLink::ESTABLISHING:
         NS_LOG_INFO ("ESTABLISHING");
         //This should not happen, as ESTABLISHING is an internal state to this function
+        NS_FATAL_ERROR ("Invalid state " << ToString (m_state));
         break;
       case NrSlUeProseDirectLink::ESTABLISHED:
         NS_LOG_INFO ("ESTABLISHED");
-        //Possible causes identified so far:  (TODO any other)
+        //Possible causes identified so far:
         //- Initiating peer UE retransmitted request before accept was received
         //- Accept was lost and initiating peer UE retransmitted request
 
@@ -445,7 +420,7 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentRequest (Ptr<Packet> packet
         //For simplicity, and as in this implementation 1. Security policies are not
         //implemented, and 2. Only one direct link is allowed between two peer UEs;
         //we simply retransmit the accept message
-        //Possible outcomes identified so far: (TODO any other?)
+        //Possible outcomes identified so far:
         //1. initiating UE receives one of the accept message, link is established
         //   on its side too.
         //2. initiating UE timer T5080 expires and releases link on its side,
@@ -477,7 +452,7 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentAccept (Ptr<Packet> packet)
   packet->PeekHeader (pdlEsAcHeader);
 
   //Process message and store info
-  //TODO: No field is really used at the moment.
+  //No field is really used at the moment.
 
   // Examine content for debug
   std::ostringstream oss (std::ostringstream::out);
@@ -497,8 +472,7 @@ NrSlUeProseDirectLink::ProcessDirectLinkEstablishmentAccept (Ptr<Packet> packet)
 
         {
           //Retrieve tag with Ip of the peer UE and store it.
-          //TODO: This is a shortcut to speed development and may be replaced
-          //      by proper IP configuration protocols in the future
+          //This may be replaced by proper IP configuration protocols in the future
           Ipv4AddrTag ipTag;
           packet->PeekPacketTag (ipTag);
           m_ipInfo.peerIpv4Addr = ipTag.GetAddress ();
@@ -691,14 +665,11 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentRequest ()
   //Add header to packet
   pdlEsRqPacket->AddHeader (pdlEsRqHeader);
 
-  //Add tag with selfIp for ease SL-DRB and TFTs configuration in the peer UE
-  //TODO: This is a shortcut to speed development and may be replaced
-  //      by proper IP configuration protocols in the future
+  //Add tag with selfIp for easy SL-DRB and TFTs configuration in the peer UE
+  //This may be replaced by proper IP configuration protocols in the future
   Ipv4AddrTag ipTag;
   ipTag.SetAddress (m_ipInfo.selfIpv4Addr);
   pdlEsRqPacket->AddPacketTag (ipTag);
-
-
 
   //Send it
   SendNrSlPc5SMessage (pdlEsRqPacket, m_peerL2Id, lcId);
@@ -728,9 +699,8 @@ NrSlUeProseDirectLink::SendDirectLinkEstablishmentAccept ()
   //Add header to packet
   pdlEsAcPacket->AddHeader (pdlEsAcHeader);
 
-  //Add tag with selfIp for ease SL-DRB and TFTs configuration in the peer UE
-  //TODO: This is a shortcut to speed development and may be replaced
-  //      by proper IP configuration protocols in the future
+  //Add tag with selfIp for easy SL-DRB and TFTs configuration in the peer UE
+  //This may be replaced by proper IP configuration protocols in the future
   Ipv4AddrTag ipTag;
   ipTag.SetAddress (m_ipInfo.selfIpv4Addr);
   pdlEsAcPacket->AddPacketTag (ipTag);
@@ -801,7 +771,6 @@ NrSlUeProseDirectLink::T5080Expiry ()
             //Restart timer
             m_pdlEsParam.t5080->Cancel ();
             m_pdlEsParam.t5080->Schedule ();
-
           }
         else
           {
@@ -809,7 +778,8 @@ NrSlUeProseDirectLink::T5080Expiry ()
                          "retransmissions reached. Releasing link..." );
 
             //Release link
-            //TODO
+            //Not implemented at the moment
+            NS_LOG_INFO ("Release procedure is not implemented." );
           }
         break;
       case NrSlUeProseDirectLink::ESTABLISHED:
@@ -820,7 +790,6 @@ NrSlUeProseDirectLink::T5080Expiry ()
       default:
         NS_FATAL_ERROR ("Invalid state " << ToString (m_state));
     }
-
 }
 
 void
@@ -832,9 +801,8 @@ NrSlUeProseDirectLink::RetransmitDirectLinkEstablishmentRequest ()
   uint8_t lcId = 0;  //pdlEsRq is an unprotected PC5 message to be sent in SL-SRB0 (TS 38.331 - Section 9.1.14)
   pdlEsRqPacket->AddHeader (m_pdlEsParam.rqMsgCopy);
 
-  //Add tag with selfIp for ease SL-DRB and TFTs configuration in the peer UE
-  //TODO: This is a shortcut to speed development and may be replaced
-  //      by proper IP configuration protocols in the future
+  //Add tag with selfIp for easy SL-DRB and TFTs configuration in the peer UE
+  //This may be replaced by proper IP configuration protocols in the future
   Ipv4AddrTag ipTag;
   ipTag.SetAddress (m_ipInfo.selfIpv4Addr);
   pdlEsRqPacket->AddPacketTag (ipTag);

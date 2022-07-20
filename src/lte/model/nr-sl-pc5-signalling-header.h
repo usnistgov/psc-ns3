@@ -432,8 +432,8 @@ private:
   // Mandatory IEs
   uint8_t m_msgId;   ///< Message identity
   uint8_t m_seqNum;  ///< Sequence number
-  std::vector<uint32_t> m_proseAppIds;   ///< ProSe application identifier contents (4 octets each ID, min 1 ID max: TODO)
-  uint32_t m_srcUserInfo;   ///< Source user info contents (Format 'Application layer ID', assumed with min 4 octets) TODO: No min defined in standard ATM
+  std::vector<uint32_t> m_proseAppIds;   ///< ProSe application identifier contents (4 octets each ID, min 1 ID) No max defined in standard ATM
+  uint32_t m_srcUserInfo;   ///< Source user info contents (Format 'Application layer ID', assumed with min 4 octets) No min defined in standard ATM
   std::vector<uint8_t> m_secCapabilities;    ///< UE security capabilities contents (min 2 octets, max 8 octets)
   uint8_t m_ueSigSecPolicy; ///< UE PC5 unicast signalling security policy (1 octet)
 
@@ -444,7 +444,7 @@ private:
   bool m_hasNonce1;  ///< Flag indicating if Nonce_1 is present
   uint8_t m_msb;  ///< Most significant bits of the KNRP-sess ID contents (1 octect)
   bool m_hasMsb;  ///< Flag indicating if the most significant bits of the KNRP-sess ID is present
-  uint32_t m_tgtUserInfo;  ///< Target user info contents (Format 'Application layer ID', assumed with min 4 octets) TODO: No min defined in standard ATM
+  uint32_t m_tgtUserInfo;  ///< Target user info contents (Format 'Application layer ID', assumed with min 4 octets) No min defined in standard ATM
   bool m_hasTgtUserInfo; ///< Flag indicating if the target user info is present
   uint32_t m_knrpId; ///< Knrp ID contents (32 bits = 4 octets)
   bool m_hasKnrpId; ///< Flag indicating if
@@ -633,7 +633,7 @@ private:
   //Mandatory IEs
   uint8_t m_msgId;   ///< Message identity
   uint8_t m_seqNum;  ///< Sequence number
-  uint32_t m_srcUserInfo;   ///< Source user info contents (Format 'Application layer ID', assumed with min 4 octets) TODO: No min defined in standard ATM
+  uint32_t m_srcUserInfo;   ///< Source user info contents (Format 'Application layer ID', assumed with min 4 octets) No min defined in standard ATM
   std::vector<uint8_t> m_qosFlowDescriptions; ///< PC5 QoS flow descriptions contents (complex structure, min 6 octets)
   uint8_t m_userPlaneSecConfig; ///< Configuration of UE PC5 unicast user plane security protection contents (1 octet)
 

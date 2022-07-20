@@ -43,6 +43,9 @@ namespace ns3 {
 
 /**
  * \ingroup lte
+ *
+ * This is the base class for the implementation of services that use the
+ * sidelink (e.g., Proximity Services)
  */
 
 class NrSlUeService : public Object
@@ -50,10 +53,6 @@ class NrSlUeService : public Object
 public:
 
   NrSlUeService ();
-  /**
-   * destructor
-   *
-   */
   virtual ~NrSlUeService ();
 
   // inherited from Object

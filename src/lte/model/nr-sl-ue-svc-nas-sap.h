@@ -61,7 +61,7 @@ public:
   virtual ~NrSlUeSvcNasSapUser ();
 
   /**
-   * \brief Notify the service layer that a NR SL data radio bearer was
+   * \brief Notify the service layer that an NR SL data radio bearer was
    *        activated for a given peer
    *
    * \param peerL2Id the layer 2 ID of the peer UE

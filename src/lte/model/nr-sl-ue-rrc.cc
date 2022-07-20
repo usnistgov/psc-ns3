@@ -114,17 +114,14 @@ NrSlUeRrc::SetNrSlPreconfiguration (const LteRrcSap::SidelinkPreconfigNr &precon
 {
   NS_LOG_FUNCTION (this);
   m_preconfiguration = preconfiguration;
-  SetTddPattern ();
+  m_tddPattern = ConvertTddPattern (m_preconfiguration.slPreconfigGeneral.slTddConfig.tddPattern);
   //Tell RRC to populate pools
   m_nrSlUeRrcSapProvider->PopulatePools ();
 }
 
-void
-NrSlUeRrc::SetTddPattern ()
+std::vector<NrSlUeRrc::LteNrTddSlotType>
+NrSlUeRrc::ConvertTddPattern (std::string tddPattern)
 {
-  NS_LOG_FUNCTION (this);
-  std::string tddPattern = m_preconfiguration.slPreconfigGeneral.slTddConfig.tddPattern;
-  NS_LOG_INFO (this << " Setting TDD pattern " << tddPattern);
   static std::unordered_map<std::string, NrSlUeRrc::LteNrTddSlotType> lookupTable =
   {
     { "DL", NrSlUeRrc::LteNrTddSlotType::DL },
@@ -151,8 +148,7 @@ NrSlUeRrc::SetTddPattern ()
          }
        vector.push_back (lookupTable[v]);
      }
-
-   m_tddPattern = vector;
+  return vector; 
 }
 
 const LteRrcSap::SidelinkPreconfigNr
@@ -165,19 +161,21 @@ NrSlUeRrc::DoGetNrSlPreconfiguration ()
 const std::vector <std::bitset<1>>
 NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
 {
-  NS_LOG_FUNCTION (this);
+  return GetPhysicalSlPool (slBitMap, m_tddPattern);
+}
+
+std::vector <std::bitset<1>>
+NrSlUeRrc::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap, std::vector<NrSlUeRrc::LteNrTddSlotType> tddPattern)
+{
   std::vector <std::bitset<1>> finalSlPool;
 
-  uint16_t countUl = std::count (m_tddPattern.begin (), m_tddPattern.end (), NrSlUeRrc::LteNrTddSlotType::UL);
+  uint16_t countUl = std::count (tddPattern.begin (), tddPattern.end (), NrSlUeRrc::LteNrTddSlotType::UL);
   NS_LOG_DEBUG ("number of uplinks in the given TDD pattern " << countUl);
-  //If you will remove the following assert you will burn in the
-  //do while loop below till the end of time!
-  NS_ASSERT_MSG (countUl > 0, "No UL slot found in the given TDD pattern");
-
+  NS_ABORT_MSG_UNLESS (countUl > 0, "No UL slot found in the given TDD pattern");
   NS_ABORT_MSG_IF (slBitMap.size () % countUl != 0, "SL bit map size should be multiple of number of UL slots in the TDD pattern");
-  NS_ABORT_MSG_IF (slBitMap.size () < m_tddPattern.size (), "SL bit map size should be greater than or equal to the TDD pattern size");
+  NS_ABORT_MSG_IF (slBitMap.size () < tddPattern.size (), "SL bit map size should be greater than or equal to the TDD pattern size");
 
-  auto patternIt = m_tddPattern.cbegin ();
+  auto patternIt = tddPattern.cbegin ();
   auto slBitMapit = slBitMap.cbegin();
 
   do
@@ -202,7 +200,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
           slBitMapit++;
         }
 
-      if (patternIt == m_tddPattern.cend () - 1)
+      if (patternIt == tddPattern.cend () - 1)
         {
           NS_LOG_DEBUG ("It is the last element of the TDD pattern " << *patternIt);
 
@@ -214,7 +212,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
           else
             {
               // we have not covered all the SL bitmap. Prepare to re-apply the TDD pattern
-              patternIt = m_tddPattern.cbegin ();
+              patternIt = tddPattern.cbegin ();
               NS_LOG_DEBUG ("re-assigning to the first element of tdd pattern " << *patternIt);
             }
         }
@@ -224,7 +222,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
         }
 
     }
-  while (patternIt != m_tddPattern.end ());
+  while (patternIt != tddPattern.end ());
 
   return finalSlPool;
 }
@@ -287,9 +285,7 @@ NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
       NS_LOG_LOGIC ("First SL RX DRB for remote UE with source L2 id " << slRxDrb->m_sourceL2Id);
       NrSlDrbMapPerLcId mapPerRxLcId;
       mapPerRxLcId.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slRxDrb->m_logicalChannelIdentity, slRxDrb));
-      //m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));  TODO: Report bug.
       m_slRxDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));
-
     }
   else
     {
