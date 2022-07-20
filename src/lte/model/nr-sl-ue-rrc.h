@@ -133,11 +133,20 @@ public:
    * Map between L2 id, logical channel id and signalling radio bearer
    */
   typedef std::unordered_map <uint32_t, NrSlSrbMapPerLcId> NrSlSrbMapPerL2Id;
+  
+  /**
+   * Map between destination L2 id and discovery radio bearer
+   * if TX: sourceL2Id, DiscoveryBearer
+   * if RX: destinationL2Id, DiscoveryBearer
+   */
+  typedef std::unordered_map <uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > NrSlDiscRbMap;
 
   /**
-   * Map between L2 id and discovery radio bearer
+   * Map between L2 IDs and discovery radio bearer
+   * if TX: [destinationL2Id, [sourceL2Id, DiscoveryBearer]]
+   * if RX: [sourceL2Id, [destinationL2Id, DiscoveryBearer]]
    */
-  typedef std::unordered_map <uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > NrSlDiscoveryRbMapPerL2Id;
+  typedef std::unordered_map <uint32_t, NrSlDiscRbMap> NrSlDiscoveryRbMapPerL2Id;
 
 private:
   //NrSlUeRrcSapUser methods

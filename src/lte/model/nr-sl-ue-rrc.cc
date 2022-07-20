@@ -498,15 +498,29 @@ NrSlUeRrc::DoAddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> sl
 {
   NS_LOG_FUNCTION (this);
   NrSlDiscoveryRbMapPerL2Id::iterator destIt = m_slTxDiscoveryRbMap.find (slTxDiscRb->m_destinationL2Id);
+
   if (destIt == m_slTxDiscoveryRbMap.end ())
     {
       NS_LOG_LOGIC ("First SL Discovery RB for destination " << slTxDiscRb->m_destinationL2Id);
-      m_slTxDiscoveryRbMap.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo>> (slTxDiscRb->m_destinationL2Id, slTxDiscRb));
-      NS_LOG_LOGIC ("Added SL Discovery RB for destination " << slTxDiscRb->m_destinationL2Id);
+      NrSlDiscRbMap mapPerDestL2Id;
+      mapPerDestL2Id.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > (slTxDiscRb->m_sourceL2Id, slTxDiscRb));
+      m_slTxDiscoveryRbMap.insert (std::pair<uint32_t, NrSlDiscRbMap> (slTxDiscRb->m_destinationL2Id, mapPerDestL2Id));
+      NS_LOG_LOGIC ("Added SL Discovery RB with source " << slTxDiscRb->m_sourceL2Id << " for destination " << slTxDiscRb->m_destinationL2Id);
     }
   else
     {
-      NS_FATAL_ERROR ("SL Discovery RB already exists for destination " << slTxDiscRb->m_destinationL2Id);
+      NrSlDiscRbMap::iterator srcL2IdIt;
+      srcL2IdIt = destIt->second.find (slTxDiscRb->m_sourceL2Id);
+      if (srcL2IdIt == destIt->second.end ())
+      {
+        //New bearer for the destination
+        destIt->second.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > (slTxDiscRb->m_sourceL2Id, slTxDiscRb));
+        NS_LOG_LOGIC ("Added SL Discovery RB with source " << slTxDiscRb->m_sourceL2Id << " for destination " << slTxDiscRb->m_destinationL2Id);
+      }
+      else
+      {
+        NS_FATAL_ERROR ("SL Discovery RB already exists for source " << slTxDiscRb->m_sourceL2Id << " and destination " << slTxDiscRb->m_destinationL2Id);
+      }
     }
 }
 
@@ -516,14 +530,28 @@ NrSlUeRrc::DoAddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> sl
   NS_LOG_FUNCTION (this);
   NrSlDiscoveryRbMapPerL2Id::iterator srcIt = m_slRxDiscoveryRbMap.find (slRxDiscRb->m_sourceL2Id);
 
-  if (srcIt == m_slRxDiscoveryRbMap.end ())
-    {
-      NS_LOG_LOGIC ("First SL RX Discovery RB for peer UE with source L2 id " <<  slRxDiscRb->m_sourceL2Id);
-      m_slRxDiscoveryRbMap.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > (slRxDiscRb->m_sourceL2Id, slRxDiscRb));
+  if (srcIt == m_slRxDiscoveryRbMap.end ()) 
+  {
+      NS_LOG_LOGIC ("First SL RX Discovery RB for peer UE with source L2 id " <<  slRxDiscRb->m_sourceL2Id << " and destination L2 id " << slRxDiscRb->m_destinationL2Id);
+
+      NrSlDiscRbMap mapPerDestL2Id;
+      mapPerDestL2Id.insert (std::pair <uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > (slRxDiscRb->m_destinationL2Id, slRxDiscRb));
+      m_slRxDiscoveryRbMap.insert (std::pair<uint32_t,  NrSlDiscRbMap> (slRxDiscRb->m_sourceL2Id, mapPerDestL2Id));
     }
   else
     {
-      NS_FATAL_ERROR ("RX SL-SRB for peer source " << slRxDiscRb->m_sourceL2Id << " already exists");
+      NrSlDiscRbMap::iterator dstL2IdIt;
+      dstL2IdIt = srcIt->second.find (slRxDiscRb->m_destinationL2Id);
+      if (dstL2IdIt == srcIt->second.end ())
+      {
+        //New Rx bearer for the destination L2 ID
+        srcIt->second.insert (std::pair<uint32_t, Ptr<NrSlDiscoveryRadioBearerInfo> > (slRxDiscRb->m_destinationL2Id, slRxDiscRb));
+        NS_LOG_LOGIC ("Added RX SL-SRB with destination L2 ID " << slRxDiscRb->m_destinationL2Id << "for peer source " << slRxDiscRb->m_sourceL2Id);
+      }
+      else
+      {
+        NS_FATAL_ERROR ("RX SL-SRB for peer source " << slRxDiscRb->m_sourceL2Id << " and destination L2 ID = "  << slRxDiscRb->m_destinationL2Id <<" already exists");
+      }
     }
 }
 
@@ -533,6 +561,7 @@ NrSlUeRrc::DoGetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
   NS_LOG_FUNCTION (this);
   Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb = nullptr;
   NrSlDiscoveryRbMapPerL2Id::iterator destIt = m_slTxDiscoveryRbMap.find (dstL2Id);
+  uint32_t srcL2Id = DoGetSourceL2Id ();
 
   if (destIt == m_slTxDiscoveryRbMap.end ())
     {
@@ -540,8 +569,19 @@ NrSlUeRrc::DoGetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
     }
   else
     {
-      slDiscRb = destIt->second;
-      NS_LOG_LOGIC ("Found SL discovery RB for destination " << slDiscRb->m_destinationL2Id);
+      NS_LOG_LOGIC ("Searching SL Discovery RB with source " << srcL2Id << " for destination L2 Id " << dstL2Id);
+
+      NrSlDiscRbMap::iterator srcL2IdIt;
+      srcL2IdIt = destIt->second.find (srcL2Id);
+      if (srcL2IdIt == destIt->second.end ())
+      {
+        NS_FATAL_ERROR ("SL Discovery RB with source " << srcL2Id << " does not exist for destination L2 Id " << dstL2Id);
+      }
+      else
+      {
+        slDiscRb = srcL2IdIt->second;
+        NS_LOG_LOGIC ("Found SL discovery RB with source " << slDiscRb->m_sourceL2Id << " for destination " << slDiscRb->m_destinationL2Id);
+      }
     }
   return slDiscRb;
 }
