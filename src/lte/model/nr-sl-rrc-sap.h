@@ -25,6 +25,8 @@
 namespace ns3 {
 
 class NrSlDataRadioBearerInfo;
+class NrSlSignallingRadioBearerInfo;
+class NrSlDiscoveryRadioBearerInfo;
 
 /**
  * \ingroup lte
@@ -98,6 +100,52 @@ public:
    * \return the next available NR SL DRB LCID
    */
   virtual uint8_t GetNextLcid (uint32_t dstL2Id) = 0;
+  /**
+   * \brief Add NR sidelink signalling radio bearer for transmission
+   *
+   * \param slSrb NrSlSignallingRadioBearerInfo pointer
+   */
+  virtual void AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb) = 0;
+  /**
+   * \brief Add NR sidelink signalling radio bearer for reception
+   *
+   * \param slSrb NrSlSignallingRadioBearerInfo pointer
+   */
+  virtual void AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb) = 0;
+  /**
+   * \brief Get NR Sidelink signalling radio bearer for transmission
+   *
+   * \param dstL2Id The peer layer 2 id
+   * \param lcId the logical channel id
+   * \return The NrSlSignallingRadioBearerInfo
+   */
+  virtual Ptr<NrSlSignallingRadioBearerInfo> GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
+  /**
+    * \brief Get the UE layer 2 ID
+    *
+    * \return The layer 2 Id
+    */
+  virtual uint32_t GetSourceL2Id () = 0;
+  /**
+   * \brief Add NR sidelink discovery radio bearer for transmission
+   *
+   * \param slDiscRb NrSlDiscoveryRadioBearerInfo pointer
+   */
+  virtual void AddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb) = 0;
+  /**
+   * \brief Add NR sidelink discovery radio bearer for reception
+   *
+   * \param slDiscRb NrSlDiscoveryRadioBearerInfo pointer
+   */
+  virtual void AddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb) = 0;
+  /**
+   * \brief Get NR Sidelink discovery radio bearer for transmission
+   *
+   * \param dstL2Id The peer layer 2 id
+   * \return The NrSlDiscoveryRadioBearerInfo
+   */
+  virtual Ptr<NrSlDiscoveryRadioBearerInfo> GetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id) = 0;
+
 };
 
 /**
@@ -167,7 +215,13 @@ public:
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
   virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
-
+  virtual void AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
+  virtual void AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
+  virtual Ptr<NrSlSignallingRadioBearerInfo> GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+  virtual uint32_t GetSourceL2Id ();
+  virtual void AddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb);
+  virtual void AddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRb);
+  virtual Ptr<NrSlDiscoveryRadioBearerInfo> GetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id);
 
 private:
   MemberNrSlUeRrcSapUser ();
@@ -236,6 +290,53 @@ MemberNrSlUeRrcSapUser<C>::GetNextLcid (uint32_t dstL2Id)
   return m_owner->DoGetNextLcid (dstL2Id);
 }
 
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb)
+{
+  m_owner->DoAddTxNrSlSignallingRadioBearer (slSrb);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb)
+{
+  m_owner->DoAddRxNrSlSignallingRadioBearer (slSrb);
+}
+
+template <class C>
+Ptr<NrSlSignallingRadioBearerInfo>
+MemberNrSlUeRrcSapUser<C>::GetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
+{
+  return m_owner->DoGetTxNrSlSignallingRadioBearer (dstL2Id, lcId);
+}
+
+template <class C>
+uint32_t
+MemberNrSlUeRrcSapUser<C>::GetSourceL2Id ()
+{
+  return m_owner->DoGetSourceL2Id ();
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddTxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slTxDiscRb)
+{
+  m_owner->DoAddTxNrSlDiscoveryRadioBearer (slTxDiscRb);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::AddRxNrSlDiscoveryRadioBearer (Ptr<NrSlDiscoveryRadioBearerInfo> slRxDiscRb)
+{
+  m_owner->DoAddRxNrSlDiscoveryRadioBearer (slRxDiscRb);
+}
+template <class C>
+Ptr<NrSlDiscoveryRadioBearerInfo>
+MemberNrSlUeRrcSapUser<C>::GetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
+{
+  return m_owner->DoGetTxNrSlDiscoveryRadioBearer (dstL2Id);
+}
 
 /**
  * Template for the implementation of the NrSlUeRrcSapProvider as a member

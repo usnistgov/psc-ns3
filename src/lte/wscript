@@ -145,6 +145,14 @@ def build(bld):
         'model/nr-sl-pdcp-sap.cc',
         'model/nr-sl-rlc-sap.cc',
         'model/nr-sl-comm-resource-pool.cc',
+        'model/nr-sl-ue-svc-rrc-sap.cc',
+        'model/nr-sl-ue-svc-nas-sap.cc',
+        'model/nr-sl-ue-prose.cc',
+        'model/nr-sl-ue-service.cc',
+        'model/nr-sl-pc5-signalling-header.cc',
+        'model/nr-sl-discovery-header.cc',
+        'model/nr-sl-ue-prose-direct-link.cc',
+        'model/nr-sl-ue-prose-dir-lnk-sap.cc',       
         ]
 
     module_test = bld.create_ns3_module_test_library('lte')
@@ -355,6 +363,14 @@ def build(bld):
         'model/nr-sl-pdcp-sap.h',
         'model/nr-sl-rlc-sap.h',
         'model/nr-sl-comm-resource-pool.h',
+        'model/nr-sl-ue-svc-rrc-sap.h',
+        'model/nr-sl-ue-svc-nas-sap.h',
+        'model/nr-sl-ue-prose.h',
+        'model/nr-sl-ue-service.h',
+        'model/nr-sl-pc5-signalling-header.h',
+        'model/nr-sl-discovery-header.h',
+        'model/nr-sl-ue-prose-direct-link.h', 
+        'model/nr-sl-ue-prose-dir-lnk-sap.h',       
         ]
 
     if (bld.env['ENABLE_EMU']):

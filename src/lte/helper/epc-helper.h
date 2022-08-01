@@ -169,6 +169,14 @@ public:
    */
   virtual Ipv6Address GetUeDefaultGatewayAddress6 () = 0;
 
+  /**
+   * Informs the PGW/SGW of a new remote UE connected to a relay UE
+   *
+   * \param relayImsi The IMSI of the relay node
+   * \param ueAddr The IPv4 address of the remote UE
+   */
+  virtual void AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr) = 0;
+
 
 };
 

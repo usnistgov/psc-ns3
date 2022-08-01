@@ -174,12 +174,26 @@ EpcPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& source,
       NS_LOG_LOGIC ("packet addressed to UE " << ueAddr);
 
       // find corresponding UeInfo address
-      std::map<Ipv4Address, Ptr<UeInfo> >::iterator it = m_ueInfoByAddrMap.find (ueAddr);
-      if (it == m_ueInfoByAddrMap.end ())
+      bool foundRemoteUe = false;
+      bool foundRegularUe = false;
+      //check if it is a remote UE connected to a relay UE
+      std::map<Ipv4Address, Ptr<UeInfo> >::iterator it = m_ueInfoByRemoteUeAddrMap.find (ueAddr);
+      foundRemoteUe = (it != m_ueInfoByRemoteUeAddrMap.end ());
+      if (foundRemoteUe)
         {
-          NS_LOG_WARN ("unknown UE address " << ueAddr);
+          NS_LOG_INFO ("it is a remote UE connected to a relay UE with IPv4 address: " << it->second->GetUeAddr ());
         }
       else
+        {
+          //check if it is a regular UE
+          it = m_ueInfoByAddrMap.find (ueAddr);
+          foundRegularUe = (it != m_ueInfoByAddrMap.end ());
+          if (!foundRegularUe)
+            {
+              NS_LOG_WARN ("unknown UE address " << ueAddr);
+            }
+        }
+      if (foundRemoteUe || foundRegularUe)
         {
           Ipv4Address sgwAddr = it->second->GetSgwAddr ();
           uint32_t teid = it->second->Classify (packet, protocolNumber);
@@ -506,5 +520,18 @@ EpcPgwApplication::SetUeAddress6 (uint64_t imsi, Ipv6Address ueAddr)
   m_ueInfoByAddrMap6[ueAddr] = ueit->second;
   ueit->second->SetUeAddr6 (ueAddr);
 }
+
+void
+EpcPgwApplication::AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr)
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueAddr);
+  // the relay UE must be known to the network
+  std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (relayImsi);
+  NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << relayImsi);
+
+  m_ueInfoByRemoteUeAddrMap[ueAddr] = ueit->second;
+
+}
+
 
 }  // namespace ns3

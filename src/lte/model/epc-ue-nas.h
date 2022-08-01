@@ -25,6 +25,8 @@
 #include <ns3/object.h>
 #include <ns3/lte-as-sap.h>
 #include <ns3/epc-tft-classifier.h>
+#include <ns3/nr-sl-ue-svc-nas-sap.h>
+#include <ns3/nr-sl-ue-prose-dir-lnk-sap.h>
 
 namespace ns3 {
 
@@ -36,6 +38,9 @@ class EpcUeNas : public Object
 {
   /// allow MemberLteAsSapUser<EpcUeNas> class friend access
   friend class MemberLteAsSapUser<EpcUeNas>;
+  /// allow MemberNrSlUeSvcNasSapProvider<LteUeRrc> class friend access
+  friend class MemberNrSlUeSvcNasSapProvider<EpcUeNas>;
+
 public:
 
   /** 
@@ -95,6 +100,22 @@ public:
    * \return the AS SAP user exported by this RRC
    */
   LteAsSapUser* GetAsSapUser ();
+
+  /**
+   * \brief Get the pointer of the UE service layer SAP Provider interface
+   *        offered to the service layer by this class
+   *
+   * \return the pointer of type NrSlUeSvcNasSapProvider
+   */
+  NrSlUeSvcNasSapProvider* GetNrSlUeSvcNasSapProvider ();
+
+  /**
+   * \brief Set the pointer for the UE service layer SAP User interface
+   *        offered to this class by service layer class
+   *
+   * \param s the pointer of type NrSlUeSvcNasSapUser
+   */
+  void SetNrSlUeSvcNasSapUser (NrSlUeSvcNasSapUser* s);
 
   /**
    * set the callback used to forward data packets up the stack
@@ -267,8 +288,23 @@ public:
    */
   void ActivateNrSlBearer (Ptr<LteSlTft> tft);
 
+  /**
+   * TracedCallback signature for reception of data packets by a UE acting as UE-to-Network relay
+   *
+   * \param [in] nodeIp the Ipv4 address of this UE
+   * \param [in] srcIp the source Ipv4 address of the data packet
+   * \param [in] dstIp the destination Ipv4 address of the data packet
+   * \param [in] srcLink the link in which the data packet was received
+   * \param [in] dstLink the link to which the data packet was relayed
+   * \param [in] p the data packet
+   */
+  typedef void (* NrSlRelayNasRxPacketTracedCallback)(Ipv4Address nodeIp, Ipv4Address srcIp, Ipv4Address dstIp,
+                                                      std::string srcLink, std::string dstLink,
+                                                      Ptr<Packet> p);
+
 private:
 
+  //LteAsSapUser functions
   /**
    * \brief Notify Nr Sidelink radio bearer activated function
    *
@@ -279,6 +315,61 @@ private:
   std::list<Ptr<LteSlTft> > m_pendingSlBearersList; ///< pending NR Sidelink bearers list
 
   std::list<Ptr<LteSlTft> > m_slBearersActivatedList; ///< Sidelink NR bearers activated list
+
+  //Service layer <-> NAS interfaces
+  NrSlUeSvcNasSapProvider* m_nrSlUeSvcNasSapProvider; //!< SAP interface to receive calls from the service layer instance
+  NrSlUeSvcNasSapUser* m_nrSlUeSvcNasSapUser {nullptr}; //!< SAP interface to call methods of the service layer instance
+
+  //NrSlUeSvcNasSapProvider functions
+  /**
+   * \brief Implementation of the method called by the service layer (e.g.,
+   *        ProSe layer) to instruct the NAS to activate a sidelink data
+   *        radio bearer (SL-DRB)
+   *
+   * \param tft the SL TFT identifying the traffic that will go on this bearer
+   */
+  void DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
+  /**
+   * Implementation of the method called by the service layer (e.g., ProSe
+   * layer) to instruct the NAS to (re)configure the data bearers (UL and SL
+   * where it applies) to have the data packets flowing in the appropriate path
+   * after the UEs establish a connection for UE-to-Network (U2N) relay.
+   *
+   * \param peerL2Id the layer 2 ID of the peer UE
+   * \param role the role of this UE in the U2N link (remote UE or relay UE)
+   * \param ipInfo the IP configuration associated to the link
+   * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   */
+  void DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                   enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                   NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                   uint8_t relayDrbId);
+  /**
+   * \brief Function that moves the received packet through the correct path
+   *        when the UE is a UE-to-Network (U2N) relay UE
+   *
+   * \param packet the received packet
+   */
+  void ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet);
+
+  /**
+   * Parameters related to the UE-to-Network relay configuration used in this
+   * layer
+   */
+  struct U2nRelayNasConfig
+  {
+    Ipv4Address selfIpv4Addr;  ///< Ipv4 address of this UE
+    bool relaying = false;     ///< True if the UE is acting as UE-to-Network Relay, false otherwise
+    uint8_t relayDrbId = 0;    ///< The data radio bearer ID used for relay
+
+  };
+
+  U2nRelayNasConfig m_u2nRelayConfig;  ///< UE-to-Network Relay parameters
+
+  /**
+   * Trace for reception of data packets by a UE acting as UE-to-Network relay
+   */
+  TracedCallback<Ipv4Address, Ipv4Address, Ipv4Address, std::string, std::string, Ptr<Packet> > m_relayRxPacketTrace;
 
 };
 
