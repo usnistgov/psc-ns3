@@ -1590,8 +1590,10 @@ private:
    * \param lcId logical channel id
    * \param srcL2Id source layer 2 id
    * \param dstL2Id destination layer 2 id
+   * \param castType Cast type
+   * \param harqEnabled whether HARQ was enabled
    */
-  void DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
+  void DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t castType, bool harqEnabled);
 
   /**
    * \brief Activate NR sidelink signalling radio bearer (SL-SRB)

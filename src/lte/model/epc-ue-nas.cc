@@ -493,7 +493,7 @@ EpcUeNas::DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
   NS_LOG_FUNCTION (this);
 
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->IsTransmit (), tft->IsReceive (), tft->GetCastType (), tft->IsHarqEnabled (), tft->GetDelayBudget ());
 
 }
 
@@ -536,7 +536,7 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                     //Create an SL bearer for this traffic
                     Ptr<LteSlTft> slTft;
                     slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
-                                              LteSlTft::CommType::Unicast,
+                                              LteSlTft::CastType::Unicast,
                                               itPf->remoteAddress, //Packets to this address
                                               peerL2Id); //Go towards the Relay UE
                     DoActivateSvcNrSlDataRadioBearer (slTft);
@@ -568,7 +568,7 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
         {
           Ptr<LteSlTft> slTft;
           slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
-                                    LteSlTft::CommType::Unicast,
+                                    LteSlTft::CastType::Unicast,
                                     ipInfo.peerIpv4Addr,
                                     peerL2Id);
           DoActivateSvcNrSlDataRadioBearer (slTft);

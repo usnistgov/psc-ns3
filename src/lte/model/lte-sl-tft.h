@@ -108,6 +108,26 @@ public:
   LteSlTft (Direction d, CastType castType, Ipv6Address remoteAddr, uint32_t dstL2Id, bool harqEnabled, Time delayBudget);
 
   /**
+   * \brief Constructor, sets HARQ enabled to true and delay budget to zero
+   *
+   * \param d The direction
+   * \param castType The communication type
+   * \param remoteAddr The IPv4 address of the remote
+   * \param dstL2Id The destination layer 2 id
+   */
+  LteSlTft (Direction d, CastType castType, Ipv4Address remoteAddr, uint32_t dstL2Id);
+
+  /**
+   * \brief Constructor, sets HARQ enabled to true and delay budget to zero
+   *
+   * \param d The direction
+   * \param castType The communication type
+   * \param remoteAddr The IPv6 address of the remote
+   * \param dstL2Id The destination layer 2 id
+   */
+  LteSlTft (Direction d, CastType castType, Ipv6Address remoteAddr, uint32_t dstL2Id);
+
+  /**
    * \brief Constructor for copy
    *
    * \param tft The TFT to copy

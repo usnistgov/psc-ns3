@@ -71,6 +71,36 @@ LteSlTft::LteSlTft (Direction d, CastType castType, Ipv6Address remoteAddr, uint
   m_remoteMask6 = Ipv6Prefix::GetOnes ();
 }
 
+LteSlTft::LteSlTft (Direction d, CastType castType, Ipv4Address remoteAddr, uint32_t dstL2Id)
+ :  m_direction (d),
+    m_castType (castType),
+    m_remoteAddress (remoteAddr),
+    m_dstL2Id (dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
+  m_harqEnabled = true;
+  m_delayBudget = Seconds (0);
+  m_hasRemoteAddress = true;
+  m_remoteMask = Ipv4Mask::GetOnes ();
+}
+
+LteSlTft::LteSlTft (Direction d, CastType castType, Ipv6Address remoteAddr, uint32_t dstL2Id)
+ :  m_direction (d),
+    m_castType (castType),
+    m_remoteAddress6 (remoteAddr),
+    m_dstL2Id (dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
+  m_harqEnabled = true;
+  m_delayBudget = Seconds (0);
+  m_hasRemoteAddress = true;
+  m_remoteMask6 = Ipv6Prefix::GetOnes ();
+}
+
 LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);

@@ -3617,7 +3617,7 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive, Lt
       //We use same SL-DRB creation and configuration logic than OOC
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id), castType, harqEnabled, delayBudget);
           NS_LOG_INFO ("Created new TX SL-DRB for dstL2id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
@@ -3661,9 +3661,9 @@ LteUeRrc::SetOutofCovrgUeRnti ()
 }
 
 void
-LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id)
+LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t castType, bool harqEnabled)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id);
+  NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id << static_cast<uint16_t> (castType) << harqEnabled);
   //add LC
   if (lcId < 4)
     {
@@ -3680,8 +3680,9 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
   else
     {
       //SL-DRB
-      Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlDrb (srcL2Id, dstL2Id, lcId);
-      NS_LOG_INFO ("Created new RX SL-DRB for dstL2Id " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
+      Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlDrb (srcL2Id, dstL2Id, lcId, static_cast<LteSlTft::CastType> (castType), harqEnabled);
+      NS_LOG_INFO ("Created new RX SL-DRB for dstL2Id " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF)
+        << " cast type=" << static_cast<uint16_t> (castType) << " HARQ enabled=" << harqEnabled);
     }
 
 }
@@ -3689,7 +3690,7 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
 Ptr<NrSlDataRadioBearerInfo>
 LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid, LteSlTft::CastType castType /* = LteSlTft::CastType::Invalid */, bool harqEnabled /* = false */, Time delayBudget /* = Seconds (0) */)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << srcL2Id << dstL2Id << +lcid << static_cast<uint16_t> (castType) << harqEnabled << delayBudget.As (Time::MS));
 
   NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
 
@@ -4000,7 +4001,9 @@ LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   lcInfo.isGbr = true;
   lcInfo.gbr = 65535; //bits/s random value
   lcInfo.mbr = lcInfo.gbr;
-
+  lcInfo.castType = LteSlTft::CastType::Unicast;
+  lcInfo.harqEnabled = false;
+  lcInfo.delayBudget = Seconds (0);
 
   Ptr<NrSlSignallingRadioBearerInfo> slSrbInfo = CreateObject <NrSlSignallingRadioBearerInfo> ();
   slSrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
@@ -4201,6 +4204,9 @@ LteUeRrc::AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id)
   lcInfo.isGbr = false;
   lcInfo.gbr = 65535; //bits/s 
   lcInfo.mbr = lcInfo.gbr;
+  lcInfo.castType = LteSlTft::CastType::Unicast;
+  lcInfo.harqEnabled = false;
+  lcInfo.delayBudget = Seconds (0);
  
   Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRbInfo = CreateObject <NrSlDiscoveryRadioBearerInfo> ();
   slDiscRbInfo->m_sourceL2Id = lcInfo.srcL2Id;
