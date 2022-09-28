@@ -50,8 +50,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("LteHandoverDelayTest");
 
 /**
- * \ingroup lte-test
- * \ingroup tests
+ * \ingroup tests lte-test
  *
  * \brief Verifying that the time needed for handover is under a
  * specified threshold.
@@ -295,6 +294,12 @@ public:
         AddTestCase (
           new LteHandoverDelayTestCase (1, true, handoverTime, Seconds (0.005),
                                         Seconds (0.200)), TestCase::QUICK);
+        AddTestCase (
+          new LteHandoverDelayTestCase (2, true, handoverTime, Seconds (0.005),
+                                        Seconds (0.200)), TestCase::QUICK);
+        AddTestCase (
+          new LteHandoverDelayTestCase (4, true, handoverTime, Seconds (0.005),
+                                        Seconds (0.200)), TestCase::QUICK);
       }
 
     // HANDOVER DELAY TEST CASES WITH REAL RRC (THRESHOLD = 0.020 sec)
@@ -305,6 +310,12 @@ public:
         // arguments: useIdealRrc, handoverTime, delayThreshold, simulationDuration
         AddTestCase (
           new LteHandoverDelayTestCase (1, false, handoverTime, Seconds (0.020),
+                                        Seconds (0.200)), TestCase::QUICK);
+        AddTestCase (
+          new LteHandoverDelayTestCase (2, false, handoverTime, Seconds (0.020),
+                                        Seconds (0.200)), TestCase::QUICK);
+        AddTestCase (
+          new LteHandoverDelayTestCase (4, false, handoverTime, Seconds (0.020),
                                         Seconds (0.200)), TestCase::QUICK);
       }
   }

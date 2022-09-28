@@ -90,6 +90,10 @@ public:
   Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  Ipv4L3Protocol (const Ipv4L3Protocol &) = delete;
+  Ipv4L3Protocol & operator = (const Ipv4L3Protocol &) = delete;
+
   /**
    * \enum DropReason
    * \brief Reason why a packet has been dropped.
@@ -225,9 +229,9 @@ public:
   /**
    * TracedCallback signature for packet send, forward, or local deliver events.
    *
-   * \param [in] header The Ipv6Header.
-   * \param [in] packet The packet.
-   * \param [in] interface
+   * \param [in] header the Ipv4Header
+   * \param [in] packet the packet
+   * \param [in] interface IP-level interface number
    */
   typedef void (* SentTracedCallback)
       (const Ipv4Header & header, Ptr<const Packet> packet, uint32_t interface);
@@ -235,10 +239,9 @@ public:
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
-   * \param [in] header The Ipv4Header.
-   * \param [in] packet The packet.
-   * \param [in] ipv4
-   * \param [in] interface
+   * \param [in] packet the packet.
+   * \param [in] ipv4 the Ipv4 protocol
+   * \param [in] interface IP-level interface number
    * \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
    * and will be changed to \c Ptr<const Ipv4> in a future release.
    */
@@ -248,11 +251,11 @@ public:
   /**
    * TracedCallback signature for packet drop events.
    *
-   * \param [in] header The Ipv4Header.
-   * \param [in] packet The packet.
-   * \param [in] reason The reason the packet was dropped.
-   * \param [in] ipv4
-   * \param [in] interface
+   * \param [in] header the Ipv4Header.
+   * \param [in] packet the packet.
+   * \param [in] reason the reason the packet was dropped.
+   * \param [in] ipv4 the Ipv4 protocol
+   * \param [in] interface IP-level interface number
    * \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
    * and will be changed to \c Ptr<const Ipv4> in a future release.
    */
@@ -275,21 +278,6 @@ private:
    * \relates Ipv4L3ProtocolTestCase
    */
   friend class ::Ipv4L3ProtocolTestCase;
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   */
-  Ipv4L3Protocol(const Ipv4L3Protocol &);
-
-  /**
-   * \brief Copy constructor.
-   *
-   * Defined but not implemented to avoid misuse
-   * \returns the copied object
-   */
-  Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
   // class Ipv4 attributes
   virtual void SetIpForward (bool forward);
@@ -430,7 +418,7 @@ private:
    * \param ipHeader the IP header that will be added to the packet
    * \param packet the packet
    * \param ipv4 the Ipv4 protocol
-   * \param interface the interface index
+   * \param interface the IP-level interface index
    *
    * Note: If the TracedCallback API ever is extended, we could consider
    * to check for connected functions before adding the header

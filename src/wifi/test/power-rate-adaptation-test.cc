@@ -27,6 +27,7 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "ns3/frame-exchange-manager.h"
+#include "ns3/interference-helper.h"
 #include "ns3/wifi-default-protection-manager.h"
 #include "ns3/wifi-default-ack-manager.h"
 
@@ -99,10 +100,12 @@ PowerRateAdaptationTest::ConfigureNode ()
    * Create and configure phy layer.
    */
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper> ();
+  phy->SetInterferenceHelper (interferenceHelper);
   phy->SetChannel (channel);
   phy->SetDevice (dev);
   phy->SetMobility (mobility);
-  phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211a, WIFI_PHY_BAND_5GHZ);
+  phy->ConfigureStandard (WIFI_STANDARD_80211a);
 
   /*
    * Configure power control parameters.

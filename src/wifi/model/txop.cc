@@ -28,11 +28,10 @@
 #include "wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
-#include "wifi-remote-station-manager.h"
 #include "wifi-mac-trailer.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_stationManager != 0 && m_stationManager->GetMac () != 0) { std::clog << "[mac=" << m_stationManager->GetMac ()->GetAddress () << "] "; }
+#define NS_LOG_APPEND_CONTEXT if (m_mac != 0) { std::clog << "[mac=" << m_mac->GetAddress () << "] "; }
 
 namespace ns3 {
 
@@ -84,7 +83,13 @@ Txop::GetTypeId (void)
 }
 
 Txop::Txop ()
+  : Txop (CreateObject<WifiMacQueue> (AC_BE_NQOS))
+{
+}
+
+Txop::Txop (Ptr<WifiMacQueue> queue)
   : m_channelAccessManager (0),
+    m_queue (queue),
     m_cwMin (0),
     m_cwMax (0),
     m_cw (0),
@@ -94,7 +99,6 @@ Txop::Txop ()
     m_backoffStart (Seconds (0.0))
 {
   NS_LOG_FUNCTION (this);
-  m_queue = CreateObject<WifiMacQueue> ();
   m_rng = CreateObject<UniformRandomVariable> ();
 }
 
@@ -108,7 +112,7 @@ Txop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue = 0;
-  m_stationManager = 0;
+  m_mac = 0;
   m_rng = 0;
   m_txMiddle = 0;
   m_channelAccessManager = 0;
@@ -129,10 +133,10 @@ void Txop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 }
 
 void
-Txop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
+Txop::SetWifiMac (const Ptr<WifiMac> mac)
 {
-  NS_LOG_FUNCTION (this << remoteManager);
-  m_stationManager = remoteManager;
+  NS_LOG_FUNCTION (this << mac);
+  m_mac = mac;
 }
 
 void
@@ -187,7 +191,7 @@ void
 Txop::ResetCw (void)
 {
   NS_LOG_FUNCTION (this);
-  m_cw = m_cwMin;
+  m_cw = GetMinCw ();
   m_cwTrace = m_cw;
 }
 
@@ -196,7 +200,9 @@ Txop::UpdateFailedCw (void)
 {
   NS_LOG_FUNCTION (this);
   //see 802.11-2012, section 9.19.2.5
-  m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
+  m_cw = std::min ( 2 * (m_cw + 1) - 1, GetMaxCw ());
+  // if the MU EDCA timer is running, CW cannot be less than MU CW min
+  m_cw = std::max (m_cw, GetMinCw ());
   m_cwTrace = m_cw;
 }
 
@@ -376,21 +382,6 @@ Txop::GenerateBackoff (void)
 }
 
 void
-Txop::NotifyInternalCollision (void)
-{
-  NS_LOG_FUNCTION (this);
-  GenerateBackoff ();
-  StartAccessIfNeeded ();
-}
-
-void
-Txop::NotifyChannelSwitching (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_queue->Flush ();
-}
-
-void
 Txop::NotifySleep (void)
 {
   NS_LOG_FUNCTION (this);
@@ -421,12 +412,6 @@ bool
 Txop::IsQosTxop () const
 {
   return false;
-}
-
-AcIndex
-Txop::GetAccessCategory (void) const
-{
-  return AC_BE_NQOS;
 }
 
 } //namespace ns3

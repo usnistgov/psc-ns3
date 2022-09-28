@@ -24,6 +24,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-utils.h"
+#include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -382,7 +383,7 @@ PhyEntity::PhyFieldRxStatus
 HtPhy::EndReceiveHtSig (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
-  NS_ASSERT (IsHt (event->GetTxVector ().GetPreambleType ()));
+  NS_ASSERT (event->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HT_MF);
   SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_HT_SIG, event);
   NS_LOG_DEBUG ("HT-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
   PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
@@ -549,14 +550,13 @@ HtPhy::CreateHtMcs (uint8_t index)
   return WifiModeFactory::CreateWifiMcs ("HtMcs" + std::to_string (index),
                                          index,
                                          WIFI_MOD_CLASS_HT,
+                                         false,
                                          MakeBoundCallback (&GetHtCodeRate, index),
                                          MakeBoundCallback (&GetHtConstellationSize, index),
-                                         MakeBoundCallback (&GetPhyRate, index),
                                          MakeCallback (&GetPhyRateFromTxVector),
-                                         MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
-                                         MakeCallback (&IsModeAllowed));
+                                         MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -763,7 +763,7 @@ HtPhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellatio
 }
 
 bool
-HtPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+HtPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 {
   return true;
 }

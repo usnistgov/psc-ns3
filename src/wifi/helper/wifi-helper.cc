@@ -32,10 +32,12 @@
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/qos-utils.h"
+#include "ns3/qos-txop.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
 #include "ns3/obss-pd-algorithm.h"
+#include "ns3/wifi-mac-trailer.h"
 #include "wifi-helper.h"
 
 namespace ns3 {
@@ -61,7 +63,10 @@ AsciiPhyTransmitSinkWithContext (
   uint8_t txLevel)
 {
   NS_LOG_FUNCTION (stream << context << p << mode << preamble << txLevel);
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << mode << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
 /**
@@ -81,7 +86,10 @@ AsciiPhyTransmitSinkWithoutContext (
   uint8_t txLevel)
 {
   NS_LOG_FUNCTION (stream << p << mode << preamble << txLevel);
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << mode << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
 /**
@@ -103,7 +111,10 @@ AsciiPhyReceiveSinkWithContext (
   WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << "" << context << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << context << " " << *pCopy << " " << fcs << std::endl;
 }
 
 /**
@@ -123,7 +134,10 @@ AsciiPhyReceiveSinkWithoutContext (
   WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << p << snr << mode << preamble);
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << *p << std::endl;
+  auto pCopy = p->Copy ();
+  WifiMacTrailer fcs;
+  pCopy->RemoveTrailer (fcs);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
 WifiPhyHelper::WifiPhyHelper ()
@@ -140,75 +154,6 @@ void
 WifiPhyHelper::Set (std::string name, const AttributeValue &v)
 {
   m_phy.Set (name, v);
-}
-
-void
-WifiPhyHelper::SetErrorRateModel (std::string name,
-                                  std::string n0, const AttributeValue &v0,
-                                  std::string n1, const AttributeValue &v1,
-                                  std::string n2, const AttributeValue &v2,
-                                  std::string n3, const AttributeValue &v3,
-                                  std::string n4, const AttributeValue &v4,
-                                  std::string n5, const AttributeValue &v5,
-                                  std::string n6, const AttributeValue &v6,
-                                  std::string n7, const AttributeValue &v7)
-{
-  m_errorRateModel = ObjectFactory ();
-  m_errorRateModel.SetTypeId (name);
-  m_errorRateModel.Set (n0, v0);
-  m_errorRateModel.Set (n1, v1);
-  m_errorRateModel.Set (n2, v2);
-  m_errorRateModel.Set (n3, v3);
-  m_errorRateModel.Set (n4, v4);
-  m_errorRateModel.Set (n5, v5);
-  m_errorRateModel.Set (n6, v6);
-  m_errorRateModel.Set (n7, v7);
-}
-
-void
-WifiPhyHelper::SetFrameCaptureModel (std::string name,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_frameCaptureModel = ObjectFactory ();
-  m_frameCaptureModel.SetTypeId (name);
-  m_frameCaptureModel.Set (n0, v0);
-  m_frameCaptureModel.Set (n1, v1);
-  m_frameCaptureModel.Set (n2, v2);
-  m_frameCaptureModel.Set (n3, v3);
-  m_frameCaptureModel.Set (n4, v4);
-  m_frameCaptureModel.Set (n5, v5);
-  m_frameCaptureModel.Set (n6, v6);
-  m_frameCaptureModel.Set (n7, v7);
-}
-
-void
-WifiPhyHelper::SetPreambleDetectionModel (std::string name,
-                                          std::string n0, const AttributeValue &v0,
-                                          std::string n1, const AttributeValue &v1,
-                                          std::string n2, const AttributeValue &v2,
-                                          std::string n3, const AttributeValue &v3,
-                                          std::string n4, const AttributeValue &v4,
-                                          std::string n5, const AttributeValue &v5,
-                                          std::string n6, const AttributeValue &v6,
-                                          std::string n7, const AttributeValue &v7)
-{
-  m_preambleDetectionModel = ObjectFactory ();
-  m_preambleDetectionModel.SetTypeId (name);
-  m_preambleDetectionModel.Set (n0, v0);
-  m_preambleDetectionModel.Set (n1, v1);
-  m_preambleDetectionModel.Set (n2, v2);
-  m_preambleDetectionModel.Set (n3, v3);
-  m_preambleDetectionModel.Set (n4, v4);
-  m_preambleDetectionModel.Set (n5, v5);
-  m_preambleDetectionModel.Set (n6, v6);
-  m_preambleDetectionModel.Set (n7, v7);
 }
 
 void
@@ -559,7 +504,7 @@ WifiPhyHelper::GetRadiotapHeader (
 
       header.SetHeFields (data1, data2, data3, data4, data5, 0);
     }
-  
+
   if (preamble == WIFI_PREAMBLE_HE_MU)
     {
       //TODO: fill in fields (everything is set to 0 so far)
@@ -711,56 +656,11 @@ WifiHelper::~WifiHelper ()
 }
 
 WifiHelper::WifiHelper ()
-  : m_standard (WIFI_STANDARD_80211a),
-    m_selectQueueCallback (&SelectQueueByDSField)
+  : m_standard (WIFI_STANDARD_80211ax),
+    m_selectQueueCallback (&SelectQueueByDSField),
+    m_enableFlowControl (true)
 {
-  SetRemoteStationManager ("ns3::ArfWifiManager");
-}
-
-void
-WifiHelper::SetRemoteStationManager (std::string type,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_stationManager = ObjectFactory ();
-  m_stationManager.SetTypeId (type);
-  m_stationManager.Set (n0, v0);
-  m_stationManager.Set (n1, v1);
-  m_stationManager.Set (n2, v2);
-  m_stationManager.Set (n3, v3);
-  m_stationManager.Set (n4, v4);
-  m_stationManager.Set (n5, v5);
-  m_stationManager.Set (n6, v6);
-  m_stationManager.Set (n7, v7);
-}
-
-void
-WifiHelper::SetObssPdAlgorithm (std::string type,
-                                std::string n0, const AttributeValue &v0,
-                                std::string n1, const AttributeValue &v1,
-                                std::string n2, const AttributeValue &v2,
-                                std::string n3, const AttributeValue &v3,
-                                std::string n4, const AttributeValue &v4,
-                                std::string n5, const AttributeValue &v5,
-                                std::string n6, const AttributeValue &v6,
-                                std::string n7, const AttributeValue &v7)
-{
-  m_obssPdAlgorithm = ObjectFactory ();
-  m_obssPdAlgorithm.SetTypeId (type);
-  m_obssPdAlgorithm.Set (n0, v0);
-  m_obssPdAlgorithm.Set (n1, v1);
-  m_obssPdAlgorithm.Set (n2, v2);
-  m_obssPdAlgorithm.Set (n3, v3);
-  m_obssPdAlgorithm.Set (n4, v4);
-  m_obssPdAlgorithm.Set (n5, v5);
-  m_obssPdAlgorithm.Set (n6, v6);
-  m_obssPdAlgorithm.Set (n7, v7);
+  SetRemoteStationManager ("ns3::IdealWifiManager");
 }
 
 void
@@ -769,35 +669,10 @@ WifiHelper::SetStandard (WifiStandard standard)
   m_standard = standard;
 }
 
-// NS_DEPRECATED_3_32
 void
-WifiHelper::SetStandard (WifiPhyStandard standard)
+WifiHelper::DisableFlowControl (void)
 {
-  switch (standard)
-    {
-    case WIFI_PHY_STANDARD_80211a:
-      m_standard = WIFI_STANDARD_80211a;
-      return;
-    case WIFI_PHY_STANDARD_80211b:
-      m_standard = WIFI_STANDARD_80211b;
-      return;
-    case WIFI_PHY_STANDARD_80211g:
-      m_standard = WIFI_STANDARD_80211g;
-      return;
-    // remove the next value from WifiPhyStandard when deprecation ends
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      m_standard = WIFI_STANDARD_80211n_2_4GHZ;
-      return;
-    // remove the next value from WifiPhyStandard when deprecation ends
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
-      m_standard = WIFI_STANDARD_80211n_5GHZ;
-      return;
-    case WIFI_PHY_STANDARD_80211ac:
-      m_standard = WIFI_STANDARD_80211ac;
-      return;
-    default:
-      NS_FATAL_ERROR ("Unsupported value of WifiPhyStandard");
-    }
+  m_enableFlowControl = false;
 }
 
 void
@@ -817,36 +692,41 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-      auto it = wifiStandards.find (m_standard);
-      if (it == wifiStandards.end ())
+      device->SetStandard (m_standard);
+      if (m_standard == WIFI_STANDARD_UNSPECIFIED)
         {
-          NS_FATAL_ERROR ("Selected standard is not defined!");
+          NS_FATAL_ERROR ("No standard specified!");
           return devices;
         }
-      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211n)
+      if (m_standard >= WIFI_STANDARD_80211n)
         {
           Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
           device->SetHtConfiguration (htConfiguration);
         }
-      if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ac) && (it->second.phyBand != WIFI_PHY_BAND_2_4GHZ))
+      if (m_standard >= WIFI_STANDARD_80211ac)
         {
+          // Create the VHT Configuration object even if the PHY band is 2.4GHz
+          // (WifiNetDevice::GetVhtConfiguration() checks the PHY band being used).
+          // This approach allows us not to worry about deleting this object when
+          // the PHY band is switched from 5GHz to 2.4GHz and creating this object
+          // when the PHY band is switched from 2.4GHz to 5GHz.
           Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration> ();
           device->SetVhtConfiguration (vhtConfiguration);
         }
-      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax)
+      if (m_standard >= WIFI_STANDARD_80211ax)
         {
           Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
           device->SetHeConfiguration (heConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-      phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
-      device->SetMac (mac);
+      phy->ConfigureStandard (m_standard);
       device->SetPhy (phy);
+      Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
+      device->SetMac (mac);
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
-      if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
+      if ((m_standard >= WIFI_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
         {
           Ptr<ObssPdAlgorithm> obssPdAlgorithm = m_obssPdAlgorithm.Create<ObssPdAlgorithm> ();
           device->AggregateObject (obssPdAlgorithm);
@@ -854,22 +734,20 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         }
       devices.Add (device);
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
-      // Aggregate a NetDeviceQueueInterface object if a RegularWifiMac is installed
-      Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-      if (rmac)
+      if (m_enableFlowControl)
         {
           Ptr<NetDeviceQueueInterface> ndqi;
           BooleanValue qosSupported;
           Ptr<WifiMacQueue> wmq;
 
-          rmac->GetAttributeFailSafe ("QosSupported", qosSupported);
+          mac->GetAttributeFailSafe ("QosSupported", qosSupported);
           if (qosSupported.Get ())
             {
               ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> ("NTxQueues",
                                                                           UintegerValue (4));
               for (auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
                 {
-                  Ptr<QosTxop> qosTxop = rmac->GetQosTxop (ac);
+                  Ptr<QosTxop> qosTxop = mac->GetQosTxop (ac);
                   wmq = qosTxop->GetWifiMacQueue ();
                   ndqi->GetTxQueue (static_cast<std::size_t> (ac))->ConnectQueueTraces (wmq);
                 }
@@ -879,7 +757,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
             {
               ndqi = CreateObject<NetDeviceQueueInterface> ();
 
-              wmq = rmac->GetTxop ()->GetWifiMacQueue ();
+              wmq = mac->GetTxop ()->GetWifiMacQueue ();
               ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
             }
           device->AggregateObject (ndqi);
@@ -964,7 +842,6 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("PhyEntity", LOG_LEVEL_ALL);
   LogComponentEnable ("QosFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("QosTxop", LOG_LEVEL_ALL);
-  LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("RrMultiUserScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("RrpaaWifiManager", LOG_LEVEL_ALL);
@@ -1027,36 +904,37 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 
           //Handle any random numbers in the MAC objects.
           Ptr<WifiMac> mac = wifi->GetMac ();
-          Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-          if (rmac)
+          PointerValue ptr;
+          if (!mac->GetQosSupported ())
             {
-              PointerValue ptr;
-              rmac->GetAttribute ("Txop", ptr);
+              mac->GetAttribute ("Txop", ptr);
               Ptr<Txop> txop = ptr.Get<Txop> ();
               currentStream += txop->AssignStreams (currentStream);
-
-              rmac->GetAttribute ("VO_Txop", ptr);
+            }
+          else
+            {
+              mac->GetAttribute ("VO_Txop", ptr);
               Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
               currentStream += vo_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("VI_Txop", ptr);
+              mac->GetAttribute ("VI_Txop", ptr);
               Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
               currentStream += vi_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("BE_Txop", ptr);
+              mac->GetAttribute ("BE_Txop", ptr);
               Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
               currentStream += be_txop->AssignStreams (currentStream);
 
-              rmac->GetAttribute ("BK_Txop", ptr);
+              mac->GetAttribute ("BK_Txop", ptr);
               Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
               currentStream += bk_txop->AssignStreams (currentStream);
+            }
 
-              //if an AP, handle any beacon jitter
-              Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (rmac);
-              if (apmac)
-                {
-                  currentStream += apmac->AssignStreams (currentStream);
-                }
+          //if an AP, handle any beacon jitter
+          Ptr<ApWifiMac> apmac = DynamicCast<ApWifiMac> (mac);
+          if (apmac)
+            {
+              currentStream += apmac->AssignStreams (currentStream);
             }
         }
     }

@@ -38,13 +38,13 @@
  * - (if logging is enabled) the changes of rate to standard output.
  *
  * Example usage:
- * ./waf --run "wifi-rate-adaptation-distance --standard=802.11a --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel"
+ * ./ns3 run "wifi-rate-adaptation-distance --standard=802.11a --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel"
  *
  * Another example (moving towards the AP):
- * ./waf --run "wifi-rate-adaptation-distance --standard=802.11a --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel --stepsSize=1 --STA1_x=-200"
+ * ./ns3 run "wifi-rate-adaptation-distance --standard=802.11a --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel --stepsSize=1 --STA1_x=-200"
  *
  * Example for HT rates with SGI and channel width of 40MHz:
- * ./waf --run "wifi-rate-adaptation-distance --staManager=ns3::MinstrelHtWifiManager --apManager=ns3::MinstrelHtWifiManager --outputFileName=minstrelHt --shortGuardInterval=true --channelWidth=40"
+ * ./ns3 run "wifi-rate-adaptation-distance --staManager=ns3::MinstrelHtWifiManager --apManager=ns3::MinstrelHtWifiManager --outputFileName=minstrelHt --shortGuardInterval=true --channelWidth=40"
  *
  * To enable the log of rate changes:
  * export NS_LOG=RateAdaptationDistance=level_info
@@ -71,23 +71,51 @@ using namespace std;
 
 NS_LOG_COMPONENT_DEFINE ("RateAdaptationDistance");
 
+/** Node statistics */
 class NodeStatistics
 {
 public:
+  /**
+   * Constructor
+   * \param aps AP devices
+   * \param stas STA devices
+   */
   NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas);
 
-  void CheckStatistics (double time);
-
+  /**
+   * RX callback
+   * \param path path
+   * \param packet received packet
+   * \param from sender
+   */
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
+  /**
+   * Set node position
+   * \param node the node
+   * \param position the position
+   */
   void SetPosition (Ptr<Node> node, Vector position);
+  /**
+   * Advance node position
+   * \param node the node
+   * \param stepsSize the size of a step
+   * \param stepsTime the time interval between steps
+   */
   void AdvancePosition (Ptr<Node> node, int stepsSize, int stepsTime);
+  /**
+   * Get node position
+   * \param node the node
+   * \return the position
+   */
   Vector GetPosition (Ptr<Node> node);
-
+  /**
+   * \return the gnuplot 2d dataset
+   */
   Gnuplot2dDataset GetDatafile ();
 
 private:
-  uint32_t m_bytesTotal;
-  Gnuplot2dDataset m_output;
+  uint32_t m_bytesTotal;     //!< total bytes
+  Gnuplot2dDataset m_output; //!< gnuplot 2d dataset
 };
 
 NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
@@ -99,12 +127,6 @@ void
 NodeStatistics::RxCallback (std::string path, Ptr<const Packet> packet, const Address &from)
 {
   m_bytesTotal += packet->GetSize ();
-}
-
-void
-NodeStatistics::CheckStatistics (double time)
-{
-
 }
 
 void
@@ -236,11 +258,11 @@ int main (int argc, char *argv[])
     {
       if (standard == "802.11n-2.4GHz")
         {
-          wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
+          wifi.SetStandard (WIFI_STANDARD_80211n);
         }
       else if (standard == "802.11n-5GHz")
         {
-          wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
+          wifi.SetStandard (WIFI_STANDARD_80211n);
         }
 
       WifiMacHelper wifiMac;

@@ -47,7 +47,7 @@
 #include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/mpi-interface.h"
-#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/nix-vector-helper.h"
 
 #include <fstream>
 #include <vector>
@@ -70,24 +70,11 @@ main (int argc, char *argv[])
   typedef std::vector<NetDeviceContainer> vectorOfNetDeviceContainer;
   typedef std::vector<vectorOfNetDeviceContainer> vectorOfVectorOfNetDeviceContainer;
 
-  // Enable parallel simulator with the command line arguments
-  MpiInterface::Enable (&argc, &argv);
-
-  SinkTracer::Init ();
-
   SystemWallClockMs t0;  // Total time
   SystemWallClockMs t1;  // Setup time
   SystemWallClockMs t2;  // Run time/
   t0.Start ();
   t1.Start ();
-
-  uint32_t systemId = MpiInterface::GetSystemId ();
-  uint32_t systemCount = MpiInterface::GetSize ();
-
-  RANK0COUT (" ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl);
-
-  GlobalValue::Bind ("SimulatorImplementationType",
-                     StringValue ("ns3::DistributedSimulatorImpl"));
 
   uint32_t nCN = 2;
   uint32_t nLANClients = 10;
@@ -109,6 +96,20 @@ main (int argc, char *argv[])
   cmd.AddValue ("test", "Enable regression test output", testing);
   
   cmd.Parse (argc,argv);
+
+  // Enable parallel simulator with the command line arguments
+  MpiInterface::Enable (&argc, &argv);
+
+  SinkTracer::Init ();
+
+  uint32_t systemId = MpiInterface::GetSystemId ();
+  uint32_t systemCount = MpiInterface::GetSize ();
+
+  RANK0COUT (" ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl);
+
+  GlobalValue::Bind ("SimulatorImplementationType",
+                     StringValue ("ns3::DistributedSimulatorImpl"));
+
 
   if (nCN < 2)
     {
@@ -283,7 +284,7 @@ main (int argc, char *argv[])
         {
           oss.str ("");
           oss << 10 + z << ".5." << 10 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.255");
+          address.SetBase (oss.str ().c_str (), "255.255.255.0");
           for (uint32_t j = 0; j < nLANClients; ++j)
             {
               Ptr<Node> node = CreateObject<Node> (z % systemCount);

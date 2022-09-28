@@ -34,6 +34,7 @@
 #include <ns3/antenna-model.h>
 #include <ns3/angles.h>
 
+#include <algorithm>
 
 #include "single-model-spectrum-channel.h"
 
@@ -70,6 +71,17 @@ SingleModelSpectrumChannel::GetTypeId (void)
   return tid;
 }
 
+
+void
+SingleModelSpectrumChannel::RemoveRx (Ptr<SpectrumPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+  auto it = std::find (begin (m_phyList), end (m_phyList), phy);
+  if (it != std::end (m_phyList))
+    {
+      m_phyList.erase (it);
+    }
+}
 
 void
 SingleModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
@@ -110,6 +122,19 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
        rxPhyIterator != m_phyList.end ();
        ++rxPhyIterator)
     {
+      Ptr<NetDevice> rxNetDevice = (*rxPhyIterator)->GetDevice ();
+      Ptr<NetDevice> txNetDevice = txParams->txPhy->GetDevice ();
+
+      if (rxNetDevice && txNetDevice)
+        {
+          // we assume that devices are attached to a node
+          if (rxNetDevice->GetNode()->GetId() == txNetDevice->GetNode()->GetId())
+            {
+              NS_LOG_DEBUG ("Skipping the pathloss calculation among different antennas of the same node, not supported yet by any pathloss model in ns-3.");
+              continue;
+            }
+        }
+
       if ((*rxPhyIterator) != txParams->txPhy)
         {
           Time delay  = MicroSeconds (0);
@@ -131,7 +156,7 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   NS_LOG_LOGIC ("txAntennaGain = " << txAntennaGain << " dB");
                   pathLossDb -= txAntennaGain;
                 }
-              Ptr<AntennaModel> rxAntenna = (*rxPhyIterator)->GetRxAntenna ();
+              Ptr<AntennaModel> rxAntenna = DynamicCast<AntennaModel>((*rxPhyIterator)->GetAntenna ());
               if (rxAntenna != 0)
                 {
                   Angles rxAngles (senderMobility->GetPosition (), receiverMobility->GetPosition ());
@@ -170,11 +195,10 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
             }
 
 
-          Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
-          if (netDev)
+          if (rxNetDevice)
             {
               // the receiver has a NetDevice, so we expect that it is attached to a Node
-              uint32_t dstNode =  netDev->GetNode ()->GetId ();
+              uint32_t dstNode =  rxNetDevice->GetNode ()->GetId ();
               Simulator::ScheduleWithContext (dstNode, delay, &SingleModelSpectrumChannel::StartRx, this, rxParams, *rxPhyIterator);
             }
           else

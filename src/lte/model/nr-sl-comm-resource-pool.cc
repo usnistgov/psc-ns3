@@ -227,8 +227,7 @@ NrSlCommResourcePool::GetNrSlSensWindInSlots (uint8_t bwpId, uint16_t poolId, Ti
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId << slotLength);
 
-  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
-  NS_UNUSED (ret);
+  [[maybe_unused]] NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
   LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
   LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
   LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
@@ -260,8 +259,7 @@ NrSlCommResourcePool::GetNrSlSubChSize (uint8_t bwpId, uint16_t poolId) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId);
 
-  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
-  NS_UNUSED (ret);
+  [[maybe_unused]] NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
   LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
   LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
   LteRrcSap::SlResourcePoolConfigNr slResourcePoolConfig = slBwpConfigCommon.slBwpPoolConfigCommonNr.slTxPoolSelectedNormal.at (poolId);
@@ -292,8 +290,7 @@ void
 NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId << resvPeriod.GetMilliSeconds ());
-  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
-  NS_UNUSED (ret);
+  [[maybe_unused]] NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
   const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
   std::array <LteRrcSap::SlResourceReservePeriod, 16> resvPeriodList = pool.slUeSelectedConfigRp.slResourceReservePeriodList;
   uint16_t periodInt = static_cast <uint16_t> (resvPeriod.GetMilliSeconds ());
@@ -315,8 +312,7 @@ uint16_t
 NrSlCommResourcePool::GetResvPeriodInSlots (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId << resvPeriod.GetMilliSeconds () << slotLength);
-  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
-  NS_UNUSED (ret);
+  [[maybe_unused]] NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
   uint16_t periodInt = static_cast <uint16_t> (resvPeriod.GetMilliSeconds ());
 
   double numResvSlots = (periodInt / static_cast <double>(1000)) / slotLength.GetSeconds ();
@@ -363,8 +359,7 @@ uint16_t
 NrSlCommResourcePool::GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const
 {
   NS_LOG_FUNCTION (this << +bwpId << poolId);
-  NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
-  NS_UNUSED (ret);
+  [[maybe_unused]] NrSlCommResourcePool::BwpAndPoolIt ret = ValidateBwpAndPoolId (bwpId, poolId);
   const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
   return LteRrcSap::GetNrSlSubChSizeValue (pool.slSubchannelSize);
 }

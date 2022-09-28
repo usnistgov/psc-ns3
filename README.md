@@ -41,26 +41,26 @@ use of these ns-3 libraries.
 
 To build the set of default libraries and the example
 programs included in this package, you need to use the
-tool 'waf'. Detailed information on how to use waf is
+tool 'ns3'. Detailed information on how to use ns3 is
 included in the file doc/build.txt
 
 However, the real quick and dirty way to get started is to
 type the command
 ```shell
-./waf configure --enable-examples
+./ns3 configure --enable-examples
 ```
 
 followed by
 
 ```shell
-./waf
+./ns3
 ```
 
 in the directory which contains this README file. The files
 built will be copied in the build/ directory.
 
 The current codebase is expected to build and run on the
-set of platforms listed in the [release notes](RELEASE_NOTES)
+set of platforms listed in the [release notes](RELEASE_NOTES.md)
 file.
 
 Other platforms may or may not work: we welcome patches to
@@ -73,7 +73,7 @@ enabled), it should be easy to run the sample programs with the
 following command, such as:
 
 ```shell
-./waf --run simple-global-routing
+./ns3 run simple-global-routing
 ```
 
 That program should generate a `simple-global-routing.tr` text

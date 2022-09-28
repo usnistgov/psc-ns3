@@ -23,10 +23,12 @@
 #include "ns3/names.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
+#include "ns3/interference-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/frame-capture-model.h"
 #include "ns3/preamble-detection-model.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/wifi-net-device.h"
 #include "yans-wifi-helper.h"
 
 namespace ns3 {
@@ -127,6 +129,7 @@ YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0)
 {
   m_phy.SetTypeId ("ns3::YansWifiPhy");
+  SetInterferenceHelper ("ns3::InterferenceHelper");
   SetErrorRateModel ("ns3::TableBasedErrorRateModel");
 }
 
@@ -144,20 +147,22 @@ YansWifiPhyHelper::SetChannel (std::string channelName)
 }
 
 Ptr<WifiPhy>
-YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
+YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
   Ptr<YansWifiPhy> phy = m_phy.Create<YansWifiPhy> ();
+  Ptr<InterferenceHelper> interference = m_interferenceHelper.Create<InterferenceHelper> ();
+  phy->SetInterferenceHelper (interference);
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
   phy->SetErrorRateModel (error);
   if (m_frameCaptureModel.IsTypeIdSet ())
     {
-      Ptr<FrameCaptureModel> capture = m_frameCaptureModel.Create<FrameCaptureModel> ();
-      phy->SetFrameCaptureModel (capture);
+      auto frameCapture = m_frameCaptureModel.Create<FrameCaptureModel> ();
+      phy->SetFrameCaptureModel (frameCapture);
     }
   if (m_preambleDetectionModel.IsTypeIdSet ())
     {
-      Ptr<PreambleDetectionModel> capture = m_preambleDetectionModel.Create<PreambleDetectionModel> ();
-      phy->SetPreambleDetectionModel (capture);
+      auto preambleDetection = m_preambleDetectionModel.Create<PreambleDetectionModel> ();
+      phy->SetPreambleDetectionModel (preambleDetection);
     }
   phy->SetChannel (m_channel);
   phy->SetDevice (device);

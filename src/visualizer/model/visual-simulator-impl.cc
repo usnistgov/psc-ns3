@@ -18,6 +18,8 @@
  * Author: Gustavo Carneiro <gjcarneiro@gmail.com> <gjc@inescporto.pt>
  */
 #include <Python.h>
+#undef HAVE_PTHREAD_H
+#undef HAVE_SYS_STAT_H
 #include "visual-simulator-impl.h"
 #include "ns3/default-simulator-impl.h"
 #include "ns3/log.h"
@@ -31,7 +33,10 @@ NS_OBJECT_ENSURE_REGISTERED (VisualSimulatorImpl);
 
 namespace
 {
-/// Get an object factory configured to the default simulator implementation
+/**
+ * Get an object factory configured to the default simulator implementation
+ * \return an object factory.
+ */
 ObjectFactory
 GetDefaultSimulatorImplFactory ()
 {

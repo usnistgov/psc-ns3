@@ -74,7 +74,7 @@ public:
   Ptr<NetDevice> GetDevice () const;
   // device does not use Rx but these pure virtual methods must be implemented
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  Ptr<AntennaModel> GetRxAntenna () const;
+  Ptr<Object> GetAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /** 
@@ -103,9 +103,6 @@ public:
    * Analog PSD approximated from Figure 4 of the following paper:
    * Stephen Shellhammer, Ahmed Sadek, and Wenyi Zhang. "Technical Challenges 
    * for Cognitive Radio in the TV White Space Spectrum." Qualcomm Incorporated.
-   *
-   *
-   * @return a pointer to the power spectral density of the TV transmitter
    */
   virtual void CreateTvPsd ();
 

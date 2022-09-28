@@ -21,8 +21,11 @@
  */
 
 // This program conducts a Bianchi analysis of a wifi network.
-// It currently only supports 11a/b/g, and will be later extended
-// to support 11n/ac/ax, including frame aggregation settings.
+// Bianchi analysis involves saturating the network and observing how
+// the maximum achievable throughput is governed by the DCF or ECDA
+// channel access mechanisms.  This program offers many configurable
+// options, traces, and a validation option; the main output is a Gnuplot
+// plot file plotting throughput vs. number of nodes.
 
 #include <fstream>
 #include "ns3/log.h"
@@ -571,7 +574,7 @@ TracePacketReception (std::string context, Ptr<const Packet> p, uint16_t channel
   packet->PeekHeader (hdr);
   // hdr.GetAddr1() is the receiving MAC address
   if (hdr.GetAddr1 () != ContextToMac (context))
-    { 
+    {
       return;
     }
   // hdr.GetAddr2() is the sending MAC address
@@ -877,6 +880,9 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
                  uint32_t trialNumber, uint32_t networkSize, Time duration, bool pcap, bool infra, uint16_t guardIntervalNs,
                  double distance, double apTxPowerDbm, double staTxPowerDbm, Time pktInterval)
 {
+  RngSeedManager::SetSeed (10);
+  RngSeedManager::SetRun (10);
+
   NodeContainer wifiNodes;
   if (infra)
     {
@@ -884,7 +890,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
     }
   else
     {
-      wifiNodes.Create (networkSize); 
+      wifiNodes.Create (networkSize);
     }
 
   YansWifiPhyHelper phy = wifiPhy;
@@ -903,14 +909,14 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
       mac.SetType ("ns3::ApWifiMac",
                    "BeaconInterval", TimeValue (MicroSeconds (beaconInterval)),
                    "Ssid", SsidValue (ssid));
-      phy.Set ("TxPowerStart", DoubleValue (apTxPowerDbm)); 
+      phy.Set ("TxPowerStart", DoubleValue (apTxPowerDbm));
       phy.Set ("TxPowerEnd", DoubleValue (apTxPowerDbm));
       devices = wifi.Install (phy, mac, wifiNodes.Get (0));
 
       mac.SetType ("ns3::StaWifiMac",
                    "MaxMissedBeacons", UintegerValue (std::numeric_limits<uint32_t>::max ()),
                    "Ssid", SsidValue (ssid));
-      phy.Set ("TxPowerStart", DoubleValue (staTxPowerDbm)); 
+      phy.Set ("TxPowerStart", DoubleValue (staTxPowerDbm));
       phy.Set ("TxPowerEnd", DoubleValue (staTxPowerDbm));
       for (uint32_t i = 1; i < nNodes; ++i)
         {
@@ -927,7 +933,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
 
   wifi.AssignStreams (devices, trialNumber);
 
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (guardIntervalNs == 400 ? true : false));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (guardIntervalNs == 400));
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (guardIntervalNs)));
 
   // Configure aggregation
@@ -959,7 +965,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
 
   PacketSocketHelper packetSocket;
   packetSocket.Install (wifiNodes);
-  
+
   ApplicationContainer apps;
   Ptr<UniformRandomVariable> startTime = CreateObject<UniformRandomVariable> ();
   startTime->SetAttribute ("Stream", IntegerValue (trialNumber));
@@ -1000,9 +1006,9 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
     }
 
   // Trace CW evolution
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/Txop/CwTrace", MakeCallback (&CwTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/Txop/CwTrace", MakeCallback (&CwTrace));
   // Trace backoff evolution
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/Txop/BackoffTrace", MakeCallback (&BackoffTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/Txop/BackoffTrace", MakeCallback (&BackoffTrace));
   // Trace PHY Tx start events
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyTxBegin", MakeCallback (&PhyTxTrace));
   // Trace PHY Tx end events
@@ -1046,7 +1052,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
       macRxTraceFile.flush ();
       socketSendTraceFile.flush ();
     }
-  
+
   return 0;
 }
 
@@ -1170,7 +1176,6 @@ int main (int argc, char *argv[])
       WifiHelper::EnableLogComponents ();
     }
 
-  Config::SetDefault ("ns3::WifiPhy::ChannelWidth", UintegerValue (channelWidth));
   std::stringstream phyModeStr;
   phyModeStr << phyMode;
   if (phyMode.find ("Mcs") != std::string::npos)
@@ -1208,11 +1213,11 @@ int main (int argc, char *argv[])
     {
       if (frequency == 2.4)
         {
-          wifiStandard = WIFI_STANDARD_80211n_2_4GHZ;
+          wifiStandard = WIFI_STANDARD_80211n;
         }
       else if (frequency == 5)
         {
-          wifiStandard = WIFI_STANDARD_80211n_5GHZ;
+          wifiStandard = WIFI_STANDARD_80211n;
         }
       else
         {
@@ -1228,15 +1233,15 @@ int main (int argc, char *argv[])
     {
       if (frequency == 2.4)
         {
-          wifiStandard = WIFI_STANDARD_80211ax_2_4GHZ;
+          wifiStandard = WIFI_STANDARD_80211ax;
         }
       else if (frequency == 5)
         {
-          wifiStandard = WIFI_STANDARD_80211ax_5GHZ;
+          wifiStandard = WIFI_STANDARD_80211ax;
         }
       else if (frequency == 6)
         {
-          wifiStandard = WIFI_STANDARD_80211ax_6GHZ;
+          wifiStandard = WIFI_STANDARD_80211ax;
         }
       else
         {
@@ -1247,6 +1252,11 @@ int main (int argc, char *argv[])
     {
       NS_FATAL_ERROR ("Unsupported standard: " << standard);
     }
+
+  std::string channelStr = "{0, " + std::to_string (channelWidth) + ", BAND_"
+                           + (frequency == 2.4 ? "2_4" : (frequency == 5 ? "5" : "6"))
+                           + "GHZ, 0}";
+  Config::SetDefault ("ns3::WifiPhy::ChannelSettings", StringValue (channelStr));
 
   YansWifiPhyHelper wifiPhy;
   wifiPhy.DisablePreambleDetectionModel ();

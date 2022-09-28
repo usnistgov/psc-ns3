@@ -76,6 +76,7 @@ SOURCES = \
 	$(SRC)/wifi/doc/source/wifi-design.rst \
 	$(SRC)/wifi/doc/source/wifi-user.rst \
 	$(SRC)/wifi/doc/source/wifi-testing.rst \
+	$(SRC)/wifi/doc/source/wifi-changelog.rst \
 	$(SRC)/wifi/doc/source/wifi-references.rst \
 	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
@@ -334,6 +335,7 @@ SOURCEFIGS = \
 	$(SRC)/netanim/doc/figures/RoutingTables.pdf \
 	$(SRC)/netanim/doc/figures/PacketTimeline.png \
 	$(SRC)/netanim/doc/figures/PacketTimeline.pdf \
+	$(SRC)/nix-vector-routing/doc/figures/nms.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.png \
 	$(SRC)/spectrum/doc/spectrum-channel-phy-interface.pdf \
 	$(SRC)/spectrum/doc/spectrum-analyzer-example.eps \

@@ -179,14 +179,10 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
 {
   Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
 
-  auto it = wifiStandards.find (m_standard);
-  if (it == wifiStandards.end ())
-    {
-      NS_FATAL_ERROR ("Selected standard is not defined!");
-      return device;
-    }
-
-  Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
+  // this is a const method, but we need to force the correct QoS setting
+  ObjectFactory macObjectFactory = m_mac;
+  macObjectFactory.Set ("QosSupported", BooleanValue (true));  // a mesh station is a QoS station
+  Ptr<MeshWifiInterfaceMac> mac = macObjectFactory.Create<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
   mac->SetSsid (Ssid ());
   mac->SetDevice (device);
@@ -195,19 +191,18 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (m_standard);
-  Ptr<RegularWifiMac> wifiMac = DynamicCast<RegularWifiMac> (mac);
-  Ptr<FrameExchangeManager> fem;
-  if (wifiMac != 0 && (fem = wifiMac->GetFrameExchangeManager ()) != 0)
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
+  if (fem != nullptr)
     {
       Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
-      protectionManager->SetWifiMac (wifiMac);
+      protectionManager->SetWifiMac (mac);
       fem->SetProtectionManager (protectionManager);
 
       Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
-      ackManager->SetWifiMac (wifiMac);
+      ackManager->SetWifiMac (mac);
       fem->SetAckManager (ackManager);
     }
-  phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
+  phy->ConfigureStandard (m_standard);
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);
@@ -249,6 +244,7 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
       Ptr<MeshWifiInterfaceMac> mac;
       if (mpd)
         {
+          currentStream += mpd->AssignStreams (currentStream);
           // To access, we need the underlying WifiNetDevices
           std::vector<Ptr<NetDevice> > ifaces = mpd->GetInterfaces ();
           for (std::vector<Ptr<NetDevice> >::iterator i = ifaces.begin (); i != ifaces.end (); i++)
@@ -267,38 +263,53 @@ MeshHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
                 }
               // Handle any random numbers in the mesh mac and plugins
               mac = DynamicCast<MeshWifiInterfaceMac> (wifi->GetMac ());
-              if (mac)
-                {
-                  currentStream += mac->AssignStreams (currentStream);
-                }
-              Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-              if (rmac)
-                {
-                  PointerValue ptr;
-                  rmac->GetAttribute ("Txop", ptr);
-                  Ptr<Txop> txop = ptr.Get<Txop> ();
-                  currentStream += txop->AssignStreams (currentStream);
+              currentStream += mac->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("VO_Txop", ptr);
-                  Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
-                  currentStream += vo_txop->AssignStreams (currentStream);
+              PointerValue ptr;
+              mac->GetAttribute ("Txop", ptr);
+              Ptr<Txop> txop = ptr.Get<Txop> ();
+              currentStream += txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("VI_Txop", ptr);
-                  Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
-                  currentStream += vi_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("VO_Txop", ptr);
+              Ptr<QosTxop> vo_txop = ptr.Get<QosTxop> ();
+              currentStream += vo_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("BE_Txop", ptr);
-                  Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
-                  currentStream += be_txop->AssignStreams (currentStream);
+              mac->GetAttribute ("VI_Txop", ptr);
+              Ptr<QosTxop> vi_txop = ptr.Get<QosTxop> ();
+              currentStream += vi_txop->AssignStreams (currentStream);
 
-                  rmac->GetAttribute ("BK_Txop", ptr);
-                  Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
-                  currentStream += bk_txop->AssignStreams (currentStream);
-               }
+              mac->GetAttribute ("BE_Txop", ptr);
+              Ptr<QosTxop> be_txop = ptr.Get<QosTxop> ();
+              currentStream += be_txop->AssignStreams (currentStream);
+
+              mac->GetAttribute ("BK_Txop", ptr);
+              Ptr<QosTxop> bk_txop = ptr.Get<QosTxop> ();
+              currentStream += bk_txop->AssignStreams (currentStream);
             }
         }
     }
   return (currentStream - stream);
+}
+
+void
+MeshHelper::EnableLogComponents (void)
+{
+  WifiHelper::EnableLogComponents ();
+
+  LogComponentEnable ("MeshL2RoutingProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("MeshPointDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("MeshWifiInterfaceMac", LOG_LEVEL_ALL);
+
+  LogComponentEnable ("Dot11sPeerManagementProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("HwmpProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("HwmpProtocolMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("HwmpRtable", LOG_LEVEL_ALL);
+  LogComponentEnable ("PeerManagementProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("PeerManagementProtocolMac", LOG_LEVEL_ALL);
+
+  LogComponentEnable ("FlameProtocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("FlameProtocolMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("FlameRtable", LOG_LEVEL_ALL);
 }
 
 } // namespace ns3

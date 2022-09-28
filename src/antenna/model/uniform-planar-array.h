@@ -33,7 +33,7 @@ namespace ns3 {
  * \brief Class implementing Uniform Planar Array (UPA) model.
  *
  * \note the current implementation supports the modeling of antenna arrays
- * composed of a single panel and with single (vertical) polarization.
+ * composed of a single panel and with single (configured) polarization.
  */
 class UniformPlanarArray : public PhasedArrayModel
 {
@@ -49,14 +49,16 @@ public:
    */
   virtual ~UniformPlanarArray (void);
 
-
-  // inherited from Object
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
 
   /**
    * Returns the horizontal and vertical components of the antenna element field
-   * pattern at the specified direction. Only vertical polarization is considered.
+   * pattern at the specified direction. Single polarization is considered.
    * \param a the angle indicating the interested direction
    * \return a pair in which the first element is the horizontal component
    *         of the field pattern and the second element is the vertical
@@ -119,6 +121,29 @@ private:
    */
   uint32_t GetNumRows (void) const;
 
+  /**
+   * \brief Set the bearing angle
+   * This method sets the bearing angle and
+   * computes its cosine and sine
+   * \param alpha the bearing angle in radians
+   */
+  void SetAlpha (double alpha);
+
+  /**
+   * \brief Set the downtilt angle
+   * This method sets the downtilt angle and
+   * computes its cosine and sine
+   * \param beta the downtilt angle in radians
+   */
+  void SetBeta (double beta);
+
+  /**
+   * \brief Set the polarization slant angle
+   * This method sets the polarization slant angle and
+   * computes its cosine and sine
+   * \param polSlant the polarization slant angle in radians
+   */
+  void SetPolSlant (double polSlant);
 
   /**
    * Set the horizontal spacing for the antenna elements of the phased array
@@ -151,14 +176,19 @@ private:
    */
   double GetAntennaVerticalSpacing (void) const;
 
-
-  uint32_t m_numColumns; //!< number of columns
-  uint32_t m_numRows; //!< number of rows
-  double m_disV; //!< antenna spacing in the vertical direction in multiples of wave length
-  double m_disH; //!< antenna spacing in the horizontal direction in multiples of wave length
-  double m_alpha; //!< the bearing angle in radians
-  double m_beta; //!< the downtilt angle in radians
-
+  uint32_t m_numColumns {1}; //!< number of columns
+  uint32_t m_numRows {1}; //!< number of rows
+  double m_disV {0.5}; //!< antenna spacing in the vertical direction in multiples of wave length
+  double m_disH {0.5}; //!< antenna spacing in the horizontal direction in multiples of wave length
+  double m_alpha {0.0}; //!< the bearing angle in radians
+  double m_cosAlpha {1.0}; //!< the cosine of alpha
+  double m_sinAlpha {0.0}; //!< the sine of alpha
+  double m_beta {0.0}; //!< the downtilt angle in radians
+  double m_cosBeta {1.0}; //!< the cosine of Beta
+  double m_sinBeta {0.0}; //!< the sine of Beta
+  double m_polSlant {0.0}; //!< the polarization slant angle in radians
+  double m_cosPolSlant {1.0}; //!< the cosine of polarization slant angle
+  double m_sinPolSlant {0.0}; //!< the sine polarization slant angle
 };
 
 } /* namespace ns3 */

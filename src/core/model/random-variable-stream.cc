@@ -33,7 +33,6 @@
 #include "log.h"
 #include "rng-stream.h"
 #include "rng-seed-manager.h"
-#include "unused.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>    // upper_bound
@@ -455,12 +454,6 @@ ParetoRandomVariable::GetTypeId (void)
     .SetParent<RandomVariableStream>()
     .SetGroupName ("Core")
     .AddConstructor<ParetoRandomVariable> ()
-    .AddAttribute ("Mean", "The mean parameter for the Pareto distribution returned by this RNG stream.",
-                   DoubleValue (0.0),
-                   MakeDoubleAccessor (&ParetoRandomVariable::m_mean),
-                   MakeDoubleChecker<double>(),
-                   TypeId::DEPRECATED,
-                   "Not anymore used. Use 'Scale' instead - changing this attribute has no effect.")
     .AddAttribute ("Scale", "The scale parameter for the Pareto distribution returned by this RNG stream.",
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&ParetoRandomVariable::m_scale),
@@ -481,7 +474,6 @@ ParetoRandomVariable::ParetoRandomVariable ()
   // m_shape, m_shape, and m_bound are initialized after constructor
   // by attributes
   NS_LOG_FUNCTION (this);
-  NS_UNUSED (m_mean);
 }
 
 double

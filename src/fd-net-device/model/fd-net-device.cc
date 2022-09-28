@@ -296,6 +296,13 @@ FdNetDevice::StopDevice (void)
       m_fd = -1;
     }
 
+  while (!m_pendingQueue.empty ())
+    {
+      std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
+      m_pendingQueue.pop ();
+      FreeBuffer (next.first);
+    }
+
   DoFinishStoppingDevice ();
 }
 
@@ -306,7 +313,7 @@ FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
   bool skip = false;
 
   {
-    CriticalSection cs (m_pendingReadMutex);
+    std::unique_lock lock {m_pendingReadMutex};
     if (m_pendingQueue.size () >= m_maxPendingReads)
       {
         NS_LOG_WARN ("Packet dropped");
@@ -415,8 +422,14 @@ FdNetDevice::ForwardUp (void)
   uint8_t *buf = 0;
   ssize_t len = 0;
 
+  if (m_pendingQueue.empty())
   {
-    CriticalSection cs (m_pendingReadMutex);
+    NS_LOG_LOGIC ("buffer is empty, probably the device is stopped.");
+    return;
+  }
+
+  {
+    std::unique_lock lock {m_pendingReadMutex};
     std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
     m_pendingQueue.pop ();
 

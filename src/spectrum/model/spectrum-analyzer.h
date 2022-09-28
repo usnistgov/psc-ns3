@@ -65,7 +65,7 @@ public:
   Ptr<MobilityModel> GetMobility () const;
   Ptr<NetDevice> GetDevice () const;
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  Ptr<AntennaModel> GetRxAntenna () const;
+  Ptr<Object> GetAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
 
@@ -114,10 +114,12 @@ private:
 
   /**
    * Adds a signal to the data collected.
+   * \param psd signal to add
    */
   void AddSignal (Ptr<const SpectrumValue> psd);
   /**
    * Removes a signal to the data collected.
+   * \param psd signal to subtract
    */
   void SubtractSignal  (Ptr<const SpectrumValue> psd);
   /**

@@ -79,6 +79,10 @@ public:
   BridgeNetDevice ();
   virtual ~BridgeNetDevice ();
 
+  // Delete copy constructor and assignment operator to avoid misuse
+  BridgeNetDevice (const BridgeNetDevice &) = delete;
+  BridgeNetDevice & operator = (const BridgeNetDevice &) = delete;
+
   /** 
    * \brief Add a 'port' to a bridge device
    * \param bridgePort the NetDevice to add
@@ -87,7 +91,6 @@ public:
    * the new bridge port NetDevice becomes part of the bridge and L2
    * frames start being forwarded to/from this NetDevice.
    *
-   * \param bridgePort NetDevice
    * \attention The netdevice that is being added as bridge port must
    * _not_ have an IP address.  In order to add IP connectivity to a
    * bridging node you must enable IP on the BridgeNetDevice itself,
@@ -187,21 +190,6 @@ protected:
   Ptr<NetDevice> GetLearnedState (Mac48Address source);
 
 private:
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  BridgeNetDevice (const BridgeNetDevice &);
-
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  BridgeNetDevice &operator = (const BridgeNetDevice &);
-
   NetDevice::ReceiveCallback m_rxCallback; //!< receive callback
   NetDevice::PromiscReceiveCallback m_promiscRxCallback; //!< promiscuous receive callback
 

@@ -335,14 +335,14 @@ the ``first.cc`` example.
   }
 
 In order to run this example, copy the ``second.cc`` example script into 
-the scratch directory and use waf to build just as you did with
+the scratch directory and use ns3 to build just as you did with
 the ``first.cc`` example.  If you are in the top-level directory of the
 repository you just type,
 
 .. sourcecode:: bash
 
   $ cp examples/tutorial/second.cc scratch/mysecond.cc
-  $ ./waf
+  $ ./ns3
 
 Warning:  We use the file ``second.cc`` as one of our regression tests to
 verify that it works exactly as we think it should in order to make your
@@ -358,7 +358,7 @@ run the program.
 .. sourcecode:: bash
 
   $ export NS_LOG=
-  $ ./waf --run scratch/mysecond
+  $ ./ns3 run scratch/mysecond
 
 Since we have set up the UDP echo applications to log just as we did in 
 ``first.cc``, you will see similar output when you run the script.
@@ -540,7 +540,7 @@ devices set to four:
 
 .. sourcecode:: bash
 
-  $ ./waf --run "scratch/mysecond --nCsma=4"
+  $ ./ns3 run "scratch/mysecond --nCsma=4"
 
 You should now see,
 
@@ -615,7 +615,7 @@ If you build the new script and run the simulation setting ``nCsma`` to 100,
 
 .. sourcecode:: bash
 
-  $ ./waf --run "scratch/mysecond --nCsma=100"
+  $ ./ns3 run "scratch/mysecond --nCsma=100"
 
 you will see the following output:
 
@@ -958,41 +958,51 @@ wireless medium and can communicate and interfere:
 
   phy.SetChannel (channel.Create ());
 
-Once the PHY helper is configured, we can focus on the MAC layer. Here we choose to
-work with non-Qos MACs. WifiMacHelper object is used to set MAC parameters. 
+Once the PHY helper is configured, we can focus on the MAC layer. The
+WifiMacHelper object is used to set MAC parameters.
+The second statement below creates an 802.11 service set identifier (SSID)
+object that will be used to set the value of the "Ssid" ``Attribute`` of
+the MAC layer implementation.  
+
+
+::
+
+  WifiMacHelper mac;
+  Ssid ssid = Ssid ("ns-3-ssid");
+
+WifiHelper will, by default, configure
+the standard in use to be 802.11ax (known commercially as Wi-Fi 6) and configure
+a compatible rate control algorithm (IdealWifiManager).
 
 ::
 
   WifiHelper wifi;
-  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
-  WifiMacHelper mac;
-
-The ``SetRemoteStationManager`` method tells the helper the type of 
-rate control algorithm to use.  Here, it is asking the helper to use the AARF
-algorithm --- details are, of course, available in Doxygen.
-
-Next, we configure the type of MAC, the SSID of the infrastructure network we
-want to setup and make sure that our stations don't perform active probing:
+We are now ready to install Wi-Fi models on the nodes, using these four 
+helper objects (YansWifiChannelHelper, YansWifiPhyHelper, WifiMacHelper,
+WifiHelper) and the Ssid object created above.  These helpers have
+encapsulated a lot of default configuration,
+and can be further tailored using additional attribute configuration if
+desired.  We also will create NetDevice containers to store pointers to
+the WifiNetDevice objects that the helper create.
 
 ::
 
-  Ssid ssid = Ssid ("ns-3-ssid");
+  NetDeviceContainer staDevices
   mac.SetType ("ns3::StaWifiMac",
     "Ssid", SsidValue (ssid),
     "ActiveProbing", BooleanValue (false));
 
-This code first creates an 802.11 service set identifier (SSID) object
-that will be used to set the value of the "Ssid" ``Attribute`` of
-the MAC layer implementation.  The particular kind of MAC layer that
-will be created by the helper is specified by ``Attribute`` as
-being of the "ns3::StaWifiMac" type.  "QosSupported" ``Attribute`` is
-set to false by default for ``WifiMacHelper`` objects. The combination
+In the above code, the specific kind of MAC layer that
+will be created by the helper is specified by the TypeId value
+of `ns3::StaWifiMac` type.  The "QosSupported" attribute is
+set to true by default for ``WifiMacHelper`` objects when the standard
+is at least 802.11n or newer. The combination
 of these two configurations means that the MAC instance next created
-will be a non-QoS non-AP station (STA) in an infrastructure BSS (i.e.,
+will be a QoS-aware, non-AP station (STA) in an infrastructure BSS (i.e.,
 a BSS with an AP).  Finally, the "ActiveProbing" ``Attribute`` is
 set to false.  This means that probe requests will not be sent by MACs
-created by this helper.
+created by this helper, and stations will listen for AP beacons.
 
 Once all the station-specific parameters are fully configured, both at the
 MAC and PHY layers, we can invoke our now-familiar ``Install`` method to 
@@ -1015,9 +1025,7 @@ requirements of the AP.
 
 In this case, the ``WifiMacHelper`` is going to create MAC
 layers of the "ns3::ApWifiMac", the latter specifying that a MAC
-instance configured as an AP should be created. We do not change
-the default setting of "QosSupported" ``Attribute``, so it remains
-false - disabling 802.11e/WMM-style QoS support at created APs.  
+instance configured as an AP should be created.
 
 The next lines create the single AP which shares the same set of PHY-level
 ``Attributes`` (and channel) as the stations:
@@ -1180,15 +1188,14 @@ Finally, we actually run the simulation, clean up and then exit the program.
   }
 
 In order to run this example, you have to copy the ``third.cc`` example
-script into the scratch directory and use Waf to build just as you did with
+script into the scratch directory and use CMake to build just as you did with
 the ``second.cc`` example.  If you are in the top-level directory of the
 repository you would type,
 
 .. sourcecode:: bash
 
   $ cp examples/tutorial/third.cc scratch/mythird.cc
-  $ ./waf
-  $ ./waf --run scratch/mythird
+  $ ./ns3 run scratch/mythird
 
 Again, since we have set up the UDP echo applications just as we did in the 
 ``second.cc`` script, you will see similar output.
