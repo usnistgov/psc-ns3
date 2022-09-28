@@ -156,7 +156,10 @@ set(source_files
     model/nr-sl-ue-bwpm-rrc-sap.cc
     model/nr-sl-ue-cmac-sap.cc
     model/nr-sl-ue-cphy-sap.cc
+    model/nr-sl-ue-prose-dir-lnk-sap.cc
     model/nr-sl-ue-rrc.cc
+    model/nr-sl-ue-svc-nas-sap.cc
+    model/nr-sl-ue-svc-rrc-sap.cc
 )
 
 set(header_files
@@ -298,7 +301,10 @@ set(header_files
     model/nr-sl-ue-bwpm-rrc-sap.h
     model/nr-sl-ue-cmac-sap.h
     model/nr-sl-ue-cphy-sap.h
+    model/nr-sl-ue-prose-dir-lnk-sap.h
     model/nr-sl-ue-rrc.h
+    model/nr-sl-ue-svc-nas-sap.h
+    model/nr-sl-ue-svc-rrc-sap.h
 )
 
 set(test_sources
