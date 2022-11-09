@@ -95,12 +95,11 @@ public:
    *
    * Tells the RRC to activate NR Sidelink Bearer
    *
-   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
-   * \param isUnicast True if the bearer is for unicast communication
+   * \param slInfo The SidelinkInfo for the bearer
    */
-  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast) = 0;
+  virtual void ActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo) = 0;
 
   /**
    * \brief Send sidelink data packet to RRC.
@@ -156,9 +155,9 @@ public:
   /**
    * \brief Notify the NAS that the NR sidelink has been setup
    *
-   * \param dstL2Id The destination layer 2 id
+   * \param slInfo The SidelinkInfo for the bearer
    */
-  virtual void NotifyNrSlRadioBearerActivated (uint32_t dstL2Id) = 0;
+  virtual void NotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo) = 0;
 
 };
 
@@ -188,7 +187,7 @@ public:
   virtual void Connect (void);
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
-  virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  virtual void ActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo);
   virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
 
 private:
@@ -251,9 +250,9 @@ MemberLteAsSapProvider<C>::Disconnect ()
 
 template <class C>
 void
-MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo)
 {
-  m_owner->DoActivateNrSlRadioBearer (dstL2Id, isTransmit, isReceive, isUnicast);
+  m_owner->DoActivateNrSlRadioBearer (isTransmit, isReceive, slInfo);
 }
 
 template <class C>
@@ -285,7 +284,7 @@ public:
   virtual void NotifyConnectionFailed ();
   virtual void RecvData (Ptr<Packet> packet);
   virtual void NotifyConnectionReleased ();
-  virtual void NotifyNrSlRadioBearerActivated (uint32_t dstL2Id);
+  virtual void NotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo);
 
 private:
   MemberLteAsSapUser ();
@@ -333,9 +332,9 @@ MemberLteAsSapUser<C>::NotifyConnectionReleased ()
 
 template <class C>
 void
-MemberLteAsSapUser<C>::NotifyNrSlRadioBearerActivated (uint32_t dstL2Id)
+MemberLteAsSapUser<C>::NotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo)
 {
-  m_owner->DoNotifyNrSlRadioBearerActivated (dstL2Id);
+  m_owner->DoNotifyNrSlRadioBearerActivated (slInfo);
 }
 
 

@@ -3490,12 +3490,12 @@ LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
 }
 
 void
-LteUeRrc::DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+LteUeRrc::DoActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo)
 {
-  NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive << isUnicast);
-  if (!isUnicast)
+  NS_LOG_FUNCTION (this << isTransmit << isReceive);
+  if (slInfo.m_castType != SidelinkInfo::CastType::Unicast)
     {
-      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive);
+      ActivateNrSlDrb (isTransmit, isReceive, slInfo);
     }
 }
 
@@ -3518,9 +3518,14 @@ LteUeRrc::DoSetSourceL2Id (uint32_t srcL2Id)
 }
 
 void
-LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
+LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct SidelinkInfo slInfo)
 {
-  NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive);
+  NS_LOG_FUNCTION (this << isTransmit << isReceive);
+
+  // Associate this RRC entity's source L2 ID with the sidelink info that
+  // was passed in (possibly with an uninitialized srcL2Id field)
+  struct SidelinkInfo slInfoWithSrcId (slInfo);
+  slInfoWithSrcId.m_srcL2Id = m_srcL2Id;
 
   switch (m_state)
   {
@@ -3542,8 +3547,8 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
 
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
-          NS_LOG_INFO ("Created new TX SLRB for remote id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, slInfo.m_dstL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id));
+          NS_LOG_INFO ("Created new TX SLRB for remote id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
       if ((isTransmit && isReceive) || isReceive)
@@ -3552,13 +3557,11 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
           for (const auto &it:bwpIdsSl)
             {
               NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
-              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (dstL2Id);
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (slInfo.m_dstL2Id);
             }
         }
-
       //Notify NAS
-      m_asSapUser->NotifyNrSlRadioBearerActivated (dstL2Id);
-      //m_nrSlRrcSapUser->NotifyNrSlRadioBearerActivated (dstL2Id); I dont see the need of for now
+      m_asSapUser->NotifyNrSlRadioBearerActivated (slInfoWithSrcId);
       break;
 /*
     case IDLE_WAIT_SIB2:
@@ -3586,7 +3589,8 @@ LteUeRrc::ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive)
         }
       //Try to send to eNodeB
       SendSidelinkUeInformation (tx, rx, false, false);
-      break;*/
+      break;
+*/
 
     default: // i.e. IDLE_RANDOM_ACCESS
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));

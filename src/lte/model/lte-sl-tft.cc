@@ -41,32 +41,29 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteSlTft");
 
-LteSlTft::LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t dstL2Id)
+LteSlTft::LteSlTft (Direction d, Ipv4Address remoteAddr, const struct SidelinkInfo& slInfo)
+  : m_direction (d),
+    m_remoteAddress (remoteAddr),
+    m_sidelinkInfo (slInfo)
 {
   NS_LOG_FUNCTION (this);
-  m_direction = d;
-  m_commType = commType;
   m_hasRemoteAddress = true;
-  m_remoteAddress = remoteAddr;
   m_remoteMask = Ipv4Mask::GetOnes ();
-
-  NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
-  NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
-  m_dstL2Id = dstL2Id;
+  NS_ASSERT_MSG (slInfo.m_dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((slInfo.m_dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
 }
 
-LteSlTft::LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t dstL2Id)
+LteSlTft::LteSlTft (Direction d, Ipv6Address remoteAddr, const struct SidelinkInfo& slInfo)
+  : m_direction (d),
+    m_remoteAddress6 (remoteAddr),
+    m_sidelinkInfo (slInfo)
 {
   NS_LOG_FUNCTION (this);
-  m_direction = d;
-  m_commType = commType;
   m_hasRemoteAddress = true;
-  m_remoteAddress6 = remoteAddr;
   m_remoteMask6 = Ipv6Prefix::GetOnes ();
 
-  NS_ASSERT_MSG (dstL2Id > 0, "Destination L2 id must be greater than zero");
-  NS_ASSERT_MSG ((dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
-  m_dstL2Id = dstL2Id;
+  NS_ASSERT_MSG (slInfo.m_dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((slInfo.m_dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
 }
 
 LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
@@ -74,12 +71,11 @@ LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
   NS_LOG_FUNCTION (this);
 
   m_direction = tft->m_direction;
-  m_commType = tft->m_commType;
   m_remoteAddress = tft->m_remoteAddress;
   m_remoteAddress6 = tft->m_remoteAddress6;
   m_remoteMask = tft->m_remoteMask;
   m_remoteMask6 = tft->m_remoteMask6;
-  m_dstL2Id = tft->m_dstL2Id;
+  m_sidelinkInfo = tft->m_sidelinkInfo;
 }
 
 bool
@@ -113,7 +109,12 @@ LteSlTft::Equals (Ptr<LteSlTft> tft)
       && m_remoteAddress6 != tft->m_remoteAddress6
       && m_remoteMask != tft->m_remoteMask
       && m_remoteMask6 != tft->m_remoteMask6
-      && m_dstL2Id != tft->m_dstL2Id)
+      && m_sidelinkInfo.m_castType != tft->m_sidelinkInfo.m_castType
+      && m_sidelinkInfo.m_srcL2Id != tft->m_sidelinkInfo.m_srcL2Id
+      && m_sidelinkInfo.m_harqEnabled != tft->m_sidelinkInfo.m_harqEnabled
+      && m_sidelinkInfo.m_pdb != tft->m_sidelinkInfo.m_pdb
+      && m_sidelinkInfo.m_dynamic != tft->m_sidelinkInfo.m_dynamic
+      && m_sidelinkInfo.m_rri != tft->m_sidelinkInfo.m_rri)
     {
       equals = false;
     }
@@ -121,10 +122,10 @@ LteSlTft::Equals (Ptr<LteSlTft> tft)
   return equals;
 }
 
-uint32_t
-LteSlTft::GetDstL2Id()
+struct SidelinkInfo
+LteSlTft::GetSidelinkInfo ()
 {
-  return m_dstL2Id;
+  return m_sidelinkInfo;
 }
 
 bool
@@ -146,8 +147,8 @@ LteSlTft::isTransmit ()
 bool
 LteSlTft::isUnicast ()
 {
-  NS_ASSERT_MSG (m_commType != LteSlTft::CommType::INVALID, "Invalid TFT communication type");
-  return (m_commType != LteSlTft::CommType::Broadcast && m_commType != LteSlTft::CommType::GroupCast);
+  NS_ASSERT_MSG (m_sidelinkInfo.m_castType != SidelinkInfo::CastType::Invalid, "Invalid TFT communication type");
+  return (m_sidelinkInfo.m_castType == SidelinkInfo::CastType::Unicast);
 }
 
 } // namespace ns3

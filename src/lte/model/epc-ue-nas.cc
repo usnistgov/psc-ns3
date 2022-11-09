@@ -233,7 +233,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                 if ((*it)->Matches (ipv4Header.GetDestination ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
                     return true;
                   }
               }
@@ -260,7 +260,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                 if ((*it)->Matches (ipv6Header.GetDestination ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
                     return true;
                   }
               }
@@ -307,7 +307,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                 if ((*it)->Matches (ipv4Header.GetDestination ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
                     return true;
                   }
               }
@@ -323,7 +323,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                 if ((*it)->Matches (ipv6Header.GetDestination ()))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
                     return true;
                   }
               }
@@ -427,18 +427,18 @@ EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft)
   //for in coverage case, it will trigger communication with the gNodeb
   //for out of coverage, it will trigger the use of preconfiguration
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->isTransmit (), tft->isReceive (), tft->GetSidelinkInfo ());
 }
 
 void
-EpcUeNas::DoNotifyNrSlRadioBearerActivated (uint32_t dstL2Id)
+EpcUeNas::DoNotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo)
 {
   NS_LOG_FUNCTION (this);
 
   std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
   while (it != m_pendingSlBearersList.end ())
     {
-      if ((*it)->GetDstL2Id () == dstL2Id)
+      if ((*it)->GetSidelinkInfo ().m_dstL2Id == slInfo.m_dstL2Id)
         {
           //Found sidelink
           m_slBearersActivatedList.push_back (*it);

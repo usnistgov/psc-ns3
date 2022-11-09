@@ -1472,12 +1472,11 @@ private:
   /**
    * \brief Activate NR sidelink radio bearer
    *
-   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
-   * \param isUnicast True if the bearer is for unicast communication
+   * \param slInfo The SidelinkInfo information
    */
-  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  void DoActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo);
   /**
    * \brief Send sidelink data packet to RRC.
    *
@@ -1508,11 +1507,11 @@ private:
   /**
    * \brief Activate NR sidelink data radio bearer
    *
-   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
+   * \param slInfo The SidelinkInfo information
    */
-  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive);
+  void ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct SidelinkInfo slInfo);
 
   /**
    * \brief set out-of-coverage UE RNTI

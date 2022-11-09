@@ -40,10 +40,42 @@
 #include <ns3/simple-ref-count.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/ipv6-address.h>
+#include <ns3/nstime.h>
 
 #include <list>
 
 namespace ns3 {
+
+
+/**
+ * \brief structure to hold sidelink information about a logical channel
+ * 
+ * Corresponds to "Sidelink Transmission/Identification/Other Information"
+ * define in TS 38.321.
+ */
+struct SidelinkInfo
+{
+  /**
+   * \brief Indicates the type of communication.  Corresponds to
+   * TS 38.212 Table 8.4.1.1-1: Cast type indicator
+   */
+  enum class CastType
+  {
+    Broadcast = 0,
+    Groupcast = 1,
+    Unicast = 2,
+    GroupcastNegativeOnly = 3,
+    Invalid = 4 
+  };
+
+  CastType m_castType {CastType::Invalid}; //!< Cast type
+  uint32_t m_srcL2Id {0}; //!< Source L2 ID
+  uint32_t m_dstL2Id {0}; //!< 24 bit L2 id of remote entity
+  bool m_harqEnabled {false}; //!< Whether HARQ is enabled
+  Time m_pdb; //!< Packet Delay Budget
+  bool m_dynamic {false}; //!< flag for whether LC is dynamic or SPS
+  Time m_rri {0}; //!< Resource Reservation Interval
+};
 
 /**
  * \ingroup Lte
@@ -71,35 +103,22 @@ public:
   };
 
   /**
-   * \brief Indicates the type of communication.
-   */
-  enum class CommType
-  {
-    Broadcast = 1,
-    GroupCast = 2,
-    Uincast = 3,
-    INVALID = 4
-  };
-
-  /**
-   * \brief Constructor (sets remote address only)
+   * \brief Constructor
    *
    * \param d The direction
-   * \param commType The communication type
    * \param remoteAddr The IPv4 address of the remote
-   * \param dstL2Id The destination layer 2 id
+   * \param slInfo SidelinkInfo structure
    */
-  LteSlTft (Direction d, CommType commType, Ipv4Address remoteAddr, uint32_t dstL2Id);
+  LteSlTft (Direction d, Ipv4Address remoteAddr, const struct SidelinkInfo& slInfo);
 
   /**
-   * \brief Constructor (sets remote address only)
+   * \brief Constructor
    *
    * \param d The direction
-   * \param commType The communication type
    * \param remoteAddr The IPv6 address of the remote
-   * \param dstL2Id The destination layer 2 id
+   * \param slInfo SidelinkInfo structure
    */
-  LteSlTft (Direction d, CommType commType, Ipv6Address remoteAddr, uint32_t dstL2Id);
+  LteSlTft (Direction d, Ipv6Address remoteAddr, const struct SidelinkInfo& slInfo);
 
   /**
    * \brief Constructor for copy
@@ -136,10 +155,10 @@ public:
   bool Equals (Ptr<LteSlTft> tft);
 
   /**
-   * \brief Gets the Destination L2 id associated with the TFT
-   * \return The Destination L2 address associated with the TFT
+   * \brief Gets the SidelinkInfo ssociated with the TFT
+   * \return The SidelinkInfo associated with the TFT
    */
-  uint32_t GetDstL2Id ();
+  struct SidelinkInfo GetSidelinkInfo ();
 
   /**
    * \brief Indicates if the TFT is for an incoming sidelink bearer
@@ -163,13 +182,12 @@ private:
   Direction m_direction {Direction::INVALID}; /**< whether the filter needs to be applied
                                                * to sending or receiving only, or in both cases
                                                */
-  CommType m_commType {CommType::INVALID}; //!< The type of communication
   bool m_hasRemoteAddress {false};      //!< Indicates if the TFT has remoteAddress information
   Ipv4Address m_remoteAddress {Ipv4Address::GetZero ()};        //!< IPv4 address of the remote host
   Ipv6Address m_remoteAddress6 {Ipv6Address::GetZero ()};       //!< IPv6 address of the remote host
   Ipv4Mask m_remoteMask {Ipv4Mask::GetZero ()};         //!< IPv4 address mask of the remote host
   Ipv6Prefix m_remoteMask6 {Ipv6Prefix::GetZero ()};    //!< IPv6 address mask of the remote host
-  uint32_t m_dstL2Id {0};      //!< 24 bit L2 id of remote entity
+  struct SidelinkInfo m_sidelinkInfo; //!< SidelinkInfo struct
 
 };
 
