@@ -3518,7 +3518,7 @@ LteUeRrc::DoSetSourceL2Id (uint32_t srcL2Id)
 }
 
 void
-LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct SidelinkInfo slInfo)
+LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo)
 {
   NS_LOG_FUNCTION (this << isTransmit << isReceive);
 
@@ -3547,7 +3547,7 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
 
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, slInfo.m_dstL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id));
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id), slInfo);
           NS_LOG_INFO ("Created new TX SLRB for remote id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
@@ -3621,14 +3621,52 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
 {
   NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id);
   //add LC
-  Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlDrb (srcL2Id, dstL2Id, lcId);
+  Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlRxDrb (srcL2Id, dstL2Id, lcId);
   NS_LOG_INFO ("Created new RX SLRB for group " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
 }
 
 Ptr<NrSlDataRadioBearerInfo>
-LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
+LteUeRrc::AddNrSlTxDrb (uint32_t srcL2Id, uint8_t lcid, const struct SidelinkInfo& slInfo)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << srcL2Id << +lcid);
+
+  NS_ABORT_MSG_IF ((srcL2Id == 0 || slInfo.m_dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
+
+  NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo lcInfo;
+  lcInfo.srcL2Id = srcL2Id;
+  lcInfo.dstL2Id = slInfo.m_dstL2Id;
+  lcInfo.lcId = lcid;
+  lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
+  //following parameters have no impact at the moment
+  //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
+  lcInfo.priority = 7;
+  lcInfo.pqi = 65;
+  lcInfo.isGbr = true;
+  lcInfo.gbr = 65535; //bits/s random value
+  lcInfo.mbr = lcInfo.gbr;
+  lcInfo.castType = slInfo.m_castType;
+  lcInfo.harqEnabled = slInfo.m_harqEnabled;
+  lcInfo.pdb = slInfo.m_pdb;
+  lcInfo.dynamic = slInfo.m_dynamic;
+  lcInfo.rri = slInfo.m_rri;
+
+  Ptr<NrSlDataRadioBearerInfo> slDrbInfo = CreateObject <NrSlDataRadioBearerInfo> ();
+  slDrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
+  slDrbInfo->m_destinationL2Id = lcInfo.dstL2Id;
+  slDrbInfo->m_logicalChannelIdentity = lcInfo.lcId;
+  slDrbInfo->m_logicalChannelConfig.logicalChannelGroup = lcInfo.lcGroup;
+  slDrbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
+  slDrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
+  slDrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
+  m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
+
+  return (FinishSlDrbConfiguration (slDrbInfo, lcInfo));
+}
+
+Ptr<NrSlDataRadioBearerInfo>
+LteUeRrc::AddNrSlRxDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
+{
+  NS_LOG_FUNCTION (this << srcL2Id << dstL2Id << +lcid);
 
   NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
 
@@ -3645,7 +3683,6 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   lcInfo.gbr = 65535; //bits/s random value
   lcInfo.mbr = lcInfo.gbr;
 
-
   Ptr<NrSlDataRadioBearerInfo> slDrbInfo = CreateObject <NrSlDataRadioBearerInfo> ();
   slDrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
   slDrbInfo->m_destinationL2Id = lcInfo.dstL2Id;
@@ -3654,17 +3691,16 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   slDrbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
   slDrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
   slDrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
+  m_nrSlRrcSapUser->AddNrSlRxDataRadioBearer (slDrbInfo);
 
-  if (m_srcL2Id == srcL2Id)
-    {
-      //Bearer for transmission
-      m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
-    }
-  else
-    {
-      //Bearer for reception
-      m_nrSlRrcSapUser->AddNrSlRxDataRadioBearer (slDrbInfo);
-    }
+  return (FinishSlDrbConfiguration (slDrbInfo, lcInfo));
+}
+
+Ptr<NrSlDataRadioBearerInfo>
+LteUeRrc::FinishSlDrbConfiguration (Ptr<NrSlDataRadioBearerInfo> slDrbInfo,
+    const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo)
+{
+  NS_LOG_FUNCTION (this << slDrbInfo << lcInfo);
 
   //create PDCP/RLC stack
   ObjectFactory rlcObjectFactory;
