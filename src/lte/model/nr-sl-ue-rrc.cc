@@ -166,18 +166,24 @@ const std::vector <std::bitset<1>>
 NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
 {
   NS_LOG_FUNCTION (this);
+  return GetPhysicalSlPool (slBitMap, m_tddPattern);
+}
+
+std::vector <std::bitset<1>>
+NrSlUeRrc::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap, const std::vector<NrSlUeRrc::LteNrTddSlotType>& tddPattern)
+{
   std::vector <std::bitset<1>> finalSlPool;
 
-  uint16_t countUl = std::count (m_tddPattern.begin (), m_tddPattern.end (), NrSlUeRrc::LteNrTddSlotType::UL);
+  uint16_t countUl = std::count (tddPattern.begin (), tddPattern.end (), NrSlUeRrc::LteNrTddSlotType::UL);
   NS_LOG_DEBUG ("number of uplinks in the given TDD pattern " << countUl);
   //If you will remove the following assert you will burn in the
   //do while loop below till the end of time!
   NS_ASSERT_MSG (countUl > 0, "No UL slot found in the given TDD pattern");
 
   NS_ABORT_MSG_IF (slBitMap.size () % countUl != 0, "SL bit map size should be multiple of number of UL slots in the TDD pattern");
-  NS_ABORT_MSG_IF (slBitMap.size () < m_tddPattern.size (), "SL bit map size should be greater than or equal to the TDD pattern size");
+  NS_ABORT_MSG_IF (slBitMap.size () < tddPattern.size (), "SL bit map size should be greater than or equal to the TDD pattern size");
 
-  auto patternIt = m_tddPattern.cbegin ();
+  auto patternIt = tddPattern.cbegin ();
   auto slBitMapit = slBitMap.cbegin();
 
   do
@@ -202,7 +208,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
           slBitMapit++;
         }
 
-      if (patternIt == m_tddPattern.cend () - 1)
+      if (patternIt == tddPattern.cend () - 1)
         {
           NS_LOG_DEBUG ("It is the last element of the TDD pattern " << *patternIt);
 
@@ -214,7 +220,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
           else
             {
               // we have not covered all the SL bitmap. Prepare to re-apply the TDD pattern
-              patternIt = m_tddPattern.cbegin ();
+              patternIt = tddPattern.cbegin ();
               NS_LOG_DEBUG ("re-assigning to the first element of tdd pattern " << *patternIt);
             }
         }
@@ -224,7 +230,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
         }
 
     }
-  while (patternIt != m_tddPattern.end ());
+  while (patternIt != tddPattern.end ());
 
   return finalSlPool;
 }
