@@ -374,6 +374,18 @@ NrSlCommResourcePool::IsRsvpMultipOfPoolLen (uint8_t bwpId, uint16_t poolId, uin
                    << phyPool.size ());
 }
 
+uint16_t
+NrSlCommResourcePool::GetPsschSymbolsPerSlot (uint8_t bwpId, uint16_t poolId) const
+{
+  std::vector <std::bitset<1>> phyPool = GetNrSlPhyPool (bwpId, poolId);
+  const LteRrcSap::SlResourcePoolNr pool = GetSlResourcePoolNr (bwpId, poolId);
+  LteRrcSap::SlFreqConfigCommonNr slfreqConfigCommon = m_slPreconfigFreqInfoList.at (0);
+  LteRrcSap::SlBwpConfigCommonNr slBwpConfigCommon = slfreqConfigCommon.slBwpList.at (bwpId);
+  uint16_t totalSlSymbols = LteRrcSap::GetSlLengthSymbolsValue (slBwpConfigCommon.slBwpGeneric.slLengthSymbols);
+  uint16_t slPscchSymLength = LteRrcSap::GetSlTResoPscchValue (pool.slPscchConfig.slTimeResourcePscch);
+  return ((totalSlSymbols - slPscchSymLength) - 1);
+}
+
 }
 
 
