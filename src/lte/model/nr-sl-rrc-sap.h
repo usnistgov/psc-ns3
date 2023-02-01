@@ -85,9 +85,10 @@ public:
    * \brief Get NR Sidelink data radio bearer
    *
    * \param dstL2Id The remote/destination layer 2 id
+   * \param lcId The logical channel id
    * \return The NrSlDataRadioBearerInfo
    */
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id) = 0;
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
   /**
    * \brief Get next LCID for setting up NR SL DRB towards the given destination
    *
@@ -165,7 +166,7 @@ public:
   virtual const std::set<uint8_t> GetBwpIdContainer ();
   virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id, uint8_t lcId);
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
 
 
@@ -224,9 +225,9 @@ MemberNrSlUeRrcSapUser<C>::AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo
 
 template <class C>
 Ptr<NrSlDataRadioBearerInfo>
-MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t dstL2Id)
+MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t dstL2Id, uint8_t lcId)
 {
-  return m_owner->DoGetSidelinkDataRadioBearer (dstL2Id);
+  return m_owner->DoGetSidelinkDataRadioBearer (dstL2Id, lcId);
 }
 
 template <class C>

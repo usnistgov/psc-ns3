@@ -75,6 +75,7 @@ struct SidelinkInfo
   Time m_pdb; //!< Packet Delay Budget
   bool m_dynamic {false}; //!< flag for whether LC is dynamic or SPS
   Time m_rri {0}; //!< Resource Reservation Interval
+  uint8_t m_lcId {0};  //!< Logical channel ID
 };
 
 /**
@@ -121,6 +122,26 @@ public:
   LteSlTft (Direction d, Ipv6Address remoteAddr, const struct SidelinkInfo& slInfo);
 
   /**
+   * \brief Constructor
+   *
+   * \param d The direction
+   * \param remoteAddr The IPv4 address of the remote
+   * \param remotePort The port number of the remote
+   * \param slInfo SidelinkInfo structure
+   */
+  LteSlTft (Direction d, Ipv4Address remoteAddr, uint16_t remotePort, const struct SidelinkInfo& slInfo);
+
+  /**
+   * \brief Constructor
+   *
+   * \param d The direction
+   * \param remoteAddr The IPv6 address of the remote
+   * \param remotePort The port number of the remote
+   * \param slInfo SidelinkInfo structure
+   */
+  LteSlTft (Direction d, Ipv6Address remoteAddr, uint16_t remotePort, const struct SidelinkInfo& slInfo);
+
+  /**
    * \brief Constructor for copy
    *
    * \param tft The TFT to copy
@@ -134,6 +155,28 @@ public:
    * \return true if the TFT matches with the parameters, false otherwise.
    */
   bool Matches (Ipv4Address ra);
+
+  /**
+   * \brief Function to evaluate if the SL TFT matches the remote IPv6 address
+   *        and the remote port
+   *
+   * \param ra the remote address
+   * \param rp the remote port
+   *
+   * \return true if the TFT matches with the parameters, false otherwise.
+   */
+  bool Matches (Ipv6Address ra, uint16_t rp);
+
+  /**
+   * \brief Function to evaluate if the SL TFT matches the remote IPv4 address
+   *        and the remote port
+   *
+   * \param ra the remote address
+   * \param rp the remote port
+   *
+   * \return true if the TFT matches with the parameters, false otherwise.
+   */
+  bool Matches (Ipv4Address ra, uint16_t rp);
 
   /**
    * \brief Function to evaluate if the SL TFT matches the remote IPv6 address
@@ -155,10 +198,17 @@ public:
   bool Equals (Ptr<LteSlTft> tft);
 
   /**
-   * \brief Gets the SidelinkInfo ssociated with the TFT
+   * \brief Gets the SidelinkInfo associated with the TFT
    * \return The SidelinkInfo associated with the TFT
    */
   struct SidelinkInfo GetSidelinkInfo ();
+
+  /**
+   * \brief Set the lcId of the SidelinkInfo associated with the TFT
+   *
+   * \param lcId Thelogical channel id to be set
+   */
+  void SetSidelinkInfoLcId (uint8_t lcId);
 
   /**
    * \brief Indicates if the TFT is for an incoming sidelink bearer
@@ -187,6 +237,8 @@ private:
   Ipv6Address m_remoteAddress6 {Ipv6Address::GetZero ()};       //!< IPv6 address of the remote host
   Ipv4Mask m_remoteMask {Ipv4Mask::GetZero ()};         //!< IPv4 address mask of the remote host
   Ipv6Prefix m_remoteMask6 {Ipv6Prefix::GetZero ()};    //!< IPv6 address mask of the remote host
+  bool m_hasRemotePort {false};      //!< Indicates if the TFT has remotePort information
+  uint16_t m_remotePort {0};  /**< Port number of the remote host */
   struct SidelinkInfo m_sidelinkInfo; //!< SidelinkInfo struct
 
 };

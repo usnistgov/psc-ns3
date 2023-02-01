@@ -3466,15 +3466,12 @@ LteUeRrc::DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParamet
 }
 
 void
-LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
+LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId)
 {
-  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. destination layer 2 id " << dstL2Id);
+  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. destination layer 2 id " << dstL2Id << " lcId " << +lcId);
   //Find the PDCP for NR Sidelink transmission
-  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (dstL2Id, lcId);
 
-  //If there are multiple bearers, hence, multiple LCs, for a destination the
-  //the NAS layer should be aware about this. That is, it should give RRC a
-  //bearer id, and RRC should map it to a right LC.
   NS_ASSERT_MSG (slDrb, "could not find Sidelink data radio bearer for remote = " << dstL2Id);
 
   auto params = NrSlPdcpSapProvider::NrSlTransmitPdcpSduParameters (packet, m_rnti,
@@ -3548,6 +3545,7 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
       if (isTransmit)
         {
           Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id), slInfo);
+          slInfoWithSrcId.m_lcId = slDrbInfo->m_logicalChannelIdentity;
           NS_LOG_INFO ("Created new TX SLRB for remote id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 

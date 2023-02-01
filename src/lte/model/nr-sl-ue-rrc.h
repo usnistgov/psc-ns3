@@ -163,9 +163,10 @@ private:
   /**
    * \brief Get NR Sidelink data radio bearer
    * \param dstL2Id The remote/destination layer 2 id
+   * \param lcId The logical channel id
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t dstL2Id, uint8_t lcId);
   /**
    * \brief Get Source layer 2 id
    * \return source layer 2 id
@@ -203,7 +204,7 @@ private:
    *
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcId);
   // NR sidelink UE RRC SAP
   NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
   NrSlUeRrcSapProvider* m_nrSlUeRrcSapProvider {nullptr}; ///< NR SL UE RRC SAP provider

@@ -106,8 +106,10 @@ public:
    *
    * \param packet The packet
    * \param dstL2Id The destination layer 2 id
+   * \param lcId The logical channel id
+
    */
-  virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id) = 0;
+  virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId) = 0;
 
 };
 
@@ -188,7 +190,7 @@ public:
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
   virtual void ActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo);
-  virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
+  virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId);
 
 private:
   MemberLteAsSapProvider ();
@@ -257,9 +259,9 @@ MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (bool isTransmit, bool isRece
 
 template <class C>
 void
-MemberLteAsSapProvider<C>::SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
+MemberLteAsSapProvider<C>::SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId)
 {
-  m_owner->DoSendSidelinkData (packet, dstL2Id);
+  m_owner->DoSendSidelinkData (packet, dstL2Id, lcId);
 }
 
 

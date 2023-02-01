@@ -66,6 +66,37 @@ LteSlTft::LteSlTft (Direction d, Ipv6Address remoteAddr, const struct SidelinkIn
   NS_ASSERT_MSG ((slInfo.m_dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
 }
 
+LteSlTft::LteSlTft (Direction d, Ipv4Address remoteAddr, uint16_t remotePort, const struct SidelinkInfo& slInfo)
+  : m_direction (d),
+    m_remoteAddress (remoteAddr),
+    m_remotePort (remotePort),
+    m_sidelinkInfo (slInfo)
+{
+  NS_LOG_FUNCTION (this);
+  m_hasRemoteAddress = true;
+  m_remoteMask = Ipv4Mask::GetOnes ();
+  m_hasRemotePort = true;
+
+  NS_ASSERT_MSG (slInfo.m_dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((slInfo.m_dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
+}
+
+LteSlTft::LteSlTft (Direction d, Ipv6Address remoteAddr, uint16_t remotePort, const struct SidelinkInfo& slInfo)
+  : m_direction (d),
+    m_remoteAddress6 (remoteAddr),
+    m_remotePort (remotePort),
+    m_sidelinkInfo (slInfo)
+{
+  NS_LOG_FUNCTION (this);
+  m_hasRemoteAddress = true;
+  m_remoteMask6 = Ipv6Prefix::GetOnes ();
+  m_hasRemotePort = true;
+
+  NS_ASSERT_MSG (slInfo.m_dstL2Id > 0, "Destination L2 id must be greater than zero");
+  NS_ASSERT_MSG ((slInfo.m_dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
+}
+
+
 LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
@@ -75,6 +106,8 @@ LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
   m_remoteAddress6 = tft->m_remoteAddress6;
   m_remoteMask = tft->m_remoteMask;
   m_remoteMask6 = tft->m_remoteMask6;
+  m_remotePort = tft->m_remotePort;
+  m_hasRemotePort = tft->m_hasRemotePort;
   m_sidelinkInfo = tft->m_sidelinkInfo;
 }
 
@@ -96,6 +129,34 @@ LteSlTft::Matches (Ipv6Address ra)
   //check remote address
   ok = m_hasRemoteAddress ? m_remoteMask6.IsMatch (ra, m_remoteAddress6) : true;
   return ok;
+}
+
+bool
+LteSlTft::Matches (Ipv6Address ra, uint16_t rp)
+{
+  NS_LOG_FUNCTION (this << ra << rp);
+  bool okAdrr = false;
+  //check remote address
+  okAdrr = m_hasRemoteAddress ? m_remoteMask6.IsMatch (ra, m_remoteAddress6) : true;
+  bool okPort = false;
+  //check remote port
+  okPort = m_hasRemotePort ? m_remotePort == rp : true;
+
+  return okAdrr && okPort;
+}
+
+bool
+LteSlTft::Matches (Ipv4Address ra, uint16_t rp)
+{
+  NS_LOG_FUNCTION (this << ra << rp);
+  bool okAdrr = false;
+  //check remote address
+  okAdrr = m_hasRemoteAddress ? m_remoteMask.IsMatch (ra, m_remoteAddress) : true;
+  bool okPort = false;
+  //check remote port
+  okPort = m_hasRemotePort ? m_remotePort == rp : true;
+
+  return okAdrr && okPort;
 }
 
 bool
@@ -126,6 +187,11 @@ struct SidelinkInfo
 LteSlTft::GetSidelinkInfo ()
 {
   return m_sidelinkInfo;
+}
+
+void LteSlTft::SetSidelinkInfoLcId (uint8_t lcId)
+{
+  m_sidelinkInfo.m_lcId = lcId;
 }
 
 bool
