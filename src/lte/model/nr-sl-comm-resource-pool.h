@@ -216,6 +216,13 @@ public:
    */
   void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
   /**
+   * \brief Get the resource reservation period list
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \return The resource reservation period list (units of ms)
+   */
+  std::list<uint16_t> GetSlResourceReservePeriodList (uint8_t bwpId, uint16_t poolId) const;
+  /**
    * \brief Get the reservation period in slots
    * \param bwpId The bandwidth part id
    * \param poolId The poolId The pool id
