@@ -284,19 +284,21 @@ void
 NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
 {
   NS_LOG_FUNCTION (this);
-  NrSlDrbMapPerL2Id::iterator srcIt = m_slRxDrbMap.find (slRxDrb->m_sourceL2Id);
+  std::pair<uint32_t, uint32_t> key = std::make_pair (slRxDrb->m_sourceL2Id, slRxDrb->m_destinationL2Id);
+  auto srcIt = m_slRxDrbMap.find (key);
+
+
   if (srcIt == m_slRxDrbMap.end ())
     {
-      NS_LOG_LOGIC ("First SL RX DRB for remote UE with source L2 id " << slRxDrb->m_sourceL2Id);
+      NS_LOG_LOGIC ("First SL RX DRB for this UE. Source L2 id " << slRxDrb->m_sourceL2Id
+                    << " Destination L2 id " << slRxDrb->m_destinationL2Id);
       NrSlDrbMapPerLcId mapPerRxLcId;
       mapPerRxLcId.insert (std::pair<uint8_t, Ptr<NrSlDataRadioBearerInfo> > (slRxDrb->m_logicalChannelIdentity, slRxDrb));
-      m_slDrbMap.insert (std::pair<uint32_t, NrSlDrbMapPerLcId> (slRxDrb->m_sourceL2Id, mapPerRxLcId));
+      m_slRxDrbMap.emplace (key, mapPerRxLcId);
+
     }
   else
     {
-      NS_FATAL_ERROR ("Currently supporting only one SL RX DRB per pair of source/destination");
-      // once we support multiple SL DRB per pair of source/destination
-      // above assert can be removed, and following code will be used
       NrSlDrbMapPerLcId::iterator rxLcIt;
       rxLcIt = srcIt->second.find (slRxDrb->m_logicalChannelIdentity);
       if (rxLcIt == srcIt->second.end ())
@@ -309,6 +311,7 @@ NrSlUeRrc::DoAddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
           NS_FATAL_ERROR ("SL RX DRB with LC id = " << +slRxDrb->m_logicalChannelIdentity << " already exists");
         }
     }
+
 }
 
 Ptr<NrSlDataRadioBearerInfo>

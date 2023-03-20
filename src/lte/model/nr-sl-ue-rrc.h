@@ -81,6 +81,11 @@ public:
    * Map between L2 id, logical channel id and data radio bearer for transmissions.
    */
   typedef std::unordered_map <uint32_t, NrSlDrbMapPerLcId> NrSlDrbMapPerL2Id;
+
+  /**
+   * Map between a pair of L2 id (typically source and destination), logical channel id and data radio bearer for transmissions.
+   */
+  typedef std::map <std::pair<uint32_t, uint32_t>, NrSlDrbMapPerLcId > NrSlDrbMapPerPairL2Id;
   /**
    * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
    * \param slBitMap slBitMap The sidelink bitmap
@@ -228,10 +233,9 @@ private:
                                  * We use another map to store rx bearer
                                  * info.
                                  */
-  NrSlDrbMapPerL2Id m_slRxDrbMap; /**< NR sidelink rx data radio bearer map
-                                   * per source layer 2 id of the sender
-                                   * for Group-Cast.
-                                   */
+  NrSlDrbMapPerPairL2Id m_slRxDrbMap; /**< NR sidelink rx data radio bearer map
+                                       * per pair of source and destination layer 2 id
+                                       */
 
 };     //end of NrSlUeRrc'class
 

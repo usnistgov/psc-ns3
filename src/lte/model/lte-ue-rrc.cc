@@ -3635,18 +3635,19 @@ LteUeRrc::AddNrSlTxDrb (uint32_t srcL2Id, uint8_t lcid, const struct SidelinkInf
   lcInfo.dstL2Id = slInfo.m_dstL2Id;
   lcInfo.lcId = lcid;
   lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
-  //following parameters have no impact at the moment
-  //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
-  lcInfo.priority = 7;
-  lcInfo.pqi = 65;
-  lcInfo.isGbr = true;
-  lcInfo.gbr = 65535; //bits/s random value
-  lcInfo.mbr = lcInfo.gbr;
+  lcInfo.priority = slInfo.m_priority;
   lcInfo.castType = slInfo.m_castType;
   lcInfo.harqEnabled = slInfo.m_harqEnabled;
   lcInfo.pdb = slInfo.m_pdb;
   lcInfo.dynamic = slInfo.m_dynamic;
   lcInfo.rri = slInfo.m_rri;
+  //following parameters have no impact at the moment
+  //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
+  lcInfo.pqi = 65;
+  lcInfo.isGbr = true;
+  lcInfo.gbr = 65535; //bits/s random value
+  lcInfo.mbr = lcInfo.gbr;
+
 
   Ptr<NrSlDataRadioBearerInfo> slDrbInfo = CreateObject <NrSlDataRadioBearerInfo> ();
   slDrbInfo->m_sourceL2Id = lcInfo.srcL2Id;

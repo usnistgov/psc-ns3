@@ -76,6 +76,8 @@ struct SidelinkInfo
   bool m_dynamic {false}; //!< flag for whether LC is dynamic or SPS
   Time m_rri {0}; //!< Resource Reservation Interval
   uint8_t m_lcId {0};  //!< Logical channel ID
+  uint8_t m_priority {0};  //!< Priority
+
 };
 
 /**
