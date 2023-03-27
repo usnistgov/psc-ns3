@@ -135,28 +135,26 @@ bool
 LteSlTft::Matches (Ipv6Address ra, uint16_t rp)
 {
   NS_LOG_FUNCTION (this << ra << rp);
-  bool okAdrr = false;
-  //check remote address
-  okAdrr = m_hasRemoteAddress ? m_remoteMask6.IsMatch (ra, m_remoteAddress6) : true;
-  bool okPort = false;
-  //check remote port
-  okPort = m_hasRemotePort ? m_remotePort == rp : true;
 
-  return okAdrr && okPort;
+  //check remote address
+  bool okAddr = m_hasRemoteAddress ? m_remoteMask6.IsMatch (ra, m_remoteAddress6) : true;
+  //check remote port
+  bool okPort = m_hasRemotePort ? m_remotePort == rp : true;
+
+  return okAddr && okPort;
 }
 
 bool
 LteSlTft::Matches (Ipv4Address ra, uint16_t rp)
 {
   NS_LOG_FUNCTION (this << ra << rp);
-  bool okAdrr = false;
-  //check remote address
-  okAdrr = m_hasRemoteAddress ? m_remoteMask.IsMatch (ra, m_remoteAddress) : true;
-  bool okPort = false;
-  //check remote port
-  okPort = m_hasRemotePort ? m_remotePort == rp : true;
 
-  return okAdrr && okPort;
+  //check remote address
+  bool okAddr = m_hasRemoteAddress ? m_remoteMask.IsMatch (ra, m_remoteAddress) : true;;
+  //check remote port
+  bool okPort = m_hasRemotePort ? m_remotePort == rp : true;
+
+  return okAddr && okPort;
 }
 
 bool

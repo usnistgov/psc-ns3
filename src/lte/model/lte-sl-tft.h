@@ -208,7 +208,7 @@ public:
   /**
    * \brief Set the lcId of the SidelinkInfo associated with the TFT
    *
-   * \param lcId Thelogical channel id to be set
+   * \param lcId The logical channel id to be set
    */
   void SetSidelinkInfoLcId (uint8_t lcId);
 
