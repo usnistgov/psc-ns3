@@ -84,6 +84,13 @@ public:
    */
   typedef std::unordered_map <uint32_t, NrSlDrbMapPerLcId> NrSlDrbMapPerL2Id;
   /**
+   * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
+   * \param slBitMap slBitMap The sidelink bitmap
+   * \param tddPattern tddPattern The TDD pattern
+   * \return A vector representing the physical sidelink pool
+   */
+  static std::vector <std::bitset<1>> GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap, const std::vector<NrSlUeRrc::LteNrTddSlotType>& tddPattern);
+  /**
    * \brief Get the pointer for the NR sidelink UE RRC SAP User interface
    *        offered to UE RRC by this class
    *

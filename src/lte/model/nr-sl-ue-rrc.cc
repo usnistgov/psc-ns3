@@ -165,7 +165,7 @@ NrSlUeRrc::DoGetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap)
 }
 
 std::vector <std::bitset<1>>
-NrSlUeRrc::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap, std::vector<NrSlUeRrc::LteNrTddSlotType> tddPattern)
+NrSlUeRrc::GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap, const std::vector<NrSlUeRrc::LteNrTddSlotType>& tddPattern)
 {
   std::vector <std::bitset<1>> finalSlPool;
 

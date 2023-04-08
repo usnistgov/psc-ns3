@@ -216,6 +216,13 @@ public:
    */
   void ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time resvPeriod, Time slotLength) const;
   /**
+   * \brief Get the resource reservation period list
+   * \param bwpId The bandwidth part id
+   * \param poolId The poolId The pool id
+   * \return The resource reservation period list (units of ms)
+   */
+  std::list<uint16_t> GetSlResourceReservePeriodList (uint8_t bwpId, uint16_t poolId) const;
+  /**
    * \brief Get the reservation period in slots
    * \param bwpId The bandwidth part id
    * \param poolId The poolId The pool id
@@ -260,6 +267,18 @@ public:
    * \return PSSCH subchannel size in RBs
    */
   uint16_t GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const;
+
+  /**
+   * \brief Get Nr Sidelink PSSCH number of symbols per slot
+   * \param bwpId bwpId The bandwidth part id
+   * \param poolId poolId The poolId The pool id
+   *
+   * Note:  Does not take into account variability due
+   * to PSFCH (not yet modeled)
+   * 
+   * \return Number of PSSCH symbols per slot
+   */
+  uint16_t GetPsschSymbolsPerSlot (uint8_t bwpId, uint16_t poolId) const;
 
 private:
   /**

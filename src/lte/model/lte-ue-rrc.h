@@ -1499,12 +1499,11 @@ private:
   /**
    * \brief Activate NR sidelink radio bearer
    *
-   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
-   * \param isUnicast True if the bearer is for unicast communication
+   * \param slInfo The SidelinkInfo information
    */
-  void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  void DoActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo);
   /**
    * \brief Send sidelink data packet to RRC.
    *
@@ -1535,11 +1534,11 @@ private:
   /**
    * \brief Activate NR sidelink data radio bearer
    *
-   * \param dstL2Id The remote layer 3 id
    * \param isTransmit True if the bearer is for transmission
    * \param isReceive True if the bearer is for reception
+   * \param slInfo The SidelinkInfo information
    */
-  void ActivateNrSlDrb (uint32_t dstL2Id, bool isTransmit, bool isReceive);
+  void ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct SidelinkInfo& slInfo);
 
   /**
    * \brief set out-of-coverage UE RNTI
@@ -1551,14 +1550,24 @@ private:
   void SetOutofCovrgUeRnti ();
 
   /**
-   * \brief Add Nr sidelink data radio bearer
+   * \brief Add Nr sidelink receive data radio bearer
+   *
+   * \param srcL2Id The sidelink source layer 2 id
+   * \param lcid The logical channel id
+   * \param slInfo The SidelinkInfo information
+   * \return The Sidelink radio bearer information
+   */
+  Ptr<NrSlDataRadioBearerInfo> AddNrSlTxDrb (uint32_t srcL2Id, uint8_t lcid, const struct SidelinkInfo& slInfo);
+
+  /**
+   * \brief Add Nr sidelink receive data radio bearer
    *
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id
    * \param lcid The logical channel id
    * \return The Sidelink radio bearer information
    */
-  Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
+  Ptr<NrSlDataRadioBearerInfo> AddNrSlRxDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
 
   /**
    * \brief Populate NR SL Pool to lower layers
@@ -1675,6 +1684,16 @@ private:
    * \return The Sidelink discovery radio bearer information
    */
   Ptr<NrSlDiscoveryRadioBearerInfo> AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id);
+
+  /**
+   * \brief Finish configuration after adding NR sidelink data radio bearer
+   *
+   * \param slDrbInfo sidelink data radio bearer information
+   * \param lcInfo Logical channel information
+   * \return The Sidelink radio bearer information
+   */
+  Ptr<NrSlDataRadioBearerInfo> FinishSlDrbConfiguration (Ptr<NrSlDataRadioBearerInfo> slDrbInfo, 
+    const NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo& lcInfo);
 
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc

@@ -21,6 +21,8 @@
 #define NR_SL_UE_CMAC_SAP_H
 
 #include <ns3/ptr.h>
+#include <ns3/nstime.h>
+#include <ns3/lte-sl-tft.h>
 
 #include <stdint.h>
 #include <limits>
@@ -60,6 +62,11 @@ public:
     bool     isGbr {false};   //!< true if the bearer is GBR, false if the bearer is NON-GBR
     uint64_t mbr {0};   //!< maximum bitrate
     uint64_t gbr {0};   //!< guaranteed bitrate
+    SidelinkInfo::CastType castType {SidelinkInfo::CastType::Invalid}; //!< cast type
+    bool harqEnabled {false};  //!< Whether HARQ is enabled
+    Time pdb;   //!< Packet Delay Budget
+    bool dynamic {false};   //!< flag for whether it is dynamic or SPS
+    Time rri;  //!< Resource Reservation Interval
   };
 
 
@@ -129,6 +136,14 @@ public:
    */
   virtual void AddNrSlRxDstL2Id (uint32_t dstL2Id) = 0;
 };
+
+/**
+ * \brief Stream output operator for SidelinkLogicalChannelInfo
+ * \param os output stream
+ * \param p struct whose parameter to output
+ * \return updated stream
+ */
+std::ostream & operator<< (std::ostream & os, NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo const & p);
 
 /**
  * \ingroup lte
