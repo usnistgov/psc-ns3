@@ -463,7 +463,7 @@ EpcUeNas::DoNotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo)
           //Notify the service layer if present
           if (m_nrSlUeSvcNasSapUser != nullptr)
             {
-              m_nrSlUeSvcNasSapUser->NotifySvcNrSlDataRadioBearerActivated (dstL2Id);
+              m_nrSlUeSvcNasSapUser->NotifySvcNrSlDataRadioBearerActivated (slInfo.m_dstL2Id);
             }
         }
       else
@@ -493,7 +493,7 @@ EpcUeNas::DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
   NS_LOG_FUNCTION (this);
 
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->isTransmit (), tft->isReceive (), tft->GetSidelinkInfo ());
 
 }
 
@@ -535,10 +535,13 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
 
                     //Create an SL bearer for this traffic
                     Ptr<LteSlTft> slTft;
+                    SidelinkInfo slInfo;
+                    slInfo.m_castType = SidelinkInfo::CastType::Unicast;
+                    slInfo.m_dstL2Id = peerL2Id; //Go towards the Relay UE
                     slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
-                                              LteSlTft::CommType::Unicast,
+                                              
                                               itPf->remoteAddress, //Packets to this address
-                                              peerL2Id); //Go towards the Relay UE
+                                              slInfo);
                     DoActivateSvcNrSlDataRadioBearer (slTft);
 
                     NS_LOG_INFO ("Reconfigured UL data bearer with remoteAddress: " << itPf->remoteAddress);
@@ -567,10 +570,12 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
         //Ask RRC to create and activate an SL data bearer to transmit to the Remote UE
         {
           Ptr<LteSlTft> slTft;
+          SidelinkInfo slInfo;
+          slInfo.m_castType = SidelinkInfo::CastType::Unicast;
+          slInfo.m_dstL2Id = peerL2Id; //Go towards the Relay UE
           slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
-                                    LteSlTft::CommType::Unicast,
                                     ipInfo.peerIpv4Addr,
-                                    peerL2Id);
+                                    slInfo);
           DoActivateSvcNrSlDataRadioBearer (slTft);
         }
         break;
@@ -603,7 +608,7 @@ EpcUeNas::ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet)
           NS_LOG_INFO ("Relaying packet to SL");
           m_relayRxPacketTrace (m_u2nRelayConfig.selfIpv4Addr,
                                 ipv4Header.GetSource (), ipv4Header.GetDestination (), "DL", "SL",  packet);
-          m_asSapProvider->SendSidelinkData (packet, (*it)->GetDstL2Id ());
+          m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
           return;
         }
       if ((*it)->Matches (ipv4Header.GetSource ()))

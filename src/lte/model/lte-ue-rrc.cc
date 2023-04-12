@@ -3531,7 +3531,7 @@ LteUeRrc::DoActivateNrSlRadioBearer (bool isTransmit, bool isReceive, const stru
     {
       //At the moment we don't have a different behavior for unicast data bearers
       //We kept the if in case we need to differentiate behaviors in the future
-      ActivateNrSlDrb (dstL2Id, isTransmit, isReceive);
+      ActivateNrSlDrb (isTransmit, isReceive, slInfo);
     }
 }
 
@@ -3629,8 +3629,8 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
       //We use same SL-DRB creation and configuration logic than OOC
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlDrb (m_srcL2Id, dstL2Id, m_nrSlRrcSapUser->GetNextLcid (dstL2Id));
-          NS_LOG_INFO ("Created new TX SL-DRB for dstL2id " << dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id), slInfo);
+          NS_LOG_INFO ("Created new TX SL-DRB for dstL2id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
       if ((isTransmit && isReceive) || isReceive)
@@ -3639,16 +3639,18 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
           for (const auto &it:bwpIdsSl)
             {
               NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
-              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (dstL2Id);
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (slInfo.m_dstL2Id);
             }
         }
 
       //Notify NAS
-      m_asSapUser->NotifyNrSlRadioBearerActivated (dstL2Id);
+      m_asSapUser->NotifyNrSlRadioBearerActivated (slInfo);
 
+/*
       //Try to send to eNodeB
       SendSidelinkUeInformation (tx, rx, false, false);
       break;
+*/
 
     default: // i.e. IDLE_RANDOM_ACCESS
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
@@ -3694,7 +3696,7 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
   else
     {
       //SL-DRB
-      Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlDrb (srcL2Id, dstL2Id, lcId);
+      Ptr<NrSlDataRadioBearerInfo> slbInfo = AddNrSlRxDrb (srcL2Id, dstL2Id, lcId);
       NS_LOG_INFO ("Created new RX SLRB for group " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
     }
 }
