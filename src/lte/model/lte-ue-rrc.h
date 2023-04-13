@@ -1510,7 +1510,7 @@ private:
    * \param packet The packet
    * \param dstL2Id The destination layer 2 id
    */
-  void DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
+  void DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId);
 
   // NR SL RRC SAP provider methods
   /**

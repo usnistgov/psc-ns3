@@ -83,6 +83,11 @@ public:
    * Map between L2 id, logical channel id and data radio bearer for transmissions.
    */
   typedef std::unordered_map <uint32_t, NrSlDrbMapPerLcId> NrSlDrbMapPerL2Id;
+
+  /**
+   * Map between a pair of L2 id (typically source and destination), logical channel id and data radio bearer for transmissions.
+   */
+  typedef std::map <std::pair<uint32_t, uint32_t>, NrSlDrbMapPerLcId > NrSlDrbMapPerPairL2Id;
   /**
    * \brief Get the physical sidelink pool based on SL bitmap and the TDD pattern
    * \param slBitMap slBitMap The sidelink bitmap
@@ -207,9 +212,10 @@ private:
   /**
    * \brief Get NR Sidelink data radio bearer
    * \param dstL2Id The remote/destination layer 2 id
+   * \param lcId The logical channel id
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t dstL2Id, uint8_t lcId);
   /**
    * \brief Get Source layer 2 id
    * \return source layer 2 id
@@ -238,7 +244,7 @@ private:
    *
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcId);
   // NR sidelink UE RRC SAP
   NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
   NrSlUeRrcSapProvider* m_nrSlUeRrcSapProvider {nullptr}; ///< NR SL UE RRC SAP provider
@@ -262,10 +268,9 @@ private:
                                  * We use another map to store rx bearer
                                  * info.
                                  */
-  NrSlDrbMapPerL2Id m_slRxDrbMap; /**< NR sidelink rx data radio bearer map
-                                   * per source layer 2 id of the sender
-                                   * for Group-Cast.
-                                   */
+  NrSlDrbMapPerPairL2Id m_slRxDrbMap; /**< NR sidelink rx data radio bearer map
+                                       * per pair of source and destination layer 2 id
+                                       */
 
   NrSlSrbMapPerL2Id m_slTxSrbMap; /**< NR SL transmission signalling radio
                                    * bearer map per destination layer 2 id.

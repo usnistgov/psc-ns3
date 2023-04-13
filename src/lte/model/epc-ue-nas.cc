@@ -32,7 +32,10 @@
 #include <ns3/ipv6-header.h>
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/ipv6-l3-protocol.h>
-
+#include "ns3/udp-header.h"
+#include "ns3/tcp-header.h"
+#include "ns3/udp-l4-protocol.h"
+#include "ns3/tcp-l4-protocol.h"
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("EpcUeNas");
@@ -227,21 +230,37 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
     {
     case ACTIVE:
       {
-        //First Check if there is any sidelink bearer for the destination
-        //otherwise it may use the default bearer, if exists
         Ptr<Packet> pCopy = packet->Copy ();
         if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
           {
             Ipv4Header ipv4Header;
             pCopy->RemoveHeader (ipv4Header);
+            uint8_t protocol = ipv4Header.GetProtocol ();
+            uint16_t remotePort = 0;
+            if (protocol == UdpL4Protocol::PROT_NUMBER)
+              {
+                UdpHeader udpHeader;
+                pCopy->RemoveHeader (udpHeader);
+                remotePort = udpHeader.GetDestinationPort ();
+              }
+            else if (protocol == TcpL4Protocol::PROT_NUMBER)
+              {
+                TcpHeader tcpHeader;
+                pCopy->RemoveHeader (tcpHeader);
+                remotePort = tcpHeader.GetDestinationPort ();
+              }
+
+            //First Check if there is any sidelink bearer for the destination
+            //otherwise it may use the default bearer, if exists
             for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                if ((*it)->Matches (ipv4Header.GetDestination (), remotePort))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id,
+                                                       (*it)->GetSidelinkInfo ().m_lcId);
                     return true;
                   }
               }
@@ -250,7 +269,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_pendingSlBearersList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                if ((*it)->Matches (ipv4Header.GetDestination (), remotePort))
                   {
                     NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
                     return false;
@@ -261,14 +280,30 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
           {
             Ipv6Header ipv6Header;
             pCopy->RemoveHeader (ipv6Header);
+            uint8_t protocol = ipv6Header.GetNextHeader ();
+            uint16_t remotePort = 0;
+            if (protocol == UdpL4Protocol::PROT_NUMBER)
+              {
+                UdpHeader udpHeader;
+                pCopy->RemoveHeader (udpHeader);
+                remotePort = udpHeader.GetDestinationPort ();
+              }
+            else if (protocol == TcpL4Protocol::PROT_NUMBER)
+              {
+                TcpHeader tcpHeader;
+                pCopy->RemoveHeader (tcpHeader);
+                remotePort = tcpHeader.GetDestinationPort ();
+              }
+
             for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestination ()))
+                if ((*it)->Matches (ipv6Header.GetDestination (), remotePort))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id,
+                                                       (*it)->GetSidelinkInfo ().m_lcId);
                     return true;
                   }
               }
@@ -277,7 +312,7 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
                  it != m_pendingSlBearersList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestination ()))
+                if ((*it)->Matches (ipv6Header.GetDestination (), remotePort))
                   {
                     NS_LOG_WARN (this << "Matching sidelink bearer still pending, discarding packet");
                     return false;
@@ -308,14 +343,29 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
           {
             Ipv4Header ipv4Header;
             pCopy->RemoveHeader (ipv4Header);
+            uint8_t protocol = ipv4Header.GetProtocol ();
+            uint16_t remotePort = 0;
+            if (protocol == UdpL4Protocol::PROT_NUMBER)
+              {
+                UdpHeader udpHeader;
+                pCopy->RemoveHeader (udpHeader);
+                remotePort = udpHeader.GetDestinationPort ();
+              }
+            else if (protocol == TcpL4Protocol::PROT_NUMBER)
+              {
+                TcpHeader tcpHeader;
+                pCopy->RemoveHeader (tcpHeader);
+                remotePort = tcpHeader.GetDestinationPort ();
+              }
             for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv4Header.GetDestination ()))
+                if ((*it)->Matches (ipv4Header.GetDestination (), remotePort))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id,
+                                                       (*it)->GetSidelinkInfo ().m_lcId);
                     return true;
                   }
               }
@@ -324,14 +374,30 @@ EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
           {
             Ipv6Header ipv6Header;
             pCopy->RemoveHeader (ipv6Header);
+            uint8_t protocol = ipv6Header.GetNextHeader ();
+            uint16_t remotePort = 0;
+            if (protocol == UdpL4Protocol::PROT_NUMBER)
+              {
+                UdpHeader udpHeader;
+                pCopy->RemoveHeader (udpHeader);
+                remotePort = udpHeader.GetDestinationPort ();
+              }
+            else if (protocol == TcpL4Protocol::PROT_NUMBER)
+              {
+                TcpHeader tcpHeader;
+                pCopy->RemoveHeader (tcpHeader);
+                remotePort = tcpHeader.GetDestinationPort ();
+              }
+
             for (std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
                  it != m_slBearersActivatedList.end ();
                  it++)
               {
-                if ((*it)->Matches (ipv6Header.GetDestination ()))
+                if ((*it)->Matches (ipv6Header.GetDestination (), remotePort))
                   {
                     //Found sidelink
-                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
+                    m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id,
+                                                       (*it)->GetSidelinkInfo ().m_lcId);
                     return true;
                   }
               }
@@ -449,7 +515,7 @@ EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft)
 void
 EpcUeNas::DoNotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << slInfo.m_dstL2Id << +slInfo.m_lcId);
 
   std::list<Ptr<LteSlTft> >::iterator it = m_pendingSlBearersList.begin ();
   while (it != m_pendingSlBearersList.end ())
@@ -457,6 +523,7 @@ EpcUeNas::DoNotifyNrSlRadioBearerActivated (const struct SidelinkInfo& slInfo)
       if ((*it)->GetSidelinkInfo ().m_dstL2Id == slInfo.m_dstL2Id)
         {
           //Found sidelink
+          (*it)->SetSidelinkInfoLcId (slInfo.m_lcId);
           m_slBearersActivatedList.push_back (*it);
           it = m_pendingSlBearersList.erase (it);
 

@@ -3496,15 +3496,12 @@ LteUeRrc::DoReceiveNrSlPdcpSdu (const NrSlPdcpSapUser::NrSlReceivePdcpSduParamet
 }
 
 void
-LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
+LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id, uint8_t lcId)
 {
-  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. destination layer 2 id " << dstL2Id);
+  NS_LOG_FUNCTION (this << packet << " for NR Sidelink. destination layer 2 id " << dstL2Id << " lcId " << +lcId);
   //Find the PDCP for NR Sidelink transmission
-  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (dstL2Id, lcId);
 
-  //If there are multiple bearers, hence, multiple LCs, for a destination the
-  //the NAS layer should be aware about this. That is, it should give RRC a
-  //bearer id, and RRC should map it to a right LC.
   NS_ASSERT_MSG (slDrb, "could not find Sidelink data radio bearer for remote = " << dstL2Id);
 
   auto params = NrSlPdcpSapProvider::NrSlTransmitPdcpSduParameters (packet, m_rnti,
@@ -3584,6 +3581,7 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
       if (isTransmit)
         {
           Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id), slInfo);
+          slInfoWithSrcId.m_lcId = slDrbInfo->m_logicalChannelIdentity;
           NS_LOG_INFO ("Created new TX SLRB for remote id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
@@ -3713,18 +3711,19 @@ LteUeRrc::AddNrSlTxDrb (uint32_t srcL2Id, uint8_t lcid, const struct SidelinkInf
   lcInfo.dstL2Id = slInfo.m_dstL2Id;
   lcInfo.lcId = lcid;
   lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
-  //following parameters have no impact at the moment
-  //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
-  lcInfo.priority = 7;
-  lcInfo.pqi = 65;
-  lcInfo.isGbr = true;
-  lcInfo.gbr = 65535; //bits/s random value
-  lcInfo.mbr = lcInfo.gbr;
+  lcInfo.priority = slInfo.m_priority;
   lcInfo.castType = slInfo.m_castType;
   lcInfo.harqEnabled = slInfo.m_harqEnabled;
   lcInfo.pdb = slInfo.m_pdb;
   lcInfo.dynamic = slInfo.m_dynamic;
   lcInfo.rri = slInfo.m_rri;
+  //following parameters have no impact at the moment
+  //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
+  lcInfo.pqi = 65;
+  lcInfo.isGbr = true;
+  lcInfo.gbr = 65535; //bits/s random value
+  lcInfo.mbr = lcInfo.gbr;
+
 
   Ptr<NrSlDataRadioBearerInfo> slDrbInfo = CreateObject <NrSlDataRadioBearerInfo> ();
   slDrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
