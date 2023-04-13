@@ -675,7 +675,7 @@ EpcUeNas::ClassifyRecvPacketForU2nRelay (Ptr<Packet> packet)
           NS_LOG_INFO ("Relaying packet to SL");
           m_relayRxPacketTrace (m_u2nRelayConfig.selfIpv4Addr,
                                 ipv4Header.GetSource (), ipv4Header.GetDestination (), "DL", "SL",  packet);
-          m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id);
+          m_asSapProvider->SendSidelinkData (packet, (*it)->GetSidelinkInfo ().m_dstL2Id, (*it)->GetSidelinkInfo ().m_lcId);
           return;
         }
       if ((*it)->Matches (ipv4Header.GetSource ()))
