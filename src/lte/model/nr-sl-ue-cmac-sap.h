@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 #include <limits>
-
+#include <ns3/lte-sl-tft.h>
 
 namespace ns3 {
 
@@ -261,8 +261,10 @@ public:
    * \param lcId The logical channel id
    * \param srcL2Id Sidelink source L2 id
    * \param dstL2Id Sidelink destination L2 id
+   * \param castType Cast type
+   * \param harqEnabled whether HARQ is enabled
    */
-  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id) = 0;
+  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t castType, bool harqEnabled) = 0;
 
   /**
    * Notify the RRC that the MAC has data to send in the PSSCH
@@ -303,7 +305,7 @@ public:
   MemberNrSlUeCmacSapUser (C* rrc);
 
   // inherited from NrSlUeCmacSapUser
-  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
+  virtual void NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t castType, bool harqEnabled);
 
 private:
   C* m_rrc; ///< the MAC class
@@ -316,9 +318,9 @@ MemberNrSlUeCmacSapUser<C>::MemberNrSlUeCmacSapUser (C* rrc)
 }
 
 template <class C>
-void MemberNrSlUeCmacSapUser<C>::NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id)
+void MemberNrSlUeCmacSapUser<C>::NotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t castType, bool harqEnabled)
 {
-  m_rrc->DoNotifySidelinkReception (lcId, srcL2Id, dstL2Id);
+  m_rrc->DoNotifySidelinkReception (lcId, srcL2Id, dstL2Id, castType, harqEnabled);
 }
 
 } // namespace ns3

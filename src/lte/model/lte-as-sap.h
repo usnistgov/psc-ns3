@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <ns3/ptr.h>
 #include <ns3/packet.h>
+#include <ns3/lte-sl-tft.h>
 
 namespace ns3 {
 

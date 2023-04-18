@@ -26,6 +26,7 @@
 #include <ns3/eps-bearer.h>
 #include <ns3/lte-rrc-sap.h>
 #include <ns3/ipv4-address.h>
+#include <ns3/lte-sl-tft.h>
 
 namespace ns3 {
 

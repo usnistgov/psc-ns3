@@ -606,7 +606,6 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                     slInfo.m_castType = SidelinkInfo::CastType::Unicast;
                     slInfo.m_dstL2Id = peerL2Id; //Go towards the Relay UE
                     slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
-                                              
                                               itPf->remoteAddress, //Packets to this address
                                               slInfo);
                     DoActivateSvcNrSlDataRadioBearer (slTft);

@@ -805,6 +805,93 @@ LteRrcSap::GetSlMaxNumPerReserveEnum (uint8_t slMaxReserveInt)
   return maxResPerEnum;
 }
 
+uint8_t
+LteRrcSap::GetSlPsfchPeriodValue (const LteRrcSap::SlPsfchPeriod &slPsfchPeriod)
+{
+  uint8_t psfchPeriod = 0;
+  switch (slPsfchPeriod.period)
+  {
+    case SlPsfchPeriod::SL0:
+      psfchPeriod = 0;
+      break;
+    case SlPsfchPeriod::SL1:
+      psfchPeriod = 1;
+      break;
+    case SlPsfchPeriod::SL2:
+      psfchPeriod = 2;
+      break;
+    case SlPsfchPeriod::SL4:
+      psfchPeriod = 4;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slPsfchPeriod.period << " LteRrcSap::SlPsfchPeriod");
+  }
+
+  return psfchPeriod;
+}
+
+LteRrcSap::SlPsfchPeriod
+LteRrcSap::GetSlPsfchPeriodEnum (uint8_t slPsfchPeriodInt)
+{
+  SlPsfchPeriod psfchPeriodEnum;
+  switch (slPsfchPeriodInt)
+  {
+    case 0:
+      psfchPeriodEnum.period = SlPsfchPeriod::SL0;
+      break;
+    case 1:
+      psfchPeriodEnum.period = SlPsfchPeriod::SL1;
+      break;
+    case 2:
+      psfchPeriodEnum.period = SlPsfchPeriod::SL2;
+      break;
+    case 4:
+      psfchPeriodEnum.period = SlPsfchPeriod::SL4;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid PSFCH period value " << +slPsfchPeriodInt);
+  }
+
+  return psfchPeriodEnum;
+}
+
+uint8_t
+LteRrcSap::GetSlMinTimeGapPsfchValue (const LteRrcSap::SlMinTimeGapPsfch &slMinTimeGapPsfch)
+{
+  uint8_t minTimeGapPsfch = 0;
+  switch (slMinTimeGapPsfch.gap)
+  {
+    case SlMinTimeGapPsfch::SL2:
+      minTimeGapPsfch = 2;
+      break;
+    case SlMinTimeGapPsfch::SL3:
+      minTimeGapPsfch = 3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid enumeration value " << slMinTimeGapPsfch.gap << " LteRrcSap::SlMinTimeGapPsfch");
+  }
+
+  return minTimeGapPsfch;
+}
+
+LteRrcSap::SlMinTimeGapPsfch
+LteRrcSap::GetSlMinTimeGapPsfchEnum (uint8_t slMinTimeGapPsfchInt)
+{
+  SlMinTimeGapPsfch minTimeGapEnum;
+  switch (slMinTimeGapPsfchInt)
+  {
+    case 2:
+      minTimeGapEnum.gap = SlMinTimeGapPsfch::SL2;
+      break;
+    case 3:
+      minTimeGapEnum.gap = SlMinTimeGapPsfch::SL3;
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid MinTimeGapPSFCH value " << +slMinTimeGapPsfchInt);
+  }
+
+  return minTimeGapEnum;
+}
 
 
 } // namespace ns3

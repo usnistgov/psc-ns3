@@ -27,6 +27,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/address.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/inet6-socket-address.h"
 #include "ns3/seq-ts-size-header.h"
 #include <unordered_map>
 
@@ -163,9 +164,17 @@ private:
      */
     size_t operator() (const Address &x) const
     {
-      NS_ABORT_IF (!InetSocketAddress::IsMatchingType (x));
-      InetSocketAddress a = InetSocketAddress::ConvertFrom (x);
-      return std::hash<uint32_t>()(a.GetIpv4 ().Get ());
+      //NS_ABORT_IF (!InetSocketAddress::IsMatchingType (x));
+      if (InetSocketAddress::IsMatchingType (x))
+        {
+          InetSocketAddress a = InetSocketAddress::ConvertFrom (x);
+          return std::hash<uint32_t>()(a.GetIpv4 ().Get ());
+        }
+      else
+        {
+          Inet6SocketAddress a = Inet6SocketAddress::ConvertFrom (x);
+          return std::hash<uint32_t>()(a.GetIpv6 ().GetIpv4MappedAddress ().Get ());
+        }
     }
   };
 

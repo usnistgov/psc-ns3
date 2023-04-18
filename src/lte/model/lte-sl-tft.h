@@ -88,7 +88,6 @@ struct SidelinkInfo
  * This class implements a variant of LTE TFT for sidelink
  *
  * It is the simple version of NIST LteSlTft class in D2D repo.
- * It uses only remote address.
  *
  */
 class LteSlTft : public SimpleRefCount<LteSlTft>
@@ -156,7 +155,7 @@ public:
    * \param ra the remote address
    * \return true if the TFT matches with the parameters, false otherwise.
    */
-  bool Matches (Ipv4Address ra);
+  bool Matches (Ipv4Address ra) const;
 
   /**
    * \brief Function to evaluate if the SL TFT matches the remote IPv6 address
@@ -188,7 +187,7 @@ public:
    * \return true if the TFT matches with the
    * parameters, false otherwise.
    */
-  bool Matches (Ipv6Address ra);
+  bool Matches (Ipv6Address ra) const;
 
   /**
    * \brief Function to evaluate if the SL TFT is completely equal to another SL TFT
@@ -197,7 +196,7 @@ public:
    * \return true if the provided SL TFT matches with the
    *         actual SL TFT parameters, false otherwise.
    */
-  bool Equals (Ptr<LteSlTft> tft);
+  bool Equals (Ptr<LteSlTft> tft) const;
 
   /**
    * \brief Gets the SidelinkInfo associated with the TFT
@@ -216,19 +215,31 @@ public:
    * \brief Indicates if the TFT is for an incoming sidelink bearer
    * \return true if the TFT is for an incoming sidelink bearer
    */
-  bool isReceive ();
+  bool IsReceive () const;
 
   /**
    * \brief Indicates if the TFT is for an outgoing sidelink bearer
    * \return true if the TFT is for an outgoing sidelink bearer
    */
-  bool isTransmit ();
+  bool IsTransmit () const;
 
   /**
-   * \brief Indicates if the TFT is for unicast communication
-   * \return true if the TFT is for the unicast communication
+   * \brief Return the cast type value
+   * \return cast type value
    */
-  bool isUnicast ();
+  CastType GetCastType () const;
+
+  /**
+   * \brief Indicates if the TFT is for HARQ feedback-enabled communication
+   * \return true if the TFT is for HARQ feedback-enabled communication
+   */
+  bool IsHarqEnabled () const;
+
+  /**
+   * \brief Return the packet delay budget
+   * \return packet delay budget
+   */
+  Time GetDelayBudget () const;
 
 private:
   Direction m_direction {Direction::INVALID}; /**< whether the filter needs to be applied

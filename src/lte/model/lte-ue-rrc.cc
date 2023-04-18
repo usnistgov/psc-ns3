@@ -3675,9 +3675,9 @@ LteUeRrc::SetOutofCovrgUeRnti ()
 }
 
 void
-LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id)
+LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id, uint8_t castType, bool harqEnabled)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id);
+  NS_LOG_FUNCTION (this << (uint16_t)lcId << srcL2Id << dstL2Id << static_cast<uint16_t> (castType) << harqEnabled);
   //add LC
   if (lcId < 4)
     {
@@ -4048,7 +4048,9 @@ LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   lcInfo.isGbr = true;
   lcInfo.gbr = 65535; //bits/s random value
   lcInfo.mbr = lcInfo.gbr;
-
+  lcInfo.castType = LteSlTft::CastType::Unicast;
+  lcInfo.harqEnabled = false;
+  lcInfo.delayBudget = Seconds (0);
 
   Ptr<NrSlSignallingRadioBearerInfo> slSrbInfo = CreateObject <NrSlSignallingRadioBearerInfo> ();
   slSrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
@@ -4249,6 +4251,9 @@ LteUeRrc::AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id)
   lcInfo.isGbr = false;
   lcInfo.gbr = 65535; //bits/s 
   lcInfo.mbr = lcInfo.gbr;
+  lcInfo.castType = LteSlTft::CastType::Unicast;
+  lcInfo.harqEnabled = false;
+  lcInfo.delayBudget = Seconds (0);
  
   Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRbInfo = CreateObject <NrSlDiscoveryRadioBearerInfo> ();
   slDiscRbInfo->m_sourceL2Id = lcInfo.srcL2Id;

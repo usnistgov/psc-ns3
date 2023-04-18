@@ -96,11 +96,9 @@ LteSlTft::LteSlTft (Direction d, Ipv6Address remoteAddr, uint16_t remotePort, co
   NS_ASSERT_MSG ((slInfo.m_dstL2Id & 0xFF000000) == 0, "Destination L2 id must be 24 bits");
 }
 
-
 LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
 {
   NS_LOG_FUNCTION (this);
-
   m_direction = tft->m_direction;
   m_remoteAddress = tft->m_remoteAddress;
   m_remoteAddress6 = tft->m_remoteAddress6;
@@ -112,7 +110,7 @@ LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
 }
 
 bool
-LteSlTft::Matches (Ipv4Address ra)
+LteSlTft::Matches (Ipv4Address ra) const
 {
   NS_LOG_FUNCTION (this << ra);
   bool ok = false;
@@ -122,7 +120,7 @@ LteSlTft::Matches (Ipv4Address ra)
 }
 
 bool
-LteSlTft::Matches (Ipv6Address ra)
+LteSlTft::Matches (Ipv6Address ra) const
 {
   NS_LOG_FUNCTION (this << ra);
   bool ok = false;
@@ -158,7 +156,7 @@ LteSlTft::Matches (Ipv4Address ra, uint16_t rp)
 }
 
 bool
-LteSlTft::Equals (Ptr<LteSlTft> tft)
+LteSlTft::Equals (Ptr<LteSlTft> tft) const
 {
   NS_LOG_FUNCTION (this);
   bool equals = true;
@@ -193,7 +191,7 @@ void LteSlTft::SetSidelinkInfoLcId (uint8_t lcId)
 }
 
 bool
-LteSlTft::isReceive ()
+LteSlTft::IsReceive () const
 {
   //receiving if RECEIVE or BIDIRECTIONAL
   NS_ASSERT_MSG (m_direction != LteSlTft::Direction::INVALID, "Invalid TFT direction");
@@ -201,18 +199,31 @@ LteSlTft::isReceive ()
 }
 
 bool
-LteSlTft::isTransmit ()
+LteSlTft::IsTransmit () const
 {
   //transmitting if TRANSMIT or BIDIRECTIONAL
   NS_ASSERT_MSG (m_direction != LteSlTft::Direction::INVALID, "Invalid TFT direction");
   return m_direction != LteSlTft::Direction::RECEIVE;
 }
 
+LteSlTft::CastType
+LteSlTft::GetCastType () const
+{
+  NS_ASSERT_MSG (m_castType != LteSlTft::CastType::Invalid, "Invalid TFT communication type");
+  return m_castType;
+}
+
 bool
-LteSlTft::isUnicast ()
+LteSlTft::IsHarqEnabled () const
+{
+  return m_harqEnabled;
+}
+
+Time
+LteSlTft::GetDelayBudget () const
 {
   NS_ASSERT_MSG (m_sidelinkInfo.m_castType != SidelinkInfo::CastType::Invalid, "Invalid TFT communication type");
-  return (m_sidelinkInfo.m_castType == SidelinkInfo::CastType::Unicast);
+  return m_delayBudget;
 }
 
 } // namespace ns3

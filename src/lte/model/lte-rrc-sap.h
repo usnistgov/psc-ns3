@@ -1167,6 +1167,44 @@ public:
     } maxNumPerRes {INVALID}; //!< Sidelink MaxNumPerReserve in slots
   };
 
+  /**
+   * \brief struct for slPSFCH-Period-r16 enumeration
+   */
+  struct SlPsfchPeriod
+  {
+    /// SlPsfchPeriod enumeration
+    enum
+    {
+      SL0, // PSFCH disabled
+      SL1,
+      SL2,
+      SL4
+    } period {SL0}; //!< PSFCH period in slots
+  };
+
+  /**
+   * \brief struct for sl-MinTimeGapPSFCH-r16 enumeration
+   */
+  struct SlMinTimeGapPsfch
+  {
+    /// SlMinTimeGapPsfch enumeration
+    enum
+    {
+      SL2,
+      SL3,
+      INVALID
+    } gap {INVALID};
+  };
+
+  /**
+   * \brief SL PSFCH-Config field within SL ResourcePool information element
+   */
+  struct SlPsfchConfig
+  {
+    SlPsfchPeriod slPsfchPeriod; //!< Parameter for indicating the PSFCH period in slots
+    SlMinTimeGapPsfch slMinTimeGapPsfch; //!< Parameter for indicating the minimum time gap between PSSCH and PSFCH (slots)
+    // Other members will be added as needed
+  };
 
   /**
    * \brief Get subcarrier spacing value
@@ -1420,6 +1458,53 @@ public:
    */
   static LteRrcSap::SlMaxNumPerReserve GetSlMaxNumPerReserveEnum (uint8_t slMaxReserveInt);
 
+  /**
+   * \brief Get sidelink PSFCH period value
+   *
+   * This method converts the enum of type LteRrcSap::SlPsfchPeriod
+   * to its unsigned integer representation, such as SL0 is 0 slots,
+   * SL1 is 1 slot, and so on. The value of zero indicates that PSFCH is
+   * never sent, and HARQ feedback is disabled.
+   *
+   * \param slPsfchPeriod The enum of type LteRrcSap::SlPsfchPeriod
+   * \returns The unsigned integer representation of LteRrcSap::SlPsfchPeriod
+   */
+  static uint8_t GetSlPsfchPeriodValue (const LteRrcSap::SlPsfchPeriod &slPsfchPeriod);
+
+  /**
+   * \brief Get sidelink PSFCH period enum
+   *
+   * This method converts the sidelink PSFCH period value to an enum
+   * of type LteRrcSap::SlPsfchPeriod.
+   *
+   * \param slPsfchPeriodInt The sidelink PSFCH period in slots
+   * \returns The object of type LteRrcSap::SlPsfchPeriod
+   */
+  static LteRrcSap::SlPsfchPeriod GetSlPsfchPeriodEnum (uint8_t slPsfchPeriodInt);
+
+  /**
+   * \brief Get sidelink PSFCH minimum time gap value
+   *
+   * This method converts the enum of type LteRrcSap::SlMinTimeGapPsfch
+   * to its unsigned integer representation, either SL2 (2 slots) or
+   * SL3 (3 slots).  This value is the minimum time gap in slots between
+   * the received PSSCH and the associated PSFCH.
+   *
+   * \param slMinTimeGapPsfch The enum of type LteRrcSap::SlMinTimeGapPsfch
+   * \returns The unsigned integer representation of LteRrcSap::SlMinTimeGapPsfch
+   */
+  static uint8_t GetSlMinTimeGapPsfchValue (const LteRrcSap::SlMinTimeGapPsfch &slMinTimeGapPsfch);
+
+  /**
+   * \brief Get sidelink MinTimeGapPSFCH enum
+   *
+   * This method converts the sidelink minimum time gap for PSFCH value to an
+   * of type LteRrcSap::SlMinTimeGapPsfch.
+   *
+   * \param slMinTimeGapInt The sidelink MinTimeGapPSFCH in slots
+   * \returns The object of type LteRrcSap::SlMinTimeGapPsfch
+   */
+  static LteRrcSap::SlMinTimeGapPsfch GetSlMinTimeGapPsfchEnum (uint8_t slMinTimeGapInt);
 
   /**
    * \brief SCS-SpecificCarrier information element
@@ -1531,6 +1616,7 @@ public:
   struct SlResourcePoolNr
   {
     SlPscchConfig slPscchConfig; //!< SL-PSCCH field
+    SlPsfchConfig slPsfchConfig; //!< SL-PSFCH field
     SlSubchannelSize slSubchannelSize; //!< Sidelink subchannel size in PRBs
     SlUeSelectedConfigRp slUeSelectedConfigRp; //!< SL-UE-SelectedConfigRP
     std::vector <std::bitset<1>> slTimeResource; //!< Sidelink bitmap
