@@ -388,7 +388,7 @@ NrSlCommResourcePool::ValidateResvPeriod (uint8_t bwpId, uint16_t poolId, Time r
           IsRsvpMultipOfPoolLen (bwpId, poolId, rsvpInSlots);
         }
     }
-  NS_ABORT_MSG_IF (!found, "The given reservation period is not in the user specified list");
+  NS_ABORT_MSG_IF (!found, "The given reservation period " << resvPeriod.As (Time::MS) << " is not in the user specified list");
 }
 
 std::list<uint16_t>

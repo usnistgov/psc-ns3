@@ -272,6 +272,18 @@ public:
   uint16_t GetSlSubChSize (uint8_t bwpId, uint16_t poolId) const;
 
   /**
+   * \brief Get Nr Sidelink PSSCH number of symbols per slot
+   * \param bwpId bwpId The bandwidth part id
+   * \param poolId poolId The poolId The pool id
+   *
+   * Note:  Does not take into account variability due
+   * to PSFCH (not yet modeled)
+   *
+   * \return Number of PSSCH symbols per slot
+   */
+  uint16_t GetPsschSymbolsPerSlot (uint8_t bwpId, uint16_t poolId) const;
+
+  /**
    * \brief Check if slot indexed by absIndexCurrentSlot is a slot with PSFCH
    *
    * This method checks whether a SL slot is configured for PSFCH, based on

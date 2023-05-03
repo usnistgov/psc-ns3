@@ -4048,9 +4048,9 @@ LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   lcInfo.isGbr = true;
   lcInfo.gbr = 65535; //bits/s random value
   lcInfo.mbr = lcInfo.gbr;
-  lcInfo.castType = LteSlTft::CastType::Unicast;
+  lcInfo.castType = SidelinkInfo::CastType::Unicast;
   lcInfo.harqEnabled = false;
-  lcInfo.delayBudget = Seconds (0);
+  lcInfo.pdb = Seconds (0);
 
   Ptr<NrSlSignallingRadioBearerInfo> slSrbInfo = CreateObject <NrSlSignallingRadioBearerInfo> ();
   slSrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
@@ -4251,9 +4251,10 @@ LteUeRrc::AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id)
   lcInfo.isGbr = false;
   lcInfo.gbr = 65535; //bits/s 
   lcInfo.mbr = lcInfo.gbr;
-  lcInfo.castType = LteSlTft::CastType::Unicast;
+  lcInfo.castType = SidelinkInfo::CastType::Unicast;
   lcInfo.harqEnabled = false;
-  lcInfo.delayBudget = Seconds (0);
+  lcInfo.dynamic = true;
+  lcInfo.pdb = Seconds (0);
  
   Ptr<NrSlDiscoveryRadioBearerInfo> slDiscRbInfo = CreateObject <NrSlDiscoveryRadioBearerInfo> ();
   slDiscRbInfo->m_sourceL2Id = lcInfo.srcL2Id;

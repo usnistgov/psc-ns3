@@ -206,24 +206,23 @@ LteSlTft::IsTransmit () const
   return m_direction != LteSlTft::Direction::RECEIVE;
 }
 
-LteSlTft::CastType
-LteSlTft::GetCastType () const
+bool
+LteSlTft::IsUnicast () const
 {
-  NS_ASSERT_MSG (m_castType != LteSlTft::CastType::Invalid, "Invalid TFT communication type");
-  return m_castType;
+  NS_ASSERT_MSG (m_sidelinkInfo.m_castType != SidelinkInfo::CastType::Invalid, "Invalid TFT communication type");
+  return (m_sidelinkInfo.m_castType == SidelinkInfo::CastType::Unicast);
 }
 
 bool
 LteSlTft::IsHarqEnabled () const
 {
-  return m_harqEnabled;
+  return m_sidelinkInfo.m_harqEnabled;
 }
 
 Time
 LteSlTft::GetDelayBudget () const
 {
-  NS_ASSERT_MSG (m_sidelinkInfo.m_castType != SidelinkInfo::CastType::Invalid, "Invalid TFT communication type");
-  return m_delayBudget;
+  return m_sidelinkInfo.m_pdb;
 }
 
 } // namespace ns3

@@ -224,10 +224,10 @@ public:
   bool IsTransmit () const;
 
   /**
-   * \brief Return the cast type value
-   * \return cast type value
+   * \brief Indicates if the TFT is for unicast communication
+   * \return true if the TFT is for the unicast communication
    */
-  CastType GetCastType () const;
+  bool IsUnicast () const;
 
   /**
    * \brief Indicates if the TFT is for HARQ feedback-enabled communication

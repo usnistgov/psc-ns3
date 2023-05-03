@@ -509,7 +509,7 @@ EpcUeNas::ActivateNrSlBearer (Ptr<LteSlTft> tft)
   //for in coverage case, it will trigger communication with the gNodeb
   //for out of coverage, it will trigger the use of preconfiguration
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->isTransmit (), tft->isReceive (), tft->GetSidelinkInfo ());
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->IsTransmit (), tft->IsReceive (), tft->GetSidelinkInfo ());
 }
 
 void
@@ -560,7 +560,7 @@ EpcUeNas::DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
   NS_LOG_FUNCTION (this);
 
   m_pendingSlBearersList.push_back (tft);
-  m_asSapProvider->ActivateNrSlRadioBearer (tft->isTransmit (), tft->isReceive (), tft->GetSidelinkInfo ());
+  m_asSapProvider->ActivateNrSlRadioBearer (tft->IsTransmit (), tft->IsReceive (), tft->GetSidelinkInfo ());
 
 }
 
