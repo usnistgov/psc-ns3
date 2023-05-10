@@ -3682,7 +3682,7 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
   if (lcId < 4)
     {
       //SL-SRB
-      Ptr<NrSlSignallingRadioBearerInfo> slbInfo = AddNrSlSrb (srcL2Id, dstL2Id, lcId);
+      Ptr<NrSlSignallingRadioBearerInfo> slbInfo = AddNrSlRxSrb (srcL2Id, dstL2Id, lcId);
       NS_LOG_INFO ("Created new RX SL-SRB for dstL2Id " << dstL2Id << " LCID=" << (slbInfo->m_logicalChannelIdentity & 0xF));
     }
   else if (lcId == 4)
@@ -3710,7 +3710,7 @@ LteUeRrc::AddNrSlTxDrb (uint32_t srcL2Id, uint8_t lcid, const struct SidelinkInf
   lcInfo.srcL2Id = srcL2Id;
   lcInfo.dstL2Id = slInfo.m_dstL2Id;
   lcInfo.lcId = lcid;
-  lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
+  lcInfo.lcGroup = 0; //Current scheduler handles only one LCG, all LCGs across different types of bearers should be the same
   lcInfo.priority = slInfo.m_priority;
   lcInfo.castType = slInfo.m_castType;
   lcInfo.harqEnabled = slInfo.m_harqEnabled;
@@ -3749,7 +3749,7 @@ LteUeRrc::AddNrSlRxDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   lcInfo.srcL2Id = srcL2Id;
   lcInfo.dstL2Id = dstL2Id;
   lcInfo.lcId = lcid;
-  lcInfo.lcGroup = 3; // as per 36.331 9.1.1.6
+  lcInfo.lcGroup = 0; //Current scheduler handles only one LCG, all LCGs across different types of bearers should be the same
   //following parameters have no impact at the moment
   //GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
   lcInfo.priority = 7;
@@ -3952,17 +3952,17 @@ LteUeRrc::DoSendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t l
 }
 
 void
-LteUeRrc::DoActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
+LteUeRrc::DoActivateNrSlSignallingRadioBearer (const struct SidelinkInfo& slInfo)
 {
-  NS_LOG_FUNCTION (this << dstL2Id << (uint16_t)lcId);
+  NS_LOG_FUNCTION (this << slInfo.m_dstL2Id << +slInfo.m_lcId);
 
-  ActivateNrSlSrb (dstL2Id, lcId);
+  ActivateNrSlSrb (slInfo);
 }
 
 void
-LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
+LteUeRrc::ActivateNrSlSrb (const struct SidelinkInfo& slInfo)
 {
-  NS_LOG_FUNCTION (this << dstL2Id << (uint16_t)lcId);
+  NS_LOG_FUNCTION (this << slInfo.m_dstL2Id << +slInfo.m_lcId);
   Ptr<NrSlSignallingRadioBearerInfo> slSrb;
 
   switch (m_state)
@@ -3982,7 +3982,7 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
           }
 
 
-        slSrb = AddNrSlSrb (m_srcL2Id, dstL2Id, lcId);
+        slSrb = AddNrSlTxSrb (slInfo);
         NS_LOG_INFO ("Inserted, dstL2Id " << slSrb->m_destinationL2Id << " lcId " <<  (uint32_t) slSrb->m_logicalChannelIdentity
                                           << " lcGroup " << (uint32_t) slSrb->m_logicalChannelConfig.logicalChannelGroup);
         break;
@@ -4016,7 +4016,7 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
         }
 
         //We use same SL-SRB creation and configuration logic as OOC
-        slSrb = AddNrSlSrb (m_srcL2Id, dstL2Id, lcId);
+        slSrb = AddNrSlTxSrb (slInfo);
         NS_LOG_INFO ("Inserted, dstL2Id " << slSrb->m_destinationL2Id << " lcId " <<  (uint32_t) slSrb->m_logicalChannelIdentity
                                           << " lcGroup " << (uint32_t) slSrb->m_logicalChannelConfig.logicalChannelGroup);
 
@@ -4031,26 +4031,29 @@ LteUeRrc::ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId)
 }
 
 Ptr<NrSlSignallingRadioBearerInfo>
-LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
+LteUeRrc::AddNrSlTxSrb (const struct SidelinkInfo& slInfo)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
+  NS_ABORT_MSG_IF ((slInfo.m_srcL2Id == 0 || slInfo.m_dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
 
   NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo lcInfo;
-  lcInfo.srcL2Id = srcL2Id;
-  lcInfo.dstL2Id = dstL2Id;
-  lcInfo.lcId = lcid;
-  lcInfo.lcGroup = 0; // SL-SRBs belong to lcGroup 0 (TS 38.331 9.1.1.4)
   //following parameters have no impact at the moment
-  lcInfo.priority = 1; // SL-SRBs have priority 1 (TS 38.331 9.1.1.4)
+  lcInfo.srcL2Id = slInfo.m_srcL2Id;
+  lcInfo.dstL2Id = slInfo.m_dstL2Id;
+  lcInfo.lcId = slInfo.m_lcId;
+  lcInfo.lcGroup = 0; //Current scheduler handles only one LCG, all LCGs across different types of bearers should be the same
+  lcInfo.priority = slInfo.m_priority;
+  lcInfo.castType = slInfo.m_castType;
+  lcInfo.harqEnabled = slInfo.m_harqEnabled;
+  lcInfo.pdb = slInfo.m_pdb;
+  lcInfo.dynamic = slInfo.m_dynamic;
+  lcInfo.rri = slInfo.m_rri;
+   //following parameters have no impact at the moment
   lcInfo.pqi = 65;
   lcInfo.isGbr = true;
   lcInfo.gbr = 65535; //bits/s random value
   lcInfo.mbr = lcInfo.gbr;
-  lcInfo.castType = SidelinkInfo::CastType::Unicast;
-  lcInfo.harqEnabled = false;
-  lcInfo.pdb = Seconds (0);
 
   Ptr<NrSlSignallingRadioBearerInfo> slSrbInfo = CreateObject <NrSlSignallingRadioBearerInfo> ();
   slSrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
@@ -4058,19 +4061,7 @@ LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   slSrbInfo->m_logicalChannelIdentity = lcInfo.lcId;
   slSrbInfo->m_logicalChannelConfig.logicalChannelGroup = lcInfo.lcGroup;
   slSrbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
-  slSrbInfo->m_logicalChannelConfig.prioritizedBitRateKbps = lcInfo.gbr;
-  slSrbInfo->m_logicalChannelConfig.bucketSizeDurationMs = 1000; // Check this value \todo
-
-  if (m_srcL2Id == srcL2Id)
-    {
-      //Bearer for transmission
-      m_nrSlRrcSapUser->AddTxNrSlSignallingRadioBearer (slSrbInfo);
-    }
-  else
-    {
-      //Bearer for reception
-      m_nrSlRrcSapUser->AddRxNrSlSignallingRadioBearer (slSrbInfo);
-    }
+  m_nrSlRrcSapUser->AddTxNrSlSignallingRadioBearer (slSrbInfo);
 
   //create PDCP/RLC stack
   ObjectFactory rlcObjectFactory;
@@ -4112,6 +4103,87 @@ LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm>::iterator itSlLcOnBwpMapping;
 
   for (itSlLcOnBwpMapping = slLcOnBwpMapping.begin (); itSlLcOnBwpMapping != slLcOnBwpMapping.end (); ++itSlLcOnBwpMapping)
+  {
+	  NS_LOG_DEBUG ("RNTI " << m_rnti
+			  << " LCG id " << +itSlLcOnBwpMapping->lcInfo.lcGroup
+			  << " BWP Id " << +itSlLcOnBwpMapping->bwpId);
+	  uint8_t bwpId = itSlLcOnBwpMapping->bwpId;
+	  m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlLc (itSlLcOnBwpMapping->lcInfo, itSlLcOnBwpMapping->msu);
+  }
+
+  return slSrbInfo;
+}
+
+
+Ptr<NrSlSignallingRadioBearerInfo>
+LteUeRrc::AddNrSlRxSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
+{
+	NS_LOG_FUNCTION (this << srcL2Id << dstL2Id << +lcid);
+
+	NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
+
+	NrSlUeCmacSapProvider::SidelinkLogicalChannelInfo lcInfo;
+	lcInfo.srcL2Id = srcL2Id;
+	lcInfo.dstL2Id = dstL2Id;
+	lcInfo.lcId = lcid;
+	lcInfo.lcGroup = 0; //Current scheduler handles only one LCG, all LCGs across different types of bearers should be the same
+	//following parameters have no impact at the moment
+	//GBR Mission Critical User Plane Push To Talk voice TS 23.501 Table 5.7.4-1
+	lcInfo.priority = 7;
+	lcInfo.pqi = 65;
+	lcInfo.isGbr = true;
+	lcInfo.gbr = 65535; //bits/s random value
+	lcInfo.mbr = lcInfo.gbr;
+
+	Ptr<NrSlSignallingRadioBearerInfo> slSrbInfo = CreateObject <NrSlSignallingRadioBearerInfo> ();
+	slSrbInfo->m_sourceL2Id = lcInfo.srcL2Id;
+	slSrbInfo->m_destinationL2Id = lcInfo.dstL2Id;
+	slSrbInfo->m_logicalChannelIdentity = lcInfo.lcId;
+	slSrbInfo->m_logicalChannelConfig.logicalChannelGroup = lcInfo.lcGroup;
+	slSrbInfo->m_logicalChannelConfig.priority = lcInfo.priority;
+
+	m_nrSlRrcSapUser->AddRxNrSlSignallingRadioBearer (slSrbInfo);
+
+	//create PDCP/RLC stack
+	ObjectFactory rlcObjectFactory;
+	rlcObjectFactory.SetTypeId (LteRlcUm::GetTypeId ());
+	Ptr<LteRlc> rlc = rlcObjectFactory.Create ()->GetObject<LteRlc> ();
+	rlc->SetNrSlMacSapProvider (m_nrSlMacSapProvider);
+	rlc->SetRnti (m_rnti);
+	rlc->SetLcId (slSrbInfo->m_logicalChannelIdentity);
+	rlc->SetSourceL2Id (slSrbInfo->m_sourceL2Id);
+	rlc->SetDestinationL2Id (slSrbInfo->m_destinationL2Id);
+	rlc->SetRlcChannelType (LteRlc::STCH);
+
+	slSrbInfo->m_rlc = rlc;
+
+	Ptr<LtePdcp> pdcp = CreateObject<LtePdcp> ();
+	pdcp->SetRnti (m_rnti);
+	pdcp->SetLcId (slSrbInfo->m_logicalChannelIdentity);
+	pdcp->SetSourceL2Id (slSrbInfo->m_sourceL2Id);
+	pdcp->SetDestinationL2Id (slSrbInfo->m_destinationL2Id);
+	pdcp->SetNrSlPdcpSapUser (m_nrSlPdcpSapUser);
+	pdcp->SetNrSlRlcSapProvider (rlc->GetNrSlRlcSapProvider ());
+	rlc->SetNrSlRlcSapUser (pdcp->GetNrSlRlcSapUser ());
+
+	slSrbInfo->m_pdcp = pdcp;
+
+	//Configure BWP manager and MAC logical channel
+	std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm> slLcOnBwpMapping;
+	slLcOnBwpMapping = m_nrSlUeBwpmRrcSapProvider->AddNrSlSrbLc (lcInfo, rlc->GetNrSlMacSapUser ());
+
+	uint8_t numOfBwpsByBwpm = slLcOnBwpMapping.size ();
+
+	NS_ASSERT_MSG (numOfBwpsByBwpm != 0, "SL BWP manager failed to add SL LC for SL radio bearer");
+
+	uint8_t numOfSlBwps = m_nrSlRrcSapUser->GetBwpIdContainer ().size ();
+	NS_ASSERT_MSG (numOfSlBwps == numOfBwpsByBwpm, " Bwp manager configured SL LC for incorrect number of SL BWPs : " << numOfBwpsByBwpm);
+
+	NS_LOG_DEBUG ("Size of slLcOnBwpMapping vector " << slLcOnBwpMapping.size ());
+
+	std::vector<NrSlUeBwpmRrcSapProvider::SlLcInfoBwpm>::iterator itSlLcOnBwpMapping;
+
+  for (itSlLcOnBwpMapping = slLcOnBwpMapping.begin (); itSlLcOnBwpMapping != slLcOnBwpMapping.end (); ++itSlLcOnBwpMapping)
     {
       NS_LOG_DEBUG ("RNTI " << m_rnti
                             << " LCG id " << +itSlLcOnBwpMapping->lcInfo.lcGroup
@@ -4120,7 +4192,7 @@ LteUeRrc::AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
       m_nrSlUeCmacSapProvider.at (bwpId)->AddNrSlLc (itSlLcOnBwpMapping->lcInfo, itSlLcOnBwpMapping->msu);
     }
 
-  return slSrbInfo;
+	return slSrbInfo;
 }
 
 uint32_t
@@ -4245,7 +4317,7 @@ LteUeRrc::AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id)
   lcInfo.lcId = lcid;
   //The discovery bearer configuration is using random values since they have not being stated in the standard. 
   //TODO: These values need to be re-evaluated.
-  lcInfo.lcGroup = 0; // SL Discovery RBs belong to lcGroup ?
+  lcInfo.lcGroup = 0; //Current scheduler handles only one LCG, all LCGs across different types of bearers should be the same
   lcInfo.priority = 2; // SL Discovery RBs have priority ?
   lcInfo.pqi = 65;
   lcInfo.isGbr = false;

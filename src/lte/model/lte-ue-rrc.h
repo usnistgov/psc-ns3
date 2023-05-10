@@ -1599,22 +1599,29 @@ private:
   /**
    * \brief Activate NR sidelink signalling radio bearer (SL-SRB)
    *
-   * \param dstL2Id the peer layer 2 id
-   * \param lcId the logical channel ID of the logical channel of the sidelink
-   *             signalling radio bearer to be activated
+   * \param slInfo the parameters to be used for the sidelink signaling radio bearer
    */
-  void ActivateNrSlSrb (uint32_t dstL2Id, uint8_t lcId);
+  void ActivateNrSlSrb (const struct SidelinkInfo& slInfo);
 
   /**
-   * \brief Create and store an NR sidelink signalling radio bearer (SL-SRB)
+   * \brief Create and store an NR sidelink signalling radio bearer (SL-SRB) for transmission
+   *
+   * \param slInfo the parameters to be used for the sidelink signaling radio bearer
+   *
+   * \return The Sidelink radio bearer information
+   */
+  Ptr<NrSlSignallingRadioBearerInfo> AddNrSlTxSrb (const struct SidelinkInfo& slInfo);
+
+  /**
+   * \brief Create and store an NR sidelink signalling radio bearer (SL-SRB) for reception
    *
    * \param srcL2Id The sidelink source layer 2 id
    * \param dstL2Id The sidelink destination layer 2 id
-   * \param lcId the logical channel ID of the logical channel of the sidelink
-   *             signalling radio bearer to be activated
+   * \param lcid The logical channel id
+   *
    * \return The Sidelink radio bearer information
    */
-  Ptr<NrSlSignallingRadioBearerInfo> AddNrSlSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
+  Ptr<NrSlSignallingRadioBearerInfo> AddNrSlRxSrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
 
 
   //NrSlUeSvcRrcSapProvider methods
@@ -1650,11 +1657,9 @@ private:
    *        ProSe layer) to instruct the RRC layer to activate a NR SL
    *        signaling radio bearer (SL-SRB).
    *
-   * \param dstL2Id the peer layer 2 ID
-   * \param lcId the logical channel ID of the logical channel of the sidelink
-   *             signalling radio bearer to be activated
+   * \param slInfo the parameters to be used for the sidelink signaling radio bearer
    */
-  void DoActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+  void DoActivateNrSlSignallingRadioBearer (const struct SidelinkInfo& slInfo);
 
   /**
    * \brief Implementation of the method called by the service layer (e.g.,

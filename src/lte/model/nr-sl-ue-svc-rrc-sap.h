@@ -137,10 +137,9 @@ public:
    * \brief The service layer instructs the RRC to activate an NR SL signalling
    *        radio bearer for a given destination and logical channel
    *
-   * \param dstL2Id the destination layer 2 ID
-   * \param lcId the logical channel ID
+   * \param slInfo the parameters to be used for the sidelink signaling radio bearer
    */
-  virtual void ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId) = 0;
+  virtual void ActivateNrSlSignallingRadioBearer (const struct SidelinkInfo& slInfo) = 0;
 
   /**
    * \brief The service layer passes a NR SL discovery message to the RRC for
@@ -229,7 +228,7 @@ public:
   virtual void MonitorSelfL2Id ();
   virtual void MonitorL2Id (uint32_t dstL2Id);
   virtual void SendNrSlSignalling (Ptr<Packet> packet, uint32_t dstL2Id,  uint8_t lcId);
-  virtual void ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
+  virtual void ActivateNrSlSignallingRadioBearer (const struct SidelinkInfo& slInfo);
   virtual void SendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id);
   virtual void ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id);
 
@@ -271,9 +270,9 @@ MemberNrSlUeSvcRrcSapProvider<C>::SendNrSlSignalling (Ptr<Packet> packet, uint32
 
 template <class C>
 void
-MemberNrSlUeSvcRrcSapProvider<C>::ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId)
+MemberNrSlUeSvcRrcSapProvider<C>::ActivateNrSlSignallingRadioBearer (const struct SidelinkInfo& slInfo)
 {
-  m_owner->DoActivateNrSlSignallingRadioBearer (dstL2Id, lcId);
+  m_owner->DoActivateNrSlSignallingRadioBearer (slInfo);
 }
 
 template <class C>
