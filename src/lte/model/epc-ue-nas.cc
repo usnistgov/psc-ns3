@@ -568,7 +568,8 @@ void
 EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                       enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                       NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
-                                                      uint8_t relayDrbId)
+                                                      uint8_t relayDrbId,
+                                                      const struct SidelinkInfo& slInfo)
 {
   NS_LOG_FUNCTION (this << peerL2Id << role << ipInfo.peerIpv4Addr << +relayDrbId);
   uint16_t nReconfigPfs = 0;
@@ -602,9 +603,6 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
 
                     //Create an SL bearer for this traffic
                     Ptr<LteSlTft> slTft;
-                    SidelinkInfo slInfo;
-                    slInfo.m_castType = SidelinkInfo::CastType::Unicast;
-                    slInfo.m_dstL2Id = peerL2Id; //Go towards the Relay UE
                     slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
                                               itPf->remoteAddress, //Packets to this address
                                               slInfo);
@@ -636,9 +634,6 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
         //Ask RRC to create and activate an SL data bearer to transmit to the Remote UE
         {
           Ptr<LteSlTft> slTft;
-          SidelinkInfo slInfo;
-          slInfo.m_castType = SidelinkInfo::CastType::Unicast;
-          slInfo.m_dstL2Id = peerL2Id; //Go towards the Relay UE
           slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
                                     ipInfo.peerIpv4Addr,
                                     slInfo);

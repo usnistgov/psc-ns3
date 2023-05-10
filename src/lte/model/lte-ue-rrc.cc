@@ -3580,9 +3580,9 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
 
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id), slInfo);
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfoWithSrcId.m_dstL2Id), slInfoWithSrcId);
           slInfoWithSrcId.m_lcId = slDrbInfo->m_logicalChannelIdentity;
-          NS_LOG_INFO ("Created new TX SLRB for remote id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
+          NS_LOG_INFO ("Created new TX SLRB for remote id " << slInfoWithSrcId.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
       if ((isTransmit && isReceive) || isReceive)
@@ -3591,7 +3591,7 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
           for (const auto &it:bwpIdsSl)
             {
               NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
-              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (slInfo.m_dstL2Id);
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (slInfoWithSrcId.m_dstL2Id);
             }
         }
       //Notify NAS
@@ -3627,7 +3627,8 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
       //We use same SL-DRB creation and configuration logic than OOC
       if (isTransmit)
         {
-          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfo.m_dstL2Id), slInfo);
+          Ptr<NrSlDataRadioBearerInfo> slDrbInfo = AddNrSlTxDrb (m_srcL2Id, m_nrSlRrcSapUser->GetNextLcid (slInfoWithSrcId.m_dstL2Id), slInfoWithSrcId);
+          slInfoWithSrcId.m_lcId = slDrbInfo->m_logicalChannelIdentity;
           NS_LOG_INFO ("Created new TX SL-DRB for dstL2id " << slInfo.m_dstL2Id << " LCID = " << +slDrbInfo->m_logicalChannelIdentity);
         }
 
@@ -3637,18 +3638,13 @@ LteUeRrc::ActivateNrSlDrb (bool isTransmit, bool isReceive, const struct Sidelin
           for (const auto &it:bwpIdsSl)
             {
               NS_LOG_INFO ("Communicating Rx destination to the MAC of SL BWP " << static_cast<uint16_t>(it));
-              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (slInfo.m_dstL2Id);
+              m_nrSlUeCmacSapProvider.at (it)->AddNrSlRxDstL2Id (slInfoWithSrcId.m_dstL2Id);
             }
         }
 
       //Notify NAS
-      m_asSapUser->NotifyNrSlRadioBearerActivated (slInfo);
-
-/*
-      //Try to send to eNodeB
-      SendSidelinkUeInformation (tx, rx, false, false);
+      m_asSapUser->NotifyNrSlRadioBearerActivated (slInfoWithSrcId);
       break;
-*/
 
     default: // i.e. IDLE_RANDOM_ACCESS
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));

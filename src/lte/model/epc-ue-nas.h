@@ -339,11 +339,13 @@ private:
    * \param role the role of this UE in the U2N link (remote UE or relay UE)
    * \param ipInfo the IP configuration associated to the link
    * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   * \param slInfo the parameters to be used for the sidelink data radio bearer
    */
   void DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                    enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                    NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
-                                                   uint8_t relayDrbId);
+                                                   uint8_t relayDrbId,
+                                                   const struct SidelinkInfo& slInfo);
   /**
    * \brief Function that moves the received packet through the correct path
    *        when the UE is a UE-to-Network (U2N) relay UE

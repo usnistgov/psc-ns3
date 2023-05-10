@@ -104,11 +104,13 @@ public:
    * \param role the role of this UE in the U2N link (remote UE or relay UE)
    * \param ipInfo the IP configuration associated to the link
    * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   * \param slInfo the parameters to be used for the sidelink data radio bearer
    */
   virtual void ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                          enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                          NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
-                                                         uint8_t relayDrbId) = 0;
+                                                         uint8_t relayDrbId,
+                                                         const struct SidelinkInfo& slInfo) = 0;
 };
 
 /**
@@ -172,7 +174,8 @@ public:
   virtual void ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                          enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                          NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
-                                                         uint8_t relayDrbId);
+                                                         uint8_t relayDrbId,
+                                                         const struct SidelinkInfo& slInfo);
 
 private:
   MemberNrSlUeSvcNasSapProvider ();
@@ -200,9 +203,10 @@ void
 MemberNrSlUeSvcNasSapProvider<C>::ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                                             enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                                             NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
-                                                                            uint8_t relayDrbId)
+                                                                            uint8_t relayDrbId,
+                                                                            const struct SidelinkInfo& slInfo)
 {
-  m_owner->DoConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, relayDrbId);
+  m_owner->DoConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, relayDrbId, slInfo);
 }
 
 }
