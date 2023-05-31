@@ -1518,9 +1518,7 @@ main(int argc, char* argv[])
         // Configure nodes
         netsimulyzer::NodeConfigurationHelper nodeConfigHelper(orchestrator);
         nodeConfigHelper.Set("Scale", DoubleValue(1.0));
-        nodeConfigHelper.Set(
-            "Model",
-            StringValue("non-distributable/models/characters/rest/Firefighter.obj"));
+        nodeConfigHelper.Set("Model", netsimulyzer::models::SMARTPHONE_VALUE);
         nodeConfigHelper.Set("Height", OptionalValue<double>(1.8));
         nodeConfigHelper.Set("Offset", Vector3DValue(Vector3D(0, 0, -1.5)));
         nodeConfigHelper.Set("Orientation", Vector3DValue(Vector3D(0, 0, 90)));
