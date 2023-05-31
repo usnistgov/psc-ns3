@@ -601,11 +601,15 @@ main(int argc, char* argv[])
     double uesDistanceToBuilding_x = 10; // m
     bool queueing = false;
     bool enableVisualization = false;
+    bool useNonDistributableModels = false;
     int guiResolution = 200; // refresh time in ms
 
     CommandLine cmd;
 
     cmd.AddValue("enableGuiTraces", "Flag to enable the NetSimulyzer traces", enableVisualization);
+    cmd.AddValue("useNonDistributableModels",
+                 "Flag to use models not included with the base NetSimulyzer",
+                 useNonDistributableModels);
     cmd.AddValue("guiResolution", "Mobility granularity of the visualization", guiResolution);
     cmd.AddValue("queueing", "Whether floor queueing is enabled", queueing);
 
@@ -1488,19 +1492,22 @@ main(int argc, char* argv[])
         // Blue
         team3Area->SetAttribute("BorderColor", teamThreeColor);
 
-        auto firetruck1 = CreateObject<netsimulyzer::Decoration>(orchestrator);
-        firetruck1->SetAttribute(
-            "Model",
-            StringValue("non-distributable/models/props/vehicle/Firetruck.obj"));
-        firetruck1->SetAttribute("Orientation", Vector3DValue({0.0, 0.0, 0.0}));
-        firetruck1->SetAttribute("Position", Vector3DValue({390.0, -40.0, 0.0}));
+        // Firetruck decorations need a custom model
+        // only include them if the user opts-in for that
+        if (useNonDistributableModels)
+        {
+            const StringValue firetruckModel{
+                "non-distributable/models/props/vehicle/Firetruck.obj"};
+            auto firetruck1 = CreateObject<netsimulyzer::Decoration>(orchestrator);
+            firetruck1->SetAttribute("Model", firetruckModel);
+            firetruck1->SetAttribute("Orientation", Vector3DValue({0.0, 0.0, 0.0}));
+            firetruck1->SetAttribute("Position", Vector3DValue({390.0, -40.0, 0.0}));
 
-        auto firetruck2 = CreateObject<netsimulyzer::Decoration>(orchestrator);
-        firetruck2->SetAttribute(
-            "Model",
-            StringValue("non-distributable/models/props/vehicle/Firetruck.obj"));
-        firetruck2->SetAttribute("Orientation", Vector3DValue({0.0, 0.0, 0.0}));
-        firetruck2->SetAttribute("Position", Vector3DValue({390.0, -80.0, 0.0}));
+            auto firetruck2 = CreateObject<netsimulyzer::Decoration>(orchestrator);
+            firetruck2->SetAttribute("Model", firetruckModel);
+            firetruck2->SetAttribute("Orientation", Vector3DValue({0.0, 0.0, 0.0}));
+            firetruck2->SetAttribute("Position", Vector3DValue({390.0, -80.0, 0.0}));
+        }
 
         // Configure buildings
         netsimulyzer::BuildingConfigurationHelper buildingConfigHelper(orchestrator);
