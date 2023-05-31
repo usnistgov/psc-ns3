@@ -1529,6 +1529,18 @@ main(int argc, char* argv[])
             nodeConfigHelper.Set("Name",
                                  StringValue("Responder " + std::to_string(ueNodeIdx) + "-team " +
                                              std::to_string(team)));
+            if (team == 1u)
+            {
+                nodeConfigHelper.Set("BaseColor", netsimulyzer::RED_OPTIONAL_VALUE);
+            }
+            else if (team == 2u)
+            {
+                nodeConfigHelper.Set("BaseColor", netsimulyzer::GREEN_OPTIONAL_VALUE);
+            }
+            else if (team == 3u)
+            {
+                nodeConfigHelper.Set("BaseColor", netsimulyzer::BLUE_OPTIONAL_VALUE);
+            }
             nodeConfigHelper.Install(allUeNodes.Get(ueNodeIdx));
         }
 
