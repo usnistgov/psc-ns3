@@ -1543,9 +1543,10 @@ main(int argc, char* argv[])
         }
 
         // Network
-        nodeConfigHelper.Set("Model",
-                             StringValue("non-distributable/models/props/Billboard_pole.obj"));
+        nodeConfigHelper.Set("Model", netsimulyzer::models::CELL_TOWER_VALUE);
         nodeConfigHelper.Set("Name", StringValue("Cell tower"));
+        nodeConfigHelper.Set("BaseColor",
+                             netsimulyzer::OptionalValue<Color3>{}); // Don't set a color
         nodeConfigHelper.Set("Height", OptionalValue<double>(30));
         nodeConfigHelper.Set("Offset", Vector3DValue(Vector3D(0, 0, -30)));
         nodeConfigHelper.Set("Orientation", Vector3DValue(Vector3D(0, 0, 0)));
