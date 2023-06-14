@@ -67,6 +67,14 @@ public:
    * \param peerL2Id the layer 2 ID of the peer UE
    */
   virtual void NotifySvcNrSlDataRadioBearerActivated (uint32_t peerL2Id) = 0;
+
+  /**
+   * \brief Notify the service layer that an NR SL data radio bearer was
+   *        removed for a given peer
+   *
+   * \param peerL2Id the layer 2 ID of the peer UE
+   */
+  virtual void NotifySvcNrSlDataRadioBearerRemoved (uint32_t peerL2Id) = 0;
 };
 
 /**
@@ -95,6 +103,16 @@ public:
    *            data radio bearer to be activated
    */
   virtual void ActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft) = 0;
+
+  /**
+   * \brief Instruct the NAS to delete a NR SL data radio bearer with a given
+   *        SL traffic template
+   *
+   * \param tft the SL traffic template used to route data from and to the NR SL
+   *            data radio bearer to be deleted
+   */
+  virtual void DeleteSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft) = 0;
+
   /**
    * Instruct the NAS to (re)configure the data bearers (UL and SL where it
    * applies) to have the data packets flowing in the appropriate path after
@@ -106,6 +124,21 @@ public:
    * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
    */
   virtual void ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                         enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                         NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                         uint8_t relayDrbId) = 0;
+
+  /**
+   * Instruct the NAS to remove the data bearers (UL and SL where it
+   * applies) corresponding to UE-to-Network (U2N) relay links.
+   * This function is used as part of the U2N release connection procedure.
+   *
+   * \param peerL2Id the layer 2 ID of the peer UE
+   * \param role the role of this UE in the U2N link (remote UE or relay UE)
+   * \param ipInfo the IP configuration associated to the link
+   * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   */
+  virtual void RemoveNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                          enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                          NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
                                                          uint8_t relayDrbId) = 0;
@@ -128,6 +161,7 @@ public:
   MemberNrSlUeSvcNasSapUser (C* owner);
   // inherited from NrSlUeSvcNasSapUser
   virtual void NotifySvcNrSlDataRadioBearerActivated (uint32_t peerL2Id);
+  virtual void NotifySvcNrSlDataRadioBearerRemoved (uint32_t peerL2Id);
 
 private:
   MemberNrSlUeSvcNasSapUser ();
@@ -150,6 +184,12 @@ MemberNrSlUeSvcNasSapUser<C>::NotifySvcNrSlDataRadioBearerActivated (uint32_t pe
   m_owner->DoNotifySvcNrSlDataRadioBearerActivated (peerL2Id);
 }
 
+template <class C>
+void
+MemberNrSlUeSvcNasSapUser<C>::NotifySvcNrSlDataRadioBearerRemoved (uint32_t peerL2Id)
+{
+  m_owner->DoNotifySvcNrSlDataRadioBearerRemoved (peerL2Id);
+}
 
 /**
  * Template for the implementation of the NrSlUeSvcNasSapProvider as a member
@@ -169,7 +209,12 @@ public:
 
   // inherited from NrSlUeSvcNasSapProvider
   virtual void ActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
+  virtual void DeleteSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
   virtual void ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                         enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                         NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                         uint8_t relayDrbId);
+  virtual void RemoveNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                          enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                          NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
                                                          uint8_t relayDrbId);
@@ -197,12 +242,29 @@ MemberNrSlUeSvcNasSapProvider<C>::ActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> 
 
 template <class C>
 void
+MemberNrSlUeSvcNasSapProvider<C>::DeleteSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
+{
+  m_owner->DoDeleteSvcNrSlDataRadioBearer (tft);
+}
+
+template <class C>
+void
 MemberNrSlUeSvcNasSapProvider<C>::ConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                                             enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                                             NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
                                                                             uint8_t relayDrbId)
 {
   m_owner->DoConfigureNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, relayDrbId);
+}
+
+template <class C>
+void
+MemberNrSlUeSvcNasSapProvider<C>::RemoveNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                                            enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                                            NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                                            uint8_t relayDrbId)
+{
+  m_owner->DoRemoveNrSlDataRadioBearersForU2nRelay (peerL2Id, role, ipInfo, relayDrbId);
 }
 
 }

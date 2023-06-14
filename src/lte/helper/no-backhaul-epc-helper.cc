@@ -575,5 +575,11 @@ NoBackhaulEpcHelper::AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr)
   m_pgwApp->AddRemoteUe (relayImsi, ueAddr);
 }
 
+void
+NoBackhaulEpcHelper::RemoveRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr)
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueAddr);
+  m_pgwApp->RemoveRemoteUe (relayImsi, ueAddr);
+}
 
 } // namespace ns3

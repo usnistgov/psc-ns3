@@ -533,5 +533,25 @@ EpcPgwApplication::AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr)
 
 }
 
+void
+EpcPgwApplication::RemoveRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr)
+{
+  NS_LOG_FUNCTION (this << relayImsi << ueAddr);
+
+  // the relay UE must be known to the network
+  std::map<uint64_t, Ptr<UeInfo> >::iterator relayit = m_ueInfoByImsiMap.find (relayImsi);
+  NS_ABORT_MSG_UNLESS (relayit != m_ueInfoByImsiMap.end (), "unknown IMSI " << relayImsi);
+ 
+  // the remote must be already in the map
+  std::map<Ipv4Address, Ptr<UeInfo> >::iterator remoteit= m_ueInfoByRemoteUeAddrMap.find (ueAddr);
+  NS_ABORT_MSG_UNLESS (remoteit != m_ueInfoByRemoteUeAddrMap.end (), "unknown UE Address " << ueAddr);
+   
+  // Remove if it is the same relay for the remote
+  if (m_ueInfoByRemoteUeAddrMap[ueAddr] == m_ueInfoByImsiMap[relayImsi])
+    {
+      m_ueInfoByRemoteUeAddrMap.erase(ueAddr);
+    }
+
+}
 
 }  // namespace ns3

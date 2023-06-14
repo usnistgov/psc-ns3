@@ -77,6 +77,16 @@ public:
    */
   virtual void ReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id) = 0;
 
+  /**
+   * \brief The RRC passes the RSRP measurements (after L3 filtering and comparison with threshold/hysteresis) 
+   * related to a peer UE to the service layer.
+   *
+   * \param peerL2Id the peer layer 2 ID 
+   * \param value RSRP value associated with peer UE
+   * \param eligible confirms whether or not the relay passed the RSRP threshold/hysteresis criteria
+   */
+  virtual void ReceiveNrSlRsrpMeasurements (uint32_t peerL2Id, double value, bool eligible) = 0;
+
 };
 
 /**
@@ -159,6 +169,13 @@ public:
    */
   virtual void ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id) = 0;
 
+  /**
+   * \brief Notify the RRC that the following connection was released
+   *
+   * \param srcL2Id Sidelink source L2 id
+   * \param dstL2Id Sidelink destination L2 id
+   */
+  virtual void NotifySidelinkConnectionRelease (uint32_t srcL2Id, uint32_t dstL2Id) = 0;
 };
 
 /**
@@ -180,6 +197,7 @@ public:
   // inherited from NrSlUeSvcRrcSapUser
   virtual void ReceiveNrSlSignalling (Ptr<Packet> packet, uint32_t srcL2Id);
   virtual void ReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t srcL2Id);
+  virtual void ReceiveNrSlRsrpMeasurements (uint32_t peerL2Id, double value, bool eligible);
 
 private:
   MemberNrSlUeSvcRrcSapUser ();
@@ -209,6 +227,13 @@ MemberNrSlUeSvcRrcSapUser<C>::ReceiveNrSlDiscovery (Ptr<Packet> packet, uint32_t
   m_owner->DoReceiveNrSlDiscovery (packet, srcL2Id);
 }
 
+template <class C>
+void
+MemberNrSlUeSvcRrcSapUser<C>::ReceiveNrSlRsrpMeasurements (uint32_t peerL2Id, double value, bool eligible)
+{
+  m_owner->DoReceiveNrSlRsrpMeasurements (peerL2Id, value, eligible);
+}
+
 /**
  * Template for the implementation of the NrSlUeSvcRrcSapProvider as a member
  * of an owner class of type C to which all methods are forwarded
@@ -232,6 +257,7 @@ public:
   virtual void ActivateNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
   virtual void SendNrSlDiscovery (Ptr<Packet> packet, uint32_t dstL2Id);
   virtual void ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id);
+  virtual void NotifySidelinkConnectionRelease (uint32_t srcL2Id, uint32_t dstL2Id);
 
 private:
   MemberNrSlUeSvcRrcSapProvider ();
@@ -288,6 +314,13 @@ void
 MemberNrSlUeSvcRrcSapProvider<C>::ActivateNrSlDiscoveryRadioBearer (uint32_t dstL2Id)
 {
   m_owner->DoActivateNrSlDiscoveryRadioBearer (dstL2Id);
+}
+
+template <class C>
+void 
+MemberNrSlUeSvcRrcSapProvider<C>::NotifySidelinkConnectionRelease (uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  m_owner->DoNotifySidelinkConnectionRelease (srcL2Id, dstL2Id);
 }
 
 }

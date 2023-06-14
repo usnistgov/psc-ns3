@@ -103,6 +103,13 @@ public:
   virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast) = 0;
 
   /**
+   * \brief Delete existing NR SL radio bearer
+   * 
+   * \param dstL2Id destination L2 ID
+   */
+  virtual void DeleteNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast) = 0;
+
+  /**
    * \brief Send sidelink data packet to RRC.
    *
    * \param packet The packet
@@ -160,6 +167,13 @@ public:
    */
   virtual void NotifyNrSlRadioBearerActivated (uint32_t dstL2Id) = 0;
 
+  /**
+   * \brief Notify the NAS that the NR sidelink has been removed
+   *
+   * \param dstL2Id The destination layer 2 id
+   */
+  virtual void NotifyNrSlRadioBearerRemoved (uint32_t dstL2Id) = 0;
+
 };
 
 
@@ -189,6 +203,7 @@ public:
   virtual void SendData (Ptr<Packet> packet, uint8_t bid);
   virtual void Disconnect ();
   virtual void ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+  virtual void DeleteNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
   virtual void SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id);
 
 private:
@@ -258,6 +273,13 @@ MemberLteAsSapProvider<C>::ActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTra
 
 template <class C>
 void
+MemberLteAsSapProvider<C>::DeleteNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+{
+  m_owner->DoDeleteNrSlDataRadioBearer (dstL2Id, isTransmit, isReceive, isUnicast);
+}
+
+template <class C>
+void
 MemberLteAsSapProvider<C>::SendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
 {
   m_owner->DoSendSidelinkData (packet, dstL2Id);
@@ -286,6 +308,7 @@ public:
   virtual void RecvData (Ptr<Packet> packet);
   virtual void NotifyConnectionReleased ();
   virtual void NotifyNrSlRadioBearerActivated (uint32_t dstL2Id);
+  virtual void NotifyNrSlRadioBearerRemoved (uint32_t dstL2Id);
 
 private:
   MemberLteAsSapUser ();
@@ -338,6 +361,12 @@ MemberLteAsSapUser<C>::NotifyNrSlRadioBearerActivated (uint32_t dstL2Id)
   m_owner->DoNotifyNrSlRadioBearerActivated (dstL2Id);
 }
 
+template <class C>
+void
+MemberLteAsSapUser<C>::NotifyNrSlRadioBearerRemoved (uint32_t dstL2Id)
+{
+  m_owner->DoNotifyNrSlRadioBearerRemoved (dstL2Id);
+}
 
 } // namespace ns3
 

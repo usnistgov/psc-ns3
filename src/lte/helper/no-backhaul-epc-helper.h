@@ -78,6 +78,7 @@ public:
   virtual Ipv4Address GetUeDefaultGatewayAddress ();
   virtual Ipv6Address GetUeDefaultGatewayAddress6 ();
   virtual void AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr);
+  virtual void RemoveRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr);
 
 protected:
   /**

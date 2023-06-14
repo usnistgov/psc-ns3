@@ -289,6 +289,14 @@ public:
   void ActivateNrSlBearer (Ptr<LteSlTft> tft);
 
   /**
+   * \brief Delete NR Sidelink bearer
+   *
+   * \param tft The bearer information 
+   */
+  void DeleteNrSlBearer (Ptr<LteSlTft> tft);
+
+
+  /**
    * TracedCallback signature for reception of data packets by a UE acting as UE-to-Network relay
    *
    * \param [in] nodeIp the Ipv4 address of this UE
@@ -312,6 +320,14 @@ private:
    */
   void DoNotifyNrSlRadioBearerActivated (uint32_t dstL2Id);
 
+  /**
+   * \brief Notify Nr Sidelink radio bearer removed function
+   *
+   * \param dstL2Id The destination L2 id
+   */
+  void DoNotifyNrSlRadioBearerRemoved (uint32_t dstL2Id);
+
+
   std::list<Ptr<LteSlTft> > m_pendingSlBearersList; ///< pending NR Sidelink bearers list
 
   std::list<Ptr<LteSlTft> > m_slBearersActivatedList; ///< Sidelink NR bearers activated list
@@ -329,6 +345,14 @@ private:
    * \param tft the SL TFT identifying the traffic that will go on this bearer
    */
   void DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
+
+  /**
+   * \ brief Instruct the NAS to delete the NR sidelink data bearer
+   *
+   * \param dstL2Id destination layer 2 ID
+   */
+  void DoDeleteSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft);
+
   /**
    * Implementation of the method called by the service layer (e.g., ProSe
    * layer) to instruct the NAS to (re)configure the data bearers (UL and SL
@@ -341,6 +365,22 @@ private:
    * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
    */
   void DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                   enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                   NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                   uint8_t relayDrbId);
+
+  /**
+   * Implementation of the method called by the service layer (e.g., ProSe
+   * layer) to instruct the NAS to remove the data bearers (UL and SL
+   * where it applies) to have the data packets flowing in the appropriate path
+   * after the UEs release a connection for UE-to-Network (U2N) relay.
+   *
+   * \param peerL2Id the layer 2 ID of the peer UE
+   * \param role the role of this UE in the U2N link (remote UE or relay UE)
+   * \param ipInfo the IP configuration associated to the link
+   * \param relayDrbId the UL data radio bearer ID used to relay data (used only when the UE has a relay UE role)
+   */
+  void DoRemoveNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
                                                    enum NrSlUeProseDirLnkSapUser::U2nRole role,
                                                    NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
                                                    uint8_t relayDrbId);

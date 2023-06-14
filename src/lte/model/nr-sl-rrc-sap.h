@@ -72,9 +72,9 @@ public:
    *
    * Attempts to add a sidelink radio bearer
    *
-   * \param slDrb LteSidelinkRadioBearerInfo pointer
+   * \param slTxDrb LteSidelinkRadioBearerInfo pointer
    */
-  virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb) = 0;
+  virtual void AddNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb) = 0;
   /**
    * \brief Add NR Reception sidelink data radio bearer
    *
@@ -89,7 +89,27 @@ public:
    * \param dstL2Id The remote/destination layer 2 id
    * \return The NrSlDataRadioBearerInfo
    */
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id) = 0;
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkTxDataRadioBearer (uint32_t dstL2Id) = 0;
+  /**
+   * \brief Get NR Sidelink Rx data radio bearer
+   *
+   * \param srcL2Id The source layer 2 id
+   * \return The NrSlDataRadioBearerInfo
+   */
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRxDataRadioBearer (uint32_t srcL2Id) = 0;
+  /**
+   * \brief Remove NR SL data bearer transmission
+   *
+   * \param slTxdDb NrSlDataRadioBearerInfo pointer
+   */
+  virtual void RemoveNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb) = 0;
+
+  /**
+   * \brief Remove NR SL data bearer for reception
+   *
+   * \param slRxDrb NrSlDataRadioBearerInfo pointer
+   */
+  virtual void RemoveNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb) = 0;
   /**
    * \brief Get next LCID for setting up NR SL DRB towards the given destination
    *
@@ -145,7 +165,7 @@ public:
    * \return The NrSlDiscoveryRadioBearerInfo
    */
   virtual Ptr<NrSlDiscoveryRadioBearerInfo> GetTxNrSlDiscoveryRadioBearer (uint32_t dstL2Id) = 0;
-
+  
 };
 
 /**
@@ -182,6 +202,19 @@ public:
    */
   virtual void SetSourceL2Id (uint32_t srcL2Id) = 0;
 
+  /**
+   * \brief Set NR Sidelink discovery and (re)selection requiremenmts for the relay UE
+   *
+   * \param relayConfig the relay UE config
+   */
+  virtual void SetRelayRequirements (const LteRrcSap::SlRelayUeConfig config) = 0 ;
+
+  /**
+   * \brief Set NR Sidelink discovery and (re)selection requiremenmts for the remote UE
+   *
+   * \param relayConfig the remote UE config
+   */
+  virtual void SetRemoteRequirements (const LteRrcSap::SlRemoteUeConfig config) = 0 ;
 
 };
 
@@ -211,9 +244,12 @@ public:
   virtual const std::vector <std::bitset<1>>
   GetPhysicalSlPool (const std::vector <std::bitset<1>> &slBitMap);
   virtual const std::set<uint8_t> GetBwpIdContainer ();
-  virtual void AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  virtual void AddNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb);
   virtual void AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
-  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t dstL2Id);
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkTxDataRadioBearer (uint32_t dstL2Id);
+  virtual Ptr<NrSlDataRadioBearerInfo> GetSidelinkRxDataRadioBearer (uint32_t srcL2Id);
+  virtual void RemoveNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxTDrb);
+  virtual void RemoveNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
   virtual uint8_t GetNextLcid (uint32_t dstL2Id);
   virtual void AddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
   virtual void AddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
@@ -263,9 +299,9 @@ MemberNrSlUeRrcSapUser<C>::GetBwpIdContainer ()
 
 template <class C>
 void
-MemberNrSlUeRrcSapUser<C>::AddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb)
+MemberNrSlUeRrcSapUser<C>::AddNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb)
 {
-  m_owner->DoAddNrSlDataRadioBearer (slDrb);
+  m_owner->DoAddNrSlTxDataRadioBearer (slTxDrb);
 }
 
 template <class C>
@@ -278,9 +314,30 @@ MemberNrSlUeRrcSapUser<C>::AddNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo
 
 template <class C>
 Ptr<NrSlDataRadioBearerInfo>
-MemberNrSlUeRrcSapUser<C>::GetSidelinkDataRadioBearer (uint32_t dstL2Id)
+MemberNrSlUeRrcSapUser<C>::GetSidelinkTxDataRadioBearer (uint32_t dstL2Id)
 {
-  return m_owner->DoGetSidelinkDataRadioBearer (dstL2Id);
+  return m_owner->DoGetSidelinkTxDataRadioBearer (dstL2Id);
+}
+
+template <class C>
+Ptr<NrSlDataRadioBearerInfo>
+MemberNrSlUeRrcSapUser<C>::GetSidelinkRxDataRadioBearer (uint32_t srcL2Id)
+{
+  return m_owner->DoGetSidelinkRxDataRadioBearer (srcL2Id);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::RemoveNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb)
+{
+  m_owner->DoRemoveNrSlTxDataRadioBearer (slTxDrb);
+}
+
+template <class C>
+void
+MemberNrSlUeRrcSapUser<C>::RemoveNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb)
+{
+  m_owner->DoRemoveNrSlRxDataRadioBearer (slRxDrb);
 }
 
 template <class C>
@@ -357,7 +414,8 @@ public:
   // inherited from NRSlUeRrcSapProvider
   virtual void PopulatePools ();
   virtual void SetSourceL2Id (uint32_t srcL2Id);
-
+  virtual void SetRelayRequirements (const LteRrcSap::SlRelayUeConfig config);
+  virtual void SetRemoteRequirements (const LteRrcSap::SlRemoteUeConfig config);
 
 private:
   MemberNrSlUeRrcSapProvider ();
@@ -390,8 +448,19 @@ MemberNrSlUeRrcSapProvider<C>::SetSourceL2Id (uint32_t srsL2Id)
   m_owner->DoSetSourceL2Id (srsL2Id);
 }
 
+template <class C>
+void
+MemberNrSlUeRrcSapProvider<C>::SetRelayRequirements (const LteRrcSap::SlRelayUeConfig config)
+{
+  m_owner->DoSetRelayRequirements (config);
+}
 
-
+template <class C>
+void
+MemberNrSlUeRrcSapProvider<C>::SetRemoteRequirements (const LteRrcSap::SlRemoteUeConfig config)
+{
+  m_owner->DoSetRemoteRequirements (config);
+}
 
 //eNB side SAPs
 

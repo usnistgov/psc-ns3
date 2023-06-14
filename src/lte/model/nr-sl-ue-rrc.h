@@ -113,6 +113,16 @@ public:
    */
   void SetNrSlPreconfiguration (const LteRrcSap::SidelinkPreconfigNr &preconfiguration);
   /**
+   * \brief Set NR sidelink relay discovery/(re)selection configuration for relay UE
+   * \param discConfig the NR LteRrcSap::SlRelayUeConfig struct
+   */
+  void SetNrSlDiscoveryRelayConfiguration (const LteRrcSap::SlRelayUeConfig relayConfig);
+  /**
+   * \brief Set NR sidelink remote discovery/(re)selection configuration for remote UE
+   * \param discConfig the NR LteRrcSap::SlRemoteUeConfig struct
+   */
+  void SetNrSlDiscoveryRemoteConfiguration (const LteRrcSap::SlRemoteUeConfig remoteConfig);
+  /**
    * \brief Set Sidelink source layer 2 id
    *
    * \param srcL2Id The Sidelink layer 2 id of the source
@@ -197,10 +207,10 @@ private:
    */
   const std::set <uint8_t> DoGetBwpIdContainer ();
   /**
-   * \brief Add NR sidelink data radio bearer
-   * \param slDrb LteSidelinkRadioBearerInfo pointer
+   * \brief Add NR Transmission sidelink data radio bearer
+   * \param slTxDrb LteSidelinkRadioBearerInfo pointer
    */
-  void DoAddNrSlDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slDrb);
+  void DoAddNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb);
   /**
    * \brief Add NR Reception sidelink data radio bearer
    * \param slRxDrb LteSidelinkRadioBearerInfo pointer
@@ -211,7 +221,24 @@ private:
    * \param dstL2Id The remote/destination layer 2 id
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkDataRadioBearer (uint32_t dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkTxDataRadioBearer (uint32_t dstL2Id);
+  /**
+   * \brief Get NR Sidelink Rx data radio bearer
+   * \param srcL2Id The source layer 2 id
+   * \return The NrSlDataRadioBearerInfo
+   */
+  Ptr<NrSlDataRadioBearerInfo> DoGetSidelinkRxDataRadioBearer (uint32_t srcL2Id);
+  /**
+   * brief Remove NR Transmission sidelink data radio bearer
+   * \param slTxDrb LteSidelinkRadioBearerInfo pointer
+   */
+  void DoRemoveNrSlTxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slTxDrb);
+  /**
+   * \brief Remove NR Reception sidelink data radio bearer
+   * \param slRxDrb LteSidelinkRadioBearerInfo pointer
+   */
+  void DoRemoveNrSlRxDataRadioBearer (Ptr<NrSlDataRadioBearerInfo> slRxDrb);
+
   /**
    * \brief Get Source layer 2 id
    * \return source layer 2 id
@@ -223,6 +250,7 @@ private:
    * \return the next available NR SL DRB LCID
    */
   uint8_t DoGetNextLcid (uint32_t dstL2Id);
+
   void DoAddTxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
   void DoAddRxNrSlSignallingRadioBearer (Ptr<NrSlSignallingRadioBearerInfo> slSrb);
   Ptr<NrSlSignallingRadioBearerInfo> DoGetTxNrSlSignallingRadioBearer (uint32_t dstL2Id, uint8_t lcId);
@@ -240,7 +268,17 @@ private:
    *
    * \return The NrSlDataRadioBearerInfo
    */
-  Ptr<NrSlDataRadioBearerInfo> GetSidelinkDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> GetSidelinkTxDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id);
+  /**
+   * \brief Get NR Sidelink Rx data radio bearer
+   *
+   * \param srcL2Id The source layer 2 id
+   * \param dstL2Id The destination layer 2 id
+   *
+   * \return The NrSlDataRadioBearerInfo
+   */
+  Ptr<NrSlDataRadioBearerInfo> GetSidelinkRxDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id);
+
   // NR sidelink UE RRC SAP
   NrSlUeRrcSapUser* m_nrSlRrcSapUser {nullptr}; ///< NR SL UE RRC SAP user
   NrSlUeRrcSapProvider* m_nrSlUeRrcSapProvider {nullptr}; ///< NR SL UE RRC SAP provider
@@ -258,7 +296,7 @@ private:
   //1. Python bindings does not support std::unordered_set
   //2. I do not see this container to pass max 2 elements
   std::set <uint8_t> m_slBwpIds; //!< A container to store SL BWP ids
-  NrSlDrbMapPerL2Id m_slDrbMap; /**< NR sidelink data radio bearer map per
+  NrSlDrbMapPerL2Id m_slTxDrbMap; /**< NR sidelink tx data radio bearer map per
                                  * destination layer 2 id. For Group-Cast
                                  * it will only hold the tx bearer info.
                                  * We use another map to store rx bearer

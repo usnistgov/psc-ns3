@@ -162,6 +162,13 @@ public:
    */
   void AddRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr);
 
+  /**
+   * Deregister a remote UE that previously connected to a UE-to-Network relay UE
+   *
+   * \param relayImsi IMSI of the relay UE
+   * \param ueAddr The IPv4 address of the remote UE
+   */
+  void RemoveRemoteUe (uint64_t relayImsi, Ipv4Address ueAddr);
 
   /**
    * TracedCallback signature for data Packet reception event.

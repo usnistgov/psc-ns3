@@ -473,6 +473,39 @@ EpcUeNas::DoNotifyNrSlRadioBearerActivated (uint32_t dstL2Id)
     }
 }
 
+void
+EpcUeNas::DeleteNrSlBearer (Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  m_asSapProvider->DeleteNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+}
+
+void
+EpcUeNas::DoNotifyNrSlRadioBearerRemoved (uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this);
+
+  std::list<Ptr<LteSlTft> >::iterator it = m_slBearersActivatedList.begin ();
+  while (it != m_slBearersActivatedList.end ())
+    {
+      if ((*it)->GetDstL2Id () == dstL2Id)
+        {
+          //Found sidelink
+          it = m_slBearersActivatedList.erase (it);
+
+          //Notify the service layer if present
+          if (m_nrSlUeSvcNasSapUser)
+            {
+              m_nrSlUeSvcNasSapUser->NotifySvcNrSlDataRadioBearerRemoved (dstL2Id);
+            }
+        }
+      else
+        {
+          it++;
+        }
+    }
+}
+
 NrSlUeSvcNasSapProvider*
 EpcUeNas::GetNrSlUeSvcNasSapProvider ()
 {
@@ -494,6 +527,14 @@ EpcUeNas::DoActivateSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
 
   m_pendingSlBearersList.push_back (tft);
   m_asSapProvider->ActivateNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
+
+}
+
+void
+EpcUeNas::DoDeleteSvcNrSlDataRadioBearer (Ptr<LteSlTft> tft)
+{
+  NS_LOG_FUNCTION (this);
+  m_asSapProvider->DeleteNrSlRadioBearer (tft->GetDstL2Id (), tft->isTransmit (), tft->isReceive (), tft->isUnicast ());
 
 }
 
@@ -577,6 +618,45 @@ EpcUeNas::DoConfigureNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
       default:
         NS_FATAL_ERROR ("Invalid role " << role);
     }
+}
+
+void
+EpcUeNas::DoRemoveNrSlDataRadioBearersForU2nRelay (uint32_t peerL2Id,
+                                                      enum NrSlUeProseDirLnkSapUser::U2nRole role,
+                                                      NrSlUeProseDirLnkSapUser::DirectLinkIpInfo ipInfo,
+                                                      uint8_t relayDrbId)
+{
+  NS_LOG_FUNCTION (this << peerL2Id << role << ipInfo.peerIpv4Addr << +relayDrbId);
+
+  switch (role)
+  {
+    case NrSlUeProseDirLnkSapUser::RemoteUe:
+      NS_LOG_INFO ("Role: Remote UE. Peer UE (Relay UE) L2ID: " << peerL2Id);
+
+      break;
+    case NrSlUeProseDirLnkSapUser::RelayUe:
+      NS_LOG_INFO ("Role: Relay UE. Peer UE (Remote UE) L2ID: " << peerL2Id);
+      
+      //Delete U2N relay values to help with packet classification upon reception
+      if (m_u2nRelayConfig.relaying == true)
+        {
+          m_u2nRelayConfig.relaying = false;
+          m_u2nRelayConfig.selfIpv4Addr = Ipv4Address::GetZero ();
+          m_u2nRelayConfig.relayDrbId = 0;        
+        }
+
+      break;
+    default:
+      NS_FATAL_ERROR ("Invalid role " << role);
+  }
+ 
+  Ptr<LteSlTft> slTft;
+  slTft = Create<LteSlTft> (LteSlTft::Direction::TRANSMIT,
+                              LteSlTft::CommType::Unicast,
+                              ipInfo.peerIpv4Addr,
+                              peerL2Id);
+  DoDeleteSvcNrSlDataRadioBearer (slTft);
+
 }
 
 void

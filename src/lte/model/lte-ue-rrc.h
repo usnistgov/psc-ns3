@@ -1493,6 +1493,25 @@ public:
    */
   uint32_t GetSourceL2Id ();
 
+  /**
+   *  Tell the PHY to enable RSRP measurements for relay selection
+   */
+  void EnableUeSlRsrpMeasurements ();
+
+  /**
+   * Tell the PHY to disable RSRP measurements for relay selection
+   */
+  void DisableUeSlRsrpMeasurements ();
+
+  /**
+   * Structure to save RSRP meausrement and its related timestamp for relay selection
+   */
+  struct RsrpMeasurement
+  {
+    double value;
+    Time timestamp;
+  };
+  
 private:
 
   //NR Sidelink AS SAP Provider methods
@@ -1505,6 +1524,19 @@ private:
    * \param isUnicast True if the bearer is for unicast communication
    */
   void DoActivateNrSlRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+
+  /**
+   * \brief Implement the method called by the ProSe layer to instruct 
+   *        the RRC to delete the NS SL data bearer
+   * 
+   * \param dstL2Id The remote layer 3 id
+   * \param isTransmit True if the bearer is for transmission
+   * \param isReceive True if the bearer is for reception
+   * \param isUnicast True if the bearer is for unicast communication
+
+   */
+  void DoDeleteNrSlDataRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast);
+
   /**
    * \brief Send sidelink data packet to RRC.
    *
@@ -1529,6 +1561,21 @@ private:
    * \param srcL2Id The Sidelink layer 2 id of the source
    */
   void DoSetSourceL2Id (uint32_t srcL2Id);
+
+  /**
+   * \brief Set relay UE config
+   *
+   * \param config relay config
+   */
+  void DoSetRelayRequirements (const LteRrcSap::SlRelayUeConfig config);
+    
+  /**
+   * \brief Set remote UE config
+   *
+   * \param config remote config
+   */
+  void DoSetRemoteRequirements (const LteRrcSap::SlRemoteUeConfig config);
+
 
   //Internal private methods and member variables
 private:
@@ -1561,6 +1608,14 @@ private:
   Ptr<NrSlDataRadioBearerInfo> AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid);
 
   /**
+   * \brief Remove NR SIdelink Data Radio Bearer
+   *
+   * \param srcL2Id The sidelink source layer 2 id
+   * \param dstL2Id The sidelink destination layer 2 id
+   */
+  void RemoveNrSlDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id);
+
+  /**
    * \brief Populate NR SL Pool to lower layers
    *
    * This methods populates the NR SL pools
@@ -1568,7 +1623,7 @@ private:
    *
    */
   void PopulateNrSlPools ();
-
+  
   /**
    * \brief Notify Sidelink reception function
    *
@@ -1581,6 +1636,14 @@ private:
    * \param dstL2Id destination layer 2 id
    */
   void DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t dstL2Id);
+
+  /**
+   * \brief Notify the RRC that a sidelink connection was released
+   *
+   * \param srcL2Id source layer 2 id
+   * \param dstL2Id destination layer 2 id
+   */
+  void DoNotifySidelinkConnectionRelease (uint32_t srcL2Id, uint32_t dstL2Id);
 
   /**
    * \brief Activate NR sidelink signalling radio bearer (SL-SRB)
@@ -1676,6 +1739,22 @@ private:
    */
   Ptr<NrSlDiscoveryRadioBearerInfo> AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id);
 
+  /**
+   * \brief Notify reception of RSRP measurements
+   * 
+   * \param l list of RSRP measurements in dBm and correspoding l2Id L2 ID of the peer UE
+   */
+  void DoReceiveUeSlRsrpMeasurements (NrSlUeCphySapUser::RsrpElementsList l);
+
+
+  /**
+   * \brief Set the filter period from L1 measurement period
+   *
+   * \param period L1 RSRP filter period
+   *
+   */
+  void DoSetRsrpFilterPeriod (Time period);
+  
   // NR sidelink SAP
   //LteUeRrc<->NrSlUeRrc
   NrSlUeRrcSapProvider* m_nrSlRrcSapProvider; //!< NR SL UE RRC SAP provider
@@ -1693,6 +1772,11 @@ private:
   NrSlPdcpSapUser *m_nrSlPdcpSapUser; //!< SAP interface to receive calls from PDCP instance
   NrSlMacSapProvider *m_nrSlMacSapProvider {nullptr}; //!< SAP interface to be given to newly created RLC instance of RLC
   uint32_t m_srcL2Id {std::numeric_limits <uint32_t>::max ()}; //!< The NR Sidelink Source L2 id;
+
+  LteRrcSap::SlRelayUeConfig m_relayConfig; //!< SlRelayUeConfig
+  LteRrcSap::SlRemoteUeConfig m_remoteConfig; //!< SlRemoteUeConfig
+  std::map <uint32_t, RsrpMeasurement> m_rsrpMeasurementsMap; //!< RSRP measurements indexed by L2 ID
+  Time m_rsrpFilterPeriod; //!< L1 measurement period 
 
   //LteUeRrc<->Service layer (e.g., NrSlUeProse)
   NrSlUeSvcRrcSapProvider* m_nrSlUeSvcRrcSapProvider; //!< SAP interface to receive calls from the service layer instance

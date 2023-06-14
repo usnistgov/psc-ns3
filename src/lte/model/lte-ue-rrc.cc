@@ -3500,7 +3500,7 @@ LteUeRrc::DoSendSidelinkData (Ptr<Packet> packet, uint32_t dstL2Id)
 {
   NS_LOG_FUNCTION (this << packet << " for NR Sidelink. destination layer 2 id " << dstL2Id);
   //Find the PDCP for NR Sidelink transmission
-  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkDataRadioBearer (dstL2Id);
+  Ptr<NrSlDataRadioBearerInfo> slDrb = m_nrSlRrcSapUser->GetSidelinkTxDataRadioBearer (dstL2Id);
 
   //If there are multiple bearers, hence, multiple LCs, for a destination the
   //the NAS layer should be aware about this. That is, it should give RRC a
@@ -3698,7 +3698,7 @@ LteUeRrc::DoNotifySidelinkReception (uint8_t lcId, uint32_t srcL2Id, uint32_t ds
 Ptr<NrSlDataRadioBearerInfo>
 LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this); 
 
   NS_ABORT_MSG_IF ((srcL2Id == 0 || dstL2Id == 0), "Layer 2 source or destination Id shouldn't be 0");
 
@@ -3728,7 +3728,7 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
   if (m_srcL2Id == srcL2Id)
     {
       //Bearer for transmission
-      m_nrSlRrcSapUser->AddNrSlDataRadioBearer (slDrbInfo);
+      m_nrSlRrcSapUser->AddNrSlTxDataRadioBearer (slDrbInfo);
     }
   else
     {
@@ -3785,6 +3785,84 @@ LteUeRrc::AddNrSlDrb (uint32_t srcL2Id, uint32_t dstL2Id, uint8_t lcid)
     }
 
   return slDrbInfo;
+}
+
+void
+LteUeRrc::DoNotifySidelinkConnectionRelease (uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this << srcL2Id << dstL2Id);
+  
+  //Removing Rx Sl-DRB
+  RemoveNrSlDataRadioBearer (srcL2Id, dstL2Id);
+  NS_LOG_INFO ("Removed Rx SL-DRB related to srcL2Id " << srcL2Id);
+}
+
+void
+LteUeRrc::DoDeleteNrSlDataRadioBearer (uint32_t dstL2Id, bool isTransmit, bool isReceive, bool isUnicast)
+{
+  NS_LOG_FUNCTION (this << dstL2Id << isTransmit << isReceive);
+  if (isTransmit)
+    {  
+      //Only one bearer per source/destinationm
+      RemoveNrSlDataRadioBearer (m_srcL2Id, dstL2Id);
+      NS_LOG_INFO ("Removed existing TX SL-DRB for dstL2Id " << dstL2Id);
+    }
+
+  if ((isTransmit && isReceive) || isReceive)
+    {
+      std::set <uint8_t> bwpIdsSl = m_nrSlRrcSapUser->GetBwpIdContainer ();
+      for (const auto &it:bwpIdsSl)
+        {
+          NS_LOG_INFO ("Removing Rx destination from the MAC of SL BWP " << static_cast<uint16_t>(it));
+          m_nrSlUeCmacSapProvider.at (it)->RemoveNrSlRxDstL2Id (dstL2Id);
+        }
+    }
+
+  //Notify NAS
+  m_asSapUser->NotifyNrSlRadioBearerRemoved (dstL2Id);
+}
+
+void
+LteUeRrc::RemoveNrSlDataRadioBearer (uint32_t srcL2Id, uint32_t dstL2Id)
+{
+  NS_LOG_FUNCTION (this );
+  uint8_t lcid;
+  if (m_srcL2Id == srcL2Id)
+    {
+      //transmission bearer
+      Ptr<NrSlDataRadioBearerInfo> slTxDrb = m_nrSlRrcSapUser->GetSidelinkTxDataRadioBearer (dstL2Id);
+      if (slTxDrb)
+        {
+          lcid = slTxDrb->m_logicalChannelIdentity;
+          m_nrSlRrcSapUser->RemoveNrSlTxDataRadioBearer (slTxDrb);
+            
+          //Inform BWP manager and MAC logical channel
+          std::vector<uint8_t> bwpIds;
+          bwpIds = m_nrSlUeBwpmRrcSapProvider->RemoveNrSlDrbLc (lcid, srcL2Id, dstL2Id);
+          for (std::vector<uint8_t>::iterator it = bwpIds.begin() ; it != bwpIds.end(); ++it)
+            {
+              m_nrSlUeCmacSapProvider.at (*it)->RemoveNrSlLc (lcid, srcL2Id, dstL2Id);
+            }
+        }
+    }
+  else
+    {
+      //reception bearer
+      Ptr<NrSlDataRadioBearerInfo> slRxDrb = m_nrSlRrcSapUser->GetSidelinkRxDataRadioBearer (srcL2Id);
+      if (slRxDrb)
+        {
+          lcid = slRxDrb->m_logicalChannelIdentity;
+          m_nrSlRrcSapUser->RemoveNrSlRxDataRadioBearer (slRxDrb);
+
+          //Inform BWP manager and MAC logical channel
+          std::vector<uint8_t> bwpIds;
+          bwpIds = m_nrSlUeBwpmRrcSapProvider->RemoveNrSlDrbLc (lcid, srcL2Id, dstL2Id);
+          for (std::vector<uint8_t>::iterator it = bwpIds.begin() ; it != bwpIds.end(); ++it)
+            {
+              m_nrSlUeCmacSapProvider.at (*it)->RemoveNrSlLc (lcid, srcL2Id, dstL2Id);
+            }
+        }
+    }
 }
 
 void
@@ -4278,6 +4356,136 @@ LteUeRrc::AddNrSlDiscoveryRb (uint32_t srcL2Id, uint32_t dstL2Id)
     }
 
   return slDiscRbInfo;
+}
+
+void
+LteUeRrc::DoSetRelayRequirements (const LteRrcSap::SlRelayUeConfig config)
+{
+  NS_LOG_FUNCTION (this);
+  m_relayConfig = config;
+}
+
+void
+LteUeRrc::DoSetRemoteRequirements (const LteRrcSap::SlRemoteUeConfig config)
+{
+  NS_LOG_FUNCTION (this);
+  m_remoteConfig = config;
+}
+
+
+void
+LteUeRrc::EnableUeSlRsrpMeasurements ()
+{
+  NS_LOG_FUNCTION (this);
+  for (const auto it : GetNrSlBwpIdContainer ())
+    {
+      m_nrSlUeCphySapProvider.at (it)->EnableUeSlRsrpMeasurements ();
+    } 
+}
+
+void
+LteUeRrc::DisableUeSlRsrpMeasurements ()
+{
+  NS_LOG_FUNCTION (this);
+  for (const auto it : GetNrSlBwpIdContainer ())
+    {
+      m_nrSlUeCphySapProvider.at (it)->DisableUeSlRsrpMeasurements ();
+    } 
+}
+
+void 
+LteUeRrc::DoReceiveUeSlRsrpMeasurements (NrSlUeCphySapUser::RsrpElementsList l)
+{
+  NS_LOG_FUNCTION (this);
+
+  double coeff = m_remoteConfig.slReselectionConfig.slFilterCoefficientRsrp;
+  double thres = m_remoteConfig.slReselectionConfig.slRsrpThres;
+  uint8_t hyst = m_remoteConfig.slReselectionConfig.slHystMin;
+
+  NS_LOG_INFO (this << "Relay UE (re)selection parameters: "
+                    << " L3 filter coefficient " << coeff
+                    << " Threshold " << thres << " minHyst " <<  hyst );
+
+  std::vector<NrSlUeCphySapUser::RsrpElement>::iterator rsrpElt;
+  for (rsrpElt = l.rsrpMeasurementsList.begin (); rsrpElt != l.rsrpMeasurementsList.end (); rsrpElt++)
+    {
+      uint32_t l2Id = rsrpElt->l2Id;
+      double rsrpVal = rsrpElt->rsrp;
+      double l3FilterRsrp;
+
+      std::map <uint32_t, RsrpMeasurement>::iterator it = m_rsrpMeasurementsMap.find (l2Id);
+      if (it != m_rsrpMeasurementsMap.end())
+        {
+          //3GPP TS 38.331 Section 5.5.3.2 
+          if (coeff != 0)
+            {
+              NS_LOG_LOGIC (this << " Using L3 filtering with coefficient: " << coeff);
+    
+              //Converting stored and new RSRP to linear units
+              double storedRsrpWatt = std::pow (10.0,it->second.value / 10.0) / 1000.0;
+              double newRsrpWatt = std::pow(10.0,rsrpVal / 10.0) / 1000.0 ;
+              //Apply L3 filtering: F_n = (1 - a) * F_{n-1} + a * M_n
+              //M_n is the latest received measurement result from the physical layer
+              //F_n is the updated filtered measurement result, 
+              //that is used for evaluation of reporting criteria or for measurement reporting
+              //F_{n-1} is the old filtered measurement result, 
+              //where F_0 is set to M_1 when the first measurement result from the physical layer is received
+
+              //a = 1/(2^(k/4)) where k is the L3 filter coefficient 
+              double a = 1 / (std::pow (2, (coeff/4)));
+              //adapt the filter such that the time characteristics of the filter are preserved at different input rates, 
+              //observing that the filterCoefficient k assumes a sample rate equal to X ms; 
+              //The value of X is equivalent to one intra-frequency L1 measurement period
+              double x = ((Simulator::Now().GetMicroSeconds () - it->second.timestamp.GetMicroSeconds ()) / static_cast<double>(m_rsrpFilterPeriod.GetMicroSeconds ())) / 1000; // calculated in microseconds then divided by 1000 to convert to milliseconds in order to avoid divisio by zero if m_rsrpFilterPeriod is in order of microseconds
+              double rsrpWatt = std::pow ((1 - a), x) * storedRsrpWatt + (a * newRsrpWatt);
+
+              //Converting filtered value to dBm
+              l3FilterRsrp = 10 * log10 (1000 * (rsrpWatt));
+            }
+          else 
+            {
+              NS_LOG_LOGIC (this << " Not using L3 filtering, storing fresh value");
+              l3FilterRsrp = rsrpVal;
+            }
+
+          it->second.value = l3FilterRsrp;
+          it->second.timestamp = Simulator::Now ();
+        }
+      else
+        {
+          NS_LOG_LOGIC (this << "First time storing the RSRP for this destination");
+          RsrpMeasurement rsrp;
+          rsrp.value = rsrpVal;
+          rsrp.timestamp = Simulator::Now ();
+          m_rsrpMeasurementsMap.insert (std::pair <uint32_t, RsrpMeasurement> (l2Id, rsrp));
+        }
+      }
+
+  for (rsrpElt = l.rsrpMeasurementsList.begin (); rsrpElt != l.rsrpMeasurementsList.end (); rsrpElt++)
+    {
+      uint32_t l2Id = rsrpElt->l2Id;
+      double rsrpDbm = rsrpElt->rsrp;
+
+      //Comparig with threshold and hysteresis
+      if ((rsrpDbm - thres) > static_cast<double>(hyst))
+        {
+          //Pass it to the service layer for relay selection logic 
+          //true: the relay passes the threshold/hysteresis criteria
+          m_nrSlUeSvcRrcSapUser->ReceiveNrSlRsrpMeasurements (l2Id, rsrpDbm, true);
+        }
+      else
+        {
+          //false: the relay is not eligible to be selected due to poor RSRP
+          m_nrSlUeSvcRrcSapUser->ReceiveNrSlRsrpMeasurements (l2Id, rsrpDbm, false);
+        }
+    }
+}
+
+void 
+LteUeRrc::DoSetRsrpFilterPeriod (Time period)
+{
+  NS_LOG_FUNCTION (this << period);
+  m_rsrpFilterPeriod = period;
 }
 
 } // namespace ns3
