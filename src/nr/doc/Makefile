@@ -24,20 +24,9 @@ IMAGES_DIA = \
 # specify eps figures from which .png and .pdf figures need to be built
 
 IMAGES_EPS = \
-	$(FIGURES)/frame-structure-time.eps\
-	$(FIGURES)/frame-structure-freq.eps\
-	$(FIGURES)/frame-structure-time-WNS3.eps\
-	$(FIGURES)/frame-structure-freq-WNS3.eps\
-	$(FIGURES)/delay_2b.eps\
-	$(FIGURES)/throughput_2.eps\
-        $(FIGURES)/delay_numerologies2.eps\
-        $(FIGURES)/throughput_numerologies.eps\
-	$(FIGURES)/gnb-changes.eps\
         $(FIGURES)/ca-enb-data-plane-v6.eps\
 	$(FIGURES)/nr-schedulers.eps\
 	$(FIGURES)/nr-scheduler-collab.eps\
-	$(FIGURES)/sinrs-r1-sh1-aoZ0-amGnb3GPP-amUe3GPP-scInH-ShoppingMall-sp3-bs0-ang10-gmWALL.eps\
-	$(FIGURES)/snrs-r1-sh1-aoZ0-amGnb3GPP-amUe3GPP-scInH-ShoppingMall-sp3-bs0-ang10-gmWALL.eps\
 
 # rescale pdf figures as necessary
 #$(FIGURES)/lte-unlicensed-interference-test-scenario.pdf_width = 8cm

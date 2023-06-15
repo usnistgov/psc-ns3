@@ -979,6 +979,11 @@ SRS ULPC formula according to 38.213 is as follows:
 
 **Closed loop power control (CLPC)**
 
+.. _fig-ulpc-7:
+.. figure:: figures/ulpc/nr-clpc.*
+   :align: center
+   :scale: 35 %
+
 As we could see in previous formulas there is a difference in the way the accumulation 
 of TPC commands is performed in LTE and NR. In LTE it happens synchronously, always considering 
 TPC command that was received in (i−KPUSCH) subframe, while for NR it is necessary to take 
@@ -990,12 +995,6 @@ From the sequence diagram we can see that once the NrUePowerControl receives
 TPC command LTE CLPC updates the accumulation state, while NR CLPC only saves 
 the value and it updates it only at the next transmission occasion. 
 
-
-.. _fig-ulpc-7:
-
-.. figure:: figures/ulpc/nr-clpc.*
-   :align: center
-   :scale: 35 %
    
 LTE/NR CLPC collaboration diagram: TPC command being sent by NrGnbPhy with DCI, 
 and the TPC command reception, reporting to NrUePowerControl and applying for 
