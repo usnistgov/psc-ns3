@@ -13,6 +13,9 @@ The Network Simulator, Version 3
 Note:  Much more substantial information about ns-3 can be found at
 https://www.nsnam.org
 
+This work includes contributions from the National Institute of Standards and
+Technology (NIST). [README_NIST.md](README_NIST.md)
+
 ## An Open Source project
 
 ns-3 is a free open source project aiming to build a discrete-event
