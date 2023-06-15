@@ -12,6 +12,7 @@ This project is considered feature complete, and will be maintained on a 'best e
 ## Contact
 
 To report a bug, please open a [GitHub Issue](https://github.com/usnistgov/pscr-net-sim/issues/new).
-The point of contact for this project is Samantha Gamboa
-([samantha.gamboaquintiliani@nist.gov](mailto:samantha.gamboaquintiliani@nist.gov))
+The points of contact for this project are:
+  * Aziza Ben Mosbah ([aziza.benmosbah@nist.gov](mailto:aziza.benmosbah@nist.gov))
+  * Samantha Gamboa Quintiliani ([samantha.gamboaquintiliani@nist.gov](mailto:samantha.gamboaquintiliani@nist.gov))
 
