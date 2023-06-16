@@ -205,10 +205,10 @@ main (int argc, char *argv[])
   Time simTime = Seconds (15.0); // Total simulation time
 
   // NR Discovery
-  Time discInterval = Seconds (2); // interval between two discovery announcements
+  Time discInterval = Seconds (5); // interval between two discovery announcements
   double discStartMin = 2; // minimum of discovery start in seconds
   double discStartMax = 4; // maximum of discovery start in seconds
-  std::string discModel = "ModelB" ; //discovery model
+  std::string discModel = "ModelA" ; //discovery model
   std::string relaySelectAlgorithm ("MaxRsrpRelay"); //relay selection algorithm: FirstAvailableRelay/RandomRelay/MaxRsrpRelay
   Time t5087 = Seconds (5); // duration of Timer T5087 (Prose Direct Link Release Request Retransmission): 5s is the dafault value
 
