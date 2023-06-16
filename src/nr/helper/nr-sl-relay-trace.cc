@@ -98,6 +98,7 @@ NrSlRelayTrace::RelayDiscoveryTrace (uint32_t remoteL2Id, uint32_t relayL2Id, ui
 
   std::ofstream outFile;
   outFile.precision (10);
+  outFile << std::fixed;
   if (m_relayDiscoveryFirstWrite == true)
     {
       outFile.open (m_nrSlRelayDiscoveryFilename);
@@ -136,6 +137,7 @@ NrSlRelayTrace::RelaySelectionTrace (uint32_t remoteL2Id, uint32_t currentRelayL
 
   std::ofstream outFile;
   outFile.precision (10);
+  outFile << std::fixed;
   if (m_relaySelectionFirstWrite == true)
     {
       outFile.open (m_nrSlRelaySelectionFilename);
@@ -174,6 +176,7 @@ NrSlRelayTrace::RelayRsrpTrace (uint32_t remoteL2Id, uint32_t relayL2Id, double 
 
   std::ofstream outFile;
   outFile.precision (10);
+  outFile << std::fixed;
   if (m_relayRsrpFirstWrite == true)
     {
       outFile.open (m_nrSlRelayRsrpFilename);

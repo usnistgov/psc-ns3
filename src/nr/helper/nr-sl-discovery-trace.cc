@@ -100,6 +100,7 @@ NrSlDiscoveryTrace::DiscoveryTrace (uint32_t senderL2Id, uint32_t receiverL2Id, 
 
   std::ofstream outFile;
   outFile.precision (10);
+  outFile << std::fixed;
   if (m_discoveryFirstWrite == true)
     {
       outFile.open (GetSlDiscoveryOutputFilename ().c_str ());
