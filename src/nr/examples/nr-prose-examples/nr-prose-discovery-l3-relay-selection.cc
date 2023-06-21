@@ -318,13 +318,13 @@ main (int argc, char *argv[])
 
   MobilityHelper mobilityRemotes;
   mobilityRemotes.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                                    "Bounds", RectangleValue (Rectangle (3000, 3200, 0, 100)));
+                                    "Bounds", RectangleValue (Rectangle (500, 700, 0, 50)));
   Ptr<ListPositionAllocator> positionAllocRemotes = CreateObject<ListPositionAllocator> ();
         
   for (uint16_t i = 0; i < remoteNum; i++)
     {
-      double x = m_uniformRandomVariablePositionX->GetValue (3050, 3150);
-      double y = m_uniformRandomVariablePositionY->GetValue (25, 75);
+      double x = m_uniformRandomVariablePositionX->GetValue (550, 650);
+      double y = m_uniformRandomVariablePositionY->GetValue (25, 45);
       positionAllocRemotes->Add (Vector (x, y, ueHeight));
     }
   mobilityRemotes.SetPositionAllocator (positionAllocRemotes);
@@ -332,12 +332,12 @@ main (int argc, char *argv[])
 
   MobilityHelper mobilityRelays;
   mobilityRelays.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-                                    "Bounds", RectangleValue (Rectangle (2800, 3000, 0, 100)));
+                                    "Bounds", RectangleValue (Rectangle (400, 600, 0, 100)));
   Ptr<ListPositionAllocator> positionAllocRelays = CreateObject<ListPositionAllocator> ();  
   for (uint16_t i = 0; i < relayNum; i++)
     {
-      double x = m_uniformRandomVariablePositionX->GetValue (2850, 2950);
-      double y = m_uniformRandomVariablePositionY->GetValue (25, 75);
+      double x = m_uniformRandomVariablePositionX->GetValue (450, 550);
+      double y = m_uniformRandomVariablePositionY->GetValue (35, 45);
       positionAllocRelays->Add (Vector (x, y, ueHeight));
     }
   mobilityRelays.SetPositionAllocator (positionAllocRelays);
