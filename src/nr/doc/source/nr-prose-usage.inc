@@ -260,14 +260,21 @@ of the target UE, and the IPv4 address of the target UE.
 5G ProSe L3 UE-to-network relay
 ===============================
 
-nr-prose-l3-relay.cc:
+nr-prose-unicast-l3-relay.cc:
 #############################
 
 Scenario with some UEs doing direct in-network communication, some UEs doing
 ProSe unicast communication over SL and also indirect in-network communication
-through an L3 UE-to-Network (U2N) relay UE. CBR bidirectional traffic is
+through a ProSe L3 UE-to-Network (U2N) relay UE. CBR bidirectional traffic is
 performed over the ProSe unicast direct link, as well as between each UE doing
 in-network communication and a Remote Host in the network.
+
+nr-prose-l3-relay.cc:
+#############################
+Scenario with some in-network UEs doing direct in-network communication and
+some out-of-network UEs doing indirect in-network communication through a ProSe
+L3 UE-to-Network (U2N) relay UE. CBR bidirectional traffic is performed between
+each UE doing in-network communication and a Remote Host in the network.
 
 nr-prose-l3-relay-on-off.cc:
 ############################
