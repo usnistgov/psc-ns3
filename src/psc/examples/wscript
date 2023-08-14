@@ -1,0 +1,104 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    if not bld.env['ENABLE_EXAMPLES']:
+        return;
+
+    obj = bld.create_ns3_program('example-udp-group-echo',
+                                 ['psc'])
+    obj.source = 'example-udp-group-echo.cc'
+
+    obj = bld.create_ns3_program('uav-mobility-energy-example', 
+                                 ['core', 'energy', 'mobility', 'psc'])
+    obj.source = 'uav-mobility-energy-example.cc'
+
+    obj = bld.create_ns3_program('example-intel-http',
+                                 ['psc'])
+    obj.source = 'example-intel-http.cc'
+    
+    obj = bld.create_ns3_program('example-psc-application',
+                                 ['psc'])
+    obj.source = 'example-psc-application.cc'
+
+    obj = bld.create_ns3_program('camad-2019-communication',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = [
+        'camad-2019/camad-2019-communication.cc',
+        'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]
+    
+    obj = bld.create_ns3_program('camad-2019-connection',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = [
+        'camad-2019/camad-2019-connection.cc',
+        'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]
+    
+    obj = bld.create_ns3_program('camad-2019-discovery',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = [
+        'camad-2019/camad-2019-discovery.cc',
+        'camad-2019/lte-sl-ue-controller-camad-2019.cc',
+    ]
+
+    psc_schoolshooting_modules = ['psc', 'netanim']
+    if 'HAS_NETSIMULYZER' in bld.env:
+        psc_schoolshooting_modules.append('netsimulyzer')
+
+    obj = bld.create_ns3_program('psc-schoolshooting',
+                                 psc_schoolshooting_modules)
+    obj.source = [
+        'schoolshooting/psc-schoolshooting.cc',
+        'schoolshooting/schoolshooting-definition-helper.cc',
+        'schoolshooting/schoolshooting-lte-helper.cc',
+        'schoolshooting/schoolshooting-network-technology-helper.cc',
+        'schoolshooting/schoolshooting-application-helper.cc',
+        'schoolshooting/schoolshooting-application-trace-helper.cc',
+        'schoolshooting/schoolshooting-lte-vis-helper.cc',
+    ]
+
+    obj = bld.create_ns3_program('example-video-streaming',
+                                 ['psc'])
+    obj.source = 'example-video-streaming.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-wifi-adhoc',
+                                 ['psc', 'wifi'])
+    obj.source = 'example-mcptt-wifi-adhoc.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-pusher-orchestrator',
+                                 ['psc', 'wifi'])
+    obj.source = 'example-mcptt-pusher-orchestrator.cc'
+
+    obj = bld.create_ns3_program('mcptt-lte-sl-out-of-covrg-comm',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'mcptt-lte-sl-out-of-covrg-comm.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-on-network-floor-control-csma',
+                                 ['core', 'csma', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'example-mcptt-on-network-floor-control-csma.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-on-network-floor-control-lte',
+                                 ['core', 'lte', 'network','mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'example-mcptt-on-network-floor-control-lte.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-on-network-two-calls',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'example-mcptt-on-network-two-calls.cc'
+
+    obj = bld.create_ns3_program('example-mcptt-on-network-two-simultaneous-calls',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc'])
+    obj.source = 'example-mcptt-on-network-two-simultaneous-calls.cc'
+
+    obj = bld.create_ns3_program('mcptt-operational-modes-static',
+                                 ['core', 'point-to-point', 'lte', 'network', 'mobility', 'internet', 'applications', 'psc', 'buildings'])
+    obj.source = 'mcptt-operational-modes-static.cc'
+
+    mcptt_operational_modes_mobility_linked_modules = ['core', 'point-to-point', 'lte', 'network',
+                                                       'mobility', 'internet', 'applications', 'psc', 'buildings']
+    if 'HAS_NETSIMULYZER' in bld.env:
+        mcptt_operational_modes_mobility_linked_modules.append('netsimulyzer')
+
+    obj = bld.create_ns3_program('mcptt-operational-modes-mobility',
+                                 mcptt_operational_modes_mobility_linked_modules)
+    obj.source = 'mcptt-operational-modes-mobility.cc'
+
