@@ -61,29 +61,29 @@ class.
 
 * class :cpp:class:`TbfQueueDisc`: This class implements the main TBF algorithm:
 
-  * ``TbfQueueDisc::DoEnqueue ()``: This routine enqueue's the incoming packet if the queue is not full and drops the packet otherwise.
+  * ``TbfQueueDisc::DoEnqueue()``: This routine enqueue's the incoming packet if the queue is not full and drops the packet otherwise.
 
-  * ``TbfQueueDisc::DoPeek ()``: This routine peeks for the top item in the queue and if the queue is not empty, it returns the topmost item.
+  * ``TbfQueueDisc::DoPeek()``: This routine peeks for the top item in the queue and if the queue is not empty, it returns the topmost item.
 
-  * ``TbfQueueDisc::DoDequeue ()``: This routine performs the dequeuing of packets according to the following logic:
+  * ``TbfQueueDisc::DoDequeue()``: This routine performs the dequeuing of packets according to the following logic:
 
-    * It calls ``TbfQueueDisc::Peek ()`` and calculates the size of the packet to be dequeued in bytes.
+    * It calls ``TbfQueueDisc::Peek()`` and calculates the size of the packet to be dequeued in bytes.
     * Then it calculates the time difference 'delta', which is the time elapsed since the last update of tokens in the buckets.
     * If the second bucket exists, the number of tokens are updated according to the 'PeakRate' and 'delta'.
     * From this second bucket a number of tokens equal to the size of the packet to be dequeued is subtracted.
     * Now the number of tokens in the first bucket are updated according to 'Rate' and 'delta'.
     * From this first bucket a number of tokens equal to the size of the packet to be dequeued is subtracted.
     * If after this, both the first and second buckets have tokens greater than zero, then the packet is dequeued.
-    * Else, an event to ``QueueDisc::Run ()`` is scheduled after a time period when enough tokens will be present for the dequeue operation.
+    * Else, an event to ``QueueDisc::Run()`` is scheduled after a time period when enough tokens will be present for the dequeue operation.
 
 References
 ==========
 
-.. [Ref1] A. Kuznetsov and D. Torokhov; Linux Cross Reference Source Code; Available online at `<http://lxr.free-electrons.com/source/net/sched/sch_tbf.c>`_.
+.. [Ref1] A. Kuznetsov and D. Torokhov; Linux Cross Reference Source Code; Available online at `<https://raw.githubusercontent.com/torvalds/linux/8efd0d9c316af470377894a6a0f9ff63ce18c177/net/sched/sch_tbf.c>`_.
 
 .. [Ref2] J. Vehent; Journey to the Center of the Linux Kernel: Traffic Control, Shaping and QoS; Available online at `<http://wiki.linuxwall.info/doku.php/en:resources:dossiers:networking:traffic_control#tbf_-_token_bucket_filter>`_.
 
-.. [Ref3] Practical IP Network QoS: TBF queuing discipline; Available online at `<http://web.opalsoft.net/qos/default.php?p=ds-24>`_.
+.. [Ref3] Practical IP Network QoS: TBF queuing discipline; Available online at `<https://web.archive.org/web/20200516025221/http://web.opalsoft.net/qos/default.php>`_.
 
 Attributes
 ==========

@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 # A list of C++ examples to run in order to ensure that they remain
 # buildable and runnable over time.  Each tuple in the list contains
@@ -11,7 +10,7 @@ cpp_examples = [
     ("icmpv6-redirect", "True", "True"),
     ("ping6", "True", "True"),
     ("radvd", "True", "True"),
-    ("radvd-two-prefix", "True", "True"),    
+    ("radvd-two-prefix", "True", "True"),
     ("test-ipv6", "True", "True"),
 ]
 

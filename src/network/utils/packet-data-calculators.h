@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008 Drexel University
  *
@@ -21,12 +20,13 @@
 #ifndef PACKET_DATA_CALCULATORS_H
 #define PACKET_DATA_CALCULATORS_H
 
-#include "ns3/packet.h"
-#include "ns3/mac48-address.h"
-#include "ns3/data-calculator.h"
 #include "ns3/basic-data-calculators.h"
+#include "ns3/data-calculator.h"
+#include "ns3/mac48-address.h"
+#include "ns3/packet.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup stats
@@ -34,42 +34,44 @@ namespace ns3 {
  *  A stat for counting packets
  *
  */
-class PacketCounterCalculator : public CounterCalculator<uint32_t> {
-public:
-  PacketCounterCalculator();
-  virtual ~PacketCounterCalculator();
+class PacketCounterCalculator : public CounterCalculator<uint32_t>
+{
+  public:
+    PacketCounterCalculator();
+    ~PacketCounterCalculator() override;
 
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId (void);
-  
-  /**
-   * Increments the packet counter by one
-   *
-   * \param path not used in this method
-   * \param packet not used in this method
-   */
-  void PacketUpdate (std::string path, Ptr<const Packet> packet);
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Increments the packet counter by one
-   *
-   * \param path not used in this method
-   * \param packet not used in this method
-   * \param realto not used in this method
-   */
+    /**
+     * Increments the packet counter by one
+     *
+     * \param path not used in this method
+     * \param packet not used in this method
+     */
+    void PacketUpdate(std::string path, Ptr<const Packet> packet);
 
-  void FrameUpdate (std::string path, Ptr<const Packet> packet,
-                    Mac48Address realto);
+    /**
+     * Increments the packet counter by one
+     *
+     * \param path not used in this method
+     * \param packet not used in this method
+     * \param realto not used in this method
+     */
 
-protected:
-  virtual void DoDispose (void);
+    void FrameUpdate(std::string path, Ptr<const Packet> packet, Mac48Address realto);
 
-  // end class PacketCounterCalculator
+  protected:
+    /**
+     * Dispose of this Object.
+     */
+    void DoDispose() override;
+
+    // end class PacketCounterCalculator
 };
-
 
 /**
  * \ingroup stats
@@ -77,46 +79,42 @@ protected:
  * A stat for collecting packet size statistics: min, max and average
  *
  */
-class PacketSizeMinMaxAvgTotalCalculator :
-  public MinMaxAvgTotalCalculator<uint32_t>
+class PacketSizeMinMaxAvgTotalCalculator : public MinMaxAvgTotalCalculator<uint32_t>
 {
-public:
-  PacketSizeMinMaxAvgTotalCalculator();
-  virtual ~PacketSizeMinMaxAvgTotalCalculator();
-  
-  /**
-   * Register this type.
-   * \return The TypeId.
-   */
-  static TypeId GetTypeId (void);
-  
-  /**
-   * Increments the packet stats by the size of the packet
-   *
-   * \param path not used in this method
-   * \param packet packet size used to update stats
-   */
-  void PacketUpdate (std::string path, Ptr<const Packet> packet);
-  
-  /**
-   * Increments the packet stats by the size of the packet
-   *
-   * \param path not used in this method
-   * \param packet packet size used to update stats
-   * \param realto not used in this method
-   */  
-  void FrameUpdate (std::string path, Ptr<const Packet> packet,
-                    Mac48Address realto);
+  public:
+    PacketSizeMinMaxAvgTotalCalculator();
+    ~PacketSizeMinMaxAvgTotalCalculator() override;
 
-protected:
-  virtual void DoDispose (void);
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
 
-  // end class PacketSizeMinMaxAvgTotalCalculator
+    /**
+     * Increments the packet stats by the size of the packet
+     *
+     * \param path not used in this method
+     * \param packet packet size used to update stats
+     */
+    void PacketUpdate(std::string path, Ptr<const Packet> packet);
+
+    /**
+     * Increments the packet stats by the size of the packet
+     *
+     * \param path not used in this method
+     * \param packet packet size used to update stats
+     * \param realto not used in this method
+     */
+    void FrameUpdate(std::string path, Ptr<const Packet> packet, Mac48Address realto);
+
+  protected:
+    void DoDispose() override;
+
+    // end class PacketSizeMinMaxAvgTotalCalculator
 };
-
 
 // end namespace ns3
-};
-
+}; // namespace ns3
 
 #endif /* PACKET_DATA_CALCULATORS_H */

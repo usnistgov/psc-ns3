@@ -1,7 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * NIST-developed software is provided by NIST as a public
- * service. You may use, copy and distribute copies of the software in 
+ * service. You may use, copy and distribute copies of the software in
  * any medium, provided that you keep intact this entire notice. You
  * may improve, modify and create derivative works of the software or
  * any portion of the software, and you may copy and distribute such
@@ -39,25 +39,27 @@
 #include "lte-rrc-sap.h"
 #include "lte-sl-disc-resource-pool-factory.h"
 
-namespace ns3 {
+namespace ns3
+{
 /**
  * Sidelink discovery preconfigured pool factory
  */
 class LteSlDiscPreconfigPoolFactory : public LteSlDiscResourcePoolFactory
 {
-public:
-  /**
-   * Create a preconfigured discovery pool
-   */
-  LteSlDiscPreconfigPoolFactory ();
+  public:
+    /**
+     * Create a preconfigured discovery pool
+     */
+    LteSlDiscPreconfigPoolFactory();
 
-  /**
-   * Set the preconfigured discovery pool
-   * \return The Sidelink discovery pre-configured pool
-   */
-  LteRrcSap::SlPreconfigDiscPool CreatePool ();
-private:
-  LteRrcSap::SlPreconfigDiscPool m_pool; ///< The Sidelink discovery pre-configured pool
+    /**
+     * Set the preconfigured discovery pool
+     * \return The Sidelink discovery pre-configured pool
+     */
+    LteRrcSap::SlPreconfigDiscPool CreatePool();
+
+  private:
+    LteRrcSap::SlPreconfigDiscPool m_pool; ///< The Sidelink discovery pre-configured pool
 };
 
 } // namespace ns3

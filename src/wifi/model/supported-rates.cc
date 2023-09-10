@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  *
@@ -18,300 +17,226 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/log.h"
 #include "supported-rates.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("SupportedRates");
+namespace ns3
+{
+
+NS_LOG_COMPONENT_DEFINE("SupportedRates");
 
 #define BSS_MEMBERSHIP_SELECTOR_HT_PHY 127
 #define BSS_MEMBERSHIP_SELECTOR_VHT_PHY 126
-#define BSS_MEMBERSHIP_SELECTOR_HE_PHY 125
+#define BSS_MEMBERSHIP_SELECTOR_HE_PHY 122
+#define BSS_MEMBERSHIP_SELECTOR_EHT_PHY 121 // TODO not defined yet as of 802.11be D1.4
 
-SupportedRates::SupportedRates ()
-  : extended (this),
-    m_nRates (0)
+SupportedRates::SupportedRates()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-SupportedRates::SupportedRates (const SupportedRates &rates)
-{
-  NS_LOG_FUNCTION (this);
-  m_nRates = rates.m_nRates;
-  memcpy (m_rates, rates.m_rates, MAX_SUPPORTED_RATES);
-  //reset the back pointer to this object
-  extended.SetSupportedRates (this);
-}
-
-SupportedRates&
-SupportedRates::operator= (const SupportedRates& rates)
-{
-  this->m_nRates = rates.m_nRates;
-  memcpy (this->m_rates, rates.m_rates, MAX_SUPPORTED_RATES);
-  //reset the back pointer to this object
-  this->extended.SetSupportedRates (this);
-  return (*this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-SupportedRates::AddSupportedRate (uint64_t bs)
+SupportedRates::Print(std::ostream& os) const
 {
-  NS_LOG_FUNCTION (this << bs);
-  NS_ASSERT_MSG (IsBssMembershipSelectorRate (bs) == false, "Invalid rate");
-  NS_ASSERT (m_nRates < MAX_SUPPORTED_RATES);
-  if (IsSupportedRate (bs))
+    os << "rates=[";
+    for (std::size_t i = 0; i < m_rates.size(); i++)
     {
-      return;
+        if ((m_rates[i] & 0x80) > 0)
+        {
+            os << "*";
+        }
+        os << GetRate(i) / 1000000 << "mbs";
+        if (i < m_rates.size() - 1)
+        {
+            os << " ";
+        }
     }
-  m_rates[m_nRates] = static_cast<uint8_t> (bs / 500000);
-  m_nRates++;
-  NS_LOG_DEBUG ("add rate=" << bs << ", n rates=" << +m_nRates);
+    os << "]";
+}
+
+bool
+AllSupportedRates::IsBasicRate(uint64_t bs) const
+{
+    NS_LOG_FUNCTION(this << bs);
+    uint8_t rate = static_cast<uint8_t>(bs / 500000) | 0x80;
+    return std::find(rates.m_rates.cbegin(), rates.m_rates.cend(), rate) != rates.m_rates.cend() ||
+           (extendedRates &&
+            std::find(extendedRates->m_rates.cbegin(), extendedRates->m_rates.cend(), rate) !=
+                extendedRates->m_rates.cend());
 }
 
 void
-SupportedRates::SetBasicRate (uint64_t bs)
+AllSupportedRates::AddSupportedRate(uint64_t bs)
 {
-  NS_LOG_FUNCTION (this << bs);
-  NS_ASSERT_MSG (IsBssMembershipSelectorRate (bs) == false, "Invalid rate");
-  uint8_t rate = static_cast<uint8_t> (bs / 500000);
-  for (uint8_t i = 0; i < m_nRates; i++)
+    NS_LOG_FUNCTION(this << bs);
+    NS_ASSERT_MSG(IsBssMembershipSelectorRate(bs) == false, "Invalid rate");
+    if (IsSupportedRate(bs))
     {
-      if ((rate | 0x80) == m_rates[i])
-        {
-          return;
-        }
-      if (rate == m_rates[i])
-        {
-          NS_LOG_DEBUG ("set basic rate=" << bs << ", n rates=" << +m_nRates);
-          m_rates[i] |= 0x80;
-          return;
-        }
+        return;
     }
-  AddSupportedRate (bs);
-  SetBasicRate (bs);
+    if (rates.m_rates.size() < 8)
+    {
+        rates.m_rates.emplace_back(static_cast<uint8_t>(bs / 500000));
+    }
+    else
+    {
+        if (!extendedRates)
+        {
+            extendedRates.emplace();
+        }
+        extendedRates->m_rates.emplace_back(static_cast<uint8_t>(bs / 500000));
+    }
+    NS_LOG_DEBUG("add rate=" << bs << ", n rates=" << +GetNRates());
 }
 
 void
-SupportedRates::AddBssMembershipSelectorRate (uint64_t bs)
+AllSupportedRates::SetBasicRate(uint64_t bs)
 {
-  NS_LOG_FUNCTION (this << bs);
-  NS_ASSERT_MSG (bs == BSS_MEMBERSHIP_SELECTOR_HT_PHY ||
- 	         bs == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
- 	         bs == BSS_MEMBERSHIP_SELECTOR_HE_PHY,
-                 "Value " << bs << " not a BSS Membership Selector");
-  uint8_t rate = static_cast<uint8_t> (bs / 500000);
-  for (uint8_t i = 0; i < m_nRates; i++)
+    NS_LOG_FUNCTION(this << bs);
+    NS_ASSERT_MSG(IsBssMembershipSelectorRate(bs) == false, "Invalid rate");
+    uint8_t rate = static_cast<uint8_t>(bs / 500000);
+    for (uint8_t i = 0; i < GetNRates(); i++)
     {
-      if (rate == m_rates[i])
+        auto& currRate = i < 8 ? rates.m_rates[i] : extendedRates->m_rates[i - 8];
+        if ((rate | 0x80) == currRate)
         {
-          return;
+            return;
+        }
+        if (rate == currRate)
+        {
+            NS_LOG_DEBUG("set basic rate=" << bs << ", n rates=" << +GetNRates());
+            currRate |= 0x80;
+            return;
         }
     }
-  m_rates[m_nRates] = rate;
-  NS_LOG_DEBUG ("add BSS membership selector rate " << bs << " as rate " << +rate);
-  m_nRates++;
+    AddSupportedRate(bs);
+    SetBasicRate(bs);
+}
+
+void
+AllSupportedRates::AddBssMembershipSelectorRate(uint64_t bs)
+{
+    NS_LOG_FUNCTION(this << bs);
+    NS_ASSERT_MSG(bs == BSS_MEMBERSHIP_SELECTOR_HT_PHY || bs == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
+                      bs == BSS_MEMBERSHIP_SELECTOR_HE_PHY || bs == BSS_MEMBERSHIP_SELECTOR_EHT_PHY,
+                  "Value " << bs << " not a BSS Membership Selector");
+    uint8_t rate = static_cast<uint8_t>(bs / 500000);
+    for (std::size_t i = 0; i < rates.m_rates.size(); i++)
+    {
+        if (rate == rates.m_rates[i])
+        {
+            return;
+        }
+    }
+    if (extendedRates)
+    {
+        for (std::size_t i = 0; i < extendedRates->m_rates.size(); i++)
+        {
+            if (rate == extendedRates->m_rates[i])
+            {
+                return;
+            }
+        }
+    }
+    if (rates.m_rates.size() < 8)
+    {
+        rates.m_rates.emplace_back(rate);
+    }
+    else
+    {
+        if (!extendedRates)
+        {
+            extendedRates.emplace();
+        }
+        extendedRates->m_rates.emplace_back(rate);
+    }
+    NS_LOG_DEBUG("add BSS membership selector rate " << bs << " as rate " << +rate);
 }
 
 bool
-SupportedRates::IsBasicRate (uint64_t bs) const
+AllSupportedRates::IsSupportedRate(uint64_t bs) const
 {
-  NS_LOG_FUNCTION (this << bs);
-  uint8_t rate = static_cast<uint8_t> (bs / 500000) | 0x80;
-  for (uint8_t i = 0; i < m_nRates; i++)
+    NS_LOG_FUNCTION(this << bs);
+    uint8_t rate = static_cast<uint8_t>(bs / 500000);
+    for (std::size_t i = 0; i < rates.m_rates.size(); i++)
     {
-      if (rate == m_rates[i])
+        if (rate == rates.m_rates[i] || (rate | 0x80) == rates.m_rates[i])
         {
-          return true;
+            return true;
         }
     }
-  return false;
+    if (extendedRates)
+    {
+        for (std::size_t i = 0; i < extendedRates->m_rates.size(); i++)
+        {
+            if (rate == extendedRates->m_rates[i] || (rate | 0x80) == extendedRates->m_rates[i])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 bool
-SupportedRates::IsSupportedRate (uint64_t bs) const
+AllSupportedRates::IsBssMembershipSelectorRate(uint64_t bs) const
 {
-  NS_LOG_FUNCTION (this << bs);
-  uint8_t rate = static_cast<uint8_t> (bs / 500000);
-  for (uint8_t i = 0; i < m_nRates; i++)
-    {
-      if (rate == m_rates[i]
-          || (rate | 0x80) == m_rates[i])
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
-bool
-SupportedRates::IsBssMembershipSelectorRate (uint64_t bs) const
-{
-  NS_LOG_FUNCTION (this << bs);
-  if ((bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY
-      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY
-      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY)
-    {
-      return true;
-    }
-  return false;
+    NS_LOG_FUNCTION(this << bs);
+    return (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY ||
+           (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
+           (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY ||
+           (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_EHT_PHY;
 }
 
 uint8_t
-SupportedRates::GetNRates (void) const
+AllSupportedRates::GetNRates() const
 {
-  return m_nRates;
+    return rates.m_rates.size() + (extendedRates ? extendedRates->m_rates.size() : 0);
 }
 
 uint32_t
-SupportedRates::GetRate (uint8_t i) const
+SupportedRates::GetRate(uint8_t i) const
 {
-  return (m_rates[i] & 0x7f) * 500000;
+    return (m_rates[i] & 0x7f) * 500000;
 }
 
 WifiInformationElementId
-SupportedRates::ElementId () const
+SupportedRates::ElementId() const
 {
-  return IE_SUPPORTED_RATES;
-}
-
-uint8_t
-SupportedRates::GetInformationFieldSize () const
-{
-  //The Supported Rates Information Element contains only the first 8
-  //supported rates - the remainder appear in the Extended Supported
-  //Rates Information Element.
-  return m_nRates > 8 ? 8 : m_nRates;
-}
-
-void
-SupportedRates::SerializeInformationField (Buffer::Iterator start) const
-{
-  //The Supported Rates Information Element contains only the first 8
-  //supported rates - the remainder appear in the Extended Supported
-  //Rates Information Element.
-  start.Write (m_rates, m_nRates > 8 ? 8 : m_nRates);
-}
-
-uint8_t
-SupportedRates::DeserializeInformationField (Buffer::Iterator start,
-                                             uint8_t length)
-{
-  NS_ASSERT (length <= 8);
-  m_nRates = length;
-  start.Read (m_rates, m_nRates);
-  return m_nRates;
-}
-
-ExtendedSupportedRatesIE::ExtendedSupportedRatesIE ()
-{
-}
-
-ExtendedSupportedRatesIE::ExtendedSupportedRatesIE (SupportedRates *sr)
-{
-  m_supportedRates = sr;
-}
-
-WifiInformationElementId
-ExtendedSupportedRatesIE::ElementId () const
-{
-  return IE_EXTENDED_SUPPORTED_RATES;
-}
-
-void
-ExtendedSupportedRatesIE::SetSupportedRates (SupportedRates *sr)
-{
-  m_supportedRates = sr;
-}
-
-uint8_t
-ExtendedSupportedRatesIE::GetInformationFieldSize () const
-{
-  //If there are 8 or fewer rates then we don't need an Extended
-  //Supported Rates IE and so could return zero here, but we're
-  //overriding the GetSerializedSize() method, so if this function is
-  //invoked in that case then it indicates a programming error. Hence
-  //we have an assertion on that condition.
-  NS_ASSERT (m_supportedRates->m_nRates > 8);
-
-  //The number of rates we have beyond the initial 8 is the size of
-  //the information field.
-  return (m_supportedRates->m_nRates - 8);
-}
-
-void
-ExtendedSupportedRatesIE::SerializeInformationField (Buffer::Iterator start) const
-{
-  //If there are 8 or fewer rates then there should be no Extended
-  //Supported Rates Information Element at all so being here would
-  //seemingly indicate a programming error.
-  //
-  //Our overridden version of the Serialize() method should ensure
-  //that this routine is never invoked in that case (by ensuring that
-  //WifiInformationElement::Serialize() is not invoked).
-  NS_ASSERT (m_supportedRates->m_nRates > 8);
-  start.Write (m_supportedRates->m_rates + 8, m_supportedRates->m_nRates - 8);
-}
-
-Buffer::Iterator
-ExtendedSupportedRatesIE::Serialize (Buffer::Iterator start) const
-{
-  //If there are 8 or fewer rates then we don't need an Extended
-  //Supported Rates IE, so we don't serialise anything.
-  if (m_supportedRates->m_nRates <= 8)
-    {
-      return start;
-    }
-
-  //If there are more than 8 rates then we serialise as per normal.
-  return WifiInformationElement::Serialize (start);
+    return IE_SUPPORTED_RATES;
 }
 
 uint16_t
-ExtendedSupportedRatesIE::GetSerializedSize () const
+SupportedRates::GetInformationFieldSize() const
 {
-  //If there are 8 or fewer rates then we don't need an Extended
-  //Supported Rates IE, so it's serialised length will be zero.
-  if (m_supportedRates->m_nRates <= 8)
+    return m_rates.size();
+}
+
+void
+SupportedRates::SerializeInformationField(Buffer::Iterator start) const
+{
+    for (const uint8_t rate : m_rates)
     {
-      return 0;
+        start.WriteU8(rate);
     }
-
-  //Otherwise, the size of it will be the number of supported rates
-  //beyond 8, plus 2 for the Element ID and Length.
-  return WifiInformationElement::GetSerializedSize ();
 }
 
-uint8_t
-ExtendedSupportedRatesIE::DeserializeInformationField (Buffer::Iterator start,
-                                                       uint8_t length)
+uint16_t
+SupportedRates::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
-  NS_ASSERT (length > 0);
-  NS_ASSERT (m_supportedRates->m_nRates + length <= SupportedRates::MAX_SUPPORTED_RATES);
-  start.Read (m_supportedRates->m_rates + m_supportedRates->m_nRates, length);
-  m_supportedRates->m_nRates += length;
-  return length;
-}
-
-std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
-{
-  os << "[";
-  for (uint8_t i = 0; i < rates.GetNRates (); i++)
+    NS_ASSERT(length <= 8);
+    for (uint16_t i = 0; i < length; i++)
     {
-      uint32_t rate = rates.GetRate (i);
-      if (rates.IsBasicRate (rate))
-        {
-          os << "*";
-        }
-      os << rate / 1000000 << "mbs";
-      if (i < rates.GetNRates () - 1)
-        {
-          os << " ";
-        }
+        m_rates.push_back(start.ReadU8());
     }
-  os << "]";
-  return os;
+    return length;
 }
 
-} //namespace ns3
+WifiInformationElementId
+ExtendedSupportedRatesIE::ElementId() const
+{
+    return IE_EXTENDED_SUPPORTED_RATES;
+}
+
+} // namespace ns3

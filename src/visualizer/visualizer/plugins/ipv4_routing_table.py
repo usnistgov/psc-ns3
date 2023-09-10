@@ -1,10 +1,9 @@
 from gi.repository import Gtk
 
-import ns.core
-import ns.network
-import ns.internet
-
-from visualizer.base import InformationWindow
+try:
+    from ns3.visualizer.base import InformationWindow
+except ModuleNotFoundError:
+    from visualizer.base import InformationWindow
 
 ## ShowIpv4RoutingTable class
 class ShowIpv4RoutingTable(InformationWindow):
@@ -22,7 +21,7 @@ class ShowIpv4RoutingTable(InformationWindow):
         COLUMN_INTERFACE,
         COLUMN_TYPE,
         COLUMN_PRIO
-        ) = range(5)
+    ) = range(5)
 
     def __init__(self, visualizer, node_index):
         """!
@@ -34,7 +33,7 @@ class ShowIpv4RoutingTable(InformationWindow):
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,
                               flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                              buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                              buttons=("_Close", Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
         self.win.set_title("IPv4 routing table for node %i" % node_index)
         self.visualizer = visualizer
@@ -97,23 +96,23 @@ class ShowIpv4RoutingTable(InformationWindow):
         @param self this object
         @return none
         """
-        node = ns.network.NodeList.GetNode(self.node_index)
-        ipv4 = node.GetObject(ns.internet.Ipv4.GetTypeId())
+        node = ns.NodeList.GetNode(self.node_index)
+        ipv4 = ns.cppyy.gbl.getNodeIpv4(node)
         routing = ipv4.GetRoutingProtocol()
         if routing is None:
             return
 
         routing_protocols = [] # list of (protocol, type_string, priority)
 
-        if isinstance(routing, ns.internet.Ipv4StaticRouting):
+        if isinstance(routing, ns.Ipv4StaticRouting):
             ipv4_routing = routing_protocols.append((routing, "static", 0))
-        elif isinstance(routing, ns.internet.Ipv4ListRouting):
+        elif isinstance(routing, ns.Ipv4ListRouting):
             list_routing = routing
             for rI in range(list_routing.GetNRoutingProtocols()):
                 routing, prio = list_routing.GetRoutingProtocol(rI)
-                if isinstance(routing, ns.internet.Ipv4StaticRouting):
+                if isinstance(routing, ns.Ipv4StaticRouting):
                     routing_protocols.append((routing, "static", prio))
-                elif isinstance(routing, ns.internet.Ipv4GlobalRouting):
+                elif isinstance(routing, ns.Ipv4GlobalRouting):
                     routing_protocols.append((routing, "global", prio))
         if not routing_protocols:
             return
@@ -127,7 +126,7 @@ class ShowIpv4RoutingTable(InformationWindow):
                 if netdevice is None:
                     interface_name = 'lo'
                 else:
-                    interface_name = ns.core.Names.FindName(netdevice)
+                    interface_name = ns.Names.FindName(netdevice)
                     if not interface_name:
                         interface_name = "(interface %i)" % route.GetInterface()
                 self.table_model.set(tree_iter,

@@ -348,7 +348,7 @@ void UavMobilityEnergyModel::ConnectMobility (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
   m_mobility = node->GetObject<MobilityModel> ();
-  NS_ABORT_MSG_IF (m_mobility == 0, "No MobilityModel attached to node");
+  NS_ABORT_MSG_IF (!m_mobility, "No MobilityModel attached to node");
 
   m_mobility->TraceConnectWithoutContext ("CourseChange",
     MakeCallback (&UavMobilityEnergyModel::CourseChangeCallback, this));

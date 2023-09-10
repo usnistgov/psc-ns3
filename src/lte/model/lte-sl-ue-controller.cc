@@ -34,34 +34,33 @@
  */
 
 #include "lte-sl-ue-controller.h"
+
 #include "ns3/abort.h"
 #include "ns3/log.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-NS_LOG_COMPONENT_DEFINE ("LteSlUeController");
-NS_OBJECT_ENSURE_REGISTERED (LteSlUeController);
+NS_LOG_COMPONENT_DEFINE("LteSlUeController");
+NS_OBJECT_ENSURE_REGISTERED(LteSlUeController);
 
-LteSlUeController::LteSlUeController ()
+LteSlUeController::LteSlUeController()
 {
 }
 
-LteSlUeController::~LteSlUeController ()
+LteSlUeController::~LteSlUeController()
 {
 }
 
 TypeId
-LteSlUeController::GetTypeId ()
+LteSlUeController::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LteSlUeController")
-    .SetParent<Object> ()
-    .SetGroupName ("Lte")
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::LteSlUeController").SetParent<Object>().SetGroupName("Lte");
+    return tid;
 }
 
 void
-LteSlUeController::DoDispose ()
+LteSlUeController::DoDispose()
 {
 }
 

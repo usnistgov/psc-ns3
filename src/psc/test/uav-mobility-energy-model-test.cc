@@ -981,13 +981,13 @@ void UavMobilityEnergyModelTestCaseAttributeEnergySource::DoRun (void)
 
   model->SetAttribute ("EnergySource", PointerValue (energySource));
 
-  NS_TEST_ASSERT_MSG_NE (model->GetEnergySource (), 0,
+  NS_TEST_ASSERT_MSG_NE (model->GetEnergySource (), nullptr,
                          "Energy source should be set");
 
   PointerValue attributeValue;
   model->GetAttribute ("EnergySource", attributeValue);
   Ptr<EnergySource> retrievedEnergySource = attributeValue.Get<EnergySource> ();
-  NS_TEST_ASSERT_MSG_NE (retrievedEnergySource, 0, 
+  NS_TEST_ASSERT_MSG_NE (retrievedEnergySource, nullptr, 
                         "Retrieved Energy Source should not be null");
   Simulator::Destroy ();
 }

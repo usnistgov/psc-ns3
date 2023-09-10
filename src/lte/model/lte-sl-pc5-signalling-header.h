@@ -37,11 +37,13 @@
 #define LTE_SL_PC5_SIGNALLING_HEADER_H
 
 #include "ns3/header.h"
-#include <stdint.h>
-#include <vector>
 #include "ns3/string.h"
 
-namespace ns3 {
+#include <stdint.h>
+#include <vector>
+
+namespace ns3
+{
 
 /**
  * \ingroup nist
@@ -50,118 +52,117 @@ namespace ns3 {
 
 class LteSlPc5SignallingMessageType : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  LteSlPc5SignallingMessageType ();
-  /**
-   * Default destructor
-   */
-  ~LteSlPc5SignallingMessageType ();
+  public:
+    /**
+     * Default constructor
+     */
+    LteSlPc5SignallingMessageType();
+    /**
+     * Default destructor
+     */
+    ~LteSlPc5SignallingMessageType() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Type
-   *
-   * \return the Message Type
-  */
-  uint8_t GetMessageType ();
+    /**
+     * Get the Message Type
+     *
+     * \return the Message Type
+     */
+    uint8_t GetMessageType() const;
 
-  /**
-   * Set the Message Type
-   *
-   * \param msgType Message Type
-   */
-  void SetMessageType (uint8_t msgType);
+    /**
+     * Set the Message Type
+     *
+     * \param msgType Message Type
+     */
+    void SetMessageType(uint8_t msgType);
 
-  /**
-   * Get the Message Acronym
-   *
-   * \return the Message Acronym
-  */
-  std::string GetMessageAcronym (void) const;
+    /**
+     * Get the Message Acronym
+     *
+     * \return the Message Acronym
+     */
+    std::string GetMessageAcronym() const;
 
-  /**
-   * Get the Message Name
-   *
-   * \return the Message Name
-  */
-  std::string GetMessageName (void) const;
+    /**
+     * Get the Message Name
+     *
+     * \return the Message Name
+     */
+    std::string GetMessageName() const;
 
-  /**
-   * The different types of PC5 signaling messages
-   */
-  enum PC5SignallingMessageType
-  {
-    DirectCommunicationRequest = 1,
-    DirectCommunicationAccept,
-    DirectCommunicationReject,
-    DirectCommunicationKeepalive,
-    DirectCommunicationKeepaliveAck,
-    DirectCommunicationRelease,
-    DirectCommunicationReleaseAccept,
-    DirectSecurityModeCommand = 12,
-    DirectSecurityModeComplete,
-    DirectSecurityModeReject,
-    DirectRekeyingRequest,
-    DirectRekeyingResponse,
-    DirectRekeyingTrigger,
-    RemoteUeInfoRequest,
-    RemoteUeInfoResponse
-  };
+    /**
+     * The different types of PC5 signaling messages
+     */
+    enum PC5SignallingMessageType
+    {
+        DirectCommunicationRequest = 1,
+        DirectCommunicationAccept,
+        DirectCommunicationReject,
+        DirectCommunicationKeepalive,
+        DirectCommunicationKeepaliveAck,
+        DirectCommunicationRelease,
+        DirectCommunicationReleaseAccept,
+        DirectSecurityModeCommand = 12,
+        DirectSecurityModeComplete,
+        DirectSecurityModeReject,
+        DirectRekeyingRequest,
+        DirectRekeyingResponse,
+        DirectRekeyingTrigger,
+        RemoteUeInfoRequest,
+        RemoteUeInfoResponse
+    };
 
-private:
-  /**
-   * Message type
-   */
-  uint8_t m_msgType;
+  private:
+    /**
+     * Message type
+     */
+    uint8_t m_msgType;
 };
-
 
 /**
  * \ingroup nist
@@ -172,21 +173,21 @@ private:
 
 class LtePc5SignallingHeaderSequenceNumber
 {
-public:
-  /**
-   * Variable with the last sequence number generated
-   */
-  static uint64_t s_seqNum;
-  /**
-   * Return a new sequence number
-   * \return A new sequence number value
-   */
-  static uint64_t GenerateSeqNum ()
-  {
-    return ++s_seqNum;
-  }
-};
+  public:
+    /**
+     * Variable with the last sequence number generated
+     */
+    static uint64_t s_seqNum;
 
+    /**
+     * Return a new sequence number
+     * \return A new sequence number value
+     */
+    static uint64_t GenerateSeqNum()
+    {
+        return ++s_seqNum;
+    }
+};
 
 /**
  * \ingroup nist
@@ -209,348 +210,358 @@ public:
  */
 class DirectCommunicationRequest : public Header
 {
-public:
-  /**
-   * Default constructor
-    */
-  DirectCommunicationRequest ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationRequest ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationRequest();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationRequest() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
+    /**
+     * Function to set all the fields of the header
+     *
+     * \param userInfoType user info type.
+     * \param userInfo user info to provide either a User Info received from upper layers, the PRUK
+     * ID received from the PKMF that the remote UE wants to use to connect to a relay, or the IMSI
+     * of the remote UE using this direct link. \param ipAddressConfig IP address config to indicate
+     * the configuration options for IP address used by the UE over this direct link. \param
+     * maxInactivityPeriod indicates the maximum inactivity period of the requesting UE over the
+     * direct link. \param nonce1 indicates the nonce value generated by the UE which initiated the
+     * direct link setup procedure or direct link rekeying procedure. \param ueSecurityCapabilities
+     * indicates which security algorithms are supported by the UE. \param msb carries the 8 most
+     * significant bits of the KD-sess ID. \param kdId carries the identity of the KD held by a UE.
+     * \param relayServiceCode parameter that identifies a connectivity service the UE-to-Network
+     * relay provides. \param signature indicates the ECCSI signature calculated based on
+     * information exchanged during the direct link setup. \param linkLocalIpv6Address contains a
+     * link-local IPv6 address.
+     */
+    void SetParameters(uint8_t userInfoType,
+                       uint64_t userInfo,
+                       uint8_t ipAddressConfig,
+                       uint32_t maxInactivityPeriod,
+                       std::vector<uint8_t> nonce1,
+                       uint16_t ueSecurityCapabilities,
+                       uint8_t msb,
+                       int32_t kdId,
+                       uint32_t relayServiceCode,
+                       std::vector<uint8_t> signature,
+                       std::vector<uint8_t> linkLocalIpv6Address);
 
-  /**
-   * Function to set all the fields of the header
-   *
-   * \param userInfoType user info type.
-   * \param userInfo user info to provide either a User Info received from upper layers, the PRUK ID received from the PKMF that the remote UE wants to use to connect to a relay, or the IMSI of the remote UE using this direct link.
-   * \param ipAddressConfig IP address config to indicate the configuration options for IP address used by the UE over this direct link.
-   * \param maxInactivityPeriod indicates the maximum inactivity period of the requesting UE over the direct link.
-   * \param nonce1 indicates the nonce value generated by the UE which initiated the direct link setup procedure or direct link rekeying procedure.
-   * \param ueSecurityCapabilities indicates which security algorithms are supported by the UE.
-   * \param msb carries the 8 most significant bits of the KD-sess ID.
-   * \param kdId carries the identity of the KD held by a UE.
-   * \param relayServiceCode parameter that identifies a connectivity service the UE-to-Network relay provides.
-   * \param signature indicates the ECCSI signature calculated based on information exchanged during the direct link setup.
-   * \param linkLocalIpv6Address contains a link-local IPv6 address.
-   */
-  void SetParameters (uint8_t userInfoType, uint64_t userInfo, uint8_t ipAddressConfig, uint32_t maxInactivityPeriod, std::vector<uint8_t> nonce1, uint16_t ueSecurityCapabilities, uint8_t msb, int32_t kdId, uint32_t relayServiceCode, std::vector<uint8_t> signature, std::vector<uint8_t> linkLocalIpv6Address);
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the User Info
+     *
+     * \param userInfoType User Info Type
+     * \param userInfo User Info
+     */
+    void SetUserInfo(uint8_t userInfoType, uint64_t userInfo);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Get the User Info
+     *
+     * \return userInfo User Info
+     */
+    uint64_t GetUserInfo() const;
 
-  /**
-   * Set the User Info
-   *
-   * \param userInfoType User Info Type
-   * \param userInfo User Info
-   */
-  void SetUserInfo (uint8_t userInfoType, uint64_t userInfo);
+    /**
+     * Get the User Info Type
+     *
+     * \return userInfoType User Info Type
+     */
+    uint8_t GetUserInfoType() const;
 
-  /**
-   * Get the User Info
-   *
-   * \return userInfo User Info
-   */
-  uint64_t GetUserInfo ();
+    /**
+     * Set the User Info to be the IMSI
+     *
+     * \param imsi the IMSI
+     */
+    void SetImsi(uint64_t imsi);
 
-  /**
-   * Get the User Info Type
-   *
-   * \return userInfoType User Info Type
-   */
-  uint8_t GetUserInfoType ();
+    /**
+     * Get the IMSI from the User Info
+     *
+     * \return imsi the IMSI
+     */
+    uint64_t GetImsi() const;
 
-  /**
-   * Set the User Info to be the IMSI
-   *
-   * \param imsi the IMSI
-   */
-  void SetImsi (uint64_t imsi);
+    /**
+     * Set the IP address config
+     *
+     * \param ipAddressConfig the IP address config
+     */
+    void SetIpAddressConfig(uint8_t ipAddressConfig);
 
-  /**
-   * Get the IMSI from the User Info
-   *
-   * \return imsi the IMSI
-   */
-  uint64_t GetImsi ();
+    /**
+     * Get the IP address config
+     *
+     * \return the IP address config
+     */
+    uint8_t GetIpAddressConfig() const;
 
-  /**
-  * Set the IP address config
-  *
-  * \param ipAddressConfig the IP address config
-  */
-  void SetIpAddressConfig (uint8_t ipAddressConfig);
+    /**
+     * Set the maximum inactivity period
+     *
+     * \param maxInactivityPeriod the maximum inactivity period
+     */
+    void SetMaximumInactivityPeriod(uint32_t maxInactivityPeriod);
 
-  /**
-   * Get the IP address config
-   *
-   * \return the IP address config
-   */
-  uint8_t GetIpAddressConfig ();
+    /**
+     * Get the maximum inactivity period
+     *
+     * \return the maximum inactivity period
+     */
+    uint32_t GetMaximumInactivityPeriod() const;
 
-  /**
-   * Set the maximum inactivity period
-   *
-   * \param maxInactivityPeriod the maximum inactivity period
-   */
-  void SetMaximumInactivityPeriod (uint32_t maxInactivityPeriod);
+    /**
+     * Set the nonce value
+     *
+     * \param nonce1 the nonce value
+     */
+    void SetNonce1(std::vector<uint8_t> nonce1);
 
-  /**
-   * Get the maximum inactivity period
-   *
-   * \return the maximum inactivity period
-   */
-  uint32_t GetMaximumInactivityPeriod ();
+    /**
+     * Get the nonce value
+     *
+     * \return the nonce value
+     */
+    std::vector<uint8_t> GetNonce1();
 
-  /**
-   * Set the nonce value
-   *
-   * \param nonce1 the nonce value
-   */
-  void SetNonce1 (std::vector<uint8_t> nonce1);
+    /**
+     * Set the supported security algorithms
+     *
+     * \param ueSecurityCapabilities the supported security algorithms
+     */
+    void SetUeSecurityCapabilities(uint16_t ueSecurityCapabilities);
 
-  /**
-  * Get the nonce value
-  *
-  * \return the nonce value
-  */
-  std::vector<uint8_t> GetNonce1 ();
+    /**
+     * Get the supported security algorithms
+     *
+     * \return the supported security algorithms
+     */
+    uint16_t GetUeSecurityCapabilities() const;
 
-  /**
-   * Set the supported security algorithms
-   *
-   * \param ueSecurityCapabilities the supported security algorithms
-   */
-  void SetUeSecurityCapabilities (uint16_t ueSecurityCapabilities);
+    /**
+     * Set the 8 most significant bits of the KD-sess ID
+     *
+     * \param msb the 8 most significant bits of the KD-sess ID
+     */
+    void SetMsbKdId(uint8_t msb);
 
-  /**
-  * Get the supported security algorithms
-  *
-  * \return the supported security algorithms
-  */
-  uint16_t GetUeSecurityCapabilities ();
+    /**
+     * Get the 8 most significant bits of the KD-sess ID
+     *
+     * \return the 8 most significant bits of the KD-sess ID
+     */
+    uint8_t GetMsbKdId() const;
 
-  /**
-   * Set the 8 most significant bits of the KD-sess ID
-   *
-   * \param msb the 8 most significant bits of the KD-sess ID
-   */
-  void SetMsbKdId (uint8_t msb);
+    /**
+     * Set the identity of the KD held by a UE
+     *
+     * \param kdId the identity of the KD held by a UE.
+     */
+    void SetKdId(uint32_t kdId);
 
-  /**
-   * Get the 8 most significant bits of the KD-sess ID
-   *
-   * \return the 8 most significant bits of the KD-sess ID
-   */
-  uint8_t GetMsbKdId ();
+    /**
+     * Get the identity of the KD held by a UE
+     *
+     * \return the identity of the KD held by a UE.
+     */
+    uint32_t GetKdId() const;
 
-  /**
-   * Set the identity of the KD held by a UE
-   *
-   * \param kdId the identity of the KD held by a UE.
-   */
-  void SetKdId (uint32_t kdId);
+    /**
+     * Set the UE-to-Network relay service code
+     *
+     * \param relayServiceCode the UE-to-Network relay service code
+     */
+    void SetRelayServiceCode(uint32_t relayServiceCode);
 
-  /**
-   * Get the identity of the KD held by a UE
-   *
-   * \return the identity of the KD held by a UE.
-   */
-  uint32_t GetKdId ();
+    /**
+     * Get the UE-to-Network relay service code
+     *
+     * \return the UE-to-Network relay service code
+     */
+    uint32_t GetRelayServiceCode() const;
 
-  /**
-   * Set the UE-to-Network relay service code
-   *
-   * \param relayServiceCode the UE-to-Network relay service code
-   */
-  void SetRelayServiceCode (uint32_t relayServiceCode);
+    /**
+     * Set the ECCSI signature
+     *
+     * \param signature the ECCSI signature
+     */
+    void SetSignature(std::vector<uint8_t> signature);
 
-  /**
-   * Get the UE-to-Network relay service code
-   *
-   * \return the UE-to-Network relay service code
-   */
-  uint32_t GetRelayServiceCode ();
+    /**
+     * Get the ECCSI signature
+     *
+     * \return the ECCSI signature
+     */
+    std::vector<uint8_t> GetSignature();
 
-  /**
-   * Set the ECCSI signature
-   *
-   * \param signature the ECCSI signature
-   */
-  void SetSignature (std::vector<uint8_t> signature);
+    /**
+     * Set link-local IPv6 address
+     *
+     * \param linkLocalIpv6Address link-local IPv6 address
+     */
+    void SetLinkLocalIpv6Address(std::vector<uint8_t> linkLocalIpv6Address);
 
-  /**
-   * Get the ECCSI signature
-   *
-   * \return the ECCSI signature
-   */
-  std::vector<uint8_t> GetSignature ();
+    /**
+     * Get link-local IPv6 address
+     *
+     * \return link-local IPv6 address
+     */
+    std::vector<uint8_t> GetLinkLocalIpv6Address();
 
-  /**
-   * Set link-local IPv6 address
-   *
-   * \param linkLocalIpv6Address link-local IPv6 address
-   */
-  void SetLinkLocalIpv6Address (std::vector<uint8_t> linkLocalIpv6Address);
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * Get link-local IPv6 address
-   *
-   * \return link-local IPv6 address
-   */
-  std::vector<uint8_t> GetLinkLocalIpv6Address ();
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
+    /**
+     * user info
+     */
+    uint64_t m_userInfo;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * user info type
+     */
+    uint8_t m_userInfoType;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * ip adress config
+     */
+    uint8_t m_ipAddressConfig;
 
-  /**
-   * user info
-   */
-  uint64_t m_userInfo;
+    /**
+     * maximum inactivity period
+     */
+    uint32_t m_maxInactivityPeriod;
 
-  /**
-   * user info type
-   */
-  uint8_t m_userInfoType;
+    /**
+     * nonce
+     */
+    std::vector<uint8_t> m_nonce1;
 
-  /**
-   * ip adress config
-   */
-  uint8_t m_ipAddressConfig;
+    /**
+     * ue security  capabilities
+     */
+    uint16_t m_ueSecurityCapabilities;
 
-  /**
-   * maximum inactivity period
-   */
-  uint32_t m_maxInactivityPeriod;
+    /**
+     * most significant bits of the KD-sess ID
+     */
+    uint8_t m_msb;
 
-  /**
-   * nonce
-   */
-  std::vector<uint8_t> m_nonce1;
+    /**
+     * optinal KD ID
+     */
+    bool m_hasKdId;
 
-  /**
-   * ue security  capabilities
-   */
-  uint16_t m_ueSecurityCapabilities;
+    /**
+     * identity of the KD
+     */
+    int32_t m_kdId;
 
-  /**
-   * most significant bits of the KD-sess ID
-   */
-  uint8_t m_msb;
+    /**
+     * optinal relay service code
+     */
+    bool m_hasRelayServiceCode;
 
-  /**
-  * optinal KD ID
-  */
-  bool m_hasKdId;
+    /**
+     * relay service code
+     */
+    uint32_t m_relayServiceCode;
 
-  /**
-   * identity of the KD
-   */
-  int32_t m_kdId;
+    /**
+     * optinal signature
+     */
+    bool m_hasSignature;
 
-  /**
-   * optinal relay service code
-   */
-  bool m_hasRelayServiceCode;
+    /**
+     * signature
+     */
+    std::vector<uint8_t> m_signature;
 
-  /**
-   * relay service code
-   */
-  uint32_t m_relayServiceCode;
+    /**
+     * optinal link-local IPv6 address
+     */
+    bool m_hasLinkLocalIpv6Address;
 
-  /**
-   * optinal signature
-   */
-  bool m_hasSignature;
-
-  /**
-   * signature
-   */
-  std::vector<uint8_t> m_signature;
-
-  /**
-   * optinal link-local IPv6 address
-   */
-  bool m_hasLinkLocalIpv6Address;
-
-  /**
-   * link-local IPv6 address
-   */
-  std::vector<uint8_t> m_linkLocalIpv6Address;
+    /**
+     * link-local IPv6 address
+     */
+    std::vector<uint8_t> m_linkLocalIpv6Address;
 };
 
 /*
@@ -563,146 +574,143 @@ private:
  */
 class DirectCommunicationAccept : public Header
 {
-public:
-  /**
-   * Default constructor
-   */
-  DirectCommunicationAccept ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationAccept ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationAccept();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationAccept() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
+    /**
+     * Function to set all the fields of the header
+     *
+     * \param ipAddressConfig IP address config to indicate the configuration options for IP address
+     * used by the UE over this direct link. \param linkLocalIpv6Address contains a link-local IPv6
+     * address.
+     */
+    void SetParameters(uint8_t ipAddressConfig, std::vector<uint8_t> linkLocalIpv6Address);
 
-  /**
-   * Function to set all the fields of the header
-   *
-   * \param ipAddressConfig IP address config to indicate the configuration options for IP address used by the UE over this direct link.
-   * \param linkLocalIpv6Address contains a link-local IPv6 address.
-   */
-  void SetParameters (uint8_t ipAddressConfig, std::vector<uint8_t> linkLocalIpv6Address);
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the IP address config
+     *
+     * \param ipAddressConfig the IP address config
+     */
+    void SetIpAddressConfig(uint8_t ipAddressConfig);
 
-  /**
-   * Set the IP address config
-   *
-   * \param ipAddressConfig the IP address config
-   */
-  void SetIpAddressConfig (uint8_t ipAddressConfig);
+    /**
+     * Get the IP address config
+     *
+     * \return the IP address config
+     */
+    uint8_t GetIpAddressConfig() const;
 
-  /**
-    * Get the IP address config
-    *
-    * \return the IP address config
-    */
-  uint8_t GetIpAddressConfig ();
+    /**
+     * Set link-local IPv6 address
+     *
+     * \param linkLocalIpv6Address link-local IPv6 address
+     */
+    void SetLinkLocalIpv6Address(std::vector<uint8_t> linkLocalIpv6Address);
 
+    /**
+     * Get link-local IPv6 address
+     *
+     * \return link-local IPv6 address
+     */
+    std::vector<uint8_t> GetLinkLocalIpv6Address();
 
-  /**
-   * Set link-local IPv6 address
-   *
-   * \param linkLocalIpv6Address link-local IPv6 address
-   */
-  void SetLinkLocalIpv6Address (std::vector<uint8_t> linkLocalIpv6Address);
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * Get link-local IPv6 address
-   *
-   * \return link-local IPv6 address
-   */
-  std::vector<uint8_t> GetLinkLocalIpv6Address ();
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * ip adress config
+     */
+    uint8_t m_ipAddressConfig;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * optinal link-local IPv6 address
+     */
+    bool m_hasLinkLocalIpv6Address;
 
-  /**
-   * ip adress config
-   */
-  uint8_t m_ipAddressConfig;
-
-  /**
-   * optinal link-local IPv6 address
-   */
-  bool m_hasLinkLocalIpv6Address;
-
-  /**
-   * link-local IPv6 address
-   */
-  std::vector<uint8_t> m_linkLocalIpv6Address;
-
-
+    /**
+     * link-local IPv6 address
+     */
+    std::vector<uint8_t> m_linkLocalIpv6Address;
 };
 
 /*
@@ -714,113 +722,111 @@ private:
  */
 class DirectCommunicationReject : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectCommunicationReject ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationReject ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationReject();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationReject() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the PC5 Signaling Protocol Cause Value
+     *
+     * \param pc5SignallingCauseValue the PC5 Signaling Protocol Cause Value
+     */
+    void SetPc5SignallingCauseValue(uint8_t pc5SignallingCauseValue);
 
-  /**
-   * Set the PC5 Signaling Protocol Cause Value
-   *
-   * \param pc5SignallingCauseValue the PC5 Signaling Protocol Cause Value
-   */
-  void SetPc5SignallingCauseValue (uint8_t pc5SignallingCauseValue);
+    /**
+     * Get the PC5 Signaling Protocol Cause Value
+     *
+     * \return the PC5 Signaling Protocol Cause Value
+     */
+    uint8_t GetPc5SignallingCauseValue() const;
 
-  /**
-   * Get the PC5 Signaling Protocol Cause Value
-   *
-   * \return the PC5 Signaling Protocol Cause Value
-   */
-  uint8_t GetPc5SignallingCauseValue ();
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
-
-  /**
-   * pc5 signalling protocol cause value
-   */
-  uint8_t m_pc5SignallingCauseValue;
+    /**
+     * pc5 signalling protocol cause value
+     */
+    uint8_t m_pc5SignallingCauseValue;
 };
-
 
 /*
  * This class has fields corresponding to a DIRECT_COMMUNICATION_KEEPALIVE message :
@@ -832,142 +838,141 @@ private:
  */
 class DirectCommunicationKeepalive : public Header
 {
-public:
-  /**
-   * Default constructor
-   */
-  DirectCommunicationKeepalive ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationKeepalive ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationKeepalive();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationKeepalive() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
+    /**
+     * Function to set all the fields of the header
+     * \param keepaliveCounter contains a 32-bit counter used for the direct link keepalive
+     * procedure. \param maxInactivityPeriod indicates the maximum inactivity period of the
+     * requesting UE over the direct link.
+     */
+    void SetParameters(uint32_t keepaliveCounter, uint32_t maxInactivityPeriod);
 
-  /**
-   * Function to set all the fields of the header
-   * \param keepaliveCounter contains a 32-bit counter used for the direct link keepalive procedure.
-   * \param maxInactivityPeriod indicates the maximum inactivity period of the requesting UE over the direct link.
-   */
-  void SetParameters (uint32_t keepaliveCounter, uint32_t maxInactivityPeriod);
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Keepalive Counter
+     *
+     * \param keepaliveCounter the Keepalive Counter
+     */
+    void SetKeepaliveCounter(uint32_t keepaliveCounter);
 
-  /**
-   * Set the Keepalive Counter
-   *
-   * \param keepaliveCounter the Keepalive Counter
-   */
-  void SetKeepaliveCounter (uint32_t keepaliveCounter);
+    /**
+     * Get the Keepalive Counter
+     *
+     * \return the Keepalive Counter
+     */
+    uint32_t GetKeepaliveCounter() const;
 
-  /**
-   * Get the Keepalive Counter
-   *
-   * \return the Keepalive Counter
-   */
-  uint32_t GetKeepaliveCounter ();
+    /**
+     * Set the maximum inactivity period
+     *
+     * \param maxInactivityPeriod the maximum inactivity period
+     */
+    void SetMaximumInactivityPeriod(uint32_t maxInactivityPeriod);
 
-  /**
-   * Set the maximum inactivity period
-   *
-   * \param maxInactivityPeriod the maximum inactivity period
-   */
-  void SetMaximumInactivityPeriod (uint32_t maxInactivityPeriod);
+    /**
+     * Get the maximum inactivity period
+     *
+     * \return the maximum inactivity period
+     */
+    uint32_t GetMaximumInactivityPeriod() const;
 
-  /**
-   * Get the maximum inactivity period
-   *
-   * \return the maximum inactivity period
-   */
-  uint32_t GetMaximumInactivityPeriod ();
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
+    /**
+     * keepalive counter
+     */
+    uint32_t m_keepaliveCounter;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
-  /**
-   * keepalive counter
-   */
-  uint32_t m_keepaliveCounter;
+    /**
+     * optional maximum inactivity period
+     */
+    bool m_hasMaxInactivityPeriod;
 
-  /**
-   * optional maximum inactivity period
-   */
-  bool m_hasMaxInactivityPeriod;
-
-  /**
-  * maximum inactivity period
-  */
-  uint32_t m_maxInactivityPeriod;
-
+    /**
+     * maximum inactivity period
+     */
+    uint32_t m_maxInactivityPeriod;
 };
 
 /*
@@ -980,110 +985,109 @@ private:
  */
 class DirectCommunicationKeepaliveAck : public Header
 {
-public:
-  /**
-   * Default constructor
-   */
-  DirectCommunicationKeepaliveAck ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationKeepaliveAck ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationKeepaliveAck();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationKeepaliveAck() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Keepalive Counter
-   *
-   * \param keepaliveCounter the Keepalive Counter
-   */
-  void SetKeepaliveCounter (uint32_t keepaliveCounter);
+    /**
+     * Set the Keepalive Counter
+     *
+     * \param keepaliveCounter the Keepalive Counter
+     */
+    void SetKeepaliveCounter(uint32_t keepaliveCounter);
 
-  /**
-   * Get the Keepalive Counter
-   *
-   * \return the Keepalive Counter
-   */
-  uint32_t GetKeepaliveCounter ();
+    /**
+     * Get the Keepalive Counter
+     *
+     * \return the Keepalive Counter
+     */
+    uint32_t GetKeepaliveCounter() const;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
-  /**
-   * keepalive counter
-   */
-  uint32_t m_keepaliveCounter;
-
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
+    /**
+     * keepalive counter
+     */
+    uint32_t m_keepaliveCounter;
 };
 
 /*
@@ -1095,112 +1099,110 @@ private:
  */
 class DirectCommunicationRelease : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectCommunicationRelease ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationRelease ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationRelease();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationRelease() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Release Reason
-   *
-   * \param releaseReason
-   */
-  void SetReleaseReason (uint8_t releaseReason);
+    /**
+     * Set the Release Reason
+     *
+     * \param releaseReason
+     */
+    void SetReleaseReason(uint8_t releaseReason);
 
-  /**
-   * Get the Release Reason
-   *
-   * \return the Release Reason
-   */
-  uint8_t GetReleaseReason ();
+    /**
+     * Get the Release Reason
+     *
+     * \return the Release Reason
+     */
+    uint8_t GetReleaseReason() const;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-  /**
-   * release reason
-   */
-  uint8_t m_releaseReason;
-
-
+    /**
+     * release reason
+     */
+    uint8_t m_releaseReason;
 };
 
 /*
@@ -1211,95 +1213,92 @@ private:
  */
 class DirectCommunicationReleaseAccept : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectCommunicationReleaseAccept ();
-  /**
-   * Default destructor
-   */
-  ~DirectCommunicationReleaseAccept ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectCommunicationReleaseAccept();
+    /**
+     * Default destructor
+     */
+    ~DirectCommunicationReleaseAccept() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
-
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
-
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 };
-
 
 /*
  * This class has fields corresponding to a DIRECT_SECURITY_MODE_COMMAND message :
@@ -1319,358 +1318,370 @@ private:
  */
 class DirectSecurityModeCommand : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectSecurityModeCommand ();
-  /**
-   * Default destructor
-   */
-  ~DirectSecurityModeCommand ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectSecurityModeCommand();
+    /**
+     * Default destructor
+     */
+    ~DirectSecurityModeCommand() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-  * Function to set all the fields of the header
-  *
-  * \param ueSecurityCapabilities indicate which security algorithms are supported by the UE.
-  * \param nonce2 indicate the nonce value generated by the UE which initiated the direct security mode control procedure.
-  * \param chosenAlgorithmsIntegrity indicate the algorithms to be used for integrity protection.
-  * \param chosenAlgorithmCyphering indicate the algorithms to be used for ciphering protection.
-  * \param lsb carry the 16 least significant bits of the KD ID.
-  * \param msb carry the 16 most significant bits of the KD ID.
-  * \param kdFreshness indicate the nonce value generated by initiating PKMF to ensure that any calculated KD is fresh.
-  * \param gpi include the GBA Push Information.
-  * \param userInfoType provide the user info type.
-  * \param userInfo provide either the User Info received from upper layers identifying the user which is using this direct link, the PRUK ID received from the PKMF that the remote UE wants to use to connect to a relay using this direct link, or the IMSI of the remote UE using this direct link.
-  * \param signature indicate the ECCSI signature calculated based on information exchanged during the direct link setup.
-  * \param encryptedPayload to indicate the encrypted data encapsulating the shared secret key to be used for the established link.
-  */
-  void SetParameters (uint16_t ueSecurityCapabilities, std::vector<uint8_t> nonce2, uint8_t chosenAlgorithmsIntegrity, uint8_t chosenAlgorithmCyphering, uint8_t lsb, uint16_t msb, std::vector<uint8_t> kdFreshness, std::vector<uint8_t> gpi,  uint8_t userInfoType, uint64_t userInfo, std::vector<uint8_t> signature, std::vector<uint8_t> encryptedPayload);
+    /**
+     * Function to set all the fields of the header
+     *
+     * \param ueSecurityCapabilities indicate which security algorithms are supported by the UE.
+     * \param nonce2 indicate the nonce value generated by the UE which initiated the direct
+     * security mode control procedure. \param chosenAlgorithmsIntegrity indicate the algorithms to
+     * be used for integrity protection. \param chosenAlgorithmCyphering indicate the algorithms to
+     * be used for ciphering protection. \param lsb carry the 16 least significant bits of the KD
+     * ID. \param msb carry the 16 most significant bits of the KD ID. \param kdFreshness indicate
+     * the nonce value generated by initiating PKMF to ensure that any calculated KD is fresh.
+     * \param gpi include the GBA Push Information.
+     * \param userInfoType provide the user info type.
+     * \param userInfo provide either the User Info received from upper layers identifying the user
+     * which is using this direct link, the PRUK ID received from the PKMF that the remote UE wants
+     * to use to connect to a relay using this direct link, or the IMSI of the remote UE using this
+     * direct link. \param signature indicate the ECCSI signature calculated based on information
+     * exchanged during the direct link setup. \param encryptedPayload to indicate the encrypted
+     * data encapsulating the shared secret key to be used for the established link.
+     */
+    void SetParameters(uint16_t ueSecurityCapabilities,
+                       std::vector<uint8_t> nonce2,
+                       uint8_t chosenAlgorithmsIntegrity,
+                       uint8_t chosenAlgorithmCyphering,
+                       uint8_t lsb,
+                       uint16_t msb,
+                       std::vector<uint8_t> kdFreshness,
+                       std::vector<uint8_t> gpi,
+                       uint8_t userInfoType,
+                       uint64_t userInfo,
+                       std::vector<uint8_t> signature,
+                       std::vector<uint8_t> encryptedPayload);
 
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Get UeSecurityCapabilities
+     *
+     * \return the UE Security Capabilities
+     */
+    uint16_t GetUeSecurityCapabilities() const;
 
-  /**
-   * Get UeSecurityCapabilities
-   *
-   * \return the UE Security Capabilities
-   */
-  uint16_t GetUeSecurityCapabilities ();
+    /**
+     * Set UeSecurityCapabilities
+     *
+     * \param ueSecurityCapabilities the UE Security Capabilities
+     */
+    void SetUeSecurityCapabilities(uint16_t ueSecurityCapabilities);
 
-  /**
-   * Set UeSecurityCapabilities
-   *
-   * \param ueSecurityCapabilities the UE Security Capabilities
-   */
-  void SetUeSecurityCapabilities (uint16_t ueSecurityCapabilities);
+    /**
+     * Get Nonce 2
+     *
+     * \return the nonce 2
+     */
+    std::vector<uint8_t> GetNonce2();
 
-  /**
-   * Get Nonce 2
-   *
-   * \return the nonce 2
-   */
-  std::vector<uint8_t> GetNonce2 ();
+    /**
+     * Set Nonce 2
+     *
+     * \param nonce2 Nonce 2
+     */
+    void SetNonce2(std::vector<uint8_t> nonce2);
 
-  /**
-   * Set Nonce 2
-   *
-   * \param nonce2 Nonce 2
-   */
-  void SetNonce2 ( std::vector<uint8_t> nonce2);
+    /**
+     * Get Chosen Algorithms integrity
+     *
+     * \return the chosen algorithms integrity
+     */
+    uint8_t GetChosenAlgorithmsIntegrity() const;
 
-  /**
-   * Get Chosen Algorithms integrity
-   *
-   * \return the chosen algorithms integrity
-   */
-  uint8_t GetChosenAlgorithmsIntegrity ();
+    /**
+     * Get Chosen Algorithms Cyphering
+     *
+     * \return the chosen algorithms Cyphering
+     */
+    uint8_t GetChosenAlgorithmsCyphering() const;
 
-  /**
-   * Get Chosen Algorithms Cyphering
-   *
-   * \return the chosen algorithms Cyphering
-   */
-  uint8_t GetChosenAlgorithmsCyphering ();
+    /**
+     * Set Chosen Algorithms
+     *
+     * \param chosenAlgorithmsIntegrity the chosen algorithms for integrity
+     * \param chosenalgorithmsCyphering the chosen algorithms for cyphering
+     */
+    void SetChosenAlgorithms(uint8_t chosenAlgorithmsIntegrity, uint8_t chosenalgorithmsCyphering);
 
-  /**
-   * Set Chosen Algorithms
-   *
-   * \param chosenAlgorithmsIntegrity the chosen algorithms for integrity
-       * \param chosenalgorithmsCyphering the chosen algorithms for cyphering
-   */
-  void SetChosenAlgorithms (uint8_t chosenAlgorithmsIntegrity, uint8_t chosenalgorithmsCyphering);
+    /**
+     * Get LSB
+     *
+     * \return LSB
+     */
+    uint8_t GetLsb() const;
 
-  /**
-   * Get LSB
-   *
-   * \return LSB
-   */
-  uint8_t GetLsb ();
+    /**
+     * Set LSB
+     *
+     * \param lsb LSB
+     */
+    void SetLsb(uint8_t lsb);
 
-  /**
-   * Set LSB
-   *
-   * \param lsb LSB
-   */
-  void SetLsb (uint8_t lsb);
+    /**
+     * Get MSB
+     *
+     * \return MSB
+     */
+    uint16_t GetMsb() const;
 
-  /**
-   * Get MSB
-   *
-   * \return MSB
-   */
-  uint16_t GetMsb ();
+    /**
+     * Set MSB
+     *
+     * \param msb MSB
+     */
+    void SetMsb(uint16_t msb);
 
-  /**
-   * Set MSB
-   *
-   * \param msb MSB
-   */
-  void SetMsb (uint16_t msb);
+    /**
+     * Get kd Fresheness
+     *
+     * \return kd Freshness
+     */
+    std::vector<uint8_t> GetKdFreshness();
 
-  /**
-   * Get kd Fresheness
-   *
-   * \return kd Freshness
-   */
-  std::vector<uint8_t> GetKdFreshness ();
+    /**
+     * Set kd Fresheness
+     *
+     * \param kdFreshness kd Freshness
+     */
+    void SetKdFreshness(std::vector<uint8_t> kdFreshness);
 
-  /**
-   * Set kd Fresheness
-   *
-   * \param kdFreshness kd Freshness
-   */
-  void SetKdFreshness (std::vector<uint8_t> kdFreshness);
+    /**
+     * Get GPI
+     *
+     * \return GPI
+     */
+    std::vector<uint8_t> GetGpi();
 
-  /**
-   * Get GPI
-   *
-   * \return GPI
-   */
-  std::vector<uint8_t> GetGpi ();
+    /**
+     * Set GPI
+     *
+     * \param gpi GPI
+     */
+    void SetGpi(std::vector<uint8_t> gpi);
 
-  /**
-   * Set GPI
-   *
-   * \param gpi GPI
-   */
-  void SetGpi (std::vector<uint8_t> gpi);
+    /**
+     * Get user info
+     *
+     * \return user info
+     */
+    uint64_t GetUserInfo() const;
 
-  /**
-   * Get user info
-   *
-   * \return user info
-   */
-  uint64_t GetUserInfo ();
+    /**
+     * Get the User Info
+     *
+     * \return userInfo User Info
+     */
+    uint8_t GetUserInfoType() const;
 
-  /**
-   * Get the User Info
-   *
-   * \return userInfo User Info
-   */
-  uint8_t GetUserInfoType ();
+    /**
+     * Set user info
+     *
+     * \param userInfoType user info type
+     * \param userInfo user info
+     */
+    void SetUserInfo(uint8_t userInfoType, uint64_t userInfo);
 
-  /**
-   * Set user info
-   *
-   * \param userInfoType user info type
-       * \param userInfo user info
-   */
-  void SetUserInfo (uint8_t userInfoType, uint64_t userInfo);
+    /**
+     * Get Signature
+     *
+     * \return signature
+     */
+    std::vector<uint8_t> GetSignature();
 
-  /**
-   * Get Signature
-   *
-   * \return signature
-   */
-  std::vector<uint8_t> GetSignature ();
+    /**
+     * Set signature
+     *
+     * \param signature Signature
+     */
+    void SetSignature(std::vector<uint8_t> signature);
 
-  /**
-   * Set signature
-   *
-   * \param signature Signature
-   */
-  void SetSignature (std::vector<uint8_t> signature);
+    /**
+     * Get Encrypted Payload
+     *
+     * \return  Encrypted Payload
+     */
+    std::vector<uint8_t> GetEncryptedPayload();
 
-  /**
-   * Get Encrypted Payload
-   *
-   * \return  Encrypted Payload
-   */
-  std::vector<uint8_t> GetEncryptedPayload ();
+    /**
+     * Set Encrypted Payload
+     *
+     * \param encryptedPayload Encrypted Payload
+     */
+    void SetEncryptedPayload(std::vector<uint8_t> encryptedPayload);
 
-  /**
-   * Set Encrypted Payload
-   *
-   * \param encryptedPayload Encrypted Payload
-   */
-  void SetEncryptedPayload (std::vector<uint8_t> encryptedPayload);
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * ue security  capabilities
+     */
+    uint16_t m_ueSecurityCapabilities;
 
-  /**
-   * ue security  capabilities
-   */
-  uint16_t m_ueSecurityCapabilities;
+    /**
+     * nonce2
+     */
+    std::vector<uint8_t> m_nonce2;
 
-  /**
-   * nonce2
-   */
-  std::vector<uint8_t> m_nonce2;
+    /**
+     * chosen algorithms integrity
+     */
+    uint8_t m_chosenAlgorithmsIntegrity;
 
-  /**
-    * chosen algorithms integrity
-    */
-  uint8_t m_chosenAlgorithmsIntegrity;
+    /**
+     * chosen algorithms cyphering
+     */
+    uint8_t m_chosenAlgorithmsCyphering;
 
-  /**
-   * chosen algorithms cyphering
-   */
-  uint8_t m_chosenAlgorithmsCyphering;
+    /**
+     * least significant bits of the KD-sess ID
+     */
+    uint8_t m_lsb;
 
-  /**
-   * least significant bits of the KD-sess ID
-   */
-  uint8_t m_lsb;
+    /**
+     * optional msb
+     */
+    bool m_hasMsb;
 
-  /**
-   * optional msb
-   */
-  bool m_hasMsb;
+    /**
+     * most significant bits of the KD-sess ID
+     */
+    uint16_t m_msb;
 
-  /**
-   * most significant bits of the KD-sess ID
-   */
-  uint16_t m_msb;
+    /**
+     * optinal KD freshness
+     */
+    bool m_hasKdFreshness;
 
-  /**
-  * optinal KD freshness
-  */
-  bool m_hasKdFreshness;
+    /**
+     * the KD freshness
+     */
+    std::vector<uint8_t> m_kdFreshness;
 
-  /**
-   * the KD freshness
-   */
-  std::vector<uint8_t> m_kdFreshness;
+    /**
+     * optional GPI
+     */
+    bool m_hasGpi;
 
-  /**
-   * optional GPI
-   */
-  bool m_hasGpi;
+    /**
+     * GPI = GBA Push Information
+     */
+    std::vector<uint8_t> m_gpi;
 
-  /**
-   * GPI = GBA Push Information
-   */
-  std::vector<uint8_t> m_gpi;
+    /**
+     * optional user info
+     */
+    bool m_hasUserInfo;
 
-  /**
-   * optional user info
-   */
-  bool m_hasUserInfo;
+    /**
+     * user info
+     */
+    uint64_t m_userInfo;
 
-  /**
-   * user info
-   */
-  uint64_t m_userInfo;
+    /**
+     * user info type
+     */
+    uint8_t m_userInfoType;
 
-  /**
-   * user info type
-   */
-  uint8_t m_userInfoType;
+    /**
+     * optional signature
+     */
+    bool m_hasSignature;
 
-  /**
-   * optional signature
-   */
-  bool m_hasSignature;
+    /**
+     * signature
+     */
+    std::vector<uint8_t> m_signature;
 
-  /**
-   * signature
-   */
-  std::vector<uint8_t> m_signature;
+    /**
+     * optional encrypted payload
+     */
+    bool m_hasEncryptedPayload;
 
-  /**
-   * optional encrypted payload
-   */
-  bool m_hasEncryptedPayload;
-
-  /**
-   * encrypted payload
-   */
-  std::vector<uint8_t> m_encryptedPayload;
+    /**
+     * encrypted payload
+     */
+    std::vector<uint8_t> m_encryptedPayload;
 };
-
 
 /*
  * This class has fields corresponding to a DIRECT_SECURITY_MODE_COMPLETE message :
@@ -1681,116 +1692,115 @@ private:
  */
 class DirectSecurityModeComplete : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectSecurityModeComplete ();
-  /**
-   * Default destructor
-   */
-  ~DirectSecurityModeComplete ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectSecurityModeComplete();
+    /**
+     * Default destructor
+     */
+    ~DirectSecurityModeComplete() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Get LSB
-   *
-   * \return LSB
-   */
-  uint16_t GetLsb ();
+    /**
+     * Get LSB
+     *
+     * \return LSB
+     */
+    uint16_t GetLsb() const;
 
-  /**
-   * Set LSB
-   *
-   * \param lsb LSB
-   */
-  void SetLsb (uint16_t lsb);
+    /**
+     * Set LSB
+     *
+     * \param lsb LSB
+     */
+    void SetLsb(uint16_t lsb);
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-  /**
-   * optional lsb
-   */
-  bool m_hasLsb;
+    /**
+     * optional lsb
+     */
+    bool m_hasLsb;
 
-  /**
-   * least significant bits of the Kd ID
-   */
-  uint16_t m_lsb;
-
+    /**
+     * least significant bits of the Kd ID
+     */
+    uint16_t m_lsb;
 };
 
 /*
@@ -1804,160 +1814,160 @@ private:
 
 class DirectSecurityModeReject : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectSecurityModeReject ();
-  /**
-   * Default destructor
-   */
-  ~DirectSecurityModeReject ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectSecurityModeReject();
+    /**
+     * Default destructor
+     */
+    ~DirectSecurityModeReject() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the PC5 Signaling Protocol Cause Value
-   *
-   * \param pc5SignallingCauseValue the PC5 Signaling Protocol Cause Value
-   */
-  void SetPc5SignallingCauseValue (uint8_t pc5SignallingCauseValue);
+    /**
+     * Set the PC5 Signaling Protocol Cause Value
+     *
+     * \param pc5SignallingCauseValue the PC5 Signaling Protocol Cause Value
+     */
+    void SetPc5SignallingCauseValue(uint8_t pc5SignallingCauseValue);
 
-  /**
-   * Get the PC5 Signaling Protocol Cause Value
-   *
-   * \return the PC5 Signaling Protocol Cause Value
-   */
-  uint8_t GetPc5SignallingCauseValue ();
+    /**
+     * Get the PC5 Signaling Protocol Cause Value
+     *
+     * \return the PC5 Signaling Protocol Cause Value
+     */
+    uint8_t GetPc5SignallingCauseValue() const;
 
-  /**
-   * Set RAND: provide the mobile station with a non-predictable challenge for the AKA procedure
-   *
-   * \param rand RAND
-   */
-  void SetRand (std::vector<uint8_t> rand);
+    /**
+     * Set RAND: provide the mobile station with a non-predictable challenge for the AKA procedure
+     *
+     * \param rand RAND
+     */
+    void SetRand(std::vector<uint8_t> rand);
 
-  /**
-   * Get RAND: provide the mobile station with a non-predictable challenge for the AKA procedure
-   *
-   * \return RAND
-   */
-  std::vector<uint8_t> GetRand ();
+    /**
+     * Get RAND: provide the mobile station with a non-predictable challenge for the AKA procedure
+     *
+     * \return RAND
+     */
+    std::vector<uint8_t> GetRand();
 
-  /**
-   * Set AUTS: provide the network with the necessary information to begin a re-synchronisation as part of the AKA procedure
-   *
-   * \param auts AUTS
-   */
-  void SetAuts (std::vector<uint8_t> auts);
+    /**
+     * Set AUTS: provide the network with the necessary information to begin a re-synchronisation as
+     * part of the AKA procedure
+     *
+     * \param auts AUTS
+     */
+    void SetAuts(std::vector<uint8_t> auts);
 
-  /**
-   * Get AUTS: provide the network with the necessary information to begin a re-synchronisation as part of the AKA procedure
-   *
-   * \return AUTS
-   */
-  std::vector<uint8_t> GetAuts ();
+    /**
+     * Get AUTS: provide the network with the necessary information to begin a re-synchronisation as
+     * part of the AKA procedure
+     *
+     * \return AUTS
+     */
+    std::vector<uint8_t> GetAuts();
 
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * pc5 signalling protocol cause value
+     */
+    uint8_t m_pc5SignallingCauseValue;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * optional RAND
+     */
+    bool m_hasRand;
 
-  /**
-   * pc5 signalling protocol cause value
-   */
-  uint8_t m_pc5SignallingCauseValue;
+    /**
+     * RAND
+     */
+    std::vector<uint8_t> m_rand;
 
-  /**
-   * optional RAND
-   */
-  bool m_hasRand;
+    /**
+     * optional AUTS
+     */
+    bool m_hasAuts;
 
-  /**
-   * RAND
-   */
-  std::vector<uint8_t> m_rand;
-
-  /**
-   * optional AUTS
-   */
-  bool m_hasAuts;
-
-  /**
-   * AUTS
-   */
-  std::vector<uint8_t> m_auts;
+    /**
+     * AUTS
+     */
+    std::vector<uint8_t> m_auts;
 };
 
 /*
@@ -1968,218 +1978,220 @@ private:
  * Nonce 1
  * MSB Kd-sess ID
  * Auth Flag: indicate that the KD is to be refreshed.
- * PRUK ID: provide the ProSe UE-to-network relay with the latest PRUK ID at the remote UE when the remote UE triggers rekeying.
+ * PRUK ID: provide the ProSe UE-to-network relay with the latest PRUK ID at the remote UE when the
+ * remote UE triggers rekeying.
  *
  */
 class DirectRekeyingRequest : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectRekeyingRequest ();
-  /**
-   * Default destructor
-   */
-  ~DirectRekeyingRequest ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectRekeyingRequest();
+    /**
+     * Default destructor
+     */
+    ~DirectRekeyingRequest() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Function to set all the fields of the header
-   *
-   * \param ueSecurityCapabilities indicate which security algorithms are supported by the UE.
-   * \param nonce1 indicate the nonce value generated by the UE which initiated the direct link setup procedure or direct link rekeying procedure.
-   * \param msb carry the 8 most significant bits of the KD ID.
-   * \param authFlag indicate that the KD is to be refreshed.
-   * \param prukId provide the ProSe UE-to-network relay with the latest PRUK ID at the remote UE when the remote UE triggers rekeying.
-   */
-  void SetParameters (uint16_t ueSecurityCapabilities, std::vector<uint8_t> nonce1, uint8_t msb, uint8_t authFlag, std::vector<uint8_t> prukId);
+    /**
+     * Function to set all the fields of the header
+     *
+     * \param ueSecurityCapabilities indicate which security algorithms are supported by the UE.
+     * \param nonce1 indicate the nonce value generated by the UE which initiated the direct link
+     * setup procedure or direct link rekeying procedure. \param msb carry the 8 most significant
+     * bits of the KD ID. \param authFlag indicate that the KD is to be refreshed. \param prukId
+     * provide the ProSe UE-to-network relay with the latest PRUK ID at the remote UE when the
+     * remote UE triggers rekeying.
+     */
+    void SetParameters(uint16_t ueSecurityCapabilities,
+                       std::vector<uint8_t> nonce1,
+                       uint8_t msb,
+                       uint8_t authFlag,
+                       std::vector<uint8_t> prukId);
 
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the supported security algorithms
+     *
+     * \param ueSecurityCapabilities the supported security algorithms
+     */
+    void SetUeSecurityCapabilities(uint16_t ueSecurityCapabilities);
 
-  /**
-   * Set the supported security algorithms
-   *
-   * \param ueSecurityCapabilities the supported security algorithms
-   */
-  void SetUeSecurityCapabilities (uint16_t ueSecurityCapabilities);
+    /**
+     * Get the supported security algorithms
+     *
+     * \return the supported security algorithms
+     */
+    uint16_t GetUeSecurityCapabilities() const;
 
-  /**
-  * Get the supported security algorithms
-  *
-  * \return the supported security algorithms
-  */
-  uint16_t GetUeSecurityCapabilities ();
+    /**
+     * Get Nonce 1
+     *
+     * \return nonce1
+     */
+    std::vector<uint8_t> GetNonce1();
 
-  /**
-    * Get Nonce 1
-    *
-    * \return nonce1
-    */
-  std::vector<uint8_t> GetNonce1 ();
+    /**
+     * Set Nonce 1
+     *
+     * \param nonce1 Nonce 1
+     */
+    void SetNonce1(std::vector<uint8_t> nonce1);
 
-  /**
-   * Set Nonce 1
-   *
-   * \param nonce1 Nonce 1
-   */
-  void SetNonce1 ( std::vector<uint8_t> nonce1);
+    /**
+     * Set the 8 most significant bits of the KD-sess ID
+     *
+     * \param msb the 8 most significant bits of the KD-sess ID
+     */
+    void SetMsb(uint8_t msb);
 
-  /**
-   * Set the 8 most significant bits of the KD-sess ID
-   *
-   * \param msb the 8 most significant bits of the KD-sess ID
-   */
-  void SetMsb (uint8_t msb);
+    /**
+     * Get the 8 most significant bits of the KD-sess ID
+     *
+     * \return the 8 most significant bits of the KD-sess ID
+     */
+    uint8_t GetMsb() const;
 
-  /**
-   * Get the 8 most significant bits of the KD-sess ID
-   *
-   * \return the 8 most significant bits of the KD-sess ID
-   */
-  uint8_t GetMsb ();
+    /**
+     * Set Auth Flag
+     *
+     * \param authFlag Auth Flag
+     */
+    void SetAuthFlag(uint8_t authFlag);
 
-  /**
-   * Set Auth Flag
-   *
-   * \param authFlag Auth Flag
-   */
-  void SetAuthFlag (uint8_t authFlag);
+    /**
+     * Get Auth Flag
+     *
+     * \return Auth Flag
+     */
+    uint8_t GetAuthFlag() const;
 
-  /**
-   * Get Auth Flag
-   *
-   * \return Auth Flag
-   */
-  uint8_t GetAuthFlag ();
+    /**
+     * Set PRUK ID
+     *
+     * \param prukId PRUK ID
+     */
+    void SetPrukId(std::vector<uint8_t> prukId);
 
-  /**
-   * Set PRUK ID
-   *
-   * \param prukId PRUK ID
-   */
-  void SetPrukId (std::vector<uint8_t> prukId);
+    /**
+     * Get PRUK ID
+     *
+     * \return PRUK ID
+     */
+    std::vector<uint8_t> GetPrukId();
 
-  /**
-   * Get PRUK ID
-   *
-   * \return PRUK ID
-   */
-  std::vector<uint8_t> GetPrukId ();
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+    /**
+     * ue security  capabilities
+     */
+    uint16_t m_ueSecurityCapabilities;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * nonce1
+     */
+    std::vector<uint8_t> m_nonce1;
 
-  /**
-   * ue security  capabilities
-   */
-  uint16_t m_ueSecurityCapabilities;
+    /**
+     * most significant bits of the KD-sess ID
+     */
+    uint8_t m_msb;
 
-  /**
-   * nonce1
-   */
-  std::vector<uint8_t> m_nonce1;
+    /**
+     * optinal Auth Flag
+     */
+    bool m_hasAuthFlag;
 
-  /**
-    * most significant bits of the KD-sess ID
-    */
-  uint8_t m_msb;
+    /**
+     * Auth Flag: indicate that the KD is to be refreshed.
+     */
+    uint8_t m_authFlag;
 
-  /**
-   * optinal Auth Flag
-   */
-  bool m_hasAuthFlag;
+    /**
+     * optinal PRUK ID
+     */
+    bool m_hasPrukId;
 
-  /**
-   * Auth Flag: indicate that the KD is to be refreshed.
-   */
-  uint8_t m_authFlag;
-
-  /**
-   * optinal PRUK ID
-   */
-  bool m_hasPrukId;
-
-  /**
-   * PRUK ID : provide the ProSe UE-to-network relay with the latest PRUK ID at the remote UE when the remote UE triggers rekeying.
-   */
-  std::vector<uint8_t> m_prukId;
-
+    /**
+     * PRUK ID : provide the ProSe UE-to-network relay with the latest PRUK ID at the remote UE when
+     * the remote UE triggers rekeying.
+     */
+    std::vector<uint8_t> m_prukId;
 };
-
-
 
 /*
  * This class has fields corresponding to a DIRECT_REKEYING_RESPONSE message :
@@ -2189,95 +2201,92 @@ private:
  */
 class DirectRekeyingResponse : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectRekeyingResponse ();
-  /**
-   * Default destructor
-   */
-  ~DirectRekeyingResponse ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectRekeyingResponse();
+    /**
+     * Default destructor
+     */
+    ~DirectRekeyingResponse() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
-
-
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 };
-
 
 /*
  * This class has fields corresponding to a DIRECT_REKEYING_TRIGGER message :
@@ -2287,92 +2296,91 @@ private:
  */
 class DirectRekeyingTrigger : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  DirectRekeyingTrigger ();
-  /**
-   * Default destructor
-   */
-  ~DirectRekeyingTrigger ();
+  public:
+    /**
+     * Default constructor
+     */
+    DirectRekeyingTrigger();
+    /**
+     * Default destructor
+     */
+    ~DirectRekeyingTrigger() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
-
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 };
 
 /*
@@ -2384,111 +2392,110 @@ private:
 
 class RemoteUeInfoRequest : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  RemoteUeInfoRequest ();
-  /**
-   * Default destructor
-   */
-  ~RemoteUeInfoRequest ();
+  public:
+    /**
+     * Default constructor
+     */
+    RemoteUeInfoRequest();
+    /**
+     * Default destructor
+     */
+    ~RemoteUeInfoRequest() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Get Remote UE Information Type
-   *
-   * \return Remote UE Information Type
-   */
-  uint8_t GetRemoteUeInfoType ();
+    /**
+     * Get Remote UE Information Type
+     *
+     * \return Remote UE Information Type
+     */
+    uint8_t GetRemoteUeInfoType() const;
 
-  /**
-   * Set Remote UE Information Type
-   *
-   * \param remoteUeInfoType Remote UE Information Type
-   */
-  void SetRemoteUeInfoType (uint8_t remoteUeInfoType);
+    /**
+     * Set Remote UE Information Type
+     *
+     * \param remoteUeInfoType Remote UE Information Type
+     */
+    void SetRemoteUeInfoType(uint8_t remoteUeInfoType);
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-  /**
-   * Remote UE Information Type
-   */
-  uint8_t m_remoteUeInfoType;
-
+    /**
+     * Remote UE Information Type
+     */
+    uint8_t m_remoteUeInfoType;
 };
 
 /*
@@ -2500,119 +2507,117 @@ private:
 
 class RemoteUeInfoResponse : public Header
 {
-public:
-  /**
-    * Default constructor
-    */
-  RemoteUeInfoResponse ();
-  /**
-   * Default destructor
-   */
-  ~RemoteUeInfoResponse ();
+  public:
+    /**
+     * Default constructor
+     */
+    RemoteUeInfoResponse();
+    /**
+     * Default destructor
+     */
+    ~RemoteUeInfoResponse() override;
 
-  /**
-  * Get the type ID.
-  *
-  * \return the object TypeId
-  */
-  static TypeId GetTypeId (void);
+    /**
+     * Get the type ID.
+     *
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Get the TypeId for this instance
-   *
-   * \return the TypeId for this instance
-   */
-  TypeId GetInstanceTypeId (void) const;
+    /**
+     * Get the TypeId for this instance
+     *
+     * \return the TypeId for this instance
+     */
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Print a string representation of this header to the
-   * std::ostream object passed as a parameter
-   *
-   * \param os The ostream where to print
-   */
-  void Print (std::ostream &os) const;
+    /**
+     * Print a string representation of this header to the
+     * std::ostream object passed as a parameter
+     *
+     * \param os The ostream where to print
+     */
+    void Print(std::ostream& os) const override;
 
-  /**
-   * Get the size of the serialized version of this header
-   *
-   * \return The size of the serialized version of this header
-   */
-  uint32_t GetSerializedSize (void) const;
+    /**
+     * Get the size of the serialized version of this header
+     *
+     * \return The size of the serialized version of this header
+     */
+    uint32_t GetSerializedSize() const override;
 
-  /**
-   * Write in the Iterator object passed as a parameter the
-   * serialized version of this header
-   *
-   * \param start The Iterator for the Buffer where to write
-   */
-  void Serialize (Buffer::Iterator start) const;
+    /**
+     * Write in the Iterator object passed as a parameter the
+     * serialized version of this header
+     *
+     * \param start The Iterator for the Buffer where to write
+     */
+    void Serialize(Buffer::Iterator start) const override;
 
-  /**
-   * Read the provided Buffer and deserialize a header from there
-   *
-   * \param start The Iterator for the Buffer where to read
-   * \return The size of the deserialized header
-   */
-  uint32_t Deserialize (Buffer::Iterator start);
+    /**
+     * Read the provided Buffer and deserialize a header from there
+     *
+     * \param start The Iterator for the Buffer where to read
+     * \return The size of the deserialized header
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  /**
-   * Get the Message Identifier
-   *
-   * \return the Message Identifier
-   */
-  uint8_t GetMessageIdentifier ();
+    /**
+     * Get the Message Identifier
+     *
+     * \return the Message Identifier
+     */
+    uint8_t GetMessageIdentifier() const;
 
-  /**
-   * Get the Sequence Number
-   *
-   * \return the Sequence Number
-   */
-  uint16_t GetSequenceNumber ();
+    /**
+     * Get the Sequence Number
+     *
+     * \return the Sequence Number
+     */
+    uint16_t GetSequenceNumber() const;
 
-  /**
-   * Set the Sequence Number
-   * \param seq The sequence number of the packet
-   */
-  void SetSequenceNumber (uint32_t seq);
+    /**
+     * Set the Sequence Number
+     * \param seq The sequence number of the packet
+     */
+    void SetSequenceNumber(uint32_t seq);
 
-  /**
-   * Get IMEI
-   *
-   * \return IMEI
-   */
-  uint64_t GetImei ();
+    /**
+     * Get IMEI
+     *
+     * \return IMEI
+     */
+    uint64_t GetImei() const;
 
-  /**
-   * Set IMEI
-   *
-   * \param imei IMEI
-   */
-  void SetImei (uint64_t imei);
+    /**
+     * Set IMEI
+     *
+     * \param imei IMEI
+     */
+    void SetImei(uint64_t imei);
 
-private:
-  /**
-   * message identifier
-   */
-  uint8_t m_msgId;
+  private:
+    /**
+     * message identifier
+     */
+    uint8_t m_msgId;
 
-  /**
-   * sequence number
-   */
-  uint16_t m_seqNum;
+    /**
+     * sequence number
+     */
+    uint16_t m_seqNum;
 
-  /**
-   * optional IMEI or IMEISV Digits
-   */
-  bool m_hasImei;
+    /**
+     * optional IMEI or IMEISV Digits
+     */
+    bool m_hasImei;
 
-  /**
-   * IMEI
-   */
-  uint64_t m_imei;
-
+    /**
+     * IMEI
+     */
+    uint64_t m_imei;
 };
 
+} // namespace ns3
 
-}// namespace ns3
-
-#endif //LTE_SL_PC5_SIGNALLING_HEADER_H
+#endif // LTE_SL_PC5_SIGNALLING_HEADER_H

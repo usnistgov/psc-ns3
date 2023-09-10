@@ -113,11 +113,21 @@ function(print_formatted_table_with_modules table_name modules output)
 endfunction()
 
 macro(write_configtable)
-  set(out "---- Summary of optional ns-3 features:\n")
+  set(out "---- Summary of ns-3 settings:\n")
   string(APPEND out "Build profile                 : ${build_profile}\n")
   string(APPEND out
          "Build directory               : ${CMAKE_OUTPUT_DIRECTORY}\n"
   )
+
+  string(APPEND out "Build with runtime asserts    : ")
+  check_on_or_off("${NS3_ASSERT}" "${NS3_ASSERT}")
+
+  string(APPEND out "Build with runtime logging    : ")
+  check_on_or_off("${NS3_LOG}" "${NS3_LOG}")
+
+  string(APPEND out "Build version embedding       : ")
+  check_on_or_off("${NS3_ENABLE_BUILD_VERSION}" "${ENABLE_BUILD_VERSION}")
+
   string(APPEND out "BRITE Integration             : ")
   check_on_or_off("ON" "${NS3_BRITE}")
 
@@ -160,19 +170,14 @@ macro(write_configtable)
   string(APPEND out "PyViz visualizer              : ")
   check_on_or_off("${NS3_VISUALIZER}" "${ENABLE_VISUALIZER}")
 
-  string(APPEND out "Python API Scanning Support   : ")
-  check_on_or_off(
-    "${NS3_SCAN_PYTHON_BINDINGS}" "${ENABLE_SCAN_PYTHON_BINDINGS}"
-  )
-
   string(APPEND out "Python Bindings               : ")
   check_on_or_off("${NS3_PYTHON_BINDINGS}" "${ENABLE_PYTHON_BINDINGS}")
 
-  string(APPEND out "Real Time Simulator           : ")
-  check_on_or_off("${NS3_REALTIME}" "${ENABLE_REALTIME}")
-
   string(APPEND out "SQLite support                : ")
   check_on_or_off("${NS3_SQLITE}" "${ENABLE_SQLITE}")
+
+  string(APPEND out "Eigen3 support                : ")
+  check_on_or_off("${NS3_EIGEN}" "${ENABLE_EIGEN}")
 
   string(APPEND out "Tap Bridge                    : ")
   check_on_or_off("${ENABLE_TAP}" "${ENABLE_TAP}")
@@ -215,4 +220,8 @@ macro(write_configtable)
 
   file(WRITE ${PROJECT_BINARY_DIR}/ns3config.txt ${out})
   message(STATUS ${out})
+
+  if(NOT (${NS3RC} STREQUAL "NS3RC-NOTFOUND"))
+    message(STATUS "Applying configuration override from: ${NS3RC}")
+  endif()
 endmacro()

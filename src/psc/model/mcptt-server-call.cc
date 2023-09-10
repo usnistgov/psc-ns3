@@ -200,7 +200,7 @@ McpttServerCall::SetCallMachine (Ptr<McpttServerCallMachine>  callMachine)
 {
   NS_LOG_FUNCTION (this << &callMachine);
 
-  if (callMachine != 0)
+  if (callMachine)
     {
       callMachine->SetServerCall (this);
     }
@@ -213,7 +213,7 @@ McpttServerCall::SetArbitrator (Ptr<McpttOnNetworkFloorArbitrator>  arbitrator)
 {
   NS_LOG_FUNCTION (this << &arbitrator);
 
-  if (arbitrator != 0)
+  if (arbitrator)
     {
       arbitrator->SetOwner (this);
     }

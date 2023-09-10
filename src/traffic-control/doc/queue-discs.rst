@@ -92,13 +92,13 @@ A C++ abstract base class, class QueueDisc, is subclassed to implement a specifi
 queue disc. A subclass is required to implement the following methods:
 
 * ``bool DoEnqueue (Ptr<QueueDiscItem> item)``:  Enqueue a packet
-* ``Ptr<QueueDiscItem> DoDequeue (void)``:  Dequeue a packet
-* ``bool CheckConfig (void) const``: Check if the configuration is correct
-* ``void InitializeParams (void)``: Initialize queue disc parameters
+* ``Ptr<QueueDiscItem> DoDequeue ()``:  Dequeue a packet
+* ``bool CheckConfig () const``: Check if the configuration is correct
+* ``void InitializeParams ()``: Initialize queue disc parameters
 
 and may optionally override the default implementation of the following method:
 
-* ``Ptr<const QueueDiscItem> DoPeek (void) const``: Peek the next packet to extract
+* ``Ptr<const QueueDiscItem> DoPeek () const``: Peek the next packet to extract
 
 The default implementation of the ``DoPeek`` method is based on the qdisc_peek_dequeued
 function of the Linux kernel, which dequeues a packet and retains it in the
@@ -171,7 +171,7 @@ Usage
 *****
 
 The traffic control layer is automatically created and inserted on an ``ns3::Node`` object
-when typical device and internet module helpers are used.  By default, the  
+when typical device and internet module helpers are used.  By default, the
 ``InternetStackHelper::Install()`` method aggregates a TrafficControlLayer object to every
 node. When invoked to assign an IPv{4,6} address to a device, the Ipv{4,6}AddressHelper,
 besides creating an Ipv{4,6}Interface, also installs the default qdisc
@@ -211,9 +211,9 @@ the pfifo_fast can be configured as follows:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  uint16_t handle = tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  tch.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue ("1000p"));
-  QueueDiscContainer qdiscs = tch.Install (devices);
+  uint16_t handle = tch.SetRootQueueDisc("ns3::PfifoFastQueueDisc");
+  tch.AddInternalQueues(handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue("1000p"));
+  QueueDiscContainer qdiscs = tch.Install(devices);
 
 The above code adds three internal queues to the root queue disc of type PfifoFast.
 With the above configuration, the config path of the root queue disc installed on the j-th
@@ -226,7 +226,7 @@ and the config path of the second internal queue is:
 /NodeList/[i]/$ns3::TrafficControlLayer/RootQueueDiscList/[j]/InternalQueueList/1
 
 For this helper's configuration to take effect, it should be added to the ns-3 program after
-``InternetStackHelper::Install()`` is called, but before IP addresses are configured using 
+``InternetStackHelper::Install()`` is called, but before IP addresses are configured using
 ``Ipv{4,6}AddressHelper``. For an example program, see examples/traffic-control/traffic-control.cc.
 
 If it is desired to install no queue disc on a device, it is necessary to use the Uninstall
@@ -235,7 +235,7 @@ method of the TrafficControlHelper:
 .. sourcecode:: cpp
 
   TrafficControlHelper tch;
-  tch.Uninstall (device);
+  tch.Uninstall(device);
 
 Note that the Uninstall method must be called after ``InternetStackHelper::Install()`` is called
 and after that IP addresses are configured using ``Ipv{4,6}AddressHelper``. For an example program,
@@ -249,7 +249,7 @@ device helper, so that the device is created without support for the flow contro
 Implementation details
 **********************
 
-In Linux, the struct netdev_queue is used to store information about a single 
+In Linux, the struct netdev_queue is used to store information about a single
 transmission queue of a device: status (i.e., whether it has been stopped or not),
 data used by techniques such as Byte Queue Limits and a qdisc pointer field that
 is mainly used to solve the following problems:
@@ -312,7 +312,7 @@ interface). In particular:
 
 * a NetDeviceQueueInterface object is aggregated to all the devices by the NetDevice
   helper classes, at ``Install`` time.  See, for example, the implementation in the
-  method ``CsmaHelper::InstallPriv()``.  
+  method ``CsmaHelper::InstallPriv()``.
 
 * when notified that a netdevice queue interface has been aggregated, traffic control \
   aware devices can cache the pointer to the \

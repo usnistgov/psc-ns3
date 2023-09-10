@@ -24,18 +24,18 @@ not strictly in accordance with either.
 Object-oriented behavior
 ************************
 
-C++ objects, in general, provide common object-oriented capabilities 
-(abstraction, encapsulation, inheritance, and polymorphism) that are part 
-of classic object-oriented design. |ns3| objects make use of these 
+C++ objects, in general, provide common object-oriented capabilities
+(abstraction, encapsulation, inheritance, and polymorphism) that are part
+of classic object-oriented design. |ns3| objects make use of these
 properties; for instance::
 
     class Address
     {
     public:
-      Address ();
-      Address (uint8_t type, const uint8_t *buffer, uint8_t len);
-      Address (const Address & address);
-      Address &operator = (const Address &address);
+      Address();
+      Address(uint8_t type, const uint8_t *buffer, uint8_t len);
+      Address(const Address & address);
+      Address &operator=(const Address &address);
       ...
     private:
       uint8_t m_type;
@@ -54,8 +54,8 @@ These base classes are:
 * class :cpp:class:`ObjectBase`
 * class :cpp:class:`SimpleRefCount`
 
-It is not required that |ns3| objects inherit from these class, but 
-those that do get special properties. Classes deriving from 
+It is not required that |ns3| objects inherit from these class, but
+those that do get special properties. Classes deriving from
 class :cpp:class:`Object` get the following properties.
 
 * the |ns3| type and attribute system (see :ref:`Attributes`)
@@ -87,14 +87,14 @@ obtained to an interface, the object's reference count is incremented by calling
 object is deleted.
 
 * When the client code obtains a pointer from the object itself through object
-  creation, or via GetObject, it does not have to increment the reference count.   
+  creation, or via GetObject, it does not have to increment the reference count.
 * When client code obtains a pointer from another source (e.g., copying a
   pointer) it must call ``Ref()`` to increment the reference count.
 * All users of the object pointer must call ``Unref()`` to release the
   reference.
 
 The burden for calling :cpp:func:`Unref()` is somewhat relieved by the use of
-the reference counting smart pointer class described below. 
+the reference counting smart pointer class described below.
 
 Users using a low-level API who wish to explicitly allocate
 non-reference-counted objects on the heap, using operator new, are responsible
@@ -108,7 +108,7 @@ provides a smart pointer class :cpp:class:`Ptr` similar to
 :cpp:class:`Boost::intrusive_ptr`. This smart-pointer class assumes that the
 underlying type provides a pair of ``Ref`` and ``Unref`` methods that are
 expected to increment and decrement the internal refcount of the object
-instance.  
+instance.
 
 This implementation allows you to manipulate the smart pointer as if it was a
 normal pointer: you can compare it with zero, compare it against other pointers,
@@ -132,7 +132,7 @@ allocated using a templated Create or CreateObject method, as follows.
 
 For objects deriving from class :cpp:class:`Object`::
 
-    Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+    Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice>();
 
 Please do not create such objects using ``operator new``; create them using
 :cpp:func:`CreateObject()` instead.
@@ -141,7 +141,7 @@ For objects deriving from class :cpp:class:`SimpleRefCount`, or other objects
 that support usage of the smart pointer class, a templated helper function is
 available and recommended to be used::
 
-    Ptr<B> b = Create<B> ();
+    Ptr<B> b = Create<B>();
 
 This is simply a wrapper around operator new that correctly handles the
 reference counting system.
@@ -157,7 +157,7 @@ The |ns3| object aggregation system is motivated in strong part by a recognition
 that a common use case for |ns2| has been the use of inheritance and
 polymorphism to extend protocol models. For instance, specialized versions of
 TCP such as RenoTcpAgent derive from (and override functions from) class
-TcpAgent.  
+TcpAgent.
 
 However, two problems that have arisen in the |ns2| model are downcasts and
 "weak base class." Downcasting refers to the procedure of using a base class
@@ -174,7 +174,7 @@ problems. This design is based on elements of the `Component Object Model
 <http://en.wikipedia.org/wiki/Component_Object_Model>`_ and `GNOME Bonobo
 <http://en.wikipedia.org/wiki/Bonobo_(component_model)>`_ although full
 binary-level compatibility of replaceable components is not supported and we
-have tried to simplify the syntax and impact on model developers.  
+have tried to simplify the syntax and impact on model developers.
 
 Examples
 ********
@@ -190,12 +190,12 @@ node. Let's look at how some Ipv4 protocols are added to a node.::
     static void
     AddIpv4Stack(Ptr<Node> node)
     {
-      Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-      ipv4->SetNode (node);
-      node->AggregateObject (ipv4);
-      Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
-      ipv4Impl->SetIpv4 (ipv4);
-      node->AggregateObject (ipv4Impl);
+      Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol>();
+      ipv4->SetNode(node);
+      node->AggregateObject(ipv4);
+      Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl>();
+      ipv4Impl->SetIpv4(ipv4);
+      node->AggregateObject(ipv4Impl);
     }
 
 Note that the Ipv4 protocols are created using :cpp:func:`CreateObject()`.
@@ -212,7 +212,7 @@ GetObject example
 +++++++++++++++++
 
 GetObject is a type-safe way to achieve a safe downcasting and to allow
-interfaces to be found on an object.  
+interfaces to be found on an object.
 
 Consider a node pointer ``m_node`` that points to a Node object that has an
 implementation of IPv4 previously aggregated to it. The client code wishes to
@@ -220,7 +220,7 @@ configure a default route. To do so, it must access an object within the node
 that has an interface to the IP forwarding configuration. It performs the
 following::
 
-    Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
+    Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4>();
 
 If the node in fact does not have an Ipv4 object aggregated to it, then the
 method will return null. Therefore, it is good practice to check the return
@@ -243,32 +243,32 @@ Object factories
 
 A common use case is to create lots of similarly configured objects. One can
 repeatedly call :cpp:func:`CreateObject` but there is also a factory design
-pattern in use in the |ns3| system. It is heavily used in the "helper" API. 
+pattern in use in the |ns3| system. It is heavily used in the "helper" API.
 
 Class :cpp:class:`ObjectFactory` can be used to instantiate objects and to
 configure the attributes on those objects::
 
-    void SetTypeId (TypeId tid);
-    void Set (std::string name, const AttributeValue &value);
-    Ptr<T> Create (void) const;
+    void SetTypeId(TypeId tid);
+    void Set(std::string name, const AttributeValue &value);
+    Ptr<T> Create() const;
 
 The first method allows one to use the |ns3| TypeId system to specify the type
 of objects created. The second allows one to set attributes on the objects to be
-created, and the third allows one to create the objects themselves. 
+created, and the third allows one to create the objects themselves.
 
 For example: ::
 
     ObjectFactory factory;
     // Make this factory create objects of type FriisPropagationLossModel
-    factory.SetTypeId ("ns3::FriisPropagationLossModel")
+    factory.SetTypeId("ns3::FriisPropagationLossModel")
     // Make this factory object change a default value of an attribute, for
     // subsequently created objects
-    factory.Set ("SystemLoss", DoubleValue (2.0));
+    factory.Set("SystemLoss", DoubleValue(2.0));
     // Create one such object
-    Ptr<Object> object = factory.Create (); 
-    factory.Set ("SystemLoss", DoubleValue (3.0));
+    Ptr<Object> object = factory.Create();
+    factory.Set("SystemLoss", DoubleValue(3.0));
     // Create another object with a different SystemLoss
-    Ptr<Object> object = factory.Create (); 
+    Ptr<Object> object = factory.Create();
 
 Downcasting
 ***********
@@ -285,9 +285,9 @@ dynamic casting much more user friendly::
 
     template <typename T1, typename T2>
     Ptr<T1>
-    DynamicCast (Ptr<T2> const&p)
+    DynamicCast(Ptr<T2> const&p)
     {
-      return Ptr<T1> (dynamic_cast<T1 *> (PeekPointer (p)));
+      return Ptr<T1>(dynamic_cast<T1 *>(PeekPointer(p)));
     }
 
 DynamicCast works when the programmer has a base type pointer and is testing

@@ -7,92 +7,312 @@
 # We support from 8 to the latest version. Check if everything builds fine
 # under debug, default, and optimized, on Linux.
 
-.weekly-build-gcc:
+.weekly-gcc-base:
   extends: .base-build
-  only:
-    variables:
-      - $RELEASE == "weekly"
-      - $GCC_BUILD_ENABLE == "True"
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   before_script:
-    - apt-get --quiet update --yes
-    - update-alternatives --install /usr/bin/gfortran gfortran /usr/local/bin/gfortran 999
-    - apt-get --quiet install gcc g++ cmake ninja-build python3 python3-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools openmpi-bin openmpi-common openmpi-doc libopenmpi-dev ccache flex bison libfl-dev sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev gsl-bin libgsl0-dev ssh --yes
+    - apt update
+    - apt upgrade -y
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      $COMPILER cmake ninja-build ccache
+      python3 python3-dev
+      gsl-bin libgsl-dev $LIBGSL
+      libboost-all-dev
+      libgtk-3-dev
+      libfl-dev
+      libxml2 libxml2-dev
+      libopenmpi-dev openmpi-bin openmpi-common openmpi-doc
+      libsqlite3-dev sqlite3
+      libeigen3-dev
+      qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+      ssh
   variables:
-    COMPILER: g++
     ENABLE_MPI: --enable-mpi
 
+weekly-gcc:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
+  stage: pre-build
+  script:
+    - echo "Starting GCC jobs"
+
 # GCC 8
-# weekly-build-gcc-8-debug:
-#   extends: .weekly-build-gcc
-#   image: gcc:8
-#   variables:
-#     MODE: debug
+weekly-build-gcc-8-debug:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: g++-8
+    LIBGSL: libgsl23
 
-# weekly-build-gcc-8-default:
-#   extends: .weekly-build-gcc
-#   image: gcc:8
-#   variables:
-#     MODE: default
+weekly-build-gcc-8-default:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: default
+    COMPILER: g++-8
+    LIBGSL: libgsl23
 
-# weekly-build-gcc-8-optimized:
-#   extends: .weekly-build-gcc
-#   image: gcc:8
-#   variables:
-#     MODE: optimized
+weekly-build-gcc-8-optimized:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
+  variables:
+    MODE: optimized
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
+weekly-test-gcc-8-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-8-default"]
+  dependencies:
+    - weekly-build-gcc-8-default
+  variables:
+    MODE: default
+    COMPILER: g++-8
+    LIBGSL: libgsl23
+
+weekly-test-gcc-8-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-8-optimized"]
+  dependencies:
+    - weekly-build-gcc-8-optimized
+  variables:
+    MODE: optimized
+    COMPILER: g++-8
+    LIBGSL: libgsl23
 
 # GCC 9
 weekly-build-gcc-9-debug:
-  extends: .weekly-build-gcc
-  image: gcc:9
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
   variables:
     MODE: debug
+    COMPILER: g++-9
+    LIBGSL: libgsl23
 
 weekly-build-gcc-9-default:
-  extends: .weekly-build-gcc
-  image: gcc:9
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
   variables:
     MODE: default
+    COMPILER: g++-9
+    LIBGSL: libgsl23
 
 weekly-build-gcc-9-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:9
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:20.04
+  stage: build
   variables:
     MODE: optimized
+    COMPILER: g++-9
+    LIBGSL: libgsl23
+
+weekly-test-gcc-9-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-9-default"]
+  dependencies:
+    - weekly-build-gcc-9-default
+  variables:
+    MODE: default
+    COMPILER: g++-9
+    LIBGSL: libgsl23
+
+weekly-test-gcc-9-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:20.04
+  stage: test
+  needs: ["weekly-build-gcc-9-optimized"]
+  dependencies:
+    - weekly-build-gcc-9-optimized
+  variables:
+    MODE: optimized
+    COMPILER: g++-9
+    LIBGSL: libgsl23
 
 # GCC 10
-weekly-build-gcc-10-debug:
-  extends: .weekly-build-gcc
-  image: gcc:10
-  variables:
-    MODE: debug
+# weekly-build-gcc-10-debug:
+#   extends: .weekly-gcc-base
+#   needs: ["weekly-gcc"]
+#   image: ubuntu:20.04
+#   stage: build
+#   variables:
+#     MODE: debug
+#     COMPILER: g++-10
+#     LIBGSL: libgsl23
 
-weekly-build-gcc-10-default:
-  extends: .weekly-build-gcc
-  image: gcc:10
-  variables:
-    MODE: default
+# weekly-build-gcc-10-default:
+#   extends: .weekly-gcc-base
+#   needs: ["weekly-gcc"]
+#   image: ubuntu:20.04
+#   stage: build
+#   variables:
+#     MODE: default
+#     COMPILER: g++-10
+#     LIBGSL: libgsl23
 
-weekly-build-gcc-10-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:10
-  variables:
-    MODE: optimized
+# weekly-build-gcc-10-optimized:
+#   extends: .weekly-gcc-base
+#   needs: ["weekly-gcc"]
+#   image: ubuntu:20.04
+#   stage: build
+#   variables:
+#     MODE: optimized
+#     COMPILER: g++-10
+#     LIBGSL: libgsl23
+
+# weekly-test-gcc-10-default:
+#   extends: .weekly-gcc-base
+#   image: ubuntu:20.04
+#   stage: test
+#   needs: ["weekly-build-gcc-10-default"]
+#   dependencies:
+#     - weekly-build-gcc-10-default
+#   variables:
+#     MODE: default
+#     COMPILER: g++-10
+#     LIBGSL: libgsl23
+
+# weekly-test-gcc-10-optimized:
+#   extends: .weekly-gcc-base
+#   image: ubuntu:20.04
+#   stage: test
+#   needs: ["weekly-build-gcc-10-optimized"]
+#   dependencies:
+#     - weekly-build-gcc-10-optimized
+#   variables:
+#     MODE: optimized
+#     COMPILER: g++-10
+#     LIBGSL: libgsl23
 
 # GCC 11
-weekly-build-gcc-11-debug:
-  extends: .weekly-build-gcc
-  image: gcc:11
+# weekly-build-gcc-11-debug:
+#   extends: .weekly-gcc-base
+#   needs: ["weekly-gcc"]
+#   image: ubuntu:22.04
+#   stage: build
+#   variables:
+#     MODE: debug
+#     COMPILER: g++-11
+#     LIBGSL: libgsl27
+
+# weekly-build-gcc-11-default:
+#   extends: .weekly-gcc-base
+#   needs: ["weekly-gcc"]
+#   image: ubuntu:22.04
+#   stage: build
+#   variables:
+#     MODE: default
+#     COMPILER: g++-11
+#     LIBGSL: libgsl27
+
+# weekly-build-gcc-11-optimized:
+#   extends: .weekly-gcc-base
+#   needs: ["weekly-gcc"]
+#   image: ubuntu:22.04
+#   stage: build
+#   variables:
+#     MODE: optimized
+#     COMPILER: g++-11
+#     LIBGSL: libgsl27
+
+# weekly-test-gcc-11-default:
+#   extends: .weekly-gcc-base
+#   image: ubuntu:22.04
+#   stage: test
+#   needs: ["weekly-build-gcc-11-default"]
+#   dependencies:
+#     - weekly-build-gcc-11-default
+#   variables:
+#     MODE: default
+#     COMPILER: g++-11
+#     LIBGSL: libgsl27
+
+# weekly-test-gcc-11-optimized:
+#   extends: .weekly-gcc-base
+#   image: ubuntu:22.04
+#   stage: test
+#   needs: ["weekly-build-gcc-11-optimized"]
+#   dependencies:
+#     - weekly-build-gcc-11-optimized
+#   variables:
+#     MODE: optimized
+#     COMPILER: g++-11
+#     LIBGSL: libgsl27
+
+# GCC 12
+weekly-build-gcc-12-debug:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:22.04
+  stage: build
   variables:
     MODE: debug
+    COMPILER: g++-12
+    LIBGSL: libgsl27
 
-weekly-build-gcc-11-default:
-  extends: .weekly-build-gcc
-  image: gcc:11
+weekly-build-gcc-12-default:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:22.04
+  stage: build
   variables:
     MODE: default
+    COMPILER: g++-12
+    LIBGSL: libgsl27
 
-weekly-build-gcc-11-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:11
+weekly-build-gcc-12-optimized:
+  extends: .weekly-gcc-base
+  needs: ["weekly-gcc"]
+  image: ubuntu:22.04
+  stage: build
   variables:
     MODE: optimized
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+weekly-test-gcc-12-default:
+  extends: .weekly-gcc-base
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-gcc-12-default"]
+  dependencies:
+    - weekly-build-gcc-12-default
+  variables:
+    MODE: default
+    COMPILER: g++-12
+    LIBGSL: libgsl27
+
+weekly-test-gcc-12-optimized:
+  extends: .weekly-gcc-base
+  image: ubuntu:22.04
+  stage: test
+  needs: ["weekly-build-gcc-12-optimized"]
+  dependencies:
+    - weekly-build-gcc-12-optimized
+  variables:
+    MODE: optimized
+    COMPILER: g++-12
+    LIBGSL: libgsl27

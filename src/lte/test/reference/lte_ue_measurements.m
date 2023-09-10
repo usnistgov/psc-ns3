@@ -6,10 +6,10 @@ close all;
 
 fdl = 2120e6;  % DL carrier freq Hz, EARFCN = 100
 ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
-nrbs = 25; % tx bandwdith configuration in number of RBs
+nrbs = 25; % tx bandwidth configuration in number of RBs
 nres = nrbs * 12;
 bw = 180000 / 12; % bandwidth per RE in Hz
-%%bwtot = xxx %%, note that this is smaller than the nominal Channel Bandwdith, see TS 36.101 fig 5.6-1
+%%bwtot = xxx %%, note that this is smaller than the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 kT = -174; % noise PSD in dBm / Hz
 ndBm = kT + 10*log10(bw);  % noise power dBm for a RE
 
@@ -96,7 +96,7 @@ for d2 = [10000]
   %% SINR (dB)
   dlsinrdB = 10.*log10(dlsinr);
 %    ulsinrdB = 10.*log10(ulsinr);
-  
+
   printf("AddTestCase (new LteUeMeasurementsTestCase (\"d1=%d, d2=%d\", % f, %f, % f, %f, % f, %f));\n", \
    d1, d2, d1, d2, rsrp1dBm, rsrp2dBm, rsrq1dB, rsrq2dB)
 
@@ -105,7 +105,7 @@ for d2 = [10000]
   rsrqdBv1 = [rsrqdBv1 rsrq1dB];
   sinrdBv1 = [sinrdBv1 dlsinrdB];
 
-  
+
 endfor
 
 

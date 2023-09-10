@@ -213,7 +213,7 @@ const
     {
       Ptr<MobilityBuildingInfo> a1 = a->GetObject <MobilityBuildingInfo> ();
       Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
-      NS_ABORT_MSG_IF ((a1 == 0) || (b1 == 0), "UrbanMacroCellPropagationLossModel only works with MobilityBuildingInfo");
+      NS_ABORT_MSG_IF ((!a1 || !b1), "UrbanMacroCellPropagationLossModel only works with MobilityBuildingInfo");
 
       std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> >::iterator ait = m_shadowingLossMap.find (a);
       if (ait != m_shadowingLossMap.end ())

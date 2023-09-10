@@ -5,15 +5,15 @@ close all;
 %% Table 22.7 Reference sensitivity.
 
 fdl = 2120e6;  % DL carrier freq Hz, EARFCN = 100
-ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100 
+ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
 
 nrbsControl = 25; % tx bandwidth configuration in number of RBs
 bwControl = nrbsControl * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwdith, see TS 36.101 fig 5.6-1
+		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 
 nrbsData = 12; % tx bandwidth configuration in number of RBs
 bwData = nrbsData * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwdith, see TS 36.101 fig 5.6-1
+		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 
 kT = -174; % noise PSD in dBm / Hz
 ndBmData = kT + 10*log10(bwData);  % noise power dBm
@@ -35,7 +35,7 @@ gamma = -log (5*ber)./1.5;
 
 
 %% distances
-%%           d1                   d2  
+%%           d1                   d2
 %%  eNB1-------------UE1-UE2-----------eNB2
 %%
 
@@ -43,10 +43,10 @@ d1 = 500;
 d2 = 500;
 
 %% propagation gains (linear)
-%%           g11dl             g21dl 
+%%           g11dl             g21dl
 %%  eNB1-------------UE1-UE2-----------eNB2
-%%           g11ul             g21ul 
-%%              
+%%           g11ul             g21ul
+%%
 
 g11dl = gain_freespace (d1, fdl);
 g11ul = gain_freespace (d1, ful);

@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -21,15 +20,14 @@
 #ifndef LTE_TEST_UE_PHY_H
 #define LTE_TEST_UE_PHY_H
 
+#include "ns3/lte-control-messages.h"
 #include "ns3/lte-phy.h"
 
-#include "ns3/lte-control-messages.h"
-
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup lte-test
- * \ingroup tests
  *
  * \brief Defines a simplified LtePhy class that is used for testing purposes
  * of downlink and uplink SINR generation. Used in LteDownlinkDataSinrTestCase
@@ -37,63 +35,62 @@ namespace ns3 {
  */
 class LteTestUePhy : public LtePhy
 {
-public:
-  /**
-   * @warning the default constructor should not be used
-   */
-  LteTestUePhy ();
+  public:
+    /**
+     * @warning the default constructor should not be used
+     */
+    LteTestUePhy();
 
-  /**
-   * \param dlPhy the downlink LteSpectrumPhy instance
-   * \param ulPhy the uplink LteSpectrumPhy instance
-   */
-  LteTestUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
+    /**
+     * \param dlPhy the downlink LteSpectrumPhy instance
+     * \param ulPhy the uplink LteSpectrumPhy instance
+     */
+    LteTestUePhy(Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
 
-  virtual ~LteTestUePhy ();
+    ~LteTestUePhy() override;
 
-  virtual void DoDispose ();
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+    void DoDispose() override;
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * \brief Queue the MAC PDU to be sent
-   * \param p the MAC PDU to sent
-   */
-  virtual void DoSendMacPdu (Ptr<Packet> p);
+    /**
+     * \brief Queue the MAC PDU to be sent
+     * \param p the MAC PDU to sent
+     */
+    void DoSendMacPdu(Ptr<Packet> p) override;
 
-  /**
-   * \brief Create the PSD for the TX
-   * \return the pointer to the PSD
-   */
-  virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity ();
+    /**
+     * \brief Create the PSD for the TX
+     * \return the pointer to the PSD
+     */
+    Ptr<SpectrumValue> CreateTxPowerSpectralDensity() override;
 
-  virtual void GenerateCtrlCqiReport (const SpectrumValue& sinr);
-  
-  virtual void GenerateDataCqiReport (const SpectrumValue& sinr);
+    void GenerateCtrlCqiReport(const SpectrumValue& sinr) override;
 
-  virtual void ReportInterference (const SpectrumValue& interf);
+    void GenerateDataCqiReport(const SpectrumValue& sinr) override;
 
-  virtual void ReportRsReceivedPower (const SpectrumValue& power);
+    void ReportInterference(const SpectrumValue& interf) override;
 
-  /**
-   * \brief Reeive LTE Control Message
-   * \param msg the control message
-   */
-  virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg);
+    void ReportRsReceivedPower(const SpectrumValue& power) override;
 
-  /**
-   * \brief Get the SINR
-   * \return the SINR
-   */
-  SpectrumValue GetSinr ();
+    /**
+     * \brief Reeive LTE Control Message
+     * \param msg the control message
+     */
+    virtual void ReceiveLteControlMessage(Ptr<LteControlMessage> msg);
 
-private:
-  SpectrumValue m_sinr; ///< the SINR
+    /**
+     * \brief Get the SINR
+     * \return the SINR
+     */
+    SpectrumValue GetSinr();
+
+  private:
+    SpectrumValue m_sinr; ///< the SINR
 };
-
 
 } // namespace ns3
 

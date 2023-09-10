@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2013 Budiarto Herman
  *
@@ -21,17 +20,15 @@
 
 #include "lte-handover-management-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-
-LteHandoverManagementSapProvider::~LteHandoverManagementSapProvider ()
+LteHandoverManagementSapProvider::~LteHandoverManagementSapProvider()
 {
 }
 
-
-LteHandoverManagementSapUser::~LteHandoverManagementSapUser ()
+LteHandoverManagementSapUser::~LteHandoverManagementSapUser()
 {
 }
-
 
 } // end of namespace ns3

@@ -1402,7 +1402,7 @@ McpttCallMachinePrivate::SetEmergMachine (Ptr<McpttEmergAlertMachineBasic>  emer
 {
   NS_LOG_FUNCTION (this << &emergMachine);
 
-  if (emergMachine != 0)
+  if (emergMachine)
     {
       emergMachine->SetOwner (this);
     }
@@ -1525,7 +1525,7 @@ McpttCallMachinePrivate::SetTypeMachine (Ptr<McpttCallTypeMachinePrivate>  typeM
 {
   NS_LOG_FUNCTION (this << &typeMachine);
 
-  if (typeMachine != 0)
+  if (typeMachine)
     {
       typeMachine->SetOwner (this);
     }

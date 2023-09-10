@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 #
 # Copyright (c) 2009 University of Washington
 #
@@ -19,7 +18,7 @@
 import os
 import sys
 import time
-import optparse
+import argparse
 import subprocess
 import threading
 import signal
@@ -81,6 +80,7 @@ ENABLE_TESTS = True
 NSCLICK = False
 ENABLE_BRITE = False
 ENABLE_OPENFLOW = False
+ENABLE_PYTHON_BINDINGS = False
 EXAMPLE_DIRECTORIES = []
 APPNAME = ""
 BUILD_PROFILE = ""
@@ -170,6 +170,7 @@ def parse_examples_to_run_file(
 
             # Set the full path for the example.
             example_path = os.path.join(cpp_executable_dir, example_path)
+            example_path += '.exe' if sys.platform == 'win32' else ''
             example_name = os.path.join(
                 os.path.relpath(cpp_executable_dir, NS3_BUILDDIR),
                 example_name)
@@ -621,7 +622,7 @@ def read_ns3_config():
                 if line.startswith(item):
                     exec(line, globals())
 
-    if options.verbose:
+    if args.verbose:
         for item in interesting_config_items:
             print("%s ==" % item, eval(item))
 
@@ -659,7 +660,7 @@ def make_paths():
     else:
         os.environ["PYTHONPATH"] += ":" + pypath
 
-    if options.verbose:
+    if args.verbose:
         print("os.environ[\"PYTHONPATH\"] == %s" % os.environ["PYTHONPATH"])
 
     if sys.platform == "darwin":
@@ -667,28 +668,28 @@ def make_paths():
             os.environ["DYLD_LIBRARY_PATH"] = ""
         for path in NS3_MODULE_PATH:
             os.environ["DYLD_LIBRARY_PATH"] += ":" + path
-        if options.verbose:
+        if args.verbose:
             print("os.environ[\"DYLD_LIBRARY_PATH\"] == %s" % os.environ["DYLD_LIBRARY_PATH"])
     elif sys.platform == "win32":
         if not have_PATH:
             os.environ["PATH"] = ""
         for path in NS3_MODULE_PATH:
             os.environ["PATH"] += ';' + path
-        if options.verbose:
+        if args.verbose:
             print("os.environ[\"PATH\"] == %s" % os.environ["PATH"])
     elif sys.platform == "cygwin":
         if not have_PATH:
             os.environ["PATH"] = ""
         for path in NS3_MODULE_PATH:
             os.environ["PATH"] += ":" + path
-        if options.verbose:
+        if args.verbose:
             print("os.environ[\"PATH\"] == %s" % os.environ["PATH"])
     else:
         if not have_LD_LIBRARY_PATH:
             os.environ["LD_LIBRARY_PATH"] = ""
         for path in NS3_MODULE_PATH:
             os.environ["LD_LIBRARY_PATH"] += ":" + str(path)
-        if options.verbose:
+        if args.verbose:
             print("os.environ[\"LD_LIBRARY_PATH\"] == %s" % os.environ["LD_LIBRARY_PATH"])
 
 #
@@ -752,7 +753,7 @@ def make_paths():
 #     ...
 #   }
 #
-# You need to add a supression name which will only be printed out by valgrind in
+# You need to add a suppression name which will only be printed out by valgrind in
 # verbose mode (but it needs to be there in any case).  The entire stack frame is
 # shown to completely characterize the error, but in most cases you won't need
 # all of that info.  For example, if you want to turn off all errors that happen
@@ -769,10 +770,18 @@ def make_paths():
 #
 # Now, when you run valgrind the error will be suppressed.
 #
-VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
+# Until ns-3.36, we used a suppression in testpy.supp in the top-level
+# ns-3 directory.   It was defined below, but commented out once it was
+# no longer needed.  If it is needed again in the future, define the
+# below variable again, and remove the alternative definition to None
+#
+# VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
+VALGRIND_SUPPRESSIONS_FILE = None
 
 def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
-    suppressions_path = os.path.join(NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
+
+    if VALGRIND_SUPPRESSIONS_FILE is not None:
+        suppressions_path = os.path.join(NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
         path_cmd = PYTHON[0] + " " + os.path.join(NS3_BASEDIR, shell_command)
@@ -783,12 +792,15 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
             path_cmd = os.path.join(NS3_BUILDDIR, shell_command)
 
     if valgrind:
-        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (suppressions_path,
-            path_cmd)
+        if VALGRIND_SUPPRESSIONS_FILE:
+            cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (suppressions_path,
+                path_cmd)
+        else:
+            cmd = "valgrind --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (path_cmd)
     else:
         cmd = path_cmd
 
-    if options.verbose:
+    if args.verbose:
         print("Synchronously execute %s" % cmd)
 
     start_time = time.time()
@@ -797,20 +809,30 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     elapsed_time = time.time() - start_time
 
     retval = proc.returncode
-    try:
-        stdout_results = stdout_results.decode()
-    except UnicodeDecodeError:
-        print("Non-decodable character in stdout output of %s" % cmd)
-        print(stdout_results)
-        retval = 1
-    try:
-        stderr_results = stderr_results.decode()
-    except UnicodeDecodeError:
-        print("Non-decodable character in stderr output of %s" % cmd)
-        print(stderr_results)
-        retval = 1
 
-    if options.verbose:
+    def decode_stream_results(stream_results: bytes, stream_name: str) -> str:
+        try:
+            stream_results = stream_results.decode()
+        except UnicodeDecodeError:
+            def decode(byte_array: bytes):
+                try:
+                    byte_array.decode()
+                except UnicodeDecodeError:
+                    return byte_array
+
+            # Find lines where the decoding error happened
+            non_utf8_lines = list(map(lambda line: decode(line), stream_results.splitlines()))
+            non_utf8_lines = list(filter(lambda line: line is not None, non_utf8_lines))
+            print(f"Non-decodable characters found in {stream_name} output of {cmd}: {non_utf8_lines}")
+
+            # Continue decoding on errors
+            stream_results = stream_results.decode(errors="backslashreplace")
+        return stream_results
+
+    stdout_results = decode_stream_results(stdout_results, "stdout")
+    stderr_results = decode_stream_results(stderr_results, "stderr")
+
+    if args.verbose:
         print("Return code = ", retval)
         print("stderr = ", stderr_results)
 
@@ -986,7 +1008,7 @@ class worker_thread(threading.Thread):
             # if is_skip is true, returncode is undefined.
             #
             if job.is_skip:
-                if options.verbose:
+                if args.verbose:
                     print("Skip %s" % job.shell_command)
                 self.output_queue.put(job)
                 continue
@@ -995,7 +1017,7 @@ class worker_thread(threading.Thread):
             # Otherwise go about the business of running tests as normal.
             #
             else:
-                if options.verbose:
+                if args.verbose:
                     print("Launch %s" % job.shell_command)
 
                 if job.is_example or job.is_pyexample:
@@ -1005,24 +1027,24 @@ class worker_thread(threading.Thread):
                     # "examples/wireless/mixed-wireless.py"
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command,
-                        job.cwd, options.valgrind, job.is_pyexample, job.build_path)
+                        job.cwd, args.valgrind, job.is_pyexample, job.build_path)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
                     # to the test runner, specifically the base directory and temp
                     # file name
                     #
-                    if options.update_data:
+                    if args.update_data:
                         update_data = '--update-data'
                     else:
                         update_data = ''
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command +
                         " --xml --tempdir=%s --out=%s %s" % (job.tempdir, job.tmp_file_name, update_data),
-                        job.cwd, options.valgrind, False)
+                        job.cwd, args.valgrind, False)
 
                 job.set_elapsed_time(et)
 
-                if options.verbose:
+                if args.verbose:
                     print("returncode = %d" % job.returncode)
                     print("---------- begin standard out ----------")
                     print(standard_out)
@@ -1059,6 +1081,7 @@ def run_tests():
     # match what is done in the CMakeLists.txt file.
     #
     test_runner_name = "%s%s-%s%s" % (APPNAME, VERSION, "test-runner", BUILD_PROFILE_SUFFIX)
+    test_runner_name += '.exe' if sys.platform == 'win32' else ''
 
     #
     # Run ns3 to make sure that everything is built, configured and ready to go
@@ -1066,36 +1089,23 @@ def run_tests():
     # our users pain while waiting for extraneous stuff to compile and link, so
     # we allow users that know what they're doing to not invoke ns3 at all.
     #
-    if not options.no_build:
+    if not args.no_build:
 
-        #
-        # If the user is running the "kinds" or "list" options, there is an
-        # implied dependency on the test-runner since we call that program
-        # if those options are selected.  We will exit after processing those
-        # options, so if we see them, we can safely only build the test-runner.
-        #
-        # If the user has constrained us to running only a particular type of
-        # file, we can only ask ns3 to build what we know will be necessary.
-        # For example, if the user only wants to run BVT tests, we only have
-        # to build the test-runner and can ignore all of the examples.
-        #
         # If the user only wants to run a single example, then we can just build
         # that example.
         #
         # If there is no constraint, then we have to build everything since the
         # user wants to run everything.
         #
-        if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
-            build_cmd = "./ns3 build test-runner"
-        elif len(options.example):
-            build_cmd = "./ns3 build %s" % os.path.basename(options.example)
+        if len(args.example):
+            build_cmd = "./ns3 build %s" % os.path.basename(args.example)
         else:
             build_cmd = "./ns3"
 
         if sys.platform == "win32":
             build_cmd = sys.executable + " " + build_cmd
 
-        if options.verbose:
+        if args.verbose:
             print("Building: %s" % build_cmd)
 
         proc = subprocess.run(build_cmd, shell=True)
@@ -1205,37 +1215,49 @@ def run_tests():
     # up a bunch of threads and running tests.  Let's detect these cases and
     # handle them without doing all of the hard work.
     #
-    if options.kinds:
+    if args.kinds:
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-type-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print(standard_out)
 
-    if options.list:
-        if len(options.constrain):
-            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types --test-type=%s" % options.constrain)
-        else:
-            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
-        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
-        if rc != 0:
-            # This is usually a sign that ns-3 crashed or exited uncleanly
-            print(('test.py error:  test-runner return code returned {}'.format(rc)))
-            print(('To debug, try running {}\n'.format('\'./ns3 run \"test-runner --print-test-name-list\"\'')))
-            return
-        if isinstance(standard_out, bytes):
-            standard_out = standard_out.decode()
-        list_items = standard_out.split('\n')
-        list_items.sort()
+    if args.list:
+        list_items = []
+        if ENABLE_TESTS:
+            if len(args.constrain):
+                path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types --test-type=%s" % args.constrain)
+            else:
+                path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --print-test-types")
+            (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+            if rc != 0:
+                # This is usually a sign that ns-3 crashed or exited uncleanly
+                print(('test.py error:  test-runner return code returned {}'.format(rc)))
+                print(('To debug, try running {}\n'.format('\'./ns3 run \"test-runner --print-test-name-list\"\'')))
+                return
+            if isinstance(standard_out, bytes):
+                standard_out = standard_out.decode()
+            list_items = standard_out.split('\n')
+            list_items.sort()
         print("Test Type    Test Name")
         print("---------    ---------")
         for item in list_items:
             if len(item.strip()):
                 print(item)
-        example_names_original.sort()
-        for item in example_names_original:
+        examples_sorted = []
+        if ENABLE_EXAMPLES:
+            examples_sorted = example_names_original
+            examples_sorted.sort()
+        if ENABLE_PYTHON_BINDINGS:
+            python_examples_sorted = []
+            for (x,y) in python_tests:
+                if y == 'True':
+                    python_examples_sorted.append(x)
+            python_examples_sorted.sort()
+            examples_sorted.extend(python_examples_sorted)
+        for item in examples_sorted:
                 print("example     ", item)
         print()
 
-    if options.kinds or options.list:
+    if args.kinds or args.list:
         return
 
     #
@@ -1288,7 +1310,7 @@ def run_tests():
     # This translates into allowing the following options with respect to the
     # suites
     #
-    #  ./test,py:                                           run all of the suites and examples
+    #  ./test.py:                                           run all of the suites and examples
     #  ./test.py --constrain=core:                          run all of the suites of all kinds
     #  ./test.py --constrain=unit:                          run all unit suites
     #  ./test.py --suite=some-test-suite:                   run a single suite
@@ -1303,7 +1325,7 @@ def run_tests():
     # Flag indicating a specific suite was explicitly requested
     single_suite = False
 
-    if len(options.suite):
+    if len(args.suite):
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
         (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
@@ -1311,7 +1333,7 @@ def run_tests():
         if isinstance(suites, bytes):
             suites = suites.decode()
 
-        suites_found = fnmatch.filter(suites.split('\n'), options.suite)
+        suites_found = fnmatch.filter(suites.split('\n'), args.suite)
 
         if not suites_found:
             print('The test suite was not run because an unknown test suite name was requested.', file=sys.stderr)
@@ -1321,9 +1343,9 @@ def run_tests():
 
         suites = '\n'.join(suites_found)
 
-    elif len(options.example) == 0 and len(options.pyexample) == 0:
-        if len(options.constrain):
-            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % options.constrain)
+    elif ENABLE_TESTS and len(args.example) == 0 and len(args.pyexample) == 0:
+        if len(args.constrain):
+            path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % args.constrain)
             (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         else:
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
@@ -1348,7 +1370,7 @@ def run_tests():
     # i.e. they are not run by default in test.py.
     # If a specific suite was requested we run it, even if
     # it is a performance test.
-    if not single_suite and options.constrain != 'performance':
+    if not single_suite and args.constrain != 'performance':
 
         # Get a list of all of the performance tests.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list --test-type=%s" % "performance")
@@ -1388,12 +1410,14 @@ def run_tests():
             stderr_results = stderr_results.decode()
             if len(stderr_results) == 0:
                 processors = int(stdout_results)
+    else:
+        processors = os.cpu_count()
 
-    if (options.process_limit):
-        if (processors < options.process_limit):
+    if args.process_limit:
+        if processors < args.process_limit:
             print('Using all %s processors' % processors)
         else:
-            processors = options.process_limit
+            processors = args.process_limit
             print('Limiting to %s worker processes' % processors)
 
     #
@@ -1433,12 +1457,12 @@ def run_tests():
             job.set_cwd(os.getcwd())
             job.set_basedir(os.getcwd())
             job.set_tempdir(testpy_output_dir)
-            if (options.multiple):
+            if args.multiple:
                 multiple = ""
             else:
                 multiple = " --stop-on-failure"
-            if (len(options.fullness)):
-                fullness = options.fullness.upper()
+            if len(args.fullness):
+                fullness = args.fullness.upper()
                 fullness = " --fullness=%s" % fullness
             else:
                 fullness = " --fullness=QUICK"
@@ -1447,11 +1471,11 @@ def run_tests():
 
             job.set_shell_command(path_cmd)
 
-            if options.valgrind and test in core_valgrind_skip_tests:
+            if args.valgrind and test in core_valgrind_skip_tests:
                 job.set_is_skip(True)
                 job.set_skip_reason("crashes valgrind")
 
-            if options.verbose:
+            if args.verbose:
                 print("Queue %s" % test)
 
             input_queue.put(job)
@@ -1490,13 +1514,14 @@ def run_tests():
     #  ./test.py --suite=some-suite --example=some-example: run the single example
     #
     #
-    if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
-        if len(options.constrain) == 0 or options.constrain == "example":
+    if len(args.suite) == 0 and len(args.example) == 0 and len(args.pyexample) == 0:
+        if len(args.constrain) == 0 or args.constrain == "example":
             if ENABLE_EXAMPLES:
                 for name, test, do_run, do_valgrind_run in example_tests:
                     # Remove any arguments and directory names from test.
                     test_name = test.split(' ', 1)[0]
                     test_name = os.path.basename(test_name)
+                    test_name = test_name[:-4] if sys.platform == 'win32' else test_name
 
                     # Don't try to run this example if it isn't runnable.
                     if test_name in ns3_runnable_programs_dictionary:
@@ -1510,23 +1535,23 @@ def run_tests():
                             job.set_basedir(os.getcwd())
                             job.set_tempdir(testpy_output_dir)
                             job.set_shell_command(test)
-                            job.set_build_path(options.buildpath)
+                            job.set_build_path(args.buildpath)
 
-                            if options.valgrind and not eval(do_valgrind_run):
+                            if args.valgrind and not eval(do_valgrind_run):
                                 job.set_is_skip(True)
                                 job.set_skip_reason("skip in valgrind runs")
 
-                            if options.verbose:
+                            if args.verbose:
                                 print("Queue %s" % test)
 
                             input_queue.put(job)
                             jobs = jobs + 1
                             total_tests = total_tests + 1
 
-    elif len(options.example):
+    elif len(args.example):
         # Add the proper prefix and suffix to the example name to
         # match what is done in the CMakeLists.txt file.
-        example_name = "%s%s-%s%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE_SUFFIX)
+        example_name = "%s%s-%s%s" % (APPNAME, VERSION, args.example, BUILD_PROFILE_SUFFIX)
 
         key_list = []
         for key in ns3_runnable_programs_dictionary:
@@ -1534,7 +1559,7 @@ def run_tests():
         example_name_key_list = fnmatch.filter(key_list, example_name)
 
         if len(example_name_key_list) == 0:
-            print("No example matching the name %s" % options.example)
+            print("No example matching the name %s" % args.example)
         else:
             #
             # If you tell me to run an example, I will try and run the example
@@ -1552,9 +1577,9 @@ def run_tests():
                 job.set_basedir(os.getcwd())
                 job.set_tempdir(testpy_output_dir)
                 job.set_shell_command(example_path)
-                job.set_build_path(options.buildpath)
+                job.set_build_path(args.buildpath)
 
-                if options.verbose:
+                if args.verbose:
                     print("Queue %s" % example_name_iter)
 
                 input_queue.put(job)
@@ -1581,60 +1606,68 @@ def run_tests():
     #  ./test.py --constrain=pyexample           run all of the python examples
     #  ./test.py --pyexample=some-example.py:    run the single python example
     #
-    if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
-        if len(options.constrain) == 0 or options.constrain == "pyexample":
-            if ENABLE_EXAMPLES:
-                for test, do_run in python_tests:
-                    # Remove any arguments and directory names from test.
-                    test_name = test.split(' ', 1)[0]
-                    test_name = os.path.basename(test_name)
+    if len(args.suite) == 0 and len(args.example) == 0 and len(args.pyexample) == 0:
+        if len(args.constrain) == 0 or args.constrain == "pyexample":
+            for test, do_run in python_tests:
+                # Remove any arguments and directory names from test.
+                test_name = test.split(' ', 1)[0]
+                test_name = os.path.basename(test_name)
 
-                    # Don't try to run this example if it isn't runnable.
-                    if test_name in ns3_runnable_scripts:
-                        if eval(do_run):
-                            job = Job()
-                            job.set_is_example(False)
-                            job.set_is_pyexample(True)
-                            job.set_display_name(test)
-                            job.set_tmp_file_name("")
-                            job.set_cwd(testpy_output_dir)
-                            job.set_basedir(os.getcwd())
-                            job.set_tempdir(testpy_output_dir)
-                            job.set_shell_command(test)
-                            job.set_build_path("")
+                # Don't try to run this example if it isn't runnable.
+                if test_name in ns3_runnable_scripts:
+                    if eval(do_run):
+                        job = Job()
+                        job.set_is_example(False)
+                        job.set_is_pyexample(True)
+                        job.set_display_name(test)
+                        job.set_tmp_file_name("")
+                        job.set_cwd(testpy_output_dir)
+                        job.set_basedir(os.getcwd())
+                        job.set_tempdir(testpy_output_dir)
+                        job.set_shell_command(test)
+                        job.set_build_path("")
 
-                            #
-                            # Python programs and valgrind do not work and play
-                            # well together, so we skip them under valgrind.
-                            # We go through the trouble of doing all of this
-                            # work to report the skipped tests in a consistent
-                            # way through the output formatter.
-                            #
-                            if options.valgrind:
-                                job.set_is_skip(True)
-                                job.set_skip_reason("skip in valgrind runs")
+                        #
+                        # Python programs and valgrind do not work and play
+                        # well together, so we skip them under valgrind.
+                        # We go through the trouble of doing all of this
+                        # work to report the skipped tests in a consistent
+                        # way through the output formatter.
+                        #
+                        if args.valgrind:
+                            job.set_is_skip(True)
+                            job.set_skip_reason("skip in valgrind runs")
 
-                            #
-                            # The user can disable python bindings, so we need
-                            # to pay attention to that and give some feedback
-                            # that we're not testing them
-                            #
-                            if not ENABLE_PYTHON_BINDINGS:
-                                job.set_is_skip(True)
-                                job.set_skip_reason("requires Python bindings")
+                        #
+                        # The user can disable python bindings, so we need
+                        # to pay attention to that and give some feedback
+                        # that we're not testing them
+                        #
+                        if not ENABLE_PYTHON_BINDINGS:
+                            job.set_is_skip(True)
+                            job.set_skip_reason("requires Python bindings")
 
-                            if options.verbose:
-                                print("Queue %s" % test)
+                        if args.verbose:
+                            print("Queue %s" % test)
 
-                            input_queue.put(job)
-                            jobs = jobs + 1
-                            total_tests = total_tests + 1
+                        input_queue.put(job)
+                        jobs = jobs + 1
+                        total_tests = total_tests + 1
 
-    elif len(options.pyexample):
+    elif len(args.pyexample):
+        # Find the full relative path to file if only a partial path has been given.
+        if not os.path.exists(args.pyexample):
+            import glob
+            files = glob.glob("./**/%s" % args.pyexample, recursive=True)
+            if files:
+                args.pyexample = files[0]
+
         # Don't try to run this example if it isn't runnable.
-        example_name = os.path.basename(options.pyexample)
+        example_name = os.path.basename(args.pyexample)
         if example_name not in ns3_runnable_scripts:
             print("Example %s is not runnable." % example_name)
+        elif not os.path.exists(args.pyexample):
+            print("Example %s does not exist." % example_name)
         else:
             #
             # If you tell me to run a python example, I will try and run the example
@@ -1642,16 +1675,16 @@ def run_tests():
             #
             job = Job()
             job.set_is_pyexample(True)
-            job.set_display_name(options.pyexample)
+            job.set_display_name(args.pyexample)
             job.set_tmp_file_name("")
             job.set_cwd(testpy_output_dir)
             job.set_basedir(os.getcwd())
             job.set_tempdir(testpy_output_dir)
-            job.set_shell_command(options.pyexample)
+            job.set_shell_command(args.pyexample)
             job.set_build_path("")
 
-            if options.verbose:
-                print("Queue %s" % options.pyexample)
+            if args.verbose:
+                print("Queue %s" % args.pyexample)
 
             input_queue.put(job)
             jobs = jobs + 1
@@ -1720,7 +1753,7 @@ def run_tests():
                 status_print = colors.PINK + status + colors.NORMAL
 
         print("[%d/%d]" % (passed_tests + failed_tests + skipped_tests + crashed_tests, total_tests), end=' ')
-        if options.duration or options.constrain == "performance":
+        if args.duration or args.constrain == "performance":
             print("%s (%.3f): %s %s" % (status_print, job.elapsed_time, kind, job.display_name))
         else:
             print("%s: %s %s" % (status_print, kind, job.display_name))
@@ -1858,17 +1891,17 @@ def run_tests():
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
     #
-    if len(options.html) + len(options.text) + len(options.xml):
+    if len(args.html) + len(args.text) + len(args.xml):
         print()
 
-    if len(options.html):
-        translate_to_html(xml_results_file, options.html)
+    if len(args.html):
+        translate_to_html(xml_results_file, args.html)
 
-    if len(options.text):
-        translate_to_text(xml_results_file, options.text)
+    if len(args.text):
+        translate_to_text(xml_results_file, args.text)
 
-    if len(options.xml):
-        xml_file = options.xml + '.xml'
+    if len(args.xml):
+        xml_file = args.xml + '.xml'
         print('Writing results to xml file %s...' % xml_file, end='')
         shutil.copyfile(xml_results_file, xml_file)
         print('done.')
@@ -1891,7 +1924,7 @@ def run_tests():
     # Let the user know if they tried to use valgrind but it was not
     # present on their machine.
     #
-    if options.valgrind and not VALGRIND_FOUND:
+    if args.valgrind and not VALGRIND_FOUND:
         print()
         print('***  Note: you are trying to use valgrind, but valgrind could not be found')
         print('***  on your machine.  All tests and examples will crash or be skipped.')
@@ -1903,7 +1936,7 @@ def run_tests():
     # directory we just created.  We don't want to happily delete any retained
     # directories, which will probably surprise the user.
     #
-    if not options.retain:
+    if not args.retain:
         shutil.rmtree(testpy_output_dir)
 
     if passed_tests + skipped_tests == total_tests:
@@ -1912,83 +1945,79 @@ def run_tests():
         return 1 # catchall for general errors
 
 def main(argv):
-    parser = optparse.OptionParser()
-    parser.add_option("-b", "--buildpath", action="store", type="string", dest="buildpath", default="",
-                      metavar="BUILDPATH",
-                      help="specify the path where ns-3 was built (defaults to the build directory for the current variant)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-b", "--buildpath", action="store", type=str, default="",
+                        help="specify the path where ns-3 was built (defaults to the build directory for the current variant)")
 
-    parser.add_option("-c", "--constrain", action="store", type="string", dest="constrain", default="",
-                      metavar="KIND",
-                      help="constrain the test-runner by kind of test")
+    parser.add_argument("-c", "--constrain", action="store", type=str, default="",
+                        help="constrain the test-runner by kind of test")
 
-    parser.add_option("-d", "--duration", action="store_true", dest="duration", default=False,
-                      help="print the duration of each test suite and example")
+    parser.add_argument("-d", "--duration", action="store_true", default=False,
+                        help="print the duration of each test suite and example")
 
-    parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
-                      metavar="EXAMPLE",
-                      help="specify a single example to run (no relative path is needed)")
+    parser.add_argument("-e", "--example", action="store", type=str, default="",
+                        help="specify a single example to run (no relative path is needed)")
 
-    parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
-                      help="If examples use reference data files, get them to re-generate them")
+    parser.add_argument("-u", "--update-data", action="store_true", default=False,
+                        help="If examples use reference data files, get them to re-generate them")
 
-    parser.add_option("-f", "--fullness", action="store", type="choice", dest="fullness", default="QUICK",
-                      metavar="FULLNESS", choices=["QUICK", "EXTENSIVE", "TAKES_FOREVER"],
-                      help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK tests are run by default)")
+    parser.add_argument("-f", "--fullness", action="store", type=str, default="QUICK",
+                        choices=["QUICK", "EXTENSIVE", "TAKES_FOREVER"],
+                        help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK tests are run by default)")
 
-    parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
-                      help="run the test suites and examples using valgrind")
+    parser.add_argument("-g", "--grind", action="store_true", dest="valgrind", default=False,
+                        help="run the test suites and examples using valgrind")
 
-    parser.add_option("-k", "--kinds", action="store_true", dest="kinds", default=False,
-                      help="print the kinds of tests available")
+    parser.add_argument("-k", "--kinds", action="store_true", default=False,
+                        help="print the kinds of tests available")
 
-    parser.add_option("-l", "--list", action="store_true", dest="list", default=False,
-                      help="print the list of known tests")
+    parser.add_argument("-l", "--list", action="store_true", default=False,
+                        help="print the list of known tests")
 
-    parser.add_option("-m", "--multiple", action="store_true", dest="multiple", default=False,
-                      help="report multiple failures from test suites and test cases")
+    parser.add_argument("-m", "--multiple", action="store_true", default=False,
+                        help="report multiple failures from test suites and test cases")
 
-    parser.add_option("-n", "--no-build", action="store_true", dest="no_build", default=False,
-                      help="do not build before starting testing")
+    parser.add_argument("-n", "--no-build", action="store_true", default=False,
+                        help="do not build before starting testing")
 
-    parser.add_option("-p", "--pyexample", action="store", type="string", dest="pyexample", default="",
-                      metavar="PYEXAMPLE",
-                      help="specify a single python example to run (with relative path)")
+    parser.add_argument("-p", "--pyexample", action="store", type=str, default="",
+                        help="specify a single python example to run (with relative path)")
 
-    parser.add_option("-r", "--retain", action="store_true", dest="retain", default=False,
-                      help="retain all temporary files (which are normally deleted)")
+    parser.add_argument("-r", "--retain", action="store_true", default=False,
+                        help="retain all temporary files (which are normally deleted)")
 
-    parser.add_option("-s", "--suite", action="store", type="string", dest="suite", default="",
-                      metavar="TEST-SUITE",
-                      help="specify a single test suite to run")
+    parser.add_argument("-s", "--suite", action="store", type=str, default="",
+                        help="specify a single test suite to run")
 
-    parser.add_option("-t", "--text", action="store", type="string", dest="text", default="",
-                      metavar="TEXT-FILE",
-                      help="write detailed test results into TEXT-FILE.txt")
+    parser.add_argument("-t", "--text", action="store", type=str, default="",
+                        metavar="TEXT-FILE",
+                        help="write detailed test results into TEXT-FILE.txt")
 
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
-                      help="print progress and informational messages")
+    parser.add_argument("-v", "--verbose", action="store_true", default=False,
+                        help="print progress and informational messages")
 
-    parser.add_option("-w", "--web", "--html", action="store", type="string", dest="html", default="",
-                      metavar="HTML-FILE",
-                      help="write detailed test results into HTML-FILE.html")
+    parser.add_argument("-w", "--web", "--html", action="store", type=str, dest="html", default="",
+                        metavar="HTML-FILE",
+                        help="write detailed test results into HTML-FILE.html")
 
-    parser.add_option("-x", "--xml", action="store", type="string", dest="xml", default="",
-                      metavar="XML-FILE",
-                      help="write detailed test results into XML-FILE.xml")
+    parser.add_argument("-x", "--xml", action="store", type=str, default="",
+                        metavar="XML-FILE",
+                        help="write detailed test results into XML-FILE.xml")
 
-    parser.add_option("--nocolor", action="store_true", dest="nocolor", default=False,
-                      help="do not use colors in the standard output")
-    parser.add_option("--jobs", action="store", type="int", dest="process_limit", default=0,
-                      help="limit number of worker threads")
+    parser.add_argument("--nocolor", action="store_true", default=False,
+                        help="do not use colors in the standard output")
 
-    global options
-    options = parser.parse_args()[0]
+    parser.add_argument("--jobs", action="store", type=int, dest="process_limit", default=0,
+                        help="limit number of worker threads")
+
+    global args
+    args = parser.parse_args()
     signal.signal(signal.SIGINT, sigint_hook)
 
     # From waf/waflib/Options.py
     envcolor=os.environ.get('NOCOLOR','') and 'no' or 'auto' or 'yes'
 
-    if options.nocolor or envcolor == 'no':
+    if args.nocolor or envcolor == 'no':
         colors_lst['USE'] = False
 
     return run_tests()

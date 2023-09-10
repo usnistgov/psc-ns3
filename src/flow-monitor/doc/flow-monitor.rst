@@ -13,7 +13,7 @@ Flow Monitor
 Model Description
 *****************
 
-The source code for the new module lives in the directory ``src/flow-monitor``.
+The source code for the module lives in the directory ``src/flow-monitor``.
 
 The Flow Monitor module goal is to provide a flexible system to measure the
 performance of network protocols. The module uses probes, installed in network
@@ -86,6 +86,9 @@ The L2 headers are not included in the measure.
 
 These stats will be written in XML form upon request (see the Usage section).
 
+Due to the above design, FlowMonitor can not generate statistics when used with DSR routing
+protocol (because DSR forwards packets using broadcast addresses)
+
 The "lost" packets problem
 ##########################
 
@@ -125,13 +128,13 @@ The typical use is::
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll();
 
-  -yourApplicationsContainer-.Stop (Seconds (stop_time));;
-  Simulator::Stop (Seconds(stop_time+cleanup_time));
-  Simulator::Run ();
+  -yourApplicationsContainer-.Stop(Seconds(stop_time));;
+  Simulator::Stop(Seconds(stop_time+cleanup_time));
+  Simulator::Run();
 
   flowMonitor->SerializeToXmlFile("NameOfFile.xml", true, true);
 
-the ``SerializeToXmlFile ()`` function 2nd and 3rd parameters are used respectively to
+the ``SerializeToXmlFile()`` function 2nd and 3rd parameters are used respectively to
 activate/deactivate the histograms and the per-probe detailed stats.
 Other possible alternatives can be found in the Doxygen documentation, while
 ``cleanup_time`` is the time needed by in-flight packets to reach their destinations.
@@ -211,7 +214,7 @@ Moreover, the following examples use the flow-monitor module:
 * examples/routing/manet-routing-compare.cc
 * examples/routing/simple-global-routing.cc
 * examples/tcp/tcp-variants-comparison.cc
-* examples/wireless/multirate.cc
+* examples/wireless/wifi-multirate.cc
 * examples/wireless/wifi-hidden-terminal.cc
 
 

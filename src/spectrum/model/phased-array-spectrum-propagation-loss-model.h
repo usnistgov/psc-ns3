@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2021 CTTC
  *
@@ -20,14 +19,15 @@
 #ifndef PHASED_ARRAY_SPECTRUM_PROPAGATION_LOSS_MODEL_H
 #define PHASED_ARRAY_SPECTRUM_PROPAGATION_LOSS_MODEL_H
 
-
-#include <ns3/object.h>
 #include <ns3/mobility-model.h>
-#include <ns3/spectrum-value.h>
+#include <ns3/object.h>
 #include <ns3/phased-array-model.h>
+#include <ns3/spectrum-value.h>
 
-namespace ns3 {
+namespace ns3
+{
 
+struct SpectrumSignalParameters;
 
 /**
  * \ingroup spectrum
@@ -43,78 +43,68 @@ namespace ns3 {
  */
 class PhasedArraySpectrumPropagationLossModel : public Object
 {
-public:
-  PhasedArraySpectrumPropagationLossModel ();
-  virtual ~PhasedArraySpectrumPropagationLossModel ();
+  public:
+    PhasedArraySpectrumPropagationLossModel();
+    ~PhasedArraySpectrumPropagationLossModel() override;
 
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  /**
-   * Used to chain various instances of PhasedArraySpectrumPropagationLossModel
-   *
-   * @param next
-   */
-  void SetNext (Ptr<PhasedArraySpectrumPropagationLossModel> next);
+    /**
+     * Used to chain various instances of PhasedArraySpectrumPropagationLossModel
+     *
+     * @param next
+     */
+    void SetNext(Ptr<PhasedArraySpectrumPropagationLossModel> next);
 
-  /**
-   * This method is to be called to calculate
-   *
-   * @param txPsd the SpectrumValue representing the power spectral
-   * density of the transmission. Watt units are to be used for radio
-   * communications, and Pascal units for acoustic communications
-   * (e.g., underwater).
-   *
-   * @param a sender mobility
-   * @param b receiver mobility
-   * @param aPhasedArrayModel the instance of the phased antenna array of the sender
-   * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
-   *
-   * @return set of values Vs frequency representing the received
-   * power in the same units used for the txPower parameter.
-   */
-  Ptr<SpectrumValue> CalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
-                                                 Ptr<const MobilityModel> a,
-                                                 Ptr<const MobilityModel> b,
-                                                 Ptr<const PhasedArrayModel> aPhasedArrayModel,
-                                                 Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
+    /**
+     * This method is to be called to calculate
+     *
+     * @param txPsd the spectrum signal parameters.
+     * @param a sender mobility
+     * @param b receiver mobility
+     * @param aPhasedArrayModel the instance of the phased antenna array of the sender
+     * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
+     *
+     * @return set of values Vs frequency representing the received
+     * power in the same units used for the txPower parameter.
+     */
+    Ptr<SpectrumValue> CalcRxPowerSpectralDensity(
+        Ptr<const SpectrumSignalParameters> txPsd,
+        Ptr<const MobilityModel> a,
+        Ptr<const MobilityModel> b,
+        Ptr<const PhasedArrayModel> aPhasedArrayModel,
+        Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
 
-protected:
-  virtual void DoDispose ();
+  protected:
+    void DoDispose() override;
 
+  private:
+    /**
+     *
+     * @param params the spectrum signal parameters.
+     * @param a sender mobility
+     * @param b receiver mobility
+     * @param aPhasedArrayModel the instance of the phased antenna array of the sender
+     * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
+     *
+     * @return set of values Vs frequency representing the received
+     * power in the same units used for the txPower parameter.
+     */
+    virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity(
+        Ptr<const SpectrumSignalParameters> params,
+        Ptr<const MobilityModel> a,
+        Ptr<const MobilityModel> b,
+        Ptr<const PhasedArrayModel> aPhasedArrayModel,
+        Ptr<const PhasedArrayModel> bPhasedArrayModel) const = 0;
 
-private:
-  /**
-   *
-   * @param txPsd set of values Vs frequency representing the
-   * transmission power. See SpectrumChannel for details.
-   * @param a sender mobility
-   * @param b receiver mobility
-   * @param aPhasedArrayModel the instance of the phased antenna array of the sender
-   * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
-   *
-   * @return set of values Vs frequency representing the received
-   * power in the same units used for the txPower parameter.
-   */
-  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
-                                                           Ptr<const MobilityModel> a,
-                                                           Ptr<const MobilityModel> b,
-                                                           Ptr<const PhasedArrayModel> aPhasedArrayModel,
-                                                           Ptr<const PhasedArrayModel> bPhasedArrayModel) const = 0;
-
-  Ptr<PhasedArraySpectrumPropagationLossModel> m_next; //!< PhasedArraySpectrumPropagationLossModel chained to this one.
+    Ptr<PhasedArraySpectrumPropagationLossModel>
+        m_next; //!< PhasedArraySpectrumPropagationLossModel chained to this one.
 };
-
-
-
-
-
 
 } // namespace ns3
 
 #endif /* PHASED_ARRAY_SPECTRUM_PROPAGATION_LOSS_MODEL_H */
-
-

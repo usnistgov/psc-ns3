@@ -170,7 +170,7 @@ UdpGroupEchoServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Starting UdpGroupEchoServer with mode " << ModeToString (m_mode) << " session time " << m_timeout.GetSeconds ());
-  if (m_socket == 0)
+  if (!m_socket)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket = Socket::CreateSocket (GetNode (), tid);
@@ -191,7 +191,7 @@ UdpGroupEchoServer::StartApplication (void)
         }
     }
 
-  if (m_socket6 == 0)
+  if (!m_socket6)
     {
       TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
       m_socket6 = Socket::CreateSocket (GetNode (), tid);
@@ -221,12 +221,12 @@ UdpGroupEchoServer::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket != 0)
+  if (m_socket)
     {
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
-  if (m_socket6 != 0)
+  if (m_socket6)
     {
       m_socket6->Close ();
       m_socket6->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());

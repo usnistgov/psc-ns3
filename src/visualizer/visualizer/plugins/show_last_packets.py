@@ -1,11 +1,13 @@
 from gi.repository import GObject
 from gi.repository import Gtk
 
-import ns.core
-import ns.network
-import ns.visualizer
+from ns import ns
 
-from visualizer.base import InformationWindow
+try:
+    from ns3.visualizer.base import InformationWindow
+except ModuleNotFoundError:
+    from visualizer.base import InformationWindow
+
 from kiwi.ui.objectlist import ObjectList, Column
 
 ## ShowLastPackets class
@@ -103,8 +105,8 @@ class ShowLastPackets(InformationWindow):
         """
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,
-                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT|Gtk.DialogFlags.NO_SEPARATOR,
-                              buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
+                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                              buttons=("_Close", Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
         self.win.set_title("Last packets for node %i" % node_index)
         self.visualizer = visualizer

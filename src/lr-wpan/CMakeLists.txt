@@ -17,6 +17,7 @@ build_lib(
     model/lr-wpan-spectrum-value-helper.cc
   HEADER_FILES
     helper/lr-wpan-helper.h
+    model/lr-wpan-constants.h
     model/lr-wpan-csmaca.h
     model/lr-wpan-error-model.h
     model/lr-wpan-fields.h
@@ -47,4 +48,5 @@ build_lib(
     test/lr-wpan-spectrum-value-helper-test.cc
     test/lr-wpan-ifs-test.cc
     test/lr-wpan-slotted-csmaca-test.cc
+    test/lr-wpan-mac-test.cc
 )

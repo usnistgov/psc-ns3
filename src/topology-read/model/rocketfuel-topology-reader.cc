@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 Hajime Tazaki
  *
@@ -18,14 +17,17 @@
  * Author: Hajime Tazaki (tazaki@sfc.wide.ad.jp)
  */
 
-#include <fstream>
-#include <cstdlib>
-#include <iostream>
-#include <sstream>
-#include <regex.h>
-#include "ns3/log.h"
-#include "ns3/node-container.h"
 #include "rocketfuel-topology-reader.h"
+
+#include "ns3/log.h"
+#include "ns3/names.h"
+#include "ns3/node-container.h"
+
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <regex>
+#include <string>
 
 /**
  * \file
@@ -33,39 +35,36 @@
  * ns3::RocketfuelTopologyReader implementation.
  */
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("RocketfuelTopologyReader");
-
-NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader);
-
-TypeId RocketfuelTopologyReader::GetTypeId (void)
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::RocketfuelTopologyReader")
-    .SetParent<TopologyReader> ()
-    .SetGroupName ("TopologyReader")
-    .AddConstructor<RocketfuelTopologyReader> ()
-  ;
-  return tid;
+
+NS_LOG_COMPONENT_DEFINE("RocketfuelTopologyReader");
+
+NS_OBJECT_ENSURE_REGISTERED(RocketfuelTopologyReader);
+
+TypeId
+RocketfuelTopologyReader::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::RocketfuelTopologyReader")
+                            .SetParent<TopologyReader>()
+                            .SetGroupName("TopologyReader")
+                            .AddConstructor<RocketfuelTopologyReader>();
+    return tid;
 }
 
-RocketfuelTopologyReader::RocketfuelTopologyReader ()
+RocketfuelTopologyReader::RocketfuelTopologyReader()
 {
-  m_linksNumber = 0;
-  m_nodesNumber = 0;
-  NS_LOG_FUNCTION (this);
+    m_linksNumber = 0;
+    m_nodesNumber = 0;
+    NS_LOG_FUNCTION(this);
 }
 
-RocketfuelTopologyReader::~RocketfuelTopologyReader ()
+RocketfuelTopologyReader::~RocketfuelTopologyReader()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
-
-
-/// Maximum nuber of matches in a regex query
-#define REGMATCH_MAX 16
 
 /// Start of a line
 #define START "^"
@@ -77,18 +76,25 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
 #define MAYSPACE "[ \t]*"
 
 /// Regex expression matching a MAP line
-#define ROCKETFUEL_MAPS_LINE \
-  START "(-*[0-9]+)" SPACE "(@[?A-Za-z0-9,+]+)" SPACE \
-  "(\\+)*" MAYSPACE "(bb)*" MAYSPACE \
-  "\\(([0-9]+)\\)" SPACE "(&[0-9]+)*" MAYSPACE \
-  "->" MAYSPACE "(<[0-9 \t<>]+>)*" MAYSPACE \
-  "(\\{-[0-9\\{\\} \t-]+\\})*" SPACE \
-  "=([A-Za-z0-9.!-]+)" SPACE "r([0-9])" \
-  MAYSPACE END
+#define ROCKETFUEL_MAPS_LINE                                                                       \
+    START "(-*[0-9]+)" SPACE "(@[?A-Za-z0-9,+-]+)" SPACE "(\\+)*" MAYSPACE "(bb)*" MAYSPACE        \
+          "\\(([0-9]+)\\)" SPACE "(&[0-9]+)*" MAYSPACE "->" MAYSPACE "(<[0-9 \t<>]+>)*" MAYSPACE   \
+          "(\\{-[0-9\\{\\} \t-]+\\})*" SPACE "=([A-Za-z0-9.!-]+)" SPACE "r([0-9])" MAYSPACE END
 
 /// Regex expression matching a WEIGHT line
-#define ROCKETFUEL_WEIGHTS_LINE \
-  START "([^ \t]+)" SPACE "([^ \t]+)" SPACE "([0-9.]+)" MAYSPACE END
+#define ROCKETFUEL_WEIGHTS_LINE START "([^ \t]+)" SPACE "([^ \t]+)" SPACE "([0-9.]+)" MAYSPACE END
+
+/**
+ * Build a Regex object for RocketFuel topology maps file type
+ * \return a static regex object for maps file type
+ */
+static const std::regex rocketfuel_maps_regex(ROCKETFUEL_MAPS_LINE);
+
+/**
+ * Build a Regex object for RocketFuel topology weights file type
+ * \return a static regex object for weights file type
+ */
+static const std::regex rocketfuel_weights_regex(ROCKETFUEL_WEIGHTS_LINE);
 
 /**
  * \brief Print node info
@@ -101,360 +107,333 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
  * \param radius node radius
  */
 static inline void
-PrintNodeInfo (std::string & uid, std::string & loc, bool dns, bool bb,
-               std::vector <std::string>::size_type neighListSize,
-               std::string & name, int radius)
+PrintNodeInfo(std::string& uid,
+              std::string& loc,
+              bool dns,
+              bool bb,
+              std::vector<std::string>::size_type neighListSize,
+              std::string& name,
+              int radius)
 {
-  /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
-  NS_LOG_INFO ("Load Node[" << uid << "]: location: " << loc << " dns: " << dns
-                            << " bb: " << bb << " neighbors: " << neighListSize
-                            << "(" << "%d" << ") externals: \"%s\"(%d) "
-                            << "name: " << name << " radius: " << radius);
+    /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
+    NS_LOG_INFO("Load Node[" << uid << "]: location: " << loc << " dns: " << dns << " bb: " << bb
+                             << " neighbors: " << neighListSize << "("
+                             << "%d"
+                             << ") externals: \"%s\"(%d) "
+                             << "name: " << name << " radius: " << radius);
 }
 
 NodeContainer
-RocketfuelTopologyReader::GenerateFromMapsFile (int argc, char *argv[])
+RocketfuelTopologyReader::GenerateFromMapsFile(const std::vector<std::string>& argv)
 {
-  std::string uid;
-  std::string loc;
-  std::string ptr;
-  std::string name;
-  std::string nuid;
-  bool dns = false;
-  bool bb = false;
-  int num_neigh_s = 0;
-  unsigned int num_neigh = 0;
-  int radius = 0;
-  std::vector <std::string> neigh_list;
-  NodeContainer nodes;
+    std::string uid;
+    std::string loc;
+    std::string ptr;
+    std::string name;
+    bool dns = false;
+    bool bb = false;
+    int num_neigh_s = 0;
+    unsigned int num_neigh = 0;
+    int radius = 0;
+    std::vector<std::string> neigh_list;
+    NodeContainer nodes;
 
-  uid = argv[0];
-  loc = argv[1];
+    uid = argv[0];
+    loc = argv[1];
 
-  if (argv[2])
+    if (!argv[2].empty())
     {
-      dns = true;
+        dns = true;
     }
 
-  if (argv[3])
+    if (!argv[3].empty())
     {
-      bb = true;
+        bb = true;
     }
 
-  num_neigh_s = ::atoi (argv[4]);
-  if (num_neigh_s < 0)
+    num_neigh_s = std::stoi(argv[4]);
+    if (num_neigh_s < 0)
     {
-      num_neigh = 0;
-      NS_LOG_WARN ("Negative number of neighbors given");
+        num_neigh = 0;
+        NS_LOG_WARN("Negative number of neighbors given");
     }
-  else
+    else
     {
-      num_neigh = num_neigh_s;
+        num_neigh = num_neigh_s;
     }
 
-  /* neighbors */
-  if (argv[6])
+    /* neighbors */
+    if (!argv[6].empty())
     {
-      char *nbr;
-      char *stringp = argv[6];
-      while ((nbr = strsep (&stringp, " \t")) != NULL)
+        // Each line contains a list <.*>[ |\t]<.*>[ |\t]<.*>[ |\t]
+        // First remove < and >
+        std::string temp;
+        std::regex replace_regex("[<|>]");
+        std::regex_replace(std::back_inserter(temp),
+                           argv[6].begin(),
+                           argv[6].end(),
+                           replace_regex,
+                           "");
+
+        // Then split list
+        std::regex split_regex("[ |\t]");
+        std::sregex_token_iterator first{temp.begin(), temp.end(), split_regex, -1};
+        std::sregex_token_iterator last;
+        neigh_list = std::vector<std::string>{first, last};
+    }
+    if (num_neigh != neigh_list.size())
+    {
+        NS_LOG_WARN("Given number of neighbors = " << num_neigh << " != size of neighbors list = "
+                                                   << neigh_list.size());
+    }
+
+    /* externs */
+    if (!argv[7].empty())
+    {
+        // euid = argv[7];
+    }
+
+    /* name */
+    if (!argv[8].empty())
+    {
+        name = argv[8];
+    }
+
+    radius = std::atoi(&argv[9][1]);
+    if (radius > 0)
+    {
+        return nodes;
+    }
+
+    PrintNodeInfo(uid, loc, dns, bb, neigh_list.size(), name, radius);
+
+    // Create node and link
+    if (!uid.empty())
+    {
+        if (!m_nodeMap[uid])
         {
-          nbr[strlen (nbr) - 1] = '\0';
-          neigh_list.push_back (nbr + 1);
+            Ptr<Node> tmpNode = CreateObject<Node>();
+            std::string nodename = "RocketFuelTopology/NodeName/" + uid;
+            Names::Add(nodename, tmpNode);
+            m_nodeMap[uid] = tmpNode;
+            nodes.Add(tmpNode);
+            m_nodesNumber++;
         }
-    }
-  if (num_neigh != neigh_list.size ())
-    {
-      NS_LOG_WARN ("Given number of neighbors = " << num_neigh << " != size of neighbors list = " << neigh_list.size ());
-    }
 
-  /* externs */
-  if (argv[7])
-    {
-      // euid = argv[7];
-    }
-
-  /* name */
-  if (argv[8])
-    {
-      name = argv[8];
-    }
-
-  radius = ::atoi (&argv[9][1]);
-  if (radius > 0)
-    {
-      return nodes;
-    }
-
-  PrintNodeInfo (uid, loc, dns, bb, neigh_list.size (), name, radius);
-
-  // Create node and link
-  if (!uid.empty ())
-    {
-      if (m_nodeMap[uid] == 0)
+        for (auto& nuid : neigh_list)
         {
-          Ptr<Node> tmpNode = CreateObject<Node> ();
-          m_nodeMap[uid] = tmpNode;
-          nodes.Add (tmpNode);
-          m_nodesNumber++;
-        }
-
-      for (uint32_t i = 0; i < neigh_list.size (); ++i)
-        {
-          nuid = neigh_list[i];
-
-          if (nuid.empty ())
+            if (nuid.empty())
             {
-              return nodes;
+                return nodes;
             }
 
-          if (m_nodeMap[nuid] == 0)
+            if (!m_nodeMap[nuid])
             {
-              Ptr<Node> tmpNode = CreateObject<Node> ();
-              m_nodeMap[nuid] = tmpNode;
-              nodes.Add (tmpNode);
-              m_nodesNumber++;
+                Ptr<Node> tmpNode = CreateObject<Node>();
+                std::string nodename = "RocketFuelTopology/NodeName/" + nuid;
+                Names::Add(nodename, tmpNode);
+                m_nodeMap[nuid] = tmpNode;
+                nodes.Add(tmpNode);
+                m_nodesNumber++;
             }
-          NS_LOG_INFO (m_linksNumber << ":" << m_nodesNumber << " From: " << uid << " to: " << nuid);
-          Link link (m_nodeMap[uid], uid, m_nodeMap[nuid], nuid);
-          AddLink (link);
-          m_linksNumber++;
+            NS_LOG_INFO(m_linksNumber << ":" << m_nodesNumber << " From: " << uid
+                                      << " to: " << nuid);
+            Link link(m_nodeMap[uid], uid, m_nodeMap[nuid], nuid);
+            AddLink(link);
+            m_linksNumber++;
         }
     }
 
-  NS_LOG_INFO ("Rocketfuel topology created with " << m_nodesNumber << " nodes and " << m_linksNumber << " links");
+    NS_LOG_INFO("Rocketfuel topology created with " << m_nodesNumber << " nodes and "
+                                                    << m_linksNumber << " links");
 
-  return nodes;
+    return nodes;
 }
 
 NodeContainer
-RocketfuelTopologyReader::GenerateFromWeightsFile (int argc, char *argv[])
+RocketfuelTopologyReader::GenerateFromWeightsFile(const std::vector<std::string>& argv)
 {
-  /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
-  std::string sname;
-  std::string tname;
-  char *endptr;
-  NodeContainer nodes;
+    /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
+    std::string sname;
+    std::string tname;
+    std::string::size_type endptr;
+    NodeContainer nodes;
 
-  sname = argv[0];
-  tname = argv[1];
-  [[maybe_unused]] double v = strtod (argv[2], &endptr); // weight
+    sname = argv[0];
+    tname = argv[1];
+    std::stod(argv[2], &endptr); // weight
 
-  if (*endptr != '\0')
+    if (argv[2].size() != endptr)
     {
-      NS_LOG_WARN ("invalid weight: " << argv[2]);
-      return nodes;
+        NS_LOG_WARN("invalid weight: " << argv[2]);
+        return nodes;
     }
 
-  // Create node and link
-  if (!sname.empty () && !tname.empty ())
+    // Create node and link
+    if (!sname.empty() && !tname.empty())
     {
-      if (m_nodeMap[sname] == 0)
+        if (!m_nodeMap[sname])
         {
-          Ptr<Node> tmpNode = CreateObject<Node> ();
-          m_nodeMap[sname] = tmpNode;
-          nodes.Add (tmpNode);
-          m_nodesNumber++;
+            Ptr<Node> tmpNode = CreateObject<Node>();
+            std::string nodename = "RocketFuelTopology/NodeName/" + sname;
+            Names::Add(nodename, tmpNode);
+            m_nodeMap[sname] = tmpNode;
+            nodes.Add(tmpNode);
+            m_nodesNumber++;
         }
 
-      if (m_nodeMap[tname] == 0)
+        if (!m_nodeMap[tname])
         {
-          Ptr<Node> tmpNode = CreateObject<Node> ();
-          m_nodeMap[tname] = tmpNode;
-          nodes.Add (tmpNode);
-          m_nodesNumber++;
+            Ptr<Node> tmpNode = CreateObject<Node>();
+            std::string nodename = "RocketFuelTopology/NodeName/" + tname;
+            Names::Add(nodename, tmpNode);
+            m_nodeMap[tname] = tmpNode;
+            nodes.Add(tmpNode);
+            m_nodesNumber++;
         }
-      NS_LOG_INFO (m_linksNumber << ":" << m_nodesNumber << " From: " << sname << " to: " << tname);
-      TopologyReader::ConstLinksIterator iter;
-      bool found = false;
-      for (iter = LinksBegin (); iter != LinksEnd (); iter++)
+        NS_LOG_INFO(m_linksNumber << ":" << m_nodesNumber << " From: " << sname
+                                  << " to: " << tname);
+        TopologyReader::ConstLinksIterator iter;
+        bool found = false;
+        for (iter = LinksBegin(); iter != LinksEnd(); iter++)
         {
-          if ((iter->GetFromNode () == m_nodeMap[tname])
-              && (iter->GetToNode () == m_nodeMap[sname]))
+            if ((iter->GetFromNode() == m_nodeMap[tname]) &&
+                (iter->GetToNode() == m_nodeMap[sname]))
             {
-              found = true;
-              break;
+                found = true;
+                break;
             }
         }
 
-      if (!found)
+        if (!found)
         {
-          Link link (m_nodeMap[sname], sname, m_nodeMap[tname], tname);
-          AddLink (link);
-          m_linksNumber++;
+            Link link(m_nodeMap[sname], sname, m_nodeMap[tname], tname);
+            AddLink(link);
+            m_linksNumber++;
         }
     }
 
-  NS_LOG_INFO ("Rocketfuel topology created with " << m_nodesNumber << " nodes and " << m_linksNumber << " links");
+    NS_LOG_INFO("Rocketfuel topology created with " << m_nodesNumber << " nodes and "
+                                                    << m_linksNumber << " links");
 
-  return nodes;
+    return nodes;
 }
 
-enum RocketfuelTopologyReader::RF_FileType
-RocketfuelTopologyReader::GetFileType (const char *line)
+RocketfuelTopologyReader::RF_FileType
+RocketfuelTopologyReader::GetFileType(const std::string& line)
 {
-  int ret;
-  regmatch_t regmatch[REGMATCH_MAX];
-  regex_t regex;
-  char errbuf[512];
+    int ret;
 
-  // Check whether MAPS file or not
-  ret = regcomp (&regex, ROCKETFUEL_MAPS_LINE, REG_EXTENDED | REG_NEWLINE);
-  if (ret != 0)
+    // Check whether Maps file or not
+    std::smatch matches;
+    ret = std::regex_match(line, matches, rocketfuel_maps_regex);
+    if (ret)
     {
-      regerror (ret, &regex, errbuf, sizeof (errbuf));
-      return RF_UNKNOWN;
+        return RF_MAPS;
     }
-  ret = regexec (&regex, line, REGMATCH_MAX, regmatch, 0);
-  if (ret != REG_NOMATCH)
-    {
-      regfree (&regex);
-      return RF_MAPS;
-    }
-  regfree (&regex);
 
-  // Check whether Weights file or not
-  ret = regcomp (&regex, ROCKETFUEL_WEIGHTS_LINE, REG_EXTENDED | REG_NEWLINE);
-  if (ret != 0)
+    // Check whether Weights file or not
+    ret = std::regex_match(line, matches, rocketfuel_weights_regex);
+    if (ret)
     {
-      regerror (ret, &regex, errbuf, sizeof (errbuf));
-      return RF_UNKNOWN;
+        return RF_WEIGHTS;
     }
-  ret = regexec (&regex, line, REGMATCH_MAX, regmatch, 0);
-  if (ret != REG_NOMATCH)
-    {
-      regfree (&regex);
-      return RF_WEIGHTS;
-    }
-  regfree (&regex);
 
-  return RF_UNKNOWN;
+    return RF_UNKNOWN;
 }
-
 
 NodeContainer
-RocketfuelTopologyReader::Read (void)
+RocketfuelTopologyReader::Read()
 {
-  std::ifstream topgen;
-  topgen.open (GetFileName ().c_str ());
-  NodeContainer nodes;
+    std::ifstream topgen;
+    topgen.open(GetFileName());
+    NodeContainer nodes;
 
-  std::istringstream lineBuffer;
-  std::string line;
-  int lineNumber = 0;
-  enum RF_FileType ftype = RF_UNKNOWN;
-  char errbuf[512];
+    std::istringstream lineBuffer;
+    std::string line;
+    int lineNumber = 0;
+    RF_FileType ftype = RF_UNKNOWN;
 
-  if (!topgen.is_open ())
+    if (!topgen.is_open())
     {
-      NS_LOG_WARN ("Couldn't open the file " << GetFileName ());
-      return nodes;
+        NS_LOG_WARN("Couldn't open the file " << GetFileName());
+        return nodes;
     }
 
-  while (!topgen.eof ())
+    while (!topgen.eof())
     {
-      int ret;
-      int argc;
-      char *argv[REGMATCH_MAX];
-      char *buf;
+        int ret;
+        std::vector<std::string> argv;
 
-      lineNumber++;
-      line.clear ();
-      lineBuffer.clear ();
+        lineNumber++;
+        line.clear();
+        lineBuffer.clear();
 
-      getline (topgen, line);
-      buf = (char *)line.c_str ();
+        getline(topgen, line);
 
-      if (lineNumber == 1)
+        if (lineNumber == 1)
         {
-          ftype = GetFileType (buf);
-          if (ftype == RF_UNKNOWN)
+            ftype = GetFileType(line);
+            if (ftype == RF_UNKNOWN)
             {
-              NS_LOG_INFO ("Unknown File Format (" << GetFileName () << ")");
-              break;
+                NS_LOG_INFO("Unknown File Format (" << GetFileName() << ")");
+                break;
             }
         }
 
-      regmatch_t regmatch[REGMATCH_MAX];
-      regex_t regex;
+        std::smatch matches;
 
-      if (ftype == RF_MAPS)
+        if (ftype == RF_MAPS)
         {
-          ret = regcomp (&regex, ROCKETFUEL_MAPS_LINE, REG_EXTENDED | REG_NEWLINE);
-          if (ret != 0)
+            ret = std::regex_match(line, matches, rocketfuel_maps_regex);
+            if (!ret || matches.empty())
             {
-              regerror (ret, &regex, errbuf, sizeof (errbuf));
-              regfree (&regex);
-              break;
-            }
-
-          ret = regexec (&regex, buf, REGMATCH_MAX, regmatch, 0);
-          if (ret == REG_NOMATCH)
-            {
-              NS_LOG_WARN ("match failed (maps file): %s" << buf);
-              regfree (&regex);
-              break;
+                NS_LOG_WARN("match failed (maps file): %s" << line);
+                break;
             }
         }
-      else if (ftype == RF_WEIGHTS)
+        else if (ftype == RF_WEIGHTS)
         {
-          ret = regcomp (&regex, ROCKETFUEL_WEIGHTS_LINE, REG_EXTENDED | REG_NEWLINE);
-          if (ret != 0)
+            ret = std::regex_match(line, matches, rocketfuel_weights_regex);
+            if (!ret || matches.empty())
             {
-              regerror (ret, &regex, errbuf, sizeof (errbuf));
-              regfree (&regex);
-              break;
-            }
-
-          ret = regexec (&regex, buf, REGMATCH_MAX, regmatch, 0);
-          if (ret == REG_NOMATCH)
-            {
-              NS_LOG_WARN ("match failed (weights file): %s" << buf);
-              regfree (&regex);
-              break;
+                NS_LOG_WARN("match failed (weights file): %s" << line);
+                break;
             }
         }
 
-      line = buf;
-      argc = 0;
+        std::string matched_string;
 
-      /* regmatch[0] is the entire strings that matched */
-      for (int i = 1; i < REGMATCH_MAX; i++)
+        for (auto it = matches.begin() + 1; it != matches.end(); it++)
         {
-          if (regmatch[i].rm_so == -1)
+            if (it->matched)
             {
-              argv[i - 1] = NULL;
+                matched_string = it->str();
             }
-          else
+            else
             {
-              line[regmatch[i].rm_eo] = '\0';
-              argv[i - 1] = &line[regmatch[i].rm_so];
-              argc = i;
+                matched_string = "";
             }
+            argv.push_back(matched_string);
         }
 
-      if (ftype == RF_MAPS)
+        if (ftype == RF_MAPS)
         {
-          nodes.Add (GenerateFromMapsFile (argc, argv));
+            nodes.Add(GenerateFromMapsFile(argv));
         }
-      else if (ftype == RF_WEIGHTS)
+        else if (ftype == RF_WEIGHTS)
         {
-          nodes.Add (GenerateFromWeightsFile (argc, argv));
+            nodes.Add(GenerateFromWeightsFile(argv));
         }
-      else
+        else
         {
-          NS_LOG_WARN ("Unsupported file format (only Maps/Weights are supported)");
+            NS_LOG_WARN("Unsupported file format (only Maps/Weights are supported)");
         }
-
-      regfree (&regex);
     }
 
+    topgen.close();
 
-  topgen.close ();
-
-  return nodes;
+    return nodes;
 }
 
 } /* namespace ns3 */
-
-

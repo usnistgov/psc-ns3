@@ -183,7 +183,7 @@ Hybrid3gppPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel
               // Get the MobilityBuildingInfo pointers
               Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo> ();
               Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo> ();
-              NS_ABORT_MSG_IF ((a1 == 0) || (b1 == 0), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
+              NS_ABORT_MSG_IF ((!a1 || !b1), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
               Vector vA = a->GetVelocity ();
               Vector vB = b->GetVelocity ();
               bool isAStatic = (vA.x == 0.0 && vA.y == 0.0 ? true : false);
@@ -280,7 +280,7 @@ const
     {
       Ptr<MobilityBuildingInfo> a1 = a->GetObject <MobilityBuildingInfo> ();
       Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
-      NS_ABORT_MSG_IF ((a1 == 0) || (b1 == 0), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
+      NS_ABORT_MSG_IF ((!a1 || !b1), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
 
       std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> >::iterator ait = m_shadowingLossMap.find (a);
       if (ait != m_shadowingLossMap.end ())

@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2008 INRIA
  *
@@ -19,65 +18,129 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/log.h"
-#include "ns3/names.h"
-#include "ns3/spectrum-wifi-phy.h"
-#include "ns3/interference-helper.h"
-#include "ns3/error-rate-model.h"
-#include "ns3/frame-capture-model.h"
-#include "ns3/preamble-detection-model.h"
-#include "ns3/mobility-model.h"
-#include "ns3/wifi-net-device.h"
 #include "spectrum-wifi-helper.h"
 
-namespace ns3 {
+#include "ns3/error-rate-model.h"
+#include "ns3/frame-capture-model.h"
+#include "ns3/interference-helper.h"
+#include "ns3/log.h"
+#include "ns3/mobility-model.h"
+#include "ns3/names.h"
+#include "ns3/preamble-detection-model.h"
+#include "ns3/spectrum-channel.h"
+#include "ns3/spectrum-transmit-filter.h"
+#include "ns3/spectrum-wifi-phy.h"
+#include "ns3/wifi-bandwidth-filter.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("SpectrumWifiHelper");
-
-SpectrumWifiPhyHelper::SpectrumWifiPhyHelper ()
-  : m_channel (0)
+namespace ns3
 {
-  m_phy.SetTypeId ("ns3::SpectrumWifiPhy");
-  SetInterferenceHelper ("ns3::InterferenceHelper");
-  SetErrorRateModel ("ns3::TableBasedErrorRateModel");
+
+NS_LOG_COMPONENT_DEFINE("SpectrumWifiHelper");
+
+SpectrumWifiPhyHelper::SpectrumWifiPhyHelper(uint8_t nLinks)
+    : WifiPhyHelper(nLinks)
+{
+    NS_ABORT_IF(m_phy.size() != nLinks);
+    for (auto& phy : m_phy)
+    {
+        phy.SetTypeId("ns3::SpectrumWifiPhy");
+    }
+    SetInterferenceHelper("ns3::InterferenceHelper");
+    SetErrorRateModel("ns3::TableBasedErrorRateModel");
 }
 
 void
-SpectrumWifiPhyHelper::SetChannel (Ptr<SpectrumChannel> channel)
+SpectrumWifiPhyHelper::SetChannel(const Ptr<SpectrumChannel> channel)
 {
-  m_channel = channel;
+    m_channels[WHOLE_WIFI_SPECTRUM] = channel;
+    AddWifiBandwidthFilter(channel);
 }
 
 void
-SpectrumWifiPhyHelper::SetChannel (std::string channelName)
+SpectrumWifiPhyHelper::SetChannel(const std::string& channelName)
 {
-  Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel> (channelName);
-  m_channel = channel;
+    Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
+    m_channels[WHOLE_WIFI_SPECTRUM] = channel;
+    AddWifiBandwidthFilter(channel);
 }
 
-Ptr<WifiPhy>
-SpectrumWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
+void
+SpectrumWifiPhyHelper::AddChannel(const Ptr<SpectrumChannel> channel,
+                                  const FrequencyRange& freqRange)
 {
-  Ptr<SpectrumWifiPhy> phy = m_phy.Create<SpectrumWifiPhy> ();
-  phy->CreateWifiSpectrumPhyInterface (device);
-  Ptr<InterferenceHelper> interference = m_interferenceHelper.Create<InterferenceHelper> ();
-  phy->SetInterferenceHelper (interference);
-  Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
-  phy->SetErrorRateModel (error);
-  if (m_frameCaptureModel.IsTypeIdSet ())
-    {
-      auto frameCapture = m_frameCaptureModel.Create<FrameCaptureModel> ();
-      phy->SetFrameCaptureModel (frameCapture);
-    }
-  if (m_preambleDetectionModel.IsTypeIdSet ())
-    {
-      auto preambleDetection = m_preambleDetectionModel.Create<PreambleDetectionModel> ();
-      phy->SetPreambleDetectionModel (preambleDetection);
-    }
-  phy->SetChannel (m_channel);
-  phy->SetDevice (device);
-  phy->SetMobility (node->GetObject<MobilityModel> ());
-  return phy;
+    m_channels[freqRange] = channel;
+    AddWifiBandwidthFilter(channel);
 }
 
-} //namespace ns3
+void
+SpectrumWifiPhyHelper::AddChannel(const std::string& channelName, const FrequencyRange& freqRange)
+{
+    Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
+    AddChannel(channel, freqRange);
+    AddWifiBandwidthFilter(channel);
+}
+
+void
+SpectrumWifiPhyHelper::AddWifiBandwidthFilter(Ptr<SpectrumChannel> channel)
+{
+    Ptr<const SpectrumTransmitFilter> p = channel->GetSpectrumTransmitFilter();
+    bool found = false;
+    while (p && !found)
+    {
+        if (DynamicCast<const WifiBandwidthFilter>(p))
+        {
+            NS_LOG_DEBUG("Found existing WifiBandwidthFilter for channel " << channel);
+            found = true;
+        }
+        else
+        {
+            NS_LOG_DEBUG("Found different SpectrumTransmitFilter for channel " << channel);
+            p = p->GetNext();
+        }
+    }
+    if (!found)
+    {
+        Ptr<WifiBandwidthFilter> pWifi = CreateObject<WifiBandwidthFilter>();
+        channel->AddSpectrumTransmitFilter(pWifi);
+        NS_LOG_DEBUG("Adding WifiBandwidthFilter to channel " << channel);
+    }
+}
+
+std::vector<Ptr<WifiPhy>>
+SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
+{
+    std::vector<Ptr<WifiPhy>> ret;
+
+    for (std::size_t i = 0; i < m_phy.size(); i++)
+    {
+        Ptr<SpectrumWifiPhy> phy = m_phy.at(i).Create<SpectrumWifiPhy>();
+        auto interference = m_interferenceHelper.Create<InterferenceHelper>();
+        phy->SetInterferenceHelper(interference);
+        Ptr<ErrorRateModel> error = m_errorRateModel.at(i).Create<ErrorRateModel>();
+        phy->SetErrorRateModel(error);
+        if (m_frameCaptureModel.at(i).IsTypeIdSet())
+        {
+            auto frameCapture = m_frameCaptureModel.at(i).Create<FrameCaptureModel>();
+            phy->SetFrameCaptureModel(frameCapture);
+        }
+        if (m_preambleDetectionModel.at(i).IsTypeIdSet())
+        {
+            auto preambleDetection =
+                m_preambleDetectionModel.at(i).Create<PreambleDetectionModel>();
+            phy->SetPreambleDetectionModel(preambleDetection);
+        }
+        for (const auto& [freqRange, channel] : m_channels)
+        {
+            phy->AddChannel(channel, freqRange);
+        }
+        phy->SetDevice(device);
+        phy->SetMobility(node->GetObject<MobilityModel>());
+        ret.emplace_back(phy);
+    }
+
+    return ret;
+}
+
+} // namespace ns3

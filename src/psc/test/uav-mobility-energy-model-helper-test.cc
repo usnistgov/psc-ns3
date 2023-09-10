@@ -102,9 +102,9 @@ UavMobilityEnergyModelHelperTestOneNode::DoRun (void)
 
   // Aggregation
   auto model = node->GetObject<UavMobilityEnergyModel> ();
-  NS_TEST_ASSERT_MSG_NE (model, 0, "Model should not be null");
+  NS_TEST_ASSERT_MSG_NE (model, nullptr, "Model should not be null");
   auto aggregateSource = node->GetObject<BasicEnergySource> ();
-  NS_TEST_ASSERT_MSG_NE (aggregateSource, 0,
+  NS_TEST_ASSERT_MSG_NE (aggregateSource, nullptr,
                         "Energy Source should not be null");
   Simulator::Destroy ();
 }
@@ -143,15 +143,15 @@ UavMobilityEnergyModelHelperTestFullSetup::DoRun (void)
 
   // Every component should be installed/aggregated
   auto mobilityModel = node->GetObject<ConstantVelocityMobilityModel> ();
-  NS_TEST_ASSERT_MSG_NE (mobilityModel, 0,
+  NS_TEST_ASSERT_MSG_NE (mobilityModel, nullptr,
                         "Mobility Model should not be null");
 
   auto energySource = node->GetObject<BasicEnergySource> ();
-  NS_TEST_ASSERT_MSG_NE (energySource, 0,
+  NS_TEST_ASSERT_MSG_NE (energySource, nullptr,
                         "Energy Source should not be null");
       
   auto energyModel = node->GetObject<UavMobilityEnergyModel> ();
-  NS_TEST_ASSERT_MSG_NE (energyModel, 0,
+  NS_TEST_ASSERT_MSG_NE (energyModel, nullptr,
                         "Energy Model should not be null");
   Simulator::Destroy ();
 }
@@ -196,13 +196,13 @@ UavMobilityEnergyModelHelperTestCollections::TestFullSetup (void)
   for (auto node = nodes.Begin (); node != nodes.End (); node++)
     {
       NS_TEST_ASSERT_MSG_NE ((*node)->GetObject<ConstantVelocityMobilityModel> (),
-                            0, "Mobility Model should not be null");
+                            nullptr, "Mobility Model should not be null");
 
       NS_TEST_ASSERT_MSG_NE ((*node)->GetObject<BasicEnergySource> (),
-                            0, "Energy Source should not be null");
+                            nullptr, "Energy Source should not be null");
 
       NS_TEST_ASSERT_MSG_NE ((*node)->GetObject<UavMobilityEnergyModel> (), 
-                            0, "Energy Model should not be null");
+                            nullptr, "Energy Model should not be null");
     }
 }
 
@@ -228,13 +228,13 @@ UavMobilityEnergyModelHelperTestCollections::TestNodeEnergyContainers (void)
   for (auto node = nodes.Begin (); node != nodes.End (); node++)
     {
       NS_TEST_ASSERT_MSG_NE ((*node)->GetObject<ConstantVelocityMobilityModel> (),
-                            0, "Mobility Model should not be null");
+                            nullptr, "Mobility Model should not be null");
 
       NS_TEST_ASSERT_MSG_NE ((*node)->GetObject<BasicEnergySource> (),
-                            0, "Energy Source should not be null");
+                            nullptr, "Energy Source should not be null");
 
       NS_TEST_ASSERT_MSG_NE ((*node)->GetObject<UavMobilityEnergyModel> (), 
-                            0, "Energy Model should not be null");
+                            nullptr, "Energy Model should not be null");
     }
 }
 

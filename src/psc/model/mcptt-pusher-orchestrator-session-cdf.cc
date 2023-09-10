@@ -502,7 +502,7 @@ McpttPusherOrchestratorSessionCdf::Start (void)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ABORT_MSG_IF (m_orchestrator == 0, "No underlying orchestrator.");
+  NS_ABORT_MSG_IF (!m_orchestrator, "No underlying orchestrator.");
 
   StopSession ();
 }

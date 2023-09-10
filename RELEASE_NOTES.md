@@ -3,18 +3,223 @@ ns-3 RELEASE NOTES
 
 This file contains ns-3 release notes (most recent releases first).
 
-All of the ns-3 documentation is accessible from the ns-3 website:
-http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
+ns-3 documentation is accessible from the [ns-3 website](https://www.nsnam.org).
 
-Consult the file CHANGES.html for more detailed information about changed
+Consult the file [CHANGES.md](CHANGES.md) for more detailed information about changed
 API and behavior across ns-3 releases.
+
+In the following, numeric references prefixed by '#' refer to
+a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
+and references prefixed by '!' refer to a
+[GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
 Release 3-dev
 -------------
 
+### Supported platforms
+
 ### New user-visible features
 
 ### Bugs fixed
+
+Release 3.39
+------------
+
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.39.tar.bz2>
+
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-9 or later, or LLVM/clang++-6 or later
+- Python 3.6 or later
+- CMake 3.10 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain or WSL2
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).  Specifically, avoid Cppyy version 3; stay with version 2.4.2 for this release.
+
+### New user-visible features
+
+- (applications) !1412 - Add Tx and TxWithAddresses trace sources in UdpClient
+- (bindings) - Package ns-3 as a pip wheel
+- (doc) #876 - Improve dark-mode heading, navigation, and search bars
+- (flowmonitor) #901 - Allow to reset the stats
+- (lr-wpan) !1399 - Add orphan scan support.
+- (lr-wpan) !1402 - Add attributes to MLME-SET and MLME-GET
+- (lr-wpan) !1410 - Add Mac16 and Mac64 functions
+- (network) !1405 - Add ConvertToInt to Mac64Address
+
+Note:  This release has removed the "wave" module from the codebase due to lack of maintenance
+and due to lack of relevance to modern vehicular networks which appear to be moving to cellular
+V2X solutions.  Future users who may wish to use this code should obtain it from an earlier ns-3
+release but should also be aware of a number of issues that arose and can be found in the
+[ns-3 Issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues/?state=all&label_name%5B%5D=module%3A%3Awave); in particular,  #249, #879, #872, and #637.
+
+### Bugs fixed
+
+- (build) #881 - Fix scratch targets for file names containing dots
+- (core) #902 - Fix vector inversion in the function `AttributeContainerTestSuite::ReverseList()`
+- (energy) !1422 - Fix null harvester issue in EnergySource
+- (internet) #910 - Release memory when sockets are closed
+- (lr-wpan) !1406 - Fixes issues during MAC scan
+- (lr-wpan) !1481 - Small fixes in MAC orphan scan
+- (lte) #906 - Don't use invalid cell ID
+- (propagation) - fix height assignment in 3gpp propagation loss model
+- (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
+- (wifi) #862 - sta-wifi-mac.cc cond="!link.bssid.has_value()", High occurrence at higher numbers of STAs per AP in indoor deployment.
+- (wifi) - Fix the equality operator of WifiInformationElement
+- (wifi) - Make the implementation of the Multi-Link Element compliant with the 11be specs by adding support of inheritance
+- (wifi) - Reset intra-BSS NAV when CF-End is an intra-BSS PPDU
+- (wifi) - UL MU CS shall be evaluated a SIFS after end of MU-RTS
+- (wifi) - Fix crash when changing operating channel after configuration but before initialization
+- (wifi) - Fix assert when non-HE STAs receive CTS frames sent using non-HT duplicate following a MU-RTS frame
+- (wifi) - Fix OBSS-PD support for 802.11be
+- (wifi) #917 - Add missing STA-ID in GetMode() call from YansErrorRateModel
+- (wifi) - Fix wifi-rate-adaptation-distance.cc example issues with CCA threshold
+
+Release 3.38
+------------
+
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.38.tar.bz2>
+
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-9 or later, or LLVM/clang++-6 or later
+- Python 3.6 or later
+- CMake 3.10 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).
+
+This release has discontinued support for g++-8 compilers.
+
+### New user-visible features
+
+- (core) !1236 - Added some macros to silence compiler warnings. The new macros are in **warnings.h**, and their use is not suggested unless for very specific cases.
+- (core) !1269 - Added new template classes `ValArray` and `MatrixArray` for efficient storage and operations on 1D, 2D, and 3D arrays.
+- (documentation) - Added an Installation Guide to replace the ns-3 wiki's installation page
+- (internet) !1229 - Ping now supports broadcast addresses.
+- (internet) !1186 - `TcpWestwood` model has been removed, and the class has been renamed `TcpWestwoodPlus`.
+- (internet-apps) - A new Ping model that works for both IPv4 and IPv6 has been added, to replace the address family specific v4Ping and Ping6.
+- (lr-wpan) !1006 - Added RX sensitivity configuration support.
+- (lr-wpan) !1268 - Added beacon payload via MLME-SET.request primitive.
+- (netanim) Added helper function to update the size of a node
+- (network) !938 - Added class `TimestampTag` for associating a timestamp with a packet.
+- (network) !1163 - Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
+- (spectrum) !1046 - Added the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
+- (spectrum) !1119 - Added a capability to filter signals (with a new SpectrumTransmitFilter) sent on the SpectrumChannel before they are forwarded to receivers on the channel.  This is motivated by scalability (reducing inconsequential simulation events).
+the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
+- (wifi) Added support for 802.11be Multi-Link Operations (MLO), STR mode only
+- (wifi) Added more fields to the EHT Capabilities information element
+- (wifi) Added an initial 802.11be-based example program
+- (wifi) Added 802.11ax dual NAV (basic NAV and intra-BSS NAV)
+- (wifi) Added 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
+- (wifi) Added support for 802.11ax MU-RTS/CTS protection
+- (wifi) !1119 - Added, by default, a WifiBandwidthFilter to spectrum channels created by the SpectrumWifiHelper, so as to filter out-of-band signals from the receiver.
+- (internet) InternetStackHelper can be now used on nodes with an InternetStack already installed (it will not install IPv[4,6] twice).
+- (wifi) Added support to attach multiple spectrum channels to a same PHY and the possibility to track signals from multiple RF interfaces
+
+### Bugs fixed
+
+- (core) !1236 - Deprecation warnings are silenced while calling `NS_OBJECT_ENSURE_REGISTERED`
+- (build) #808 - Handle profile setting changes in the first ns3 run
+- (build) #815 - Configure find_program to search for programs in PATH first, then AppBundles in MacOS
+- (lr-wpan) #636 - Ext address, short address and manual assoc adjustments
+- (internet) !1229 - Fixed a bug in `Icmpv4Header::HandleEcho` when replying to broadcast-type Echo requests, and two bugs in `Ipv4RawSocketImpl::SendTo` in handling sockets bound to a specific address and directed to a broadcast-type address.
+- (internet) - `NeighborCacheHelper::PopulateNeighborCache` is now robust against missing IPv4 or IPv6 stack in nodes.
+- (network) !1229 - Fixed a bug in `Ipv4Address::IsSubnetDirectedBroadcast`
+- (wifi) Fixed multiple issues about setting the TXOP holder
+- (wifi) #861 - Bianchi validation program was not compatible with 11ax
+- (wifi) Fixed 10 MHz offset in center frequencies for 6 GHz channels
+- (wifi) Fixed setting of Duration/ID field of a Multi-STA Block Ack
+- (wifi) Fixed handling of the HE TB TXVECTOR and TRIGVECTOR parameters
+- (wifi) Prevent extraction of in-flight MPDUs due to lifetime expired
+- (wifi) Fixed getting the primary 80 MHz channel number in the 6 GHz band
+
+Release 3.37
+------------
+
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.37.tar.bz2>
+
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-8 or later, or LLVM/clang++-6 or later
+- Python 3.6 or later
+- CMake 3.10 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).
+
+### New user-visible features
+
+- (internet) !996 - IPv6 Router Solicitations (RS) are now retransmitted up to 4 times, following RFC 5779.
+- (internet) Add auto-generate ARP/NDISC cache, as the outcome of GSoC 2022 project.
+- (lte) LTE handover failure is now handled for joining and leaving timeouts, RACH failure, and preamble allocation failure.
+- (lr-wpan) !991 - Adds MAC ED scan support
+- (lr-wpan) !959 - Add PHY channel page support
+- (lr-wpan) !997 - Adds MAC ACTIVE and PASSIVE scan support
+- (lr-wpan) !1072 - Adds support for association (network bootstrap)
+- (lr-wpan) !1131 - Add support for configurable tx queue and ind tx queue limits.
+- (lr-wpan) !1133 - Add a post-rx error model.
+- (lr-wpan) Adds support for PAN Id compression (IEEE 802.15.4-2006 (7.5.6.1))
+- (lr-wpan) Adds PAN descriptor, CommandPayload Header and Capability Field
+- (utils) `utils/bench-simulator` has been moved to `utils/bench-scheduler` to better reflect what it actually tests
+- (utils) `utils/bench-scheduler` has been enhanced to test multiple schedulers.
+- (wifi) !984 - MultiUserScheduler can request channel access periodically
+- (wifi) CCA has been reworked to report the channel type in the CCA-BUSY indication and the per-20 MHz CCA bitmap for 802.11ax.
+- (wifi) PPDUs are transmitted on the largest primary channel that is found to be idle (according to the CCA-BUSY indication provided by the PHY) when gaining a TXOP.
+- (wifi) Add support for fragmentation of Information Elements.
+- (wifi) Implement 802.11be Multi-link discovery and setup
+
+### Bugs fixed
+
+- (build) #676 Fix missing version defines
+- (build) #684 Fix prevents hidden source files from being processed as scratches
+- (build) #687 Display how to forward arguments to programs with the ns3 script
+- (build) #694 Fix .ns3rc search scope
+- (build) #699 Fix the ns3 script behavior for `-h`
+- (build) #700 Suppress build chatter for `./ns3 show version`
+- (build) #712 Fix build version parsing
+- (build) #713 Fix build version requirements checking to allow for custom embedded version
+- (build) #732 Fix WSLv1 check that failed in systems that included a `;` in their `/proc/version` output
+- (build) #733 Fix installation to optionally include python bindings and uninstallation to remove pkg-config files
+- (build) #734 Fix installation to include tap-creator and raw-sock-creator
+- (build) Widen the search scope of headers and libraries to better support Bake
+- (core) #756 - Fix `CsvReader::GetValueAs()` functions for `char` arguments
+- (core) Fix int64x64-cairo.h bool operator
+- (general) #758 - Fix warnings about `for` loops with variables that are "too small" to fully represent the data being looped
+- (lr-wpan) #536 - Fixes PHY not going to TRX_OFF after CSMA-CA failure (RxOnWhenIdle(false))
+- (lr-wpan) #692 - Replace raw pointers for smart pointers in Tx queue and Ind Tx queue.
+- (wifi) #521 - UL OFDMA support
+- (wifi) #696 - 802.11ax assert failed. cond="seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE"
+- (wifi) #709 Adjust WifiPhy::RxSensitivity with channel width for YansWifiChannel
+- (wifi) Fix setting of stations' maximum supported channel width
+- (wifi) Fix setting TX power for HE TB PPDUs in case AP requested using the max TX power
+- (wifi) Only include QoS Null frames for TIDs for which a BA agreement exists in responses to BSRP TFs
+- (wifi) Notify RX end only for the last received HE TB PPDU
+- (wifi) Correctly compute the time to RX end to be passed to WifiPhyStateHelper::SwitchToRx()
+- (wifi) Align default TXOP limit for VI and VO to 802.11-2020
+- (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
+- (wifi) Fix the TID of QoS Null frames in response to BSRP TF
 
 Release 3.36.1
 --------------
@@ -22,7 +227,7 @@ Release 3.36.1
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.36.1.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.36.1.tar.bz2>
 
 ### Supported platforms
 
@@ -62,12 +267,13 @@ Release 3.36
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.36.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.36.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
+
 - g++-8 or later, or LLVM/clang++-6 or later
 - Python 3.6 or later
 - (macOS only) Xcode 11 or later
@@ -79,7 +285,7 @@ This release has discontinued support for g++-7 compilers.
 
 ### New user-visible features
 
-- (build system) The ns-3 build system has been changed to CMake from Waf.  A wrapper script called 'ns3' provides a Waf-like command-line API.
+- (build system) The ns-3 build system has been changed to CMake from Waf.  A wrapper script called `ns3` provides a Waf-like command-line API.
 - (build system) The default build profile has been changed from 'debug' to a new 'default'.  Two key differences are that the new default has optimizations enabled (-O2 vs. previous -O0), and the -Werror flag is disabled.  Select the 'debug' profile to disable optimizations and enable warnings as errors.
 - (core) An attribute value type for a std::tuple has been added
 - (core) Simulation events can be created from lambda expressions
@@ -143,6 +349,7 @@ This release has discontinued support for g++-7 compilers.
 - (wifi) #507 - Set CS Required field according to 802.11ax specs
 - (wifi) #600 - Fix HT Operation Primary Channel setting
 - (wifi) #609 - STA checks that a Multi-STA BA is sent by the AP it is associated with
+- (lr-wpan) #742 - Add default values to non-initialized structs with primitive variables in ``LrWpanPhy``
 
 Release 3.35
 ------------
@@ -150,12 +357,13 @@ Release 3.35
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.35.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.35.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
+
 - g++-7 or later, or LLVM/clang++-8 or later
 - Python 3.6 or later
 - (macOS only) Xcode 11 or later
@@ -164,6 +372,7 @@ Python API scanning only works for Python versions 3.6 through 3.8, due to
 an upstream toolchain limitation.
 
 This release has been tested on the following systems:
+
 - Fedora 34 with g++-11.2.1 and clang++-12.0.1; Python 3.9.7
 - Fedora 33 with g++-10.3.1 and clang++-11.0.0; Python 3.9.6
 - Ubuntu 21.04 with g++-11.1.and clang++-12.0.0; Python 3.9.5
@@ -185,7 +394,7 @@ to stay compatible with the Python API scanning framework.
 - (config-store) OBSOLETE Attributes are not anymore saved.
 - (config-store) New ConfigStore::SaveDeprecated Attribute (default false) to avoid to save DEPRECATED attributes.
 - (core) Add TracedCallback::IsEmpty to know if a TracedCallback has any callback associated.
-- (core) Add std::hash<ns3::Ptr<T>> to allow seamless use of Ptr as key in unordered_maps.
+- (core) Add `std::hash<ns3::Ptr<T>>` to allow seamless use of Ptr as key in unordered_maps.
 - (core) Print available values on EnumChecker::GetValue () error
 - (internet) Added getters and setters for source and destination in Ipv6Header consistent with Ipv4Header naming.
 - (internet) New functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively in Ipv4InterfaceAddress to keep consistency with Ipv6InterfaceAddress.
@@ -220,17 +429,19 @@ Release 3.34
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.34.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.34.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
+
 - g++-7 or later, or LLVM/clang++-8 or later
 - Python 3.6 or later
 - (macOS only) Xcode 10.1 or later
 
 This release has been tested on the following systems:
+
 - Fedora 33 with g++-10.2.1 and clang++-11.0.0; Python 3.9.2
 - Ubuntu 21.04 with g++-11.1.0 and clang++-12.0.0; Python 3.9.5
 - Ubuntu 20.04 with g++-9.3.0 and Python 3.8.5
@@ -248,7 +459,7 @@ This release has been tested on the following systems:
 - (network) Improved support for bit fields in header serialization/deserialization.
 - (network) Added support for DLT_LORATAP DataLinkType to PCAP files
 - (network) More arithmetic operators are provided for DataRate objects
-- (nix-vector) Nix-Vector routing supports multiple interface addresse and can print out routing paths.
+- (nix-vector) Nix-Vector routing supports multiple interface addresses and can print out routing paths.
 - (olsr) Add support for printing OLSR headers
 - (sixlowpan) Added support for stateful (i.e., context-based) RFC6282 compression.
 - (tcp) TCP CUBIC is now the default TCP congestion control, replacing NewReno.
@@ -300,17 +511,19 @@ Release 3.33
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.33.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.33.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
+
 - g++-5.4 or later, or clang++-8 or later
 - Python 3.5 or later
 - (macOS only) Xcode 10.1 or later
 
 This release has been tested on the following systems:
+
 - Arch Linux with g++-10.2.0 and clang++ versions 8-11, Python 3.9.1
 - Fedora 33 with g++-10.2.1 and clang++-11.0.0; Python 3.9.1
 - Ubuntu 20.04 with g++-9.3.0 and Python 3.8.5
@@ -366,12 +579,13 @@ Release 3.32
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.32.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.32.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all ns-3 features available on all systems):
+
 - g++-4.9 or later
 - Xcode 10.1 or later
 - Python 3.5 or later
@@ -380,6 +594,7 @@ Starting with ns-3.30, Python 3 has been the only supported Python version,
 and scripts default to Python 3 usage.
 
 This release has been tested on the following systems:
+
 - Fedora 32 with g++-10.2.1 and Python 3.8.5
 - Fedora 32 with clang-10.0.0 and Python 3.8.5
 - Ubuntu 20.04 with g++-9.3.0 and Python 3.8.2
@@ -442,12 +657,13 @@ Release 3.31
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.31.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.31.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all ns-3 features available on all systems):
+
 - g++-4.9 or later
 - Xcode 10.1 or later
 - Python 3.5 or later
@@ -456,6 +672,7 @@ Starting with ns-3.30, Python 3 has been the only supported Python version,
 and scripts default to Python 3 usage.
 
 This release has been tested on the following systems:
+
 - Fedora 32 with g++-10.1.1 and Python 3.8.3
 - Fedora 32 with clang-10.0.0 and Python 3.8.3
 - Fedora 29 with g++-8.3.1 and Python 3.7.5
@@ -488,6 +705,7 @@ This release has been tested on the following systems:
 
 If available, the numbers below make reference to a Bugzilla bug number, GitLab
 issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
+
 - (build system) #119 - Waf --lcov-report option was broken
 - (buildings) #80 - Update indoor/outdoor status of a moving node
 - (core) Bug 2725 - EmpiricalRandomVariable should not interpolate
@@ -505,7 +723,7 @@ issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
 - (lr-wpan) !326 - Inactive Periods Queue fix
 - (lte) #106 - Inconsistent imsi representation in LTE module
 - (lte) #196 - Remove LteSecondaryCellSelectionTestSuite from LTE module
-- (lte) #221 - Stop T310 upon receving handover command
+- (lte) #221 - Stop T310 upon receiving handover command
 - (network) #216 - Correct the return value for PacketSocket::SendTo()
 - (network) !239 - Refactor DelayJitterEstimation to more closely follow RFC 1889 and RFC 3550
 - (propagation) !269 - Fix Okumura-Hata propagation loss model for frequency > 1.5 Ghz and medium or small city
@@ -513,7 +731,7 @@ issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
 - (wifi) - Fix frame capture when signals arrive at the exact same time and add additional tests to verify these cases
 - (wifi) - Fix MCS selection in ideal rate manager for cases with unbalanced MIMO settings and/or RX diversity
 - (wifi) - Fix SNR computations for MIMO
-- (wifi) - Fix ReportAmpduTxStatus called two times when BAR is explicitely sent upon missed BACK
+- (wifi) - Fix ReportAmpduTxStatus called two times when BAR is explicitly sent upon missed BACK
 - (wifi)  A zero value for the backoff timer might be discarded and a new value
   might be generated by an erroneous call to NotifyCollision().
 - (wifi) Bug 1909, Issue #41 - Implementation of ACK timeout
@@ -535,7 +753,7 @@ issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at https://gitlab.com/nsnam/ns-3-dev/issues
+at <https://gitlab.com/nsnam/ns-3-dev/issues>
 
 Release 3.30.1
 --------------
@@ -553,11 +771,12 @@ the ns-3.30 release:
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.30.1.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.30.1.tar.bz2>
 
 ### Supported platforms
 
 The list of supported platforms includes those listed for ns-3.30 plus
+
 - macOS 10.15 preview (Catalina) with Apple clang version 11.0.0
 
 ### New user-visible features
@@ -578,12 +797,13 @@ Release 3.30
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.30.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.30.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
+
 - g++-4.9 or later
 - Xcode 10.1 or later
 - Python 3.5 or later
@@ -593,6 +813,7 @@ and scripts will default to Python 3 usage.  Python 2.7 may continue to work
 in the near term.
 
 This release has been tested on the following systems:
+
 - Fedora 30 with g++-9.1.1
 - Ubuntu 19.04 with g++-8.3.0
 - Ubuntu 18.04 with g++-7.4.0
@@ -694,7 +915,7 @@ Other issues fixed:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at https://gitlab.com/nsnam/ns-3-dev/issues
+at <https://gitlab.com/nsnam/ns-3-dev/issues>
 
 Release 3.29
 ------------
@@ -704,12 +925,13 @@ This release is dedicated to the memory of project co-founder George Riley.
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.29.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.29.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
+
 - g++-4.9 or later
 - Apple LLVM version 7.0.2 or later
 - clang-3.3 or later
@@ -717,6 +939,7 @@ requirements (Note:  not all features available on all platforms):
 In addition, Python 2.7 (Python 2 series) or Python 3.4-3.7 (Python 3 series)
 
 This release has been tested on the following platforms:
+
 - Ubuntu 18.04 (64 bit) with g++-7.3.0 and Python 2.7.15
 - Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12/3.5.2
 - Fedora Core 28 (64 bit) with g++-8.1.1 and Python 2.7.15/3.7.0
@@ -752,7 +975,7 @@ This release has been tested on the following platforms:
 - Bug 2801 - fd-net-device: FdNetDevice device MTU is not set correctly
 - Bug 2819 - traffic-control: FqCoDel handling of non-IP packets
 - Bug 2891 - netanim:  dumbbell-animation breaks when RightCount > LeftCount
-- Bug 2901 - core: Add CommandLine::Parse (const std::vector<std::string>> args)
+- Bug 2901 - core: Add `CommandLine::Parse (const std::vector<std::string>> args)`
 - Bug 2902 - build: missing modules cause Waf to run indefinitely
 - Bug 2908 - build:  Check if pybindgen version exists before use
 - Bug 2911 - aodv:  Binary exponential backoff can become unlimited
@@ -778,7 +1001,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.28
 ------------
@@ -786,12 +1009,13 @@ Release 3.28
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.28.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.28.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 compiler requirements (other compilers supporting C++11 may also work):
+
 - g++-4.9 or later
 - Apple LLVM version 7.0.2 or later
 - clang-3.3 or later
@@ -799,6 +1023,7 @@ In addition, a Python 2.7 (Python 2 series) or Python 3.4 (Python 3 series)
 or later is required.
 
 This release has been tested on the following platforms:
+
 - Ubuntu 17.10 (64 bit) with g++-7.2.0 and Python 2.7.14
 - Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12
 - Fedora Core 27 (64 bit) with g++-7.3.1 and Python 2.7.14
@@ -878,7 +1103,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.27
 ------------
@@ -886,18 +1111,20 @@ Release 3.27
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.27.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.27.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
+
 - g++-4.9 or later (Note:  this is an upgraded requirement from ns-3.26)
 - Apple LLVM version 7.0.2 or later
 - clang-3.3 or later
 - Python 2.7 (Python 2 series) or Python 3.4 (Python 3 series) or later
 
 This release has been tested on the following platforms:
+
 - Ubuntu 17.04 (64 bit) with g++-6.3.0
 - Ubuntu 16.04 (64 bit) with g++-5.4.0
 - Ubuntu 14.04.5 (64 bit) with g++-4.9.4
@@ -1057,7 +1284,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.26
 ------------
@@ -1065,18 +1292,20 @@ Release 3.26
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.26.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.26.tar.bz2>
 
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
 requirements:
+
 - g++-4.8 or later
 - clang-3.3 or later
 - Python 2.7 (Python 2 series)
 - Python 3.4 or later (Python 3 series)
 
 This release has been tested on the following platforms:
+
 - Ubuntu 16.04 (64 bit) with g++-5.4.0
 - Ubuntu 14.04 (64 bit) with g++-4.8.2
 - Fedora Core 24 (64 bit) with g++-6.1.1
@@ -1192,7 +1421,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.25
 ------------
@@ -1200,11 +1429,12 @@ Release 3.25
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.25.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.25.tar.bz2>
 
 ### Supported platforms
 
 This release has been tested on the following platforms:
+
 - Ubuntu 15.10 (64 bit) with g++-5.2.1
 - Ubuntu 14.04 (64 bit) with g++-4.8.2
 - Fedora Core 23 (64 bit) with g++-5.3.1
@@ -1381,12 +1611,13 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.24.1
 --------------
 
 Release 3.24.1 is a maintenance release that fixes three issues:
+
 - support for Xcode 7 clang compiler version
 - detection of Python bindings location
 - compilation problem on 32-bit gcc-4.4 machine
@@ -1398,11 +1629,12 @@ detect the presence of pybindgen used for Python bindings.
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.24.1.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.24.1.tar.bz2>
 
 ### Supported platforms
 
 This release has been tested on the following platforms:
+
 - Ubuntu 15.04 (64 bit) with g++-4.9.2
 - Fedora Core 22 (32 bit) with g++-5.1.1
 - Fedora Core 21 (64 bit) with g++-4.9.2
@@ -1429,11 +1661,12 @@ Release 3.24
 ### Availability
 
 This release is available from:
-https://www.nsnam.org/release/ns-allinone-3.24.tar.bz2
+<https://www.nsnam.org/release/ns-allinone-3.24.tar.bz2>
 
 ### Supported platforms
 
 This release has been tested on the following platforms:
+
 - Ubuntu 15.04 (64 bit) with g++-4.9.2
 - Fedora Core 22 (32 bit) with g++-5.1.1
 - Fedora Core 21 (64 bit) with g++-4.9.2
@@ -1499,7 +1732,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.23
 ------------
@@ -1507,11 +1740,12 @@ Release 3.23
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.23.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.23.tar.bz2>
 
 ### Supported platforms
 
 This release has been tested on the following platforms:
+
 - Ubuntu 15.04 (64 bit) with g++-4.9.2
 - Fedora Core 21 (64 bit) with g++-4.9.2
 - Ubuntu 14.04 (64 bit) with g++-4.8.2
@@ -1565,7 +1799,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.22
 ------------
@@ -1573,11 +1807,12 @@ Release 3.22
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.22.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.22.tar.bz2>
 
 ### Supported platforms
 
 This release has been tested on the following platforms:
+
 - Fedora Core 21 (64 bit) with g++-4.9.2
 - Ubuntu 14.10 (32 bit) with g++-4.9.1
 - Ubuntu 14.04 (64 bit) with g++-4.8.2
@@ -1673,7 +1908,7 @@ This release has been tested on the following platforms:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.21
 ------------
@@ -1681,7 +1916,7 @@ Release 3.21
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.21.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.21.tar.bz2>
 
 ### Supported platforms
 
@@ -1767,7 +2002,7 @@ Release 3.20
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2>
 
 ### Supported platforms
 
@@ -1785,7 +2020,7 @@ http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2
 - A new IPv6 routing protocol has been added: RIPng. This protocol is
   an Interior Gateway Protocol and it is available in the Internet module.
 - A new LTE MAC downlink scheduling algorithm named Channel and QoS Aware (CQA)
-  Scheduler is provided by the new ``ns3::CqaFfMacScheduler`` object.
+  Scheduler is provided by the new `ns3::CqaFfMacScheduler` object.
 - The Internet FlowMonitor can now track IPv6 packets.
 - FlowMonitor no longer tracks multicast/broadcast packets, reflecting
   its original design.
@@ -1823,7 +2058,7 @@ http://www.nsnam.org/release/ns-allinone-3.20.tar.bz2
 - Bug 1837 - AODV crashes when using multiple interfaces
 - Bug 1838 - FlowMonitorHelper must not be copied.
 - Bug 1841 - FlowMonitor fails to install if IPv4 is not installed in the node
-- Bug 1842 - FlowMonitor SerializeToXml<Something> should be called by the helper
+- Bug 1842 - FlowMonitor `SerializeToXml<Something>` should be called by the helper
 - Bug 1843 - IPv6 extensions dropped packets do not fire L3 drop trace
 - Bug 1845 - FlowMonitor should discard any broadcast/multicast packet
 - Bug 1846 - IPv6 should send Destination Unreachable if no route is available
@@ -1875,11 +2110,12 @@ Release 3.19
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.19.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.19.tar.bz2>
 
 ### Supported platforms
 
 These platforms have been tested; others may work also:
+
 - Fedora Core 20 (32 bit) with g++-4.8.2
 - Fedora Core 19 (32/64 bit) with g++-4.8.1
 - Ubuntu 13.10 (64 bit) with g++-4.8.1
@@ -1939,8 +2175,8 @@ These platforms have been tested; others may work also:
   same way as with Ipv4PacketInfoTag. See Doxygen for current limitations in
   using Ipv[4,6]PacketInfoTag to set IP properties.
 
-- Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octects
-  for IPv4 and 1280 octects for IPv6) will be automatically set as Down.
+- Ipv[4,6]Interfaces not respecting the minimum MTU requirements (68 octets
+  for IPv4 and 1280 octets for IPv6) will be automatically set as Down.
 
 - IPv6 addresses and routing tables are printed in a more conventional way,
   closely matching the Linux "route -A inet6" command.
@@ -1975,7 +2211,7 @@ These platforms have been tested; others may work also:
 - Bug 1814 - IPv6 Packet with length not multiple of 8 bytes are fragmented incorrectly.
 - Bug 1815 - Python bindings compilation with clang compiler toolchain
 - Bug 1816 - IPv4 fragmentation loses Packet tags
-- Bug 1877 - constructor missing for <something>PropagationLossModels
+- Bug 1877 - constructor missing for `<something>PropagationLossModels`
 
 Release 3.18.2
 --------------
@@ -1994,11 +2230,12 @@ and new features are described below.
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.18.1.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.18.1.tar.bz2>
 
 ### Supported platforms
 
 These platforms have been tested; others may work also:
+
 - Fedora Core 19 (32/64 bit) with g++-4.8.1
 - Ubuntu 13.10 (64 bit) with g++-4.8.1
 - Ubuntu 12.04.3 (32/64 bit) with g++-4.6.3
@@ -2042,11 +2279,12 @@ Release 3.18
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.18.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.18.tar.bz2>
 
 ### Supported platforms
 
 These platforms have been tested; others may work also:
+
 - Fedora Core 18 (32/64 bit) with g++-4.7.2
 - Fedora Core 17 (32/64 bit) with g++-4.7.0
 - Ubuntu 13.04 (32/64 bit) with g++-4.7.3
@@ -2114,7 +2352,7 @@ These platforms have been tested; others may work also:
 - Bug 1718 - Ipv4StaticRouting log component is misspelled
 - Bug 1720 - IPv6 Fragmentation cause crashes
 - Bug 1721 - Path MTU isn't handled properly
-- Bug 1723 - name clash in ipv4-header.h with <termios.h>
+- Bug 1723 - name clash in ipv4-header.h with `<termios.h>`
 - Bug 1727 - Ping6 should use a proper source address
 - Bug 1728 - Radvd application is missing an Helper
 - Bug 1731 - lte-phy-error-model passes unexpectedly
@@ -2127,7 +2365,7 @@ These platforms have been tested; others may work also:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.17
 ------------
@@ -2135,11 +2373,12 @@ Release 3.17
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.17.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.17.tar.bz2>
 
 ### Supported platforms
 
 These platforms have been tested; others may work also:
+
 - Fedora Core 18 (32/64 bit) with g++-4.7.2
 - Fedora Core 17 (32/64 bit) with g++-4.7.0
 - Ubuntu 13.04 (32/64 bit) with g++-4.7.3
@@ -2218,7 +2457,7 @@ These platforms have been tested; others may work also:
 - bug 1633 - Bake - should not report that it is downloading qt4 when it is already installed
 - bug 1635 - Small bug without Simulator::Destroy()
 - bug 1636 - Compilation error flagged as unmet dependency
-- bug 1637 - Bake calling apt-get for unpriviledged user
+- bug 1637 - Bake calling apt-get for unprivileged user
 - bug 1639 - bake.py support for linux mint
 - bug 1640 - bake needs to test for g++
 - bug 1641 - bake reports autotools dependency, but needs automake
@@ -2227,7 +2466,7 @@ These platforms have been tested; others may work also:
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.16
 ------------
@@ -2235,7 +2474,7 @@ Release 3.16
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.16.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.16.tar.bz2>
 
 ### Supported platforms
 
@@ -2299,7 +2538,7 @@ http://www.nsnam.org/release/ns-allinone-3.16.tar.bz2
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.15
 ------------
@@ -2307,7 +2546,7 @@ Release 3.15
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.15.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.15.tar.bz2>
 
 ### Supported platforms
 
@@ -2322,50 +2561,50 @@ http://www.nsnam.org/release/ns-allinone-3.15.tar.bz2
 
 ### New user-visible features
 
-- A new random variable base class called 'RandomVariableStream', has been
-  introduced.  This base class derives from ns3::Object, unlike the current
-  'RandomVariable' class which is a special type of object in the ns-3
-  system to date.  By making this class derive from ns3::Object, it can be
+- A new random variable base class called `RandomVariableStream`, has been
+  introduced.  This base class derives from `ns3::Object`, unlike the current
+  `RandomVariable` class which is a special type of object in the ns-3
+  system to date.  By making this class derive from `ns3::Object`, it can be
   handled with the Ptr class, can carry attributes, and can have its parameters
   and initial state saved in the config-store subsystem.  A new attribute
-  called "Stream" has been introduced for this class, to allow users to
+  called `Stream` has been introduced for this class, to allow users to
   better control the assignment of underlying pseudo-random sequences to
-  the RandomVariableStream objects (bug 101).
+  the `RandomVariableStream` objects (bug 101).
 
 ### Bugs fixed
 
- - bug 101 - random variable initialization
- - bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
- - bug 1308 - Nix-vector; do not process packets to self
- - bug 1386 - assert if PositionAllocator not provided to
-              RandomWaypointMobilityModel
- - bug 1399 - TCP not backing off retransmissions properly
- - bug 1441 - IPv4 header length handling
- - bug 1464 - ConfigStore Save + Load => Could not set default value
-                  for ns3::UdpSocketImpl::IcmpCallback
- - bug 1470 - define default parameter for constructor in .h file
- - bug 1473 - GetQueue/SetQueue missing from Csma python bindings
- - bug 1475 - "test.py --list" should sort the output
- - bug 1476 - TestCase::GetName () should not be private
- - bug 1477 - Click doesn't work with raw sockets
- - bug 1481 - Openflow example doesn't run
- - bug 1486 - Segfaults in nix-vector-routing with bridges
- - bug 1489 - Jakes Log component is missing
- - fixed bug with multiple LCs in UL BSR
- - fixed bug with lena-dual-stripe crashes with --homeUesHomeEnbRatio=2
+- bug 101 - random variable initialization
+- bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
+- bug 1308 - Nix-vector; do not process packets to self
+- bug 1386 - assert if PositionAllocator not provided to
+             RandomWaypointMobilityModel
+- bug 1399 - TCP not backing off retransmissions properly
+- bug 1441 - IPv4 header length handling
+- bug 1464 - ConfigStore Save + Load => Could not set default value
+             for `ns3::UdpSocketImpl::IcmpCallback`
+- bug 1470 - define default parameter for constructor in .h file
+- bug 1473 - GetQueue/SetQueue missing from Csma python bindings
+- bug 1475 - `test.py --list` should sort the output
+- bug 1476 - `TestCase::GetName ()` should not be private
+- bug 1477 - Click doesn't work with raw sockets
+- bug 1481 - Openflow example doesn't run
+- bug 1486 - Segfaults in nix-vector-routing with bridges
+- bug 1489 - Jakes Log component is missing
+- fixed bug with multiple LCs in UL BSR
+- fixed bug with lena-dual-stripe crashes with --homeUesHomeEnbRatio=2
 
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.14.1
-------------
+--------------
 
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.14.1.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.14.1.tar.bz2>
 
 ### Bugs fixed
 
@@ -2379,7 +2618,7 @@ Release 3.14
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.14.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.14.tar.bz2>
 
 ### Supported platforms
 
@@ -2428,58 +2667,58 @@ available on all platforms; check the Installation page on the project wiki.
 
 ### Bugs fixed
 
- - bug 603 - Simulator::Next is useless
- - bug 631 - RealtimeSimulatorImpl does not handle Ctrl-C with python bindings
- - bug 962 - list of paths to reach objects contains bogus entries
- - bug 1000 - Make RealtimeSimulatorImpl last until stop
- - bug 1053 - Need better error diagnostics in ns2-mobility-trace example
- - bug 1109 - Point out the effects of ArpCache::PendingQueueSize
- - bug 1179 - Add LTE trace hooks for supporting visualizer
- - bug 1180 - LTE: Add TX/RX trace support
- - bug 1273 - Better error message on missing Python development files
- - bug 1282 - Sleep state and CCA
- - bug 1283 - PacketSocket::SendTo should return number of bytes
- - bug 1302 - Flow monitor bug
- - bug 1304 - Tag information changed after transmission
- - bug 1313 - Stddev (average.h) returning NaN
- - bug 1318 - Asserts for IPv6 malformed packets
- - bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
- - bug 1325 - Python examples get valgrind errors when build subdirectories
-              are specified in waf
- - bug 1339 - test.py uses the old name for the test runner
- - bug 1348 - python bindings: deprecated conversion from string constant
-              to ‘char*’
- - bug 1349 - TypeId.LookupAttributeByName Python bindings missing
- - bug 1350 - Simulator.ScheduleWithContext Python binding missing
- - bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
- - bug 1352 - Fixed MapAttributes, previously was mapped to a vector in
-              ObjectPtrContainer and (and key information was dropped).
-              Now the container is a map.
- - bug 1354 - Building scratch subdir programs is broken
- - bug 1355 - Visualizer dependencies not detected at buildtime
- - bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
- - bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor
-              fixes to ICMPv6)
- - bug 1376 - wrong wind variable's name
- - bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
- - bug 1379 - lte-multiple-flows example crashes
- - bug 1380 - lte-phy-uplink example crashes
- - bug 1391 - .ns3rc does not allow comments as expected
- - bug 1392 - Modules built report does not clarify C++ or Python
- - bug 1393 - IPv6 Routing Helper RT Print functions
- - bug 1395 - AODV DeferredRouteOutputTag missing constructor
- - bug 1396 - ARP with hardware addresses longer than 6 bytes
- - bug 1399 - TCP not backing off retransmissions properly
- - bug 1404 - Bound user input in tutorial third.cc program
- - bug 1406 - waf exits with maximum recursion depth exceeded
- - bug 1415 - examples-to-run.py doesn't work with command line arguments
- - bug 1420 - no python bindings for csma-layout
- - bug 1441 - IPv4 header length handling
+- bug 603 - Simulator::Next is useless
+- bug 631 - RealtimeSimulatorImpl does not handle Ctrl-C with python bindings
+- bug 962 - list of paths to reach objects contains bogus entries
+- bug 1000 - Make RealtimeSimulatorImpl last until stop
+- bug 1053 - Need better error diagnostics in ns2-mobility-trace example
+- bug 1109 - Point out the effects of ArpCache::PendingQueueSize
+- bug 1179 - Add LTE trace hooks for supporting visualizer
+- bug 1180 - LTE: Add TX/RX trace support
+- bug 1273 - Better error message on missing Python development files
+- bug 1282 - Sleep state and CCA
+- bug 1283 - PacketSocket::SendTo should return number of bytes
+- bug 1302 - Flow monitor bug
+- bug 1304 - Tag information changed after transmission
+- bug 1313 - Stddev (average.h) returning NaN
+- bug 1318 - Asserts for IPv6 malformed packets
+- bug 1319 - Fix Ipv6RawSocketImpl Icmpv6 filter
+- bug 1325 - Python examples get valgrind errors when build subdirectories
+             are specified in waf
+- bug 1339 - test.py uses the old name for the test runner
+- bug 1348 - python bindings: deprecated conversion from string constant
+             to 'char*'
+- bug 1349 - TypeId.LookupAttributeByName Python bindings missing
+- bug 1350 - Simulator.ScheduleWithContext Python binding missing
+- bug 1351 and 1333 - TCP not able to take RTT samples on long delay network
+- bug 1352 - Fixed MapAttributes, previously was mapped to a vector in
+             ObjectPtrContainer and (and key information was dropped).
+             Now the container is a map.
+- bug 1354 - Building scratch subdir programs is broken
+- bug 1355 - Visualizer dependencies not detected at buildtime
+- bug 1357 - IPv6 fragmentation fails due to checks about malformed extensions
+- bug 1362 - ICMPv6 does not forward ICMPs to upper layers (and minor
+             fixes to ICMPv6)
+- bug 1376 - wrong wind variable's name
+- bug 1378 - UdpEchoClient::SetFill () does not set packet size correctly
+- bug 1379 - lte-multiple-flows example crashes
+- bug 1380 - lte-phy-uplink example crashes
+- bug 1391 - .ns3rc does not allow comments as expected
+- bug 1392 - Modules built report does not clarify C++ or Python
+- bug 1393 - IPv6 Routing Helper RT Print functions
+- bug 1395 - AODV DeferredRouteOutputTag missing constructor
+- bug 1396 - ARP with hardware addresses longer than 6 bytes
+- bug 1399 - TCP not backing off retransmissions properly
+- bug 1404 - Bound user input in tutorial third.cc program
+- bug 1406 - waf exits with maximum recursion depth exceeded
+- bug 1415 - examples-to-run.py doesn't work with command line arguments
+- bug 1420 - no python bindings for csma-layout
+- bug 1441 - IPv4 header length handling
 
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.13
 ------------
@@ -2487,7 +2726,7 @@ Release 3.13
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.13.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.13.tar.bz2>
 
 ### Supported platforms
 
@@ -2524,7 +2763,7 @@ available on all platforms; check the Installation page on the project wiki.
 - bug 1186 - Ipv4Header lacks DSCP and ECN
 - bug 1204 - Can't Parse Time +100000000.0ns
 - bug 1219 - Coding style of ns2-mobility-helper-test-suite.cc is fixed
-- bug 1257 - waf install __init__ Python files even with --disable-python
+- bug 1257 - waf install `__init__` Python files even with --disable-python
 - bug 1263 - waf configure fails on FreeBSD 9.0-BETA2 amd64
 - bug 1266 - gdb cannot be loaded
 - bug 1227 - Spurious RTO due to low min RTO
@@ -2554,7 +2793,7 @@ available on all platforms; check the Installation page on the project wiki.
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.12.1
 --------------
@@ -2562,7 +2801,7 @@ Release 3.12.1
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.12.1.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.12.1.tar.bz2>
 
 ### Bugs fixed
 
@@ -2575,7 +2814,7 @@ Release 3.12
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.12.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.12.tar.bz2>
 
 ### Supported platforms
 
@@ -2651,7 +2890,7 @@ available on all platforms; check the Installation page on the project wiki.
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.11
 ------------
@@ -2659,7 +2898,7 @@ Release 3.11
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.11.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.11.tar.bz2>
 
 ### Supported platforms
 
@@ -2791,7 +3030,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Release 3.10
 ------------
@@ -2799,7 +3038,7 @@ Release 3.10
 ### Availability
 
 This release is available from:
-http://www.nsnam.org/release/ns-allinone-3.10.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.10.tar.bz2>
 
 ### Supported platforms
 
@@ -2952,7 +3191,7 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
 ### Known issues
 
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at <http://www.nsnam.org/bugzilla/>
 
 Windows XP 32 bit Cygwin 1.7.7 does not seem to work because of a
 problem (reported elsewhere) in linking large libraries.
@@ -2963,11 +3202,12 @@ Release 3.9
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-allinone-3.9.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.9.tar.bz2>
 
 ### Supported platforms
 
 ns-3.9 has been tested on the following platforms:
+
 - Ubuntu 10.04 LTS 32/64-bit gcc-4.4.3
 - Fedora Core 12 64-bit gcc-4.4.3
 - Ubuntu 9.10 32-bit gcc-4.4.1
@@ -2978,7 +3218,7 @@ ns-3.9 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3007,7 +3247,7 @@ http://www.nsnam.org/wiki/Installation
 
 - Rocketfuel topology dataset support for existing topology reader
   Rocketfuel project:
-  http://www.cs.washington.edu/research/networking/rocketfuel/
+  <http://www.cs.washington.edu/research/networking/rocketfuel/>
 
 - Underwater Acoustic Network (UAN) model, split in to three parts, the
   channel, PHY, and MAC models to enable researchers to model a variety
@@ -3075,7 +3315,7 @@ since ns-3.8, in many cases referencing the Bugzilla bug number
 - bug 922 - Inconsistent declaration of class/struct in
             wifi-remote-station-manager.h
 - bug 923 - Inconsistent declaration of class/struct in mac-low.h
-- bug 924 - Inconsistent declaration of class/struct in <xxx>-wifi-managers
+- bug 924 - Inconsistent declaration of class/struct in `<xxx>-wifi-managers`
 - bug 925 - Various IPv6 cc files trigger deprecated warning
 - bug 926 - olsr handling of multicast packets
 - bug 927 - SimpleOfdmWimaxChannel RxPower computation
@@ -3115,26 +3355,26 @@ since ns-3.8, in many cases referencing the Bugzilla bug number
 
 ### Known issues
 
-
 Release 3.8
 -----------
 
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-allinone-3.8.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.8.tar.bz2>
 
 ### Supported platforms
 
 ns-3.8 has been tested on the following platforms:
-  - linux x86 gcc 4.4.0, 4.3.2, 4.2, 4.1.1, 4.1 and 3.4.6 (debug and optimized)
-  - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.4, 4.2.3, 4.2.1, 4.1.3, 3.4.6 (debug and optimized)
-  - MacOS X ppc gcc 4.0.x and 4.2.x (debug and optimized)
-  - cygwin gcc 4.3.4 (debug and optimized)
+
+- linux x86 gcc 4.4.0, 4.3.2, 4.2, 4.1.1, 4.1 and 3.4.6 (debug and optimized)
+- linux x86_64 gcc 4.4.0, 4.3.2, 4.2.4, 4.2.3, 4.2.1, 4.1.3, 3.4.6 (debug and optimized)
+- MacOS X ppc gcc 4.0.x and 4.2.x (debug and optimized)
+- cygwin gcc 4.3.4 (debug and optimized)
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3160,7 +3400,6 @@ http://www.nsnam.org/wiki/Installation
   The antenna height is set to the nodes z coordinate, but can be added to using the model parameter
   SetHeightAboveZ, which will affect ALL stations
 
-
 ### API changes from ns-3.7
 
 API changes for this release are documented in the file CHANGES.html.
@@ -3169,6 +3408,7 @@ API changes for this release are documented in the file CHANGES.html.
 
 The following lists many of the bugs that were fixed since ns-3.7, in
 many cases referencing the Bugzilla bug number
+
 - bug 155 - std::ostream & os" parameters not Python friendly
 - bug 184 - GtkConfigStore do not support ConfigureDefault
 - bug 407 - OLSR is missing HNA support
@@ -3251,10 +3491,10 @@ many cases referencing the Bugzilla bug number
 ### Known issues
 
 ns-3 builds have been known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
-
 
 Release 3.7
 -----------
@@ -3262,11 +3502,12 @@ Release 3.7
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-allinone-3.7.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.7.tar.bz2>
 
 ### Supported platforms
 
 ns-3.7 has been tested on the following platforms:
+
 - linux x86 gcc 4.4.0, 4.3.2, 4.2, 4.1.1, 4.1 and 3.4.6 (debug and optimized)
 - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.4, 4.2.3, 4.2.1, 4.1.3, 3.4.6 (debug and optimized)
 - MacOS X ppc gcc 4.0.x and 4.2.x (debug and optimized)
@@ -3278,7 +3519,7 @@ ns-3.7 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3362,10 +3603,10 @@ many cases referencing the Bugzilla bug number
 ### Known issues
 
 ns-3 builds have been known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
-
 
 Release 3.6
 -----------
@@ -3373,11 +3614,12 @@ Release 3.6
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-allinone-3.6.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.6.tar.bz2>
 
 ### Supported platforms
 
 ns-3.6 has been tested on the following platforms:
+
 - linux x86 gcc 4.4.1, 4.2, 4.1, and, 3.4.6.
 - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
 - MacOS X ppc and x86 (gcc 4.0.x and 4.2.x)
@@ -3385,7 +3627,7 @@ ns-3.6 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3438,6 +3680,7 @@ API changes for this release are documented in the file CHANGES.html.
 ### Known issues
 
 ns-3.6 build is known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
@@ -3448,11 +3691,12 @@ Release 3.5
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-allinone-3.5.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.5.tar.bz2>
 
 ### Supported platforms
 
 ns-3.5 has been tested on the following platforms:
+
 - linux x86 gcc 4.2, 4.1, and, 3.4.6.
 - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
 - MacOS X ppc and x86 (gcc 4.0.x and 4.2.x)
@@ -3461,7 +3705,7 @@ ns-3.5 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3489,6 +3733,7 @@ refactoring in this release cycle.
 ### Known issues
 
 ns-3 build is known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
@@ -3506,11 +3751,12 @@ Release 3.4
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-allinone-3.4.tar.bz2
+<http://www.nsnam.org/release/ns-allinone-3.4.tar.bz2>
 
 ### Supported platforms
 
 ns-3.4 has been tested on the following platforms:
+
 - linux x86 gcc 4.2, 4.1, and, 3.4.6.
 - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
 - MacOS X ppc and x86
@@ -3518,7 +3764,7 @@ ns-3.4 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3542,6 +3788,7 @@ API changes for this release are documented in the file CHANGES.html
 ### Known issues
 
 ns-3 build is known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
@@ -3565,11 +3812,12 @@ Release 3.3
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-3.3.tar.bz2
+<http://www.nsnam.org/release/ns-3.3.tar.bz2>
 
 ### Supported platforms
 
 ns-3.3 has been tested on the following platforms:
+
 - linux x86 gcc 4.2, 4.1, and, 3.4.6.
 - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
 - MacOS X ppc and x86
@@ -3577,7 +3825,7 @@ ns-3.3 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3588,7 +3836,7 @@ http://www.nsnam.org/wiki/Installation
   Support for several ICMP messages has been added to ns-3.  See
   src/internet-stack/icmpv4.h for details.
 - IPv6 Address Support
-  New clases to support IPv6 addresses has been added to the system.  This
+  New classes to support IPv6 addresses has been added to the system.  This
   is enabling technology for fuller IPv6 support scheduled for ns-3.4.
 - A flow-id tag has been added to the contributed code section
 - Star topologies can be created from the topology helper functions
@@ -3604,6 +3852,7 @@ API changes for this release are documented in the file CHANGES.html
 ### Known issues
 
 ns-3 build is known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
@@ -3626,11 +3875,12 @@ Release 3.2
 ### Availability
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-3.2.tar.bz2
+<http://www.nsnam.org/release/ns-3.2.tar.bz2>
 
 ### Supported platforms
 
 ns-3.2 has been tested on the following platforms:
+
 - linux x86 gcc 4.2, 4.1, and, 3.4.6.
 - linux x86_64 gcc 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
 - MacOS X ppc and x86
@@ -3638,7 +3888,7 @@ ns-3.2 has been tested on the following platforms:
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
-http://www.nsnam.org/wiki/Installation
+<http://www.nsnam.org/wiki/Installation>
 
 ### New user-visible features
 
@@ -3657,7 +3907,7 @@ http://www.nsnam.org/wiki/Installation
 
 - Network Simulation Cradle
   It is now possible to use the Network Simulation Cradle
-  (http://www.wand.net.nz/~stj2/nsc/) in ns-3 and run simulations
+  (<http://www.wand.net.nz/~stj2/nsc/>) in ns-3 and run simulations
   using various versions of kernel TCP network stacks. (contributed
   by Florian Westphal as part of his Google Summer of Code work)
 
@@ -3666,7 +3916,7 @@ http://www.nsnam.org/wiki/Installation
   keep track of simulation data in persistent storage across multiple
   runs (database and ascii file backends are available).
   More information on the wiki:
-  http://www.nsnam.org/wiki/Statistical_Framework_for_Network_Simulation
+  <http://www.nsnam.org/wiki/Statistical_Framework_for_Network_Simulation>
 
 ### API changes from ns-3.1
 
@@ -3675,6 +3925,7 @@ API changes for this release are documented in the file CHANGES.html
 ### Known issues
 
 ns-3 build is known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
@@ -3696,7 +3947,7 @@ Release 3.1 (2008/06/30)
 ### The first ns-3 stable release
 
 This release is immediately available from:
-http://www.nsnam.org/release/ns-3.1.tar.bz2
+<http://www.nsnam.org/release/ns-3.1.tar.bz2>
 
 We dedicate this initial ns-3 release to our late contributor and friend,
 Federico Maguolo.
@@ -3716,14 +3967,15 @@ models and/or to maintain existing models.
 ### Where to get more information about ns-3
 
 All the ns-3 documentation, is accessible from the ns-3 website:
-http://www.nsnam.org
+<http://www.nsnam.org>
 
 Including, tutorials:
-http://www.nsnam.org/tutorials.html
+<http://www.nsnam.org/tutorials.html>
 
 ### Supported platforms
 
 ns-3 is regularly tested on the following platforms:
+
 - linux x86 gcc 4.2, 4.1, and, 3.4.6.
 - linux x86_64 gcc 4.1.3, 4.2.1, 3.4.6
 - MacOS X ppc and x86
@@ -3732,6 +3984,7 @@ ns-3 is regularly tested on the following platforms:
 ### Known issues
 
 ns-3 is known to fail on the following platforms:
+
 - gcc 3.3 and earlier
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x

@@ -38,7 +38,7 @@ OVERWRITE=0
 
 SCENARIO="wns3-2017-pscch"
 SIMULATION_TIME=5 #Change to 81 seconds to simulate 1000 sidelink periods of 80 ms
-PSCCH_RB_M=22 
+PSCCH_RB_M=22
 MCS=10
 PSSCH_SUBCHANNEL_RBS=2
 KTRP=2
@@ -57,12 +57,12 @@ if [ "$#" -ne 9 ];then
 fi
 
 if [[ ! -d "scratch" ]];then
-echo "ERROR: $0 must be copied to ns-3 root directory!" 
+echo "ERROR: $0 must be copied to ns-3 root directory!"
 exit
 fi
 
 if [[ ! -e "scratch/$SCENARIO.cc" ]];then
-echo "ERROR: $SCENARIO.cc must be copied to scratch folder!" 
+echo "ERROR: $SCENARIO.cc must be copied to scratch folder!"
 exit
 fi
 
@@ -126,12 +126,12 @@ do
   mkdir -p $newdir
   OUTFILE="${newdir}/log_${ver}${run}.txt"
   rm -f $OUTFILE
-  
+
   runinfo="$SCENARIO, RUN: ${ver}${run}"
   echo -e "\n$runinfo saved to dir: ${newdir}\n"
   run_args="--RngSeed=$run $arguments"
   echo -e "$runinfo, $run_args $linediv" >> $OUTFILE
-  
+
   ./waf --cwd=$newdir --run "$SCENARIO $run_args" >> $OUTFILE 2>&1 &
 done
 

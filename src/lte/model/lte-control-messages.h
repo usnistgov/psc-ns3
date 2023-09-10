@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -23,16 +22,18 @@
 #ifndef LTE_CONTROL_MESSAGES_H
 #define LTE_CONTROL_MESSAGES_H
 
+#include "ff-mac-common.h"
+#include "lte-rrc-sap.h"
+
 #include <ns3/ptr.h>
 #include <ns3/simple-ref-count.h>
-#include <ns3/ff-mac-common.h>
-#include <ns3/lte-rrc-sap.h>
+
 #include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
 class LteNetDevice;
-
 
 /**
  * \ingroup lte
@@ -43,46 +44,47 @@ class LteNetDevice;
  */
 class LteControlMessage : public SimpleRefCount<LteControlMessage>
 {
-public:
-  /**
-   * The type of the message
-   * NOTE: The messages sent by UE are filtered by the
-   *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones
-   *  that has been already handoff by the eNB for avoiding propagation of
-   *  spurious messages. When new messaged have to been added, consider to
-   *  update the switch statement implementing the filtering.
-   */
-  enum MessageType
-  {
-    DL_DCI, UL_DCI, // Downlink/Uplink Data Control Indicator
-    DL_CQI, UL_CQI, // Downlink/Uplink Channel Quality Indicator
-    BSR, // Buffer Status Report, including sidelink bsr
-    DL_HARQ, // UL HARQ feedback
-    RACH_PREAMBLE, // Random Access Preamble
-    RAR, // Random Access Response
-    MIB, // Master Information Block
-    SIB1, // System Information Block Type 1
-    SL_DCI //Sidelink Data Control Indicator
-  };
+  public:
+    /**
+     * The type of the message
+     * NOTE: The messages sent by UE are filtered by the
+     *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones
+     *  that has been already handoff by the eNB for avoiding propagation of
+     *  spurious messages. When new messaged have to been added, consider to
+     *  update the switch statement implementing the filtering.
+     */
+    enum MessageType
+    {
+        DL_DCI,
+        UL_DCI, // Downlink/Uplink Data Control Indicator
+        DL_CQI,
+        UL_CQI,        // Downlink/Uplink Channel Quality Indicator
+        BSR,           // Buffer Status Report, including sidelink bsr
+        DL_HARQ,       // UL HARQ feedback
+        RACH_PREAMBLE, // Random Access Preamble
+        RAR,           // Random Access Response
+        MIB,           // Master Information Block
+        SIB1,          // System Information Block Type 1
+        SL_DCI         // Sidelink Data Control Indicator
+    };
 
-  LteControlMessage (void);
-  virtual ~LteControlMessage (void);
+    LteControlMessage();
+    virtual ~LteControlMessage();
 
-  /**
-   * \brief Set the type of the message
-   * \param type the type of the message
-   */
-  void SetMessageType (MessageType type);
-  /**
-   * \brief Get the type of the message
-   * \return the type of the message
-   */
-  MessageType GetMessageType (void);
+    /**
+     * \brief Set the type of the message
+     * \param type the type of the message
+     */
+    void SetMessageType(MessageType type);
+    /**
+     * \brief Get the type of the message
+     * \return the type of the message
+     */
+    MessageType GetMessageType();
 
-private:
-  MessageType m_type; ///< message type
+  private:
+    MessageType m_type; ///< message type
 };
-
 
 // -----------------------------------------------------------------------
 
@@ -93,26 +95,25 @@ private:
  */
 class DlDciLteControlMessage : public LteControlMessage
 {
-public:
-  DlDciLteControlMessage (void);
-  virtual ~DlDciLteControlMessage (void);
+  public:
+    DlDciLteControlMessage();
+    ~DlDciLteControlMessage() override;
 
-  /**
-  * \brief add a DCI into the message
-  * \param dci the dci
-  */
-  void SetDci (DlDciListElement_s dci);
+    /**
+     * \brief add a DCI into the message
+     * \param dci the dci
+     */
+    void SetDci(DlDciListElement_s dci);
 
-  /**
-  * \brief Get dic information
-  * \return dci messages
-  */
-  DlDciListElement_s GetDci (void);
+    /**
+     * \brief Get dic information
+     * \return dci messages
+     */
+    const DlDciListElement_s& GetDci();
 
-private:
-  DlDciListElement_s m_dci; ///< DCI
+  private:
+    DlDciListElement_s m_dci; ///< DCI
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -123,26 +124,25 @@ private:
  */
 class UlDciLteControlMessage : public LteControlMessage
 {
-public:
-  UlDciLteControlMessage (void);
-  virtual ~UlDciLteControlMessage (void);
+  public:
+    UlDciLteControlMessage();
+    ~UlDciLteControlMessage() override;
 
-  /**
-  * \brief add a DCI into the message
-  * \param dci the dci
-  */
-  void SetDci (UlDciListElement_s dci);
+    /**
+     * \brief add a DCI into the message
+     * \param dci the dci
+     */
+    void SetDci(UlDciListElement_s dci);
 
-  /**
-  * \brief Get dic information
-  * \return dci messages
-  */
-  UlDciListElement_s GetDci (void);
+    /**
+     * \brief Get dic information
+     * \return dci messages
+     */
+    const UlDciListElement_s& GetDci();
 
-private:
-  UlDciListElement_s m_dci; ///< DCI
+  private:
+    UlDciListElement_s m_dci; ///< DCI
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -153,26 +153,25 @@ private:
  */
 class SlDciLteControlMessage : public LteControlMessage
 {
-public:
-  SlDciLteControlMessage (void);
-  virtual ~SlDciLteControlMessage (void);
+  public:
+    SlDciLteControlMessage();
+    ~SlDciLteControlMessage() override;
 
-  /**
-  * \brief add a DCI into the message
-  * \param dci the dci
-  */
-  void SetDci (SlDciListElement_s dci);
+    /**
+     * \brief add a DCI into the message
+     * \param dci the dci
+     */
+    void SetDci(SlDciListElement_s dci);
 
-  /**
-  * \brief Get dic informations
-  * \return dci messages
-  */
-  SlDciListElement_s GetDci (void);
+    /**
+     * \brief Get dic informations
+     * \return dci messages
+     */
+    SlDciListElement_s GetDci();
 
-private:
-  SlDciListElement_s m_dci; ///< Sidelink DCI
+  private:
+    SlDciListElement_s m_dci; ///< Sidelink DCI
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -183,26 +182,25 @@ private:
  */
 class DlCqiLteControlMessage : public LteControlMessage
 {
-public:
-  DlCqiLteControlMessage (void);
-  virtual ~DlCqiLteControlMessage (void);
+  public:
+    DlCqiLteControlMessage();
+    ~DlCqiLteControlMessage() override;
 
-  /**
-  * \brief add a DL-CQI feedback record into the message.
-  * \param dlcqi the DL cqi feedback
-  */
-  void SetDlCqi (CqiListElement_s dlcqi);
+    /**
+     * \brief add a DL-CQI feedback record into the message.
+     * \param dlcqi the DL cqi feedback
+     */
+    void SetDlCqi(CqiListElement_s dlcqi);
 
-  /**
-  * \brief Get DL cqi information
-  * \return dlcqi messages
-  */
-  CqiListElement_s GetDlCqi (void);
+    /**
+     * \brief Get DL cqi information
+     * \return dlcqi messages
+     */
+    CqiListElement_s GetDlCqi();
 
-private:
-  CqiListElement_s m_dlCqi; ///< DL CQI
+  private:
+    CqiListElement_s m_dlCqi; ///< DL CQI
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -213,27 +211,25 @@ private:
  */
 class BsrLteControlMessage : public LteControlMessage
 {
-public:
-  BsrLteControlMessage (void);
-  virtual ~BsrLteControlMessage (void);
+  public:
+    BsrLteControlMessage();
+    ~BsrLteControlMessage() override;
 
-  /**
-  * \brief add a BSR feedback record into the message.
-  * \param bsr the BSR feedback
-  */
-  void SetBsr (MacCeListElement_s bsr);
+    /**
+     * \brief add a BSR feedback record into the message.
+     * \param bsr the BSR feedback
+     */
+    void SetBsr(MacCeListElement_s bsr);
 
-  /**
-  * \brief Get BSR information
-  * \return BSR message
-  */
-  MacCeListElement_s GetBsr (void);
+    /**
+     * \brief Get BSR information
+     * \return BSR message
+     */
+    MacCeListElement_s GetBsr();
 
-private:
-  MacCeListElement_s m_bsr; ///< BSR
-
+  private:
+    MacCeListElement_s m_bsr; ///< BSR
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -244,27 +240,25 @@ private:
  */
 class DlHarqFeedbackLteControlMessage : public LteControlMessage
 {
-public:
-  DlHarqFeedbackLteControlMessage (void);
-  virtual ~DlHarqFeedbackLteControlMessage (void);
+  public:
+    DlHarqFeedbackLteControlMessage();
+    ~DlHarqFeedbackLteControlMessage() override;
 
-  /**
-  * \brief add a DL HARQ feedback record into the message.
-  * \param m the DL HARQ feedback
-  */
-  void SetDlHarqFeedback (DlInfoListElement_s m);
+    /**
+     * \brief add a DL HARQ feedback record into the message.
+     * \param m the DL HARQ feedback
+     */
+    void SetDlHarqFeedback(DlInfoListElement_s m);
 
-  /**
-  * \brief Get DL HARQ information
-  * \return DL HARQ message
-  */
-  DlInfoListElement_s GetDlHarqFeedback (void);
+    /**
+     * \brief Get DL HARQ information
+     * \return DL HARQ message
+     */
+    DlInfoListElement_s GetDlHarqFeedback();
 
-private:
-  DlInfoListElement_s m_dlInfoListElement; ///< DL info list element
-
+  private:
+    DlInfoListElement_s m_dlInfoListElement; ///< DL info list element
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -275,27 +269,25 @@ private:
  */
 class RachPreambleLteControlMessage : public LteControlMessage
 {
-public:
-  RachPreambleLteControlMessage (void);
+  public:
+    RachPreambleLteControlMessage();
 
-  /**
-   * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
-   *
-   * \param rapid the RAPID
-   */
-  void SetRapId (uint32_t rapid);
+    /**
+     * Set the Random Access Preamble Identifier (RAPID), see 3GPP TS 36.321 6.2.2
+     *
+     * \param rapid the RAPID
+     */
+    void SetRapId(uint32_t rapid);
 
-  /**
-   *
-   * \return the RAPID
-   */
-  uint32_t GetRapId () const;
+    /**
+     *
+     * \return the RAPID
+     */
+    uint32_t GetRapId() const;
 
-private:
-  uint32_t m_rapId; ///< the RAPID
-
+  private:
+    uint32_t m_rapId; ///< the RAPID
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -306,56 +298,54 @@ private:
  */
 class RarLteControlMessage : public LteControlMessage
 {
-public:
-  RarLteControlMessage (void);
+  public:
+    RarLteControlMessage();
 
-  /**
-   *
-   * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
-   */
-  void SetRaRnti (uint16_t raRnti);
+    /**
+     *
+     * \param raRnti the RA-RNTI, see 3GPP TS 36.321 5.1.4
+     */
+    void SetRaRnti(uint16_t raRnti);
 
-  /**
-   *
-   * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
-   */
-  uint16_t GetRaRnti () const;
+    /**
+     *
+     * \return  the RA-RNTI, see 3GPP TS 36.321 5.1.4
+     */
+    uint16_t GetRaRnti() const;
 
-  /**
-   * a MAC RAR and the corresponding RAPID subheader
-   *
-   */
-  struct Rar
-  {
-    uint8_t rapId; ///< RAPID
-    BuildRarListElement_s rarPayload; ///< RAR payload
-  };
+    /**
+     * a MAC RAR and the corresponding RAPID subheader
+     *
+     */
+    struct Rar
+    {
+        uint8_t rapId;                    ///< RAPID
+        BuildRarListElement_s rarPayload; ///< RAR payload
+    };
 
-  /**
-   * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
-   *
-   * \param rar the rar
-   */
-  void AddRar (Rar rar);
+    /**
+     * add a RAR to the MAC PDU, see 3GPP TS 36.321 6.2.3
+     *
+     * \param rar the rar
+     */
+    void AddRar(Rar rar);
 
-  /**
-   *
-   * \return a const iterator to the beginning of the RAR list
-   */
-  std::list<Rar>::const_iterator RarListBegin () const;
+    /**
+     *
+     * \return a const iterator to the beginning of the RAR list
+     */
+    std::list<Rar>::const_iterator RarListBegin() const;
 
-  /**
-   *
-   * \return a const iterator to the end of the RAR list
-   */
-  std::list<Rar>::const_iterator RarListEnd () const;
+    /**
+     *
+     * \return a const iterator to the end of the RAR list
+     */
+    std::list<Rar>::const_iterator RarListEnd() const;
 
-private:
-  std::list<Rar> m_rarList; ///< RAR list
-  uint16_t m_raRnti; ///< RA RNTI
-
+  private:
+    std::list<Rar> m_rarList; ///< RAR list
+    uint16_t m_raRnti;        ///< RA RNTI
 };
-
 
 // ---------------------------------------------------------------------------
 
@@ -372,29 +362,28 @@ private:
  */
 class MibLteControlMessage : public LteControlMessage
 {
-public:
-  /**
-   * \brief Create a new instance of MIB control message.
-   */
-  MibLteControlMessage (void);
+  public:
+    /**
+     * \brief Create a new instance of MIB control message.
+     */
+    MibLteControlMessage();
 
-  /**
-   * \brief Replace the MIB content of this control message.
-   * \param mib the desired MIB content
-   */
-  void SetMib (LteRrcSap::MasterInformationBlock mib);
+    /**
+     * \brief Replace the MIB content of this control message.
+     * \param mib the desired MIB content
+     */
+    void SetMib(LteRrcSap::MasterInformationBlock mib);
 
-  /**
-   * \brief Retrieve the MIB content from this control message.
-   * \return the current MIB content that this control message holds
-   */
-  LteRrcSap::MasterInformationBlock GetMib () const;
+    /**
+     * \brief Retrieve the MIB content from this control message.
+     * \return the current MIB content that this control message holds
+     */
+    LteRrcSap::MasterInformationBlock GetMib() const;
 
-private:
-  LteRrcSap::MasterInformationBlock m_mib; ///< MIB
+  private:
+    LteRrcSap::MasterInformationBlock m_mib; ///< MIB
 
 }; // end of class MibLteControlMessage
-
 
 // ---------------------------------------------------------------------------
 
@@ -411,29 +400,29 @@ private:
  */
 class Sib1LteControlMessage : public LteControlMessage
 {
-public:
-  /**
-   * \brief Create a new instance of SIB1 control message.
-   */
-  Sib1LteControlMessage (void);
+  public:
+    /**
+     * \brief Create a new instance of SIB1 control message.
+     */
+    Sib1LteControlMessage();
 
-  /**
-   * \brief Replace the SIB1 content of this control message.
-   * \param sib1 the desired SIB1 content
-   */
-  void SetSib1 (LteRrcSap::SystemInformationBlockType1 sib1);
+    /**
+     * \brief Replace the SIB1 content of this control message.
+     * \param sib1 the desired SIB1 content
+     */
+    void SetSib1(LteRrcSap::SystemInformationBlockType1 sib1);
 
-  /**
-   * \brief Retrieve the SIB1 content from this control message.
-   * \return the current SIB1 content that this control message holds
-   */
-  LteRrcSap::SystemInformationBlockType1 GetSib1 () const;
+    /**
+     * \brief Retrieve the SIB1 content from this control message.
+     * \return the current SIB1 content that this control message holds
+     */
+    LteRrcSap::SystemInformationBlockType1 GetSib1() const;
 
-private:
-  LteRrcSap::SystemInformationBlockType1 m_sib1; ///< SIB1
+  private:
+    LteRrcSap::SystemInformationBlockType1 m_sib1; ///< SIB1
 
 }; // end of class Sib1LteControlMessage
 
 } // namespace ns3
 
-#endif  // LTE_CONTROL_MESSAGES_H
+#endif // LTE_CONTROL_MESSAGES_H

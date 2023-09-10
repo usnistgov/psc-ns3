@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 CTTC
  *
@@ -18,15 +17,13 @@
  * Author: Marco Miozzo <mmiozzo@cttc.es>
  */
 
-#include <ns3/ff-mac-common.h>
+#include "ff-mac-common.h"
 
-namespace ns3 {
-  
-
-VendorSpecificValue::~VendorSpecificValue ()
+namespace ns3
 {
-  
+
+VendorSpecificValue::~VendorSpecificValue()
+{
 }
 
-  
 } // namespace ns3

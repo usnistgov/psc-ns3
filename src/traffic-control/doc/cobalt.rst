@@ -4,7 +4,7 @@
 Cobalt queue disc
 -----------------
 
-This chapter describes the COBALT (CoDel BLUE Alternate) ([Cake16]_) queue disc 
+This chapter describes the COBALT (CoDel BLUE Alternate) ([Cake16]_) queue disc
 implementation in |ns3|.
 
 COBALT queue disc is an integral component of CAKE smart queue management system.
@@ -19,10 +19,10 @@ The source code for the COBALT model is located in the directory
 ``src/traffic-control/model`` and consists of 2 files: `cobalt-queue-disc.h` and
 `cobalt-queue-disc.cc` defining a CobaltQueueDisc class and a helper
 CobaltTimestampTag class. The code was ported to |ns3| by Vignesh Kanan,
-Harsh Lara, Shefali Gupta, Jendaipou Palmei and Mohit P. Tahiliani based on 
+Harsh Lara, Shefali Gupta, Jendaipou Palmei and Mohit P. Tahiliani based on
 the Linux kernel code.
 
-Stefano Avallone and Pasquale Imputato helped in verifying the correctness of 
+Stefano Avallone and Pasquale Imputato helped in verifying the correctness of
 COBALT model in |ns3| by comparing the results obtained from it to those obtained
 from the Linux model of COBALT. A detailed comparison of ns-3 model of COBALT with
 Linux model of COBALT is provided in ([Cobalt19]_).
@@ -37,7 +37,7 @@ Linux model of COBALT is provided in ([Cobalt19]_).
   `m_stats.qLimDrop`.
 * ``CobaltQueueDisc::ShouldDrop ()``: This routine is
   ``CobaltQueueDisc::DoDequeue()``'s helper routine that determines whether a
-  packet should be dropped or not based on its sojourn time. If L4S mode is 
+  packet should be dropped or not based on its sojourn time. If L4S mode is
   enabled then if the packet is ECT1 is checked and if delay is greater than
   CE threshold then the packet is marked and returns ``false``.
   If the sojourn time goes above `m_target` and remains above continuously
@@ -51,7 +51,7 @@ Linux model of COBALT is provided in ([Cobalt19]_).
   parameters (Pdrop of BLUE and dropping state of CoDel). If either of them
   decide to drop the packet, the packet is dropped.
 * ``CobaltQueueDisc::DoDequeue ()``: This routine performs the actual packet
-  ``drop based on ``CobaltQueueDisc::ShouldDrop ()``'s return value and
+  ``drop based on ``CobaltQueueDisc::ShouldDrop()``'s return value and
   schedules the next drop. Cobalt will decrease BLUE's drop probability
   if the queue is empty. This will ensure that the queue does not underflow.
   Otherwise Cobalt will take the next packet from the queue and calculate
@@ -65,7 +65,7 @@ References
 
 .. [Cake16] Linux implementation of Cobalt as a part of the cake framework.
    Available online at
-   `<https://github.com/dtaht/sch_cake/blob/master/cobalt.c>`_.
+   `<https://github.com/dtaht/sch_cake/blob/master/sch_cake.c>`_.
 
 .. [Kath17] Controlled Delay Active Queue Management
    (draft-ietf-aqm-fq-codel-07)
@@ -122,7 +122,7 @@ The suite includes 2 test cases:
 * Test 1: Simple enqueue/dequeue with no drops.
 * Test 2: Change of BLUE's drop probability upon queue full
   (Activation of Blue).
-* Test 3: This test verfies ECN marking.
+* Test 3: This test verifies ECN marking.
 * Test 4: CE threshold marking test.
 
 The test suite can be run using the following commands:
@@ -138,4 +138,3 @@ or
 ::
 
   $ NS_LOG="CobaltQueueDisc" ./ns3 run "test-runner --suite=cobalt-queue-disc"
-

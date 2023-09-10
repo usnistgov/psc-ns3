@@ -8,7 +8,7 @@ r_cell=isd/2/cos(pi/6);
 X_vcell=r_cell*cos(theta);
 Y_vcell=r_cell*sin(theta);
 
-%3 inter-sector's boundaries 
+%3 inter-sector's boundaries
 r_sector=isd/2;
 phi=(pi/2:2*pi/3:2*pi);
 X_3sbounds=r_sector*cos(phi);
@@ -45,34 +45,34 @@ while(i<=length(A))
         Y_sb = P(cid,3) + Y_3sbounds(j);
         plot([P(cid,2) X_sb], [P(cid,3) Y_sb], 'k');
     end
-    
+
     ueid = A(i,2);
     X = [P(cid,2), P(ueid+eNBnum,2)];
     Y = [P(cid,3), P(ueid+eNBnum,3)];
-    
+
     %Plot links eNB----UE
     k = mod(cid-1,3)+1;
     plot(X,Y, [marker_color(k) ':']);
     plot(X(2),Y(2), [marker_color(k) '*']);
-    
+
     i = i + 1;
 end
 
 % eNBs
 plot(P(1:eNBnum,2),P(1:eNBnum,3), 'k^');
 
-if nargin==3 
-    
-  T = dlmread(buildings_file,' '); 
+if nargin==3
+
+  T = dlmread(buildings_file,' ');
   fprintf('Total number of buildings =');
   disp(size (T,1));
 
   for j=1:size (T,1)
-        X_sb =[T(j,1) T(j,1) T(j,2) T(j,2) T(j,1)]; 
-        Y_sb = [T(j,3) T(j,4) T(j,4) T(j,3) T(j,3)]; 
+        X_sb =[T(j,1) T(j,1) T(j,2) T(j,2) T(j,1)];
+        Y_sb = [T(j,3) T(j,4) T(j,4) T(j,3) T(j,3)];
         plot(X_sb,Y_sb,'r', 'LineWidth',1);
   end
-  
+
 end
 
 

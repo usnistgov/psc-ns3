@@ -20,12 +20,20 @@ if((NOT
     openflow_FOUND)
    AND (NOT
         ${openflow_FOUND})
+   AND (NOT
+        ${NS3_FETCH_OPTIONAL_COMPONENTS})
 )
   message(
     ${HIGHLIGHTED_STATUS}
     "Skipping src/openflow"
   )
   return()
+endif()
+
+if(${NS3_FETCH_OPTIONAL_COMPONENTS})
+  set(openflow_LIBRARIES
+      openflow
+  )
 endif()
 
 check_include_file_cxx(
@@ -51,7 +59,8 @@ set(NS3_OPENFLOW
 )
 
 if(${GCC})
-  add_compile_options(-Wno-stringop-truncation) # This option does not exist in CLANG
+  add_compile_options(-Wno-stringop-truncation) # This option does not exist in
+                                                # CLANG
 elseif(${CLANG})
   add_compile_options(-Wno-reserved-user-defined-literal)
 endif()

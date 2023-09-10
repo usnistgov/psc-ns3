@@ -33,196 +33,211 @@
  * subject to copyright protection within the United States.
  */
 
-
-#include "ns3/lte-module.h"
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/mobility-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/point-to-point-module.h"
 #include "ns3/config-store.h"
+#include "ns3/core-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/lte-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
+#include "ns3/point-to-point-module.h"
+
 #include <cfloat>
 #include <sstream>
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("wns3-2017-discovery");
+NS_LOG_COMPONENT_DEFINE("wns3-2017-discovery");
 
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
-  // Initialize some values
-  double simTime = 10;
-  uint32_t nbUes = 10;
-  uint16_t txProb = 100;
-  bool useRecovery = false;
-  bool  enableNsLogs = false; // If enabled will output NS LOGs
+    // Initialize some values
+    double simTime = 10;
+    uint32_t nbUes = 10;
+    uint16_t txProb = 100;
+    bool useRecovery = false;
+    bool enableNsLogs = false; // If enabled will output NS LOGs
 
-  // Command line arguments
-  CommandLine cmd;
-  cmd.AddValue ("simTime", "Simulation time", simTime);
-  cmd.AddValue ("numUe", "Number of UEs", nbUes);
-  cmd.AddValue ("txProb", "initial transmission probability", txProb);
-  cmd.AddValue ("enableRecovery", "error model and HARQ for D2D Discovery", useRecovery);
-  cmd.AddValue ("enableNsLogs", "Enable NS logs", enableNsLogs);
+    // Command line arguments
+    CommandLine cmd;
+    cmd.AddValue("simTime", "Simulation time", simTime);
+    cmd.AddValue("numUe", "Number of UEs", nbUes);
+    cmd.AddValue("txProb", "initial transmission probability", txProb);
+    cmd.AddValue("enableRecovery", "error model and HARQ for D2D Discovery", useRecovery);
+    cmd.AddValue("enableNsLogs", "Enable NS logs", enableNsLogs);
 
-  cmd.Parse (argc, argv);
+    cmd.Parse(argc, argv);
 
-  if (enableNsLogs)
+    if (enableNsLogs)
     {
-      LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
-      LogComponentEnable ("wns3-2017-discovery", logLevel);
+        LogLevel logLevel =
+            (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
+        LogComponentEnable("wns3-2017-discovery", logLevel);
 
-      LogComponentEnable ("LteSpectrumPhy", logLevel);
-      LogComponentEnable ("LteUePhy", logLevel);
-      LogComponentEnable ("LteUeRrc", logLevel);
-      LogComponentEnable ("LteEnbPhy", logLevel);
-      LogComponentEnable ("LteUeMac", logLevel);
-      LogComponentEnable ("LteSlUeRrc", logLevel);
-      LogComponentEnable ("LteSidelinkHelper", logLevel);
-      LogComponentEnable ("LteHelper", logLevel);
+        LogComponentEnable("LteSpectrumPhy", logLevel);
+        LogComponentEnable("LteUePhy", logLevel);
+        LogComponentEnable("LteUeRrc", logLevel);
+        LogComponentEnable("LteEnbPhy", logLevel);
+        LogComponentEnable("LteUeMac", logLevel);
+        LogComponentEnable("LteSlUeRrc", logLevel);
+        LogComponentEnable("LteSidelinkHelper", logLevel);
+        LogComponentEnable("LteHelper", logLevel);
     }
 
-  // Set the UEs power in dBm
-  Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
-  // Use error model and HARQ for D2D Discovery (recovery process)
-  Config::SetDefault ("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue (useRecovery));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (true));
+    // Set the UEs power in dBm
+    Config::SetDefault("ns3::LteUePhy::TxPower", DoubleValue(23.0));
+    // Use error model and HARQ for D2D Discovery (recovery process)
+    Config::SetDefault("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled",
+                       BooleanValue(useRecovery));
+    Config::SetDefault("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue(true));
 
-  ConfigStore inputConfig;
-  inputConfig.ConfigureDefaults ();
+    ConfigStore inputConfig;
+    inputConfig.ConfigureDefaults();
 
-  NS_LOG_INFO ("Creating helpers...");
-  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
-  lteHelper->SetEpcHelper (epcHelper);
-  Ptr<LteSidelinkHelper> sidelinkHelper = CreateObject<LteSidelinkHelper> ();
-  sidelinkHelper->SetLteHelper (lteHelper);
+    NS_LOG_INFO("Creating helpers...");
+    Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
+    Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
+    lteHelper->SetEpcHelper(epcHelper);
+    Ptr<LteSidelinkHelper> sidelinkHelper = CreateObject<LteSidelinkHelper>();
+    sidelinkHelper->SetLteHelper(lteHelper);
 
-  // Set pathloss model
-  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisPropagationLossModel"));
+    // Set pathloss model
+    lteHelper->SetAttribute("PathlossModel", StringValue("ns3::FriisPropagationLossModel"));
 
-  lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
-  lteHelper->Initialize ();
+    lteHelper->SetAttribute("UseSidelink", BooleanValue(true));
+    lteHelper->Initialize();
 
-  // Since we are not installing eNB, we need to set the frequency attribute of pathloss model here
-  // Frequency for Public Safety use case (band 14 : 788 - 798 MHz for Uplink)
-  double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (23330);
-  NS_LOG_LOGIC ("UL freq: " << ulFreq);
-  Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
-  Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel> ();
-  NS_ABORT_MSG_IF (lossModel == nullptr, "No PathLossModel");
-  bool ulFreqOk = uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
-  if (!ulFreqOk)
+    // Since we are not installing eNB, we need to set the frequency attribute of pathloss model
+    // here Frequency for Public Safety use case (band 14 : 788 - 798 MHz for Uplink)
+    double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency(23330);
+    NS_LOG_LOGIC("UL freq: " << ulFreq);
+    Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel();
+    Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel>();
+    NS_ABORT_MSG_IF(lossModel == nullptr, "No PathLossModel");
+    bool ulFreqOk = uplinkPathlossModel->SetAttributeFailSafe("Frequency", DoubleValue(ulFreq));
+    if (!ulFreqOk)
     {
-      NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
+        NS_LOG_WARN("UL propagation model does not have a Frequency attribute");
     }
 
-  NS_LOG_INFO ("Deploying UE's...");
-  NodeContainer ues;
-  ues.Create (nbUes);
+    NS_LOG_INFO("Deploying UE's...");
+    NodeContainer ues;
+    ues.Create(nbUes);
 
-  //Position of the nodes
-  Ptr<ListPositionAllocator> positionAllocUe = CreateObject<ListPositionAllocator> ();
+    // Position of the nodes
+    Ptr<ListPositionAllocator> positionAllocUe = CreateObject<ListPositionAllocator>();
 
-  for (uint32_t u = 0; u < ues.GetN (); ++u)
+    for (uint32_t u = 0; u < ues.GetN(); ++u)
     {
-      Ptr<UniformRandomVariable> rand = CreateObject<UniformRandomVariable> ();
-      double x = rand->GetValue (-100,100);
-      double y = rand->GetValue (-100,100);
-      double z = 1.5;
-      positionAllocUe->Add (Vector (x, y, z));
+        Ptr<UniformRandomVariable> rand = CreateObject<UniformRandomVariable>();
+        double x = rand->GetValue(-100, 100);
+        double y = rand->GetValue(-100, 100);
+        double z = 1.5;
+        positionAllocUe->Add(Vector(x, y, z));
     }
 
-  // Install mobility
+    // Install mobility
 
-  MobilityHelper mobilityUe;
-  mobilityUe.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobilityUe.SetPositionAllocator (positionAllocUe);
-  mobilityUe.Install (ues);
+    MobilityHelper mobilityUe;
+    mobilityUe.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobilityUe.SetPositionAllocator(positionAllocUe);
+    mobilityUe.Install(ues);
 
-  NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ues);
+    NetDeviceContainer ueDevs = lteHelper->InstallUeDevice(ues);
 
-  //Fix the random number stream
-  uint16_t randomStream = 1;
-  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
+    // Fix the random number stream
+    uint16_t randomStream = 1;
+    randomStream += lteHelper->AssignStreams(ueDevs, randomStream);
 
-  AsciiTraceHelper asc;
-  Ptr<OutputStreamWrapper> st = asc.CreateFileStream ("discovery_nodes.txt");
-  *st->GetStream () << "id\tx\ty" << std::endl;
+    AsciiTraceHelper asc;
+    Ptr<OutputStreamWrapper> st = asc.CreateFileStream("discovery_nodes.txt");
+    *st->GetStream() << "id\tx\ty" << std::endl;
 
-  for (uint32_t i = 0; i < ueDevs.GetN (); ++i)
+    for (uint32_t i = 0; i < ueDevs.GetN(); ++i)
     {
-      Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (ueDevs.Get (i));
-      uint64_t imsi = ueNetDevice->GetImsi ();
-      Vector pos = ues.Get (i)->GetObject<MobilityModel> ()->GetPosition ();
-      std::cout << "UE " << i << " id = " << ues.Get (i)->GetId () << " / imsi = " << imsi << " / position = [" << pos.x << "," << pos.y << "," << pos.z << "]" << std::endl;
-      *st->GetStream () << imsi << "\t" << pos.x << "\t" << pos.y << std::endl;
+        Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice>(ueDevs.Get(i));
+        uint64_t imsi = ueNetDevice->GetImsi();
+        Vector pos = ues.Get(i)->GetObject<MobilityModel>()->GetPosition();
+        std::cout << "UE " << i << " id = " << ues.Get(i)->GetId() << " / imsi = " << imsi
+                  << " / position = [" << pos.x << "," << pos.y << "," << pos.z << "]" << std::endl;
+        *st->GetStream() << imsi << "\t" << pos.x << "\t" << pos.y << std::endl;
     }
 
-  NS_LOG_INFO ("Configuring discovery pool for the UEs...");
-  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
-  ueSidelinkConfiguration->SetDiscEnabled (true);
+    NS_LOG_INFO("Configuring discovery pool for the UEs...");
+    Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc>();
+    ueSidelinkConfiguration->SetDiscEnabled(true);
 
-  //todo: specify parameters before installing in UEs if needed
-  LteRrcSap::SlPreconfiguration preconfiguration;
+    // todo: specify parameters before installing in UEs if needed
+    LteRrcSap::SlPreconfiguration preconfiguration;
 
-  preconfiguration.preconfigGeneral.carrierFreq = 23330;
-  preconfiguration.preconfigGeneral.slBandwidth = 50;
-  preconfiguration.preconfigDisc.nbPools = 1;
-  preconfiguration.preconfigDisc.pools[0].cpLen.cplen = LteRrcSap::SlCpLen::NORMAL;
-  preconfiguration.preconfigDisc.pools[0].discPeriod.period = LteRrcSap::SlPeriodDisc::rf32;
-  preconfiguration.preconfigDisc.pools[0].numRetx = 0;
-  preconfiguration.preconfigDisc.pools[0].numRepetition = 1;
-  preconfiguration.preconfigDisc.pools[0].tfResourceConfig.prbNum = 10;
-  preconfiguration.preconfigDisc.pools[0].tfResourceConfig.prbStart = 10;
-  preconfiguration.preconfigDisc.pools[0].tfResourceConfig.prbEnd = 49;
-  preconfiguration.preconfigDisc.pools[0].tfResourceConfig.offsetIndicator.offset = 0;
-  preconfiguration.preconfigDisc.pools[0].tfResourceConfig.subframeBitmap.bitmap = std::bitset<40> (0x11111);
-  preconfiguration.preconfigDisc.pools[0].txParameters.txParametersGeneral.alpha = LteRrcSap::SlTxParameters::al09;
-  preconfiguration.preconfigDisc.pools[0].txParameters.txParametersGeneral.p0 = -40;
-  preconfiguration.preconfigDisc.pools[0].txParameters.txProbability = SidelinkDiscResourcePool::TxProbabilityFromInt (txProb);
+    preconfiguration.preconfigGeneral.carrierFreq = 23330;
+    preconfiguration.preconfigGeneral.slBandwidth = 50;
+    preconfiguration.preconfigDisc.nbPools = 1;
+    preconfiguration.preconfigDisc.pools[0].cpLen.cplen = LteRrcSap::SlCpLen::NORMAL;
+    preconfiguration.preconfigDisc.pools[0].discPeriod.period = LteRrcSap::SlPeriodDisc::rf32;
+    preconfiguration.preconfigDisc.pools[0].numRetx = 0;
+    preconfiguration.preconfigDisc.pools[0].numRepetition = 1;
+    preconfiguration.preconfigDisc.pools[0].tfResourceConfig.prbNum = 10;
+    preconfiguration.preconfigDisc.pools[0].tfResourceConfig.prbStart = 10;
+    preconfiguration.preconfigDisc.pools[0].tfResourceConfig.prbEnd = 49;
+    preconfiguration.preconfigDisc.pools[0].tfResourceConfig.offsetIndicator.offset = 0;
+    preconfiguration.preconfigDisc.pools[0].tfResourceConfig.subframeBitmap.bitmap =
+        std::bitset<40>(0x11111);
+    preconfiguration.preconfigDisc.pools[0].txParameters.txParametersGeneral.alpha =
+        LteRrcSap::SlTxParameters::al09;
+    preconfiguration.preconfigDisc.pools[0].txParameters.txParametersGeneral.p0 = -40;
+    preconfiguration.preconfigDisc.pools[0].txParameters.txProbability =
+        SidelinkDiscResourcePool::TxProbabilityFromInt(txProb);
 
-  NS_LOG_INFO ("Install Sidelink discovery configuration in the UEs...");
-  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
-  lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+    NS_LOG_INFO("Install Sidelink discovery configuration in the UEs...");
+    ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
+    lteHelper->InstallSidelinkConfiguration(ueDevs, ueSidelinkConfiguration);
 
-  NS_LOG_INFO ("Configuring discovery applications");
-  std::map<Ptr<NetDevice>, std::list<uint32_t> > announcePayloads; 
-  std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorPayloads; 
+    NS_LOG_INFO("Configuring discovery applications");
+    std::map<Ptr<NetDevice>, std::list<uint32_t>> announcePayloads;
+    std::map<Ptr<NetDevice>, std::list<uint32_t>> monitorPayloads;
 
-  for (uint32_t i = 1; i <= nbUes; ++i)
+    for (uint32_t i = 1; i <= nbUes; ++i)
     {
-      announcePayloads[ueDevs.Get (i - 1)].push_back (i);
+        announcePayloads[ueDevs.Get(i - 1)].push_back(i);
 
-      for (uint32_t j = 1; j <= nbUes; ++j)
+        for (uint32_t j = 1; j <= nbUes; ++j)
         {
-          if (i != j)
+            if (i != j)
             {
-              monitorPayloads[ueDevs.Get (i - 1)].push_back (j);
+                monitorPayloads[ueDevs.Get(i - 1)].push_back(j);
             }
         }
     }
 
-  for (uint32_t i = 0; i < nbUes; i++)
+    for (uint32_t i = 0; i < nbUes; i++)
     {
-      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, sidelinkHelper, ueDevs.Get (i), announcePayloads[ueDevs.Get (i)], LteSlUeRrc::Announcing);
-      Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, sidelinkHelper, ueDevs.Get (i), monitorPayloads[ueDevs.Get (i)], LteSlUeRrc::Monitoring);
+        Simulator::Schedule(Seconds(2.0),
+                            &LteSidelinkHelper::StartDiscoveryApps,
+                            sidelinkHelper,
+                            ueDevs.Get(i),
+                            announcePayloads[ueDevs.Get(i)],
+                            LteSlUeRrc::Announcing);
+        Simulator::Schedule(Seconds(2.0),
+                            &LteSidelinkHelper::StartDiscoveryApps,
+                            sidelinkHelper,
+                            ueDevs.Get(i),
+                            monitorPayloads[ueDevs.Get(i)],
+                            LteSlUeRrc::Monitoring);
     }
 
-  ///*** End of application configuration ***///
+    ///*** End of application configuration ***///
 
-  // Set Discovery Traces
-  lteHelper->EnableSlRxPhyTraces ();
-  lteHelper->EnableSlPsdchMacTraces ();
-  lteHelper->EnableDiscoveryMonitoringRrcTraces ();
-  
-  NS_LOG_INFO ("Starting simulation...");
-  Simulator::Stop (Seconds (simTime));
+    // Set Discovery Traces
+    lteHelper->EnableSlRxPhyTraces();
+    lteHelper->EnableSlPsdchMacTraces();
+    lteHelper->EnableDiscoveryMonitoringRrcTraces();
 
-  Simulator::Run ();
-  Simulator::Destroy ();
-  return 0;
+    NS_LOG_INFO("Starting simulation...");
+    Simulator::Stop(Seconds(simTime));
 
+    Simulator::Run();
+    Simulator::Destroy();
+    return 0;
 }

@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -18,15 +17,16 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/lte-rlc-sap.h"
+#include "lte-rlc-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-LteRlcSapProvider::~LteRlcSapProvider ()
+LteRlcSapProvider::~LteRlcSapProvider()
 {
 }
 
-LteRlcSapUser::~LteRlcSapUser ()
+LteRlcSapUser::~LteRlcSapUser()
 {
 }
 

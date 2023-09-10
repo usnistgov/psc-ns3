@@ -40,7 +40,7 @@ OVERWRITE=1
 fi
 
 if [[ ! -d "scratch" ]];then
-echo "ERROR: $0 must be copied to ns-3 directory!" 
+echo "ERROR: $0 must be copied to ns-3 directory!"
 exit
 fi
 
@@ -88,7 +88,7 @@ do
         echo "Simulation time = $stime" >> $OUTFILE
         echo -e "-------------------------------\n" >> $OUTFILE
         ./waf --cwd=$newdir --run "$SCENARIO --RngRun=$run --RngSeed=$i --numUe=$UE --simTime=$stime --enableRecovery=$recovery" >> $OUTFILE 2>&1 &
-        sleep 1 
+        sleep 1
       done
       seed=`python -c "print $seed+$STEPSEED"`
     else
@@ -116,18 +116,18 @@ for j in $(seq 1 $numruns)
 do
   outfile="${container}/discovery-cdf-${version}-ue${chosenue}-run${j}-${numseeds}trials.tr"
   rm -f $outfile
-  
+
   for i in $(seq 1 $numseeds)
-  do 
-    #echo processing ${version}-${j}-${i} 
+  do
+    #echo processing ${version}-${j}-${i}
     dir="${container}/disc-${version}-${j}-${i}"
     cd $dir
     grep -v IMSI $INFILE | awk -v maxues=$numues '
       {
         if (! ($2, $8) in times) {
           times[$2, $8] = $1
-        } 
-      } 
+        }
+      }
       END{
         for (i=1; i<=maxues; i++) {
           maxtime=0
@@ -141,7 +141,7 @@ do
             }
           }
           print i, maxtime, count, count == (maxues - 1)?"OK":"ERROR"
-        } 
+        }
       }' > discovery-first.txt
     cd ../..
   done
@@ -156,7 +156,7 @@ do
       maxperiod=1
     }
     {
-      count[$1]++; 
+      count[$1]++;
       if ($1 > maxperiod) {
         maxperiod = $1
       }
@@ -175,10 +175,10 @@ do
       #print ""
       #print "Mean=", mean*1.0/numseeds
     }'
-  else 
+  else
     echo $errors
   fi > $outfile
-done 
+done
 
 outfile="${container}/discovery-cdf-${version}-ue${chosenue}-average.tr"
 cat ${container}/discovery-cdf-${version}-ue${chosenue}-run*-${numseeds}trials.tr | awk -v numseeds=$numseeds -v numruns=$numruns '
@@ -211,18 +211,18 @@ gnuplot -persist << EOF
   set style line 81 lt 0
   set style line 81 lt rgb "#808080"
   set grid back linestyle 81
-  set border 3 back linestyle 80 
+  set border 3 back linestyle 80
   set xtics nomirror
   set ytics nomirror
   unset surface
-  set autoscale   
-  unset log       
-  unset label     
-  set xtic auto   
-  set ytic auto 
-  set key on  
+  set autoscale
+  unset log
+  unset label
+  set xtic auto
+  set ytic auto
+  set key on
   set xlabel "Number of periods"
-  set ylabel "CDF" 
+  set ylabel "CDF"
   set key right bottom
   set title "CDF of UEs Discovered: 10 UEs and 50 Reources"
   plot "$outfile" using 1:4 title " ns-3 simulations" with steps

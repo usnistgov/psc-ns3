@@ -20,56 +20,56 @@ by hand, or via a helper function :cpp:func:`InternetStackHelper::Install ()`
 which does the following to all nodes passed in as arguments::
 
     void
-    InternetStackHelper::Install (Ptr<Node> node) const
+    InternetStackHelper::Install(Ptr<Node> node) const
     {
       if (m_ipv4Enabled)
         {
           /* IPv4 stack */
-          if (node->GetObject<Ipv4> () != 0)
+          if (node->GetObject<Ipv4>() != 0)
             {
-              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
-                              "an InternetStack to a node with an existing Ipv4 object");
+              NS_FATAL_ERROR("InternetStackHelper::Install(): Aggregating "
+                             "an InternetStack to a node with an existing Ipv4 object");
               return;
             }
 
-          CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
-          CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
-          CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+          CreateAndAggregateObjectFromTypeId(node, "ns3::ArpL3Protocol");
+          CreateAndAggregateObjectFromTypeId(node, "ns3::Ipv4L3Protocol");
+          CreateAndAggregateObjectFromTypeId(node, "ns3::Icmpv4L4Protocol");
           // Set routing
-          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-          Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
-          ipv4->SetRoutingProtocol (ipv4Routing);
+          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
+          Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create(node);
+          ipv4->SetRoutingProtocol(ipv4Routing);
         }
 
       if (m_ipv6Enabled)
         {
           /* IPv6 stack */
-          if (node->GetObject<Ipv6> () != 0)
+          if (node->GetObject<Ipv6>() != 0)
             {
-              NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
-                              "an InternetStack to a node with an existing Ipv6 object");
+              NS_FATAL_ERROR("InternetStackHelper::Install(): Aggregating "
+                             "an InternetStack to a node with an existing Ipv6 object");
               return;
             }
 
-          CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
-          CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
+          CreateAndAggregateObjectFromTypeId(node, "ns3::Ipv6L3Protocol");
+          CreateAndAggregateObjectFromTypeId(node, "ns3::Icmpv6L4Protocol");
           // Set routing
-          Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-          Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create (node);
-          ipv6->SetRoutingProtocol (ipv6Routing);
+          Ptr<Ipv6> ipv6 = node->GetObject<Ipv6>();
+          Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create(node);
+          ipv6->SetRoutingProtocol(ipv6Routing);
 
           /* register IPv6 extensions and options */
-          ipv6->RegisterExtensions ();
-          ipv6->RegisterOptions ();
+          ipv6->RegisterExtensions();
+          ipv6->RegisterOptions();
         }
 
       if (m_ipv4Enabled || m_ipv6Enabled)
         {
           /* UDP and TCP stacks */
-          CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
-          node->AggregateObject (m_tcpFactory.Create<Object> ());
-          Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
-          node->AggregateObject (factory);
+          CreateAndAggregateObjectFromTypeId(node, "ns3::UdpL4Protocol");
+          node->AggregateObject(m_tcpFactory.Create<Object>());
+          Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory>();
+          node->AggregateObject(factory);
         }
     }
 
@@ -79,19 +79,19 @@ are added by a factory object (TCP) or by a routing helper (m_routing).
 Note that the routing protocol is configured and set outside this
 function. By default, the following protocols are added::
 
-    void InternetStackHelper::Initialize ()
+    void InternetStackHelper::Initialize()
     {
-      SetTcp ("ns3::TcpL4Protocol");
+      SetTcp("ns3::TcpL4Protocol");
       Ipv4StaticRoutingHelper staticRouting;
       Ipv4GlobalRoutingHelper globalRouting;
       Ipv4ListRoutingHelper listRouting;
       Ipv6ListRoutingHelper listRoutingv6;
       Ipv6StaticRoutingHelper staticRoutingv6;
-      listRouting.Add (staticRouting, 0);
-      listRouting.Add (globalRouting, -10);
-      listRoutingv6.Add (staticRoutingv6, 0);
-      SetRoutingHelper (listRouting);
-      SetRoutingHelper (listRoutingv6);
+      listRouting.Add(staticRouting, 0);
+      listRouting.Add(globalRouting, -10);
+      listRoutingv6.Add(staticRoutingv6, 0);
+      SetRoutingHelper(listRouting);
+      SetRoutingHelper(listRoutingv6);
     }
 
 By default, IPv4 and IPv6 are enabled.
@@ -120,7 +120,7 @@ In class Ipv4L3Protocol, one method described below is ``Receive ()``::
        *    - implement a per-NetDevice ARP cache
        *    - send back arp replies on the right device
        */
-     void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, 
+     void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol,
      const Address &from, const Address &to, NetDevice::PacketType packetType);
 
 First, note that the ``Receive ()`` function has a matching signature to the
@@ -129,18 +129,18 @@ inserted into the Node's protocol handler when ``AddInterface ()`` is called.
 The actual registration is done
 with a statement such as follows::
 
-     RegisterProtocolHandler ( MakeCallback (&Ipv4Protocol::Receive, ipv4),
-                               Ipv4L3Protocol::PROT_NUMBER, 0);
+     RegisterProtocolHandler( MakeCallback(&Ipv4Protocol::Receive, ipv4),
+                              Ipv4L3Protocol::PROT_NUMBER, 0);
 
 The Ipv4L3Protocol object is aggregated to the Node; there is only one such
 Ipv4L3Protocol object. Higher-layer protocols that have a packet to send down to
-the Ipv4L3Protocol object can call ``GetObject<Ipv4L3Protocol> ()`` to obtain a
+the Ipv4L3Protocol object can call ``GetObject<Ipv4L3Protocol>()`` to obtain a
 pointer, as follows::
 
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol>();
   if (ipv4 != 0)
     {
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
+      ipv4->Send(packet, saddr, daddr, PROT_NUMBER);
     }
 
 This class nicely demonstrates two techniques we exploit in |ns3| to bind
@@ -150,7 +150,7 @@ Once IPv4 routing has determined that a packet is for the local node, it
 forwards it up the stack.  This is done with the following function::
 
     void
-    Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uint32_t iif)
+    Ipv4L3Protocol::LocalDeliver(Ptr<const Packet> packet, Ipv4Header const&ip, uint32_t iif)
 
 The first step is to find the right Ipv4L4Protocol object, based on IP protocol
 number. For instance, TCP is registered in the demux as protocol number 6.
@@ -171,7 +171,7 @@ The ARP cache pending queue is limited (3 datagrams) and IP packets might be fra
 overfilling the ARP cache queue size. In those cases it is useful to increase the ARP cache
 pending size to a proper value, e.g.::
 
-    Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (MAX_BURST_SIZE/L2MTU*3));
+    Config::SetDefault("ns3::ArpCache::PendingQueueSize", UintegerValue(MAX_BURST_SIZE/L2MTU*3));
 
 The IPv6 implementation follows a similar architecture.  Dual-stacked nodes (one with
 support for both IPv4 and IPv6) will allow an IPv6 socket to receive IPv4 connections
@@ -185,55 +185,55 @@ Layer-4 protocols and sockets
 
 We next describe how the transport protocols, sockets, and applications tie
 together. In summary, each transport protocol implementation is a socket
-factory. An application that needs a new socket 
+factory. An application that needs a new socket
 
 For instance, to create a UDP socket, an application would use a code snippet
 such as the following::
 
-      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
-      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
-      m_socket->Bind (m_local_address);
+      Ptr<Udp> udpSocketFactory = GetNode()->GetObject<Udp>();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket();
+      m_socket->Bind(m_local_address);
       ...
 
 The above will query the node to get a pointer to its UDP socket factory, will
 create one such socket, and will use the socket with an API similar to the
-C-based sockets API, such as ``Connect ()`` and ``Send ()``.  The address passed
-to the ``Bind ()``, ``Connect ()``, or ``Send ()`` functions may be a
+C-based sockets API, such as ``Connect()`` and ``Send()``.  The address passed
+to the ``Bind()``, ``Connect()``, or ``Send()`` functions may be a
 :cpp:class:`Ipv4Address`, :cpp:class:`Ipv6Address`, or :cpp:class:`Address`.
 If a :cpp:class:`Address` is passed in and contains anything other than
 a :cpp:class:`Ipv4Address` or :cpp:class:`Ipv6Address`, these functions will
-return an error.  The ``Bind (void)`` and ``Bind6 (void)`` functions bind to
+return an error.  The ``Bind()`` and ``Bind6()`` functions bind to
 "0.0.0.0" and "::" respectively.
 
-The socket can also be bound to a specific NetDevice though the 
-``BindToNetDevice (Ptr<NetDevice> netdevice)`` function.
-``BindToNetDevice (Ptr<NetDevice> netdevice)`` will bind the socket
-to "0.0.0.0" and "::" (equivalent to calling ``Bind ()`` and ``Bind6 ()``,
+The socket can also be bound to a specific NetDevice though the
+``BindToNetDevice(Ptr<NetDevice> netdevice)`` function.
+``BindToNetDevice(Ptr<NetDevice> netdevice)`` will bind the socket
+to "0.0.0.0" and "::"(equivalent to calling ``Bind()`` and ``Bind6()``,
 unless the socket has been already bound to a specific address.
 Summarizing, the correct sequence is::
 
-      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
-      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
-      m_socket->BindToNetDevice (n_netDevice);
+      Ptr<Udp> udpSocketFactory = GetNode()->GetObject<Udp>();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket();
+      m_socket->BindToNetDevice(n_netDevice);
      ...
 
 or::
 
-      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
-      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
-      m_socket->Bind (m_local_address);
-      m_socket->BindToNetDevice (n_netDevice);
+      Ptr<Udp> udpSocketFactory = GetNode()->GetObject<Udp>();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket();
+      m_socket->Bind(m_local_address);
+      m_socket->BindToNetDevice(n_netDevice);
       ...
 
 The following raises an error::
 
-      Ptr<Udp> udpSocketFactory = GetNode ()->GetObject<Udp> ();
-      Ptr<Socket> m_socket = socketFactory->CreateSocket ();
-      m_socket->BindToNetDevice (n_netDevice);
-      m_socket->Bind (m_local_address);
+      Ptr<Udp> udpSocketFactory = GetNode()->GetObject<Udp>();
+      Ptr<Socket> m_socket = socketFactory->CreateSocket();
+      m_socket->BindToNetDevice(n_netDevice);
+      m_socket->Bind(m_local_address);
       ...
 
-See the chapter on |ns3| sockets for more information.  
+See the chapter on |ns3| sockets for more information.
 
 We have described so far a socket factory (e.g. ``class Udp``) and a socket,
 which may be specialized (e.g., class :cpp:class:`UdpSocket`).  There are a few
@@ -243,35 +243,35 @@ to one or more receiving sockets.  The key object in this task is class
 :cpp:class:`Ipv4EndPoint`.  This class holds the addressing/port tuple (local
 port, local address, destination port, destination address) associated with the
 socket, and a receive callback. This receive callback has a receive function
-registered by the socket. The ``Lookup ()`` function to Ipv4EndPointDemux
-returns a list of Ipv4EndPoint objects (there may be a list since more than one
+registered by the socket. The ``Lookup()`` function to Ipv4EndPointDemux
+returns a list of Ipv4EndPoint objects(there may be a list since more than one
 socket may match the packet). The layer-4 protocol copies the packet to each
-Ipv4EndPoint and calls its ``ForwardUp ()`` method, which then calls the
-``Receive ()`` function registered by the socket.
+Ipv4EndPoint and calls its ``ForwardUp()`` method, which then calls the
+``Receive()`` function registered by the socket.
 
 An issue that arises when working with the sockets API on real
-systems is the need to manage the reading from a socket, using 
+systems is the need to manage the reading from a socket, using
 some type of I/O (e.g., blocking, non-blocking, asynchronous, ...).
 |ns3| implements an asynchronous model for socket I/O; the application
-sets a callback to be notified of received data ready to be read, and the 
+sets a callback to be notified of received data ready to be read, and the
 callback is invoked by the transport protocol when data is available.
 This callback is specified as follows::
 
-  void Socket::SetRecvCallback (Callback<void, Ptr<Socket>, 
-                                Ptr<Packet>,
-                                const Address&> receivedData);
+  void Socket::SetRecvCallback(Callback<void, Ptr<Socket>,
+                               Ptr<Packet>,
+                               const Address&> receivedData);
 
 The data being received is conveyed in the Packet data buffer.  An example
 usage is in class :cpp:class:`PacketSink`::
 
-  m_socket->SetRecvCallback (MakeCallback(&PacketSink::HandleRead, this));
+  m_socket->SetRecvCallback(MakeCallback(&PacketSink::HandleRead, this));
 
 To summarize, internally, the UDP implementation is organized as follows:
 
 * a ``UdpImpl`` class that implements the UDP socket factory functionality
 
 * a ``UdpL4Protocol`` class that implements the protocol logic that is
-  socket-independent 
+  socket-independent
 * a ``UdpSocketImpl`` class that implements socket-specific aspects of UDP
 * a class called ``Ipv4EndPoint`` that stores the addressing tuple (local port,
   local address, destination port, destination address) associated with the
@@ -283,8 +283,8 @@ IP-capable node interfaces
 Many of the implementation details, or internal objects themselves, of
 IP-capable Node objects are not exposed at the simulator public API. This
 allows for different implementations; for instance, replacing the native |ns3|
-models with ported TCP/IP stack code. 
- 
+models with ported TCP/IP stack code.
+
 The C++ public APIs of all of these objects is found in the ``src/network``
 directory, including principally:
 
@@ -307,11 +307,11 @@ Internet Node objects.
 .. _internet-node-send:
 
 .. figure:: figures/internet-node-send.*
-   
+
    Send path of a packet.
 
 .. _internet-node-recv:
 
 .. figure:: figures/internet-node-recv.*
-   
+
    Receive path of a packet.

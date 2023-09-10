@@ -33,137 +33,139 @@
  * subject to copyright protection within the United States.
  */
 
-#include "ns3/log.h"
-
 #include "ns3/lte-sl-pdcp-header.h"
 
-namespace ns3 {
+#include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("LteSlPdcpHeader");
+namespace ns3
+{
 
-NS_OBJECT_ENSURE_REGISTERED (LteSlPdcpHeader);
+NS_LOG_COMPONENT_DEFINE("LteSlPdcpHeader");
 
-LteSlPdcpHeader::LteSlPdcpHeader ()
-  : m_sduType (0xff),
-    m_pgkIndex (0x0),
-    m_secIdentity (0x0),
-    m_sequenceNumber (0xfffa)
+NS_OBJECT_ENSURE_REGISTERED(LteSlPdcpHeader);
+
+LteSlPdcpHeader::LteSlPdcpHeader()
+    : m_sduType(0xff),
+      m_pgkIndex(0x0),
+      m_secIdentity(0x0),
+      m_sequenceNumber(0xfffa)
 {
 }
 
-LteSlPdcpHeader::~LteSlPdcpHeader ()
+LteSlPdcpHeader::~LteSlPdcpHeader()
 {
-  m_sduType = 0xff;
-  m_pgkIndex = 0x0;
-  m_secIdentity = 0x0;
-  m_sequenceNumber = 0xfffb;
-}
-
-void
-LteSlPdcpHeader::SetSduType (uint8_t sduType)
-{
-  m_sduType = sduType & 0x07;
+    m_sduType = 0xff;
+    m_pgkIndex = 0x0;
+    m_secIdentity = 0x0;
+    m_sequenceNumber = 0xfffb;
 }
 
 void
-LteSlPdcpHeader::SetPgkIndex (uint8_t pgkIndex)
+LteSlPdcpHeader::SetSduType(uint8_t sduType)
 {
-  m_pgkIndex = pgkIndex & 0x1F;
+    m_sduType = sduType & 0x07;
 }
 
 void
-LteSlPdcpHeader::SetSecurityIdentity (uint16_t secIdentity)
+LteSlPdcpHeader::SetPgkIndex(uint8_t pgkIndex)
 {
-  m_secIdentity = secIdentity;
+    m_pgkIndex = pgkIndex & 0x1F;
 }
-  
+
 void
-LteSlPdcpHeader::SetSequenceNumber (uint16_t sequenceNumber)
+LteSlPdcpHeader::SetSecurityIdentity(uint16_t secIdentity)
 {
-  m_sequenceNumber = sequenceNumber;
+    m_secIdentity = secIdentity;
+}
+
+void
+LteSlPdcpHeader::SetSequenceNumber(uint16_t sequenceNumber)
+{
+    m_sequenceNumber = sequenceNumber;
 }
 
 uint8_t
-LteSlPdcpHeader::GetSduType () const
+LteSlPdcpHeader::GetSduType() const
 {
-  return m_sduType;
+    return m_sduType;
 }
 
 uint8_t
-LteSlPdcpHeader::GetPgkIndex () const
+LteSlPdcpHeader::GetPgkIndex() const
 {
-  return m_pgkIndex;
+    return m_pgkIndex;
 }
 
 uint16_t
-LteSlPdcpHeader::GetSecurityIdentity () const
+LteSlPdcpHeader::GetSecurityIdentity() const
 {
-  return m_secIdentity;
+    return m_secIdentity;
 }
-  
+
 uint16_t
-LteSlPdcpHeader::GetSequenceNumber () const
+LteSlPdcpHeader::GetSequenceNumber() const
 {
-  return m_sequenceNumber;
-}
-
-
-TypeId
-LteSlPdcpHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::LteSlPdcpHeader")
-    .SetParent<Header> ()
-    .AddConstructor<LteSlPdcpHeader> ()
-  ;
-  return tid;
+    return m_sequenceNumber;
 }
 
 TypeId
-LteSlPdcpHeader::GetInstanceTypeId (void) const
+LteSlPdcpHeader::GetTypeId()
 {
-  return GetTypeId ();
+    static TypeId tid =
+        TypeId("ns3::LteSlPdcpHeader").SetParent<Header>().AddConstructor<LteSlPdcpHeader>();
+    return tid;
 }
 
-void LteSlPdcpHeader::Print (std::ostream &os)  const
+TypeId
+LteSlPdcpHeader::GetInstanceTypeId() const
 {
-  os << "SDU type=" << (uint16_t)m_sduType;
-  os << " PGK Index=" << (uint16_t)m_pgkIndex;
-  os << " PTK/KD_SESS=" << m_secIdentity;
-  os << " SN=" << m_sequenceNumber;
+    return GetTypeId();
 }
 
-uint32_t LteSlPdcpHeader::GetSerializedSize (void) const
+void
+LteSlPdcpHeader::Print(std::ostream& os) const
 {
-  return 5;
+    os << "SDU type=" << (uint16_t)m_sduType;
+    os << " PGK Index=" << (uint16_t)m_pgkIndex;
+    os << " PTK/KD_SESS=" << m_secIdentity;
+    os << " SN=" << m_sequenceNumber;
 }
 
-void LteSlPdcpHeader::Serialize (Buffer::Iterator start) const
+uint32_t
+LteSlPdcpHeader::GetSerializedSize() const
 {
-  Buffer::Iterator i = start;
-
-  i.WriteU8 ( (m_sduType << 5) | m_pgkIndex );
-  i.WriteU8 ( (m_secIdentity & 0xFF00) >> 8);
-  i.WriteU8 ( (m_secIdentity & 0x00FF) );
-  i.WriteU8 ( (m_sequenceNumber & 0xFF00) >> 8);
-  i.WriteU8 ( (m_sequenceNumber & 0x00FF) );
+    return 5;
 }
 
-uint32_t LteSlPdcpHeader::Deserialize (Buffer::Iterator start)
+void
+LteSlPdcpHeader::Serialize(Buffer::Iterator start) const
 {
-  Buffer::Iterator i = start;
-  uint8_t bytes[5];
+    Buffer::Iterator i = start;
 
-  for (uint8_t index = 0; index < 5; index++)
+    i.WriteU8((m_sduType << 5) | m_pgkIndex);
+    i.WriteU8((m_secIdentity & 0xFF00) >> 8);
+    i.WriteU8((m_secIdentity & 0x00FF));
+    i.WriteU8((m_sequenceNumber & 0xFF00) >> 8);
+    i.WriteU8((m_sequenceNumber & 0x00FF));
+}
+
+uint32_t
+LteSlPdcpHeader::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+    uint8_t bytes[5];
+
+    for (uint8_t index = 0; index < 5; index++)
     {
-      bytes[index] = i.ReadU8 ();
+        bytes[index] = i.ReadU8();
     }
 
-  m_sduType = (bytes[0] & 0xE0) >> 5;
-  m_pgkIndex = bytes[0] & 0x1F;
-  m_secIdentity = (bytes[1] << 8) | bytes[2];
-  m_sequenceNumber = (bytes[3] << 8) | bytes[4];
+    m_sduType = (bytes[0] & 0xE0) >> 5;
+    m_pgkIndex = bytes[0] & 0x1F;
+    m_secIdentity = (bytes[1] << 8) | bytes[2];
+    m_sequenceNumber = (bytes[3] << 8) | bytes[4];
 
-  return GetSerializedSize ();
+    return GetSerializedSize();
 }
 
 }; // namespace ns3

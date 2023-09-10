@@ -36,14 +36,14 @@
 #ifndef LTE_SL_TFT_H
 #define LTE_SL_TFT_H
 
-
-#include <ns3/simple-ref-count.h>
 #include <ns3/ipv4-address.h>
 #include <ns3/ipv6-address.h>
+#include <ns3/simple-ref-count.h>
 
 #include <list>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  *
@@ -54,150 +54,149 @@ namespace ns3 {
  */
 class LteSlTft : public SimpleRefCount<LteSlTft>
 {
-public:
-  /**
-   * Indicates the direction of the traffic that is to be classified.
-   */
-  enum Direction
-  {
-    TRANSMIT = 1,
-    RECEIVE = 2,
-    BIDIRECTIONAL = 3
-  };
+  public:
+    /**
+     * Indicates the direction of the traffic that is to be classified.
+     */
+    enum Direction
+    {
+        TRANSMIT = 1,
+        RECEIVE = 2,
+        BIDIRECTIONAL = 3
+    };
 
-  /**
-   * Indicates if the address provided is for local or remote in case
-   * the TFT does not use both
-   */
-  enum AddressType
-  {
-    LOCAL = 1,
-    REMOTE = 2
-  };
+    /**
+     * Indicates if the address provided is for local or remote in case
+     * the TFT does not use both
+     */
+    enum AddressType
+    {
+        LOCAL = 1,
+        REMOTE = 2
+    };
 
-  /**
-   * Constructor
-   * \param d The direction
-   * \param type The type of address provided
-   * \param addr The IPv4 address
-   * \param remoteL2 The group layer 2 address
-   */
-  LteSlTft (Direction d, AddressType type, Ipv4Address addr, uint32_t remoteL2);
+    /**
+     * Constructor
+     * \param d The direction
+     * \param type The type of address provided
+     * \param addr The IPv4 address
+     * \param remoteL2 The group layer 2 address
+     */
+    LteSlTft(Direction d, AddressType type, Ipv4Address addr, uint32_t remoteL2);
 
-/**
-   * Constructor (sets remote address only, defined for backward compatibility)
-   * \param d The direction
-   * \param addr The IPv4 address
-   * \param remoteL2 The group layer 2 address
-   */
-  LteSlTft (Direction d, Ipv4Address addr, uint32_t remoteL2);
+    /**
+     * Constructor (sets remote address only, defined for backward compatibility)
+     * \param d The direction
+     * \param addr The IPv4 address
+     * \param remoteL2 The group layer 2 address
+     */
+    LteSlTft(Direction d, Ipv4Address addr, uint32_t remoteL2);
 
-  /**
-   * Constructor
-   * \param d The direction
-   * \param type The type of address provided
-   * \param addr The IPv4 address
-   * \param mask The IPv4 mask
-   * \param remoteL2 The group layer 2 address
-   */
-  LteSlTft (Direction d, AddressType type, Ipv4Address addr, Ipv4Mask mask, uint32_t remoteL2);
+    /**
+     * Constructor
+     * \param d The direction
+     * \param type The type of address provided
+     * \param addr The IPv4 address
+     * \param mask The IPv4 mask
+     * \param remoteL2 The group layer 2 address
+     */
+    LteSlTft(Direction d, AddressType type, Ipv4Address addr, Ipv4Mask mask, uint32_t remoteL2);
 
-  /**
-   * Constructor
-   * \param d The direction
-   * \param type The type of address provided
-   * \param addr The IPv6 address
-   * \param remoteL2 The group layer 2 address
-   */
-  LteSlTft (Direction d, AddressType type, Ipv6Address addr, uint32_t remoteL2);
+    /**
+     * Constructor
+     * \param d The direction
+     * \param type The type of address provided
+     * \param addr The IPv6 address
+     * \param remoteL2 The group layer 2 address
+     */
+    LteSlTft(Direction d, AddressType type, Ipv6Address addr, uint32_t remoteL2);
 
-  /**
-   * Constructor (sets remote address only, defined for backward compatibility)
-   * \param d The direction
-   * \param addr The IPv6 address
-   * \param remoteL2 The group layer 2 address
-   */
-  LteSlTft (Direction d, Ipv6Address addr, uint32_t remoteL2);
+    /**
+     * Constructor (sets remote address only, defined for backward compatibility)
+     * \param d The direction
+     * \param addr The IPv6 address
+     * \param remoteL2 The group layer 2 address
+     */
+    LteSlTft(Direction d, Ipv6Address addr, uint32_t remoteL2);
 
-  /**
-   * Constructor
-   * \param d The direction
-   * \param type The type of address provided
-   * \param addr The IPv6 address
-   * \param prefix The IPv6 prefix
-   * \param remoteL2 The group layer 2 address
-   */
-  LteSlTft (Direction d, AddressType type, Ipv6Address addr, Ipv6Prefix prefix, uint32_t remoteL2);
+    /**
+     * Constructor
+     * \param d The direction
+     * \param type The type of address provided
+     * \param addr The IPv6 address
+     * \param prefix The IPv6 prefix
+     * \param remoteL2 The group layer 2 address
+     */
+    LteSlTft(Direction d, AddressType type, Ipv6Address addr, Ipv6Prefix prefix, uint32_t remoteL2);
 
-  /**
-   * Constructor for copy
-   * \param tft The TFT to copy
-   */
-  LteSlTft (Ptr<LteSlTft> tft);
+    /**
+     * Constructor for copy
+     * \param tft The TFT to copy
+     */
+    LteSlTft(Ptr<LteSlTft> tft);
 
-  /**
-   * Function to evaluate if the SL TFT matches the remote IPv4 address
-   * \param la the local address
-   * \param ra the remote address
-   * \return true if the TFT matches with the
-   * parameters, false otherwise.
-   */
-  bool Matches (Ipv4Address la, Ipv4Address ra);
+    /**
+     * Function to evaluate if the SL TFT matches the remote IPv4 address
+     * \param la the local address
+     * \param ra the remote address
+     * \return true if the TFT matches with the
+     * parameters, false otherwise.
+     */
+    bool Matches(Ipv4Address la, Ipv4Address ra);
 
-  /**
-   * Function to evaluate if the SL TFT matches the remote IPv6 address
-   * \param la the local address
-   * \param ra the remote address
-   *
-   * \return true if the TFT matches with the
-   * parameters, false otherwise.
-   */
-  bool Matches (Ipv6Address la, Ipv6Address ra);
-  
-  /**
-   * Function to evaluate if the SL TFT is completely equal to another SL TFT
-   * \param tft the tft to compare
-   *
-   * \return true if the provided SL TFT matches with the
-   * actual SL TFT parameters, false otherwise.
-   */
-  bool Equals (Ptr<LteSlTft> tft);
+    /**
+     * Function to evaluate if the SL TFT matches the remote IPv6 address
+     * \param la the local address
+     * \param ra the remote address
+     *
+     * \return true if the TFT matches with the
+     * parameters, false otherwise.
+     */
+    bool Matches(Ipv6Address la, Ipv6Address ra);
 
-  /**
-   * Gets the Group L2 address associated with the TFT
-   * \return the Group L2 address associated with the TFT
-   */
-  uint32_t GetRemoteL2Address ();
+    /**
+     * Function to evaluate if the SL TFT is completely equal to another SL TFT
+     * \param tft the tft to compare
+     *
+     * \return true if the provided SL TFT matches with the
+     * actual SL TFT parameters, false otherwise.
+     */
+    bool Equals(Ptr<LteSlTft> tft);
 
-  /**
-   * Indicates if the TFT is for an incoming sidelink bearer
-   * \return true if the TFT is for an incoming sidelink bearer
-   */
-  bool isReceive ();
+    /**
+     * Gets the Group L2 address associated with the TFT
+     * \return the Group L2 address associated with the TFT
+     */
+    uint32_t GetRemoteL2Address() const;
 
-  /**
-   * Indicates if the TFT is for an outgoing sidelink bearer
-   * \return true if the TFT is for an outgoing sidelink bearer
-   */
-  bool isTransmit ();
+    /**
+     * Indicates if the TFT is for an incoming sidelink bearer
+     * \return true if the TFT is for an incoming sidelink bearer
+     */
+    bool isReceive();
 
-private:
-  Direction m_direction; ///< whether the filter needs to be applied
-  ///< to sending or receiving only, or in both cases*/
+    /**
+     * Indicates if the TFT is for an outgoing sidelink bearer
+     * \return true if the TFT is for an outgoing sidelink bearer
+     */
+    bool isTransmit();
 
-  bool m_hasRemoteAddress;         /**< Indicates if the TFT has remoteAddress information */
-  Ipv4Address m_remoteAddress;     /**< IPv4 address of the remote host  */
-  Ipv6Address m_remoteAddress6;    /**< IPv6 address of the remote host  */
-  Ipv4Mask m_remoteMask;           /**< IPv4 address mask of the remote host */
-  Ipv6Prefix m_remoteMask6;        /**< IPv6 address mask of the remote host */
-  bool m_hasLocalAddress;         /**< Indicates if the TFT has localeAddress information */
-  Ipv4Address m_localAddress;      /**< IPv4 address of the UE */
-  Ipv6Address m_localAddress6;     /**< IPv6 address of the UE */
-  Ipv4Mask m_localMask;            /**< IPv4 address mask of the UE */
-  Ipv6Prefix m_localMask6;         /**< IPv6 address mask of the remote host */
+  private:
+    Direction m_direction; ///< whether the filter needs to be applied
+    ///< to sending or receiving only, or in both cases*/
 
-  uint32_t m_remoteL2Address;      ///< 24 bit MAC address of remote entity
+    bool m_hasRemoteAddress;      /**< Indicates if the TFT has remoteAddress information */
+    Ipv4Address m_remoteAddress;  /**< IPv4 address of the remote host  */
+    Ipv6Address m_remoteAddress6; /**< IPv6 address of the remote host  */
+    Ipv4Mask m_remoteMask;        /**< IPv4 address mask of the remote host */
+    Ipv6Prefix m_remoteMask6;     /**< IPv6 address mask of the remote host */
+    bool m_hasLocalAddress;       /**< Indicates if the TFT has localeAddress information */
+    Ipv4Address m_localAddress;   /**< IPv4 address of the UE */
+    Ipv6Address m_localAddress6;  /**< IPv6 address of the UE */
+    Ipv4Mask m_localMask;         /**< IPv4 address mask of the UE */
+    Ipv6Prefix m_localMask6;      /**< IPv6 address mask of the remote host */
 
+    uint32_t m_remoteL2Address; ///< 24 bit MAC address of remote entity
 };
 
 } // namespace ns3

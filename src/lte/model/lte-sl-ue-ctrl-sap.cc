@@ -33,21 +33,17 @@
  * subject to copyright protection within the United States.
  */
 
-
 #include "lte-sl-ue-ctrl-sap.h"
 
+namespace ns3
+{
 
-namespace ns3 {
-
-
-LteSlUeCtrlSapProvider::~LteSlUeCtrlSapProvider ()
+LteSlUeCtrlSapProvider::~LteSlUeCtrlSapProvider()
 {
 }
 
-
-LteSlUeCtrlSapUser::~LteSlUeCtrlSapUser ()
+LteSlUeCtrlSapUser::~LteSlUeCtrlSapUser()
 {
 }
-
 
 } // namespace ns3

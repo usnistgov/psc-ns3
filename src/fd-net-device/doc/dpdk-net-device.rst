@@ -213,7 +213,7 @@ To check allocation of hugepages, run:
 
 You will see the number of hugepages allocated, they should be equal to the number you used above.
 
-Once the hugepage memory is reserved (at either runtime or boot time), 
+Once the hugepage memory is reserved (at either runtime or boot time),
 to make the memory available for DPDK use, perform the following steps:
 
 .. sourcecode:: text
@@ -271,14 +271,14 @@ Initialization of DPDK driver requires initialization of EAL. EAL requires PMD (
 
 .. sourcecode:: text
 
- DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
+ DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper();
  dpdk->SetPmdLibrary("librte_pmd_e1000.so");
 
 Also, NIC should be bound to DPDK Driver in order to be used with EAL. The default driver used is ``uio_pci_generic`` which supports most of the NICs. You can change it using ``DpdkNetDeviceHelper::SetDpdkDriver``, as follows:
 
 .. sourcecode:: text
 
- DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
+ DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper();
  dpdk->SetDpdkDriver("igb_uio");
 
 Attributes

@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -19,316 +18,314 @@
  * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
+#include "lte-rlc.h"
+
+#include "lte-rlc-sap.h"
+#include "lte-rlc-tag.h"
+// #include "lte-mac-sap.h"
+// #include "ff-mac-sched-sap.h"
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
-#include "ns3/lte-rlc.h"
-#include "ns3/lte-rlc-tag.h"
-// #include "lte-mac-sap.h"
-#include "ns3/lte-rlc-sap.h"
-// #include "ff-mac-sched-sap.h"
+namespace ns3
+{
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteRlc");
+NS_LOG_COMPONENT_DEFINE("LteRlc");
 
 /// LteRlcSpecificLteMacSapUser class
 class LteRlcSpecificLteMacSapUser : public LteMacSapUser
 {
-public:
-  /**
-   * Constructor
-   *
-   * \param rlc the RLC
-   */
-  LteRlcSpecificLteMacSapUser (LteRlc* rlc);
+  public:
+    /**
+     * Constructor
+     *
+     * \param rlc the RLC
+     */
+    LteRlcSpecificLteMacSapUser(LteRlc* rlc);
 
-  // Interface implemented from LteMacSapUser
-  virtual void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters params);
-  virtual void NotifyHarqDeliveryFailure ();
-  virtual void ReceivePdu (LteMacSapUser::ReceivePduParameters params);
+    // Interface implemented from LteMacSapUser
+    void NotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters params) override;
+    void NotifyHarqDeliveryFailure() override;
+    void ReceivePdu(LteMacSapUser::ReceivePduParameters params) override;
 
-private:
-  LteRlcSpecificLteMacSapUser ();
-  LteRlc* m_rlc; ///< the RLC
+  private:
+    LteRlcSpecificLteMacSapUser();
+    LteRlc* m_rlc; ///< the RLC
 };
 
-LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser (LteRlc* rlc)
-  : m_rlc (rlc)
-{}
-
-LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser ()
-{}
-
-void
-LteRlcSpecificLteMacSapUser::NotifyTxOpportunity (TxOpportunityParameters params)
+LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser(LteRlc* rlc)
+    : m_rlc(rlc)
 {
-  m_rlc->DoNotifyTxOpportunity (params);
+}
+
+LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser()
+{
 }
 
 void
-LteRlcSpecificLteMacSapUser::NotifyHarqDeliveryFailure ()
+LteRlcSpecificLteMacSapUser::NotifyTxOpportunity(TxOpportunityParameters params)
 {
-  m_rlc->DoNotifyHarqDeliveryFailure ();
+    m_rlc->DoNotifyTxOpportunity(params);
 }
 
 void
-LteRlcSpecificLteMacSapUser::ReceivePdu (LteMacSapUser::ReceivePduParameters params)
+LteRlcSpecificLteMacSapUser::NotifyHarqDeliveryFailure()
 {
-  m_rlc->DoReceivePdu (params);
+    m_rlc->DoNotifyHarqDeliveryFailure();
 }
 
+void
+LteRlcSpecificLteMacSapUser::ReceivePdu(LteMacSapUser::ReceivePduParameters params)
+{
+    m_rlc->DoReceivePdu(params);
+}
 
 ///////////////////////////////////////
 
-NS_OBJECT_ENSURE_REGISTERED (LteRlc);
+NS_OBJECT_ENSURE_REGISTERED(LteRlc);
 
-LteRlc::LteRlc ()
-  : m_rlcSapUser (0),
-  m_macSapProvider (0),
-  m_rnti (0),
-  m_lcid (0),
-  m_srcL2Id (0),
-  m_dstL2Id (0),
-  m_channelType (LteRlc::DEFAULT)
+LteRlc::LteRlc()
+    : m_rlcSapUser(nullptr),
+      m_macSapProvider(nullptr),
+      m_rnti(0),
+      m_lcid(0),
+      m_srcL2Id(0),
+      m_dstL2Id(0),
+      m_channelType(LteRlc::DEFAULT)
 {
-  NS_LOG_FUNCTION (this);
-  m_rlcSapProvider = new LteRlcSpecificLteRlcSapProvider<LteRlc> (this);
-  m_macSapUser = new LteRlcSpecificLteMacSapUser (this);
+    NS_LOG_FUNCTION(this);
+    m_rlcSapProvider = new LteRlcSpecificLteRlcSapProvider<LteRlc>(this);
+    m_macSapUser = new LteRlcSpecificLteMacSapUser(this);
 }
 
-LteRlc::~LteRlc ()
+LteRlc::~LteRlc()
 {
-  NS_LOG_FUNCTION (this);
-}
-
-TypeId LteRlc::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::LteRlc")
-    .SetParent<Object> ()
-    .SetGroupName ("Lte")
-    .AddTraceSource ("TxPDU",
-                     "PDU transmission notified to the MAC.",
-                     MakeTraceSourceAccessor (&LteRlc::m_txPdu),
-                     "ns3::LteRlc::NotifyTxTracedCallback")
-    .AddTraceSource ("RxPDU",
-                     "PDU received.",
-                     MakeTraceSourceAccessor (&LteRlc::m_rxPdu),
-                     "ns3::LteRlc::ReceiveTracedCallback")
-    .AddTraceSource ("TxDrop",
-                     "Trace source indicating a packet "
-                     "has been dropped before transmission",
-                     MakeTraceSourceAccessor (&LteRlc::m_txDropTrace),
-                     "ns3::Packet::TracedCallback")
-  ;
-  return tid;
-}
-
-void
-LteRlc::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  delete (m_rlcSapProvider);
-  delete (m_macSapUser);
-}
-
-void
-LteRlc::SetRnti (uint16_t rnti)
-{
-  NS_LOG_FUNCTION (this << (uint32_t) rnti);
-  m_rnti = rnti;
-}
-
-void
-LteRlc::SetLcId (uint8_t lcId)
-{
-  NS_LOG_FUNCTION (this << (uint32_t) lcId);
-  m_lcid = lcId;
-}
-
-void
-LteRlc::SetSourceL2Id (uint32_t src)
-{
-  NS_LOG_FUNCTION (this << src);
-  m_srcL2Id = src;
-}
-
-void
-LteRlc::SetDestinationL2Id (uint32_t dst)
-{
-  NS_LOG_FUNCTION (this << dst);
-  m_dstL2Id = dst;
-}
-
-void
-LteRlc::SetLteRlcSapUser (LteRlcSapUser * s)
-{
-  NS_LOG_FUNCTION (this << s);
-  m_rlcSapUser = s;
-}
-
-LteRlcSapProvider*
-LteRlc::GetLteRlcSapProvider ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_rlcSapProvider;
-}
-
-void
-LteRlc::SetLteMacSapProvider (LteMacSapProvider * s)
-{
-  NS_LOG_FUNCTION (this << s);
-  m_macSapProvider = s;
-}
-
-LteMacSapUser*
-LteRlc::GetLteMacSapUser ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_macSapUser;
-}
-
-void
-LteRlc::SetRlcChannelType (LteRlc::ChannelType channelType)
-{
-  NS_LOG_FUNCTION (this);
-
-  switch (channelType)
-  {
-    case STCH:
-      m_channelType = STCH;
-      break;
-    default:
-      m_channelType = DEFAULT;
-      break;
-  }
-}
-
-
-
-////////////////////////////////////////
-
-NS_OBJECT_ENSURE_REGISTERED (LteRlcSm);
-
-LteRlcSm::LteRlcSm ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-LteRlcSm::~LteRlcSm ()
-{
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 TypeId
-LteRlcSm::GetTypeId (void)
+LteRlc::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::LteRlcSm")
-    .SetParent<LteRlc> ()
-    .SetGroupName ("Lte")
-    .AddConstructor<LteRlcSm> ()
-  ;
-  return tid;
+    static TypeId tid = TypeId("ns3::LteRlc")
+                            .SetParent<Object>()
+                            .SetGroupName("Lte")
+                            .AddTraceSource("TxPDU",
+                                            "PDU transmission notified to the MAC.",
+                                            MakeTraceSourceAccessor(&LteRlc::m_txPdu),
+                                            "ns3::LteRlc::NotifyTxTracedCallback")
+                            .AddTraceSource("RxPDU",
+                                            "PDU received.",
+                                            MakeTraceSourceAccessor(&LteRlc::m_rxPdu),
+                                            "ns3::LteRlc::ReceiveTracedCallback")
+                            .AddTraceSource("TxDrop",
+                                            "Trace source indicating a packet "
+                                            "has been dropped before transmission",
+                                            MakeTraceSourceAccessor(&LteRlc::m_txDropTrace),
+                                            "ns3::Packet::TracedCallback");
+    return tid;
 }
 
 void
-LteRlcSm::DoInitialize ()
+LteRlc::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  ReportBufferStatus ();
+    NS_LOG_FUNCTION(this);
+    delete (m_rlcSapProvider);
+    delete (m_macSapUser);
 }
 
 void
-LteRlcSm::DoDispose ()
+LteRlc::SetRnti(uint16_t rnti)
 {
-  NS_LOG_FUNCTION (this);
-  LteRlc::DoDispose ();
+    NS_LOG_FUNCTION(this << (uint32_t)rnti);
+    m_rnti = rnti;
 }
 
 void
-LteRlcSm::DoTransmitPdcpPdu (Ptr<Packet> p)
+LteRlc::SetLcId(uint8_t lcId)
 {
-  NS_LOG_FUNCTION (this << p);
+    NS_LOG_FUNCTION(this << (uint32_t)lcId);
+    m_lcid = lcId;
 }
 
 void
-LteRlcSm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
+LteRlc::SetPacketDelayBudgetMs(uint16_t packetDelayBudget)
 {
-  NS_LOG_FUNCTION (this << rxPduParams.p);
-  // RLC Performance evaluation
-  RlcTag rlcTag;
-  Time delay;
-  bool ret = rxPduParams.p->FindFirstMatchingByteTag (rlcTag);
-  NS_ASSERT_MSG (ret, "RlcTag is missing");
-  delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
-  NS_LOG_LOGIC (" RNTI=" << m_rnti
-                         << " LCID=" << (uint32_t) m_lcid
-                         << " size=" << rxPduParams.p->GetSize ()
-                         << " delay=" << delay.As (Time::NS));
-  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds () );
+    NS_LOG_FUNCTION(this << +packetDelayBudget);
+    m_packetDelayBudgetMs = packetDelayBudget;
 }
 
 void
-LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams)
+LteRlc::SetSourceL2Id(uint32_t src)
 {
-  NS_LOG_FUNCTION (this << txOpParams.bytes);
-  LteMacSapProvider::TransmitPduParameters params;
-  RlcTag tag (Simulator::Now ());
-
-  params.pdu = Create<Packet> (txOpParams.bytes);
-  NS_ABORT_MSG_UNLESS (txOpParams.bytes > 0, "Bytes must be > 0");
-  /**
-   * For RLC SM, the packets are not passed to the upper layers, therefore,
-   * in the absence of an header we can safely byte tag the entire packet.
-   */
-  params.pdu->AddByteTag (tag, 1, params.pdu->GetSize ());
-
-  params.rnti = m_rnti;
-  params.lcid = m_lcid;
-  params.srcL2Id = m_srcL2Id;
-  params.dstL2Id = m_dstL2Id;
-  params.layer = txOpParams.layer;
-  params.harqProcessId = txOpParams.harqId;
-  params.componentCarrierId = txOpParams.componentCarrierId;
-  params.discMsg = false;
-  params.mibslMsg = false;
-
-  // RLC Performance evaluation
-  NS_LOG_LOGIC (" RNTI=" << m_rnti
-                         << " LCID=" << (uint32_t) m_lcid
-                         << " size=" << txOpParams.bytes);
-  m_txPdu (m_rnti, m_lcid, txOpParams.bytes);
-
-  m_macSapProvider->TransmitPdu (params);
-  ReportBufferStatus ();
+    NS_LOG_FUNCTION(this << src);
+    m_srcL2Id = src;
 }
 
 void
-LteRlcSm::DoNotifyHarqDeliveryFailure ()
+LteRlc::SetDestinationL2Id(uint32_t dst)
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this << dst);
+    m_dstL2Id = dst;
 }
 
 void
-LteRlcSm::ReportBufferStatus ()
+LteRlc::SetLteRlcSapUser(LteRlcSapUser* s)
 {
-  NS_LOG_FUNCTION (this);
-  LteMacSapProvider::ReportBufferStatusParameters p;
-  p.rnti = m_rnti;
-  p.lcid = m_lcid;
-  p.srcL2Id = m_srcL2Id;
-  p.dstL2Id = m_dstL2Id;
-  p.txQueueSize = 80000;
-  p.txQueueHolDelay = 10;
-  p.retxQueueSize = 0;
-  p.retxQueueHolDelay = 0;
-  p.statusPduSize = 0;
-  m_macSapProvider->ReportBufferStatus (p);
+    NS_LOG_FUNCTION(this << s);
+    m_rlcSapUser = s;
 }
 
+LteRlcSapProvider*
+LteRlc::GetLteRlcSapProvider()
+{
+    NS_LOG_FUNCTION(this);
+    return m_rlcSapProvider;
+}
 
+void
+LteRlc::SetLteMacSapProvider(LteMacSapProvider* s)
+{
+    NS_LOG_FUNCTION(this << s);
+    m_macSapProvider = s;
+}
 
+LteMacSapUser*
+LteRlc::GetLteMacSapUser()
+{
+    NS_LOG_FUNCTION(this);
+    return m_macSapUser;
+}
+
+void
+LteRlc::SetRlcChannelType(LteRlc::ChannelType channelType)
+{
+    NS_LOG_FUNCTION(this);
+
+    switch (channelType)
+    {
+    case STCH:
+        m_channelType = STCH;
+        break;
+    default:
+        m_channelType = DEFAULT;
+        break;
+    }
+}
+
+////////////////////////////////////////
+
+NS_OBJECT_ENSURE_REGISTERED(LteRlcSm);
+
+LteRlcSm::LteRlcSm()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+LteRlcSm::~LteRlcSm()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+TypeId
+LteRlcSm::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::LteRlcSm").SetParent<LteRlc>().SetGroupName("Lte").AddConstructor<LteRlcSm>();
+    return tid;
+}
+
+void
+LteRlcSm::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    ReportBufferStatus();
+}
+
+void
+LteRlcSm::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    LteRlc::DoDispose();
+}
+
+void
+LteRlcSm::DoTransmitPdcpPdu(Ptr<Packet> p)
+{
+    NS_LOG_FUNCTION(this << p);
+}
+
+void
+LteRlcSm::DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams)
+{
+    NS_LOG_FUNCTION(this << rxPduParams.p);
+    // RLC Performance evaluation
+    RlcTag rlcTag;
+    Time delay;
+    bool ret = rxPduParams.p->FindFirstMatchingByteTag(rlcTag);
+    NS_ASSERT_MSG(ret, "RlcTag is missing");
+    delay = Simulator::Now() - rlcTag.GetSenderTimestamp();
+    NS_LOG_LOGIC(" RNTI=" << m_rnti << " LCID=" << (uint32_t)m_lcid << " size="
+                          << rxPduParams.p->GetSize() << " delay=" << delay.As(Time::NS));
+    m_rxPdu(m_rnti, m_lcid, rxPduParams.p->GetSize(), delay.GetNanoSeconds());
+}
+
+void
+LteRlcSm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParams)
+{
+    NS_LOG_FUNCTION(this << txOpParams.bytes);
+    LteMacSapProvider::TransmitPduParameters params;
+    RlcTag tag(Simulator::Now());
+
+    params.pdu = Create<Packet>(txOpParams.bytes);
+    NS_ABORT_MSG_UNLESS(txOpParams.bytes > 0, "Bytes must be > 0");
+    /**
+     * For RLC SM, the packets are not passed to the upper layers, therefore,
+     * in the absence of an header we can safely byte tag the entire packet.
+     */
+    params.pdu->AddByteTag(tag, 1, params.pdu->GetSize());
+
+    params.rnti = m_rnti;
+    params.lcid = m_lcid;
+    params.srcL2Id = m_srcL2Id;
+    params.dstL2Id = m_dstL2Id;
+    params.layer = txOpParams.layer;
+    params.harqProcessId = txOpParams.harqId;
+    params.componentCarrierId = txOpParams.componentCarrierId;
+    params.discMsg = false;
+    params.mibslMsg = false;
+
+    // RLC Performance evaluation
+    NS_LOG_LOGIC(" RNTI=" << m_rnti << " LCID=" << (uint32_t)m_lcid
+                          << " size=" << txOpParams.bytes);
+    m_txPdu(m_rnti, m_lcid, txOpParams.bytes);
+
+    m_macSapProvider->TransmitPdu(params);
+    ReportBufferStatus();
+}
+
+void
+LteRlcSm::DoNotifyHarqDeliveryFailure()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+void
+LteRlcSm::ReportBufferStatus()
+{
+    NS_LOG_FUNCTION(this);
+    LteMacSapProvider::ReportBufferStatusParameters p;
+    p.rnti = m_rnti;
+    p.lcid = m_lcid;
+    p.srcL2Id = m_srcL2Id;
+    p.dstL2Id = m_dstL2Id;
+    p.txQueueSize = 80000;
+    p.txQueueHolDelay = 10;
+    p.retxQueueSize = 0;
+    p.retxQueueHolDelay = 0;
+    p.statusPduSize = 0;
+    m_macSapProvider->ReportBufferStatus(p);
+}
 
 //////////////////////////////////////////
 
@@ -347,6 +344,5 @@ LteRlcSm::ReportBufferStatus ()
 // LteRlcAm::~LteRlcAm ()
 // {
 // }
-
 
 } // namespace ns3

@@ -98,11 +98,7 @@ McpttChannel::IsOpen (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<Socket> socket = GetSocket ();
-
-  bool isOpen = (socket != 0);
-
-  return isOpen;
+  return (GetSocket ()) ? true : false;
 }
 
 int

@@ -321,7 +321,7 @@ McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
 
-  while (participant == 0 && it != m_participants.end ())
+  while (!participant && it != m_participants.end ())
     {
       if ((*it)->GetPeerUserId () == userId)
         {
@@ -330,7 +330,7 @@ McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
 
       it++;
     }
-  if (participant == 0)
+  if (!participant)
     {
       NS_LOG_WARN ("Participant not found by user ID");
     }
@@ -342,7 +342,7 @@ McpttOnNetworkFloorArbitrator::GetParticipantBySsrc (const uint32_t ssrc) const
 {
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
-  while (participant == 0 && it != m_participants.end ())
+  while (!participant && it != m_participants.end ())
     {
       if ((*it)->GetStoredSsrc () == ssrc)
         {
@@ -351,7 +351,7 @@ McpttOnNetworkFloorArbitrator::GetParticipantBySsrc (const uint32_t ssrc) const
 
       it++;
     }
-  if (participant == 0)
+  if (!participant)
     {
       NS_LOG_WARN ("Participant not found by SSRC");
     }
@@ -362,7 +362,7 @@ McpttOnNetworkFloorArbitrator::GetOriginatingParticipant (void) const
 {
   Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
   std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
-  while (participant == 0 && it != m_participants.end ())
+  while (!participant && it != m_participants.end ())
     {
       if ((*it)->IsOriginator ())
         {
@@ -371,7 +371,7 @@ McpttOnNetworkFloorArbitrator::GetOriginatingParticipant (void) const
 
       it++;
     }
-  if (participant == 0)
+  if (!participant)
     {
       NS_LOG_WARN ("Originating participant not found");
     }
@@ -902,7 +902,7 @@ McpttOnNetworkFloorArbitrator::SetDualControl (const Ptr<McpttOnNetworkFloorDual
 {
   NS_LOG_FUNCTION (this);
 
-  if (dualControl != 0)
+  if (dualControl)
     {
       dualControl->SetOwner (this);
     }

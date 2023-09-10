@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006,2007 INRIA
  *
@@ -31,7 +30,7 @@
  *
  *  - a "course change notifier" trace source which can be used to register
  *    listeners to the course changes of a mobility model
- * 
- *  - a number of helper classes which are used to place nodes and setup 
+ *
+ *  - a number of helper classes which are used to place nodes and setup
  *    mobility models (including parsers for some mobility definition formats).
  */

@@ -1,7 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * NIST-developed software is provided by NIST as a public
- * service. You may use, copy and distribute copies of the software in 
+ * service. You may use, copy and distribute copies of the software in
  * any medium, provided that you keep intact this entire notice. You
  * may improve, modify and create derivative works of the software or
  * any portion of the software, and you may copy and distribute such
@@ -36,20 +36,21 @@
 #ifndef LTE_SL_POOL_FACTORY_H
 #define LTE_SL_POOL_FACTORY_H
 
-namespace ns3 {
+namespace ns3
+{
 
-  /**
-   * This class is used to generate sidelink pool configuration
-   */
+/**
+ * This class is used to generate sidelink pool configuration
+ */
 class LteSlPoolFactory
 {
-public:
-  /**
-   * Creates an instance of the sidelink pool factory
-   */
-  LteSlPoolFactory ();
+  public:
+    /**
+     * Creates an instance of the sidelink pool factory
+     */
+    LteSlPoolFactory();
 };
 
-}
+} // namespace ns3
 
 #endif

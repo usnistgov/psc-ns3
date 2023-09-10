@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -18,15 +17,16 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include "ns3/lte-as-sap.h"
+#include "lte-as-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-LteAsSapProvider::~LteAsSapProvider ()
+LteAsSapProvider::~LteAsSapProvider()
 {
 }
 
-LteAsSapUser::~LteAsSapUser ()
+LteAsSapUser::~LteAsSapUser()
 {
 }
 

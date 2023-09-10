@@ -10,9 +10,9 @@ University of Murcia (Spain) by Francisco J. Ros for NS-2, and was
 ported to NS-3 by Gustavo Carneiro at INESC Porto (Portugal).
 
 The implementation is based on OLSR Version 1 (:rfc:`3626` [rfc3626]_) and
-it is *not* compliant with OLSR Version 2 (:rfc:`7181` [rfc7181]_) or any 
+it is *not* compliant with OLSR Version 2 (:rfc:`7181` [rfc7181]_) or any
 of the Version 2 extensions.
- 
+
 Model Description
 *****************
 
@@ -23,9 +23,9 @@ design choices are based on the previous ns2 model.
 Scope and Limitations
 +++++++++++++++++++++
 
-The model is for IPv4 only.  
+The model is for IPv4 only.
 
-* Mostly compliant with OLSR as documented in :rfc:`3626` ([rfc3626]_), 
+* Mostly compliant with OLSR as documented in :rfc:`3626` ([rfc3626]_),
 * The use of multiple interfaces was not supported by the NS-2 version, but is supported in NS-3;
 * OLSR does not respond to the routing event notifications corresponding to dynamic interface up and down (``ns3::RoutingProtocol::NotifyInterfaceUp`` and ``ns3::RoutingProtocol::NotifyInterfaceDown``) or address insertion/removal ``ns3::RoutingProtocol::NotifyAddAddress`` and ``ns3::RoutingProtocol::NotifyRemoveAddress``).
 * Unlike the NS-2 version, does not yet support MAC layer feedback as described in :rfc:`3626` ([rfc3626]_);
@@ -57,18 +57,18 @@ before the node's static routing table.::
   NodeContainer c:
   ...
   // Enable OLSR
-  NS_LOG_INFO ("Enabling OLSR Routing.");
+  NS_LOG_INFO("Enabling OLSR Routing.");
   OlsrHelper olsr;
 
   Ipv4StaticRoutingHelper staticRouting;
 
   Ipv4ListRoutingHelper list;
-  list.Add (staticRouting, 0);
-  list.Add (olsr, 10);
+  list.Add(staticRouting, 0);
+  list.Add(olsr, 10);
 
   InternetStackHelper internet;
-  internet.SetRoutingHelper (list);
-  internet.Install (c);
+  internet.SetRoutingHelper(list);
+  internet.Install(c);
 
 Once installed,the OLSR "main interface" can be set with the SetMainInterface()
 command. If the user does not specify a main address, the protocol will select
@@ -85,7 +85,7 @@ welcome.
 Examples
 ++++++++
 
-The examples are in the ``src/olsr/examples/`` directory. However, many other examples esists in the
+The examples are in the ``src/olsr/examples/`` directory. However, many other examples exists in the
 general examples directory, e.g., ``examples/routing/manet-routing-compare.cc``.
 
 For specific examples of the HNA feature, see the examples in ``src/olsr/examples/``.
@@ -98,7 +98,7 @@ has been created and unique IP addresses assigned to each node, the
 simulation script writer can call one of three overloaded functions
 with different scope to enable OLSR: ``ns3::OlsrHelper::Install
 (NodeContainer container)``; ``ns3::OlsrHelper::Install (Ptr<Node>
-node)``; or ``ns3::OlsrHelper::InstallAll (void)``
+node)``; or ``ns3::OlsrHelper::InstallAll ()``
 
 Attributes
 ++++++++++
@@ -115,7 +115,7 @@ The list of configurabel attributes is:
 * TcInterval (time, default 5s), TC messages emission interval.
 * MidInterval (time, default 5s), MID messages emission interval.
 * HnaInterval (time, default 5s), HNA messages emission interval.
-* Willingness (enum, default OLSR_WILL_DEFAULT), Willingness of a node to carry and forward traffic for other nodes.
+* Willingness (enum, default olsr::Willingness::DEFAULT), Willingness of a node to carry and forward traffic for other nodes.
 
 Tracing
 +++++++

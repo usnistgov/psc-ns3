@@ -169,7 +169,7 @@ UavMobilityEnergyModelHelper::CheckInstallMobilityModel (Ptr<Node> node) const
 {
   NS_LOG_FUNCTION (this << node);
   auto mobility = node->GetObject<MobilityModel> ();
-  if (mobility == 0)
+  if (!mobility)
     {
       if (m_mobilityModel.GetTypeId ().GetName ().empty ())
         {
@@ -177,7 +177,7 @@ UavMobilityEnergyModelHelper::CheckInstallMobilityModel (Ptr<Node> node) const
                         "SetMobilityModel not called");
         }
       mobility = m_mobilityModel.Create ()->GetObject<MobilityModel> ();
-      if (mobility == 0)
+      if (!mobility)
         {
           NS_ABORT_MSG ("Failed to create MobilityModel "
                         << m_mobilityModel.GetTypeId ().GetName ());
@@ -195,7 +195,7 @@ UavMobilityEnergyModelHelper::CheckInstallEnergySource (Ptr<Node> node) const
 {
   NS_LOG_FUNCTION (this << node);
   auto energySource = node->GetObject<EnergySource> ();
-  if (energySource == 0)
+  if (!energySource)
     {
       if (m_energySource.GetTypeId ().GetName ().empty ())
         {
@@ -204,7 +204,7 @@ UavMobilityEnergyModelHelper::CheckInstallEnergySource (Ptr<Node> node) const
         }
 
       energySource = m_energySource.Create ()->GetObject<EnergySource> ();
-      if (energySource == 0)
+      if (!energySource)
         {
           NS_ABORT_MSG ("Failed to create EnergySource "
                         << m_energySource.GetTypeId ().GetName ());
@@ -222,11 +222,11 @@ Ptr<DeviceEnergyModel>
 UavMobilityEnergyModelHelper::DoInstall (Ptr<Node> node, Ptr<EnergySource> source) const
 {
   NS_LOG_FUNCTION (this << node << source);
-  NS_ABORT_MSG_IF (node == 0, "Cannot install on a NULL node");
-  NS_ABORT_MSG_IF (source == 0, "Cannot install with a NULL source");
+  NS_ABORT_MSG_IF (!node, "Cannot install on a NULL node");
+  NS_ABORT_MSG_IF (!source, "Cannot install with a NULL source");
   source->SetNode (node);
   auto mobility = node->GetObject<MobilityModel> ();
-  NS_ABORT_MSG_IF (mobility == 0, "node Must have a MobilityModel installed");
+  NS_ABORT_MSG_IF (!mobility, "node Must have a MobilityModel installed");
 
   auto createdModel = 
     m_energyModel.Create ()->GetObject<UavMobilityEnergyModel> ();

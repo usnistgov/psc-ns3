@@ -618,7 +618,7 @@ McpttCall::SetCallMachine (Ptr<McpttCallMachine>  callMachine)
 {
   NS_LOG_FUNCTION (this << &callMachine);
 
-  if (callMachine != 0)
+  if (callMachine)
     {
       callMachine->SetCall (this);
     }
@@ -631,7 +631,7 @@ McpttCall::SetFloorChannel (Ptr<McpttChannel>  floorChannel)
 {
   NS_LOG_FUNCTION (this << &floorChannel);
 
-  if (floorChannel != 0)
+  if (floorChannel)
     {
       floorChannel->SetRxPktCb (MakeCallback (&McpttCall::ReceiveFloorPkt, this));
     }
@@ -644,7 +644,7 @@ McpttCall::SetFloorMachine (Ptr<McpttFloorParticipant>  floorMachine)
 {
   NS_LOG_FUNCTION (this << &floorMachine);
 
-  if (floorMachine != 0)
+  if (floorMachine)
     {
       floorMachine->SetCall (this);
     }
@@ -657,7 +657,7 @@ McpttCall::SetMediaChannel (Ptr<McpttChannel>  mediaChannel)
 {
   NS_LOG_FUNCTION (this << &mediaChannel);
 
-  if (mediaChannel != 0)
+  if (mediaChannel)
     {
       mediaChannel->SetRxPktCb (MakeCallback (&McpttCall::ReceiveMediaPkt, this));
     }

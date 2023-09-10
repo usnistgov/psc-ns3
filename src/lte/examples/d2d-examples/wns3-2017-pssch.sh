@@ -41,29 +41,29 @@ RB_STEP=2
 Time=10 #simulation length
 
 function run_config ()
-{    
+{
     config=$1
     period=$2
     pscch=$3
     mcs=$4
     ktrp=$5
-  
+
     Log="DataRate_$config.txt"
     TraceFile="SlRxPhyStats_$config.txt"
 
     if [ -e $Log ] || [ -e $TraceFile ];then
-    echo "ERROR: $Log or $TraceFile already exists. Appending the old $Log or reading old $TraceFile is not allowed!" 
+    echo "ERROR: $Log or $TraceFile already exists. Appending the old $Log or reading old $TraceFile is not allowed!"
     exit
-    fi 
-  
+    fi
+
     printf "SlPeriod(ms)\tPscchSubframes\tMCS\tKTRP\tPsschRbs\tDataRate(bits/sec)\n" >> $Log
 
     for ((rb=$RB_START; rb<=$RB_END;rb=$((rb+RB_STEP))))
     do
     #echo "Running RB=$rb"
     ./waf --run "$scenario --period=${period} --pscchLength=${pscch} --mcs=${mcs} --ktrp=${ktrp} --rbSize=${rb} --simTime=${Time} --SlRxOutputFilename=${TraceFile}" >> /dev/null 2>&1
-    datarate=`cat ${TraceFile} | awk 'BEGIN{bytes=0;start=0;stop=0}{if ($9==1 && $10==1) { if (bytes==0) start=$1; bytes+=$7; stop=$1}}END{print 8*bytes/(stop-start)}'` 
-        printf "$period\t$pscch\t$mcs\t$ktrp\t$rb\t$datarate\n" >> $Log   
+    datarate=`cat ${TraceFile} | awk 'BEGIN{bytes=0;start=0;stop=0}{if ($9==1 && $10==1) { if (bytes==0) start=$1; bytes+=$7; stop=$1}}END{print 8*bytes/(stop-start)}'`
+        printf "$period\t$pscch\t$mcs\t$ktrp\t$rb\t$datarate\n" >> $Log
     done
 }
 

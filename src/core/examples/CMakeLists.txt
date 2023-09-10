@@ -1,4 +1,5 @@
 set(base_examples
+    assert-example
     command-line-example
     fatal-example
     hash-example
@@ -42,18 +43,23 @@ if(${ENABLE_BUILD_VERSION})
   )
 endif()
 
-if(${ENABLE_REALTIME})
-  build_lib_example(
-    NAME main-test-sync
-    SOURCE_FILES main-test-sync.cc
-    LIBRARIES_TO_LINK ${libnetwork}
-                      ${CMAKE_THREAD_LIBS_INIT}
-  )
-endif()
+build_lib_example(
+  NAME main-test-sync
+  SOURCE_FILES main-test-sync.cc
+  LIBRARIES_TO_LINK ${libnetwork}
+                    ${CMAKE_THREAD_LIBS_INIT}
+)
 
 build_lib_example(
   NAME empirical-random-variable-example
   SOURCE_FILES empirical-random-variable-example.cc
   LIBRARIES_TO_LINK ${libcore}
                     ${libflow-monitor}
+)
+
+build_lib_example(
+  NAME log-example
+  SOURCE_FILES log-example.cc
+  LIBRARIES_TO_LINK ${libcore}
+                    ${libnetwork}
 )

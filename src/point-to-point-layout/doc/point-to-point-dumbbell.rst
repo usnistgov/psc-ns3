@@ -1,6 +1,6 @@
 .. include:: replace.txt
 .. highlight:: cpp
- 
+
 Point to Point Dumbbell Topology Helper
 ---------------------------------------
 
@@ -38,7 +38,7 @@ nodes, function ``AssignIpv4Addresses`` which takes ``Ipv4AddressHelper``
 objects for the left, right and router nodes for assigning IPv4 address to
 each node. It provides a function ``AssignIpv6Addresses`` which takes a
 ``Ipv6Address`` address base and a ``Ipv6Prefix`` prefix for assigning
-IPv6Adddress to every node.
+IPv6Address to every node.
 
 Node Positioning
 ================
@@ -67,18 +67,18 @@ A dumbbell topology with point-to-point links can be configured by using the
 router nodes as shown below::
 
   PointToPointHelper p2pLeaf;
-  p2pLeaf.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2pLeaf.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  p2pLeaf.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
+  p2pLeaf.SetChannelAttribute("Delay", StringValue("2ms"));
 
   PointToPointHelper p2pRouter;
-  p2pRouter.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  p2pRouter.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  p2pRouter.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+  p2pRouter.SetChannelAttribute("Delay", StringValue("10ms"));
 
 After creating the ``PointToPointHelper`` objects, we need to instantiate the
 ``PointToPointDumbbellHelper``::
 
-  PointToPointDumbbellHelper dumbbell (nLeftLeaf, p2pLeaf, nRightLeaf,
-                                       p2pLeaf, p2pRouter);
+  PointToPointDumbbellHelper dumbbell(nLeftLeaf, p2pLeaf, nRightLeaf,
+                                      p2pLeaf, p2pRouter);
 
 It is also possible to create two separate ``PointToPointHelper`` objects for
 left leaf nodes and right leaf nodes. In this case, a total of three
@@ -86,21 +86,21 @@ left leaf nodes and right leaf nodes. In this case, a total of three
 one for right leaf nodes and one for the router nodes as shown below::
 
   PointToPointHelper p2pLeft;
-  p2pLeft.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2pLeft.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  p2pLeft.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
+  p2pLeft.SetChannelAttribute("Delay", StringValue("2ms"));
 
   PointToPointHelper p2pRight;
-  p2pRight.SetDeviceAttribute ("DataRate", StringValue ("15Mbps"));
-  p2pRight.SetChannelAttribute ("Delay", StringValue ("5ms"));
+  p2pRight.SetDeviceAttribute("DataRate", StringValue("15Mbps"));
+  p2pRight.SetChannelAttribute("Delay", StringValue("5ms"));
 
   PointToPointHelper p2pRouter;
-  p2pRouter.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  p2pRouter.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  p2pRouter.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+  p2pRouter.SetChannelAttribute("Delay", StringValue("10ms"));
 
 In this case, we instantiate the ``PointToPointDumbbellHelper`` as shown below::
 
-  PointToPointDumbbellHelper dumbbell (nLeftLeaf, p2pLeft, nRightLeaf,
-                                       p2pRight, p2pRouter);
+  PointToPointDumbbellHelper dumbbell(nLeftLeaf, p2pLeft, nRightLeaf,
+                                      p2pRight, p2pRouter);
 
 After this, we can tell the helper to position the nodes in a dumbbell layout.
 This is done to improve the visualization of the topology and can be achieved
@@ -110,33 +110,33 @@ by calling the ``BoundingBox`` function::
   // uly -> Minimum Upper Left Y coordinate
   // lrx -> Maximum Lower Right X coordinate
   // lry -> Maximum Lower Right Y coordinate
-  dumbbell.BoundingBox (ulx, uly, lrx, lry);
+  dumbbell.BoundingBox(ulx, uly, lrx, lry);
 
 Next, we need to install an Internet Stack on the nodes. We have to
 instantiate a ``InternetStackHelper`` object for this, and pass it as a
 parameter to ``InstallStack`` function::
 
   InternetStackHelper stack;
-  dumbbell.InstallStack (stack);
+  dumbbell.InstallStack(stack);
 
 Subsequently, we have to assign a IPv4/IPv6 address to the nodes as shown
 below::
 
   // IPv4
   Ipv4AddressHelper leftIp, rightIp, routerIp;
-  leftIp.SetBase ("10.1.1.0", "255.255.255.0");
-  rightIp.SetBase ("10.2.1.0", "255.255.255.0");
-  routerIp.SetBase ("10.3.1.0", "255.255.255.0");
+  leftIp.SetBase("10.1.1.0", "255.255.255.0");
+  rightIp.SetBase("10.2.1.0", "255.255.255.0");
+  routerIp.SetBase("10.3.1.0", "255.255.255.0");
 
-  dumbbell.AssignIpv4Addresses (leftIp, rightIp, routerIp);
+  dumbbell.AssignIpv4Addresses(leftIp, rightIp, routerIp);
 
 For IPv6 address::
 
   // IPv6
-  Ipv6Address addrBase ("2001:1::");
-  Ipv6Prefix prefix (64)
+  Ipv6Address addrBase("2001:1::");
+  Ipv6Prefix prefix(64)
 
-  dumbbell.AssignIpv6Addresses (addrBase, prefix);
+  dumbbell.AssignIpv6Addresses(addrBase, prefix);
 
 Example
 *******

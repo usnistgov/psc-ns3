@@ -154,7 +154,7 @@ void PscApplicationClient::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket == 0)
+  if (m_socket)
     {
       m_socket = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
       m_socket->SetSendCallback (MakeCallback (&PscApplicationClient::TrySend, this));

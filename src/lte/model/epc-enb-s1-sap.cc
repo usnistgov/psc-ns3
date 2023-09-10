@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -18,15 +17,16 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include "ns3/epc-enb-s1-sap.h"
+#include "epc-enb-s1-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-EpcEnbS1SapProvider::~EpcEnbS1SapProvider ()
+EpcEnbS1SapProvider::~EpcEnbS1SapProvider()
 {
 }
 
-EpcEnbS1SapUser::~EpcEnbS1SapUser ()
+EpcEnbS1SapUser::~EpcEnbS1SapUser()
 {
 }
 

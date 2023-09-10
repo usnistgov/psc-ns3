@@ -3,7 +3,7 @@
 +++++++++++++++++++++++++++++++++++++
 
 In this section we describe the test suites included with the antenna
-module that verify its correct functionality. 
+module that verify its correct functionality.
 
 
 Angles
@@ -49,6 +49,19 @@ directions and for different values of the orientation, the reference
 gain and the beamwidth. The reference gain is calculated by hand. Each
 test case passes if the reference gain in dB is equal to the value returned
 by ``CosineAntennaModel`` within a tolerance of 0.001, which accounts
+for the approximation done for the calculation of the reference
+values.
+
+ParabolicAntennaModel
+---------------------
+
+The unit test suite ``parabolic-antenna-model`` checks that the
+``ParabolicAntennaModel`` class works properly. Several test cases are
+provided that check for the antenna gain value calculated at different
+directions and for different values of the orientation, the maximum attenuation
+and the beamwidth. The reference gain is calculated by hand. Each
+test case passes if the reference gain in dB is equal to the value returned
+by ``ParabolicAntennaModel`` within a tolerance of 0.001, which accounts
 for the approximation done for the calculation of the reference
 values.
 

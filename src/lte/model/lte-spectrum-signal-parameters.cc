@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 CTTC
  *
@@ -20,228 +19,232 @@
  * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
+#include "lte-spectrum-signal-parameters.h"
+
+#include "lte-control-messages.h"
+
 #include <ns3/log.h>
 #include <ns3/packet-burst.h>
 #include <ns3/ptr.h>
-#include <ns3/lte-spectrum-signal-parameters.h>
-#include <ns3/lte-control-messages.h>
 
-
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteSpectrumSignalParameters");
-
-LteSpectrumSignalParameters::LteSpectrumSignalParameters ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("LteSpectrumSignalParameters");
+
+LteSpectrumSignalParameters::LteSpectrumSignalParameters()
+{
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParameters::LteSpectrumSignalParameters (const LteSpectrumSignalParameters& p)
-  : SpectrumSignalParameters (p)
+LteSpectrumSignalParameters::LteSpectrumSignalParameters(const LteSpectrumSignalParameters& p)
+    : SpectrumSignalParameters(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  packetBurst = p.packetBurst->Copy ();
+    NS_LOG_FUNCTION(this << &p);
+    packetBurst = p.packetBurst->Copy();
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParameters::Copy ()
+LteSpectrumSignalParameters::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParameters> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParameters>(*this);
 }
 
-
-
-LteSpectrumSignalParametersDataFrame::LteSpectrumSignalParametersDataFrame ()
+LteSpectrumSignalParametersDataFrame::LteSpectrumSignalParametersDataFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersDataFrame::LteSpectrumSignalParametersDataFrame (const LteSpectrumSignalParametersDataFrame& p)
-  : SpectrumSignalParameters (p)
+LteSpectrumSignalParametersDataFrame::LteSpectrumSignalParametersDataFrame(
+    const LteSpectrumSignalParametersDataFrame& p)
+    : SpectrumSignalParameters(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  cellId = p.cellId;
-  if (p.packetBurst)
+    NS_LOG_FUNCTION(this << &p);
+    cellId = p.cellId;
+    if (p.packetBurst)
     {
-      packetBurst = p.packetBurst->Copy ();
+        packetBurst = p.packetBurst->Copy();
     }
-  ctrlMsgList = p.ctrlMsgList;
+    ctrlMsgList = p.ctrlMsgList;
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersDataFrame::Copy ()
+LteSpectrumSignalParametersDataFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersDataFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersDataFrame>(*this);
 }
 
-
-
-LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame ()
+LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame (const LteSpectrumSignalParametersDlCtrlFrame& p)
-  : SpectrumSignalParameters (p)
+LteSpectrumSignalParametersDlCtrlFrame::LteSpectrumSignalParametersDlCtrlFrame(
+    const LteSpectrumSignalParametersDlCtrlFrame& p)
+    : SpectrumSignalParameters(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  cellId = p.cellId;
-  pss = p.pss;
-  ctrlMsgList = p.ctrlMsgList;
-}
-
-Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersDlCtrlFrame::Copy ()
-{
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersDlCtrlFrame> (*this);
-}
-
-
-LteSpectrumSignalParametersUlSrsFrame::LteSpectrumSignalParametersUlSrsFrame ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-LteSpectrumSignalParametersUlSrsFrame::LteSpectrumSignalParametersUlSrsFrame (const LteSpectrumSignalParametersUlSrsFrame& p)
-  : SpectrumSignalParameters (p)
-{
-  NS_LOG_FUNCTION (this << &p);
-  cellId = p.cellId;
+    NS_LOG_FUNCTION(this << &p);
+    cellId = p.cellId;
+    pss = p.pss;
+    ctrlMsgList = p.ctrlMsgList;
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersUlSrsFrame::Copy ()
+LteSpectrumSignalParametersDlCtrlFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersUlSrsFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersDlCtrlFrame>(*this);
 }
 
-
-LteSpectrumSignalParametersSlFrame::LteSpectrumSignalParametersSlFrame ()
+LteSpectrumSignalParametersUlSrsFrame::LteSpectrumSignalParametersUlSrsFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersSlFrame::LteSpectrumSignalParametersSlFrame (const LteSpectrumSignalParametersSlFrame& p)
-  : SpectrumSignalParameters (p)
+LteSpectrumSignalParametersUlSrsFrame::LteSpectrumSignalParametersUlSrsFrame(
+    const LteSpectrumSignalParametersUlSrsFrame& p)
+    : SpectrumSignalParameters(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  nodeId = p.nodeId;
-  slssId = p.slssId;
-  if (p.packetBurst)
+    NS_LOG_FUNCTION(this << &p);
+    cellId = p.cellId;
+}
+
+Ptr<SpectrumSignalParameters>
+LteSpectrumSignalParametersUlSrsFrame::Copy() const
+{
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersUlSrsFrame>(*this);
+}
+
+LteSpectrumSignalParametersSlFrame::LteSpectrumSignalParametersSlFrame()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+LteSpectrumSignalParametersSlFrame::LteSpectrumSignalParametersSlFrame(
+    const LteSpectrumSignalParametersSlFrame& p)
+    : SpectrumSignalParameters(p)
+{
+    NS_LOG_FUNCTION(this << &p);
+    nodeId = p.nodeId;
+    slssId = p.slssId;
+    if (p.packetBurst)
     {
-      packetBurst = p.packetBurst->Copy ();
+        packetBurst = p.packetBurst->Copy();
     }
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersSlFrame::Copy ()
+LteSpectrumSignalParametersSlFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersSlFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersSlFrame>(*this);
 }
 
-LteSpectrumSignalParametersSlCtrlFrame::LteSpectrumSignalParametersSlCtrlFrame ()
+LteSpectrumSignalParametersSlCtrlFrame::LteSpectrumSignalParametersSlCtrlFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersSlCtrlFrame::LteSpectrumSignalParametersSlCtrlFrame (const LteSpectrumSignalParametersSlCtrlFrame& p)
-  : LteSpectrumSignalParametersSlFrame (p)
+LteSpectrumSignalParametersSlCtrlFrame::LteSpectrumSignalParametersSlCtrlFrame(
+    const LteSpectrumSignalParametersSlCtrlFrame& p)
+    : LteSpectrumSignalParametersSlFrame(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  nodeId = p.nodeId;
-  groupId = p.groupId;
-  slssId = p.slssId;
-  if (p.packetBurst)
+    NS_LOG_FUNCTION(this << &p);
+    nodeId = p.nodeId;
+    groupId = p.groupId;
+    slssId = p.slssId;
+    if (p.packetBurst)
     {
-      packetBurst = p.packetBurst->Copy ();
+        packetBurst = p.packetBurst->Copy();
     }
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersSlCtrlFrame::Copy ()
+LteSpectrumSignalParametersSlCtrlFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersSlCtrlFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersSlCtrlFrame>(*this);
 }
 
-LteSpectrumSignalParametersSlDataFrame::LteSpectrumSignalParametersSlDataFrame ()
+LteSpectrumSignalParametersSlDataFrame::LteSpectrumSignalParametersSlDataFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersSlDataFrame::LteSpectrumSignalParametersSlDataFrame (const LteSpectrumSignalParametersSlDataFrame& p)
-  : LteSpectrumSignalParametersSlFrame (p)
+LteSpectrumSignalParametersSlDataFrame::LteSpectrumSignalParametersSlDataFrame(
+    const LteSpectrumSignalParametersSlDataFrame& p)
+    : LteSpectrumSignalParametersSlFrame(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  nodeId = p.nodeId;
-  groupId = p.groupId;
-  slssId = p.slssId;
-  if (p.packetBurst)
+    NS_LOG_FUNCTION(this << &p);
+    nodeId = p.nodeId;
+    groupId = p.groupId;
+    slssId = p.slssId;
+    if (p.packetBurst)
     {
-      packetBurst = p.packetBurst->Copy ();
+        packetBurst = p.packetBurst->Copy();
     }
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersSlDataFrame::Copy ()
+LteSpectrumSignalParametersSlDataFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersSlDataFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersSlDataFrame>(*this);
 }
 
-LteSpectrumSignalParametersSlDiscFrame::LteSpectrumSignalParametersSlDiscFrame ()
+LteSpectrumSignalParametersSlDiscFrame::LteSpectrumSignalParametersSlDiscFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersSlDiscFrame::LteSpectrumSignalParametersSlDiscFrame (const LteSpectrumSignalParametersSlDiscFrame& p)
-  : LteSpectrumSignalParametersSlFrame (p)
+LteSpectrumSignalParametersSlDiscFrame::LteSpectrumSignalParametersSlDiscFrame(
+    const LteSpectrumSignalParametersSlDiscFrame& p)
+    : LteSpectrumSignalParametersSlFrame(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  nodeId = p.nodeId;
-  resNo = p.resNo;
-  rv = p.rv;
-  slssId = p.slssId;
-  if (p.packetBurst)
+    NS_LOG_FUNCTION(this << &p);
+    nodeId = p.nodeId;
+    resNo = p.resNo;
+    rv = p.rv;
+    slssId = p.slssId;
+    if (p.packetBurst)
     {
-      packetBurst = p.packetBurst->Copy ();
+        packetBurst = p.packetBurst->Copy();
     }
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersSlDiscFrame::Copy ()
+LteSpectrumSignalParametersSlDiscFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersSlDiscFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersSlDiscFrame>(*this);
 }
 
-LteSpectrumSignalParametersSlMibFrame::LteSpectrumSignalParametersSlMibFrame ()
+LteSpectrumSignalParametersSlMibFrame::LteSpectrumSignalParametersSlMibFrame()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSpectrumSignalParametersSlMibFrame::LteSpectrumSignalParametersSlMibFrame (const LteSpectrumSignalParametersSlMibFrame& p)
-  : LteSpectrumSignalParametersSlFrame (p)
+LteSpectrumSignalParametersSlMibFrame::LteSpectrumSignalParametersSlMibFrame(
+    const LteSpectrumSignalParametersSlMibFrame& p)
+    : LteSpectrumSignalParametersSlFrame(p)
 {
-  NS_LOG_FUNCTION (this << &p);
-  nodeId = p.nodeId;
-  slssId = p.slssId;
-  if (p.packetBurst)
+    NS_LOG_FUNCTION(this << &p);
+    nodeId = p.nodeId;
+    slssId = p.slssId;
+    if (p.packetBurst)
     {
-      packetBurst = p.packetBurst->Copy ();
+        packetBurst = p.packetBurst->Copy();
     }
 }
 
 Ptr<SpectrumSignalParameters>
-LteSpectrumSignalParametersSlMibFrame::Copy ()
+LteSpectrumSignalParametersSlMibFrame::Copy() const
 {
-  NS_LOG_FUNCTION (this);
-  return Create<LteSpectrumSignalParametersSlMibFrame> (*this);
+    NS_LOG_FUNCTION(this);
+    return Create<LteSpectrumSignalParametersSlMibFrame>(*this);
 }
 
 } // namespace ns3

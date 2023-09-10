@@ -33,15 +33,15 @@
  * subject to copyright protection within the United States.
  */
 
-
-#include "ns3/lte-module.h"
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/mobility-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/point-to-point-module.h"
 #include "ns3/config-store.h"
+#include "ns3/core-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/lte-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/network-module.h"
+#include "ns3/point-to-point-module.h"
+
 #include <cfloat>
 #include <sstream>
 
@@ -87,211 +87,223 @@ using namespace ns3;
  *
  */
 
-NS_LOG_COMPONENT_DEFINE ("LteSlOutOfCovrgDiscoveryCollision");
+NS_LOG_COMPONENT_DEFINE("LteSlOutOfCovrgDiscoveryCollision");
 
-int main (int argc, char *argv[])
+int
+main(int argc, char* argv[])
 {
-  Time simTime = Seconds (3);
-  bool enableNsLogs = false;
+    Time simTime = Seconds(3);
+    bool enableNsLogs = false;
 
-  CommandLine cmd;
-  cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
-  cmd.AddValue ("enableNsLogs", "Enable ns-3 logging (debug builds)", enableNsLogs);
-  cmd.Parse (argc, argv);
+    CommandLine cmd;
+    cmd.AddValue("simTime", "Total duration of the simulation", simTime);
+    cmd.AddValue("enableNsLogs", "Enable ns-3 logging (debug builds)", enableNsLogs);
+    cmd.Parse(argc, argv);
 
-  // Set error models
-  Config::SetDefault ("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue (true));
-  Config::SetDefault ("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue (true));
+    // Set error models
+    Config::SetDefault("ns3::LteSpectrumPhy::SlDiscoveryErrorModelEnabled", BooleanValue(true));
+    Config::SetDefault("ns3::LteSpectrumPhy::DropRbOnCollisionEnabled", BooleanValue(true));
 
-  //Set the UEs power in dBm
-  Config::SetDefault ("ns3::LteUePhy::TxPower", DoubleValue (23.0));
+    // Set the UEs power in dBm
+    Config::SetDefault("ns3::LteUePhy::TxPower", DoubleValue(23.0));
 
-  ConfigStore inputConfig;
-  inputConfig.ConfigureDefaults ();
-  // parse again so we can override input file default values via command line
-  cmd.Parse (argc, argv);
+    ConfigStore inputConfig;
+    inputConfig.ConfigureDefaults();
+    // parse again so we can override input file default values via command line
+    cmd.Parse(argc, argv);
 
-  if (enableNsLogs)
+    if (enableNsLogs)
     {
-      LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
+        LogLevel logLevel =
+            (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
 
-      LogComponentEnable ("LteUeRrc", logLevel);
-      LogComponentEnable ("LteUeMac", logLevel);
-      LogComponentEnable ("LteSpectrumPhy", logLevel);
-      LogComponentEnable ("LteSlInterference", logLevel);
+        LogComponentEnable("LteUeRrc", logLevel);
+        LogComponentEnable("LteUeMac", logLevel);
+        LogComponentEnable("LteSpectrumPhy", logLevel);
+        LogComponentEnable("LteSlInterference", logLevel);
 
-      LogComponentEnable ("LteUePhy", logLevel);
-      LogComponentEnable ("LteEnbPhy", logLevel);
+        LogComponentEnable("LteUePhy", logLevel);
+        LogComponentEnable("LteEnbPhy", logLevel);
     }
 
-  //Create the helpers
-  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+    // Create the helpers
+    Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
 
-  //Create and set the EPC helper
-  Ptr<PointToPointEpcHelper>  epcHelper = CreateObject<PointToPointEpcHelper> ();
-  lteHelper->SetEpcHelper (epcHelper);
+    // Create and set the EPC helper
+    Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
+    lteHelper->SetEpcHelper(epcHelper);
 
-  ////Create Sidelink helper and set lteHelper
-  Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper> ();
-  proseHelper->SetLteHelper (lteHelper);
+    ////Create Sidelink helper and set lteHelper
+    Ptr<LteSidelinkHelper> proseHelper = CreateObject<LteSidelinkHelper>();
+    proseHelper->SetLteHelper(lteHelper);
 
-  //Set pathloss model
-  lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::Cost231PropagationLossModel"));
+    // Set pathloss model
+    lteHelper->SetAttribute("PathlossModel", StringValue("ns3::Cost231PropagationLossModel"));
 
-  //Enable Sidelink
-  lteHelper->SetAttribute ("UseSidelink", BooleanValue (true));
-  lteHelper->Initialize ();
+    // Enable Sidelink
+    lteHelper->SetAttribute("UseSidelink", BooleanValue(true));
+    lteHelper->Initialize();
 
-  // Since we are not installing eNB, we need to set the frequency attribute of pathloss model here
-  // Frequency for Public Safety use case (band 14 : 788 - 798 MHz for Uplink)
-  double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (23330);
-  NS_LOG_LOGIC ("UL freq: " << ulFreq);
-  Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel ();
-  Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel> ();
-  NS_ABORT_MSG_IF (lossModel == nullptr, "No PathLossModel");
-  bool ulFreqOk = uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
-  if (!ulFreqOk)
+    // Since we are not installing eNB, we need to set the frequency attribute of pathloss model
+    // here Frequency for Public Safety use case (band 14 : 788 - 798 MHz for Uplink)
+    double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency(23330);
+    NS_LOG_LOGIC("UL freq: " << ulFreq);
+    Ptr<Object> uplinkPathlossModel = lteHelper->GetUplinkPathlossModel();
+    Ptr<PropagationLossModel> lossModel = uplinkPathlossModel->GetObject<PropagationLossModel>();
+    NS_ABORT_MSG_IF(lossModel == nullptr, "No PathLossModel");
+    bool ulFreqOk = uplinkPathlossModel->SetAttributeFailSafe("Frequency", DoubleValue(ulFreq));
+    if (!ulFreqOk)
     {
-      NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
+        NS_LOG_WARN("UL propagation model does not have a Frequency attribute");
     }
 
-  NodeContainer ueNodes;
-  ueNodes.Create (3);
-  NS_LOG_INFO ("UE 1 node id = [" << ueNodes.Get (0)->GetId () << "]");
-  NS_LOG_INFO ("UE 2 node id = [" << ueNodes.Get (1)->GetId () << "]");
-  NS_LOG_INFO ("UE 3 node id = [" << ueNodes.Get (2)->GetId () << "]");
+    NodeContainer ueNodes;
+    ueNodes.Create(3);
+    NS_LOG_INFO("UE 1 node id = [" << ueNodes.Get(0)->GetId() << "]");
+    NS_LOG_INFO("UE 2 node id = [" << ueNodes.Get(1)->GetId() << "]");
+    NS_LOG_INFO("UE 3 node id = [" << ueNodes.Get(2)->GetId() << "]");
 
-  //Position of the UE nodes
-  Ptr<ListPositionAllocator> positionAllocUes = CreateObject<ListPositionAllocator> ();
-  positionAllocUes->Add (Vector (10.0, 0.0, 1.5));
-  positionAllocUes->Add (Vector (-10.0, 0.0, 1.5));
-  positionAllocUes->Add (Vector (0.0, 17.32, 1.5));
+    // Position of the UE nodes
+    Ptr<ListPositionAllocator> positionAllocUes = CreateObject<ListPositionAllocator>();
+    positionAllocUes->Add(Vector(10.0, 0.0, 1.5));
+    positionAllocUes->Add(Vector(-10.0, 0.0, 1.5));
+    positionAllocUes->Add(Vector(0.0, 17.32, 1.5));
 
-  //Install mobility
-  MobilityHelper mobilityUes;
-  mobilityUes.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobilityUes.SetPositionAllocator (positionAllocUes);
+    // Install mobility
+    MobilityHelper mobilityUes;
+    mobilityUes.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobilityUes.SetPositionAllocator(positionAllocUes);
 
-  for (uint32_t i = 0; i < ueNodes.GetN (); ++i)
+    for (uint32_t i = 0; i < ueNodes.GetN(); ++i)
     {
-      mobilityUes.Install (ueNodes.Get (i));
+        mobilityUes.Install(ueNodes.Get(i));
     }
 
-  //Install LTE devices to the nodes
-  NetDeviceContainer ueDevs = lteHelper->InstallUeDevice (ueNodes);
+    // Install LTE devices to the nodes
+    NetDeviceContainer ueDevs = lteHelper->InstallUeDevice(ueNodes);
 
-  //Fix the random number stream
-  uint16_t randomStream = 1;
-  randomStream += lteHelper->AssignStreams (ueDevs, randomStream);
+    // Fix the random number stream
+    uint16_t randomStream = 1;
+    randomStream += lteHelper->AssignStreams(ueDevs, randomStream);
 
-  // Install Sidelink configuration for the UEs
-  Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc> ();
-  ueSidelinkConfiguration->SetDiscEnabled (true);
+    // Install Sidelink configuration for the UEs
+    Ptr<LteSlUeRrc> ueSidelinkConfiguration = CreateObject<LteSlUeRrc>();
+    ueSidelinkConfiguration->SetDiscEnabled(true);
 
-  LteRrcSap::SlPreconfiguration preconfiguration;
+    LteRrcSap::SlPreconfiguration preconfiguration;
 
-  preconfiguration.preconfigGeneral.carrierFreq = 23330;
-  preconfiguration.preconfigGeneral.slBandwidth = 50;
-  preconfiguration.preconfigDisc.nbPools = 1;
+    preconfiguration.preconfigGeneral.carrierFreq = 23330;
+    preconfiguration.preconfigGeneral.slBandwidth = 50;
+    preconfiguration.preconfigDisc.nbPools = 1;
 
-  LteSlDiscPreconfigPoolFactory pfactory;
+    LteSlDiscPreconfigPoolFactory pfactory;
 
-  pfactory.SetDiscCpLen ("NORMAL");
-  pfactory.SetDiscPeriod ("rf32");
-  pfactory.SetNumRetx (0);
-  pfactory.SetNumRepetition (1);
+    pfactory.SetDiscCpLen("NORMAL");
+    pfactory.SetDiscPeriod("rf32");
+    pfactory.SetNumRetx(0);
+    pfactory.SetNumRepetition(1);
 
-  pfactory.SetDiscPrbNum (2);
-  pfactory.SetDiscPrbStart (1);
-  pfactory.SetDiscPrbEnd (2);
-  pfactory.SetDiscOffset (0);
-  pfactory.SetDiscBitmap (0x00001);
+    pfactory.SetDiscPrbNum(2);
+    pfactory.SetDiscPrbStart(1);
+    pfactory.SetDiscPrbEnd(2);
+    pfactory.SetDiscOffset(0);
+    pfactory.SetDiscBitmap(0x00001);
 
-  preconfiguration.preconfigDisc.pools[0] = pfactory.CreatePool ();
-  preconfiguration.preconfigDisc.nbPools = 1;
+    preconfiguration.preconfigDisc.pools[0] = pfactory.CreatePool();
+    preconfiguration.preconfigDisc.nbPools = 1;
 
-  ueSidelinkConfiguration->SetSlPreconfiguration (preconfiguration);
-  lteHelper->InstallSidelinkConfiguration (ueDevs, ueSidelinkConfiguration);
+    ueSidelinkConfiguration->SetSlPreconfiguration(preconfiguration);
+    lteHelper->InstallSidelinkConfiguration(ueDevs, ueSidelinkConfiguration);
 
+    // Install the IP stack on the UEs and assign IP address
+    InternetStackHelper internet;
+    internet.Install(ueNodes);
+    Ipv4InterfaceContainer ueIpIface;
+    ueIpIface = epcHelper->AssignUeIpv4Address(NetDeviceContainer(ueDevs));
 
-  //Install the IP stack on the UEs and assign IP address
-  InternetStackHelper internet;
-  internet.Install (ueNodes);
-  Ipv4InterfaceContainer ueIpIface;
-  ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueDevs));
-
-  // set the default gateway for the UE
-  Ipv4StaticRoutingHelper ipv4RoutingHelper;
-  for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    // set the default gateway for the UE
+    Ipv4StaticRoutingHelper ipv4RoutingHelper;
+    for (uint32_t u = 0; u < ueNodes.GetN(); ++u)
     {
-      Ptr<Node> ueNode = ueNodes.Get (u);
-      // Set the default gateway for the UE
-      Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNode->GetObject<Ipv4> ());
-      ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+        Ptr<Node> ueNode = ueNodes.Get(u);
+        // Set the default gateway for the UE
+        Ptr<Ipv4StaticRouting> ueStaticRouting =
+            ipv4RoutingHelper.GetStaticRouting(ueNode->GetObject<Ipv4>());
+        ueStaticRouting->SetDefaultRoute(epcHelper->GetUeDefaultGatewayAddress(), 1);
     }
 
+    NS_LOG_INFO("Configuring discovery applications");
+    std::map<Ptr<NetDevice>, std::list<uint32_t>> announceApps;
+    std::map<Ptr<NetDevice>, std::list<uint32_t>> monitorApps;
 
-  NS_LOG_INFO ("Configuring discovery applications");
-   std::map<Ptr<NetDevice>, std::list<uint32_t> > announceApps;
-   std::map<Ptr<NetDevice>, std::list<uint32_t> > monitorApps;
-   
-   for (uint32_t i = 1; i <= ueNodes.GetN (); ++i)
-   {
-      if (i != ueNodes.GetN ())
-      {
-         announceApps[ueDevs.Get (i - 1)].push_back(i);
-      }
-      for (uint32_t j = 1; j <= ueNodes.GetN (); ++j)
-      {
-         if (i == ueNodes.GetN () && j < ueNodes.GetN ())
-         {
-            monitorApps[ueDevs.Get (i - 1)].push_back(j);
-         }
-      }
-   }
-   
-   for (auto itAnnounceApps : announceApps)
-   {
-      Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itAnnounceApps.first);
-      std::list<uint32_t> apps = itAnnounceApps.second;
-      std::cout << "Scheduling " << apps.size () << " announce apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
-      std::list<uint32_t>::iterator itAppList;
-      for (auto itAppList : apps)
+    for (uint32_t i = 1; i <= ueNodes.GetN(); ++i)
+    {
+        if (i != ueNodes.GetN())
         {
-          std::cout << "Announcing App code = " << itAppList << std::endl;
+            announceApps[ueDevs.Get(i - 1)].push_back(i);
+        }
+        for (uint32_t j = 1; j <= ueNodes.GetN(); ++j)
+        {
+            if (i == ueNodes.GetN() && j < ueNodes.GetN())
+            {
+                monitorApps[ueDevs.Get(i - 1)].push_back(j);
+            }
+        }
+    }
+
+    for (const auto& itAnnounceApps : announceApps)
+    {
+        Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice>(itAnnounceApps.first);
+        std::list<uint32_t> apps = itAnnounceApps.second;
+        std::cout << "Scheduling " << apps.size()
+                  << " announce apps for UE with IMSI = " << ueNetDevice->GetImsi() << std::endl;
+        std::list<uint32_t>::iterator itAppList;
+        for (auto itAppList : apps)
+        {
+            std::cout << "Announcing App code = " << itAppList << std::endl;
         }
 
-      Simulator::Schedule (Seconds (2.0), &LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Announcing);
+        Simulator::Schedule(Seconds(2.0),
+                            &LteSidelinkHelper::StartDiscoveryApps,
+                            proseHelper,
+                            ueNetDevice,
+                            apps,
+                            LteSlUeRrc::Announcing);
     }
 
-  for (auto itMonitorApps : monitorApps)
+    for (const auto& itMonitorApps : monitorApps)
     {
-      Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice> (itMonitorApps.first);
-      std::list<uint32_t> apps = itMonitorApps.second;
-      std::cout << "Scheduling " << apps.size () << " monitor apps for UE with IMSI = " << ueNetDevice->GetImsi () << std::endl;
-      std::list<uint32_t>::iterator itAppList;
-      for (auto itAppList : apps)
-      {
-         std::cout << "Monitoring App code = " << itAppList << std::endl;
-      }
+        Ptr<LteUeNetDevice> ueNetDevice = DynamicCast<LteUeNetDevice>(itMonitorApps.first);
+        std::list<uint32_t> apps = itMonitorApps.second;
+        std::cout << "Scheduling " << apps.size()
+                  << " monitor apps for UE with IMSI = " << ueNetDevice->GetImsi() << std::endl;
+        std::list<uint32_t>::iterator itAppList;
+        for (auto itAppList : apps)
+        {
+            std::cout << "Monitoring App code = " << itAppList << std::endl;
+        }
 
-      Simulator::Schedule (Seconds (2.0),&LteSidelinkHelper::StartDiscoveryApps, proseHelper, ueNetDevice, apps, LteSlUeRrc::Monitoring);
+        Simulator::Schedule(Seconds(2.0),
+                            &LteSidelinkHelper::StartDiscoveryApps,
+                            proseHelper,
+                            ueNetDevice,
+                            apps,
+                            LteSlUeRrc::Monitoring);
     }
 
-  ///*** End of application configuration ***///
+    ///*** End of application configuration ***///
 
-  NS_LOG_INFO ("Enabling Sidelink discovery reception trace...");
+    NS_LOG_INFO("Enabling Sidelink discovery reception trace...");
 
-  lteHelper->EnableSlRxPhyTraces ();
-  lteHelper->EnableSlPsdchMacTraces ();
-  lteHelper->EnableDiscoveryMonitoringRrcTraces ();
+    lteHelper->EnableSlRxPhyTraces();
+    lteHelper->EnableSlPsdchMacTraces();
+    lteHelper->EnableDiscoveryMonitoringRrcTraces();
 
-  NS_LOG_INFO ("Starting simulation...");
+    NS_LOG_INFO("Starting simulation...");
 
-  Simulator::Stop (simTime);
+    Simulator::Stop(simTime);
 
-  Simulator::Run ();
-  Simulator::Destroy ();
-  return 0;
-
+    Simulator::Run();
+    Simulator::Destroy();
+    return 0;
 }

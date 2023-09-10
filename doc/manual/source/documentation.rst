@@ -14,7 +14,7 @@ The API documentation is generated from the source code itself,
 using Doxygen_, to generate cross-linked web pages.
 Both of these are important:  the Sphinx chapters explain the *why*
 and overview of using a model; the API documentation explains the
-*how* details.  
+*how* details.
 
 This chapter gives a quick overview of these
 tools, emphasizing preferred usage and customizations for |ns3|.
@@ -64,7 +64,7 @@ all go in the ``src/foo/doc/`` directory.  The docs are actually built
 by a Sphinx Makefile.  For especially involved
 documentation, it may be helpful to have a local ``Makefile``
 in the ``src/foo/doc/`` directory to
-simplify building the documentation for this module 
+simplify building the documentation for this module
 (`Antenna`_ is an example).  Setting this up
 is not particularly hard, but is beyond the scope of this chapter.
 
@@ -87,7 +87,7 @@ To add your chapter there, edit ``doc/models/source/index.rst``
 
    .. toctree::
       :maxdepth: 1
- 
+
      organization
      animation
      antenna
@@ -127,7 +127,7 @@ your image files.  Again, please keep these in alphabetical order.
 Building Sphinx Docs
 ====================
 
-Building the Sphinx documentation is pretty simple.  
+Building the Sphinx documentation is pretty simple.
 To build all the Sphinx documentation:
 
 .. sourcecode:: bash
@@ -175,12 +175,12 @@ the basics here, instead focusing on preferred usage for |ns3|.
 
 
 * Start documents with these two lines:
-   
+
   .. sourcecode:: rest
-     
+
      .. include:: replace.txt
      .. highlight:: cpp
-   
+
   The first line enables some simple replacements.  For example,
   typing ``|ns3|`` renders as |ns3|.
   The second sets the default source code highlighting language explicitly
@@ -189,12 +189,12 @@ the basics here, instead focusing on preferred usage for |ns3|.
   see below.)
 
 * Sections:
-  
+
   Sphinx is pretty liberal about marking section headings.  By convention,
   we prefer this hierarchy:
-  
+
   .. sourcecode:: rest
-      
+
      .. heading hierarchy:
         ------------- Chapter
         ************* Section (#.#)
@@ -202,7 +202,7 @@ the basics here, instead focusing on preferred usage for |ns3|.
         ############# Sub-subsection
 
 * Syntax Highlighting:
-  
+
   To use the default syntax highlighter, simply start a sourcecode block:
 
   +--------------------------------------+------------------------------------+
@@ -213,7 +213,7 @@ the basics here, instead focusing on preferred usage for |ns3|.
   |   The ``Frobnitz`` is accessed by::  | The ``Frobnitz`` is accessed by::  |
   |                                      |                                    |
   |     Foo::Frobnitz frob;              |   Foo::Frobnitz frob;              |
-  |     frob.Set (...);                  |   frob.Set (...);                  |
+  |     frob.Set(...);                   |   frob.Set(...);                   |
   +--------------------------------------+------------------------------------+
 
   To use a specific syntax highlighter, for example, ``bash`` shell commands:
@@ -225,9 +225,9 @@ the basics here, instead focusing on preferred usage for |ns3|.
   |                                      |                                    |
   |   .. sourcecode:: bash               | .. sourcecode:: bash               |
   |                                      |                                    |
-  |      $ ls                            |    $ ls		              |
+  |      $ ls                            |    $ ls                            |
   +--------------------------------------+------------------------------------+
-  
+
 * Shorthand Notations:
 
   These shorthands are defined:
@@ -315,7 +315,7 @@ The preferred style for Doxygen comments is the JavaDoc style::
    *  Understanding this material shouldn't be necessary to using
    *  the class or method.
    */
-   void ExampleFunction (const int foo, double & bar, const bool baz);
+   void ExampleFunction(const int foo, double & bar, const bool baz);
 
 In this style the Doxygen comment block begins with two \`*' characters:
 ``/**``, and precedes the item being documented.
@@ -324,7 +324,7 @@ For items needing only a brief description, either of these short forms
 is appropriate::
 
   /** Destructor implementation. */
-  void DoDispose ();
+  void DoDispose();
 
   int m_count;  //!< Count of ...
 
@@ -355,11 +355,8 @@ Useful Features
   #. In the sub class mark inherited functions with an ordinary comment::
 
        // Inherited methods
-       virtual void FooBar (void);
-       virtual int BarFoo (double baz);
-
-     Note that the signatures have to match exactly, so include the formal
-     argument ``(void)``
+       virtual void FooBar();
+       virtual int BarFoo(double baz);
 
      This doesn't work for static functions; see ``GetTypeId``, below, for an
      example.
@@ -390,7 +387,7 @@ script:
 .. sourcecode:: bash
 
     $ doc/doxygen.warnings.report.sh
-    
+
     doxygen.warnings.report.sh:
     Building and running print-introspected-doxygen...done.
     Rebuilding doxygen (v1.8.10) docs with full errors...done.
@@ -519,8 +516,8 @@ As for Sphinx, the Doxygen docs_ and reference_ are pretty good.
 We won't duplicate the basics here, instead focusing on preferred
 usage for |ns3|.
 
-.. _docs:       http://www.stack.nl/~dimitri/doxygen/index.html
-.. _reference:  http://www.stack.nl/~dimitri/doxygen/manual/commands.html
+.. _docs:       https://www.doxygen.nl/index.html
+.. _reference:  https://www.doxygen.nl/manual/commands.html
 
 
 * Use Doxygen ``Modules`` to group related items.
@@ -545,7 +542,7 @@ usage for |ns3|.
      */
 
   or in the corresponding ``.cc`` file::
-  
+
     /**
      *  \file
      *  \ingroup foo
@@ -570,7 +567,7 @@ usage for |ns3|.
      *  \param ale The size of a pint of ale, in Imperial ounces.
      */
     typedef void (* BarCallback)(const int ale);
-    
+
 * Copy the ``Attribute`` help strings from the ``GetTypeId`` method to use
   as the brief descriptions of associated members.
 
@@ -586,7 +583,7 @@ usage for |ns3|.
   The allowed values of the direction token are ``[in]``, ``[out]``, and
   ``[in,out]`` (note the explicit square brackets), as discussed in the
   Doxygen docs for ``\param``.
-  
+
 * Document template arguments with ``\tparam``, just as you use ``\param``
   for function arguments.
 
@@ -599,7 +596,7 @@ usage for |ns3|.
      * \tparam U \deduced The argument type.
      * \param [in] a The argument.
      */
-    template <typename T, typename U> T Function (U a);
+    template <typename T, typename U> T Function(U a);
 
   * Use ``\tparam U \deduced`` because the type ``U`` can be deduced at
     the site where the template is invoked.  Basically deduction can only
@@ -607,7 +604,7 @@ usage for |ns3|.
 
   * Use ``\tparam T \explicit`` because the type ``T`` can't be deduced;
     it must be given explicitly at the invocation site, as in
-    ``Create<MyObject> (...)``
+    ``Create<MyObject>(...)``
 
 * ``\internal`` should be used only to set off a discussion of implementation
   details, not to mark ``private`` functions (they are already marked,
@@ -624,16 +621,16 @@ cases is:
 
 * Default constructor/destructor::
 
-    MyClass ();   //!< Default constructor
-    ~MyClass ();  //!< Destructor
+    MyClass();   //!< Default constructor
+    ~MyClass();  //!< Destructor
 
 * Dummy destructor and DoDispose::
 
     /** Dummy destructor, see DoDispose. */
-    ~MyClass ();
+    ~MyClass();
 
     /** Destructor implementation */
-    virtual void DoDispose ();
+    virtual void DoDispose();
 
 * GetTypeId::
 
@@ -641,7 +638,4 @@ cases is:
      *  Register this type.
      *  \return The object TypeId.
      */
-    static TypeId GetTypeId (void);
-
-
-
+    static TypeId GetTypeId();

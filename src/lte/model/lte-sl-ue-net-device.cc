@@ -34,86 +34,86 @@
  */
 
 #include "lte-sl-ue-net-device.h"
-#include "lte-ue-rrc.h"
+
 #include "epc-ue-nas.h"
+#include "lte-ue-rrc.h"
+
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/ipv6-l3-protocol.h>
 #include <ns3/log.h>
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteSlUeNetDevice");
-
-NS_OBJECT_ENSURE_REGISTERED ( LteSlUeNetDevice);
-
-
-TypeId LteSlUeNetDevice::GetTypeId (void)
+namespace ns3
 {
-  static TypeId
-    tid =
-    TypeId ("ns3::LteSlUeNetDevice")
-    .SetParent<LteNetDevice> ()
-    .AddConstructor<LteSlUeNetDevice> ()
-    .AddAttribute ("EpcUeNas",
-                   "The NAS associated to this UeNetDevice",
-                   PointerValue (),
-                   MakePointerAccessor (&LteSlUeNetDevice::m_nas),
-                   MakePointerChecker <EpcUeNas> ())
-  ;
 
-  return tid;
+NS_LOG_COMPONENT_DEFINE("LteSlUeNetDevice");
+
+NS_OBJECT_ENSURE_REGISTERED(LteSlUeNetDevice);
+
+TypeId
+LteSlUeNetDevice::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::LteSlUeNetDevice")
+                            .SetParent<LteNetDevice>()
+                            .AddConstructor<LteSlUeNetDevice>()
+                            .AddAttribute("EpcUeNas",
+                                          "The NAS associated to this UeNetDevice",
+                                          PointerValue(),
+                                          MakePointerAccessor(&LteSlUeNetDevice::m_nas),
+                                          MakePointerChecker<EpcUeNas>());
+
+    return tid;
 }
 
-
-LteSlUeNetDevice::LteSlUeNetDevice (void)
+LteSlUeNetDevice::LteSlUeNetDevice()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
-LteSlUeNetDevice::~LteSlUeNetDevice (void)
+LteSlUeNetDevice::~LteSlUeNetDevice()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 void
-LteSlUeNetDevice::DoDispose (void)
+LteSlUeNetDevice::DoDispose()
 {
-  NS_LOG_FUNCTION (this);
-  m_nas = 0;
-  LteNetDevice::DoDispose ();
+    NS_LOG_FUNCTION(this);
+    m_nas = nullptr;
+    LteNetDevice::DoDispose();
 }
 
 void
-LteSlUeNetDevice::SetNas (const Ptr<EpcUeNas> nas)
+LteSlUeNetDevice::SetNas(const Ptr<EpcUeNas> nas)
 {
-  NS_LOG_FUNCTION (this);
-  m_nas = nas;
+    NS_LOG_FUNCTION(this);
+    m_nas = nas;
 }
 
 Ptr<EpcUeNas>
-LteSlUeNetDevice::GetNas (void) const
+LteSlUeNetDevice::GetNas() const
 {
-  NS_LOG_FUNCTION (this);
-  return m_nas;
+    NS_LOG_FUNCTION(this);
+    return m_nas;
 }
 
 void
-LteSlUeNetDevice::DoInitialize (void)
+LteSlUeNetDevice::DoInitialize()
 {
-  NS_LOG_FUNCTION (this);
+    NS_LOG_FUNCTION(this);
 }
 
 bool
-LteSlUeNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+LteSlUeNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << dest << protocolNumber);
-  if (protocolNumber != Ipv4L3Protocol::PROT_NUMBER && protocolNumber != Ipv6L3Protocol::PROT_NUMBER)
+    NS_LOG_FUNCTION(this << dest << protocolNumber);
+    if (protocolNumber != Ipv4L3Protocol::PROT_NUMBER &&
+        protocolNumber != Ipv6L3Protocol::PROT_NUMBER)
     {
-      NS_LOG_INFO ("unsupported protocol " << protocolNumber << ", only IPv4 and IPv6 are supported");
-      return true;
+        NS_LOG_INFO("unsupported protocol " << protocolNumber
+                                            << ", only IPv4 and IPv6 are supported");
+        return true;
     }
-  return m_nas->Send (packet,protocolNumber);
+    return m_nas->Send(packet, protocolNumber);
 }
-
 
 } // namespace ns3

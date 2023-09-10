@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2017 Peter D. Barnes, Jr.
  *
@@ -28,20 +27,19 @@
  * This file provides some doxygen documentation for the core module.
  */
 
-
 /**
  * \defgroup core Core
  * \brief The "core" module contains:
  *    - a time management class to hold a time and convert between various
- *      time units: ns3::Time 
+ *      time units: ns3::Time
  *    - a scheduler base class used to implement new simulation event
- *      schedulers:       
- *      ns3::Scheduler and ns3::SchedulerFactory 
+ *      schedulers:
+ *      ns3::Scheduler and ns3::SchedulerFactory
  *    - a simulator class used to create, schedule and cancel events:
  *      ns3::Simulator
- *    - a Functor class: ns3::Callback  
+ *    - a Functor class: ns3::Callback
  *    - an os-independent interface to get access to the elapsed wall clock
- *      time: ns3::SystemWallClockMs 
+ *      time: ns3::SystemWallClockMs
  *    - a class to register regression tests with the test manager: ns3::Test
  *      and ns3::TestManager
  *    - debugging facilities: \ref debugging
@@ -82,4 +80,20 @@
  * \ingroup core
  * \defgroup core-tests Core module tests
  * TestSuites for the Core module
+ */
+
+/**
+ * \ingroup core
+ * \defgroup system System Services
+ *
+ * System-independent interfaces to operating system services:
+ * environment variables, files system, threading, wall clock time.
+ *
+ * Services provided:
+ *
+ *   - Environment variables
+ *   - File and directory paths.
+ *   - Thread primitives:  threads, conditional waits, mutex, critical sections.
+ *   - Asynchronous input from a file descriptor.
+ *   - Wall clock time.
  */

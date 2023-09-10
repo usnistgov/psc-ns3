@@ -76,10 +76,10 @@ how to do this:
 ::
 
     string fileNameWithoutExtension = "gnuplot-aggregator";
-  
+
     // Create an aggregator.
     Ptr<GnuplotAggregator> aggregator =
-      CreateObject<GnuplotAggregator> (fileNameWithoutExtension);
+      CreateObject<GnuplotAggregator>(fileNameWithoutExtension);
 
 The first argument for the constructor, fileNameWithoutExtension, is
 the name of the gnuplot related files to write with no extension.
@@ -111,7 +111,7 @@ If it was desired to have the key below rather than the default position of insi
 ::
 
   aggregator->SetKeyLocation(GnuplotAggregator::KEY_BELOW);
- 
+
 Examples
 ########
 
@@ -138,37 +138,35 @@ GnuplotAggregator as was discussed above.
 
 ::
 
-  void Create2dPlot ()
+  void Create2dPlot()
   {
-    using namespace std;
-  
-    string fileNameWithoutExtension = "gnuplot-aggregator";
-    string plotTitle                = "Gnuplot Aggregator Plot";
-    string plotXAxisHeading         = "Time (seconds)";
-    string plotYAxisHeading         = "Double Values";
-    string plotDatasetLabel         = "Data Values";
-    string datasetContext           = "Dataset/Context/String";
-  
+    std::string fileNameWithoutExtension = "gnuplot-aggregator";
+    std::string plotTitle                = "Gnuplot Aggregator Plot";
+    std::string plotXAxisHeading         = "Time(seconds)";
+    std::string plotYAxisHeading         = "Double Values";
+    std::string plotDatasetLabel         = "Data Values";
+    std::string datasetContext           = "Dataset/Context/String";
+
     // Create an aggregator.
     Ptr<GnuplotAggregator> aggregator =
-      CreateObject<GnuplotAggregator> (fileNameWithoutExtension);
-  
+      CreateObject<GnuplotAggregator>(fileNameWithoutExtension);
+
 Various GnuplotAggregator attributes are set including the 2-D dataset
 that will be plotted.
 
 ::
 
-    // Set the aggregator's properties. 
-    aggregator->SetTerminal ("png");
-    aggregator->SetTitle (plotTitle);
-    aggregator->SetLegend (plotXAxisHeading, plotYAxisHeading);
+    // Set the aggregator's properties.
+    aggregator->SetTerminal("png");
+    aggregator->SetTitle(plotTitle);
+    aggregator->SetLegend(plotXAxisHeading, plotYAxisHeading);
 
-    // Add a data set to the aggregator. 
-    aggregator->Add2dDataset (datasetContext, plotDatasetLabel);
-  
+    // Add a data set to the aggregator.
+    aggregator->Add2dDataset(datasetContext, plotDatasetLabel);
+
     // aggregator must be turned on
-    aggregator->Enable ();
-  
+    aggregator->Enable();
+
 Next, the 2-D values are calculated, and each one is individually
 written to the GnuplotAggregator using the ``Write2d()`` function.
 
@@ -176,7 +174,7 @@ written to the GnuplotAggregator using the ``Write2d()`` function.
 
     double time;
     double value;
-  
+
     // Create the 2-D dataset.
     for (time = -5.0; time <= +5.0; time += 1.0)
       {
@@ -186,13 +184,13 @@ written to the GnuplotAggregator using the ``Write2d()`` function.
         //     value  =  time   .
         //
         value = time * time;
-  
+
         // Add this point to the plot.
-        aggregator->Write2d (datasetContext, time, value);
+        aggregator->Write2d(datasetContext, time, value);
       }
-  
+
     // Disable logging of data for the aggregator.
-    aggregator->Disable ();
+    aggregator->Disable();
   }
 
 FileAggregator
@@ -226,10 +224,10 @@ to do this:
 ::
 
     string fileName       = "file-aggregator-formatted-values.txt";
-  
+
     // Create an aggregator that will have formatted values.
     Ptr<FileAggregator> aggregator =
-      CreateObject<FileAggregator> (fileName, FileAggregator::FORMATTED);
+      CreateObject<FileAggregator>(fileName, FileAggregator::FORMATTED);
 
 The first argument for the constructor, filename, is the name of the
 file to write; the second argument, fileType, is type of file to
@@ -283,24 +281,22 @@ FileAggregator as was discussed above.
 
 ::
 
-  void CreateCommaSeparatedFile ()
+  void CreateCommaSeparatedFile()
   {
-    using namespace std;
-  
-    string fileName       = "file-aggregator-comma-separated.txt";
-    string datasetContext = "Dataset/Context/String";
-  
+    std::string fileName       = "file-aggregator-comma-separated.txt";
+    std::string datasetContext = "Dataset/Context/String";
+
     // Create an aggregator.
     Ptr<FileAggregator> aggregator =
-      CreateObject<FileAggregator> (fileName, FileAggregator::COMMA_SEPARATED);
-  
+      CreateObject<FileAggregator>(fileName, FileAggregator::COMMA_SEPARATED);
+
 FileAggregator attributes are set.
 
 ::
 
     // aggregator must be turned on
-    aggregator->Enable ();
-  
+    aggregator->Enable();
+
 Next, the 2-D values are calculated, and each one is individually
 written to the FileAggregator using the ``Write2d()`` function.
 
@@ -308,7 +304,7 @@ written to the FileAggregator using the ``Write2d()`` function.
 
     double time;
     double value;
-  
+
     // Create the 2-D dataset.
     for (time = -5.0; time <= +5.0; time += 1.0)
       {
@@ -318,59 +314,57 @@ written to the FileAggregator using the ``Write2d()`` function.
         //     value  =  time   .
         //
         value = time * time;
-  
+
         // Add this point to the plot.
-        aggregator->Write2d (datasetContext, time, value);
+        aggregator->Write2d(datasetContext, time, value);
       }
-  
+
     // Disable logging of data for the aggregator.
-    aggregator->Disable ();
+    aggregator->Disable();
   }
-  
+
 The following text file with 2 columns of formatted values was also
 created using the example.
 
 ::
 
-  Time = -5.000e+00	Value = 25
-  Time = -4.000e+00	Value = 16
-  Time = -3.000e+00	Value = 9
-  Time = -2.000e+00	Value = 4
-  Time = -1.000e+00	Value = 1
-  Time = 0.000e+00	Value = 0
-  Time = 1.000e+00	Value = 1
-  Time = 2.000e+00	Value = 4
-  Time = 3.000e+00	Value = 9
-  Time = 4.000e+00	Value = 16
-  Time = 5.000e+00	Value = 25
+  Time = -5.000e+00  Value = 25
+  Time = -4.000e+00  Value = 16
+  Time = -3.000e+00  Value = 9
+  Time = -2.000e+00  Value = 4
+  Time = -1.000e+00  Value = 1
+  Time = 0.000e+00   Value = 0
+  Time = 1.000e+00   Value = 1
+  Time = 2.000e+00   Value = 4
+  Time = 3.000e+00   Value = 9
+  Time = 4.000e+00   Value = 16
+  Time = 5.000e+00   Value = 25
 
 This code from the example shows how to construct the
 FileAggregator as was discussed above.
 
 ::
 
-  void CreateFormattedFile ()
+  void CreateFormattedFile()
   {
-    using namespace std;
-  
-    string fileName       = "file-aggregator-formatted-values.txt";
-    string datasetContext = "Dataset/Context/String";
-  
+    std::string fileName       = "file-aggregator-formatted-values.txt";
+    std::string datasetContext = "Dataset/Context/String";
+
     // Create an aggregator that will have formatted values.
     Ptr<FileAggregator> aggregator =
-      CreateObject<FileAggregator> (fileName, FileAggregator::FORMATTED);
-  
+      CreateObject<FileAggregator>(fileName, FileAggregator::FORMATTED);
+
 FileAggregator attributes are set, including the C-style format string
 to use.
 
 ::
 
     // Set the format for the values.
-    aggregator->Set2dFormat ("Time = %.3e\tValue = %.0f");
-  
+    aggregator->Set2dFormat("Time = %.3e\tValue = %.0f");
+
     // aggregator must be turned on
-    aggregator->Enable ();
-  
+    aggregator->Enable();
+
 Next, the 2-D values are calculated, and each one is individually
 written to the FileAggregator using the ``Write2d()`` function.
 
@@ -378,7 +372,7 @@ written to the FileAggregator using the ``Write2d()`` function.
 
     double time;
     double value;
-  
+
     // Create the 2-D dataset.
     for (time = -5.0; time <= +5.0; time += 1.0)
       {
@@ -388,12 +382,11 @@ written to the FileAggregator using the ``Write2d()`` function.
         //     value  =  time   .
         //
         value = time * time;
-  
-        // Add this point to the plot.
-        aggregator->Write2d (datasetContext, time, value);
-      }
-  
-    // Disable logging of data for the aggregator.
-    aggregator->Disable ();
-  }
 
+        // Add this point to the plot.
+        aggregator->Write2d(datasetContext, time, value);
+      }
+
+    // Disable logging of data for the aggregator.
+    aggregator->Disable();
+  }

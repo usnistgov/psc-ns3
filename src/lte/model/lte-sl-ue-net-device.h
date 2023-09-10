@@ -39,7 +39,8 @@
 #include "ns3/lte-net-device.h"
 #include "ns3/traced-callback.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class Packet;
 class EpcUeNas;
@@ -52,41 +53,38 @@ class EpcUeNas;
  */
 class LteSlUeNetDevice : public LteNetDevice
 {
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+    LteSlUeNetDevice();
+    ~LteSlUeNetDevice() override;
+    void DoDispose() override;
 
-  LteSlUeNetDevice (void);
-  virtual ~LteSlUeNetDevice (void);
-  virtual void DoDispose ();
+    // inherited from NetDevice
+    bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
 
-  // inherited from NetDevice
-  virtual bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+    /**
+     * \brief Set the NAS.
+     * \param nas the LTE UE NAS
+     */
+    void SetNas(const Ptr<EpcUeNas> nas);
 
-  /**
-   * \brief Set the NAS.
-   * \param nas the LTE UE NAS
-   */
-  void SetNas (const Ptr<EpcUeNas> nas);
+    /**
+     * \brief Get the NAS.
+     * \return the LTE UE NAS
+     */
+    Ptr<EpcUeNas> GetNas() const;
 
-  /**
-   * \brief Get the NAS.
-   * \return the LTE UE NAS
-   */
-  Ptr<EpcUeNas> GetNas (void) const;
+  protected:
+    // inherited from Object
+    void DoInitialize() override;
 
-
-protected:
-  // inherited from Object
-  virtual void DoInitialize (void);
-
-
-private:
-  Ptr<EpcUeNas> m_nas; ///< the NAS
+  private:
+    Ptr<EpcUeNas> m_nas; ///< the NAS
 
 }; // end of class LteSlUeNetDevice
 

@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright 2007 University of Washington
  *
@@ -15,19 +14,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Modified by: NIST // Contributions may not be subject to US copyright. 
+ * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
 #ifndef UDP_ECHO_SERVER_H
 #define UDP_ECHO_SERVER_H
 
+#include "ns3/address.h"
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
-#include "ns3/address.h"
 #include "ns3/traced-callback.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class Socket;
 class Packet;
@@ -45,47 +45,46 @@ class Packet;
  */
 class UdpEchoServer : public Application
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  UdpEchoServer ();
-  virtual ~UdpEchoServer ();
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    UdpEchoServer();
+    ~UdpEchoServer() override;
 
-protected:
-  virtual void DoDispose (void);
+  protected:
+    void DoDispose() override;
 
-private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  private:
+    void StartApplication() override;
+    void StopApplication() override;
 
-  /**
-   * \brief Handle a packet reception.
-   *
-   * This function is called by lower layers.
-   *
-   * \param socket the socket the packet was received to.
-   */
-  void HandleRead (Ptr<Socket> socket);
+    /**
+     * \brief Handle a packet reception.
+     *
+     * This function is called by lower layers.
+     *
+     * \param socket the socket the packet was received to.
+     */
+    void HandleRead(Ptr<Socket> socket);
 
-  uint16_t m_port; //!< Port on which we listen for incoming packets.
-  Ptr<Socket> m_socket; //!< IPv4 Socket
-  Ptr<Socket> m_socket6; //!< IPv6 Socket
-  Address m_local; //!< local multicast address
+    uint16_t m_port;       //!< Port on which we listen for incoming packets.
+    Ptr<Socket> m_socket;  //!< IPv4 Socket
+    Ptr<Socket> m_socket6; //!< IPv6 Socket
+    Address m_local;       //!< local multicast address
 
-  /// Callbacks for tracing the packet Rx events
-  TracedCallback<Ptr<const Packet> > m_rxTrace;
+    /// Callbacks for tracing the packet Rx events
+    TracedCallback<Ptr<const Packet>> m_rxTrace;
 
-  /// Callbacks for tracing the packet Tx events, includes source and destination addresses
-  TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_txTraceWithAddresses;
+    /// Callbacks for tracing the packet Tx events, includes source and destination addresses
+    TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_txTraceWithAddresses;
 
-  /// Callbacks for tracing the packet Rx events, includes source and destination addresses
-  TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_rxTraceWithAddresses;
+    /// Callbacks for tracing the packet Rx events, includes source and destination addresses
+    TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
 };
 
 } // namespace ns3
 
 #endif /* UDP_ECHO_SERVER_H */
-

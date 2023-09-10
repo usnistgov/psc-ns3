@@ -16,17 +16,17 @@ def parse_time_ns(tm):
 ## FiveTuple
 class FiveTuple(object):
     ## class variables
-    ## @var sourceAddress 
+    ## @var sourceAddress
     #  source address
-    ## @var destinationAddress 
+    ## @var destinationAddress
     #  destination address
-    ## @var protocol 
+    ## @var protocol
     #  network protocol
-    ## @var sourcePort 
+    ## @var sourcePort
     #  source port
-    ## @var destinationPort 
+    ## @var destinationPort
     #  destination port
-    ## @var __slots_ 
+    ## @var __slots_
     #  class variable list
     __slots_ = ['sourceAddress', 'destinationAddress', 'protocol', 'sourcePort', 'destinationPort']
     def __init__(self, el):
@@ -39,16 +39,12 @@ class FiveTuple(object):
         self.sourcePort = int(el.get('sourcePort'))
         self.destinationPort = int(el.get('destinationPort'))
         self.protocol = int(el.get('protocol'))
-        
+
 ## Histogram
 class Histogram(object):
     ## class variables
     ## @var bins
     #  histogram bins
-    ## @var nbins
-    #  number of bins
-    ## @var number_of_flows
-    #  number of flows
     ## @var __slots_
     #  class variable list
     __slots_ = 'bins', 'nbins', 'number_of_flows'
@@ -76,8 +72,6 @@ class Flow(object):
     #  receive bit rate
     ## @var txBitrate
     #  transmit bit rate
-    ## @var fiveTuple
-    #  five tuple
     ## @var packetSizeMean
     #  packet size mean
     ## @var probe_stats_unsorted
@@ -140,14 +134,10 @@ class Flow(object):
 ## ProbeFlowStats
 class ProbeFlowStats(object):
     ## class variables
-    ## @var probeId
-    #  probe ID
     ## @var packets
     #  network packets
     ## @var bytes
     #  bytes
-    ## @var delayFromFirstProbe
-    #  delay from first probe
     ## @var __slots_
     #  class variable list
     __slots_ = ['probeId', 'packets', 'bytes', 'delayFromFirstProbe']
@@ -191,8 +181,8 @@ class Simulation(object):
 def main(argv):
     file_obj = open(argv[1])
     print("Reading XML file ", end=" ")
- 
-    sys.stdout.flush()        
+
+    sys.stdout.flush()
     level = 0
     sim_list = []
     for event, elem in ElementTree.iterparse(file_obj, events=("start", "end")):

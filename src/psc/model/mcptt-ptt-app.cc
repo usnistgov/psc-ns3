@@ -150,7 +150,7 @@ McpttPttApp::AcceptCall (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
 
@@ -166,7 +166,7 @@ McpttPttApp::AcceptFloorGrant (void)
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       floorMachine = call->GetFloorMachine ();
 
@@ -183,7 +183,7 @@ McpttPttApp::BeginEmergAlert (void)
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
@@ -201,7 +201,7 @@ McpttPttApp::CancelEmergAlert (void)
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
@@ -256,7 +256,7 @@ McpttPttApp::DowngradeCallType (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
 
@@ -316,7 +316,7 @@ McpttPttApp::InitiateCall (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       call->GetFloorMachine ()->SetOriginator (true);
       call->GetCallMachine ()->InitiateCall ();
@@ -375,7 +375,7 @@ McpttPttApp::RejectCall (void)
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
 
@@ -391,7 +391,7 @@ McpttPttApp::ReleaseCall (void)
   Ptr<McpttCall> call = GetSelectedCall ();
   Ptr<McpttCallMachine> callMachine = 0;
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
       callMachine->ReleaseCall ();
@@ -411,7 +411,7 @@ McpttPttApp::ReleaseCallByCallId (uint32_t callId)
   Ptr<McpttCall> call = m_calls.find (callId)->second;
   Ptr<McpttCallMachine> callMachine = 0;
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
       callMachine->ReleaseCall ();
@@ -448,7 +448,7 @@ McpttPttApp::ReleaseRequest (void)
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       floorMachine = call->GetFloorMachine ();
 
@@ -487,7 +487,7 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
       return;
     }
 
-  if (oldCall != 0)
+  if (oldCall)
     {
       oldCallId = oldCall->GetCallId ();
       oldCallMachine = oldCall->GetCallMachine ();
@@ -506,7 +506,7 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
     }
 
   newCall = m_calls.find (callId)->second;
-  if (newCall != 0)
+  if (newCall)
     {
       newCallId = newCall->GetCallId ();
       newCallMachine = newCall->GetCallMachine ();
@@ -558,7 +558,7 @@ McpttPttApp::TakePushNotification (void)
   Ptr<McpttCall> call = GetSelectedCall ();
   Ptr<McpttCallMachine> callMachine = 0;
   Ptr<McpttFloorParticipant> floorMachine = 0;
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
@@ -588,7 +588,7 @@ McpttPttApp::TakeReleaseNotification (void)
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
       floorMachine = call->GetFloorMachine ();
@@ -615,7 +615,7 @@ McpttPttApp::TakeSendReq (McpttMediaMsg& msg)
   Ptr<McpttFloorParticipant> floorMachine = 0;
   Ptr<McpttCall> call = GetSelectedCall ();
 
-  if (call != 0)
+  if (call)
     {
       floorMachine = call->GetFloorMachine ();
 
@@ -639,7 +639,7 @@ McpttPttApp::UpgradeCallType (uint8_t callType)
   Ptr<McpttCall> call = GetSelectedCall ();
   Ptr<McpttCallMachine> callMachine = 0;
 
-  if (call != 0)
+  if (call)
     {
       callMachine = call->GetCallMachine ();
 
@@ -1078,7 +1078,7 @@ McpttPttApp::SetMediaSrc (Ptr<McpttMediaSrc>  mediaSrc)
 {
   NS_LOG_FUNCTION (this << mediaSrc);
 
-  if (mediaSrc != 0)
+  if (mediaSrc)
     {
       mediaSrc->SetSink (this);
     }
@@ -1099,7 +1099,7 @@ McpttPttApp::SetPusher (Ptr<McpttPusher>  pusher)
 {
   NS_LOG_FUNCTION (this << pusher);
 
-  if (pusher != 0)
+  if (pusher)
     {
       pusher->SetPttApp (GetObject<McpttPttApp> ());
     }

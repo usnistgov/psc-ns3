@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2015 Danilo Abrignani
  *
@@ -21,17 +20,15 @@
 
 #include "lte-ccm-rrc-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-
-LteCcmRrcSapProvider::~LteCcmRrcSapProvider ()
+LteCcmRrcSapProvider::~LteCcmRrcSapProvider()
 {
 }
 
-
-LteCcmRrcSapUser::~LteCcmRrcSapUser ()
+LteCcmRrcSapUser::~LteCcmRrcSapUser()
 {
 }
-
 
 } // end of namespace ns3

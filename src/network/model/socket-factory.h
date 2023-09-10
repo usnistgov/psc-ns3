@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
  *
@@ -23,14 +22,15 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class Socket;
 
 /**
  * \ingroup socket
  *
- * \brief Object to create transport layer instances that provide a 
+ * \brief Object to create transport layer instances that provide a
  * socket API to applications.
  *
  * This base class defines the API for creating sockets.
@@ -39,32 +39,31 @@ class Socket;
  * set through the sysctl or proc interfaces in Linux.
 
  * If you want to write a new transport protocol accessible through
- * sockets, you need to subclass this factory class, implement CreateSocket, 
+ * sockets, you need to subclass this factory class, implement CreateSocket,
  * instantiate the object, and aggregate it to the node.
- * 
+ *
  * \see Udp
  * \see UdpImpl
  */
 class SocketFactory : public Object
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  SocketFactory ();
+    SocketFactory();
 
-  /**
-   * \return smart pointer to Socket
-   * 
-   * Base class method for creating socket instances.
-   */
-  virtual Ptr<Socket> CreateSocket (void) = 0;
+    /**
+     * \return smart pointer to Socket
+     *
+     * Base class method for creating socket instances.
+     */
+    virtual Ptr<Socket> CreateSocket() = 0;
 };
 
 } // namespace ns3
-
 
 #endif /* SOCKET_FACTORY_H */

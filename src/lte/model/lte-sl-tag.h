@@ -35,13 +35,13 @@
 #ifndef LTE_SL_TAG_H
 #define LTE_SL_TAG_H
 
-#include "ns3/tag.h"
 #include "ns3/nstime.h"
+#include "ns3/tag.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class Tag;
-
 
 /**
  * Tag used to define the resource number in the control pool and the
@@ -50,57 +50,55 @@ class Tag;
 
 class LteSlSciTag : public Tag
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Create an empty LteSlSciTag
-   */
-  LteSlSciTag ();
+    /**
+     * Create an empty LteSlSciTag
+     */
+    LteSlSciTag();
 
-  /**
-   * Create a LteSlSciTag with the given resource number and transport block size
-   * \param rnti The RNTI
-   * \param resNo The resource number
-   * \param tbSize The transport block size
-   */
-  LteSlSciTag (uint16_t rnti, uint16_t resNo, uint32_t tbSize);
+    /**
+     * Create a LteSlSciTag with the given resource number and transport block size
+     * \param rnti The RNTI
+     * \param resNo The resource number
+     * \param tbSize The transport block size
+     */
+    LteSlSciTag(uint16_t rnti, uint16_t resNo, uint32_t tbSize);
 
+    void Serialize(TagBuffer i) const override;
+    void Deserialize(TagBuffer i) override;
+    uint32_t GetSerializedSize() const override;
+    void Print(std::ostream& os) const override;
 
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Print (std::ostream &os) const;
+    /**
+     * Get RNTI function
+     *
+     * \returns RNTI
+     */
+    uint16_t GetRnti() const;
+    /**
+     * Get LCID function
+     *
+     * \returns LCID
+     */
+    uint16_t GetResNo() const;
+    /**
+     * Get layer function
+     *
+     * \returns layer
+     */
+    uint32_t GetTbSize() const;
 
-  /**
-   * Get RNTI function
-   *
-   * \returns RNTI
-   */
-  uint16_t GetRnti (void) const;
-  /**
-   * Get LCID function
-   *
-   * \returns LCID
-   */
-  uint16_t GetResNo (void) const;
-  /**
-   * Get layer function
-   *
-   * \returns layer
-   */
-  uint32_t GetTbSize (void) const;
-
-private:
-  uint16_t m_rnti; ///< RNTI
-  uint16_t m_resNo; ///< Resource number
-  uint32_t m_tbSize; ///< Transport block size
-
+  private:
+    uint16_t m_rnti;   ///< RNTI
+    uint16_t m_resNo;  ///< Resource number
+    uint32_t m_tbSize; ///< Transport block size
 };
 
 /**
@@ -108,41 +106,39 @@ private:
  */
 class LteSlPc5ContextTag : public Tag
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
 
-  /**
-   * Create an empty LteSlPc5Tag
-   */
-  LteSlPc5ContextTag ();
+    /**
+     * Create an empty LteSlPc5Tag
+     */
+    LteSlPc5ContextTag();
 
-  /**
-   * Create a LteSlSciTag with the given resource number and transport block size
-   * \param context The context associated with the packet
-   */
-  LteSlPc5ContextTag (uint32_t context);
+    /**
+     * Create a LteSlSciTag with the given resource number and transport block size
+     * \param context The context associated with the packet
+     */
+    LteSlPc5ContextTag(uint32_t context);
 
+    void Serialize(TagBuffer i) const override;
+    void Deserialize(TagBuffer i) override;
+    uint32_t GetSerializedSize() const override;
+    void Print(std::ostream& os) const override;
 
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual uint32_t GetSerializedSize () const;
-  virtual void Print (std::ostream &os) const;
+    /**
+     * Get context value
+     *
+     * \returns layer
+     */
+    uint32_t GetContext() const;
 
-  /**
-   * Get context value
-   *
-   * \returns layer
-   */
-  uint32_t GetContext (void) const;
-
-private:
-  uint16_t m_context; ///< The tag value
-  
+  private:
+    uint16_t m_context; ///< The tag value
 };
 
 } // namespace ns3

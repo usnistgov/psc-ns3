@@ -35,7 +35,7 @@ since this event could change other events which have already been executed. To
 address this problem, two conservative synchronization algorithm with lookahead are
 used in |ns3|. For more information on different synchronization approaches and
 parallel and distributed simulation in general, please refer to "Parallel and
-Distributed Simulation Systems" by Richard Fujimoto.   
+Distributed Simulation Systems" by Richard Fujimoto.
 
 The default parallel synchronization strategy implemented in the
 DistributedSimulatorImpl class is based on a globally synchronized
@@ -99,15 +99,15 @@ Prerequisites
 +++++++++++++
 .. highlight:: bash
 
-Ensure that MPI is installed, as well as mpic++. In Ubuntu repositories, 
-these are openmpi-bin, openmpi-common, openmpi-doc, libopenmpi-dev. In 
+Ensure that MPI is installed, as well as mpic++. In Ubuntu repositories,
+these are openmpi-bin, openmpi-common, openmpi-doc, libopenmpi-dev. In
 Fedora, these are openmpi and openmpi-devel.
 
-Note: 
+Note:
 
-There is a conflict on some Fedora systems between libotf and openmpi. A 
-possible "quick-fix" is to yum remove libotf before installing openmpi. 
-This will remove conflict, but it will also remove emacs. Alternatively, 
+There is a conflict on some Fedora systems between libotf and openmpi. A
+possible "quick-fix" is to yum remove libotf before installing openmpi.
+This will remove conflict, but it will also remove emacs. Alternatively,
 these steps could be followed to resolve the conflict:
 
     1) Rename the tiny otfdump which emacs says it needs::
@@ -118,7 +118,7 @@ these steps could be followed to resolve the conflict:
 
          $ sudo yum install libgfortran libtorque numactl
 
-    3) Download rpm packages: 
+    3) Download rpm packages:
 
        .. sourcecode:: text
 
@@ -146,21 +146,21 @@ the openmpi lib directory to LD_LIBRARY_PATH.
 Here is an example of setting up PATH and LD_LIBRARY_PATH using a bash shell:
 
     * For a 32-bit Linux distribution::
-         
+
          $ export PATH=$PATH:/usr/lib/openmpi/bin
-         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/openmpi/lib      
-    
+         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/openmpi/lib
+
      For a 64-bit Linux distribution::
-     
+
          $ export PATH=$PATH:/usr/lib64/openmpi/bin
-         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/openmpi/lib          
+         $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/openmpi/lib
 
 These lines can be added into ~/.bash_profile or ~/.bashrc to avoid having to
 retype them when a new shell is opened.
 
 Note 2:  There is a separate issue on recent Fedora distributions, which is
 that the libraries are built with AVX instructions.  On older machines or
-some virtual machines, this results in an illegal instruction 
+some virtual machines, this results in an illegal instruction
 being thrown.  This is not an |ns3| issue, a simple MPI test case will also
 fail.  The AVX instructions are being called during initialization.
 
@@ -206,7 +206,7 @@ Here are a few examples (from the root |ns3| directory)::
 
     $ ./ns3 run simple-distributed --command-template="mpiexec -np 2 %s"
     $ ./ns3 run nms-p2p-nix-distributed --command-template="mpiexec -np 2 -machinefile mpihosts %s --nix=0"
-            
+
 An example using the null message synchronization algorithm::
 
     $ ./ns3 run simple-distributed --command-template="mpiexec -np 2 %s --nullmsg"
@@ -243,20 +243,20 @@ DistributedSimulatorImpl is not used.  Here is an example code snippet
 showing how to add a command line argument to control the
 synchronization algorithm choice:::
 
-  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
-  if(nullmsg) 
+  cmd.AddValue("nullmsg", "Enable the use of null-message synchronization", nullmsg);
+  if (nullmsg)
     {
-      GlobalValue::Bind ("SimulatorImplementationType",
-                         StringValue ("ns3::NullMessageSimulatorImpl"));
-    } 
-  else 
+      GlobalValue::Bind("SimulatorImplementationType",
+                         StringValue("ns3::NullMessageSimulatorImpl"));
+    }
+  else
     {
-      GlobalValue::Bind ("SimulatorImplementationType",
-                         StringValue ("ns3::DistributedSimulatorImpl"));
+      GlobalValue::Bind("SimulatorImplementationType",
+                         StringValue("ns3::DistributedSimulatorImpl"));
     }
 
   // Enable parallel simulator with the command line arguments
-  MpiInterface::Enable (&argc, &argv);
+  MpiInterface::Enable(&argc, &argv);
 
 
 
@@ -274,21 +274,21 @@ Assigning system ids to nodes is simple and can be handled two different ways.
 First, a NodeContainer can be used to create the nodes and assign system ids::
 
     NodeContainer nodes;
-    nodes.Create (5, 1); // Creates 5 nodes with system id 1.
+    nodes.Create(5, 1); // Creates 5 nodes with system id 1.
 
 Alternatively, nodes can be created individually, assigned system ids, and added
 to a NodeContainer. This is useful if a NodeContainer holds nodes with different
 system ids::
 
     NodeContainer nodes;
-    Ptr<Node> node1 = CreateObject<Node> (0); // Create node1 with system id 0
-    Ptr<Node> node2 = CreateObject<Node> (1); // Create node2 with system id 1
-    nodes.Add (node1);
-    nodes.Add (node2);
+    Ptr<Node> node1 = CreateObject<Node>(0); // Create node1 with system id 0
+    Ptr<Node> node2 = CreateObject<Node>(1); // Create node2 with system id 1
+    nodes.Add(node1);
+    nodes.Add(node2);
 
-Next, where the simulation is divided is determined by the placement of 
-point-to-point links. If a point-to-point link is created between two 
-nodes with different system ids, a remote point-to-point link is created, 
+Next, where the simulation is divided is determined by the placement of
+point-to-point links. If a point-to-point link is created between two
+nodes with different system ids, a remote point-to-point link is created,
 as described in :ref:`current-implementation-details`.
 
 Finally, installing applications only on the LP associated with the target node
@@ -308,15 +308,15 @@ differently, based on the system id of the simulator. For example, something
 like this should work well, assuming all of these local variables were
 previously defined::
 
-    if (MpiInterface::GetSystemId () == 0)
+    if (MpiInterface::GetSystemId() == 0)
       {
-        pointToPoint.EnablePcapAll ("distributed-rank0");
-        phy.EnablePcap ("distributed-rank0", apDevices.Get (0));
-        csma.EnablePcap ("distributed-rank0", csmaDevices.Get (0), true);
+        pointToPoint.EnablePcapAll("distributed-rank0");
+        phy.EnablePcap("distributed-rank0", apDevices.Get(0));
+        csma.EnablePcap("distributed-rank0", csmaDevices.Get(0), true);
       }
-    else if (MpiInterface::GetSystemId () == 1)
+    else if (MpiInterface::GetSystemId() == 1)
       {
-        pointToPoint.EnablePcapAll ("distributed-rank1");
-        phy.EnablePcap ("distributed-rank1", apDevices.Get (0));
-        csma.EnablePcap ("distributed-rank1", csmaDevices.Get (0), true);
+        pointToPoint.EnablePcapAll("distributed-rank1");
+        phy.EnablePcap("distributed-rank1", apDevices.Get(0));
+        csma.EnablePcap("distributed-rank1", csmaDevices.Get(0), true);
       }

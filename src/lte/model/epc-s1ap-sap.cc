@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -20,9 +19,10 @@
 
 #include "epc-s1ap-sap.h"
 
-namespace ns3 {
+namespace ns3
+{
 
-EpcS1apSap::~EpcS1apSap ()
+EpcS1apSap::~EpcS1apSap()
 {
 }
 

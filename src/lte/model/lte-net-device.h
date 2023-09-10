@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
  *
@@ -22,15 +21,14 @@
 #ifndef LTE_NET_DEVICE_H
 #define LTE_NET_DEVICE_H
 
-#include <ns3/net-device.h>
 #include <ns3/event-id.h>
 #include <ns3/mac64-address.h>
-#include <ns3/traced-callback.h>
+#include <ns3/net-device.h>
 #include <ns3/nstime.h>
-#include <ns3/lte-phy.h>
-#include <ns3/lte-control-messages.h>
+#include <ns3/traced-callback.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 class Node;
 class Packet;
@@ -47,74 +45,71 @@ class Packet;
  */
 class LteNetDevice : public NetDevice
 {
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
 
-  LteNetDevice (void);
-  virtual ~LteNetDevice (void);
+    LteNetDevice();
+    ~LteNetDevice() override;
 
-  virtual void DoDispose (void);
+    // Delete copy constructor and assignment operator to avoid misuse
+    LteNetDevice(const LteNetDevice&) = delete;
+    LteNetDevice& operator=(const LteNetDevice&) = delete;
 
-  // inherited from NetDevice
-  virtual void SetIfIndex (const uint32_t index);
-  virtual uint32_t GetIfIndex (void) const;
-  virtual Ptr<Channel> GetChannel (void) const;
-  virtual bool SetMtu (const uint16_t mtu);
-  virtual uint16_t GetMtu (void) const;
-  virtual void SetAddress (Address address);
-  virtual Address GetAddress (void) const;
-  virtual bool IsLinkUp (void) const;
-  virtual void AddLinkChangeCallback (Callback<void> callback);
-  virtual bool IsBroadcast (void) const;
-  virtual Address GetBroadcast (void) const;
-  virtual bool IsMulticast (void) const;
-  virtual bool IsPointToPoint (void) const;
-  virtual bool IsBridge (void) const;
-  virtual Ptr<Node> GetNode (void) const;
-  virtual void SetNode (Ptr<Node> node);
-  virtual bool NeedsArp (void) const;
-  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  virtual Address GetMulticast (Ipv4Address addr) const;
-  virtual Address GetMulticast (Ipv6Address addr) const;
-  virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb); 
-  virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  virtual bool SupportsSendFrom (void) const;
+    void DoDispose() override;
 
-  /** 
-   * receive a packet from the lower layers in order to forward it to the upper layers
-   * 
-   * \param p the packet
-   */
-  void Receive (Ptr<Packet> p);
-  
-protected:
-  
-  NetDevice::ReceiveCallback m_rxCallback; ///< receive callback
-  
-private:
-  /// type conversion operator
-  LteNetDevice (const LteNetDevice &);
-  /**
-   * assignment operator
-   * \returns LteNetDevice
-   */
-  LteNetDevice & operator= (const LteNetDevice &);
+    // inherited from NetDevice
+    void SetIfIndex(const uint32_t index) override;
+    uint32_t GetIfIndex() const override;
+    Ptr<Channel> GetChannel() const override;
+    bool SetMtu(const uint16_t mtu) override;
+    uint16_t GetMtu() const override;
+    void SetAddress(Address address) override;
+    Address GetAddress() const override;
+    bool IsLinkUp() const override;
+    void AddLinkChangeCallback(Callback<void> callback) override;
+    bool IsBroadcast() const override;
+    Address GetBroadcast() const override;
+    bool IsMulticast() const override;
+    bool IsPointToPoint() const override;
+    bool IsBridge() const override;
+    Ptr<Node> GetNode() const override;
+    void SetNode(Ptr<Node> node) override;
+    bool NeedsArp() const override;
+    void SetReceiveCallback(NetDevice::ReceiveCallback cb) override;
+    Address GetMulticast(Ipv4Address addr) const override;
+    Address GetMulticast(Ipv6Address addr) const override;
+    void SetPromiscReceiveCallback(PromiscReceiveCallback cb) override;
+    bool SendFrom(Ptr<Packet> packet,
+                  const Address& source,
+                  const Address& dest,
+                  uint16_t protocolNumber) override;
+    bool SupportsSendFrom() const override;
 
-  Ptr<Node> m_node; ///< the node
+    /**
+     * receive a packet from the lower layers in order to forward it to the upper layers
+     *
+     * \param p the packet
+     */
+    void Receive(Ptr<Packet> p);
 
-  TracedCallback<> m_linkChangeCallbacks; ///< link change callback
+  protected:
+    NetDevice::ReceiveCallback m_rxCallback; ///< receive callback
 
-  uint32_t m_ifIndex; ///< interface index
-  bool m_linkUp; ///< link uo
-  mutable uint16_t m_mtu; ///< MTU
+  private:
+    Ptr<Node> m_node; ///< the node
 
-  Mac64Address m_address; ///< MAC address - only relevant for UEs.
+    TracedCallback<> m_linkChangeCallbacks; ///< link change callback
+
+    uint32_t m_ifIndex;     ///< interface index
+    bool m_linkUp;          ///< link uo
+    mutable uint16_t m_mtu; ///< MTU
+
+    Mac64Address m_address; ///< MAC address - only relevant for UEs.
 };
-
 
 } // namespace ns3
 

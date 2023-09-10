@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 CTTC
  *
@@ -21,46 +20,41 @@
 #ifndef ISOTROPIC_ANTENNA_MODEL_H
 #define ISOTROPIC_ANTENNA_MODEL_H
 
-
-#include <ns3/object.h>
 #include <ns3/antenna-model.h>
+#include <ns3/object.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 /**
  * \ingroup antenna
- * 
+ *
  * \brief Isotropic antenna model
- * 
+ *
  * This is the simplest antenna model. The gain of this antenna is the same in all directions.
  */
 class IsotropicAntennaModel : public AntennaModel
 {
-public:
+  public:
+    IsotropicAntennaModel();
 
-  IsotropicAntennaModel ();
-  
-  /**
-   * \brief Get the type ID.
-   * \return The object TypeId.
-   */
-  static TypeId GetTypeId ();
+    /**
+     * \brief Get the type ID.
+     * \return The object TypeId.
+     */
+    static TypeId GetTypeId();
 
-  // inherited from AntennaModel
-  virtual double GetGainDb (Angles a);
+    // inherited from AntennaModel
+    double GetGainDb(Angles a) override;
 
-protected:
-
-  /**
-   * gain of the antenna in dB, in all directions
-   * 
-   */
-  double m_gainDb;
+  protected:
+    /**
+     * gain of the antenna in dB, in all directions
+     *
+     */
+    double m_gainDb;
 };
 
-
-
 } // namespace ns3
-
 
 #endif // ISOTROPIC_ANTENNA_MODEL_H

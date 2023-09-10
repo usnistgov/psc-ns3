@@ -11,10 +11,10 @@ Nix-Vector Routing Documentation
    ############# Paragraph (no number)
 
 
-Nix-vector routing is a simulation specific routing protocol and is 
-intended for large network topologies.  The on-demand nature of this 
-protocol as well as the low-memory footprint of the nix-vector provides 
-improved performance in terms of memory usage and simulation run time 
+Nix-vector routing is a simulation specific routing protocol and is
+intended for large network topologies.  The on-demand nature of this
+protocol as well as the low-memory footprint of the nix-vector provides
+improved performance in terms of memory usage and simulation run time
 when dealing with a large number of nodes.
 
 Model Description
@@ -23,15 +23,15 @@ Model Description
 The source code for the NixVectorRouting module lives in
 the directory ``src/nix-vector-routing``.
 
-|ns3| nix-vector-routing performs on-demand route computation using 
-a breadth-first search and an efficient route-storage data structure 
+|ns3| nix-vector-routing performs on-demand route computation using
+a breadth-first search and an efficient route-storage data structure
 known as a nix-vector.
 
-When a packet is generated at a node for transmission, the route is 
+When a packet is generated at a node for transmission, the route is
 calculated, and the nix-vector is built.
 
 **How is the Nix-Vector calculated?**
-The nix-vector stores an index for each hop along the path, which 
+The nix-vector stores an index for each hop along the path, which
 corresponds to the neighbor-index.  This index is used to determine
 which net-device and gateway should be used.
 
@@ -55,11 +55,11 @@ example below to understand how nix-vectors are calculated.
 
 **How does Nix reacts to topology changes?**
 Routes in Nix are specific to a given network topology, and are cached by
-the sender node. Nix monitors the following events: Interface up/down, 
-Route add/removal, Address add/removal to understand if the cached routes 
-are valid or if they have to be purged. 
+the sender node. Nix monitors the following events: Interface up/down,
+Route add/removal, Address add/removal to understand if the cached routes
+are valid or if they have to be purged.
 
-If the topology changes while the packet is "in flight", the associated 
+If the topology changes while the packet is "in flight", the associated
 NixVector is invalid, and have to be rebuilt by an intermediate node.
 This is possible because the NixVecor carries an "Epoch", i.e., a counter
 indicating when the NixVector has been created. If the topology changes,
@@ -92,8 +92,8 @@ Usage
 *****
 
 The usage pattern is the one of all the Internet routing protocols.
-Since NixVectorRouting is not installed by default in the 
-Internet stack, it is necessary to set it in the Internet Stack 
+Since NixVectorRouting is not installed by default in the
+Internet stack, it is necessary to set it in the Internet Stack
 helper by using ``InternetStackHelper::SetRoutingHelper``.
 
 Remember to include the header file ``ns3/nix-vector-routing-module.h`` to
@@ -112,8 +112,8 @@ use IPv4 or IPv6 Nix-Vector routing.
 
    Ipv4NixVectorHelper nixRouting;
    InternetStackHelper stack;
-   stack.SetRoutingHelper (nixRouting);  // has effect on the next Install ()
-   stack.Install (allNodes);             // allNodes is the NodeContainer
+   stack.SetRoutingHelper(nixRouting);  // has effect on the next Install()
+   stack.Install(allNodes);             // allNodes is the NodeContainer
 
 *  Using IPv6 Nix-Vector Routing:
 
@@ -121,8 +121,8 @@ use IPv4 or IPv6 Nix-Vector routing.
 
    Ipv6NixVectorHelper nixRouting;
    InternetStackHelper stack;
-   stack.SetRoutingHelper (nixRouting);  // has effect on the next Install ()
-   stack.Install (allNodes);             // allNodes is the NodeContainer
+   stack.SetRoutingHelper(nixRouting);  // has effect on the next Install()
+   stack.Install(allNodes);             // allNodes is the NodeContainer
 
 .. note::
    The NixVectorHelper helper class helps to use NixVectorRouting functionality.
@@ -166,7 +166,7 @@ There are examples which use both IPv4 and IPv6 networking.
    n2 has 3 neighbors i.e. n1, n3 and n0. The n2 net-device for n1 -- n2
    p2p link was created before the n2 net-device for n2 -- n3 p2p link
    which was before the n2 netdevice for n0 -- n2 p2p link. This, n3
-   has neighbor-index of 01 (n1 has 00 and n0 has 10) with repect to n2.
+   has neighbor-index of 01 (n1 has 00 and n0 has 10) with respect to n2.
 
    Thus, the nix-vector for the path from n0 to n3 is 101.
 

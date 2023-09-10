@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -19,177 +18,191 @@
  * Modified by: NIST // Contributions may not be subject to US copyright.
  */
 
-
 #include "lte-radio-bearer-tag.h"
+
 #include "ns3/tag.h"
 #include "ns3/uinteger.h"
 
-namespace ns3 {
-
-NS_OBJECT_ENSURE_REGISTERED (LteRadioBearerTag);
-
-TypeId
-LteRadioBearerTag::GetTypeId (void)
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::LteRadioBearerTag")
-    .SetParent<Tag> ()
-    .SetGroupName("Lte")
-    .AddConstructor<LteRadioBearerTag> ()
-    .AddAttribute ("rnti", "The rnti that indicates the UE to which packet belongs",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteRadioBearerTag::GetRnti),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("lcid", "The id within the UE identifying the logical channel to which the packet belongs",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteRadioBearerTag::GetLcid),
-                   MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("srcL2Id", "For sidelink communication, the source L2 identifier",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteRadioBearerTag::GetSourceL2Id),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("dstL2Id", "For sidelink communication, the destination L2 identifier",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&LteRadioBearerTag::GetDestinationL2Id),
-                   MakeUintegerChecker<uint32_t> ())
-  ;
-  return tid;
-}
+
+NS_OBJECT_ENSURE_REGISTERED(LteRadioBearerTag);
 
 TypeId
-LteRadioBearerTag::GetInstanceTypeId (void) const
+LteRadioBearerTag::GetTypeId()
 {
-  return GetTypeId ();
+    static TypeId tid =
+        TypeId("ns3::LteRadioBearerTag")
+            .SetParent<Tag>()
+            .SetGroupName("Lte")
+            .AddConstructor<LteRadioBearerTag>()
+            .AddAttribute("rnti",
+                          "The rnti that indicates the UE to which packet belongs",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&LteRadioBearerTag::GetRnti),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute(
+                "lcid",
+                "The id within the UE identifying the logical channel to which the packet belongs",
+                UintegerValue(0),
+                MakeUintegerAccessor(&LteRadioBearerTag::GetLcid),
+                MakeUintegerChecker<uint8_t>())
+            .AddAttribute("srcL2Id",
+                          "For sidelink communication, the source L2 identifier",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&LteRadioBearerTag::GetSourceL2Id),
+                          MakeUintegerChecker<uint32_t>())
+            .AddAttribute("dstL2Id",
+                          "For sidelink communication, the destination L2 identifier",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&LteRadioBearerTag::GetDestinationL2Id),
+                          MakeUintegerChecker<uint32_t>());
+    return tid;
 }
 
-LteRadioBearerTag::LteRadioBearerTag ()
-  : m_rnti (0),
-    m_lcid (0),
-    m_layer (0),
-    m_srcL2Id (0),
-    m_dstL2Id (0)
+TypeId
+LteRadioBearerTag::GetInstanceTypeId() const
 {
+    return GetTypeId();
 }
-LteRadioBearerTag::LteRadioBearerTag (uint16_t rnti, uint8_t lcid)
-  : m_rnti (rnti),
-    m_lcid (lcid),
-    m_layer (0),
-    m_srcL2Id (0),
-    m_dstL2Id (0)
+
+LteRadioBearerTag::LteRadioBearerTag()
+    : m_rnti(0),
+      m_lcid(0),
+      m_layer(0),
+      m_srcL2Id(0),
+      m_dstL2Id(0)
 {
 }
 
-LteRadioBearerTag::LteRadioBearerTag (uint16_t rnti, uint8_t lcid, uint8_t layer)
-  : m_rnti (rnti),
-    m_lcid (lcid),
-    m_layer (layer),
-    m_srcL2Id (0),
-    m_dstL2Id (0)
+LteRadioBearerTag::LteRadioBearerTag(uint16_t rnti, uint8_t lcid)
+    : m_rnti(rnti),
+      m_lcid(lcid),
+      m_layer(0),
+      m_srcL2Id(0),
+      m_dstL2Id(0)
 {
 }
 
-LteRadioBearerTag::LteRadioBearerTag (uint16_t rnti, uint8_t lcid, uint32_t srcL2Id, uint32_t dstL2Id)
-  : m_rnti (rnti),
-    m_lcid (lcid),
-    m_layer (0),
-    m_srcL2Id (srcL2Id),
-    m_dstL2Id (dstL2Id)
+LteRadioBearerTag::LteRadioBearerTag(uint16_t rnti, uint8_t lcid, uint8_t layer)
+    : m_rnti(rnti),
+      m_lcid(lcid),
+      m_layer(layer),
+      m_srcL2Id(0),
+      m_dstL2Id(0)
+{
+}
+
+LteRadioBearerTag::LteRadioBearerTag(uint16_t rnti,
+                                     uint8_t lcid,
+                                     uint32_t srcL2Id,
+                                     uint32_t dstL2Id)
+    : m_rnti(rnti),
+      m_lcid(lcid),
+      m_layer(0),
+      m_srcL2Id(srcL2Id),
+      m_dstL2Id(dstL2Id)
 {
 }
 
 void
-LteRadioBearerTag::SetRnti (uint16_t rnti)
+LteRadioBearerTag::SetRnti(uint16_t rnti)
 {
-  m_rnti = rnti;
+    m_rnti = rnti;
 }
 
 void
-LteRadioBearerTag::SetLcid (uint8_t lcid)
+LteRadioBearerTag::SetLcid(uint8_t lcid)
 {
-  m_lcid = lcid;
+    m_lcid = lcid;
 }
 
 void
-LteRadioBearerTag::SetLayer (uint8_t layer)
+LteRadioBearerTag::SetLayer(uint8_t layer)
 {
-  m_layer = layer;
+    m_layer = layer;
 }
 
 void
-LteRadioBearerTag::SetSourceL2Id (uint32_t src)
+LteRadioBearerTag::SetSourceL2Id(uint32_t src)
 {
-  m_srcL2Id = src;
+    m_srcL2Id = src;
 }
-  
+
 void
-LteRadioBearerTag::SetDestinationL2Id (uint32_t dst)
+LteRadioBearerTag::SetDestinationL2Id(uint32_t dst)
 {
-  m_dstL2Id = dst;
-}  
-  
+    m_dstL2Id = dst;
+}
+
 uint32_t
-LteRadioBearerTag::GetSerializedSize (void) const
+LteRadioBearerTag::GetSerializedSize() const
 {
- return 12;
+    return 12;
 }
 
 void
-LteRadioBearerTag::Serialize (TagBuffer i) const
+LteRadioBearerTag::Serialize(TagBuffer i) const
 {
-  i.WriteU16 (m_rnti);
-  i.WriteU8 (m_lcid);
-  i.WriteU8 (m_layer);
-  i.WriteU32 (m_srcL2Id);
-  i.WriteU32 (m_dstL2Id);
+    i.WriteU16(m_rnti);
+    i.WriteU8(m_lcid);
+    i.WriteU8(m_layer);
+    i.WriteU32(m_srcL2Id);
+    i.WriteU32(m_dstL2Id);
 }
 
 void
-LteRadioBearerTag::Deserialize (TagBuffer i)
+LteRadioBearerTag::Deserialize(TagBuffer i)
 {
-  m_rnti = (uint16_t) i.ReadU16 ();
-  m_lcid = (uint8_t) i.ReadU8 ();
-  m_layer = (uint8_t) i.ReadU8 ();
-  m_srcL2Id = (uint32_t) i.ReadU32 ();
-  m_dstL2Id = (uint32_t) i.ReadU32 ();
+    m_rnti = (uint16_t)i.ReadU16();
+    m_lcid = (uint8_t)i.ReadU8();
+    m_layer = (uint8_t)i.ReadU8();
+    m_srcL2Id = (uint32_t)i.ReadU32();
+    m_dstL2Id = (uint32_t)i.ReadU32();
 }
 
 uint16_t
-LteRadioBearerTag::GetRnti () const
+LteRadioBearerTag::GetRnti() const
 {
-  return m_rnti;
+    return m_rnti;
 }
 
 uint8_t
-LteRadioBearerTag::GetLcid () const
+LteRadioBearerTag::GetLcid() const
 {
-  return m_lcid;
+    return m_lcid;
 }
 
 uint8_t
-LteRadioBearerTag::GetLayer () const
+LteRadioBearerTag::GetLayer() const
 {
-  return m_layer;
-}
-  
-uint32_t
-LteRadioBearerTag::GetSourceL2Id () const
-{
-  return m_srcL2Id;
+    return m_layer;
 }
 
 uint32_t
-LteRadioBearerTag::GetDestinationL2Id () const
+LteRadioBearerTag::GetSourceL2Id() const
 {
-  return m_dstL2Id;
+    return m_srcL2Id;
+}
+
+uint32_t
+LteRadioBearerTag::GetDestinationL2Id() const
+{
+    return m_dstL2Id;
 }
 
 void
-LteRadioBearerTag::Print (std::ostream &os) const
+LteRadioBearerTag::Print(std::ostream& os) const
 {
-  if (m_srcL2Id == 0) {
-    os << "rnti=" << m_rnti << ", lcid=" << (uint16_t) m_lcid << ", layer=" << (uint16_t)m_layer;
-  } else {
-    os << "rnti=" << m_rnti << ", lcid=" << (uint16_t) m_lcid << ", srcL2Id=" << m_srcL2Id << ", dstL2Id=" << m_dstL2Id << ", layer=" << (uint16_t)m_layer;
-  }
+    if (m_srcL2Id == 0)
+    {
+        os << "rnti=" << m_rnti << ", lcid=" << (uint16_t)m_lcid << ", layer=" << (uint16_t)m_layer;
+    }
+    else
+    {
+        os << "rnti=" << m_rnti << ", lcid=" << (uint16_t)m_lcid << ", srcL2Id=" << m_srcL2Id
+           << ", dstL2Id=" << m_dstL2Id << ", layer=" << (uint16_t)m_layer;
+    }
 }
 
 } // namespace ns3

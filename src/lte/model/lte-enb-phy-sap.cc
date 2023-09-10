@@ -1,4 +1,3 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
@@ -18,21 +17,17 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-
 #include "lte-enb-phy-sap.h"
 
+namespace ns3
+{
 
-namespace ns3 {
-
-
-LteEnbPhySapProvider::~LteEnbPhySapProvider ()
+LteEnbPhySapProvider::~LteEnbPhySapProvider()
 {
 }
 
-
-LteEnbPhySapUser::~LteEnbPhySapUser ()
+LteEnbPhySapUser::~LteEnbPhySapUser()
 {
 }
-
 
 } // namespace ns3

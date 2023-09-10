@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011 CTTC
  *
@@ -23,14 +22,15 @@
 #ifndef LTE_SPECTRUM_SIGNAL_PARAMETERS_H
 #define LTE_SPECTRUM_SIGNAL_PARAMETERS_H
 
-
 #include <ns3/spectrum-signal-parameters.h>
 
-namespace ns3 {
+#include <list>
+
+namespace ns3
+{
 
 class PacketBurst;
 class LteControlMessage;
-
 
 /**
  * \ingroup lte
@@ -39,265 +39,240 @@ class LteControlMessage;
  */
 struct LteSpectrumSignalParameters : public SpectrumSignalParameters
 {
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParameters();
 
-  /**
-   * default constructor
-   */
-  LteSpectrumSignalParameters ();
+    /**
+     * copy constructor
+     * \param p the LteSpectrumSignalParameters to copy
+     */
+    LteSpectrumSignalParameters(const LteSpectrumSignalParameters& p);
 
-  /**
-   * copy constructor
-   * \param p the LteSpectrumSignalParameters to copy
-   */
-  LteSpectrumSignalParameters (const LteSpectrumSignalParameters& p);
-
-  /**
-   * The packet burst being transmitted with this signal
-   */
-  Ptr<PacketBurst> packetBurst;
+    /**
+     * The packet burst being transmitted with this signal
+     */
+    Ptr<PacketBurst> packetBurst;
 };
 
-
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte Data Frame (PDSCH), and eventually after some
-* control messages through other control channel embedded in PDSCH
-* (i.e. PBCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte Data Frame (PDSCH), and eventually after some
+ * control messages through other control channel embedded in PDSCH
+ * (i.e. PBCH)
+ */
 struct LteSpectrumSignalParametersDataFrame : public SpectrumSignalParameters
 {
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersDataFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersDataFrame ();
+    /**
+     * copy constructor
+     * \param p the LteSpectrumSignalParametersDataFrame to copy
+     */
+    LteSpectrumSignalParametersDataFrame(const LteSpectrumSignalParametersDataFrame& p);
 
-  /**
-  * copy constructor
-  * \param p the LteSpectrumSignalParametersDataFrame to copy
-  */
-  LteSpectrumSignalParametersDataFrame (const LteSpectrumSignalParametersDataFrame& p);
+    /**
+     * The packet burst being transmitted with this signal
+     */
+    Ptr<PacketBurst> packetBurst;
 
-  /**
-  * The packet burst being transmitted with this signal
-  */
-  Ptr<PacketBurst> packetBurst;
+    std::list<Ptr<LteControlMessage>> ctrlMsgList; ///< the control message list
 
-  std::list<Ptr<LteControlMessage> > ctrlMsgList; ///< the control message list
-
-  uint16_t cellId; ///< cell ID
+    uint16_t cellId; ///< cell ID
 };
 
-
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte DL Ctrl Frame (RS, PCFICH and PDCCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte DL Ctrl Frame (RS, PCFICH and PDCCH)
+ */
 struct LteSpectrumSignalParametersDlCtrlFrame : public SpectrumSignalParameters
 {
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersDlCtrlFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersDlCtrlFrame ();
+    /**
+     * copy constructor
+     * \param p the LteSpectrumSignalParametersDlCtrlFrame to copy
+     */
+    LteSpectrumSignalParametersDlCtrlFrame(const LteSpectrumSignalParametersDlCtrlFrame& p);
 
-  /**
-  * copy constructor
-  * \param p the LteSpectrumSignalParametersDlCtrlFrame to copy
-  */
-  LteSpectrumSignalParametersDlCtrlFrame (const LteSpectrumSignalParametersDlCtrlFrame& p);
+    std::list<Ptr<LteControlMessage>> ctrlMsgList; ///< control message list
 
-
-  std::list<Ptr<LteControlMessage> > ctrlMsgList; ///< control message list
-
-  uint16_t cellId; ///< cell ID
-  bool pss; ///< primary synchronization signal
+    uint16_t cellId; ///< cell ID
+    bool pss;        ///< primary synchronization signal
 };
 
-
-
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte SRS Frame
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte SRS Frame
+ */
 struct LteSpectrumSignalParametersUlSrsFrame : public SpectrumSignalParameters
 {
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersUlSrsFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersUlSrsFrame ();
+    /**
+     * copy constructor
+     * \param p the LteSpectrumSignalParametersUlSrsFrame to copy
+     */
+    LteSpectrumSignalParametersUlSrsFrame(const LteSpectrumSignalParametersUlSrsFrame& p);
 
-  /**
-  * copy constructor
-  * \param p the LteSpectrumSignalParametersUlSrsFrame to copy
-  */
-  LteSpectrumSignalParametersUlSrsFrame (const LteSpectrumSignalParametersUlSrsFrame& p);
-
-  uint16_t cellId; ///< cell ID
+    uint16_t cellId; ///< cell ID
 };
 
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte SL Frame (PSCCH and PSSCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte SL Frame (PSCCH and PSSCH)
+ */
 struct LteSpectrumSignalParametersSlFrame : public SpectrumSignalParameters
 {
+    // inherited from SpectrumSignalParameters
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersSlFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersSlFrame ();
+    /**
+     * copy constructor
+     * \param p The LteSpectrumSignalParametersSlFrame
+     */
+    LteSpectrumSignalParametersSlFrame(const LteSpectrumSignalParametersSlFrame& p);
 
-  /**
-  * copy constructor
-  * \param p The LteSpectrumSignalParametersSlFrame
-  */
-  LteSpectrumSignalParametersSlFrame (const LteSpectrumSignalParametersSlFrame& p);
+    /**
+     * The packet burst being transmitted with this signal
+     */
+    Ptr<PacketBurst> packetBurst;
 
+    /**
+     * The control messages being sent (for sidelink, there should only be 1)
+     */
+    std::list<Ptr<LteControlMessage>> ctrlMsgList;
 
-  /**
-  * The packet burst being transmitted with this signal
-  */
-  Ptr<PacketBurst> packetBurst;
+    uint32_t nodeId; ///< Node id
 
-  /**
-   * The control messages being sent (for sidelink, there should only be 1)
-   */
-  std::list<Ptr<LteControlMessage> > ctrlMsgList;
-
-  uint32_t nodeId; ///< Node id
-
-  /**
-   * The Sidelink synchronization signal identifier of the transmitting UE
-   */
-  uint64_t slssId;
-
+    /**
+     * The Sidelink synchronization signal identifier of the transmitting UE
+     */
+    uint64_t slssId;
 };
 
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte SL Frame (PSCCH and PSSCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte SL Frame (PSCCH and PSSCH)
+ */
 struct LteSpectrumSignalParametersSlCtrlFrame : public LteSpectrumSignalParametersSlFrame
 {
+    // inherited from SpectrumSignalParameters
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersSlCtrlFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersSlCtrlFrame ();
+    /**
+     * copy constructor
+     * \param p The LteSpectrumSignalParametersSlFrame
+     */
+    LteSpectrumSignalParametersSlCtrlFrame(const LteSpectrumSignalParametersSlCtrlFrame& p);
 
-  /**
-  * copy constructor
-  * \param p The LteSpectrumSignalParametersSlFrame
-  */
-  LteSpectrumSignalParametersSlCtrlFrame (const LteSpectrumSignalParametersSlCtrlFrame& p);
-
-  uint8_t groupId; ///< Sidelink group id
-
+    uint8_t groupId; ///< Sidelink group id
 };
 
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte SL Frame (PSCCH and PSSCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte SL Frame (PSCCH and PSSCH)
+ */
 struct LteSpectrumSignalParametersSlDataFrame : public LteSpectrumSignalParametersSlFrame
 {
+    // inherited from SpectrumSignalParameters
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersSlDataFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersSlDataFrame ();
+    /**
+     * copy constructor
+     * \param p The LteSpectrumSignalParametersSlFrame
+     */
+    LteSpectrumSignalParametersSlDataFrame(const LteSpectrumSignalParametersSlDataFrame& p);
 
-  /**
-  * copy constructor
-  * \param p The LteSpectrumSignalParametersSlFrame
-  */
-  LteSpectrumSignalParametersSlDataFrame (const LteSpectrumSignalParametersSlDataFrame& p);
-
-  uint8_t groupId; ///< Sidelink group id
-
+    uint8_t groupId; ///< Sidelink group id
 };
 
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte SL Frame (PSCCH and PSSCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte SL Frame (PSCCH and PSSCH)
+ */
 struct LteSpectrumSignalParametersSlDiscFrame : public LteSpectrumSignalParametersSlFrame
 {
+    // inherited from SpectrumSignalParameters
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersSlDiscFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersSlDiscFrame ();
+    /**
+     * copy constructor
+     * \param p The LteSpectrumSignalParametersSlFrame
+     */
+    LteSpectrumSignalParametersSlDiscFrame(const LteSpectrumSignalParametersSlDiscFrame& p);
 
-  /**
-  * copy constructor
-  * \param p The LteSpectrumSignalParametersSlFrame
-  */
-  LteSpectrumSignalParametersSlDiscFrame (const LteSpectrumSignalParametersSlDiscFrame& p);
-
-  uint32_t resNo; ///< Resource number
-  uint8_t rv; ///< Redundancy version
-
+    uint32_t resNo; ///< Resource number
+    uint8_t rv;     ///< Redundancy version
 };
 
 /**
-* \ingroup lte
-*
-* Signal parameters for Lte SL Frame (PSCCH and PSSCH)
-*/
+ * \ingroup lte
+ *
+ * Signal parameters for Lte SL Frame (PSCCH and PSSCH)
+ */
 struct LteSpectrumSignalParametersSlMibFrame : public LteSpectrumSignalParametersSlFrame
 {
+    // inherited from SpectrumSignalParameters
+    Ptr<SpectrumSignalParameters> Copy() const override;
 
-  // inherited from SpectrumSignalParameters
-  virtual Ptr<SpectrumSignalParameters> Copy ();
+    /**
+     * default constructor
+     */
+    LteSpectrumSignalParametersSlMibFrame();
 
-  /**
-  * default constructor
-  */
-  LteSpectrumSignalParametersSlMibFrame ();
-
-  /**
-  * copy constructor
-  * \param p The LteSpectrumSignalParametersSlFrame
-  */
-  LteSpectrumSignalParametersSlMibFrame (const LteSpectrumSignalParametersSlMibFrame& p);
-
+    /**
+     * copy constructor
+     * \param p The LteSpectrumSignalParametersSlFrame
+     */
+    LteSpectrumSignalParametersSlMibFrame(const LteSpectrumSignalParametersSlMibFrame& p);
 };
 
-}  // namespace ns3
-
+} // namespace ns3
 
 #endif /* LTE_SPECTRUM_SIGNAL_PARAMETERS_H */

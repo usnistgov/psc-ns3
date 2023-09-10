@@ -110,7 +110,7 @@ PscApplicationServer::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket == 0)
+  if (m_socket)
     {
       m_socket = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
@@ -124,7 +124,7 @@ PscApplicationServer::StartApplication (void)
     MakeCallback (&PscApplicationServer::HandleAccept, this));
   m_socket->SetSendCallback (MakeCallback (&PscApplicationServer::TrySend, this));
 
-  if (m_socket6 == 0)
+  if (m_socket6)
     {
       m_socket6 = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
       Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (), m_port);

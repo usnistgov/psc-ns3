@@ -1,4 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
  *
@@ -23,7 +22,7 @@
 
 #include "ns3/socket-factory.h"
 
-namespace ns3 
+namespace ns3
 {
 
 class Socket;
@@ -32,10 +31,10 @@ class Socket;
  * \ingroup ipv6
  * \ingroup socket
  *
- * \brief API to create IPv6 RAW socket instances 
+ * \brief API to create IPv6 RAW socket instances
  *
  * This abstract class defines the API for IPv6 RAW socket factory.
- * 
+ *
  * A RAW Socket typically is used to access specific IP layers not usually
  * available through L4 sockets, e.g., ICMP. The implementer should take
  * particular care to define the Ipv6RawSocketImpl Attributes, and in
@@ -62,15 +61,14 @@ class Socket;
  */
 class Ipv6RawSocketFactory : public SocketFactory
 {
-public:
-  /** 
-   * \brief Get the type ID of this class.
-   * \return type ID
-   */
-  static TypeId GetTypeId (void);
+  public:
+    /**
+     * \brief Get the type ID of this class.
+     * \return type ID
+     */
+    static TypeId GetTypeId();
 };
 
 } // namespace ns3
 
 #endif /* IPV6_RAW_SOCKET_FACTORY_H */
-

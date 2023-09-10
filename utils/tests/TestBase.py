@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 #
 # Copyright (c) 2014 Siddharth Santurkar
 #
@@ -54,9 +53,9 @@ class TestBaseClass:
     """
         Generic class for testing tools based on provided commands and test cases.
     """
-    ## @var my_env 
+    ## @var my_env
     #  os environment
-    ## @var mode 
+    ## @var mode
     #  mode
     ## @var outfile
     #  output file

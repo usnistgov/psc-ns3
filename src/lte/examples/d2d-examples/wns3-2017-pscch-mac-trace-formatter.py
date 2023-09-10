@@ -128,7 +128,7 @@ def main(input):
 #    for key, value in storage.items():
 #        if (value[1] == 1):
 #            print ("EHI THIS LINE WAS NOT MERGED")
-#        value[0].print() 
+#        value[0].print()
 
     for key, value in sorted(storage.items()):
         value[0].print(input)

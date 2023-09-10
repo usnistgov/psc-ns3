@@ -1,7 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * NIST-developed software is provided by NIST as a public
- * service. You may use, copy and distribute copies of the software in 
+ * service. You may use, copy and distribute copies of the software in
  * any medium, provided that you keep intact this entire notice. You
  * may improve, modify and create derivative works of the software or
  * any portion of the software, and you may copy and distribute such
@@ -34,15 +34,17 @@
  */
 
 #include "lte-sl-pool-factory.h"
+
 #include "ns3/log.h"
 
-namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("LteSlPoolFactory");
-
-LteSlPoolFactory::LteSlPoolFactory ()
+namespace ns3
 {
-  NS_LOG_FUNCTION (this);
+
+NS_LOG_COMPONENT_DEFINE("LteSlPoolFactory");
+
+LteSlPoolFactory::LteSlPoolFactory()
+{
+    NS_LOG_FUNCTION(this);
 }
 
 } // namespace ns3

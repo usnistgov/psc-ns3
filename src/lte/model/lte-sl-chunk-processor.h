@@ -29,81 +29,82 @@
 #ifndef LTE_SL_CHUNK_PROCESSOR_H
 #define LTE_SL_CHUNK_PROCESSOR_H
 
-#include <ns3/ptr.h>
 #include <ns3/nstime.h>
 #include <ns3/object.h>
+#include <ns3/ptr.h>
 
-namespace ns3 {
+namespace ns3
+{
 
 class SpectrumValue;
 
 /// Chunk processor callback typedef
-typedef Callback< void, std::vector<SpectrumValue> > LteSlChunkProcessorCallback;
+typedef Callback<void, std::vector<SpectrumValue>> LteSlChunkProcessorCallback;
 
-/** 
+/**
  * This abstract class is used to process the time-vs-frequency
  * SINR/interference/power chunk of a received LTE signal
  * which was calculated by the LteSlInterference object.
  */
 class LteSlChunkProcessor : public SimpleRefCount<LteSlChunkProcessor>
 {
-public:
-  LteSlChunkProcessor ();
-  virtual ~LteSlChunkProcessor ();
+  public:
+    LteSlChunkProcessor();
+    virtual ~LteSlChunkProcessor();
 
-  /** Stores the received spectral power and duration of the received signals */
-  struct LteSlChunkValue
-  {
-    Ptr<SpectrumValue> m_sumValues; //!< received spectral density
-    Time m_totDuration; //!< duration of the signal received
-  };
+    /** Stores the received spectral power and duration of the received signals */
+    struct LteSlChunkValue
+    {
+        Ptr<SpectrumValue> m_sumValues; //!< received spectral density
+        Time m_totDuration;             //!< duration of the signal received
+    };
 
-  /**
-    * \brief Add callback to list
-    *
-    * This function adds callback c to list. Each callback pass
-    * calculated value to its object and is called in
-    * LteSlChunkProcessor::End().
-    * \param c The callback to add
-    */
-  virtual void AddCallback (LteSlChunkProcessorCallback c);
+    /**
+     * \brief Add callback to list
+     *
+     * This function adds callback c to list. Each callback pass
+     * calculated value to its object and is called in
+     * LteSlChunkProcessor::End().
+     * \param c The callback to add
+     */
+    virtual void AddCallback(LteSlChunkProcessorCallback c);
 
-  /**
-    * \brief Clear internal variables
-    *
-    * This function clears internal variables in the beginning of
-    * calculation
-    * \param init argument indicates if we need to reset all variables
-    */
-  virtual void Start (bool init);
+    /**
+     * \brief Clear internal variables
+     *
+     * This function clears internal variables in the beginning of
+     * calculation
+     * \param init argument indicates if we need to reset all variables
+     */
+    virtual void Start(bool init);
 
-  /**
-    * \brief Collect SpectrumValue and duration of signal
-    *
-    * Passed values are collected in m_sumValues and m_totDuration variables.
-    * \param index The index of the message received
-    * \param sinr The sinr of the message received
-    * \param duration The duration of the reception
-    */
-  virtual void EvaluateChunk (uint32_t index, const SpectrumValue& sinr, Time duration);
+    /**
+     * \brief Collect SpectrumValue and duration of signal
+     *
+     * Passed values are collected in m_sumValues and m_totDuration variables.
+     * \param index The index of the message received
+     * \param sinr The sinr of the message received
+     * \param duration The duration of the reception
+     */
+    virtual void EvaluateChunk(uint32_t index, const SpectrumValue& sinr, Time duration);
 
-  /**
-    * \brief Finish calculation and inform interested objects about calculated value
-    *
-    * During this function all callbacks from list are executed
-    * to inform interested object about calculated value. This
-    * function is called at the end of calculation.
-    */
-  virtual void End ();
+    /**
+     * \brief Finish calculation and inform interested objects about calculated value
+     *
+     * During this function all callbacks from list are executed
+     * to inform interested object about calculated value. This
+     * function is called at the end of calculation.
+     */
+    virtual void End();
 
-private:
-  std::vector<LteSlChunkValue> m_chunkValues; ///< Vector to hold LteSlChunkValue of Signals received on Sidelink
+  private:
+    std::vector<LteSlChunkValue>
+        m_chunkValues; ///< Vector to hold LteSlChunkValue of Signals received on Sidelink
 
-  std::vector<LteSlChunkProcessorCallback> m_lteSlChunkProcessorCallbacks; ///< chunk processor callback
+    std::vector<LteSlChunkProcessorCallback>
+        m_lteSlChunkProcessorCallbacks; ///< chunk processor callback
 };
 
 } // namespace ns3
-
-
 
 #endif /* LTE_SL_CHUNK_PROCESSOR_H */

@@ -53,7 +53,7 @@ if [[ -f $OUTFILE_PSCCH_2 && $OVERWRITE == "0" ]];then
   echo "NO OVERWRITE PERMISSION!"
   exit
 fi
-echo -e "Periods\tP_with_Coll\tTot_Collisions\tP_with_SO\tTot_SO\tP_with_DO\tTot_DO" > $OUTFILE_PSCCH_2 
+echo -e "Periods\tP_with_Coll\tTot_Collisions\tP_with_SO\tTot_SO\tP_with_DO\tTot_DO" > $OUTFILE_PSCCH_2
 
 for ((run=$2; run<=$3; run++))
 do
@@ -63,9 +63,9 @@ do
     echo "$newdir does not exist!"
     continue
   fi
-  
+
   OUTFILE_PSCCH_1="${newdir}/ProsePSCCH-errors-${ver}${run}.txt"
-  
+
   if [[ -f $OUTFILE_PSCCH_1 && $OVERWRITE == "0" ]];then
     echo "SKIPPING RUN, NO OVERWRITE PERMISSION!"
     continue
@@ -77,9 +77,9 @@ do
 
   #echo "Processing Tx"
   INFILE_UeScheduleTrace="$newdir/Wns32017SlCchMacStats.txt"
-  
+
   gawk -v simu_time=$SIMU_TIME 'FNR>1{
-          
+
             if($1 >= simu_time)
               { #Avoid counting schedulings out of simulation time because they would not be processed.
                 #print
@@ -91,7 +91,7 @@ do
                 prev_period_t = curr_period_t;
                 p_num = 1;
               }
-            
+
             # Collect statistics
             RI = $9; # PSCCH resource index
             RI_access[curr_period_t][RI]++;
@@ -100,7 +100,7 @@ do
             PSCCH_txs[curr_period_t][PSCCH_1tx]++;
             PSCCH_txs[curr_period_t][PSCCH_2tx]++;
             PSCCH_combined_txs[curr_period_t][PSCCH_1tx "" PSCCH_2tx]++;
-            
+
             if (prev_period_t != curr_period_t) # New period!
               {
                 p_num++;
@@ -115,7 +115,7 @@ do
                       }
                   }
                 delete RI_access[prev_period_t];
-                
+
                 for(i in PSCCH_combined_txs[prev_period_t])
                   {
                     if(PSCCH_combined_txs[prev_period_t][i]>1)
@@ -124,7 +124,7 @@ do
                       }
                   }
                 delete PSCCH_combined_txs[prev_period_t];
-                
+
                 for(i in PSCCH_txs[prev_period_t])
                   {
                     if(PSCCH_txs[prev_period_t][i]>1)
@@ -134,7 +134,7 @@ do
                   }
                 p_single_o -= p_double_o * 2; # Substract double overlaps counted as single overlaps.
                 delete PSCCH_txs[prev_period_t];
-                
+
                 printf "%d\t%d\t%d\t%d\n", prev_period_t, p_collisions, p_single_o, p_double_o  >> "'"$OUTFILE_PSCCH_1"'";
                 collisions += p_collisions;
                 if(p_collisions > 0)
@@ -154,7 +154,7 @@ do
 
                 prev_period_t = curr_period_t;
               }
-          
+
           }
        END{#print "Periods: " p_num
             #Proccess last period
@@ -169,7 +169,7 @@ do
                   }
               }
             delete RI_access[prev_period_t];
-            
+
             for(i in PSCCH_combined_txs[prev_period_t])
               {
                 if(PSCCH_combined_txs[prev_period_t][i]>1)
@@ -178,7 +178,7 @@ do
                   }
               }
             delete PSCCH_combined_txs[prev_period_t];
-            
+
             for(i in PSCCH_txs[prev_period_t])
               {
                 if(PSCCH_txs[prev_period_t][i]>1)
@@ -188,7 +188,7 @@ do
               }
             p_single_o -= p_double_o * 2; # Substract double overlaps counted as single overlaps.
             delete PSCCH_txs[prev_period_t];
-            
+
             printf "%d\t%d\t%d\t%d\n", prev_period_t, p_collisions, p_single_o, p_double_o  >> "'"$OUTFILE_PSCCH_1"'";
             collisions += p_collisions;
             if(p_collisions > 0)
@@ -212,7 +212,7 @@ do
             do_ratio = double_o/p_num;
             printf "%d\t%d\t%d\t%d\t%d\t%d\t%d\n", p_num, collided_periods, collisions, so_periods, single_o, do_periods, double_o  >> "'"${OUTFILE_PSCCH_2}"'";
           }
-       ' $INFILE_UeScheduleTrace 
+       ' $INFILE_UeScheduleTrace
 done
 
 OUTFILE_PSCCH_ERRORS_MEAN="ProsePSCCH-errors-mean-${basedir}-${ver}.txt"
@@ -241,7 +241,7 @@ END{
       {
         std_coll = 0;
         std_so   = 0;
-        std_do   = 0;  
+        std_do   = 0;
       }
      else
       {

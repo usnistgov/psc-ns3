@@ -1,7 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * NIST-developed software is provided by NIST as a public
- * service. You may use, copy and distribute copies of the software in 
+ * service. You may use, copy and distribute copies of the software in
  * any medium, provided that you keep intact this entire notice. You
  * may improve, modify and create derivative works of the software or
  * any portion of the software, and you may copy and distribute such
@@ -39,21 +39,23 @@
 #include "lte-rrc-sap.h"
 #include "lte-sl-resource-pool-factory.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 /** Class to generate preconfigured pool configuration */
 class LteSlPreconfigPoolFactory : public LteSlResourcePoolFactory
 {
-public:
-  LteSlPreconfigPoolFactory ();
+  public:
+    LteSlPreconfigPoolFactory();
 
-  /**
-   * Generate a preconfigure resource pool based on the factory configuration
-   * \return a new preconfigured resource pool
-   */
-  LteRrcSap::SlPreconfigCommPool CreatePool ();
-private:
-  LteRrcSap::SlPreconfigCommPool m_pool; ///< Sidelink communication pre-configured pool
+    /**
+     * Generate a preconfigure resource pool based on the factory configuration
+     * \return a new preconfigured resource pool
+     */
+    LteRrcSap::SlPreconfigCommPool CreatePool();
+
+  private:
+    LteRrcSap::SlPreconfigCommPool m_pool; ///< Sidelink communication pre-configured pool
 };
 
 } // namespace ns3
