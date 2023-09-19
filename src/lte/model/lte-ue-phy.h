@@ -1134,9 +1134,6 @@ class LteUePhy : public LtePhy
 
     std::list<DiscPoolInfo> m_discRxPools; ///< List of Sidelink discovery Rx pools
 
-    uint8_t
-        m_discResPsdch; ///< A randomly chosen resource index from the PSDCH resource pool by UE MAC
-
     /**
      * Summary results of measuring a specific SyncRef. Used for layer-1 filtering.
      */
@@ -1215,14 +1212,6 @@ class LteUePhy : public LtePhy
      * successfully decoded/received MIB-SL are not considered detected
      */
     std::map<std::pair<uint16_t, uint16_t>, LteRrcSap::MasterInformationBlockSL> m_detectedMibSl;
-    /**
-     * Initial frame number
-     */
-    uint32_t m_initFrameNo;
-    /**
-     * Initial subframe number
-     */
-    uint32_t m_initSubframeNo;
     /**
      * Current frame number
      */
