@@ -188,7 +188,6 @@ Ipv6Interface::SetDown()
 {
     NS_LOG_FUNCTION(this);
     m_ifup = false;
-    m_addresses.clear();
     m_ndCache->Flush();
 }
 
