@@ -220,6 +220,24 @@ private:
  * be granted the floor. At this point UE 2 should be receiving media from
  * both UE 1 and UE 3 as they share the floor. Then UE 1 will release the
  * floor, followed by UE 3 releasing the floor.
+ *
+ * This test verifies the following sequence of events:
+ * 1) at time 3 s, Ue1 will send a SIP INVITE; this will trigger
+ *    the reception of FloorMsgTaken shortly after by Ue2 and Ue3
+ *    Therefore, at time just before 4 s, check that Ue1Rx has seen
+ *    FloorMsgGranted, and Ue2 and Ue3 have seen FloorMsgTaken
+ * 2) at time 4 s, Ue2 will send a FloorMsgRequest, will receive a
+ *    FloorMsgDeny, and will send its first FloorMsgAck.  Check at time 5 s
+ * 3) at time 6 s, Ue3 will send a FloorMsgRequest, Ue3 will receive
+ *    FloorMsgGranted, and Ue3 will send FloorMsgAck.  Ue2 will receive 
+ *    FloorMsgIdle and will send FloorMsgAck.  Ue2 will also receive
+ *    FloorMsgTaken and will send another FloorMsgAck.  Ue1 will receive
+ *    FloorMsgIdle and FloorMsgTaken.  Check the above by time 7 s.
+ * 4) at time 7 s, Ue1 will send FloorMsgRelease and will receive
+ *    FloorMsgAck.  Ue2 will receive its second FloorMsgIdle and send 
+ *    its fourth FloorMsgAck.   Ue3 receives FloorMsgIdle and sends
+ *    its first FloorMsgAck. 
+ *          
  */
 class McpttTestCaseOnNetworkDualFloorControl : public McpttTestCase
 {
@@ -229,6 +247,10 @@ public:
  protected:
   virtual void Configure (void);
   virtual void Execute (void);
+  virtual void Check4 (void); // Check values just before 4 s
+  virtual void Check5 (void); // Check values just before 5 s
+  virtual void Check7 (void); // Check values just before 7 s
+  virtual void Check8 (void); // Check values just before 8 s
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -237,6 +259,7 @@ public:
   virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
 
 private:
+  bool m_ue1RxFloorGranted {false};
   bool m_ue3RxFloorTaken {false};
   bool m_ue2RxFloorTaken {false};
   bool m_ue2TxFloorRequest {false};
@@ -248,7 +271,7 @@ private:
   bool m_ue1RxFloorIdle {false}; 
   bool m_ue2RxFloorIdle {false};
   bool m_ue2TxFloorAck {false};
-  bool m_ue1RxFloorTaken1 {false};
+  bool m_ue1RxFloorTaken {false};
   bool m_ue2RxFloorTaken2 {false}; 
   bool m_ue2TxFloorAck3 {false}; 
   bool m_ue1TxFloorRelease {false};
@@ -1273,13 +1296,60 @@ McpttTestCaseOnNetworkDualFloorControl::Configure (void)
   Ptr<McpttFloorParticipant> ue3FloorParticipant = ue3Call->GetFloorMachine ();
   Ptr<McpttOnNetworkFloorParticipant> ue3OnNetworkFloorParticipant = DynamicCast<McpttOnNetworkFloorParticipant, McpttFloorParticipant> (ue3FloorParticipant);
   Simulator::Schedule (Seconds (5), &McpttOnNetworkFloorParticipant::SetPriority, ue3OnNetworkFloorParticipant, 2);
+  // Schedule four checks during the execution
+  Simulator::Schedule (Seconds (4) - MicroSeconds (1), &McpttTestCaseOnNetworkDualFloorControl::Check4, this);
+  Simulator::Schedule (Seconds (5) - MicroSeconds (1), &McpttTestCaseOnNetworkDualFloorControl::Check5, this);
+  Simulator::Schedule (Seconds (7) - MicroSeconds (1), &McpttTestCaseOnNetworkDualFloorControl::Check7, this);
+  Simulator::Schedule (Seconds (8) - MicroSeconds (1), &McpttTestCaseOnNetworkDualFloorControl::Check8, this);
+}
+
+void McpttTestCaseOnNetworkDualFloorControl::Check4 (void)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorGranted, true, "UE 1 did not receive Floor Granted by 4 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken by 4 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken by 4 s.");
+}
+
+void McpttTestCaseOnNetworkDualFloorControl::Check5 (void)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send Floor Request by 5 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive Floor Deny by 5 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send Floor Ack by 5 s.");
+}
+
+void McpttTestCaseOnNetworkDualFloorControl::Check7 (void)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack  by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Idle by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send its second Floor Ack by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive second Floor Taken by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send its third Floor Ack by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Idle by 7 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken, true, "UE 1 did not receive Floor Taken by 7 s.");
+}
+
+void McpttTestCaseOnNetworkDualFloorControl::Check8 (void)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release by 8 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive Floor Ack by 8 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive its second Floor Idle by 8 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send its second Floor Ack by 8 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send its fourth Floor Ack by 8 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle by 8 s.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack by 8 s.");
 }
 
 void McpttTestCaseOnNetworkDualFloorControl::Execute (void)
 {
   Simulator::Run ();
-  Simulator::Destroy ();
+  // Final check:  Check that Ue3Tx saw a FloorMsgRelease
+  // and that Ue3Rx saw a FloorMsgAck
+  NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, true, "UE 3 did not send Floor Release by end of simulation.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, true, "UE 3 did not receive Floor Ack by end of simulation.");
 
+  // Check that some unexpected messages were not actually observed 
   NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
@@ -1291,7 +1361,7 @@ void McpttTestCaseOnNetworkDualFloorControl::Execute (void)
   NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Idle.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Idle.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-  NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
+  NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken, true, "UE 1 did not receive Floor Taken.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
   NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
@@ -1305,343 +1375,78 @@ void McpttTestCaseOnNetworkDualFloorControl::Execute (void)
   NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, true, "UE 2 did not send floor Ack.");
   NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, true, "UE 3 did not send Floor Release");
   NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, true, "UE 3 did not send Floor ACK.");
+
+  Simulator::Destroy ();
 }
 
 void
 McpttTestCaseOnNetworkDualFloorControl::Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
+  NS_LOG_DEBUG ("Ue1Rx " << headerType);
   if (headerType == McpttFloorMsgIdle::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue1RxFloorIdle = true;
     }
   else if (headerType == McpttFloorMsgTaken::GetTypeId ()
-           && !m_ue1RxFloorTaken1)
+           && !m_ue1RxFloorTaken)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
-      m_ue1RxFloorTaken1 = true;  
+      m_ue1RxFloorTaken = true;  
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue1RxFloorAck = true;
     }
   else if (headerType == McpttFloorMsgTaken::GetTypeId ()
            && !m_ue1RxFloorTaken2)
     {  
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, true, "UE 3 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue1RxFloorTaken2 = true;
+    }
+  else if (headerType == McpttFloorMsgGranted::GetTypeId ())
+    {
+      m_ue1RxFloorGranted = true;
     }
 }
 
 void
 McpttTestCaseOnNetworkDualFloorControl::Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
+  NS_LOG_DEBUG("Ue1Tx " << headerType);
   if (headerType == McpttFloorMsgRelease::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue1TxFloorRelease = true;
     }
 }
 void
 McpttTestCaseOnNetworkDualFloorControl::Ue2TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
+  NS_LOG_DEBUG("Ue2Tx " << headerType);
   if (headerType == McpttFloorMsgRequest::GetTypeId ())
     {    
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, false, "UE 2 did send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, false, "UE 2 did receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, false, "UE 3 did send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2TxFloorRequest = true;
-    }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck2 == false)
-    {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, false, "UE 3 did send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
-      m_ue2TxFloorAck2 = true;
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ()
            && m_ue2TxFloorAck == false)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2TxFloorAck = true;
+    }
+  else if (headerType == McpttFloorMsgAck::GetTypeId ()
+           && m_ue2TxFloorAck2 == false)
+    {
+      m_ue2TxFloorAck2 = true;
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ()
            && m_ue2TxFloorAck3 == false)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2TxFloorAck3 = true;
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ()
            && m_ue2TxFloorAck4 == false)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2TxFloorAck4 = true;
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ()
            && m_ue2TxFloorAck5 == false)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, true, "UE 3 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2TxFloorAck5 = true;
     }
 }
@@ -1649,184 +1454,34 @@ McpttTestCaseOnNetworkDualFloorControl::Ue2TxCb (Ptr<const Application> app, uin
 void
 McpttTestCaseOnNetworkDualFloorControl::Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  
+  NS_LOG_DEBUG("Ue2Rx " << headerType);
   if (headerType == McpttFloorMsgTaken::GetTypeId ()
       && m_ue2RxFloorTaken == false )
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, false, "UE 3 already received Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, false, "UE 2 did send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, false, "UE 2 did receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, false, "UE 3 did send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2RxFloorTaken = true;
     }
   else if (headerType == McpttFloorMsgDeny::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, false, "UE 2 did receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, false, "UE 3 did send Floor Request");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease,false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2RxFloorDeny = true;
     }
   else if (headerType == McpttFloorMsgIdle::GetTypeId ()
            && m_ue2RxFloorIdle == false)
     {  
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2RxFloorIdle = true;
     }
   else if (headerType == McpttFloorMsgTaken::GetTypeId ()
            && m_ue2RxFloorTaken2 == false)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2RxFloorTaken2 = true;
     }
   else if (headerType == McpttFloorMsgIdle::GetTypeId ()
            && m_ue2RxFloorIdle == true)
     {  
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2RxFloorIdle2 = true;
     }
   else if (headerType == McpttFloorMsgTaken::GetTypeId ()
            && m_ue2RxFloorTaken3 == false)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, true, "UE 3 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue2RxFloorTaken3 = true;  
     }
 }
@@ -1834,120 +1489,21 @@ McpttTestCaseOnNetworkDualFloorControl::Ue2RxCb (Ptr<const Application> app, uin
 void
 McpttTestCaseOnNetworkDualFloorControl::Ue3RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
+  NS_LOG_DEBUG("Ue3Rx " << headerType);
   if (headerType == McpttFloorMsgTaken ::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, false, "UE 3 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, false, "UE 2 did send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, false, "UE 2 did receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, false, "UE 3 did send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3RxFloorTaken = true;
     }
   else if (headerType == McpttFloorMsgGranted ::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3RxFloorGranted = true;    
     }
   else if (headerType == McpttFloorMsgIdle::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3RxFloorIdle = true;
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, true, "UE 3 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, true, "UE 3 did not send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck,false , "UE 3 did not send Floor ACK.");
       m_ue3RxFloorAck = true;
       Stop ();
     }
@@ -1956,122 +1512,23 @@ McpttTestCaseOnNetworkDualFloorControl::Ue3RxCb (Ptr<const Application> app, uin
 void
 McpttTestCaseOnNetworkDualFloorControl::Ue3TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
+  NS_LOG_DEBUG("Ue3Tx " << headerType);
   if (headerType == McpttFloorMsgRequest::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");  
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, false, "UE 3 did send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, false, "UE 3 did receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3TxFloorRequest = true;
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ()
            && m_ue3TxFloorAck == false)
     {  
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, false, "UE 3 did send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, false, "UE 1 did send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, false, "UE 1 did receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, false, "UE 3 did receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3TxFloorAck = true;  
     }
   else if (headerType == McpttFloorMsgAck::GetTypeId ()
            && m_ue3TxFloorAck2 == false )
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, false, "UE 3 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, false, "UE 1 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, false, "UE 2 did receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, false, "UE 2 did send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3TxFloorAck2 = true;
     }  
   else if (headerType == McpttFloorMsgRelease::GetTypeId ())
     {
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive floor Deny");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request"); 
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorIdle, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken1, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken2, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck3, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorIdle2, true, "UE 2 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck4, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorIdle, true, "UE 3 did not receive Floor Idle.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck2, true, "UE 3 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken2, true, "UE 1 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken3, true, "UE 2 did not receive Floor Taken.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck5, true, "UE 2 did not send floor Ack.");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRelease, false, "UE 3 did send Floor Release");
-      NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorAck, false, "UE 3 did send Floor ACK.");
       m_ue3TxFloorRelease = true;
     }
 }
