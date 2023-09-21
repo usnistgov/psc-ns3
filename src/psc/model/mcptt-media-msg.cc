@@ -124,7 +124,7 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
   bytesRead += 2;
   index += 2;
   NS_ABORT_MSG_UNLESS (payloadSize >= 6, "Payload size must be at least six bytes");
-  m_talkSpurtStart = MicroSeconds (10 * start.ReadNtohU32 ());
+  m_talkSpurtStart = 10 * MicroSeconds (start.ReadNtohU32 ());
   bytesRead += 4;
   index += 4;
   for (; index < payloadSize; index++)
