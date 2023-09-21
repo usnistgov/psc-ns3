@@ -69,18 +69,38 @@ namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (McpttPttApp);
 
-uint16_t McpttPttApp::s_portNumber = 9000; // Media ports typically 9000-10999
+uint16_t McpttPttApp::s_mediaPortNumber = 9000; // Media ports typically 9000-10999
+uint16_t McpttPttApp::s_floorPortNumber = 11000; // Floor ports arbitrarily start after
 
-uint16_t
-McpttPttApp::GetCurrentPortNumber (void)
-{
-  return s_portNumber;
-}
-
+// Legacy method, to preserve test code for the moment
 uint16_t
 McpttPttApp::AllocateNextPortNumber (void)
 {
-  return s_portNumber++;
+  return s_mediaPortNumber++;
+}
+
+uint16_t
+McpttPttApp::GetCurrentMediaPortNumber (void)
+{
+  return s_mediaPortNumber;
+}
+
+uint16_t
+McpttPttApp::AllocateNextMediaPortNumber (void)
+{
+  return s_mediaPortNumber++;
+}
+
+uint16_t
+McpttPttApp::GetCurrentFloorPortNumber (void)
+{
+  return s_floorPortNumber;
+}
+
+uint16_t
+McpttPttApp::AllocateNextFloorPortNumber (void)
+{
+  return s_floorPortNumber++;
 }
 
 TypeId
