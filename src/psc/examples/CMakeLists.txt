@@ -59,74 +59,6 @@ build_lib_example(
 )
 
 build_lib_example(
-    NAME camad-2019-communication
-    SOURCE_FILES
-    camad-2019/camad-2019-communication.cc
-    camad-2019/lte-sl-ue-controller-camad-2019.cc
-    LIBRARIES_TO_LINK
-    ${libcore}
-    ${liblte}
-    ${libnetwork}
-    ${libmobility}
-    ${libinternet}
-    ${libapplications}
-    ${libpsc}
-)
-
-build_lib_example(
-    NAME camad-2019-connection
-    SOURCE_FILES
-    camad-2019/camad-2019-connection.cc
-    camad-2019/lte-sl-ue-controller-camad-2019.cc
-    LIBRARIES_TO_LINK
-    ${libcore}
-    ${liblte}
-    ${libnetwork}
-    ${libmobility}
-    ${libinternet}
-    ${libapplications}
-    ${libpsc}
-)
-
-build_lib_example(
-    NAME camad-2019-discovery
-    SOURCE_FILES
-    camad-2019/camad-2019-discovery.cc
-    camad-2019/lte-sl-ue-controller-camad-2019.cc
-    LIBRARIES_TO_LINK
-    ${libcore}
-    ${liblte}
-    ${libnetwork}
-    ${libmobility}
-    ${libinternet}
-    ${libapplications}
-    ${libpsc}
-)
-
-set(school_shooting_libs
-    ${libnetanim}
-    ${libpsc}
-    )
-
-if ("netsimulyzer" IN_LIST ns3-all-enabled-modules)
-  list(APPEND school_shooting_libs ${libnetsimulyzer})
-endif ()
-
-build_lib_example(
-    NAME psc-schoolshooting
-    SOURCE_FILES
-    schoolshooting/psc-schoolshooting.cc
-    schoolshooting/schoolshooting-definition-helper.cc
-    schoolshooting/schoolshooting-lte-helper.cc
-    schoolshooting/schoolshooting-network-technology-helper.cc
-    schoolshooting/schoolshooting-application-helper.cc
-    schoolshooting/schoolshooting-application-trace-helper.cc
-    schoolshooting/schoolshooting-lte-vis-helper.cc
-    LIBRARIES_TO_LINK
-    ${school_shooting_libs}
-)
-
-build_lib_example(
     NAME example-video-streaming
     SOURCE_FILES example-video-streaming.cc
     LIBRARIES_TO_LINK
@@ -147,19 +79,6 @@ build_lib_example(
     LIBRARIES_TO_LINK
     ${libpsc}
     ${libwifi}
-)
-
-build_lib_example(
-    NAME mcptt-lte-sl-out-of-covrg-comm
-    SOURCE_FILES mcptt-lte-sl-out-of-covrg-comm.cc
-    LIBRARIES_TO_LINK
-    ${libcore}
-    ${liblte}
-    ${libnetwork}
-    ${libmobility}
-    ${libinternet}
-    ${libapplications}
-    ${libpsc}
 )
 
 build_lib_example(
@@ -216,40 +135,3 @@ build_lib_example(
     ${libpsc}
 )
 
-build_lib_example(
-    NAME mcptt-operational-modes-static
-    SOURCE_FILES example-mcptt-on-network-two-simultaneous-calls.cc
-    LIBRARIES_TO_LINK
-    ${libcore}
-    ${libpoint-to-point}
-    ${liblte}
-    ${libnetwork}
-    ${libmobility}
-    ${libinternet}
-    ${libapplications}
-    ${libpsc}
-    ${libbuildings}
-)
-
-set(mcptt_operational_modes_mobility_libs
-    ${libcore}
-    ${libpoint-to-point}
-    ${liblte}
-    ${libnetwork}
-    ${libmobility}
-    ${libinternet}
-    ${libapplications}
-    ${libpsc}
-    ${libbuildings}
-    )
-
-if ("netsimulyzer" IN_LIST ns3-all-enabled-modules)
-  list(APPEND mcptt_operational_modes_mobility_libs ${libnetsimulyzer})
-endif ()
-
-build_lib_example(
-    NAME mcptt-operational-modes-mobility
-    SOURCE_FILES mcptt-operational-modes-mobility.cc
-    LIBRARIES_TO_LINK
-    ${mcptt_operational_modes_mobility_libs}
-)
