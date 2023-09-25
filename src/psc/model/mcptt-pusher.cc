@@ -138,13 +138,15 @@ void
 McpttPusher::Release (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
-  NS_LOG_LOGIC ("Pusher about to release PTT button.");
   SetPushing (false);
-  m_pttApp->TakeReleaseNotification ();
-  if (m_automatic == true)
+  if (m_pttApp)
     {
-      SchedulePush ();
+      NS_LOG_LOGIC ("Pusher about to release PTT button.");
+      m_pttApp->TakeReleaseNotification ();
+      if (m_automatic == true)
+        {
+          SchedulePush ();
+        }
     }
 }
 
@@ -292,6 +294,7 @@ void
 McpttPusher::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  Stop ();
   SetPttApp (0);
   m_pttIatVariable = 0;
   m_pttDurationVariable = 0;
