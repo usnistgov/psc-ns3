@@ -38,6 +38,7 @@
 #include <ns3/traced-callback.h>
 #include <ns3/application.h>
 #include <ns3/random-variable-stream.h>
+#include <map>
 
 namespace ns3 {
 namespace psc {

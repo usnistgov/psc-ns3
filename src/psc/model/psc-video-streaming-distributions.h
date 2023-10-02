@@ -35,6 +35,7 @@
 
 #include <ns3/string.h>
 #include <ns3/ptr.h>
+#include <map>
 
 namespace ns3 {
 namespace psc {

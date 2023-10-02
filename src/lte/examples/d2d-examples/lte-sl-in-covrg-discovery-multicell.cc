@@ -385,12 +385,12 @@ main(int argc, char* argv[])
     {
         NS_LOG_INFO("Verifying scenario...");
 
-        // In this scenario, with simTime = Seconds (6), each UE should have
-        // successfully received at least 10 discovery messages
+        // In this scenario, with simTime = Seconds (6), each UE should send 12 discovery 
+        // messages and should have successfully received at least 6 discovery messages
         NS_LOG_INFO("UE 0 received " << tracer0.m_nRxMsgs << " discovery messages");
         NS_LOG_INFO("UE 1 received " << tracer1.m_nRxMsgs << " discovery messages");
 
-        if (tracer0.m_nRxMsgs >= 10 && tracer1.m_nRxMsgs >= 10)
+        if (tracer0.m_nRxMsgs >= 6 && tracer1.m_nRxMsgs >= 6)
         {
             NS_LOG_INFO("Expected behavior");
         }

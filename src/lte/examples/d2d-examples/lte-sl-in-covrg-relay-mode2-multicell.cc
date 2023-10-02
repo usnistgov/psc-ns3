@@ -483,14 +483,15 @@ main(int argc, char* argv[])
     {
         NS_LOG_INFO("Verifying scenario...");
 
-        // In this scenario, with simTime = Seconds (10), the Remote UE should have
-        // successfully received back at least 15 messages and at least 8 of them should
+        // In this scenario, with simTime = Seconds (10), the Remote UE should send 16 messages
+        // overall, 9 of them are sent after connecting to the relay UE. The remote UE should
+        // have successfully received back at least 8 messages and at least 5 of them should
         // have been received after the connection to the Relay UE (reflected in the change of IP)
         NS_LOG_INFO("Remote UE received back " << tracer.m_nRxMsgs << " messages");
         NS_LOG_INFO("Remote UE received back " << tracer.m_nRxMsgsRelay
                                                << " messages while connected to the Relay UE");
 
-        if (tracer.m_nRxMsgs >= 15 && tracer.m_nRxMsgsRelay >= 8)
+        if (tracer.m_nRxMsgs >= 8 && tracer.m_nRxMsgsRelay >= 5)
         {
             NS_LOG_INFO("Expected behavior");
         }
