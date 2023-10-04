@@ -102,6 +102,7 @@ LteSlTft::LteSlTft (Ptr<LteSlTft> tft)
   m_direction = tft->m_direction;
   m_remoteAddress = tft->m_remoteAddress;
   m_remoteAddress6 = tft->m_remoteAddress6;
+  m_hasRemoteAddress = tft-> m_hasRemoteAddress;
   m_remoteMask = tft->m_remoteMask;
   m_remoteMask6 = tft->m_remoteMask6;
   m_remotePort = tft->m_remotePort;
