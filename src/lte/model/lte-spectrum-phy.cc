@@ -1580,11 +1580,10 @@ LteSpectrumPhy::AddExpectedTb(uint16_t rnti,
     TbId_t tbId;
     tbId.m_rnti = rnti;
     tbId.m_layer = layer;
-    expectedTbs_t::iterator it;
-    it = m_expectedTbs.find(tbId);
+    auto it = m_expectedTbs.find(tbId);
     if (it != m_expectedTbs.end())
     {
-        // might be a TB of an unreceived packet (due to high progpalosses)
+        // might be a TB of an unreceived packet (due to high propagation losses)
         m_expectedTbs.erase(it);
     }
     // insert new entry
@@ -1673,8 +1672,7 @@ LteSpectrumPhy::RemoveExpectedTb(uint16_t rnti)
     for (uint8_t i = 0; i < 2; i++)
     {
         tbId.m_layer = i;
-        expectedTbs_t::iterator it;
-        it = m_expectedTbs.find(tbId);
+        auto it = m_expectedTbs.find(tbId);
         if (it != m_expectedTbs.end())
         {
             m_expectedTbs.erase(it);
@@ -1695,7 +1693,7 @@ LteSpectrumPhy::EndRxData()
     m_interferenceData->EndRx();
     NS_LOG_DEBUG(this << " No. of burts " << m_rxPacketBurstList.size());
     NS_LOG_DEBUG(this << " Expected TBs " << m_expectedTbs.size());
-    expectedTbs_t::iterator itTb = m_expectedTbs.begin();
+    auto itTb = m_expectedTbs.begin();
 
     // apply transmission mode gain
     NS_LOG_DEBUG(this << " txMode " << (uint16_t)m_transmissionMode << " gain "
@@ -2883,7 +2881,7 @@ LteSpectrumPhy::RxSlPsbch(std::vector<uint32_t> pktIndexes)
         }
     }
 
-    for (std::multiset<SlCtrlPacketInfo_t>::iterator it = sortedControlMessages.begin();
+    for (auto it = sortedControlMessages.begin();
          it != sortedControlMessages.end();
          it++)
     {

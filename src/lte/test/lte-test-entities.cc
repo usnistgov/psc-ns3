@@ -164,7 +164,7 @@ LteTestRrc::DoReceivePdcpSdu(LtePdcpSapUser::ReceivePdcpSduParameters params)
     params.dstL2Id = 0;
 
     uint32_t dataLen = p->GetSize();
-    uint8_t* buf = new uint8_t[dataLen];
+    auto buf = new uint8_t[dataLen];
 
     // Stats
     m_rxPdus++;
@@ -320,7 +320,7 @@ LteTestPdcp::DoReceivePdcpPdu(Ptr<Packet> p)
     NS_LOG_LOGIC("Data = " << (*p));
 
     uint32_t dataLen = p->GetSize();
-    uint8_t* buf = new uint8_t[dataLen];
+    auto buf = new uint8_t[dataLen];
     p->CopyData(buf, dataLen);
     m_receivedData = std::string((char*)buf, dataLen);
 
@@ -620,7 +620,7 @@ LteTestMac::DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params)
 
         // Copy data to a string
         uint32_t dataLen = params.pdu->GetSize();
-        uint8_t* buf = new uint8_t[dataLen];
+        auto buf = new uint8_t[dataLen];
         params.pdu->CopyData(buf, dataLen);
         m_receivedData = std::string((char*)buf, dataLen);
 
@@ -637,8 +637,7 @@ LteTestMac::DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters
     if (m_txOpportunityMode == AUTOMATIC_MODE)
     {
         // cancel all previously scheduled TxOpps
-        for (std::list<EventId>::iterator it = m_nextTxOppList.begin(); it != m_nextTxOppList.end();
-             ++it)
+        for (auto it = m_nextTxOppList.begin(); it != m_nextTxOppList.end(); ++it)
         {
             it->Cancel();
         }

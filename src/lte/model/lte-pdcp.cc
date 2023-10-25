@@ -212,9 +212,9 @@ LtePdcp::DoTransmitPdcpSdu(LtePdcpSapProvider::TransmitPdcpSduParameters params)
 
         pdcpHeader.SetSduType(params.sduType);
 
-        NS_LOG_LOGIC("PDCP header: " << pdcpHeader);
         p->AddHeader(pdcpHeader);
         p->AddByteTag(pdcpTag, 1, pdcpHeader.GetSerializedSize());
+        NS_LOG_INFO("Transmitting PDCP PDU with header: " << pdcpHeader);
     }
     else
     {
@@ -229,9 +229,9 @@ LtePdcp::DoTransmitPdcpSdu(LtePdcpSapProvider::TransmitPdcpSduParameters params)
 
         pdcpHeader.SetDcBit(LtePdcpHeader::DATA_PDU);
 
-        NS_LOG_LOGIC("PDCP header: " << pdcpHeader);
         p->AddHeader(pdcpHeader);
         p->AddByteTag(pdcpTag, 1, pdcpHeader.GetSerializedSize());
+        NS_LOG_INFO("Transmitting PDCP PDU with header: " << pdcpHeader);
     }
 
     m_txPdu(m_rnti, m_lcid, p->GetSize());

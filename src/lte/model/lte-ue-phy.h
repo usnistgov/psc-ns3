@@ -871,7 +871,7 @@ class LteUePhy : public LtePhy
 
     uint16_t m_srsPeriodicity;    ///< SRS periodicity
     uint16_t m_srsSubframeOffset; ///< SRS subframe offset
-    uint16_t m_srsConfigured;     ///< SRS configured
+    bool m_srsConfigured;         ///< SRS configured
     Time m_srsStartTime;          ///< SRS start time
 
     double m_paLinear; ///< PA linear

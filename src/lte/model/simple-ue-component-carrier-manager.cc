@@ -186,8 +186,7 @@ SimpleUeComponentCarrierManager::DoTransmitPdu(LteMacSapProvider::TransmitPduPar
     if (params.srcL2Id == 0)
     {
         NS_LOG_INFO("Simple UE CCM forwarding LTE RLC PDU to MAC");
-        std::map<uint8_t, LteMacSapProvider*>::iterator it =
-            m_macSapProvidersMap.find(params.componentCarrierId);
+        auto it = m_macSapProvidersMap.find(params.componentCarrierId);
         NS_ABORT_MSG_IF(it == m_macSapProvidersMap.end(),
                         "could not find Sap for ComponentCarrier "
                             << (uint16_t)params.componentCarrierId);
@@ -197,8 +196,7 @@ SimpleUeComponentCarrierManager::DoTransmitPdu(LteMacSapProvider::TransmitPduPar
     else
     {
         NS_LOG_INFO("Simple UE CCM forwarding Sidelink RLC PDU to MAC");
-        std::map<uint8_t, LteMacSapProvider*>::iterator it =
-            m_macSapProvidersMap.find(params.componentCarrierId);
+        auto it = m_macSapProvidersMap.find(params.componentCarrierId);
         NS_ABORT_MSG_IF(it == m_macSapProvidersMap.end(),
                         "could not find Sap for Sidelink ComponentCarrier "
                             << (uint16_t)params.componentCarrierId);
@@ -216,20 +214,18 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus(
     if (params.srcL2Id == 0)
     {
         NS_LOG_DEBUG("BSR from RLC for LTE LCID = " << (uint16_t)params.lcid);
-        std::map<uint8_t, LteMacSapProvider*>::iterator it = m_macSapProvidersMap.find(0);
+        auto it = m_macSapProvidersMap.find(0);
         NS_ABORT_MSG_IF(it == m_macSapProvidersMap.end(),
                         "could not find Sap for ComponentCarrier");
 
         NS_LOG_DEBUG("Size of component carrier LC map " << m_componentCarrierLcMap.size());
 
-        for (std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*>>::iterator ccLcMapIt =
-                 m_componentCarrierLcMap.begin();
+        for (auto ccLcMapIt = m_componentCarrierLcMap.begin();
              ccLcMapIt != m_componentCarrierLcMap.end();
              ccLcMapIt++)
         {
             NS_LOG_DEBUG("BSR from RLC for CC id = " << (uint16_t)ccLcMapIt->first);
-            std::map<uint8_t, LteMacSapProvider*>::iterator it =
-                ccLcMapIt->second.find(params.lcid);
+            auto it = ccLcMapIt->second.find(params.lcid);
             if (it != ccLcMapIt->second.end())
             {
                 it->second->ReportBufferStatus(params);
@@ -238,7 +234,7 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus(
     }
     else
     {
-        std::map<uint8_t, LteMacSapProvider*>::iterator it = m_macSapProvidersMap.find(0);
+        auto it = m_macSapProvidersMap.find(0);
         NS_ABORT_MSG_IF(it == m_macSapProvidersMap.end(),
                         "could not find Sap for Sidelink Component Carrier");
 
@@ -246,8 +242,7 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus(
 
         // Replicate the BSR
         // Bug : 2861
-        for (std::map<uint8_t, std::map<UeCcmSidelinkLcIdentifier, LteMacSapProvider*>>::iterator
-                 slCcLcMapIt = m_slComponentCarrierLcMap.begin();
+        for (auto slCcLcMapIt = m_slComponentCarrierLcMap.begin();
              slCcLcMapIt != m_slComponentCarrierLcMap.end();
              slCcLcMapIt++)
         {
@@ -295,7 +290,7 @@ SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(
 
     if (txOpParams.srcL2Id == 0)
     {
-        std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = m_lcAttached.find(txOpParams.lcid);
+        auto lcidIt = m_lcAttached.find(txOpParams.lcid);
         NS_ABORT_MSG_IF(lcidIt == m_lcAttached.end(),
                         "could not find LCID" << (uint16_t)txOpParams.lcid);
         NS_LOG_DEBUG(this << " lcid = " << (uint32_t)txOpParams.lcid
@@ -316,8 +311,7 @@ SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(
         slLcIdentifier.srcL2Id = txOpParams.srcL2Id;
         slLcIdentifier.dstL2Id = txOpParams.dstL2Id;
 
-        std::map<UeCcmSidelinkLcIdentifier, UeCcmLcInfo>::iterator slLcIdIt =
-            m_slLcInfoMap.find(slLcIdentifier);
+        auto slLcIdIt = m_slLcInfoMap.find(slLcIdentifier);
 
         NS_ABORT_MSG_IF(slLcIdIt == m_slLcInfoMap.end(),
                         "cannot find SL LCID " << (uint16_t)txOpParams.lcid << ", srcL2Id "
@@ -345,7 +339,7 @@ SimpleUeComponentCarrierManager::DoReceivePdu(LteMacSapUser::ReceivePduParameter
 
     if (rxPduParams.srcL2Id == 0)
     {
-        std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = m_lcAttached.find(rxPduParams.lcid);
+        auto lcidIt = m_lcAttached.find(rxPduParams.lcid);
         NS_ABORT_MSG_IF(lcidIt == m_lcAttached.end(),
                         "could not find LCID" << (uint16_t)rxPduParams.lcid);
         if (lcidIt != m_lcAttached.end())
@@ -360,8 +354,7 @@ SimpleUeComponentCarrierManager::DoReceivePdu(LteMacSapUser::ReceivePduParameter
         slLcIdentifier.srcL2Id = rxPduParams.srcL2Id;
         slLcIdentifier.dstL2Id = rxPduParams.dstL2Id;
 
-        std::map<UeCcmSidelinkLcIdentifier, UeCcmLcInfo>::iterator slLcIdIt =
-            m_slLcInfoMap.find(slLcIdentifier);
+        auto slLcIdIt = m_slLcInfoMap.find(slLcIdentifier);
 
         NS_ABORT_MSG_IF(slLcIdIt == m_slLcInfoMap.end(),
                         "cannot find SL LCID " << (uint16_t)rxPduParams.lcid << ", srcL2Id "
@@ -383,11 +376,10 @@ SimpleUeComponentCarrierManager::DoRemoveLc(uint8_t lcid)
     NS_ABORT_MSG_IF(m_lcAttached.find(lcid) == m_lcAttached.end(), "could not find LCID " << lcid);
     m_lcAttached.erase(lcid);
     // send back all the configuration to the componentCarrier where we want to remove the Lc
-    std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*>>::iterator it =
-        m_componentCarrierLcMap.begin();
+    auto it = m_componentCarrierLcMap.begin();
     while (it != m_componentCarrierLcMap.end())
     {
-        std::map<uint8_t, LteMacSapProvider*>::iterator lcToRemove = it->second.find(lcid);
+        auto lcToRemove = it->second.find(lcid);
         if (lcToRemove != it->second.end())
         {
             res.insert(res.end(), it->first);
@@ -405,7 +397,7 @@ SimpleUeComponentCarrierManager::DoReset()
 {
     NS_LOG_FUNCTION(this);
     // same semantics as LteUeMac::DoRest
-    std::map<uint8_t, LteMacSapUser*>::iterator it = m_lcAttached.begin();
+    auto it = m_lcAttached.begin();
     while (it != m_lcAttached.end())
     {
         // don't delete CCCH
@@ -428,11 +420,10 @@ SimpleUeComponentCarrierManager::DoAddLc(uint8_t lcId,
 {
     NS_LOG_FUNCTION(this);
     std::vector<LteUeCcmRrcSapProvider::LcsConfig> res;
-    std::map<uint8_t, LteMacSapUser*>::iterator it = m_lcAttached.find(lcId);
+    auto it = m_lcAttached.find(lcId);
     NS_ABORT_MSG_IF(it != m_lcAttached.end(), "Warning, LCID " << lcId << " already exist");
     m_lcAttached.insert(std::pair<uint8_t, LteMacSapUser*>(lcId, msu));
     LteUeCcmRrcSapProvider::LcsConfig elem;
-    std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*>>::iterator ccLcMapIt;
     for (uint8_t ncc = 0; ncc < m_noOfComponentCarriers; ncc++)
     {
         elem.componentCarrierId = ncc;
@@ -440,7 +431,7 @@ SimpleUeComponentCarrierManager::DoAddLc(uint8_t lcId,
         elem.msu = m_ccmMacSapUser;
         res.insert(res.end(), elem);
 
-        ccLcMapIt = m_componentCarrierLcMap.find(ncc);
+        auto ccLcMapIt = m_componentCarrierLcMap.find(ncc);
         if (ccLcMapIt != m_componentCarrierLcMap.end())
         {
             ccLcMapIt->second.insert(
@@ -449,9 +440,8 @@ SimpleUeComponentCarrierManager::DoAddLc(uint8_t lcId,
         else
         {
             std::map<uint8_t, LteMacSapProvider*> empty;
-            std::pair<std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*>>::iterator, bool>
-                ret = m_componentCarrierLcMap.insert(
-                    std::pair<uint8_t, std::map<uint8_t, LteMacSapProvider*>>(ncc, empty));
+            auto ret = m_componentCarrierLcMap.insert(
+                std::pair<uint8_t, std::map<uint8_t, LteMacSapProvider*>>(ncc, empty));
             NS_ABORT_MSG_IF(!ret.second,
                             "element already present, ComponentCarrierId already exist");
             ccLcMapIt = m_componentCarrierLcMap.find(ncc);
@@ -535,7 +525,7 @@ SimpleUeComponentCarrierManager::DoConfigureSignalBearer(
     LteMacSapUser* msu)
 {
     NS_LOG_FUNCTION(this);
-    std::map<uint8_t, LteMacSapUser*>::iterator it = m_lcAttached.find(lcid);
+    auto it = m_lcAttached.find(lcid);
     // if the following assert is hit, e.g., in handover scenarios, it means
     //  the DoRest function is not called by UE RRC
     NS_ABORT_MSG_IF(it != m_lcAttached.end(),
@@ -543,10 +533,9 @@ SimpleUeComponentCarrierManager::DoConfigureSignalBearer(
 
     m_lcAttached.insert(std::pair<uint8_t, LteMacSapUser*>(lcid, msu));
 
-    std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*>>::iterator ccLcMapIt;
     for (uint8_t ncc = 0; ncc < m_noOfComponentCarriers; ncc++)
     {
-        ccLcMapIt = m_componentCarrierLcMap.find(ncc);
+        auto ccLcMapIt = m_componentCarrierLcMap.find(ncc);
         if (ccLcMapIt != m_componentCarrierLcMap.end())
         {
             ccLcMapIt->second.insert(
@@ -555,9 +544,8 @@ SimpleUeComponentCarrierManager::DoConfigureSignalBearer(
         else
         {
             std::map<uint8_t, LteMacSapProvider*> empty;
-            std::pair<std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*>>::iterator, bool>
-                ret = m_componentCarrierLcMap.insert(
-                    std::pair<uint8_t, std::map<uint8_t, LteMacSapProvider*>>(ncc, empty));
+            auto ret = m_componentCarrierLcMap.insert(
+                std::pair<uint8_t, std::map<uint8_t, LteMacSapProvider*>>(ncc, empty));
             NS_ABORT_MSG_IF(!ret.second,
                             "element already present, ComponentCarrierId already existed");
             ccLcMapIt = m_componentCarrierLcMap.find(ncc);

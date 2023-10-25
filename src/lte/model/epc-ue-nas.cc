@@ -302,7 +302,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
         NS_LOG_DEBUG("No sidelink bearer found. Use uplink");
         uint32_t id = m_tftClassifier.Classify(packet, EpcTft::UPLINK, protocolNumber);
         NS_ASSERT((id & 0xFFFFFF00) == 0);
-        uint8_t bid = (uint8_t)(id & 0x000000FF);
+        auto bid = (uint8_t)(id & 0x000000FF);
         if (bid == 0)
         {
             return false;
@@ -448,8 +448,7 @@ EpcUeNas::SwitchToState(State newState)
     switch (m_state)
     {
     case ACTIVE:
-        for (std::list<BearerToBeActivated>::iterator it = m_bearersToBeActivatedList.begin();
-             it != m_bearersToBeActivatedList.end();
+        for (auto it = m_bearersToBeActivatedList.begin(); it != m_bearersToBeActivatedList.end();
              m_bearersToBeActivatedList.erase(it++))
         {
             DoActivateEpsBearer(it->bearer, it->tft);

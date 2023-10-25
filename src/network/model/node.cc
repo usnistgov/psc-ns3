@@ -24,13 +24,13 @@
 #include "application.h"
 #include "net-device.h"
 #include "node-list.h"
+#include "packet.h"
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
 #include "ns3/global-value.h"
 #include "ns3/log.h"
 #include "ns3/object-vector.h"
-#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
 
@@ -212,16 +212,14 @@ Node::DoDispose()
     NS_LOG_FUNCTION(this);
     m_deviceAdditionListeners.clear();
     m_handlers.clear();
-    for (std::vector<Ptr<NetDevice>>::iterator i = m_devices.begin(); i != m_devices.end(); i++)
+    for (auto i = m_devices.begin(); i != m_devices.end(); i++)
     {
         Ptr<NetDevice> device = *i;
         device->Dispose();
         *i = nullptr;
     }
     m_devices.clear();
-    for (std::vector<Ptr<Application>>::iterator i = m_applications.begin();
-         i != m_applications.end();
-         i++)
+    for (auto i = m_applications.begin(); i != m_applications.end(); i++)
     {
         Ptr<Application> application = *i;
         application->Dispose();
@@ -235,14 +233,12 @@ void
 Node::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-    for (std::vector<Ptr<NetDevice>>::iterator i = m_devices.begin(); i != m_devices.end(); i++)
+    for (auto i = m_devices.begin(); i != m_devices.end(); i++)
     {
         Ptr<NetDevice> device = *i;
         device->Initialize();
     }
-    for (std::vector<Ptr<Application>>::iterator i = m_applications.begin();
-         i != m_applications.end();
-         i++)
+    for (auto i = m_applications.begin(); i != m_applications.end(); i++)
     {
         Ptr<Application> application = *i;
         application->Initialize();
@@ -269,8 +265,7 @@ Node::RegisterProtocolHandler(ProtocolHandler handler,
     {
         if (!device)
         {
-            for (std::vector<Ptr<NetDevice>>::iterator i = m_devices.begin(); i != m_devices.end();
-                 i++)
+            for (auto i = m_devices.begin(); i != m_devices.end(); i++)
             {
                 Ptr<NetDevice> dev = *i;
                 dev->SetPromiscReceiveCallback(MakeCallback(&Node::PromiscReceiveFromDevice, this));
@@ -289,7 +284,7 @@ void
 Node::UnregisterProtocolHandler(ProtocolHandler handler)
 {
     NS_LOG_FUNCTION(this << &handler);
-    for (ProtocolHandlerList::iterator i = m_handlers.begin(); i != m_handlers.end(); i++)
+    for (auto i = m_handlers.begin(); i != m_handlers.end(); i++)
     {
         if (i->handler.IsEqual(handler))
         {
@@ -356,7 +351,7 @@ Node::ReceiveFromDevice(Ptr<NetDevice> device,
                          << packet->GetUid());
     bool found = false;
 
-    for (ProtocolHandlerList::iterator i = m_handlers.begin(); i != m_handlers.end(); i++)
+    for (auto i = m_handlers.begin(); i != m_handlers.end(); i++)
     {
         if (!i->device || (i->device == device))
         {
@@ -379,8 +374,7 @@ Node::RegisterDeviceAdditionListener(DeviceAdditionListener listener)
     NS_LOG_FUNCTION(this << &listener);
     m_deviceAdditionListeners.push_back(listener);
     // and, then, notify the new listener about all existing devices.
-    for (std::vector<Ptr<NetDevice>>::const_iterator i = m_devices.begin(); i != m_devices.end();
-         ++i)
+    for (auto i = m_devices.begin(); i != m_devices.end(); ++i)
     {
         listener(*i);
     }
@@ -390,9 +384,7 @@ void
 Node::UnregisterDeviceAdditionListener(DeviceAdditionListener listener)
 {
     NS_LOG_FUNCTION(this << &listener);
-    for (DeviceAdditionListenerList::iterator i = m_deviceAdditionListeners.begin();
-         i != m_deviceAdditionListeners.end();
-         i++)
+    for (auto i = m_deviceAdditionListeners.begin(); i != m_deviceAdditionListeners.end(); i++)
     {
         if ((*i).IsEqual(listener))
         {
@@ -406,9 +398,7 @@ void
 Node::NotifyDeviceAdded(Ptr<NetDevice> device)
 {
     NS_LOG_FUNCTION(this << device);
-    for (DeviceAdditionListenerList::iterator i = m_deviceAdditionListeners.begin();
-         i != m_deviceAdditionListeners.end();
-         i++)
+    for (auto i = m_deviceAdditionListeners.begin(); i != m_deviceAdditionListeners.end(); i++)
     {
         (*i)(device);
     }

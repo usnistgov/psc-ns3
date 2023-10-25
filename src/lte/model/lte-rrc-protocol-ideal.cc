@@ -217,9 +217,9 @@ LteUeRrcProtocolIdeal::SetEnbRrcSapProvider()
 
     // walk list of all nodes to get the peer eNB
     Ptr<LteEnbNetDevice> enbDev;
-    NodeList::Iterator listEnd = NodeList::End();
+    auto listEnd = NodeList::End();
     bool found = false;
-    for (NodeList::Iterator i = NodeList::Begin(); (i != listEnd) && (!found); ++i)
+    for (auto i = NodeList::Begin(); (i != listEnd) && (!found); ++i)
     {
         Ptr<Node> node = *i;
         int nDevs = node->GetNDevices();
@@ -299,8 +299,7 @@ LteEnbRrcProtocolIdeal::SetCellId(uint16_t cellId)
 LteUeRrcSapProvider*
 LteEnbRrcProtocolIdeal::GetUeRrcSapProvider(uint16_t rnti)
 {
-    std::map<uint16_t, LteUeRrcSapProvider*>::const_iterator it;
-    it = m_enbRrcSapProviderMap.find(rnti);
+    auto it = m_enbRrcSapProviderMap.find(rnti);
     NS_ASSERT_MSG(it != m_enbRrcSapProviderMap.end(), "could not find RNTI = " << rnti);
     return it->second;
 }
@@ -308,8 +307,7 @@ LteEnbRrcProtocolIdeal::GetUeRrcSapProvider(uint16_t rnti)
 void
 LteEnbRrcProtocolIdeal::SetUeRrcSapProvider(uint16_t rnti, LteUeRrcSapProvider* p)
 {
-    std::map<uint16_t, LteUeRrcSapProvider*>::iterator it;
-    it = m_enbRrcSapProviderMap.find(rnti);
+    auto it = m_enbRrcSapProviderMap.find(rnti);
     // assign UE RRC only if the RNTI is found at eNB
     if (it != m_enbRrcSapProviderMap.end())
     {
@@ -370,7 +368,7 @@ LteEnbRrcProtocolIdeal::DoSendSystemInformation(uint16_t cellId, LteRrcSap::Syst
     NS_LOG_FUNCTION(this << cellId);
     // walk list of all nodes to get UEs with this cellId
     Ptr<LteUeRrc> ueRrc;
-    for (NodeList::Iterator i = NodeList::Begin(); i != NodeList::End(); ++i)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         Ptr<Node> node = *i;
         int nDevs = node->GetNDevices();
@@ -587,8 +585,7 @@ LteEnbRrcProtocolIdeal::DoDecodeHandoverPreparationInformation(Ptr<Packet> p)
     p->RemoveHeader(h);
     uint32_t msgId = h.GetMsgId();
     NS_LOG_INFO(" decoding msgId = " << msgId);
-    std::map<uint32_t, LteRrcSap::HandoverPreparationInfo>::iterator it =
-        g_handoverPreparationInfoMsgMap.find(msgId);
+    auto it = g_handoverPreparationInfoMsgMap.find(msgId);
     NS_ASSERT_MSG(it != g_handoverPreparationInfoMsgMap.end(), "msgId " << msgId << " not found");
     LteRrcSap::HandoverPreparationInfo msg = it->second;
     g_handoverPreparationInfoMsgMap.erase(it);
@@ -710,8 +707,7 @@ LteEnbRrcProtocolIdeal::DoDecodeHandoverCommand(Ptr<Packet> p)
     p->RemoveHeader(h);
     uint32_t msgId = h.GetMsgId();
     NS_LOG_INFO(" decoding msgId = " << msgId);
-    std::map<uint32_t, LteRrcSap::RrcConnectionReconfiguration>::iterator it =
-        g_handoverCommandMsgMap.find(msgId);
+    auto it = g_handoverCommandMsgMap.find(msgId);
     NS_ASSERT_MSG(it != g_handoverCommandMsgMap.end(), "msgId " << msgId << " not found");
     LteRrcSap::RrcConnectionReconfiguration msg = it->second;
     g_handoverCommandMsgMap.erase(it);

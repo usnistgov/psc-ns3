@@ -59,7 +59,7 @@ void
 EpcPgwApplication::UeInfo::RemoveBearer(uint8_t bearerId)
 {
     NS_LOG_FUNCTION(this << (uint16_t)bearerId);
-    std::map<uint8_t, uint32_t>::iterator it = m_teidByBearerIdMap.find(bearerId);
+    auto it = m_teidByBearerIdMap.find(bearerId);
     m_tftClassifier.Delete(it->second); // delete tft
     m_teidByBearerIdMap.erase(bearerId);
 }
@@ -182,7 +182,7 @@ EpcPgwApplication::RecvFromTunDevice(Ptr<Packet> packet,
         NS_LOG_LOGIC("packet addressed to UE " << ueAddr);
 
         // find corresponding UeInfo address
-        std::map<Ipv4Address, Ptr<UeInfo>>::iterator it = m_ueInfoByAddrMap.find(ueAddr);
+        auto it = m_ueInfoByAddrMap.find(ueAddr);
         if (it == m_ueInfoByAddrMap.end())
         {
             NS_LOG_WARN("unknown UE address " << ueAddr);
@@ -209,7 +209,7 @@ EpcPgwApplication::RecvFromTunDevice(Ptr<Packet> packet,
         NS_LOG_LOGIC("packet addressed to UE " << ueAddr);
 
         // find corresponding UeInfo address
-        std::map<Ipv6Address, Ptr<UeInfo>>::iterator it = m_ueInfoByAddrMap6.find(ueAddr);
+        auto it = m_ueInfoByAddrMap6.find(ueAddr);
         bool foundUe = (it != m_ueInfoByAddrMap6.end());
         if (!foundUe)
         {
@@ -314,7 +314,7 @@ EpcPgwApplication::DoRecvCreateSessionRequest(Ptr<Packet> packet)
     uint16_t cellId = msg.GetUliEcgi();
     NS_LOG_DEBUG("cellId " << cellId << " IMSI " << imsi);
 
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(imsi);
+    auto ueit = m_ueInfoByImsiMap.find(imsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI " << imsi);
     ueit->second->SetSgwAddr(m_sgwS5Addr);
 
@@ -376,7 +376,7 @@ EpcPgwApplication::DoRecvModifyBearerRequest(Ptr<Packet> packet)
     uint16_t cellId = msg.GetUliEcgi();
     NS_LOG_DEBUG("cellId " << cellId << " IMSI " << imsi);
 
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(imsi);
+    auto ueit = m_ueInfoByImsiMap.find(imsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI " << imsi);
     ueit->second->SetSgwAddr(m_sgwS5Addr);
 
@@ -438,7 +438,7 @@ EpcPgwApplication::DoRecvDeleteBearerResponse(Ptr<Packet> packet)
     packet->RemoveHeader(msg);
 
     uint64_t imsi = msg.GetTeid();
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(imsi);
+    auto ueit = m_ueInfoByImsiMap.find(imsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI " << imsi);
 
     for (auto& epsBearerId : msg.GetEpsBearerIds())
@@ -514,7 +514,7 @@ void
 EpcPgwApplication::SetUeAddress(uint64_t imsi, Ipv4Address ueAddr)
 {
     NS_LOG_FUNCTION(this << imsi << ueAddr);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(imsi);
+    auto ueit = m_ueInfoByImsiMap.find(imsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI" << imsi);
     ueit->second->SetUeAddr(ueAddr);
     m_ueInfoByAddrMap[ueAddr] = ueit->second;
@@ -524,7 +524,7 @@ void
 EpcPgwApplication::SetUeAddress6(uint64_t imsi, Ipv6Address ueAddr)
 {
     NS_LOG_FUNCTION(this << imsi << ueAddr);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(imsi);
+    auto ueit = m_ueInfoByImsiMap.find(imsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI " << imsi);
     m_ueInfoByAddrMap6[ueAddr] = ueit->second;
     ueit->second->SetUeAddr6(ueAddr);
