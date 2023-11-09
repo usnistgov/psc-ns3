@@ -45,7 +45,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttMsg);
 
 TypeId
-McpttMsg::GetTypeId (void)
+McpttMsg::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttMsg")
     .SetParent<Header> ()
@@ -54,11 +54,11 @@ McpttMsg::GetTypeId (void)
   return tid;
 }
 
-McpttMsg::~McpttMsg (void)
+McpttMsg::~McpttMsg()
 {}
 
 TypeId
-McpttMsg::GetInstanceTypeId (void) const
+McpttMsg::GetInstanceTypeId() const
 {
   return McpttMsg::GetTypeId ();
 }
@@ -75,8 +75,8 @@ McpttMsg::IsA (const TypeId& type) const
   return isA;
 }
 
-McpttMsg::McpttMsg (void)
-  : Header ()
+McpttMsg::McpttMsg()
+    : Header()
 {
   NS_LOG_FUNCTION (this);
 }

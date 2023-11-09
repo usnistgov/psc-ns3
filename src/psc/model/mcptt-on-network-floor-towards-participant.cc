@@ -62,7 +62,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorTowardsParticipant");
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorTowardsParticipant);
 
 TypeId
-McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
+McpttOnNetworkFloorTowardsParticipant::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorTowardsParticipant")
     .SetParent<Object> ()
@@ -104,20 +104,20 @@ McpttOnNetworkFloorTowardsParticipant::GetTypeId (void)
   return tid;
 }
 
-McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (void)
-  : Object (),
-    m_dualFloor (false),
-    m_floorChannel (CreateObject<McpttChannel> ()),
-    m_implicitRequest (false),
-    m_mediaChannel (CreateObject<McpttChannel> ()),
-    m_originator (false),
-    m_overridden (false),
-    m_overriding (false),
-    m_owner (0),
-    m_revokeMsg (McpttFloorMsgRevoke ()),
-    m_state (McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
-    m_t8 (CreateObject<McpttTimer> (McpttEntityId (8, "T8")))
+McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant()
+    : Object(),
+      m_dualFloor(false),
+      m_floorChannel(CreateObject<McpttChannel>()),
+      m_implicitRequest(false),
+      m_mediaChannel(CreateObject<McpttChannel>()),
+      m_originator(false),
+      m_overridden(false),
+      m_overriding(false),
+      m_owner(nullptr),
+      m_revokeMsg(McpttFloorMsgRevoke()),
+      m_state(McpttOnNetworkFloorTowardsParticipantStateStartStop::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>()),
+      m_t8(CreateObject<McpttTimer>(McpttEntityId(8, "T8")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -127,7 +127,7 @@ McpttOnNetworkFloorTowardsParticipant::McpttOnNetworkFloorTowardsParticipant (vo
   m_t8->Link (&McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8, this);
 }
 
-McpttOnNetworkFloorTowardsParticipant::~McpttOnNetworkFloorTowardsParticipant (void)
+McpttOnNetworkFloorTowardsParticipant::~McpttOnNetworkFloorTowardsParticipant()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -142,7 +142,7 @@ McpttOnNetworkFloorTowardsParticipant::CallInitialized (bool implicitRequest)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::CallRelease1 (void)
+McpttOnNetworkFloorTowardsParticipant::CallRelease1()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Taking call release notification (part I).");
@@ -150,7 +150,7 @@ McpttOnNetworkFloorTowardsParticipant::CallRelease1 (void)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::CallRelease2 (void)
+McpttOnNetworkFloorTowardsParticipant::CallRelease2()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Taking call release notification (part II).");
@@ -158,7 +158,7 @@ McpttOnNetworkFloorTowardsParticipant::CallRelease2 (void)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::ClientRelease (void)
+McpttOnNetworkFloorTowardsParticipant::ClientRelease()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Taking client release notification.");
@@ -210,13 +210,13 @@ McpttOnNetworkFloorTowardsParticipant::DoSend (McpttMsg& msg)
 }
 
 TypeId
-McpttOnNetworkFloorTowardsParticipant::GetInstanceTypeId (void) const
+McpttOnNetworkFloorTowardsParticipant::GetInstanceTypeId() const
 {
   return McpttOnNetworkFloorTowardsParticipant::GetTypeId ();
 }
 
 McpttEntityId
-McpttOnNetworkFloorTowardsParticipant::GetStateId (void) const
+McpttOnNetworkFloorTowardsParticipant::GetStateId() const
 {
   McpttEntityId stateId = m_state->GetInstanceStateId ();
 
@@ -224,49 +224,49 @@ McpttOnNetworkFloorTowardsParticipant::GetStateId (void) const
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsDualFloor (void) const
+McpttOnNetworkFloorTowardsParticipant::IsDualFloor() const
 {
   return m_dualFloor;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsImplicitRequest (void) const
+McpttOnNetworkFloorTowardsParticipant::IsImplicitRequest() const
 {
   return m_implicitRequest;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsQueueing (void) const
+McpttOnNetworkFloorTowardsParticipant::IsQueueing() const
 {
   return m_owner->IsQueueingSupported ();
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsOriginator (void) const
+McpttOnNetworkFloorTowardsParticipant::IsOriginator() const
 {
   return m_originator;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsOverridden (void) const
+McpttOnNetworkFloorTowardsParticipant::IsOverridden() const
 {
   return m_overridden;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsOverriding (void) const
+McpttOnNetworkFloorTowardsParticipant::IsOverriding() const
 {
   return m_overriding;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsReceiveOnly (void) const
+McpttOnNetworkFloorTowardsParticipant::IsReceiveOnly() const
 {
   return m_receiveOnly;
 }
 
 bool
-McpttOnNetworkFloorTowardsParticipant::IsStarted (void) const
+McpttOnNetworkFloorTowardsParticipant::IsStarted() const
 {
   return m_state->GetInstanceStateId () != McpttOnNetworkFloorTowardsParticipant::GetStateId ();
 }
@@ -356,7 +356,7 @@ McpttOnNetworkFloorTowardsParticipant::Send (McpttMsg& msg)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::Terminate (void)
+McpttOnNetworkFloorTowardsParticipant::Terminate()
 {
   NS_LOG_FUNCTION (this);
 
@@ -374,7 +374,7 @@ McpttOnNetworkFloorTowardsParticipant::SetDelayT8 (const Time& delayT8)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::Start (void)
+McpttOnNetworkFloorTowardsParticipant::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -394,7 +394,7 @@ McpttOnNetworkFloorTowardsParticipant::Start (void)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::Stop (void)
+McpttOnNetworkFloorTowardsParticipant::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -410,17 +410,17 @@ McpttOnNetworkFloorTowardsParticipant::Stop (void)
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::DoDispose (void)
+McpttOnNetworkFloorTowardsParticipant::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   m_floorChannel->Dispose ();
-  m_floorChannel = 0;
+  m_floorChannel = nullptr;
   m_mediaChannel->Dispose ();
-  m_mediaChannel = 0;
-  m_owner = 0;
-  m_state = 0;
-  m_t8 = 0;
+  m_mediaChannel = nullptr;
+  m_owner = nullptr;
+  m_state = nullptr;
+  m_t8 = nullptr;
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
@@ -512,7 +512,7 @@ McpttOnNetworkFloorTowardsParticipant::ReceiveMediaPkt (Ptr<Packet>  pkt, Addres
 }
 
 void
-McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8 (void)
+McpttOnNetworkFloorTowardsParticipant::ExpiryOfT8()
 {
   NS_LOG_FUNCTION (this);
 
@@ -582,73 +582,73 @@ McpttOnNetworkFloorTowardsParticipant::SendMedia (McpttMediaMsg& msg)
 }
 
 Ptr<McpttChannel>
-McpttOnNetworkFloorTowardsParticipant::GetFloorChannel (void) const
+McpttOnNetworkFloorTowardsParticipant::GetFloorChannel() const
 {
   return m_floorChannel;
 }
 
 uint16_t
-McpttOnNetworkFloorTowardsParticipant::GetFloorPort (void) const
+McpttOnNetworkFloorTowardsParticipant::GetFloorPort() const
 {
   return m_floorPort;
 }
 
 Ptr<McpttChannel>
-McpttOnNetworkFloorTowardsParticipant::GetMediaChannel (void) const
+McpttOnNetworkFloorTowardsParticipant::GetMediaChannel() const
 {
   return m_mediaChannel;
 }
 
 uint16_t
-McpttOnNetworkFloorTowardsParticipant::GetMediaPort (void) const
+McpttOnNetworkFloorTowardsParticipant::GetMediaPort() const
 {
   return m_mediaPort;
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
-McpttOnNetworkFloorTowardsParticipant::GetOwner (void) const
+McpttOnNetworkFloorTowardsParticipant::GetOwner() const
 {
   return m_owner;
 }
 
 Address
-McpttOnNetworkFloorTowardsParticipant::GetPeerAddress (void) const
+McpttOnNetworkFloorTowardsParticipant::GetPeerAddress() const
 {
   return m_peerAddress;
 }
 
 uint32_t
-McpttOnNetworkFloorTowardsParticipant::GetPeerUserId (void) const
+McpttOnNetworkFloorTowardsParticipant::GetPeerUserId() const
 {
   return m_peerUserId;
 }
 
 McpttFloorMsgRevoke
-McpttOnNetworkFloorTowardsParticipant::GetRevokeMsg (void) const
+McpttOnNetworkFloorTowardsParticipant::GetRevokeMsg() const
 {
   return m_revokeMsg;
 }
 
 uint32_t
-McpttOnNetworkFloorTowardsParticipant::GetStoredSsrc (void) const
+McpttOnNetworkFloorTowardsParticipant::GetStoredSsrc() const
 {
   return m_storedSsrc;
 }
 
 uint8_t
-McpttOnNetworkFloorTowardsParticipant::GetStoredPriority (void) const
+McpttOnNetworkFloorTowardsParticipant::GetStoredPriority() const
 {
   return m_storedPriority;
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttOnNetworkFloorTowardsParticipant::GetTrackInfo (void) const
+McpttOnNetworkFloorTowardsParticipant::GetTrackInfo() const
 {
   return m_trackInfo;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorTowardsParticipant::GetT8 (void) const
+McpttOnNetworkFloorTowardsParticipant::GetT8() const
 {
   return m_t8;
 }

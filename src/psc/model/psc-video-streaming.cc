@@ -53,7 +53,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (PscVideoStreaming);
 
 TypeId
-PscVideoStreaming::GetTypeId (void)
+PscVideoStreaming::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscVideoStreaming")
     .SetParent <Application> ()
@@ -119,7 +119,7 @@ PscVideoStreaming::SetReceiver (Address recvAddress, uint16_t recvPort)
 }
 
 void
-PscVideoStreaming::DoDispose (void)
+PscVideoStreaming::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
@@ -178,7 +178,7 @@ PscVideoStreaming::ReadCustomDistribution (std::string sizeCdfFilePath, std::str
 }
 
 void
-PscVideoStreaming::LoadCdfs (void)
+PscVideoStreaming::LoadCdfs()
 {
   NS_LOG_FUNCTION (this);
 
@@ -204,9 +204,11 @@ PscVideoStreaming::LoadCdfs (void)
         {
           if (!boostCdfStarted)
             {
-              uint32_t interpolatedVal = static_cast<uint32_t> (oldSize + (((m_boostPercentile / 100) - oldProb) / (it->first - oldProb)) * (it->second - oldSize));
-              m_sizeErvBoost->CDF (interpolatedVal, 0);
-              boostCdfStarted = true;
+                auto interpolatedVal = static_cast<uint32_t>(
+                    oldSize + (((m_boostPercentile / 100) - oldProb) / (it->first - oldProb)) *
+                                  (it->second - oldSize));
+                m_sizeErvBoost->CDF(interpolatedVal, 0);
+                boostCdfStarted = true;
             }
           m_sizeErvBoost->CDF (it->second, (it->first - (m_boostPercentile / 100)) / boostPctSize);
         }
@@ -245,7 +247,7 @@ PscVideoStreaming::LoadCdfs (void)
 }
 
 void
-PscVideoStreaming::StartApplication (void)
+PscVideoStreaming::StartApplication()
 {
   NS_LOG_FUNCTION (this);
 
@@ -279,7 +281,7 @@ PscVideoStreaming::StartApplication (void)
 }
 
 void
-PscVideoStreaming::StopApplication (void)
+PscVideoStreaming::StopApplication()
 {
   NS_LOG_FUNCTION (this);
   m_socket->Close ();
@@ -287,7 +289,7 @@ PscVideoStreaming::StopApplication (void)
 }
 
 void
-PscVideoStreaming::Send (void)
+PscVideoStreaming::Send()
 {
   NS_LOG_FUNCTION (this);
 
@@ -360,7 +362,7 @@ PscVideoStreaming::SetDistributionName (std::string distributionName)
 }
 
 std::string
-PscVideoStreaming::GetDistributionName (void) const
+PscVideoStreaming::GetDistributionName() const
 {
   NS_LOG_FUNCTION (this);
 

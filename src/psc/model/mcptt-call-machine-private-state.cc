@@ -49,7 +49,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttCallMachinePrivateState");
 namespace psc {
 
 /** McpttCallMachinePrivateState - begin **/
-McpttCallMachinePrivateState::~McpttCallMachinePrivateState (void)
+McpttCallMachinePrivateState::~McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -214,8 +214,8 @@ McpttCallMachinePrivateState::ReleaseCall (McpttCallMachinePrivate& machine)
   NS_LOG_LOGIC (GetInstanceStateId ().GetName () << "(" << this << ")" << " ignoring release call.");
 }
 
-McpttCallMachinePrivateState::McpttCallMachinePrivateState (void)
-  : SimpleRefCount<McpttCallMachinePrivateState> ()
+McpttCallMachinePrivateState::McpttCallMachinePrivateState()
+    : SimpleRefCount<McpttCallMachinePrivateState>()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -233,7 +233,7 @@ operator<< (std::ostream& os, const McpttCallMachinePrivateState& inst)
 
 /** McpttCallMachinePrivateStateP0 - begin **/
 Ptr<McpttCallMachinePrivateStateP0>
-McpttCallMachinePrivateStateP0::GetInstance (void)
+McpttCallMachinePrivateStateP0::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -243,26 +243,26 @@ McpttCallMachinePrivateStateP0::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP0::GetStateId (void)
+McpttCallMachinePrivateStateP0::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (0, "'P0: start-stop'");
 
   return stateId;
 }
 
-McpttCallMachinePrivateStateP0::McpttCallMachinePrivateStateP0 (void)
-  : McpttCallMachinePrivateState ()
+McpttCallMachinePrivateStateP0::McpttCallMachinePrivateStateP0()
+    : McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachinePrivateStateP0::~McpttCallMachinePrivateStateP0 (void)
+McpttCallMachinePrivateStateP0::~McpttCallMachinePrivateStateP0()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP0::GetInstanceStateId (void) const
+McpttCallMachinePrivateStateP0::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -290,7 +290,7 @@ McpttCallMachinePrivateStateP0::InitiateCall (McpttCallMachinePrivate& machine)
   uint16_t callId = machine.GenerateRandomCallId ();
   NS_LOG_DEBUG ("Generate call ID of " << callId);
   uint32_t myUserId = pttApp->GetUserId ();
-  uint32_t theirUserId = (uint32_t)targetId.Get ();
+  auto theirUserId = (uint32_t)targetId.Get();
   uint16_t floorPort = McpttPttApp::AllocateNextPortNumber ();
   uint16_t speechPort = McpttPttApp::AllocateNextPortNumber ();
   AddressValue origAddress = pttApp->GetLocalAddress ();
@@ -472,7 +472,7 @@ McpttCallMachinePrivateStateP0::ReceiveSetupRequest (McpttCallMachinePrivate& ma
 
 /** McpttCallMachinePrivateStateP1 - begin **/
 Ptr<McpttCallMachinePrivateStateP1>
-McpttCallMachinePrivateStateP1::GetInstance (void)
+McpttCallMachinePrivateStateP1::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -482,20 +482,20 @@ McpttCallMachinePrivateStateP1::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP1::GetStateId (void)
+McpttCallMachinePrivateStateP1::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (1, "'P1: ignoring same call id'");
 
   return stateId;
 }
 
-McpttCallMachinePrivateStateP1::McpttCallMachinePrivateStateP1 (void)
-  : McpttCallMachinePrivateState ()
+McpttCallMachinePrivateStateP1::McpttCallMachinePrivateStateP1()
+    : McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachinePrivateStateP1::~McpttCallMachinePrivateStateP1 (void)
+McpttCallMachinePrivateStateP1::~McpttCallMachinePrivateStateP1()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -511,7 +511,7 @@ McpttCallMachinePrivateStateP1::ExpiryOfTfp7 (McpttCallMachinePrivate& machine)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP1::GetInstanceStateId (void) const
+McpttCallMachinePrivateStateP1::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -578,7 +578,7 @@ McpttCallMachinePrivateStateP1::ReceiveSetupRequest (McpttCallMachinePrivate& ma
 
 /** McpttCallMachinePrivateStateP2 - begin **/
 Ptr<McpttCallMachinePrivateStateP2>
-McpttCallMachinePrivateStateP2::GetInstance (void)
+McpttCallMachinePrivateStateP2::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -588,20 +588,20 @@ McpttCallMachinePrivateStateP2::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP2::GetStateId (void)
+McpttCallMachinePrivateStateP2::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (2, "'P2: waiting for call response'");
 
   return stateId;
 }
 
-McpttCallMachinePrivateStateP2::McpttCallMachinePrivateStateP2 (void)
-  : McpttCallMachinePrivateState ()
+McpttCallMachinePrivateStateP2::McpttCallMachinePrivateStateP2()
+    : McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachinePrivateStateP2::~McpttCallMachinePrivateStateP2 (void)
+McpttCallMachinePrivateStateP2::~McpttCallMachinePrivateStateP2()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -680,7 +680,7 @@ McpttCallMachinePrivateStateP2::ExpiryOfTfp2 (McpttCallMachinePrivate& machine)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP2::GetInstanceStateId (void) const
+McpttCallMachinePrivateStateP2::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -814,7 +814,7 @@ McpttCallMachinePrivateStateP2::ReleaseCall (McpttCallMachinePrivate& machine)
 
 /** McpttCallMachinePrivateStateP3 - begin **/
 Ptr<McpttCallMachinePrivateStateP3>
-McpttCallMachinePrivateStateP3::GetInstance (void)
+McpttCallMachinePrivateStateP3::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -824,20 +824,20 @@ McpttCallMachinePrivateStateP3::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP3::GetStateId (void)
+McpttCallMachinePrivateStateP3::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (3, "'P3: waiting for release response'");
 
   return stateId;
 }
 
-McpttCallMachinePrivateStateP3::McpttCallMachinePrivateStateP3 (void)
-  : McpttCallMachinePrivateState ()
+McpttCallMachinePrivateStateP3::McpttCallMachinePrivateStateP3()
+    : McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachinePrivateStateP3::~McpttCallMachinePrivateStateP3 (void)
+McpttCallMachinePrivateStateP3::~McpttCallMachinePrivateStateP3()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -884,7 +884,7 @@ McpttCallMachinePrivateStateP3::ExpiryOfTfp3 (McpttCallMachinePrivate& machine)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP3::GetInstanceStateId (void) const
+McpttCallMachinePrivateStateP3::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -928,7 +928,7 @@ McpttCallMachinePrivateStateP3::ReceiveReleaseAck (McpttCallMachinePrivate& mach
 
 /** McpttCallMachinePrivateStateP4 - begin **/
 Ptr<McpttCallMachinePrivateStateP4>
-McpttCallMachinePrivateStateP4::GetInstance (void)
+McpttCallMachinePrivateStateP4::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -938,20 +938,20 @@ McpttCallMachinePrivateStateP4::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP4::GetStateId (void)
+McpttCallMachinePrivateStateP4::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (4, "'P4: part of ongoing call'");
 
   return stateId;
 }
 
-McpttCallMachinePrivateStateP4::McpttCallMachinePrivateStateP4 (void)
-  : McpttCallMachinePrivateState ()
+McpttCallMachinePrivateStateP4::McpttCallMachinePrivateStateP4()
+    : McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachinePrivateStateP4::~McpttCallMachinePrivateStateP4 (void)
+McpttCallMachinePrivateStateP4::~McpttCallMachinePrivateStateP4()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1020,7 +1020,7 @@ McpttCallMachinePrivateStateP4::ExpiryOfTfp6 (McpttCallMachinePrivate& machine)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP4::GetInstanceStateId (void) const
+McpttCallMachinePrivateStateP4::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1104,7 +1104,7 @@ McpttCallMachinePrivateStateP4::ReleaseCall (McpttCallMachinePrivate& machine)
 
 /** McpttCallMachinePrivateStateP5 - begin **/
 Ptr<McpttCallMachinePrivateStateP5>
-McpttCallMachinePrivateStateP5::GetInstance (void)
+McpttCallMachinePrivateStateP5::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1114,20 +1114,20 @@ McpttCallMachinePrivateStateP5::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP5::GetStateId (void)
+McpttCallMachinePrivateStateP5::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (5, "'P5: pending'");
 
   return stateId;
 }
 
-McpttCallMachinePrivateStateP5::McpttCallMachinePrivateStateP5 (void)
-  : McpttCallMachinePrivateState ()
+McpttCallMachinePrivateStateP5::McpttCallMachinePrivateStateP5()
+    : McpttCallMachinePrivateState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachinePrivateStateP5::~McpttCallMachinePrivateStateP5 (void)
+McpttCallMachinePrivateStateP5::~McpttCallMachinePrivateStateP5()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1235,7 +1235,7 @@ McpttCallMachinePrivateStateP5::ExpiryOfTfp4 (McpttCallMachinePrivate& machine)
 }
 
 McpttEntityId
-McpttCallMachinePrivateStateP5::GetInstanceStateId (void) const
+McpttCallMachinePrivateStateP5::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 

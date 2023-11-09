@@ -73,7 +73,7 @@ ModeToString (UdpGroupEchoServer::Mode_t mode)
 }
 
 TypeId
-UdpGroupEchoServer::GetTypeId (void)
+UdpGroupEchoServer::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::UdpGroupEchoServer")
     .SetParent<Application> ()
@@ -117,8 +117,8 @@ UdpGroupEchoServer::UdpGroupEchoServer ()
 UdpGroupEchoServer::~UdpGroupEchoServer ()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
-  m_socket6 = 0;
+  m_socket = nullptr;
+  m_socket6 = nullptr;
 }
 
 void
@@ -159,14 +159,14 @@ UdpGroupEchoServer::AddClient (const Address& address)
 }
 
 void
-UdpGroupEchoServer::DoDispose (void)
+UdpGroupEchoServer::DoDispose()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-UdpGroupEchoServer::StartApplication (void)
+UdpGroupEchoServer::StartApplication()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Starting UdpGroupEchoServer with mode " << ModeToString (m_mode) << " session time " << m_timeout.GetSeconds ());
@@ -239,8 +239,10 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
 
   Ptr<Packet> packet;
-  Address from, echo_address;
-  std::map<std::string, UdpGroupEchoClient>::iterator it, tempit;
+  Address from;
+  Address echo_address;
+  std::map<std::string, UdpGroupEchoClient>::iterator it;
+  std::map<std::string, UdpGroupEchoClient>::iterator tempit;
   std::string ipaddrskey;
   std::ostringstream os;
   UdpGroupEchoClient src_client;
@@ -469,21 +471,20 @@ UdpGroupEchoServer::HandleRead (Ptr<Socket> socket)
 }
 
 void
-UdpGroupEchoServer::LogClients (void)
+UdpGroupEchoServer::LogClients()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Number of clients: " << m_clients.size ());
-  if ( m_clients.size () > 0 )
-    {
+  if (!m_clients.empty())
+  {
       // Check time lapse
       Time tstamp = Simulator::Now ();
       Time lapse;
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
       NS_LOG_INFO (std::setw (23) << "Client  " << std::setw (10) << "Session");
       NS_LOG_INFO (std::setfill ('-') << std::setw (57) << "-" << std::setfill (' '));
-      for (std::map<std::string, UdpGroupEchoClient>::iterator it = m_clients.begin ();
-           it != m_clients.end (); ++it)
-        {
+      for (auto it = m_clients.begin(); it != m_clients.end(); ++it)
+      {
           lapse = tstamp - it->second.m_timestamp;
           if (m_mode == INF_SESSION
               || m_mode == NO_GROUP_SESSION

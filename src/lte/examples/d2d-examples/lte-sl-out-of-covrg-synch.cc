@@ -66,7 +66,7 @@ UePacketTrace(Ptr<OutputStreamWrapper> stream,
     if (InetSocketAddress::IsMatchingType(srcAddrs))
     {
         oss << InetSocketAddress::ConvertFrom(srcAddrs).GetIpv4();
-        if (!oss.str().compare("0.0.0.0")) // srcAddrs not set
+        if (oss.str() == "0.0.0.0") // srcAddrs not set
         {
             *stream->GetStream() << Ipv4Address::ConvertFrom(localAddrs) << ":"
                                  << InetSocketAddress::ConvertFrom(srcAddrs).GetPort() << "\t"
@@ -77,7 +77,7 @@ UePacketTrace(Ptr<OutputStreamWrapper> stream,
         {
             oss.str("");
             oss << InetSocketAddress::ConvertFrom(dstAddrs).GetIpv4();
-            if (!oss.str().compare("0.0.0.0")) // dstAddrs not set
+            if (oss.str() == "0.0.0.0") // dstAddrs not set
             {
                 *stream->GetStream()
                     << InetSocketAddress::ConvertFrom(srcAddrs).GetIpv4() << ":"
@@ -98,7 +98,7 @@ UePacketTrace(Ptr<OutputStreamWrapper> stream,
     else if (Inet6SocketAddress::IsMatchingType(srcAddrs))
     {
         oss << Inet6SocketAddress::ConvertFrom(srcAddrs).GetIpv6();
-        if (!oss.str().compare("::")) // srcAddrs not set
+        if (oss.str() == "::") // srcAddrs not set
         {
             *stream->GetStream() << Ipv6Address::ConvertFrom(localAddrs) << ":"
                                  << Inet6SocketAddress::ConvertFrom(srcAddrs).GetPort() << "\t"
@@ -110,7 +110,7 @@ UePacketTrace(Ptr<OutputStreamWrapper> stream,
         {
             oss.str("");
             oss << Inet6SocketAddress::ConvertFrom(dstAddrs).GetIpv6();
-            if (!oss.str().compare("::")) // dstAddrs not set
+            if (oss.str() == "::") // dstAddrs not set
             {
                 *stream->GetStream()
                     << Inet6SocketAddress::ConvertFrom(srcAddrs).GetIpv6() << ":"
@@ -242,7 +242,7 @@ main(int argc, char* argv[])
 
     if (enableNsLogs)
     {
-        LogLevel logLevel =
+        auto logLevel =
             (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
 
         LogComponentEnable("LteUeRrc", logLevel);
@@ -376,7 +376,7 @@ main(int argc, char* argv[])
     /*Synchronization*/
     // Set initial SLSSID and start of the first scanning for all UEs
     uint16_t base_t = 2000; // ms
-    for (uint16_t devIt = 0; devIt < ueDevs.GetN(); devIt++)
+    for (uint32_t devIt = 0; devIt < ueDevs.GetN(); devIt++)
     {
         ueDevs.Get(devIt)->GetObject<LteUeNetDevice>()->GetRrc()->SetSlssid(devIt + 10);
         ueDevs.Get(devIt)->GetObject<LteUeNetDevice>()->GetPhy()->SetFirstScanningTime(
@@ -484,7 +484,7 @@ main(int argc, char* argv[])
     if (!useIPv6)
     {
         // Set Tx traces
-        for (uint16_t ac = 0; ac < clientApps.GetN(); ac++)
+        for (uint32_t ac = 0; ac < clientApps.GetN(); ac++)
         {
             Ipv4Address localAddrs = clientApps.Get(ac)
                                          ->GetNode()
@@ -506,7 +506,7 @@ main(int argc, char* argv[])
         }
 
         // Set Rx traces
-        for (uint16_t ac = 0; ac < serverApps.GetN(); ac++)
+        for (uint32_t ac = 0; ac < serverApps.GetN(); ac++)
         {
             Ipv4Address localAddrs = serverApps.Get(ac)
                                          ->GetNode()
@@ -530,7 +530,7 @@ main(int argc, char* argv[])
     else
     {
         // Set Tx traces
-        for (uint16_t ac = 0; ac < clientApps.GetN(); ac++)
+        for (uint32_t ac = 0; ac < clientApps.GetN(); ac++)
         {
             clientApps.Get(ac)->GetNode()->GetObject<Ipv6L3Protocol>()->AddMulticastAddress(
                 groupAddress6);
@@ -554,7 +554,7 @@ main(int argc, char* argv[])
         }
 
         // Set Rx traces
-        for (uint16_t ac = 0; ac < serverApps.GetN(); ac++)
+        for (uint32_t ac = 0; ac < serverApps.GetN(); ac++)
         {
             serverApps.Get(ac)->GetNode()->GetObject<Ipv6L3Protocol>()->AddMulticastAddress(
                 groupAddress6);

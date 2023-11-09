@@ -47,7 +47,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorInterface);
 
 TypeId
-McpttPusherOrchestratorInterface::GetTypeId (void)
+McpttPusherOrchestratorInterface::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorInterface")
     .SetParent<Object> ()
@@ -64,13 +64,13 @@ McpttPusherOrchestratorInterface::GetTypeId (void)
   return tid;
 }
 
-McpttPusherOrchestratorInterface::McpttPusherOrchestratorInterface (void)
-  : Object ()
+McpttPusherOrchestratorInterface::McpttPusherOrchestratorInterface()
+    : Object()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttPusherOrchestratorInterface::~McpttPusherOrchestratorInterface (void)
+McpttPusherOrchestratorInterface::~McpttPusherOrchestratorInterface()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -92,7 +92,7 @@ McpttPusherOrchestratorInterface::StopAt (const Time& t)
 }
 
 void
-McpttPusherOrchestratorInterface::DoDispose (void)
+McpttPusherOrchestratorInterface::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 

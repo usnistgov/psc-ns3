@@ -238,7 +238,7 @@ LteHarqPhy::UpdateUlHarqProcessStatus(uint16_t rnti, double sinr)
 
         //       move current status back at the end to maintain full history
         HarqProcessInfoList_t list = (*it).second.at(0);
-        for (uint8_t i = 0; i < list.size(); i++)
+        for (uint32_t i = 0; i < list.size(); i++)
         {
             (*it).second.at(7).push_back(list.at(i));
         }

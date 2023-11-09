@@ -536,7 +536,7 @@ SlOocRelayGenericTrafficRm2RhTestCase::DoRun()
     m_echoServerAddress = remoteHostAddr;
     NS_LOG_DEBUG("Changed m_echoServerAddress to " << m_echoServerAddress);
     std::ostringstream oss;
-    for (uint16_t remUeIdx = 0; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
+    for (uint32_t remUeIdx = 0; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
     {
         uint16_t remUePort = echoPortBase + remUeIdx;
 

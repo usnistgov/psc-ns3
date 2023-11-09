@@ -34,7 +34,7 @@ namespace sip {
 NS_OBJECT_ENSURE_REGISTERED (SipElement);
 
 TypeId
-SipElement::GetTypeId (void)
+SipElement::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::sip::SipElement")
     .SetParent<Object> ()
@@ -474,14 +474,7 @@ bool
 SipElement::DialogExists (DialogId id) const
 {
   auto dialogIt = m_dialogs.find (id);
-  if (dialogIt == m_dialogs.end ())
-    {
-      return false;
-    }
-  else
-    {
-      return true;
-    }
+  return dialogIt != m_dialogs.end();
 }
 
 void
@@ -547,14 +540,7 @@ bool
 SipElement::TransactionExists (TransactionId id) const
 {
   auto transIt = m_transactions.find (id);
-  if (transIt == m_transactions.end ())
-    {
-      return false;
-    }
-  else
-    {
-      return true;
-    }
+  return transIt != m_transactions.end();
 }
 
 void
@@ -593,7 +579,7 @@ SipElement::FreeTransactionPacket (TransactionId id)
   auto transIt = m_transactions.find (id);
   if (transIt != m_transactions.end ())
     {
-      transIt->second.m_packet = 0;
+        transIt->second.m_packet = nullptr;
     }
 }
 
@@ -841,25 +827,26 @@ SipElement::HandleTimerK (TransactionId id)
 }
 
 std::unordered_map<SipElement::DialogId, SipElement::Dialog, SipElement::TupleHash>&
-SipElement::GetDialogs (void)
+SipElement::GetDialogs()
 {
   return m_dialogs;
 }
 
 std::unordered_map<SipElement::TransactionId, SipElement::Transaction, SipElement::TupleHash>&
-SipElement::GetTransactions (void)
+SipElement::GetTransactions()
 {
   return m_transactions;
 }
 
-std::unordered_map<uint16_t, Callback<void, const char*, SipElement::TransactionState> >&
-SipElement::GetEventCallbacks (void)
+std::unordered_map<uint16_t, Callback<void, const char*, SipElement::TransactionState>>&
+SipElement::GetEventCallbacks()
 {
   return m_eventCallbacks;
 }
 
-std::unordered_map<uint16_t, Callback<void, Ptr<Packet>, const SipHeader&, SipElement::TransactionState> >&
-SipElement::GetReceiveCallbacks (void)
+std::unordered_map<uint16_t,
+                   Callback<void, Ptr<Packet>, const SipHeader&, SipElement::TransactionState>>&
+SipElement::GetReceiveCallbacks()
 {
   return m_receiveCallbacks;
 }

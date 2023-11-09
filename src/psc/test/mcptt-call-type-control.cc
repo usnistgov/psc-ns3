@@ -51,23 +51,23 @@ namespace tests {
 class TestCallTypeMachine : public McpttCallTypeMachineGrpBasic
 {
 public:
-  static TypeId GetTypeId (void);
-  TestCallTypeMachine (void);
-  virtual ~TestCallTypeMachine (void);
-  virtual void ChangeState (const McpttEntityId& stateId);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun& msg);
-  virtual void ReceiveGrpCallEmergEnd (const McpttCallMsgGrpEmergEnd& msg);
-  virtual void ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpImmPerilEnd& msg);
-  virtual void Start (void);
-  virtual void Send (const McpttCallMsg& msg);
+  static TypeId GetTypeId();
+  TestCallTypeMachine();
+  ~TestCallTypeMachine() override;
+  void ChangeState(const McpttEntityId& stateId) override;
+  TypeId GetInstanceTypeId() const override;
+  void ReceiveGrpCallAnnoun(const McpttCallMsgGrpAnnoun& msg) override;
+  void ReceiveGrpCallEmergEnd(const McpttCallMsgGrpEmergEnd& msg) override;
+  void ReceiveGrpCallImmPerilEnd(const McpttCallMsgGrpImmPerilEnd& msg) override;
+  void Start() override;
+  void Send(const McpttCallMsg& msg) override;
 
 protected:
-  virtual void ExpiryOfTfg1 (void);
-  virtual void ExpiryOfTfg11 (void);
-  virtual void ExpiryOfTfg12 (void);
-  virtual void ExpiryOfTfg13 (void);
-  virtual void ExpiryOfTfg14 (void);
+  void ExpiryOfTfg1() override;
+  void ExpiryOfTfg11() override;
+  void ExpiryOfTfg12() override;
+  void ExpiryOfTfg13() override;
+  void ExpiryOfTfg14() override;
 
 private:
   Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> m_postRxCb;
@@ -80,13 +80,14 @@ private:
   Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> m_stateChangeCb;
 
 public:
-  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostRxCb (void) const;
-  virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPostTimerExpCb (void) const;
-  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostTxCb (void) const;
-  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreRxCb (void) const;
-  virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPreTimerExpCb (void) const;
-  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreTxCb (void) const;
-  virtual Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> GetStateChangeCb (void) const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostRxCb() const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPostTimerExpCb() const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPostTxCb() const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreRxCb() const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttTimer&> GetPreTimerExpCb() const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttCallMsg&> GetPreTxCb() const;
+  virtual Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>
+  GetStateChangeCb() const;
   virtual void SetPostRxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  postRxCb);
   virtual void SetPostTimerExpCb (const Callback<void, const TestCallTypeMachine&, const McpttTimer&>  timerExpCb);
   virtual void SetPostTxCb (const Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>  postTxCb);
@@ -102,8 +103,8 @@ public:
   McpttCallTypeInitEstabNewCall (const std::string& name = "Call Type Initialization - Establish New Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -128,8 +129,8 @@ public:
   McpttCallTypeInitJoinEmergCall (const std::string& name = "Call Type Initialization - Join Emergency Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -154,8 +155,8 @@ public:
   McpttCallTypeInitJoinImmPerilCall (const std::string& name = "Call Type Initialization - Join Imminent Peril Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -180,8 +181,8 @@ public:
   McpttCallTypeInitJoinBasicCall (const std::string& name = "Call Type Initialization - Join Basic Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -206,8 +207,8 @@ public:
   McpttCallTypeInitJoinEmergCallUserAck (const std::string& name = "Call Type Initialization - Join Emergency Call with User Acknowledgement", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -232,8 +233,8 @@ public:
   McpttCallTypeInitJoinEmergCallNoUserAck (const std::string& name = "Call Type Initialization - Join Emergency Call with User Acknowledgement", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -258,8 +259,8 @@ public:
   McpttCallTypeUpgradeFromBasicCall (const std::string& name = "Call Type Upgrade - From Basic Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -288,8 +289,8 @@ public:
   McpttCallTypeUpgradeFromImmPerilCall (const std::string& name = "Call Type Upgrade - From Imminent Peril Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -318,8 +319,8 @@ public:
   McpttCallTypeExplicitDowngradeFromEmerg (const std::string& name = "Call Type Explicit Downgrade - From Emergency", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -348,8 +349,8 @@ public:
   McpttCallTypeExplicitDowngradeFromImmPeril (const std::string& name = "Call Type Explicit Downgrade - From Imminent Peril", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -378,8 +379,8 @@ public:
   McpttCallTypeImplicitDowngradeFromEmerg (const std::string& name = "Call Type Implicit Downgrade - From Emergency", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -404,8 +405,8 @@ public:
   McpttCallTypeImplicitDowngradeFromImmPeril (const std::string& name = "Call Type Implicit Downgrade - From Imminent Peril", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -430,8 +431,8 @@ public:
   McpttCallTypeReleaseAfterCallEstab (const std::string& name = "Call Type Release - After Call Establishment", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -455,8 +456,8 @@ public:
   McpttCallTypeMerge (const std::string& name = "Call Type Merge", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallTypeMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallTypeMachine& machine, const McpttEntityId& oldStateId, const McpttEntityId& newStateId);
   virtual void UeATimerExpCb (const TestCallTypeMachine& machine, const McpttTimer& timer);
@@ -480,7 +481,7 @@ private:
 class McpttCallTypeControlTestSuite : public TestSuite
 {
 public:
-  McpttCallTypeControlTestSuite (void);
+  McpttCallTypeControlTestSuite();
 };
 
 /***************************************************************
@@ -490,7 +491,7 @@ public:
 static McpttCallTypeControlTestSuite callSuite;
 
 TypeId
-TestCallTypeMachine::GetTypeId (void)
+TestCallTypeMachine::GetTypeId()
 {
   static TypeId tid = TypeId ("TestCallTypeMachine")
     .SetParent<McpttCallTypeMachineGrpBasic> ()
@@ -500,19 +501,22 @@ TestCallTypeMachine::GetTypeId (void)
   return tid;
 }
 
-TestCallTypeMachine::TestCallTypeMachine (void)
-  : McpttCallTypeMachineGrpBasic (),
-    m_postRxCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&> ()),
-    m_postTimerExpCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttTimer&> ()),
-    m_postTxCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&> ()),
-    m_preRxCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&> ()),
-    m_preTimerExpCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttTimer&> ()),
-    m_preTxCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&> ()),
-    m_startStateId (McpttCallTypeMachineGrpBasic::T0),
-    m_stateChangeCb (MakeNullCallback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&> ())
+TestCallTypeMachine::TestCallTypeMachine()
+    : McpttCallTypeMachineGrpBasic(),
+      m_postRxCb(MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&>()),
+      m_postTimerExpCb(MakeNullCallback<void, const TestCallTypeMachine&, const McpttTimer&>()),
+      m_postTxCb(MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&>()),
+      m_preRxCb(MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&>()),
+      m_preTimerExpCb(MakeNullCallback<void, const TestCallTypeMachine&, const McpttTimer&>()),
+      m_preTxCb(MakeNullCallback<void, const TestCallTypeMachine&, const McpttCallMsg&>()),
+      m_startStateId(McpttCallTypeMachineGrpBasic::T0),
+      m_stateChangeCb(MakeNullCallback<void,
+                                       const TestCallTypeMachine&,
+                                       const McpttEntityId&,
+                                       const McpttEntityId&>())
 { }
 
-TestCallTypeMachine::~TestCallTypeMachine (void)
+TestCallTypeMachine::~TestCallTypeMachine()
 { }
 
 void
@@ -592,7 +596,7 @@ TestCallTypeMachine::Send (const McpttCallMsg& msg)
 }
 
 void
-TestCallTypeMachine::ExpiryOfTfg1 (void)
+TestCallTypeMachine::ExpiryOfTfg1()
 {
   Ptr<McpttTimer> tfg = GetOwner ()->GetTfg1 ();
   Callback<void, const TestCallTypeMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -612,7 +616,7 @@ TestCallTypeMachine::ExpiryOfTfg1 (void)
 }
 
 void
-TestCallTypeMachine::ExpiryOfTfg11 (void)
+TestCallTypeMachine::ExpiryOfTfg11()
 {
   Ptr<McpttTimer> tfg = GetTfg11 ();
   Callback<void, const TestCallTypeMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -632,7 +636,7 @@ TestCallTypeMachine::ExpiryOfTfg11 (void)
 }
 
 void
-TestCallTypeMachine::ExpiryOfTfg12 (void)
+TestCallTypeMachine::ExpiryOfTfg12()
 {
   Ptr<McpttTimer> tfg = GetTfg12 ();
   Callback<void, const TestCallTypeMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -652,7 +656,7 @@ TestCallTypeMachine::ExpiryOfTfg12 (void)
 }
 
 void
-TestCallTypeMachine::ExpiryOfTfg13 (void)
+TestCallTypeMachine::ExpiryOfTfg13()
 {
   Ptr<McpttTimer> tfg = GetTfg13 ();
   Callback<void, const TestCallTypeMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -672,7 +676,7 @@ TestCallTypeMachine::ExpiryOfTfg13 (void)
 }
 
 void
-TestCallTypeMachine::ExpiryOfTfg14 (void)
+TestCallTypeMachine::ExpiryOfTfg14()
 {
   Ptr<McpttTimer> tfg = GetTfg14 ();
   Callback<void, const TestCallTypeMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -692,7 +696,7 @@ TestCallTypeMachine::ExpiryOfTfg14 (void)
 }
 
 void
-TestCallTypeMachine::Start (void)
+TestCallTypeMachine::Start()
 {
   McpttCallTypeMachineGrpBasic::Start ();
 }
@@ -712,50 +716,49 @@ TestCallTypeMachine::ChangeState (const McpttEntityId& newStateId)
 }
 
 TypeId
-TestCallTypeMachine::GetInstanceTypeId (void) const
+TestCallTypeMachine::GetInstanceTypeId() const
 {
   return TestCallTypeMachine::GetTypeId ();
 }
 
 Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>
-TestCallTypeMachine::GetPostRxCb (void) const
+TestCallTypeMachine::GetPostRxCb() const
 {
   return m_postRxCb;
 }
 
 Callback<void, const TestCallTypeMachine&, const McpttTimer&>
-TestCallTypeMachine::GetPostTimerExpCb (void) const
+TestCallTypeMachine::GetPostTimerExpCb() const
 {
   return m_postTimerExpCb;
 }
 
-
 Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>
-TestCallTypeMachine::GetPostTxCb (void) const
+TestCallTypeMachine::GetPostTxCb() const
 {
   return m_postTxCb;
 }
 
 Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>
-TestCallTypeMachine::GetPreRxCb (void) const
+TestCallTypeMachine::GetPreRxCb() const
 {
   return m_preRxCb;
 }
 
 Callback<void, const TestCallTypeMachine&, const McpttTimer&>
-TestCallTypeMachine::GetPreTimerExpCb (void) const
+TestCallTypeMachine::GetPreTimerExpCb() const
 {
   return m_preTimerExpCb;
 }
 
 Callback<void, const TestCallTypeMachine&, const McpttCallMsg&>
-TestCallTypeMachine::GetPreTxCb (void) const
+TestCallTypeMachine::GetPreTxCb() const
 {
   return m_preTxCb;
 }
 
 Callback<void, const TestCallTypeMachine&, const McpttEntityId&, const McpttEntityId&>
-TestCallTypeMachine::GetStateChangeCb (void) const
+TestCallTypeMachine::GetStateChangeCb() const
 {
   return m_stateChangeCb;
 }
@@ -809,7 +812,7 @@ McpttCallTypeInitEstabNewCall::McpttCallTypeInitEstabNewCall (const std::string&
 { }
 
 void
-McpttCallTypeInitEstabNewCall::Configure (void)
+McpttCallTypeInitEstabNewCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -857,7 +860,7 @@ McpttCallTypeInitEstabNewCall::Configure (void)
 }
 
 void
-McpttCallTypeInitEstabNewCall::Execute (void)
+McpttCallTypeInitEstabNewCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -998,7 +1001,7 @@ McpttCallTypeInitJoinEmergCall::McpttCallTypeInitJoinEmergCall (const std::strin
 { }
 
 void
-McpttCallTypeInitJoinEmergCall::Configure (void)
+McpttCallTypeInitJoinEmergCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -1137,7 +1140,7 @@ McpttCallTypeInitJoinEmergCall::Configure (void)
 }
 
 void
-McpttCallTypeInitJoinEmergCall::Execute (void)
+McpttCallTypeInitJoinEmergCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1285,7 +1288,7 @@ McpttCallTypeInitJoinImmPerilCall::McpttCallTypeInitJoinImmPerilCall (const std:
 { }
 
 void
-McpttCallTypeInitJoinImmPerilCall::Configure (void)
+McpttCallTypeInitJoinImmPerilCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -1424,7 +1427,7 @@ McpttCallTypeInitJoinImmPerilCall::Configure (void)
 }
 
 void
-McpttCallTypeInitJoinImmPerilCall::Execute (void)
+McpttCallTypeInitJoinImmPerilCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1572,7 +1575,7 @@ McpttCallTypeInitJoinBasicCall::McpttCallTypeInitJoinBasicCall (const std::strin
 { }
 
 void
-McpttCallTypeInitJoinBasicCall::Configure (void)
+McpttCallTypeInitJoinBasicCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -1704,7 +1707,7 @@ McpttCallTypeInitJoinBasicCall::Configure (void)
 }
 
 void
-McpttCallTypeInitJoinBasicCall::Execute (void)
+McpttCallTypeInitJoinBasicCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1852,7 +1855,7 @@ McpttCallTypeInitJoinEmergCallUserAck::McpttCallTypeInitJoinEmergCallUserAck (co
 { }
 
 void
-McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
+McpttCallTypeInitJoinEmergCallUserAck::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -1989,7 +1992,7 @@ McpttCallTypeInitJoinEmergCallUserAck::Configure (void)
 }
 
 void
-McpttCallTypeInitJoinEmergCallUserAck::Execute (void)
+McpttCallTypeInitJoinEmergCallUserAck::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2144,7 +2147,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::McpttCallTypeInitJoinEmergCallNoUserAck
 { }
 
 void
-McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
+McpttCallTypeInitJoinEmergCallNoUserAck::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -2281,7 +2284,7 @@ McpttCallTypeInitJoinEmergCallNoUserAck::Configure (void)
 }
 
 void
-McpttCallTypeInitJoinEmergCallNoUserAck::Execute (void)
+McpttCallTypeInitJoinEmergCallNoUserAck::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2433,7 +2436,7 @@ McpttCallTypeUpgradeFromBasicCall::McpttCallTypeUpgradeFromBasicCall (const std:
 { }
 
 void
-McpttCallTypeUpgradeFromBasicCall::Configure (void)
+McpttCallTypeUpgradeFromBasicCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -2586,7 +2589,7 @@ McpttCallTypeUpgradeFromBasicCall::Configure (void)
 }
 
 void
-McpttCallTypeUpgradeFromBasicCall::Execute (void)
+McpttCallTypeUpgradeFromBasicCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2835,7 +2838,7 @@ McpttCallTypeUpgradeFromImmPerilCall::McpttCallTypeUpgradeFromImmPerilCall (cons
 { }
 
 void
-McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
+McpttCallTypeUpgradeFromImmPerilCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -2998,7 +3001,7 @@ McpttCallTypeUpgradeFromImmPerilCall::Configure (void)
 }
 
 void
-McpttCallTypeUpgradeFromImmPerilCall::Execute (void)
+McpttCallTypeUpgradeFromImmPerilCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3110,8 +3113,8 @@ McpttCallTypeUpgradeFromImmPerilCall::UeBRxCb (const TestCallTypeMachine& machin
       NS_TEST_ASSERT_MSG_EQ (m_ueBT3ToT1, true, "UE B never made transition from " << McpttCallTypeMachineGrpBasic::T3 << " to " << McpttCallTypeMachineGrpBasic::T1 << ".");
       NS_TEST_ASSERT_MSG_EQ (stateId, McpttCallTypeMachineGrpBasic::T1, "UE B in state " << stateId << " but should be in " << McpttCallTypeMachineGrpBasic::T1 << ".");
       m_ueBRxAnnoun = true;
-      if (m_ueCRxAnnoun == true)
-        {
+      if (m_ueCRxAnnoun)
+      {
           Stop ();
         }
     }
@@ -3188,8 +3191,8 @@ McpttCallTypeUpgradeFromImmPerilCall::UeCRxCb (const TestCallTypeMachine& machin
       NS_TEST_ASSERT_MSG_EQ (m_ueCT3ToT1, true, "UE C never made transition from " << McpttCallTypeMachineGrpBasic::T3 << " to " << McpttCallTypeMachineGrpBasic::T1 << ".");
       NS_TEST_ASSERT_MSG_EQ (stateId, McpttCallTypeMachineGrpBasic::T1, "UE C in state " << stateId << " but should be in " << McpttCallTypeMachineGrpBasic::T1 << ".");
       m_ueCRxAnnoun = true;
-      if (m_ueBRxAnnoun == true)
-        {
+      if (m_ueBRxAnnoun)
+      {
           Stop ();
         }
     }
@@ -3254,7 +3257,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::McpttCallTypeExplicitDowngradeFromEmerg
 { }
 
 void
-McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
+McpttCallTypeExplicitDowngradeFromEmerg::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -3417,7 +3420,7 @@ McpttCallTypeExplicitDowngradeFromEmerg::Configure (void)
 }
 
 void
-McpttCallTypeExplicitDowngradeFromEmerg::Execute (void)
+McpttCallTypeExplicitDowngradeFromEmerg::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3529,8 +3532,8 @@ McpttCallTypeExplicitDowngradeFromEmerg::UeBRxCb (const TestCallTypeMachine& mac
       NS_TEST_ASSERT_MSG_EQ (m_ueBT1ToT2, true, "UE B never made transition from " << McpttCallTypeMachineGrpBasic::T1 << " to " << McpttCallTypeMachineGrpBasic::T2 << ".");
       NS_TEST_ASSERT_MSG_EQ (stateId, McpttCallTypeMachineGrpBasic::T2, "UE B in state " << stateId << " but should be in " << McpttCallTypeMachineGrpBasic::T2 << ".");
       m_ueBRxEmergEnd = true;
-      if (m_ueCRxEmergEnd == true)
-        {
+      if (m_ueCRxEmergEnd)
+      {
           Stop ();
         }
     }
@@ -3607,8 +3610,8 @@ McpttCallTypeExplicitDowngradeFromEmerg::UeCRxCb (const TestCallTypeMachine& mac
       NS_TEST_ASSERT_MSG_EQ (m_ueCT1ToT2, true, "UE C never made transition from " << McpttCallTypeMachineGrpBasic::T1 << " to " << McpttCallTypeMachineGrpBasic::T2 << ".");
       NS_TEST_ASSERT_MSG_EQ (stateId, McpttCallTypeMachineGrpBasic::T2, "UE C in state " << stateId << " but should be in " << McpttCallTypeMachineGrpBasic::T2 << ".");
       m_ueCRxEmergEnd = true;
-      if (m_ueBRxEmergEnd == true)
-        {
+      if (m_ueBRxEmergEnd)
+      {
           Stop ();
         }
     }
@@ -3673,7 +3676,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::McpttCallTypeExplicitDowngradeFromIm
 { }
 
 void
-McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
+McpttCallTypeExplicitDowngradeFromImmPeril::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -3836,7 +3839,7 @@ McpttCallTypeExplicitDowngradeFromImmPeril::Configure (void)
 }
 
 void
-McpttCallTypeExplicitDowngradeFromImmPeril::Execute (void)
+McpttCallTypeExplicitDowngradeFromImmPeril::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3948,8 +3951,8 @@ McpttCallTypeExplicitDowngradeFromImmPeril::UeBRxCb (const TestCallTypeMachine& 
       NS_TEST_ASSERT_MSG_EQ (m_ueBT3ToT2, true, "UE B never made transition from " << McpttCallTypeMachineGrpBasic::T3 << " to " << McpttCallTypeMachineGrpBasic::T2 << ".");
       NS_TEST_ASSERT_MSG_EQ (stateId, McpttCallTypeMachineGrpBasic::T2, "UE B in state " << stateId << " but should be in " << McpttCallTypeMachineGrpBasic::T2 << ".");
       m_ueBRxImmPerilEnd = true;
-      if (m_ueCRxImmPerilEnd == true)
-        {
+      if (m_ueCRxImmPerilEnd)
+      {
           Stop ();
         }
     }
@@ -4026,8 +4029,8 @@ McpttCallTypeExplicitDowngradeFromImmPeril::UeCRxCb (const TestCallTypeMachine& 
       NS_TEST_ASSERT_MSG_EQ (m_ueCT3ToT2, true, "UE C never made transition from " << McpttCallTypeMachineGrpBasic::T3 << " to " << McpttCallTypeMachineGrpBasic::T2 << ".");
       NS_TEST_ASSERT_MSG_EQ (stateId, McpttCallTypeMachineGrpBasic::T2, "UE C in state " << stateId << " but should be in " << McpttCallTypeMachineGrpBasic::T2 << ".");
       m_ueCRxImmPerilEnd = true;
-      if (m_ueBRxImmPerilEnd == true)
-        {
+      if (m_ueBRxImmPerilEnd)
+      {
           Stop ();
         }
     }
@@ -4088,7 +4091,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::McpttCallTypeImplicitDowngradeFromEmerg
 { }
 
 void
-McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
+McpttCallTypeImplicitDowngradeFromEmerg::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -4249,7 +4252,7 @@ McpttCallTypeImplicitDowngradeFromEmerg::Configure (void)
 }
 
 void
-McpttCallTypeImplicitDowngradeFromEmerg::Execute (void)
+McpttCallTypeImplicitDowngradeFromEmerg::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -4390,7 +4393,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::McpttCallTypeImplicitDowngradeFromIm
 { }
 
 void
-McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
+McpttCallTypeImplicitDowngradeFromImmPeril::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -4552,7 +4555,7 @@ McpttCallTypeImplicitDowngradeFromImmPeril::Configure (void)
 }
 
 void
-McpttCallTypeImplicitDowngradeFromImmPeril::Execute (void)
+McpttCallTypeImplicitDowngradeFromImmPeril::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -4692,7 +4695,7 @@ McpttCallTypeReleaseAfterCallEstab::McpttCallTypeReleaseAfterCallEstab (const st
 { }
 
 void
-McpttCallTypeReleaseAfterCallEstab::Configure (void)
+McpttCallTypeReleaseAfterCallEstab::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -4848,7 +4851,7 @@ McpttCallTypeReleaseAfterCallEstab::Configure (void)
 }
 
 void
-McpttCallTypeReleaseAfterCallEstab::Execute (void)
+McpttCallTypeReleaseAfterCallEstab::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -4964,7 +4967,7 @@ McpttCallTypeMerge::McpttCallTypeMerge (const std::string& name, Ptr<McpttTestCa
 { }
 
 void
-McpttCallTypeMerge::Configure (void)
+McpttCallTypeMerge::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (McpttCallMachineGrpBasic::GetTypeId ());
@@ -5116,7 +5119,7 @@ McpttCallTypeMerge::Configure (void)
 }
 
 void
-McpttCallTypeMerge::Execute (void)
+McpttCallTypeMerge::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -5151,8 +5154,8 @@ McpttCallTypeMerge::UeARxCb (const TestCallTypeMachine& machine, const McpttCall
       NS_TEST_ASSERT_MSG_EQ (m_ueARxAnnoun, false, "UE A already received " << McpttCallMsgGrpAnnoun::GetTypeId ());
       NS_TEST_ASSERT_MSG_EQ (m_ueAT2ToT1, true, "UE A never made transition from " << McpttCallTypeMachineGrpBasic::T2 << " to " << McpttCallTypeMachineGrpBasic::T1 << ".");
       m_ueARxAnnoun = true;
-      if (m_ueBRxAnnoun == true)
-        {
+      if (m_ueBRxAnnoun)
+      {
           Stop ();
         }
     }
@@ -5228,8 +5231,8 @@ McpttCallTypeMerge::UeBRxCb (const TestCallTypeMachine& machine, const McpttCall
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxAnnoun, false, "UE B already received " << McpttCallMsgGrpAnnoun::GetTypeId ());
       NS_TEST_ASSERT_MSG_EQ (m_ueBT3ToT1, true, "UE B never made transition from " << McpttCallTypeMachineGrpBasic::T3 << " to " << McpttCallTypeMachineGrpBasic::T1 << ".");
       m_ueBRxAnnoun = true;
-      if (m_ueARxAnnoun == true)
-        {
+      if (m_ueARxAnnoun)
+      {
           Stop ();
         }
     }
@@ -5307,9 +5310,8 @@ McpttCallTypeMerge::UeCStateChangeCb (const TestCallTypeMachine& machine, const 
   NS_TEST_ASSERT_MSG_EQ (true, false, "UE C state transition from " << oldStateId << " to " << newStateId << ".");
 }
 
-
-McpttCallTypeControlTestSuite::McpttCallTypeControlTestSuite (void)
-  : TestSuite ("mcptt-call-type-control", TestSuite::SYSTEM)
+McpttCallTypeControlTestSuite::McpttCallTypeControlTestSuite()
+    : TestSuite("mcptt-call-type-control", TestSuite::SYSTEM)
 {
   AddTestCase (new McpttCallTypeInitEstabNewCall (), TestCase::QUICK);
   AddTestCase (new McpttCallTypeInitJoinEmergCall (), TestCase::QUICK);

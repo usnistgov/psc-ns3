@@ -48,13 +48,13 @@ namespace ns3 {
 namespace psc {
 namespace tests {
 
-McpttTestCaseConfig::McpttTestCaseConfig (void)
-  : m_appCount (2),
-    m_appTid (McpttPttApp::GetTypeId ()),
-    m_callTid (McpttCallMachineNull::GetTypeId ()),
-    m_floorTid (McpttFloorParticipantNull::GetTypeId ()),
-    m_start (Seconds (2)),
-    m_stop (Seconds (20))
+McpttTestCaseConfig::McpttTestCaseConfig()
+    : m_appCount(2),
+      m_appTid(McpttPttApp::GetTypeId()),
+      m_callTid(McpttCallMachineNull::GetTypeId()),
+      m_floorTid(McpttFloorParticipantNull::GetTypeId()),
+      m_start(Seconds(2)),
+      m_stop(Seconds(20))
 { }
 
 McpttTestCaseConfig::McpttTestCaseConfig (const uint32_t& appCount, const TypeId& appTid, const TypeId& callTid, const TypeId& floorTid, const Time& start, const Time& stop)
@@ -66,11 +66,11 @@ McpttTestCaseConfig::McpttTestCaseConfig (const uint32_t& appCount, const TypeId
     m_stop (stop)
 { }
 
-McpttTestCaseConfig::~McpttTestCaseConfig (void)
+McpttTestCaseConfig::~McpttTestCaseConfig()
 { }
 
 ApplicationContainer
-McpttTestCaseConfig::Configure (void)
+McpttTestCaseConfig::Configure()
 {
   uint32_t appCount = GetAppCount ();
   TypeId appTid = GetAppTid ();
@@ -142,37 +142,37 @@ McpttTestCaseConfig::Configure (void)
 }
 
 uint32_t
-McpttTestCaseConfig::GetAppCount (void) const
+McpttTestCaseConfig::GetAppCount() const
 {
   return m_appCount;
 }
 
 TypeId
-McpttTestCaseConfig::GetAppTid (void) const
+McpttTestCaseConfig::GetAppTid() const
 {
   return m_appTid;
 }
 
 TypeId
-McpttTestCaseConfig::GetCallTid (void) const
+McpttTestCaseConfig::GetCallTid() const
 {
   return m_callTid;
 }
 
 TypeId
-McpttTestCaseConfig::GetFloorTid (void) const
+McpttTestCaseConfig::GetFloorTid() const
 {
   return m_floorTid;
 }
 
 Time
-McpttTestCaseConfig::GetStart (void) const
+McpttTestCaseConfig::GetStart() const
 {
   return m_start;
 }
 
 Time
-McpttTestCaseConfig::GetStop (void) const
+McpttTestCaseConfig::GetStop() const
 {
   return m_stop;
 }

@@ -56,7 +56,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttServerApp);
 uint16_t McpttServerApp::s_callId = 1;
 
 TypeId
-McpttServerApp::GetTypeId (void)
+McpttServerApp::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttServerApp")
     .SetParent<Application> ()
@@ -88,27 +88,27 @@ McpttServerApp::GetTypeId (void)
   return tid;
 }
 
-McpttServerApp::McpttServerApp (void)
-  : Application (),
-    m_callChannel (0)
+McpttServerApp::McpttServerApp()
+    : Application(),
+      m_callChannel(nullptr)
 {
   NS_LOG_FUNCTION (this);
   m_sipProxy = CreateObject<sip::SipProxy> ();
 }
 
-McpttServerApp::~McpttServerApp (void)
+McpttServerApp::~McpttServerApp()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<sip::SipProxy>
-McpttServerApp::GetSipProxy (void) const
+McpttServerApp::GetSipProxy() const
 {
   return m_sipProxy;
 }
 
 uint16_t
-McpttServerApp::AllocateCallId (void)
+McpttServerApp::AllocateCallId()
 {
   return s_callId++;
 }
@@ -128,7 +128,7 @@ McpttServerApp::GetCall (uint16_t callId)
 {
   NS_LOG_FUNCTION (this);
   Ptr<McpttServerCall> call = nullptr;
-  std::map<uint16_t, Ptr<McpttServerCall> >::iterator it = m_calls.find (callId);
+  auto it = m_calls.find(callId);
   if (it != m_calls.end ())
     {
       call = it->second;
@@ -137,7 +137,7 @@ McpttServerApp::GetCall (uint16_t callId)
 }
 
 void
-McpttServerApp::DoDispose (void)
+McpttServerApp::DoDispose()
 {
   NS_LOG_FUNCTION (this);
   for (auto it = m_calls.begin (); it != m_calls.end (); it++)
@@ -148,10 +148,10 @@ McpttServerApp::DoDispose (void)
   if (m_callChannel)
     {
       m_callChannel->Dispose ();
-      m_callChannel = 0;
+      m_callChannel = nullptr;
     }
   m_sipProxy->Dispose ();
-  m_sipProxy = 0;
+  m_sipProxy = nullptr;
   Object::DoDispose ();
 }
 
@@ -162,7 +162,7 @@ McpttServerApp::TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, con
 }
 
 void
-McpttServerApp::StartApplication (void)
+McpttServerApp::StartApplication()
 {
   NS_LOG_FUNCTION (this);
   m_callChannel = CreateObject<McpttChannel> ();
@@ -183,7 +183,7 @@ McpttServerApp::StartApplication (void)
 }
 
 void
-McpttServerApp::StopApplication (void)
+McpttServerApp::StopApplication()
 {
   NS_LOG_FUNCTION (this);
 
@@ -209,7 +209,7 @@ McpttServerApp::TraceMessageSend (uint16_t callId, Ptr<const Packet> pkt, const 
 }
 
 Address
-McpttServerApp::GetLocalAddress (void) const
+McpttServerApp::GetLocalAddress() const
 {
   return m_localAddress;
 }
@@ -223,7 +223,7 @@ McpttServerApp::SetLocalAddress (const Address& localAddress)
 }
 
 bool
-McpttServerApp::IsRunning (void) const
+McpttServerApp::IsRunning() const
 {
   return m_isRunning;
 }

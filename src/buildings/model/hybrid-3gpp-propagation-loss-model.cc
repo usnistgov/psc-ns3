@@ -66,7 +66,7 @@ Hybrid3gppPropagationLossModel::~Hybrid3gppPropagationLossModel ()
 }
 
 TypeId
-Hybrid3gppPropagationLossModel::GetTypeId (void)
+Hybrid3gppPropagationLossModel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::Hybrid3gppPropagationLossModel")
 
@@ -139,7 +139,7 @@ Hybrid3gppPropagationLossModel::IsMacroComm (Ptr<MobilityModel> a, Ptr<MobilityM
 {
   NS_LOG_FUNCTION (this);
   double heightDiff = std::abs (a->GetPosition ().z - b->GetPosition ().z);
-  m_isMacroComm = (heightDiff > m_heightThreshold ? true : false);
+  m_isMacroComm = (heightDiff > m_heightThreshold);
   NS_LOG_DEBUG ("Height difference between a and b: " << heightDiff);
   return m_isMacroComm;
 }
@@ -158,8 +158,8 @@ Hybrid3gppPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel
   MobilityDuo couple;
   couple.a = a;
   couple.b = b;
-  std::map<MobilityDuo, double>::iterator it_a = m_lossMap.find (couple);
-  BuildingList::Iterator buildingsIt = BuildingList::Begin ();
+  auto it_a = m_lossMap.find(couple);
+  auto buildingsIt = BuildingList::Begin();
   bool aIndoor = false;
   bool bIndoor = false;
 
@@ -171,7 +171,7 @@ Hybrid3gppPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel
     {
       couple.a = b;
       couple.b = a;
-      std::map<MobilityDuo, double>::iterator it_b = m_lossMap.find (couple);
+      auto it_b = m_lossMap.find(couple);
       if (it_b != m_lossMap.end ())
         {
           loss = it_b->second;
@@ -186,8 +186,8 @@ Hybrid3gppPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityModel
               NS_ABORT_MSG_IF ((!a1 || !b1), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
               Vector vA = a->GetVelocity ();
               Vector vB = b->GetVelocity ();
-              bool isAStatic = (vA.x == 0.0 && vA.y == 0.0 ? true : false);
-              bool isBStatic = (vB.x == 0.0 && vB.y == 0.0 ? true : false);
+              bool isAStatic = (vA.x == 0.0 && vA.y == 0.0);
+              bool isBStatic = (vB.x == 0.0 && vB.y == 0.0);
               if (!isAStatic)
                 {
                   // To tackle a case, when there are buildings and nodes have mobility,
@@ -282,11 +282,11 @@ const
       Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
       NS_ABORT_MSG_IF ((!a1 || !b1), "Hybrid3gppsPropagationLossModel only works with MobilityBuildingInfo");
 
-      std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> >::iterator ait = m_shadowingLossMap.find (a);
+      auto ait = m_shadowingLossMap.find(a);
       if (ait != m_shadowingLossMap.end ())
         {
-          std::map<Ptr<MobilityModel>, double>::iterator bit = ait->second.find (b);
-          if (bit != ait->second.end ())
+            auto bit = ait->second.find(b);
+            if (bit != ait->second.end())
             {
               return (bit->second);
             }

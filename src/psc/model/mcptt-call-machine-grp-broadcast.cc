@@ -56,7 +56,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMachineGrpBroadcast);
 
 TypeId
-McpttCallMachineGrpBroadcast::GetTypeId (void)
+McpttCallMachineGrpBroadcast::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -112,13 +112,13 @@ McpttCallMachineGrpBroadcast::McpttCallMachineGrpBroadcast (Ptr<McpttCall> call)
   m_tfb3->Link (&McpttCallMachineGrpBroadcast::ExpiryOfTfb3, this);
 }
 
-McpttCallMachineGrpBroadcast::~McpttCallMachineGrpBroadcast (void)
+McpttCallMachineGrpBroadcast::~McpttCallMachineGrpBroadcast()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttCallMachineGrpBroadcast::AcceptCall (void)
+McpttCallMachineGrpBroadcast::AcceptCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -135,7 +135,7 @@ McpttCallMachineGrpBroadcast::AcceptCall (void)
 }
 
 void
-McpttCallMachineGrpBroadcast::BeginEmergAlert (void)
+McpttCallMachineGrpBroadcast::BeginEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
@@ -143,7 +143,7 @@ McpttCallMachineGrpBroadcast::BeginEmergAlert (void)
 }
 
 void
-McpttCallMachineGrpBroadcast::CancelEmergAlert (void)
+McpttCallMachineGrpBroadcast::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
@@ -185,7 +185,7 @@ McpttCallMachineGrpBroadcast::ChangeState (Ptr<McpttCallMachineGrpBroadcastState
 }
 
 void
-McpttCallMachineGrpBroadcast::DowngradeCallType (void)
+McpttCallMachineGrpBroadcast::DowngradeCallType()
 {
   NS_LOG_FUNCTION (this);
 
@@ -193,7 +193,7 @@ McpttCallMachineGrpBroadcast::DowngradeCallType (void)
 }
 
 uint32_t
-McpttCallMachineGrpBroadcast::GetCallerUserId (void) const
+McpttCallMachineGrpBroadcast::GetCallerUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -204,7 +204,7 @@ McpttCallMachineGrpBroadcast::GetCallerUserId (void) const
 }
 
 TypeId
-McpttCallMachineGrpBroadcast::GetInstanceTypeId (void) const
+McpttCallMachineGrpBroadcast::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -212,7 +212,7 @@ McpttCallMachineGrpBroadcast::GetInstanceTypeId (void) const
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcast::GetStateId (void) const
+McpttCallMachineGrpBroadcast::GetStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -223,7 +223,7 @@ McpttCallMachineGrpBroadcast::GetStateId (void) const
 }
 
 void
-McpttCallMachineGrpBroadcast::InitiateCall (void)
+McpttCallMachineGrpBroadcast::InitiateCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -239,7 +239,7 @@ McpttCallMachineGrpBroadcast::InitiateCall (void)
 }
 
 bool
-McpttCallMachineGrpBroadcast::IsCallOngoing (void) const
+McpttCallMachineGrpBroadcast::IsCallOngoing() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -256,7 +256,7 @@ McpttCallMachineGrpBroadcast::IsCallOngoing (void) const
 }
 
 bool
-McpttCallMachineGrpBroadcast::IsStarted (void) const
+McpttCallMachineGrpBroadcast::IsStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -266,7 +266,7 @@ McpttCallMachineGrpBroadcast::IsStarted (void) const
 }
 
 bool
-McpttCallMachineGrpBroadcast::IsUserAckReq (void) const
+McpttCallMachineGrpBroadcast::IsUserAckReq() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -336,7 +336,7 @@ McpttCallMachineGrpBroadcast::ReceiveGrpCallBroadcastEnd (const McpttCallMsgGrpB
 }
 
 void
-McpttCallMachineGrpBroadcast::ReleaseCall (void)
+McpttCallMachineGrpBroadcast::ReleaseCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -353,7 +353,7 @@ McpttCallMachineGrpBroadcast::ReleaseCall (void)
 }
 
 void
-McpttCallMachineGrpBroadcast::RejectCall (void)
+McpttCallMachineGrpBroadcast::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -427,7 +427,7 @@ McpttCallMachineGrpBroadcast::SetGrpId (uint32_t grpId)
 }
 
 void
-McpttCallMachineGrpBroadcast::Start (void)
+McpttCallMachineGrpBroadcast::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -437,7 +437,7 @@ McpttCallMachineGrpBroadcast::Start (void)
 }
 
 void
-McpttCallMachineGrpBroadcast::Stop (void)
+McpttCallMachineGrpBroadcast::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -500,7 +500,7 @@ McpttCallMachineGrpBroadcast::UpgradeCallType (uint8_t callType)
 }
 
 void
-McpttCallMachineGrpBroadcast::DoDispose (void)
+McpttCallMachineGrpBroadcast::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
@@ -509,21 +509,21 @@ McpttCallMachineGrpBroadcast::DoDispose (void)
   SetGrpId (McpttCallMsgFieldGrpId ());
   SetNewCallCb (MakeNullCallback<void, uint16_t> ());
   SetOrigId (McpttCallMsgFieldUserId ());
-  SetCall (0);
+  SetCall(nullptr);
   SetPriority (0);
   SetSdp (McpttCallMsgFieldSdp ());
   SetStarted (false);
-  SetState (0);
+  SetState(nullptr);
   SetStateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ());
-  SetTfb1 (0);
-  SetTfb2 (0);
-  SetTfb3 (0);
+  SetTfb1(nullptr);
+  SetTfb2(nullptr);
+  SetTfb3(nullptr);
 
   McpttCallMachineGrp::DoDispose ();
 }
 
 void
-McpttCallMachineGrpBroadcast::ExpiryOfTfb1 (void)
+McpttCallMachineGrpBroadcast::ExpiryOfTfb1()
 {
   NS_LOG_FUNCTION (this);
 
@@ -540,7 +540,7 @@ McpttCallMachineGrpBroadcast::ExpiryOfTfb1 (void)
 }
 
 void
-McpttCallMachineGrpBroadcast::ExpiryOfTfb2 (void)
+McpttCallMachineGrpBroadcast::ExpiryOfTfb2()
 {
   NS_LOG_FUNCTION (this);
 
@@ -557,7 +557,7 @@ McpttCallMachineGrpBroadcast::ExpiryOfTfb2 (void)
 }
 
 void
-McpttCallMachineGrpBroadcast::ExpiryOfTfb3 (void)
+McpttCallMachineGrpBroadcast::ExpiryOfTfb3()
 {
   NS_LOG_FUNCTION (this);
 
@@ -574,7 +574,7 @@ McpttCallMachineGrpBroadcast::ExpiryOfTfb3 (void)
 }
 
 bool
-McpttCallMachineGrpBroadcast::GetStarted (void) const
+McpttCallMachineGrpBroadcast::GetStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -590,7 +590,7 @@ McpttCallMachineGrpBroadcast::SetStarted (const bool& started)
 }
 
 McpttCallMsgFieldCallId
-McpttCallMachineGrpBroadcast::GetCallId (void) const
+McpttCallMachineGrpBroadcast::GetCallId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -598,7 +598,7 @@ McpttCallMachineGrpBroadcast::GetCallId (void) const
 }
 
 McpttCallMsgFieldCallType
-McpttCallMachineGrpBroadcast::GetCallType (void) const
+McpttCallMachineGrpBroadcast::GetCallType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -606,7 +606,7 @@ McpttCallMachineGrpBroadcast::GetCallType (void) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMachineGrpBroadcast::GetGrpId (void) const
+McpttCallMachineGrpBroadcast::GetGrpId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -614,7 +614,7 @@ McpttCallMachineGrpBroadcast::GetGrpId (void) const
 }
 
 McpttCallMsgFieldUserId
-McpttCallMachineGrpBroadcast::GetOrigId (void) const
+McpttCallMachineGrpBroadcast::GetOrigId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -622,7 +622,7 @@ McpttCallMachineGrpBroadcast::GetOrigId (void) const
 }
 
 Ptr<McpttCall>
-McpttCallMachineGrpBroadcast::GetCall (void) const
+McpttCallMachineGrpBroadcast::GetCall() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -630,7 +630,7 @@ McpttCallMachineGrpBroadcast::GetCall (void) const
 }
 
 uint8_t
-McpttCallMachineGrpBroadcast::GetPriority (void) const
+McpttCallMachineGrpBroadcast::GetPriority() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -638,7 +638,7 @@ McpttCallMachineGrpBroadcast::GetPriority (void) const
 }
 
 uint16_t
-McpttCallMachineGrpBroadcast::GenerateRandomCallId (void) const
+McpttCallMachineGrpBroadcast::GenerateRandomCallId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -646,7 +646,7 @@ McpttCallMachineGrpBroadcast::GenerateRandomCallId (void) const
 }
 
 McpttCallMsgFieldSdp
-McpttCallMachineGrpBroadcast::GetSdp (void) const
+McpttCallMachineGrpBroadcast::GetSdp() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -654,7 +654,7 @@ McpttCallMachineGrpBroadcast::GetSdp (void) const
 }
 
 Ptr<McpttCallMachineGrpBroadcastState>
-McpttCallMachineGrpBroadcast::GetState (void) const
+McpttCallMachineGrpBroadcast::GetState() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -662,7 +662,7 @@ McpttCallMachineGrpBroadcast::GetState (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBroadcast::GetTfb1 (void) const
+McpttCallMachineGrpBroadcast::GetTfb1() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -670,7 +670,7 @@ McpttCallMachineGrpBroadcast::GetTfb1 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBroadcast::GetTfb2 (void) const
+McpttCallMachineGrpBroadcast::GetTfb2() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -678,7 +678,7 @@ McpttCallMachineGrpBroadcast::GetTfb2 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBroadcast::GetTfb3 (void) const
+McpttCallMachineGrpBroadcast::GetTfb3() const
 {
   NS_LOG_FUNCTION (this);
 

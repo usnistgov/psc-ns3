@@ -552,10 +552,9 @@ LteUeMac::DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params)
         {
             NS_LOG_INFO("Transmitting Sidelink PDU");
             // find transmitting pool
-            std::list<PoolInfo>::iterator poolIt = GetPoolForDestination(params.dstL2Id);
+            auto poolIt = GetPoolForDestination(params.dstL2Id);
             NS_ASSERT(poolIt != m_sidelinkTxPools.end());
-            std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator allocIt =
-                poolIt->m_psschTx.begin();
+            auto allocIt = poolIt->m_psschTx.begin();
 
             // For sanity check, but to be removed once the code is checked
 
@@ -727,7 +726,7 @@ LteUeMac::SendSidelinkReportBufferStatus()
     }
     // check if we have at scheduled pools
     bool scheduled = false;
-    for (std::list<PoolInfo>::iterator slTxPoolIt = m_sidelinkTxPools.begin();
+    for (auto slTxPoolIt = m_sidelinkTxPools.begin();
          slTxPoolIt != m_sidelinkTxPools.end() && !scheduled;
          slTxPoolIt++)
     {
@@ -763,7 +762,7 @@ LteUeMac::SendSidelinkReportBufferStatus()
         NS_ASSERT(slLcInfoMapIt != m_slLcInfoMap.end());
         // TODO: find the mapping between the destination and the group index (must be provided by
         // RRC)
-        std::list<PoolInfo>::iterator slTxPoolIt = GetPoolForDestination(dstL2Id);
+        auto slTxPoolIt = GetPoolForDestination(dstL2Id);
         Ptr<SidelinkTxCommResourcePool> pool =
             DynamicCast<SidelinkTxCommResourcePool>(slTxPoolIt->m_pool);
         NS_ASSERT(slTxPoolIt != m_sidelinkTxPools.end());
@@ -1156,7 +1155,7 @@ void
 LteUeMac::DoRemoveSlCommTxPool(uint32_t dstL2Id)
 {
     NS_LOG_FUNCTION(this << dstL2Id);
-    std::list<PoolInfo>::iterator it = GetPoolForDestination(dstL2Id);
+    auto it = GetPoolForDestination(dstL2Id);
     NS_ASSERT_MSG(it != m_sidelinkTxPools.end(),
                   "Cannot remove Sidelink transmission pool for " << dstL2Id
                                                                   << ". Unknown destination");
@@ -1181,7 +1180,7 @@ LteUeMac::DoReceivePhyPdu(Ptr<Packet> p)
         if (tag.GetRnti() == m_rnti)
         {
             // packet is for the current user
-            std::map<uint8_t, LcInfo>::const_iterator it = m_lcInfoMap.find(tag.GetLcid());
+            auto it = m_lcInfoMap.find(tag.GetLcid());
             if (it != m_lcInfoMap.end())
             {
                 LteMacSapUser::ReceivePduParameters rxPduParams;
@@ -1214,8 +1213,7 @@ LteUeMac::DoReceivePhyPdu(Ptr<Packet> p)
                 identifier.srcL2Id = tag.GetSourceL2Id();
                 identifier.dstL2Id = tag.GetDestinationL2Id();
 
-                std::map<SidelinkLcIdentifier, LcInfo>::iterator it =
-                    m_slLcInfoMap.find(identifier);
+                auto it = m_slLcInfoMap.find(identifier);
                 if (it == m_slLcInfoMap.end())
                 {
                     // notify RRC to setup bearer
@@ -1277,7 +1275,7 @@ LteUeMac::DoReceiveSlSciPhyPdu(Ptr<Packet> p)
             NS_LOG_INFO("received SCI for group " << (uint32_t)((*it) & 0xFF) << " from rnti "
                                                   << tag.GetRnti());
 
-            std::list<Ptr<SidelinkRxCommResourcePool>>::iterator poolIt = m_sidelinkRxPools.begin();
+            auto poolIt = m_sidelinkRxPools.begin();
 
             NS_ASSERT_MSG(poolIt != m_sidelinkRxPools.end(), "No receiving pools configured");
 
@@ -1713,8 +1711,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
     SidelinkCommResourcePool::SubframeInfo currentSubframe;
     currentSubframe.frameNo = frameNo;
     currentSubframe.subframeNo = subframeNo;
-    std::set<SidelinkCommResourcePool::SubframeInfo>::iterator subIt =
-        m_psschRxSet.find(currentSubframe);
+    auto subIt = m_psschRxSet.find(currentSubframe);
     if (subIt != m_psschRxSet.end())
     {
         m_hasSlCommToRx = true;
@@ -1804,10 +1801,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
                     poolIt->m_pool->GetPscchTransmissions(poolIt->m_currentGrant.m_resPscch);
                 NS_ABORT_MSG_IF(poolIt->m_pscchTx.size() > 2,
                                 "PSCCH ONLY SUPPORTS 2 TRANSMISSIONS PER UE GRANT!");
-                for (std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator txIt =
-                         poolIt->m_pscchTx.begin();
-                     txIt != poolIt->m_pscchTx.end();
-                     txIt++)
+                for (auto txIt = poolIt->m_pscchTx.begin(); txIt != poolIt->m_pscchTx.end(); txIt++)
                 {
                     txIt->subframe = txIt->subframe + subFrameInfo;
                     // adjust for index starting at 1
@@ -1827,10 +1821,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
                                                           poolIt->m_currentGrant.m_rbLen);
 
                 // adjust PSSCH frame to next period
-                for (std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator txIt =
-                         poolIt->m_psschTx.begin();
-                     txIt != poolIt->m_psschTx.end();
-                     txIt++)
+                for (auto txIt = poolIt->m_psschTx.begin(); txIt != poolIt->m_psschTx.end(); txIt++)
                 {
                     // adjust for index starting at 1
                     txIt->subframe.frameNo++;
@@ -1966,8 +1957,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
                     if (itBsr->first.dstL2Id == poolIt->m_currentGrant.m_dst)
                     {
                         // this is the BSR for the pool
-                        std::map<SidelinkLcIdentifier, LcInfo>::iterator it =
-                            m_slLcInfoMap.find(itBsr->first);
+                        auto it = m_slLcInfoMap.find(itBsr->first);
                         // for Sidelink we should never have retxQueueSize since it is
                         // unacknowledged mode we still keep the process similar to uplink to be
                         // more generic (and maybe handle future modifications)
@@ -2097,7 +2087,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
             {
                 NS_LOG_INFO("PSSCH retransmission " << (4 - poolIt->m_psschTx.size() % 4));
                 Ptr<PacketBurst> pb = poolIt->m_miSlHarqProcessPacket;
-                for (std::list<Ptr<Packet>>::const_iterator j = pb->Begin(); j != pb->End(); ++j)
+                for (auto j = pb->Begin(); j != pb->End(); ++j)
                 {
                     Ptr<Packet> pkt = (*j)->Copy();
                     LteUePhySapProvider::TransmitSlPhySduParameters phyParams;
@@ -2189,7 +2179,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
                         uint32_t randVar =
                             m_resUniformVariable->GetInteger(0, resourcesAvailable.size() - 1);
                         DiscGrant grant;
-                        std::set<uint32_t>::iterator selectResIt = resourcesAvailable.begin();
+                        auto selectResIt = resourcesAvailable.begin();
                         std::advance(selectResIt, randVar);
                         grant.m_resPsdch = *selectResIt;
                         grant.m_discMsg = *pktIt;
@@ -2248,9 +2238,7 @@ LteUeMac::DoSlDelayedSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
                     grantIt->m_psdchTx =
                         m_discTxPool.m_pool->GetPsdchTransmissions(grantIt->m_resPsdch);
 
-                    for (std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator
-                             txIt = grantIt->m_psdchTx.begin();
-                         txIt != grantIt->m_psdchTx.end();
+                    for (auto txIt = grantIt->m_psdchTx.begin(); txIt != grantIt->m_psdchTx.end();
                          txIt++)
                     {
                         txIt->subframe = txIt->subframe + tmp;
@@ -2367,7 +2355,7 @@ void
 LteUeMac::DoRemoveSlDestination(uint32_t destination)
 {
     NS_LOG_FUNCTION(this << destination);
-    std::list<uint32_t>::iterator it = m_sidelinkDestinations.begin();
+    auto it = m_sidelinkDestinations.begin();
     while (it != m_sidelinkDestinations.end())
     {
         if ((*it) == destination)
@@ -2532,7 +2520,7 @@ LteUeMac::GetSlUeSelectedGrant(std::list<PoolInfo>::iterator poolIt)
             bool noAvailablePairForTbs = true;
             uint32_t tbs_bytes;
             uint8_t kValue;
-            for (uint8_t i = 0; i < tbPerKtrpVector.size(); i++)
+            for (uint32_t i = 0; i < tbPerKtrpVector.size(); i++)
             {
                 if (tbPerKtrpVector[i] > 0)
                 {
@@ -2669,8 +2657,7 @@ LteUeMac::GetSlUeSelectedGrant(std::list<PoolInfo>::iterator poolIt)
                          itPair++)
                     {
                         // Evaluate each pair using utility function
-                        for (std::vector<LteAmc::McsPrbInfo>::iterator itVector =
-                                 (*itPair).second.begin();
+                        for (auto itVector = (*itPair).second.begin();
                              itVector != (*itPair).second.end();
                              itVector++)
                         {

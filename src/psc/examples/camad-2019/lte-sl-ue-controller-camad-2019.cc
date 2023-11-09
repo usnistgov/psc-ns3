@@ -119,10 +119,8 @@ void
 LteSlUeControllerCamad2019::SetCampaign (std::string campaign)
 {
   NS_LOG_FUNCTION (this << campaign);
-  if (campaign.compare ("Discovery") != 0
-      && campaign.compare ("Connection") != 0
-      && campaign.compare ("Communication") != 0 )
-    {
+  if (campaign != "Discovery" && campaign != "Connection" && campaign != "Communication")
+  {
       NS_FATAL_ERROR ("The campaign " << campaign << " does not exist." );
     }
   m_campaign = campaign;
@@ -156,10 +154,9 @@ void LteSlUeControllerCamad2019::DoRecvRelayServiceDiscovery (uint32_t serviceCo
 {
   NS_LOG_FUNCTION (this << serviceCode << announcerInfo << proseRelayUeId << statusIndicator);
 
-  if (m_campaign.compare ("Discovery") == 0)
-    {
-
-      std::map <uint32_t, Time>::iterator it = m_dicoveredRelayUeIds.find (proseRelayUeId);
+  if (m_campaign == "Discovery")
+  {
+      auto it = m_dicoveredRelayUeIds.find(proseRelayUeId);
       if (it == m_dicoveredRelayUeIds.end ())
         {
           //First discovery of this proseRelayId
@@ -181,7 +178,7 @@ void LteSlUeControllerCamad2019::DoRecvRelayServiceDiscovery (uint32_t serviceCo
           Ptr<LteSlUeRrc> slUeRrc = ptrOne.Get<LteSlUeRrc> ();
           uint32_t myL2Id = slUeRrc->GetSourceL2Id ();
 
-          bool allRelaysDiscovered = (m_nProseRelaysToDiscover == m_dicoveredRelayUeIds.size ()) ? true : false;
+          bool allRelaysDiscovered = m_nProseRelaysToDiscover == m_dicoveredRelayUeIds.size();
           NS_LOG_INFO (" UE Imsi: " << myImsi
                                     << " UE L2Id: " << myL2Id
                                     << " discovered proseRelayId " << proseRelayUeId
@@ -214,15 +211,15 @@ void LteSlUeControllerCamad2019::DoPc5SecuredEstablished (uint32_t peerUeId, uin
 {
   NS_LOG_FUNCTION (this << peerUeId << selfUeId << role);
 
-  if (m_campaign.compare ("Discovery") == 0)
-    {
+  if (m_campaign == "Discovery")
+  {
       NS_LOG_ERROR ( "This controller should not initiate relay communication when running the Discovery Campaign");
       return;
     }
 
   //Make sure we don't already have a connection
-  std::map < uint32_t, Ptr<LteSlUeNetDevice> >::iterator it = m_lteSlUeNetDeviceMap.find (peerUeId);
-  if (m_connectingRelayUeId != std::numeric_limits<uint32_t>::max ())
+    auto it = m_lteSlUeNetDeviceMap.find(peerUeId);
+    if (m_connectingRelayUeId != std::numeric_limits<uint32_t>::max())
     {
       NS_ASSERT_MSG (it == m_lteSlUeNetDeviceMap.end (), "PC5 connection between " << selfUeId << " and " << peerUeId << " already established");
       NS_ASSERT_MSG (m_connectingRelayUeId == peerUeId, "PC5 connection established to a relay it was not trying to connect");
@@ -250,9 +247,9 @@ void LteSlUeControllerCamad2019::DoPc5SecuredEstablished (uint32_t peerUeId, uin
 
   if (it == m_lteSlUeNetDeviceMap.end ())
     {
-      NS_LOG_DEBUG (" " << bool(m_campaign.compare ("Connection") == 0));
+        NS_LOG_DEBUG(" " << bool(m_campaign == "Connection"));
 
-      if (m_campaign.compare ("Connection") == 0)
+        if (m_campaign == "Connection")
         {
           NS_LOG_DEBUG (" " <<  role << " " << LteSlUeRrc::RemoteUE << " " <<  bool(role == LteSlUeRrc::RemoteUE));
           //Tracing Remote connection time
@@ -339,23 +336,23 @@ LteSlUeControllerCamad2019::DoPc5ConnectionTerminated (uint32_t peerUeId, uint32
 {
   NS_LOG_FUNCTION (this << peerUeId << selfUeId << role);
 
-  if (m_campaign.compare ("Discovery") == 0)
-    {
+  if (m_campaign == "Discovery")
+  {
       NS_LOG_ERROR ( "This controller should not initiate relay communication when running the Discovery Campaign");
       return;
     }
 
-  std::map < uint32_t, Ptr<LteSlUeNetDevice> >::iterator it = m_lteSlUeNetDeviceMap.find (peerUeId);
-  NS_ASSERT_MSG (it != m_lteSlUeNetDeviceMap.end (), "Could not find an associated interface");
+    auto it = m_lteSlUeNetDeviceMap.find(peerUeId);
+    NS_ASSERT_MSG(it != m_lteSlUeNetDeviceMap.end(), "Could not find an associated interface");
 
-  Ptr<LteSlUeNetDevice> slNetDev = it->second;
+    Ptr<LteSlUeNetDevice> slNetDev = it->second;
 
-  Ptr<Node> node = m_netDevice->GetNode ();
-  Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-  uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice (slNetDev);
-  ipv6->SetDown (ipInterfaceIndex);
+    Ptr<Node> node = m_netDevice->GetNode();
+    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6>();
+    uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice(slNetDev);
+    ipv6->SetDown(ipInterfaceIndex);
 
-  if (role == LteSlUeRrc::RemoteUE)
+    if (role == LteSlUeRrc::RemoteUE)
     {
       Ipv6Address ipv6a = m_lteSidelinkHelper->GetSelfIpv6AddressFromMap (peerUeId, selfUeId, role);
 
@@ -390,8 +387,8 @@ LteSlUeControllerCamad2019::DoPc5ConnectionAborted (uint32_t peerUeId, uint32_t 
 {
   NS_LOG_FUNCTION (this << peerUeId << selfUeId << role << reason);
 
-  if (m_campaign.compare ("Discovery") == 0)
-    {
+  if (m_campaign == "Discovery")
+  {
       NS_LOG_ERROR ( "This controller should not initiate relay communication when running the Discovery Campaign");
       return;
     }
@@ -409,26 +406,26 @@ LteSlUeControllerCamad2019::DoRecvRemoteUeReport (uint64_t localImsi, uint32_t p
 {
   NS_LOG_FUNCTION (this << localImsi << peerUeId << remoteImsi);
 
-  if (m_campaign.compare ("Discovery") == 0)
-    {
+  if (m_campaign == "Discovery")
+  {
       NS_LOG_ERROR ( "This controller should not initiate relay communication when running the Discovery Campaign");
       return;
     }
 
   //for now we let the core know about the new UE. Normally this is done by the relay node
   //by transmitting a Remote UE report (24.301 6.6.3)
-  std::map < uint32_t, Ptr<LteSlUeNetDevice> >::iterator it = m_lteSlUeNetDeviceMap.find (peerUeId);
-  NS_ASSERT_MSG (it != m_lteSlUeNetDeviceMap.end (), "Unknown remote UE id " << peerUeId);
-  Ptr<Ipv6> ipv6 = m_netDevice->GetNode ()->GetObject<Ipv6> ();
-  uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice ((*it).second);
+    auto it = m_lteSlUeNetDeviceMap.find(peerUeId);
+    NS_ASSERT_MSG(it != m_lteSlUeNetDeviceMap.end(), "Unknown remote UE id " << peerUeId);
+    Ptr<Ipv6> ipv6 = m_netDevice->GetNode()->GetObject<Ipv6>();
+    uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice((*it).second);
 
-  //Now we can report the /64 IPv6 Prefix of the remote UE
-  uint8_t relayAddr[16];
-  ipv6->GetAddress (ipInterfaceIndex, 1).GetAddress ().GetBytes (relayAddr);
-  uint8_t remotePrefix[8];
-  std::memmove (remotePrefix, relayAddr, 8);
+    // Now we can report the /64 IPv6 Prefix of the remote UE
+    uint8_t relayAddr[16];
+    ipv6->GetAddress(ipInterfaceIndex, 1).GetAddress().GetBytes(relayAddr);
+    uint8_t remotePrefix[8];
+    std::memmove(remotePrefix, relayAddr, 8);
 
-  m_lteSidelinkHelper->RemoteUeContextConnected (localImsi, remoteImsi, remotePrefix);
+    m_lteSidelinkHelper->RemoteUeContextConnected(localImsi, remoteImsi, remotePrefix);
 
 }
 
@@ -437,8 +434,8 @@ LteSlUeControllerCamad2019::DoRelayUeSelection (std::map <uint64_t, double> vali
 {
   NS_LOG_FUNCTION (this << currentRelayId);
 
-  if (m_campaign.compare ("Discovery") == 0)
-    {
+  if (m_campaign == "Discovery")
+  {
       //This controller should not do any Relay UE (re)selection.
       //This function will be called upon measurement report and it will return the currentRelayId
       //so that there is no action taken in LteSlUeRrc::RelayUeSelection
@@ -446,8 +443,7 @@ LteSlUeControllerCamad2019::DoRelayUeSelection (std::map <uint64_t, double> vali
     }
   else
     {
-
-      if (m_campaign.compare ("Connection") == 0)
+        if (m_campaign == "Connection")
         {
           //In the Connection campaign we are only interested in the first successful connection in simTime
           //If the Remote UE already had a connection, it should not try to connect
@@ -470,14 +466,14 @@ LteSlUeControllerCamad2019::DoRelayUeSelection (std::map <uint64_t, double> vali
       if (currentRelayId == 0)
         {
           NS_LOG_INFO (validRelays.size () << " valid Relay UEs");
-          if (validRelays.size () > 0)
-            {
+          if (!validRelays.empty())
+          {
               std::map <uint64_t, double>::iterator vaReIt;
               vaReIt = validRelays.begin ();
               selectedRelayId = vaReIt->first;
 
-              if (m_campaign.compare ("Connection") == 0)
-                {
+              if (m_campaign == "Connection")
+              {
                   //Trace the connection start event
                   m_remoteStartedConnectionTime = Simulator::Now ();
                   m_connectionCount++;

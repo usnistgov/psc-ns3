@@ -141,7 +141,7 @@ LteSlBasicUeController::DoPc5SecuredEstablished(uint32_t peerUeId,
     NS_LOG_FUNCTION(this << peerUeId << selfUeId << role);
 
     // Make sure we don't already have a connection
-    std::map<uint32_t, Ptr<LteSlUeNetDevice>>::iterator it = m_lteSlUeNetDeviceMap.find(peerUeId);
+    auto it = m_lteSlUeNetDeviceMap.find(peerUeId);
     if (m_connectingRelayUeId != std::numeric_limits<uint32_t>::max())
     {
         NS_ASSERT_MSG(it == m_lteSlUeNetDeviceMap.end(),
@@ -284,7 +284,7 @@ LteSlBasicUeController::DoPc5ConnectionTerminated(uint32_t peerUeId,
 {
     NS_LOG_FUNCTION(this << peerUeId << selfUeId << role);
 
-    std::map<uint32_t, Ptr<LteSlUeNetDevice>>::iterator it = m_lteSlUeNetDeviceMap.find(peerUeId);
+    auto it = m_lteSlUeNetDeviceMap.find(peerUeId);
     NS_ASSERT_MSG(it != m_lteSlUeNetDeviceMap.end(), "Could not find an associated interface");
 
     Ptr<LteSlUeNetDevice> slNetDev = it->second;
@@ -372,7 +372,7 @@ LteSlBasicUeController::DoRecvRemoteUeReport(uint64_t localImsi,
 
     // for now we let the core know about the new UE. Normally this is done by the relay node
     // by transmitting a Remote UE report (24.301 6.6.3)
-    std::map<uint32_t, Ptr<LteSlUeNetDevice>>::iterator it = m_lteSlUeNetDeviceMap.find(peerUeId);
+    auto it = m_lteSlUeNetDeviceMap.find(peerUeId);
     NS_ASSERT_MSG(it != m_lteSlUeNetDeviceMap.end(), "Unknown remote UE id " << peerUeId);
     Ptr<Ipv6> ipv6 = m_netDevice->GetNode()->GetObject<Ipv6>();
     uint32_t ipInterfaceIndex = ipv6->GetInterfaceForDevice((*it).second);

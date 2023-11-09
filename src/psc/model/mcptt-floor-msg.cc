@@ -51,7 +51,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsg);
 
 TypeId
-McpttFloorMsg::GetTypeId (void)
+McpttFloorMsg::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttFloorMsg")
     .SetParent<McpttMsg> ()
@@ -60,15 +60,15 @@ McpttFloorMsg::GetTypeId (void)
   return tid;
 }
 
-McpttFloorMsg::McpttFloorMsg (void)
-  : McpttMsg (),
-    m_length (16),
-    m_name ("MCPT"),
-    m_padding (0),
-    m_payloadType (204),
-    m_ssrc (0),
-    m_subtype (0),
-    m_version (2)
+McpttFloorMsg::McpttFloorMsg()
+    : McpttMsg(),
+      m_length(16),
+      m_name("MCPT"),
+      m_padding(0),
+      m_payloadType(204),
+      m_ssrc(0),
+      m_subtype(0),
+      m_version(2)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -99,7 +99,7 @@ McpttFloorMsg::McpttFloorMsg (const std::string& name, uint8_t payloadType, uint
   NS_LOG_FUNCTION (this << name << (uint32_t)payloadType << (uint32_t)subtype << ssrc);
 }
 
-McpttFloorMsg::~McpttFloorMsg (void)
+McpttFloorMsg::~McpttFloorMsg()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -168,7 +168,7 @@ McpttFloorMsg::Deserialize (Buffer::Iterator start)
 }
 
 TypeId
-McpttFloorMsg::GetInstanceTypeId (void) const
+McpttFloorMsg::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -176,7 +176,7 @@ McpttFloorMsg::GetInstanceTypeId (void) const
 }
 
 uint32_t
-McpttFloorMsg::GetSerializedSize (void) const
+McpttFloorMsg::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -236,7 +236,7 @@ McpttFloorMsg::Serialize (Buffer::Iterator start) const
   start.WriteHtonU16 (length);
   start.WriteHtonU32 (ssrc);
 
-  for (uint16_t index = 0; index < name.size (); index++)
+  for (uint32_t index = 0; index < name.size (); index++)
     {
       uint8_t nameChar = name.at (index);
 
@@ -295,7 +295,7 @@ McpttFloorMsg::WriteData (Buffer::Iterator& buff) const
 }
 
 uint16_t
-McpttFloorMsg::GetLength (void) const
+McpttFloorMsg::GetLength() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -303,7 +303,7 @@ McpttFloorMsg::GetLength (void) const
 }
 
 std::string
-McpttFloorMsg::GetName (void) const
+McpttFloorMsg::GetName() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -311,7 +311,7 @@ McpttFloorMsg::GetName (void) const
 }
 
 uint8_t
-McpttFloorMsg::GetPadding (void) const
+McpttFloorMsg::GetPadding() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -319,7 +319,7 @@ McpttFloorMsg::GetPadding (void) const
 }
 
 uint8_t
-McpttFloorMsg::GetPayloadType (void) const
+McpttFloorMsg::GetPayloadType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -327,7 +327,7 @@ McpttFloorMsg::GetPayloadType (void) const
 }
 
 uint32_t
-McpttFloorMsg::GetSsrc (void) const
+McpttFloorMsg::GetSsrc() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -335,7 +335,7 @@ McpttFloorMsg::GetSsrc (void) const
 }
 
 uint8_t
-McpttFloorMsg::GetSubtype (void) const
+McpttFloorMsg::GetSubtype() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -343,7 +343,7 @@ McpttFloorMsg::GetSubtype (void) const
 }
 
 uint8_t
-McpttFloorMsg::GetVersion (void) const
+McpttFloorMsg::GetVersion() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -419,7 +419,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgRequest);
 const uint8_t McpttFloorMsgRequest::SUBTYPE = 0;
 
 TypeId
-McpttFloorMsgRequest::GetTypeId (void)
+McpttFloorMsgRequest::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -454,7 +454,7 @@ McpttFloorMsgRequest::McpttFloorMsgRequest (uint32_t ssrc)
   SetUserId (userId);
 }
 
-McpttFloorMsgRequest::~McpttFloorMsgRequest (void)
+McpttFloorMsgRequest::~McpttFloorMsgRequest()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -488,7 +488,7 @@ McpttFloorMsgRequest::ReadData (Buffer::Iterator& start)
 }
 
 TypeId
-McpttFloorMsgRequest::GetInstanceTypeId (void) const
+McpttFloorMsgRequest::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -561,7 +561,7 @@ McpttFloorMsgRequest::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgRequest::GetIndicator (void) const
+McpttFloorMsgRequest::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -569,7 +569,7 @@ McpttFloorMsgRequest::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldPriority
-McpttFloorMsgRequest::GetPriority (void) const
+McpttFloorMsgRequest::GetPriority() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -577,7 +577,7 @@ McpttFloorMsgRequest::GetPriority (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgRequest::GetTrackInfo (void) const
+McpttFloorMsgRequest::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -585,7 +585,7 @@ McpttFloorMsgRequest::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgRequest::GetUserId (void) const
+McpttFloorMsgRequest::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -633,7 +633,7 @@ const uint8_t McpttFloorMsgGranted::SUBTYPE = 1;
 const uint8_t McpttFloorMsgGranted::SUBTYPE_ACK = 17;
 
 TypeId
-McpttFloorMsgGranted::GetTypeId (void)
+McpttFloorMsgGranted::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -668,8 +668,8 @@ McpttFloorMsgGranted::McpttFloorMsgGranted (uint32_t ssrc)
   length += queueSize.GetSerializedSize ();
   length += userId.GetSerializedSize ();
 
-  for (std::list<McpttQueuedUserInfo>::iterator it = users.begin (); it != users.end (); it++)
-    {
+  for (auto it = users.begin(); it != users.end(); it++)
+  {
       length += it->GetSerializedSize ();
     }
 
@@ -686,7 +686,7 @@ McpttFloorMsgGranted::McpttFloorMsgGranted (uint32_t ssrc)
   SetUsers (users);
 }
 
-McpttFloorMsgGranted::~McpttFloorMsgGranted (void)
+McpttFloorMsgGranted::~McpttFloorMsgGranted()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -708,15 +708,15 @@ McpttFloorMsgGranted::AddUserInfo (const McpttQueuedUserInfo& userInfo)
 }
 
 void
-McpttFloorMsgGranted::ClearUserInfo (void)
+McpttFloorMsgGranted::ClearUserInfo()
 {
   NS_LOG_FUNCTION (this);
 
   uint8_t length = GetLength ();
   std::list<McpttQueuedUserInfo> users = GetUsers ();
 
-  for (std::list<McpttQueuedUserInfo>::iterator it = users.begin (); it != users.end (); it++)
-    {
+  for (auto it = users.begin(); it != users.end(); it++)
+  {
       length -= it->GetSerializedSize ();
     }
 
@@ -776,7 +776,7 @@ McpttFloorMsgGranted::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgGranted::GetInstanceTypeId (void) const
+McpttFloorMsgGranted::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -812,8 +812,8 @@ McpttFloorMsgGranted::Print (std::ostream& os) const
   queueSize.Print (os);
   os << ";";
   os << "Users(";
-  for (std::list<McpttQueuedUserInfo>::iterator it = users.begin (); it != users.end (); it++)
-    {
+  for (auto it = users.begin(); it != users.end(); it++)
+  {
       it->Print (os);
       os << ";";
     }
@@ -849,8 +849,8 @@ McpttFloorMsgGranted::WriteData (Buffer::Iterator& buff) const
   userId.Serialize (buff);
   queueSize.Serialize (buff);
 
-  for (std::list<McpttQueuedUserInfo>::iterator it = users.begin (); it != users.end (); it++)
-    {
+  for (auto it = users.begin(); it != users.end(); it++)
+  {
       it->Serialize (buff);
     }
 
@@ -886,14 +886,14 @@ McpttFloorMsgGranted::UpdateUsers (const std::list<McpttQueuedUserInfo>& users)
 
   ClearUserInfo ();
 
-  for (std::list<McpttQueuedUserInfo>::const_iterator it = users.begin (); it != users.end (); it++)
-    {
+  for (auto it = users.begin(); it != users.end(); it++)
+  {
       AddUserInfo (*it);
     }
 }
 
 McpttFloorMsgFieldDuration
-McpttFloorMsgGranted::GetDuration (void) const
+McpttFloorMsgGranted::GetDuration() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -901,7 +901,7 @@ McpttFloorMsgGranted::GetDuration (void) const
 }
 
 McpttFloorMsgFieldSsrc
-McpttFloorMsgGranted::GetGrantedSsrc (void) const
+McpttFloorMsgGranted::GetGrantedSsrc() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -909,7 +909,7 @@ McpttFloorMsgGranted::GetGrantedSsrc (void) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgGranted::GetIndicator (void) const
+McpttFloorMsgGranted::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -917,7 +917,7 @@ McpttFloorMsgGranted::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldPriority
-McpttFloorMsgGranted::GetPriority (void) const
+McpttFloorMsgGranted::GetPriority() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -925,7 +925,7 @@ McpttFloorMsgGranted::GetPriority (void) const
 }
 
 McpttFloorMsgFieldQueueSize
-McpttFloorMsgGranted::GetQueueSize (void) const
+McpttFloorMsgGranted::GetQueueSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -933,7 +933,7 @@ McpttFloorMsgGranted::GetQueueSize (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgGranted::GetTrackInfo (void) const
+McpttFloorMsgGranted::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -941,7 +941,7 @@ McpttFloorMsgGranted::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgGranted::GetUserId (void) const
+McpttFloorMsgGranted::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -949,7 +949,7 @@ McpttFloorMsgGranted::GetUserId (void) const
 }
 
 std::list<McpttQueuedUserInfo>
-McpttFloorMsgGranted::GetUsers (void) const
+McpttFloorMsgGranted::GetUsers() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1031,7 +1031,7 @@ const uint8_t McpttFloorMsgDeny::SUBTYPE = 3;
 const uint8_t McpttFloorMsgDeny::SUBTYPE_ACK = 19;
 
 TypeId
-McpttFloorMsgDeny::GetTypeId (void)
+McpttFloorMsgDeny::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1066,7 +1066,7 @@ McpttFloorMsgDeny::McpttFloorMsgDeny (uint32_t ssrc)
   SetIndicator (indicator);
 }
 
-McpttFloorMsgDeny::~McpttFloorMsgDeny (void)
+McpttFloorMsgDeny::~McpttFloorMsgDeny()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1100,7 +1100,7 @@ McpttFloorMsgDeny::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgDeny::GetInstanceTypeId (void) const
+McpttFloorMsgDeny::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1173,7 +1173,7 @@ McpttFloorMsgDeny::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgDeny::GetIndicator (void) const
+McpttFloorMsgDeny::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1181,7 +1181,7 @@ McpttFloorMsgDeny::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldRejectCause
-McpttFloorMsgDeny::GetRejCause (void) const
+McpttFloorMsgDeny::GetRejCause() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1189,7 +1189,7 @@ McpttFloorMsgDeny::GetRejCause (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgDeny::GetTrackInfo (void) const
+McpttFloorMsgDeny::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1197,7 +1197,7 @@ McpttFloorMsgDeny::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgDeny::GetUserId (void) const
+McpttFloorMsgDeny::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1245,7 +1245,7 @@ const uint8_t McpttFloorMsgRelease::SUBTYPE = 4;
 const uint8_t McpttFloorMsgRelease::SUBTYPE_ACK = 20;
 
 TypeId
-McpttFloorMsgRelease::GetTypeId (void)
+McpttFloorMsgRelease::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1278,7 +1278,7 @@ McpttFloorMsgRelease::McpttFloorMsgRelease (uint32_t ssrc)
   SetIndicator (indicator);
 }
 
-McpttFloorMsgRelease::~McpttFloorMsgRelease (void)
+McpttFloorMsgRelease::~McpttFloorMsgRelease()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1309,7 +1309,7 @@ McpttFloorMsgRelease::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgRelease::GetInstanceTypeId (void) const
+McpttFloorMsgRelease::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1377,7 +1377,7 @@ McpttFloorMsgRelease::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgRelease::GetIndicator (void) const
+McpttFloorMsgRelease::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1385,7 +1385,7 @@ McpttFloorMsgRelease::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgRelease::GetTrackInfo (void) const
+McpttFloorMsgRelease::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1393,7 +1393,7 @@ McpttFloorMsgRelease::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgRelease::GetUserId (void) const
+McpttFloorMsgRelease::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1431,7 +1431,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgRevoke);
 const uint8_t McpttFloorMsgRevoke::SUBTYPE = 6;
 
 TypeId
-McpttFloorMsgRevoke::GetTypeId (void)
+McpttFloorMsgRevoke::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1463,7 +1463,7 @@ McpttFloorMsgRevoke::McpttFloorMsgRevoke (uint32_t ssrc)
   SetIndicator (indicator);
 }
 
-McpttFloorMsgRevoke::~McpttFloorMsgRevoke (void)
+McpttFloorMsgRevoke::~McpttFloorMsgRevoke()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1494,7 +1494,7 @@ McpttFloorMsgRevoke::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgRevoke::GetInstanceTypeId (void) const
+McpttFloorMsgRevoke::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1562,7 +1562,7 @@ McpttFloorMsgRevoke::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgRevoke::GetIndicator (void) const
+McpttFloorMsgRevoke::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1570,7 +1570,7 @@ McpttFloorMsgRevoke::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldRejectCause
-McpttFloorMsgRevoke::GetRejCause (void) const
+McpttFloorMsgRevoke::GetRejCause() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1578,7 +1578,7 @@ McpttFloorMsgRevoke::GetRejCause (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgRevoke::GetTrackInfo (void) const
+McpttFloorMsgRevoke::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1618,7 +1618,7 @@ const uint8_t McpttFloorMsgIdle::SUBTYPE = 5;
 const uint8_t McpttFloorMsgIdle::SUBTYPE_ACK = 21;
 
 TypeId
-McpttFloorMsgIdle::GetTypeId (void)
+McpttFloorMsgIdle::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1651,7 +1651,7 @@ McpttFloorMsgIdle::McpttFloorMsgIdle (uint32_t ssrc)
   SetIndicator (indicator);
 }
 
-McpttFloorMsgIdle::~McpttFloorMsgIdle (void)
+McpttFloorMsgIdle::~McpttFloorMsgIdle()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1682,7 +1682,7 @@ McpttFloorMsgIdle::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgIdle::GetInstanceTypeId (void) const
+McpttFloorMsgIdle::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1748,7 +1748,7 @@ McpttFloorMsgIdle::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgIdle::GetIndicator (void) const
+McpttFloorMsgIdle::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1756,7 +1756,7 @@ McpttFloorMsgIdle::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldSeqNum
-McpttFloorMsgIdle::GetSeqNum (void) const
+McpttFloorMsgIdle::GetSeqNum() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1764,7 +1764,7 @@ McpttFloorMsgIdle::GetSeqNum (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgIdle::GetTrackInfo (void) const
+McpttFloorMsgIdle::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1804,7 +1804,7 @@ const uint8_t McpttFloorMsgTaken::SUBTYPE = 2;
 const uint8_t McpttFloorMsgTaken::SUBTYPE_ACK = 18;
 
 TypeId
-McpttFloorMsgTaken::GetTypeId (void)
+McpttFloorMsgTaken::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1846,7 +1846,7 @@ McpttFloorMsgTaken::McpttFloorMsgTaken (uint32_t ssrc)
   SetIndicator (indicator);
 }
 
-McpttFloorMsgTaken::~McpttFloorMsgTaken (void)
+McpttFloorMsgTaken::~McpttFloorMsgTaken()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1886,7 +1886,7 @@ McpttFloorMsgTaken::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgTaken::GetInstanceTypeId (void) const
+McpttFloorMsgTaken::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1964,7 +1964,7 @@ McpttFloorMsgTaken::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgTaken::GetIndicator (void) const
+McpttFloorMsgTaken::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1972,7 +1972,7 @@ McpttFloorMsgTaken::GetIndicator (void) const
 }
 
 McpttFloorMsgFieldGrantedPartyId
-McpttFloorMsgTaken::GetPartyId (void) const
+McpttFloorMsgTaken::GetPartyId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1980,7 +1980,7 @@ McpttFloorMsgTaken::GetPartyId (void) const
 }
 
 McpttFloorMsgFieldPermToReq
-McpttFloorMsgTaken::GetPermission (void) const
+McpttFloorMsgTaken::GetPermission() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1988,7 +1988,7 @@ McpttFloorMsgTaken::GetPermission (void) const
 }
 
 McpttFloorMsgFieldSeqNum
-McpttFloorMsgTaken::GetSeqNum (void) const
+McpttFloorMsgTaken::GetSeqNum() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1996,7 +1996,7 @@ McpttFloorMsgTaken::GetSeqNum (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgTaken::GetTrackInfo (void) const
+McpttFloorMsgTaken::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2004,7 +2004,7 @@ McpttFloorMsgTaken::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgTaken::GetUserId (void) const
+McpttFloorMsgTaken::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2066,7 +2066,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgQueuePositionRequest);
 const uint8_t McpttFloorMsgQueuePositionRequest::SUBTYPE = 8;
 
 TypeId
-McpttFloorMsgQueuePositionRequest::GetTypeId (void)
+McpttFloorMsgQueuePositionRequest::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -2096,7 +2096,7 @@ McpttFloorMsgQueuePositionRequest::McpttFloorMsgQueuePositionRequest (uint32_t s
   SetUserId (userId);
 }
 
-McpttFloorMsgQueuePositionRequest::~McpttFloorMsgQueuePositionRequest (void)
+McpttFloorMsgQueuePositionRequest::~McpttFloorMsgQueuePositionRequest()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -2124,7 +2124,7 @@ McpttFloorMsgQueuePositionRequest::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgQueuePositionRequest::GetInstanceTypeId (void) const
+McpttFloorMsgQueuePositionRequest::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2186,7 +2186,7 @@ McpttFloorMsgQueuePositionRequest::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgQueuePositionRequest::GetTrackInfo (void) const
+McpttFloorMsgQueuePositionRequest::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2194,7 +2194,7 @@ McpttFloorMsgQueuePositionRequest::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgQueuePositionRequest::GetUserId (void) const
+McpttFloorMsgQueuePositionRequest::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2226,7 +2226,7 @@ const uint8_t McpttFloorMsgQueuePositionInfo::SUBTYPE = 9;
 const uint8_t McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK = 25;
 
 TypeId
-McpttFloorMsgQueuePositionInfo::GetTypeId (void)
+McpttFloorMsgQueuePositionInfo::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -2269,7 +2269,7 @@ McpttFloorMsgQueuePositionInfo::McpttFloorMsgQueuePositionInfo (uint32_t ssrc)
   SetIndicator (indicator);
 }
 
-McpttFloorMsgQueuePositionInfo::~McpttFloorMsgQueuePositionInfo (void)
+McpttFloorMsgQueuePositionInfo::~McpttFloorMsgQueuePositionInfo()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -2313,7 +2313,7 @@ McpttFloorMsgQueuePositionInfo::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgQueuePositionInfo::GetInstanceTypeId (void) const
+McpttFloorMsgQueuePositionInfo::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2398,7 +2398,7 @@ McpttFloorMsgQueuePositionInfo::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldUserId
-McpttFloorMsgQueuePositionInfo::GetUserId (void) const
+McpttFloorMsgQueuePositionInfo::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2406,7 +2406,7 @@ McpttFloorMsgQueuePositionInfo::GetUserId (void) const
 }
 
 uint32_t
-McpttFloorMsgQueuePositionInfo::GetQueuedSsrc (void) const
+McpttFloorMsgQueuePositionInfo::GetQueuedSsrc() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2414,7 +2414,7 @@ McpttFloorMsgQueuePositionInfo::GetQueuedSsrc (void) const
 }
 
 McpttFloorMsgFieldQueuedUserId
-McpttFloorMsgQueuePositionInfo::GetQueuedUserId (void) const
+McpttFloorMsgQueuePositionInfo::GetQueuedUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2422,7 +2422,7 @@ McpttFloorMsgQueuePositionInfo::GetQueuedUserId (void) const
 }
 
 McpttFloorMsgFieldQueuePositionInfo
-McpttFloorMsgQueuePositionInfo::GetQueuePositionInfo (void) const
+McpttFloorMsgQueuePositionInfo::GetQueuePositionInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2430,7 +2430,7 @@ McpttFloorMsgQueuePositionInfo::GetQueuePositionInfo (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgQueuePositionInfo::GetTrackInfo (void) const
+McpttFloorMsgQueuePositionInfo::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2438,7 +2438,7 @@ McpttFloorMsgQueuePositionInfo::GetTrackInfo (void) const
 }
 
 McpttFloorMsgFieldIndic
-McpttFloorMsgQueuePositionInfo::GetIndicator (void) const
+McpttFloorMsgQueuePositionInfo::GetIndicator() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2500,7 +2500,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttFloorMsgAck);
 const uint8_t McpttFloorMsgAck::SUBTYPE = 10;
 
 TypeId
-McpttFloorMsgAck::GetTypeId (void)
+McpttFloorMsgAck::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -2533,7 +2533,7 @@ McpttFloorMsgAck::McpttFloorMsgAck (uint32_t ssrc)
   SetTrackInfo (trackInfo);
 }
 
-McpttFloorMsgAck::~McpttFloorMsgAck (void)
+McpttFloorMsgAck::~McpttFloorMsgAck()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -2564,7 +2564,7 @@ McpttFloorMsgAck::ReadData (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttFloorMsgAck::GetInstanceTypeId (void) const
+McpttFloorMsgAck::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2630,7 +2630,7 @@ McpttFloorMsgAck::Visit (McpttFloorMsgSink& floorMsgSink) const
 }
 
 McpttFloorMsgFieldSource
-McpttFloorMsgAck::GetSource (void) const
+McpttFloorMsgAck::GetSource() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2638,7 +2638,7 @@ McpttFloorMsgAck::GetSource (void) const
 }
 
 McpttFloorMsgFieldType
-McpttFloorMsgAck::GetMsgType (void) const
+McpttFloorMsgAck::GetMsgType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -2646,7 +2646,7 @@ McpttFloorMsgAck::GetMsgType (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttFloorMsgAck::GetTrackInfo (void) const
+McpttFloorMsgAck::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 

@@ -49,7 +49,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttFloorQueue");
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorQueue);
 
 TypeId
-McpttFloorQueue::GetTypeId (void)
+McpttFloorQueue::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttFloorQueue")
     .SetParent<Object> ()
@@ -78,13 +78,13 @@ McpttFloorQueue::McpttFloorQueue (const std::list<McpttQueuedUserInfo>& users, u
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorQueue::~McpttFloorQueue (void)
+McpttFloorQueue::~McpttFloorQueue()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorQueue::Clear (void)
+McpttFloorQueue::Clear()
 {
   NS_LOG_FUNCTION (this);
 
@@ -102,7 +102,7 @@ McpttFloorQueue::Contains (uint32_t userId) const
 }
 
 McpttQueuedUserInfo
-McpttFloorQueue::Dequeue (void)
+McpttFloorQueue::Dequeue()
 {
   NS_LOG_FUNCTION (this);
 
@@ -123,7 +123,7 @@ McpttFloorQueue::Enqueue (McpttQueuedUserInfo& user)
   NS_LOG_FUNCTION (this);
 
   uint16_t position = 1;
-  std::list<McpttQueuedUserInfo>::iterator it = m_users.begin ();
+  auto it = m_users.begin();
   while (it != m_users.end () && user.GetInfo ().GetPriority () <= it->GetInfo ().GetPriority ())
     {
       it++;
@@ -148,7 +148,7 @@ McpttFloorQueue::Find (uint32_t userId) const
 }
 
 uint16_t
-McpttFloorQueue::GetCount (void) const
+McpttFloorQueue::GetCount() const
 {
   uint16_t count = m_users.size ();
 
@@ -156,13 +156,13 @@ McpttFloorQueue::GetCount (void) const
 }
 
 TypeId
-McpttFloorQueue::GetInstanceTypeId (void) const
+McpttFloorQueue::GetInstanceTypeId() const
 {
   return McpttFloorQueue::GetTypeId ();
 }
 
 bool
-McpttFloorQueue::IsAtCapacity (void) const
+McpttFloorQueue::IsAtCapacity() const
 {
   uint16_t count = GetCount ();
 
@@ -172,7 +172,7 @@ McpttFloorQueue::IsAtCapacity (void) const
 }
 
 bool
-McpttFloorQueue::IsEnabled (void) const
+McpttFloorQueue::IsEnabled() const
 {
   bool isEnabled = (m_capacity > 0);
 
@@ -180,7 +180,7 @@ McpttFloorQueue::IsEnabled (void) const
 }
 
 bool
-McpttFloorQueue::HasNext (void) const
+McpttFloorQueue::HasNext() const
 {
   uint16_t count = GetCount ();
 
@@ -190,7 +190,7 @@ McpttFloorQueue::HasNext (void) const
 }
 
 McpttQueuedUserInfo
-McpttFloorQueue::Peek (void) const
+McpttFloorQueue::Peek() const
 {
   McpttQueuedUserInfo next = m_users.front ();
 
@@ -206,8 +206,8 @@ McpttFloorQueue::Pull (uint32_t userId)
 {
   NS_LOG_FUNCTION (this << userId);
 
-  for (std::list<McpttQueuedUserInfo>::iterator it = m_users.begin (); it != m_users.end (); it++)
-    {
+  for (auto it = m_users.begin(); it != m_users.end(); it++)
+  {
       McpttFloorMsgFieldUserId idField = it->GetUserId ();
       uint32_t tempUserId = idField.GetUserId ();
 
@@ -235,8 +235,8 @@ McpttFloorQueue::View (uint32_t userId, McpttQueuedUserInfo& info, uint16_t& pos
 
   position = 0;
   uint16_t count = 1;
-  for (std::list<McpttQueuedUserInfo>::const_iterator it = m_users.begin (); it != m_users.end () && position == 0; it++)
-    {
+  for (auto it = m_users.begin(); it != m_users.end() && position == 0; it++)
+  {
       McpttFloorMsgFieldUserId idField = it->GetUserId ();
       uint32_t tempUserId = idField.GetUserId ();
 
@@ -259,13 +259,13 @@ McpttFloorQueue::View (uint32_t userId, McpttQueuedUserInfo& info, uint16_t& pos
 }
 
 std::list<McpttQueuedUserInfo>
-McpttFloorQueue::ViewUsers (void) const
+McpttFloorQueue::ViewUsers() const
 {
   return m_users;
 }
 
 void
-McpttFloorQueue::DoDispose (void)
+McpttFloorQueue::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 

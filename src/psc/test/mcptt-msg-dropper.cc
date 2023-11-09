@@ -38,17 +38,17 @@ namespace ns3 {
 namespace psc {
 namespace tests {
 
-McpttMsgDropper::McpttMsgDropper (void)
+McpttMsgDropper::McpttMsgDropper()
 { }
 
-McpttMsgDropper::~McpttMsgDropper (void)
+McpttMsgDropper::~McpttMsgDropper()
 { }
 
-McpttMsgDropperImpl::McpttMsgDropperImpl (void)
-  : McpttMsgDropper (),
-    m_limit (0),
-    m_msgTypeId (TypeId ()),
-    m_received (0)
+McpttMsgDropperImpl::McpttMsgDropperImpl()
+    : McpttMsgDropper(),
+      m_limit(0),
+      m_msgTypeId(TypeId()),
+      m_received(0)
 { }
 
 McpttMsgDropperImpl::McpttMsgDropperImpl (const uint32_t& limit, const TypeId& msgTypeId)
@@ -58,7 +58,7 @@ McpttMsgDropperImpl::McpttMsgDropperImpl (const uint32_t& limit, const TypeId& m
     m_received (0)
 { }
 
-McpttMsgDropperImpl::~McpttMsgDropperImpl (void)
+McpttMsgDropperImpl::~McpttMsgDropperImpl()
 {
   SetLimit (0);
   SetMsgTypeId (TypeId ());
@@ -92,7 +92,7 @@ McpttMsgDropperImpl::IncrementReceived (const uint32_t& amount)
 }
 
 bool
-McpttMsgDropperImpl::IsLimitReached (void) const
+McpttMsgDropperImpl::IsLimitReached() const
 {
   uint32_t limit = GetLimit ();
   uint32_t received = GetReceived ();
@@ -103,19 +103,19 @@ McpttMsgDropperImpl::IsLimitReached (void) const
 }
 
 uint32_t
-McpttMsgDropperImpl::GetLimit (void) const
+McpttMsgDropperImpl::GetLimit() const
 {
   return m_limit;
 }
 
 TypeId
-McpttMsgDropperImpl::GetMsgTypeId (void) const
+McpttMsgDropperImpl::GetMsgTypeId() const
 {
   return m_msgTypeId;
 }
 
 uint32_t
-McpttMsgDropperImpl::GetReceived (void) const
+McpttMsgDropperImpl::GetReceived() const
 {
   return m_received;
 }

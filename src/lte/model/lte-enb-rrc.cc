@@ -1273,7 +1273,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted(
             req.m_rnti = m_rnti;
             req.m_transmissionMode = m_physicalConfigDedicated.antennaInfo.transmissionMode;
             req.m_slDestinations = m_slDestinations;
-            for (uint8_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
+            for (uint32_t i = 0; i < m_rrc->m_numberOfComponentCarriers; i++)
             {
                 m_rrc->m_cmacSapProvider.at(i)->UeUpdateConfigurationReq(req);
             }
@@ -1468,17 +1468,15 @@ UeManager::RecvSidelinkUeInformation(LteRrcSap::SidelinkUeInformation msg)
             dedicatedResource.commTxResources = LteRrcSap::SlCommConfig::SETUP;
 
             // check if pool already in use
-            std::map<uint32_t, LteSlEnbRrc::ActivePoolInfo>::iterator it2 =
-                m_rrc->m_sidelinkConfiguration->m_activePoolMap.find(
-                    msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
+            auto it2 = m_rrc->m_sidelinkConfiguration->m_activePoolMap.find(
+                msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
 
             if (it2 == m_rrc->m_sidelinkConfiguration->m_activePoolMap.end())
             {
                 // no active pool for this group, let's check if we have a preconfigured, a default
                 // one or later, how to create one dynamically
-                std::map<uint32_t, LteRrcSap::SlCommTxResourcesSetup>::iterator it =
-                    m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.find(
-                        msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
+                auto it = m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.find(
+                    msg.slCommTxResourceReq.slDestinationInfoList.SlDestinationIdentity[0]);
 
                 if (it != m_rrc->m_sidelinkConfiguration->m_preconfigDedicatedPoolMap.end())
                 {
@@ -1581,7 +1579,7 @@ UeManager::RecvSidelinkUeInformation(LteRrcSap::SidelinkUeInformation msg)
     {
         // interest from the UE
     }
-    else if (0)
+    else
     {
         // no more interest from that UE
     }
@@ -1727,7 +1725,7 @@ UeManager::RecvSidelinkUeInformation(LteRrcSap::SidelinkUeInformation msg)
     {
         // UE interested in receiving Sidelink Discovery messages
     }
-    else if (0)
+    else
     {
         // no more interest from the UE
     }

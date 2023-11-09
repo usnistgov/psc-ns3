@@ -73,18 +73,18 @@ using psc::UavMobilityEnergyModelHelper;
 class UavMobilityEnergyModelHelperTestOneNode : public TestCase
 {
 public:
-  UavMobilityEnergyModelHelperTestOneNode (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelHelperTestOneNode();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelHelperTestOneNode::UavMobilityEnergyModelHelperTestOneNode (void)
-  : TestCase ("UAV Mobility Energy Model Helper Test Case - Basic Use")
+UavMobilityEnergyModelHelperTestOneNode::UavMobilityEnergyModelHelperTestOneNode()
+    : TestCase("UAV Mobility Energy Model Helper Test Case - Basic Use")
 {
 
 }
 
 void
-UavMobilityEnergyModelHelperTestOneNode::DoRun (void)
+UavMobilityEnergyModelHelperTestOneNode::DoRun()
 {
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<BasicEnergySource> energySource = CreateObject<BasicEnergySource> ();
@@ -116,18 +116,18 @@ UavMobilityEnergyModelHelperTestOneNode::DoRun (void)
 class UavMobilityEnergyModelHelperTestFullSetup : public TestCase
 {
 public:
-  UavMobilityEnergyModelHelperTestFullSetup (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelHelperTestFullSetup();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelHelperTestFullSetup::UavMobilityEnergyModelHelperTestFullSetup (void)
-  : TestCase ("UAV Mobility Energy Model Helper Test Case - Full Setup")
+UavMobilityEnergyModelHelperTestFullSetup::UavMobilityEnergyModelHelperTestFullSetup()
+    : TestCase("UAV Mobility Energy Model Helper Test Case - Full Setup")
 {
 
 }
 
 void
-UavMobilityEnergyModelHelperTestFullSetup::DoRun (void)
+UavMobilityEnergyModelHelperTestFullSetup::DoRun()
 {
   Ptr<Node> node = CreateObject<Node> ();
 
@@ -166,21 +166,22 @@ class UavMobilityEnergyModelHelperTestCollections : public TestCase
   // # of nodes to create in each test
   const uint32_t NODES = 5;
 
-  void TestFullSetup (void);
-  void TestNodeEnergyContainers (void);
+  void TestFullSetup();
+  void TestNodeEnergyContainers();
+
 public:
-  UavMobilityEnergyModelHelperTestCollections (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelHelperTestCollections();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelHelperTestCollections::UavMobilityEnergyModelHelperTestCollections (void)
-  : TestCase ("UAV Mobility Energy Model Helper Test Case - Collections")
+UavMobilityEnergyModelHelperTestCollections::UavMobilityEnergyModelHelperTestCollections()
+    : TestCase("UAV Mobility Energy Model Helper Test Case - Collections")
 {
 
 }
 
 void
-UavMobilityEnergyModelHelperTestCollections::TestFullSetup (void)
+UavMobilityEnergyModelHelperTestCollections::TestFullSetup()
 {
   NodeContainer nodes;
   nodes.Create (NODES);
@@ -207,7 +208,7 @@ UavMobilityEnergyModelHelperTestCollections::TestFullSetup (void)
 }
 
 void
-UavMobilityEnergyModelHelperTestCollections::TestNodeEnergyContainers (void)
+UavMobilityEnergyModelHelperTestCollections::TestNodeEnergyContainers()
 {
   const uint32_t NODES = 5;
 
@@ -239,7 +240,7 @@ UavMobilityEnergyModelHelperTestCollections::TestNodeEnergyContainers (void)
 }
 
 void
-UavMobilityEnergyModelHelperTestCollections::DoRun (void)
+UavMobilityEnergyModelHelperTestCollections::DoRun()
 {
   TestFullSetup ();
   Simulator::Destroy ();
@@ -255,11 +256,11 @@ UavMobilityEnergyModelHelperTestCollections::DoRun (void)
 class UavMobilityEnergyModelHelperTestSuite : public TestSuite
 {
   public:
-    UavMobilityEnergyModelHelperTestSuite (void);
+    UavMobilityEnergyModelHelperTestSuite();
 };
 
-UavMobilityEnergyModelHelperTestSuite::UavMobilityEnergyModelHelperTestSuite (void)
-  : TestSuite ("uav-mobility-energy-model-helper")
+UavMobilityEnergyModelHelperTestSuite::UavMobilityEnergyModelHelperTestSuite()
+    : TestSuite("uav-mobility-energy-model-helper")
 {
   AddTestCase (new UavMobilityEnergyModelHelperTestOneNode ());
   AddTestCase (new UavMobilityEnergyModelHelperTestFullSetup ());

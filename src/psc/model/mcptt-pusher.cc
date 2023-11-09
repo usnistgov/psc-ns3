@@ -53,7 +53,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttPusher);
 
 TypeId
-McpttPusher::GetTypeId (void)
+McpttPusher::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttPusher")
     .SetParent<Object> ()
@@ -86,20 +86,20 @@ McpttPusher::GetTypeId (void)
   return tid;
 }
 
-McpttPusher::McpttPusher (void)
-  : m_pttApp (0),
-    m_pushing (false)
+McpttPusher::McpttPusher()
+    : m_pttApp(nullptr),
+      m_pushing(false)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttPusher::~McpttPusher (void)
+McpttPusher::~McpttPusher()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttPusher::CancelEvents (void)
+McpttPusher::CancelEvents()
 {
   NS_LOG_FUNCTION (this);
   m_pushEvent.Cancel ();
@@ -107,63 +107,63 @@ McpttPusher::CancelEvents (void)
 }
 
 void
-McpttPusher::Push (void)
+McpttPusher::Push()
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
   NS_LOG_LOGIC ("Pusher about to push PTT button.");
   SetPushing (true);
   m_pttApp->TakePushNotification ();
-  if (m_automatic == true)
-    {
+  if (m_automatic)
+  {
       ScheduleRelease ();
     }
 }
 
 void
-McpttPusher::NotifyPushed (void)
+McpttPusher::NotifyPushed()
 {
   NS_LOG_FUNCTION (this);
   if (!IsPushing ())
     {
       SetPushing (true);
-      if (m_automatic == true)
-        {
+      if (m_automatic)
+      {
           ScheduleRelease ();
         }
     }
 }
 
 void
-McpttPusher::Release (void)
+McpttPusher::Release()
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_UNLESS (m_pttApp, "There is no PTT app.");
   NS_LOG_LOGIC ("Pusher about to release PTT button.");
   SetPushing (false);
   m_pttApp->TakeReleaseNotification ();
-  if (m_automatic == true)
-    {
+  if (m_automatic)
+  {
       SchedulePush ();
     }
 }
 
 void
-McpttPusher::NotifyReleased (void)
+McpttPusher::NotifyReleased()
 {
   NS_LOG_FUNCTION (this);
   if (IsPushing ())
     {
       SetPushing (false);
-      if (m_automatic == true)
-        {
+      if (m_automatic)
+      {
           SchedulePush ();
         }
     }
 }
 
 bool
-McpttPusher::SchedulePush (void)
+McpttPusher::SchedulePush()
 {
   NS_LOG_FUNCTION (this);
   double rv = m_pttIatVariable->GetValue ();
@@ -194,7 +194,7 @@ McpttPusher::SchedulePush (const Time& delay)
 }
 
 bool
-McpttPusher::CancelPush (void)
+McpttPusher::CancelPush()
 {
   NS_LOG_FUNCTION (this);
   if (!m_pushEvent.IsRunning ())
@@ -211,7 +211,7 @@ McpttPusher::CancelPush (void)
 }
 
 bool
-McpttPusher::ScheduleRelease (void)
+McpttPusher::ScheduleRelease()
 {
   NS_LOG_FUNCTION (this);
   double rv = m_pttDurationVariable->GetValue ();
@@ -242,7 +242,7 @@ McpttPusher::ScheduleRelease (const Time& delay)
 }
 
 bool
-McpttPusher::CancelRelease (void)
+McpttPusher::CancelRelease()
 {
   NS_LOG_FUNCTION (this);
   if (!m_releaseEvent.IsRunning ())
@@ -259,7 +259,7 @@ McpttPusher::CancelRelease (void)
 }
 
 void
-McpttPusher::Start (void)
+McpttPusher::Start()
 {
   NS_LOG_FUNCTION (this);
   if (m_automatic)
@@ -274,7 +274,7 @@ McpttPusher::Start (void)
 }
 
 void
-McpttPusher::Stop (void)
+McpttPusher::Stop()
 {
   NS_LOG_FUNCTION (this);
   if (m_releaseEvent.IsRunning () || m_pushEvent.IsRunning ())
@@ -289,17 +289,17 @@ McpttPusher::Stop (void)
 }
 
 void
-McpttPusher::DoDispose (void)
+McpttPusher::DoDispose()
 {
   NS_LOG_FUNCTION (this);
-  SetPttApp (0);
-  m_pttIatVariable = 0;
-  m_pttDurationVariable = 0;
+  SetPttApp(nullptr);
+  m_pttIatVariable = nullptr;
+  m_pttDurationVariable = nullptr;
   Object::DoDispose ();
 }
 
 Ptr<McpttPttApp>
-McpttPusher::GetPttApp (void) const
+McpttPusher::GetPttApp() const
 {
   NS_LOG_FUNCTION (this);
   return m_pttApp;
@@ -313,7 +313,7 @@ McpttPusher::SetPttApp (Ptr<McpttPttApp> pttApp)
 }
 
 bool
-McpttPusher::IsPushing (void) const
+McpttPusher::IsPushing() const
 {
   return m_pushing;
 }

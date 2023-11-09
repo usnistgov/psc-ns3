@@ -665,8 +665,7 @@ LteSidelinkHelper::AssignIpv6AddressForRelayCommunication(Ptr<NetDevice> dev,
     key.remoteL2Id = remoteL2Id;
 
     LteSlO2OIpv6AddressValue value;
-    std::map<LteSlO2OIpv6AddressKey, LteSlO2OIpv6AddressValue>::iterator it =
-        m_ipv6AddressValueMap.find(key);
+    auto it = m_ipv6AddressValueMap.find(key);
     if (it != m_ipv6AddressValueMap.end())
     {
         value = it->second;
@@ -749,8 +748,7 @@ LteSidelinkHelper::GetRelayIpv6AddressFromMap(uint32_t relayL2Id,
     Ipv6Address ipv6a_relay = Ipv6Address("::");
     if (role == LteSlUeRrc::RemoteUE)
     {
-        std::map<LteSlO2OIpv6AddressKey, LteSlO2OIpv6AddressValue>::iterator it_av_map =
-            m_ipv6AddressValueMap.find(key);
+        auto it_av_map = m_ipv6AddressValueMap.find(key);
         if (it_av_map == m_ipv6AddressValueMap.end())
         {
             NS_ABORT_MSG("Relay UE IPv6 address not present in map!");
@@ -779,8 +777,7 @@ LteSidelinkHelper::GetSelfIpv6AddressFromMap(uint32_t relayL2Id,
 
     Ipv6Address ipv6a = Ipv6Address("::");
 
-    std::map<LteSlO2OIpv6AddressKey, LteSlO2OIpv6AddressValue>::iterator it_av_map =
-        m_ipv6AddressValueMap.find(key);
+    auto it_av_map = m_ipv6AddressValueMap.find(key);
     if (it_av_map == m_ipv6AddressValueMap.end())
     {
         NS_ABORT_MSG("IPv6 address not present in map!");

@@ -54,7 +54,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (IntelHttpServer);
 
 TypeId
-IntelHttpServer::GetTypeId (void)
+IntelHttpServer::GetTypeId()
 {
   static TypeId tid =
       TypeId ("ns3::psc::IntelHttpServer")
@@ -171,7 +171,7 @@ IntelHttpServer::~IntelHttpServer ()
 }
 
 void
-IntelHttpServer::DoDispose (void)
+IntelHttpServer::DoDispose()
 {
   NS_LOG_FUNCTION (this);
   m_socket = nullptr;
@@ -179,7 +179,7 @@ IntelHttpServer::DoDispose (void)
 }
 
 void
-IntelHttpServer::StartApplication (void)
+IntelHttpServer::StartApplication()
 {
   NS_LOG_FUNCTION (this);
 

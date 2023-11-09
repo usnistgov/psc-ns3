@@ -53,7 +53,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (PscApplicationClient);
 
 TypeId
-PscApplicationClient::GetTypeId (void)
+PscApplicationClient::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscApplicationClient")
     .SetParent<PscApplication> ()
@@ -95,7 +95,7 @@ PscApplicationClient::GetTypeId (void)
 PscApplicationClient::PscApplicationClient ()
 {
   NS_LOG_FUNCTION (this);
-  m_socket = 0;
+  m_socket = nullptr;
   m_sendEvent = EventId ();
   m_packetsLeftThisSession = 0;
   m_txBuffer = Create<Packet> ();
@@ -136,25 +136,26 @@ PscApplicationClient::SetSessionInterval (Ptr<RandomVariableStream> sessiontInte
 }
 
 void
-PscApplicationClient::DoDispose (void)
+PscApplicationClient::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  m_packetsPerSessionRandomVariable = 0;
-  m_packetIntervalRandomVariable    = 0;
-  m_sessionIntervalRandomVariable   = 0;
-  m_rxBuffer = 0;
-  m_txBuffer = 0;
-  m_socket = 0;
+  m_packetsPerSessionRandomVariable = nullptr;
+  m_packetIntervalRandomVariable = nullptr;
+  m_sessionIntervalRandomVariable = nullptr;
+  m_rxBuffer = nullptr;
+  m_txBuffer = nullptr;
+  m_socket = nullptr;
   PscApplication::DoDispose ();
   m_packetsLeftThisSession = -1;
 }
 
-void PscApplicationClient::StartApplication (void)
+void
+PscApplicationClient::StartApplication()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket)
+  if (!m_socket)
     {
       m_socket = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
       m_socket->SetSendCallback (MakeCallback (&PscApplicationClient::TrySend, this));
@@ -187,7 +188,7 @@ void PscApplicationClient::StartApplication (void)
 }
 
 void
-PscApplicationClient::StopNow (void)
+PscApplicationClient::StopNow()
 {
   NS_LOG_FUNCTION (this);
 
@@ -198,7 +199,8 @@ PscApplicationClient::StopNow (void)
   m_startStopTimeTrace (m_appName, m_startTime, m_stopTime);
 }
 
-void PscApplicationClient::StopApplication (void)
+void
+PscApplicationClient::StopApplication()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_sendEvent);
@@ -208,7 +210,7 @@ void PscApplicationClient::StopApplication (void)
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<ns3::Socket> > ());
       m_socket->SetSendCallback (MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t> ());
       m_socket->Close ();
-      m_socket = 0;
+      m_socket = nullptr;
     }
 }
 
@@ -220,7 +222,7 @@ PscApplicationClient::ScheduleTransmit (Time t)
 }
 
 void
-PscApplicationClient::Send (void)
+PscApplicationClient::Send()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_sendEvent.IsExpired ());
@@ -308,25 +310,25 @@ PscApplicationClient::HandleRead (Ptr<ns3::Socket> socket)
                   uint32_t bytesToRemove = tmpPacket->GetSize () - (m_rxBuffer->GetSize () - nbh.GetSize () - stsh.GetSerializedSize ());
                   m_rxBuffer->RemoveAllPacketTags ();
                   m_rxBuffer->RemoveAllByteTags ();
-                  m_rxBuffer = 0;
+                  m_rxBuffer = nullptr;
 
                   // Now let's see if there is anything else in the segment
                   tmpPacket->RemoveAtStart (bytesToRemove);
                   if (tmpPacket->GetSize () == 0)
                     {
-                      tmpPacket = 0;
+                        tmpPacket = nullptr;
                     }
                 }
               else
                 {
                   // We don't have the full packet. Let's wait.
-                  tmpPacket = 0;
+                  tmpPacket = nullptr;
                 }
             }
           else
             {
               // We still need to keep receiving data (we don't have the full header).
-              tmpPacket = 0;
+              tmpPacket = nullptr;
             }
         }
     }

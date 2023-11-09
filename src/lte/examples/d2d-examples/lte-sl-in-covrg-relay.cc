@@ -130,7 +130,7 @@ UePacketTrace(Ptr<OutputStreamWrapper> stream,
     if (Inet6SocketAddress::IsMatchingType(srcAddrs))
     {
         oss << Inet6SocketAddress::ConvertFrom(srcAddrs).GetIpv6();
-        if (!oss.str().compare("::")) // srcAddrs not set
+        if (oss.str() == "::") // srcAddrs not set
         {
             *stream->GetStream() << localAddrs << ":"
                                  << Inet6SocketAddress::ConvertFrom(srcAddrs).GetPort() << "\t"
@@ -142,7 +142,7 @@ UePacketTrace(Ptr<OutputStreamWrapper> stream,
         {
             oss.str("");
             oss << Inet6SocketAddress::ConvertFrom(dstAddrs).GetIpv6();
-            if (!oss.str().compare("::")) // dstAddrs not set
+            if (oss.str() == "::") // dstAddrs not set
             {
                 *stream->GetStream()
                     << Inet6SocketAddress::ConvertFrom(srcAddrs).GetIpv6() << ":"
@@ -198,7 +198,7 @@ main(int argc, char* argv[])
 
     if (enableNsLogs)
     {
-        LogLevel logLevel =
+        auto logLevel =
             (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
 
         LogComponentEnable("LteUeRrc", logLevel);

@@ -539,7 +539,7 @@ EpcPgwApplication::RemoteUeContextConnected(uint64_t relayImsi,
     // the relay UE must be known to the network
     // the remote UE connected to the relay may or may not be known to the SGW depending where it is
     // located
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(relayImsi);
+    auto ueit = m_ueInfoByImsiMap.find(relayImsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI " << relayImsi);
     // m_ueInfoByAddrMap6[ueAddr] = ueit->second;
     uint8_t address[16];
@@ -558,7 +558,7 @@ EpcPgwApplication::RemoteUeContextDisconnected(uint64_t relayImsi,
     // the relay UE must be known to the network
     // the remote UE connected to the relay may or may not be known to the SGW depending where it is
     // located
-    std::map<uint64_t, Ptr<UeInfo>>::iterator ueit = m_ueInfoByImsiMap.find(relayImsi);
+    auto ueit = m_ueInfoByImsiMap.find(relayImsi);
     NS_ASSERT_MSG(ueit != m_ueInfoByImsiMap.end(), "unknown IMSI " << relayImsi);
 
     // m_ueInfoByAddrMap6[ueAddr] = ueit->second;
@@ -566,8 +566,7 @@ EpcPgwApplication::RemoteUeContextDisconnected(uint64_t relayImsi,
     std::fill_n(std::begin(address), 16, 0);
     std::memmove(address, ipv6Prefix, 8);
     Ipv6Address remotePrefix(address);
-    std::map<Ipv6Address, Ptr<UeInfo>>::iterator prefixit =
-        m_ueInfoByRemotePrefixMap.find(remotePrefix);
+    auto prefixit = m_ueInfoByRemotePrefixMap.find(remotePrefix);
     if (prefixit != m_ueInfoByRemotePrefixMap.end())
     {
         m_ueInfoByRemotePrefixMap.erase(remotePrefix);

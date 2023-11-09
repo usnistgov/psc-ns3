@@ -53,7 +53,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkCallMachineClient);
 
 TypeId
-McpttOnNetworkCallMachineClient::GetTypeId (void)
+McpttOnNetworkCallMachineClient::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkCallMachineClient")
     .SetParent<McpttCallMachineGrp> ()
@@ -95,18 +95,18 @@ McpttOnNetworkCallMachineClient::GetTypeId (void)
   return tid;
 }
 
-McpttOnNetworkCallMachineClient::McpttOnNetworkCallMachineClient (void)
-  : McpttCallMachineGrp (),
-    m_call (0),
-    m_callId (0),
-    m_started (false)
+McpttOnNetworkCallMachineClient::McpttOnNetworkCallMachineClient()
+    : McpttCallMachineGrp(),
+      m_call(nullptr),
+      m_callId(0),
+      m_started(false)
 {
   NS_LOG_FUNCTION (this);
   m_state = McpttOnNetworkCallMachineClientStateS1::GetInstance ();
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
-McpttOnNetworkCallMachineClient::~McpttOnNetworkCallMachineClient (void)
+McpttOnNetworkCallMachineClient::~McpttOnNetworkCallMachineClient()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -135,7 +135,7 @@ McpttOnNetworkCallMachineClient::SetState (Ptr<McpttOnNetworkCallMachineClientSt
 }
 
 Ptr<McpttOnNetworkCallMachineClientState>
-McpttOnNetworkCallMachineClient::GetState (void) const
+McpttOnNetworkCallMachineClient::GetState() const
 {
   return m_state;
 }
@@ -149,31 +149,31 @@ McpttOnNetworkCallMachineClient::SetStateChangeCb (const Callback<void, const Mc
 }
 
 void
-McpttOnNetworkCallMachineClient::AcceptCall (void)
+McpttOnNetworkCallMachineClient::AcceptCall()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttOnNetworkCallMachineClient::BeginEmergAlert (void)
+McpttOnNetworkCallMachineClient::BeginEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttOnNetworkCallMachineClient::CancelEmergAlert (void)
+McpttOnNetworkCallMachineClient::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttOnNetworkCallMachineClient::DowngradeCallType (void)
+McpttOnNetworkCallMachineClient::DowngradeCallType()
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint32_t
-McpttOnNetworkCallMachineClient::GetCallerUserId (void) const
+McpttOnNetworkCallMachineClient::GetCallerUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -181,13 +181,13 @@ McpttOnNetworkCallMachineClient::GetCallerUserId (void) const
 }
 
 McpttCallMsgFieldCallId
-McpttOnNetworkCallMachineClient::GetCallId (void) const
+McpttOnNetworkCallMachineClient::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldCallType
-McpttOnNetworkCallMachineClient::GetCallType (void) const
+McpttOnNetworkCallMachineClient::GetCallType() const
 {
   McpttCallMsgFieldCallType callTypeField;
   callTypeField.SetType (m_callType);
@@ -196,25 +196,25 @@ McpttOnNetworkCallMachineClient::GetCallType (void) const
 }
 
 TypeId
-McpttOnNetworkCallMachineClient::GetInstanceTypeId (void) const
+McpttOnNetworkCallMachineClient::GetInstanceTypeId() const
 {
   return McpttOnNetworkCallMachineClient::GetTypeId ();
 }
 
 Ptr<McpttCall>
-McpttOnNetworkCallMachineClient::GetCall (void) const
+McpttOnNetworkCallMachineClient::GetCall() const
 {
   return m_call;
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClient::GetStateId (void) const
+McpttOnNetworkCallMachineClient::GetStateId() const
 {
   return m_state->GetInstanceStateId ();
 }
 
 void
-McpttOnNetworkCallMachineClient::InitiateCall (void)
+McpttOnNetworkCallMachineClient::InitiateCall()
 {
   NS_LOG_FUNCTION (this);
   if (GetStateId () == McpttOnNetworkCallMachineClientStateS1::GetInstance ()->GetStateId ())
@@ -229,13 +229,9 @@ McpttOnNetworkCallMachineClient::InitiateCall (void)
 }
 
 bool
-McpttOnNetworkCallMachineClient::IsCallOngoing (void) const
+McpttOnNetworkCallMachineClient::IsCallOngoing() const
 {
-  if (GetStateId () != McpttOnNetworkCallMachineClientStateS1::GetInstance ()->GetStateId ())
-    {
-      return true;
-    }
-  return false;
+    return GetStateId() != McpttOnNetworkCallMachineClientStateS1::GetInstance()->GetStateId();
 }
 
 bool
@@ -291,7 +287,7 @@ McpttOnNetworkCallMachineClient::Receive (const McpttCallMsg& msg)
 }
 
 void
-McpttOnNetworkCallMachineClient::ReleaseCall (void)
+McpttOnNetworkCallMachineClient::ReleaseCall()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("Release call for call ID " << GetCall ()->GetCallId () << " in state " << GetStateId ());
@@ -299,7 +295,7 @@ McpttOnNetworkCallMachineClient::ReleaseCall (void)
 }
 
 void
-McpttOnNetworkCallMachineClient::RejectCall (void)
+McpttOnNetworkCallMachineClient::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -332,7 +328,7 @@ McpttOnNetworkCallMachineClient::SetCall (Ptr<McpttCall> call)
 }
 
 void
-McpttOnNetworkCallMachineClient::Start (void)
+McpttOnNetworkCallMachineClient::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -349,7 +345,7 @@ McpttOnNetworkCallMachineClient::Start (void)
 }
 
 void
-McpttOnNetworkCallMachineClient::Stop (void)
+McpttOnNetworkCallMachineClient::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -371,7 +367,7 @@ McpttOnNetworkCallMachineClient::UpgradeCallType (uint8_t callType)
 }
 
 uint32_t
-McpttOnNetworkCallMachineClient::GetInvitePayloadSize (void)
+McpttOnNetworkCallMachineClient::GetInvitePayloadSize()
 {
   double value = m_invitePayloadSize->GetValue ();
   NS_ASSERT_MSG (value > 0, "Invalid random variate");
@@ -379,7 +375,7 @@ McpttOnNetworkCallMachineClient::GetInvitePayloadSize (void)
 }
 
 uint32_t
-McpttOnNetworkCallMachineClient::GetByePayloadSize (void)
+McpttOnNetworkCallMachineClient::GetByePayloadSize()
 {
   double value = m_byePayloadSize->GetValue ();
   NS_ASSERT_MSG (value > 0, "Invalid random variate");
@@ -387,7 +383,7 @@ McpttOnNetworkCallMachineClient::GetByePayloadSize (void)
 }
 
 uint32_t
-McpttOnNetworkCallMachineClient::GetResponsePayloadSize (void)
+McpttOnNetworkCallMachineClient::GetResponsePayloadSize()
 {
   double value = m_responsePayloadSize->GetValue ();
   NS_ASSERT_MSG (value > 0, "Invalid random variate");
@@ -409,10 +405,10 @@ McpttOnNetworkCallMachineClient::AssignStreams (int64_t stream)
 }
 
 void
-McpttOnNetworkCallMachineClient::DoDispose (void)
+McpttOnNetworkCallMachineClient::DoDispose()
 {
   NS_LOG_FUNCTION (this);
-  m_call = 0;
+  m_call = nullptr;
   McpttCallMachine::DoDispose ();
 }
 
@@ -426,7 +422,7 @@ McpttOnNetworkCallMachineClient::SetGrpId (uint32_t grpId)
 }
 
 McpttCallMsgFieldGrpId
-McpttOnNetworkCallMachineClient::GetGrpId (void) const
+McpttOnNetworkCallMachineClient::GetGrpId() const
 {
   return m_grpId;
 }

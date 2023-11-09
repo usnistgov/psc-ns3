@@ -269,10 +269,7 @@ SidelinkCommPoolResourceOpportunityTestCase::DoRun()
     uint32_t actualRbStart = 0;
     uint32_t actualRbCount = 0;
 
-    for (std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator it =
-             txInfo.begin();
-         it != txInfo.end();
-         it++)
+    for (auto it = txInfo.begin(); it != txInfo.end(); it++)
     {
         if (ctr == m_pscchTransmissionNo)
         {
@@ -401,7 +398,7 @@ SidelinkCommPoolSubframeOpportunityTestCase::DoRun()
 
     if (!rbs.empty())
     {
-        for (std::list<uint8_t>::iterator it = rbs.begin(); it != rbs.end(); it++)
+        for (auto it = rbs.begin(); it != rbs.end(); it++)
         {
             if (ctr == 0)
             {
@@ -606,10 +603,7 @@ SidelinkCommPoolPsschTestCase::DoRun()
     uint32_t actualRbStart = 0;
     uint32_t actualRbCount = 0;
 
-    for (std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator it =
-             txInfo.begin();
-         it != txInfo.end();
-         it++)
+    for (auto it = txInfo.begin(); it != txInfo.end(); it++)
     {
         if (ctr == m_psschTransmissionNo)
         {

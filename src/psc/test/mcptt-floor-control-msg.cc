@@ -48,56 +48,56 @@ namespace tests {
 class FloorMsgRequestTest : public TestCase
 {
 public:
-  FloorMsgRequestTest (void);
-  virtual void DoRun (void);
+  FloorMsgRequestTest();
+  void DoRun() override;
 };
 
 class FloorMsgGrantedTest : public TestCase
 {
 public:
-  FloorMsgGrantedTest (void);
-  virtual void DoRun (void);
+  FloorMsgGrantedTest();
+  void DoRun() override;
 };
 
 class FloorMsgDenyTest : public TestCase
 {
 public:
-  FloorMsgDenyTest (void);
-  virtual void DoRun (void);
+  FloorMsgDenyTest();
+  void DoRun() override;
 };
 
 class FloorMsgReleaseTest : public TestCase
 {
 public:
-  FloorMsgReleaseTest (void);
-  virtual void DoRun (void);
+  FloorMsgReleaseTest();
+  void DoRun() override;
 };
 
 class FloorMsgTakenTest : public TestCase
 {
 public:
-  FloorMsgTakenTest (void);
-  virtual void DoRun (void);
+  FloorMsgTakenTest();
+  void DoRun() override;
 };
 
 class FloorMsgQueuePositionRequestTest : public TestCase
 {
 public:
-  FloorMsgQueuePositionRequestTest (void);
-  virtual void DoRun (void);
+  FloorMsgQueuePositionRequestTest();
+  void DoRun() override;
 };
 
 class FloorMsgQueuePositionInfoTest : public TestCase
 {
 public:
-  FloorMsgQueuePositionInfoTest (void);
-  virtual void DoRun (void);
+  FloorMsgQueuePositionInfoTest();
+  void DoRun() override;
 };
 
 class McpttFloorControlMsgTestSuite : public TestSuite
 {
 public:
-  McpttFloorControlMsgTestSuite (void);
+  McpttFloorControlMsgTestSuite();
 };
 
 /***************************************************************
@@ -106,12 +106,12 @@ public:
 
 static McpttFloorControlMsgTestSuite suite;
 
-FloorMsgRequestTest::FloorMsgRequestTest (void)
-  : TestCase ("Floor Request")
+FloorMsgRequestTest::FloorMsgRequestTest()
+    : TestCase("Floor Request")
 {}
 
 void
-FloorMsgRequestTest::DoRun (void)
+FloorMsgRequestTest::DoRun()
 {
   McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic ();
   indic.Indicate (McpttFloorMsgFieldIndic::BROADCAST_CALL);
@@ -151,12 +151,12 @@ FloorMsgRequestTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-FloorMsgGrantedTest::FloorMsgGrantedTest (void)
-  : TestCase ("Floor Granted")
+FloorMsgGrantedTest::FloorMsgGrantedTest()
+    : TestCase("Floor Granted")
 {}
 
 void
-FloorMsgGrantedTest::DoRun (void)
+FloorMsgGrantedTest::DoRun()
 {
   McpttFloorMsgFieldDuration duration;
   duration.SetDuration (50);
@@ -213,12 +213,12 @@ FloorMsgGrantedTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-FloorMsgDenyTest::FloorMsgDenyTest (void)
-  : TestCase ("Floor Deny")
+FloorMsgDenyTest::FloorMsgDenyTest()
+    : TestCase("Floor Deny")
 {}
 
 void
-FloorMsgDenyTest::DoRun (void)
+FloorMsgDenyTest::DoRun()
 {
   McpttFloorMsgFieldRejectCause rejCause (McpttFloorMsgFieldRejectCause::CAUSE_255);
 
@@ -252,12 +252,12 @@ FloorMsgDenyTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-FloorMsgReleaseTest::FloorMsgReleaseTest (void)
-  : TestCase ("Floor Release")
+FloorMsgReleaseTest::FloorMsgReleaseTest()
+    : TestCase("Floor Release")
 {}
 
 void
-FloorMsgReleaseTest::DoRun (void)
+FloorMsgReleaseTest::DoRun()
 {
   McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
   id.SetUserId (9);
@@ -292,12 +292,12 @@ FloorMsgReleaseTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-FloorMsgTakenTest::FloorMsgTakenTest (void)
-  : TestCase ("Floor Taken")
+FloorMsgTakenTest::FloorMsgTakenTest()
+    : TestCase("Floor Taken")
 {}
 
 void
-FloorMsgTakenTest::DoRun (void)
+FloorMsgTakenTest::DoRun()
 {
   McpttFloorMsgFieldIndic indic = McpttFloorMsgFieldIndic ();
   indic.Indicate (McpttFloorMsgFieldIndic::BROADCAST_CALL);
@@ -343,12 +343,12 @@ FloorMsgTakenTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest (void)
-  : TestCase ("Queue Position Request")
+FloorMsgQueuePositionRequestTest::FloorMsgQueuePositionRequestTest()
+    : TestCase("Queue Position Request")
 {}
 
 void
-FloorMsgQueuePositionRequestTest::DoRun (void)
+FloorMsgQueuePositionRequestTest::DoRun()
 {
   McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
   id.SetUserId (9);
@@ -379,12 +379,12 @@ FloorMsgQueuePositionRequestTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest (void)
-  : TestCase ("Queue Info")
+FloorMsgQueuePositionInfoTest::FloorMsgQueuePositionInfoTest()
+    : TestCase("Queue Info")
 {}
 
 void
-FloorMsgQueuePositionInfoTest::DoRun (void)
+FloorMsgQueuePositionInfoTest::DoRun()
 {
   McpttFloorMsgFieldUserId id = McpttFloorMsgFieldUserId ();
   id.SetUserId (9);
@@ -426,8 +426,8 @@ FloorMsgQueuePositionInfoTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((p->GetSize () == 0), true, "Bytes written/read do not match reported size.");
 }
 
-McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite (void)
-  : TestSuite ("mcptt-floor-control-messages", TestSuite::UNIT)
+McpttFloorControlMsgTestSuite::McpttFloorControlMsgTestSuite()
+    : TestSuite("mcptt-floor-control-messages", TestSuite::UNIT)
 {
   AddTestCase (new FloorMsgRequestTest (), TestCase::QUICK);
   AddTestCase (new FloorMsgGrantedTest (), TestCase::QUICK);

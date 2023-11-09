@@ -256,8 +256,7 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus(
             // Note: If UE RRC will not call AddSlLc of
             // UE CCM, here it will not be able to find
             // the LteMacSapProvider pointer.
-            std::map<UeCcmSidelinkLcIdentifier, LteMacSapProvider*>::iterator it =
-                slCcLcMapIt->second.find(slLcIdentifier);
+            auto it = slCcLcMapIt->second.find(slLcIdentifier);
             if (it != slCcLcMapIt->second.end())
             {
                 NS_LOG_DEBUG("UE CCM sending Sidelink BSR from RLC with LCID = "

@@ -35,9 +35,9 @@ namespace ns3 {
 namespace psc {
 namespace tests {
 
-McpttTestCase::McpttTestCase (const std::string& name, Ptr<McpttTestCaseConfig>  config)
-  : TestCase (name),
-    m_config (0)
+McpttTestCase::McpttTestCase(const std::string& name, Ptr<McpttTestCaseConfig> config)
+    : TestCase(name),
+      m_config(nullptr)
 {
   SetConfig (config);
 }
@@ -73,7 +73,7 @@ McpttTestCase::GetFloorMachine (uint32_t index)
 }
 
 void
-McpttTestCase::Configure (void)
+McpttTestCase::Configure()
 {
   Ptr<McpttTestCaseConfig> configuration = GetConfig ();
 
@@ -83,26 +83,26 @@ McpttTestCase::Configure (void)
 }
 
 void
-McpttTestCase::Stop (void)
+McpttTestCase::Stop()
 {
   Simulator::Stop ();
 }
 
 void
-McpttTestCase::DoRun (void)
+McpttTestCase::DoRun()
 {
   Configure ();
   Execute ();
 }
 
 ApplicationContainer
-McpttTestCase::GetClientApps (void) const
+McpttTestCase::GetClientApps() const
 {
   return m_clientApps;
 }
 
 Ptr<McpttTestCaseConfig>
-McpttTestCase::GetConfig (void) const
+McpttTestCase::GetConfig() const
 {
   return m_config;
 }

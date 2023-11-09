@@ -56,8 +56,8 @@ public:
   McpttTestCasePreArrangedGroupCO (const std::string& name = "Floor Release", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void ServerRxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void ServerTxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -87,7 +87,7 @@ private:
 class McpttTestSuiteCallControlOnNetwork : public TestSuite
 {
 public:
-  McpttTestSuiteCallControlOnNetwork (void);
+  McpttTestSuiteCallControlOnNetwork();
 };
 
 /***************************************************************
@@ -99,7 +99,7 @@ McpttTestCasePreArrangedGroupCO::McpttTestCasePreArrangedGroupCO (const std::str
 { }
 
 void
-McpttTestCasePreArrangedGroupCO::Configure (void)
+McpttTestCasePreArrangedGroupCO::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -153,18 +153,18 @@ McpttTestCasePreArrangedGroupCO::Configure (void)
 }
 
 void
-McpttTestCasePreArrangedGroupCO::Execute (void)
+McpttTestCasePreArrangedGroupCO::Execute()
 {
   // Configure expected sequence according to TS 36.579-2, Table 6.1.1.1.3.2-1
-  m_expectedEvents.push_back (TestEvent (2, "-->", "SIP INVITE"));
+  m_expectedEvents.emplace_back(2, "-->", "SIP INVITE");
   // TODO: Step 3 'SIP 100 Trying' is occurring (in the logs) but this
   // test suite cannot hook the event until McpttCall::ReceiveSipEvent
   // is completed (and the TRYING_RECEIVED event is exported)
-  m_expectedEvents.push_back (TestEvent (5, "<--", "SIP 200 (OK)"));
-  m_expectedEvents.push_back (TestEvent (6, "-->", "SIP ACK"));
-  m_expectedEvents.push_back (TestEvent (9, "-->", "Floor Release"));
-  m_expectedEvents.push_back (TestEvent (10, "<--", "Floor Ack"));
-  m_expectedEvents.push_back (TestEvent (11, "<--", "Floor Idle"));
+  m_expectedEvents.emplace_back(5, "<--", "SIP 200 (OK)");
+  m_expectedEvents.emplace_back(6, "-->", "SIP ACK");
+  m_expectedEvents.emplace_back(9, "-->", "Floor Release");
+  m_expectedEvents.emplace_back(10, "<--", "Floor Ack");
+  m_expectedEvents.emplace_back(11, "<--", "Floor Idle");
   // TODO:  add events beyond step 11
 
   Simulator::Stop (Seconds (10));
@@ -222,7 +222,7 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
               // Skip to step 5, since step 3 (Trying) is not observable
               // in this test, and step 4 is 'Void' in Table 6.1.1.1.3.2-1
               m_step = 5;
-              m_observedEvents.push_back (TestEvent (m_step, "<--", "SIP 200 (OK)"));
+              m_observedEvents.emplace_back(m_step, "<--", "SIP 200 (OK)");
             }
         }
       else if (messageType == sip::SipHeader::SIP_REQUEST)
@@ -236,7 +236,7 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
       if (m_step == 9)
         {
           NS_LOG_DEBUG ("Step 10 <-- Floor Ack");
-          m_observedEvents.push_back (TestEvent (10, "<--", "Floor Ack"));
+          m_observedEvents.emplace_back(10, "<--", "Floor Ack");
           m_step = 10;
         }
     }
@@ -245,7 +245,7 @@ McpttTestCasePreArrangedGroupCO::Ue1RxCb (Ptr<const Application> app, uint16_t c
       if (m_step == 10)
         {
           NS_LOG_DEBUG ("Step 11 <-- Floor Idle");
-          m_observedEvents.push_back (TestEvent (11, "<--", "Floor Idle"));
+          m_observedEvents.emplace_back(11, "<--", "Floor Idle");
           m_step = 11;
         }
     }
@@ -268,13 +268,13 @@ McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t c
             {
               NS_LOG_DEBUG ("Step 2 --> SIP INVITE");
               m_step++;
-              m_observedEvents.push_back (TestEvent (m_step, "-->", "SIP INVITE"));
+              m_observedEvents.emplace_back(m_step, "-->", "SIP INVITE");
             }
           else if (method == sip::SipHeader::ACK && m_step == 5)
             {
               NS_LOG_DEBUG ("Step 6 --> SIP ACK");
               m_step++;
-              m_observedEvents.push_back (TestEvent (m_step, "-->", "SIP ACK"));
+              m_observedEvents.emplace_back(m_step, "-->", "SIP ACK");
             }
         }
       else if (messageType == sip::SipHeader::SIP_RESPONSE)
@@ -287,7 +287,7 @@ McpttTestCasePreArrangedGroupCO::Ue1TxCb (Ptr<const Application> app, uint16_t c
       if (m_step == 6)
         {
           NS_LOG_DEBUG ("Step 9 --> Floor Release");
-          m_observedEvents.push_back (TestEvent (9, "-->", "Floor Release"));
+          m_observedEvents.emplace_back(9, "-->", "Floor Release");
           m_step = 9;
         }
     }
@@ -327,8 +327,8 @@ McpttTestCasePreArrangedGroupCO::ServerTxCb (Ptr<const Application> app, uint16_
     }
 }
 
-McpttTestSuiteCallControlOnNetwork::McpttTestSuiteCallControlOnNetwork (void)
-  : TestSuite ("mcptt-call-control-on-network", TestSuite::SYSTEM)
+McpttTestSuiteCallControlOnNetwork::McpttTestSuiteCallControlOnNetwork()
+    : TestSuite("mcptt-call-control-on-network", TestSuite::SYSTEM)
 {
   AddTestCase (new McpttTestCasePreArrangedGroupCO (), TestCase::QUICK);
 }

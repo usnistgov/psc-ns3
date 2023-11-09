@@ -31,7 +31,7 @@ namespace sip {
 NS_OBJECT_ENSURE_REGISTERED (SipAgent);
 
 TypeId
-SipAgent::GetTypeId (void)
+SipAgent::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::sip::SipAgent")
     .SetParent<SipElement> ()

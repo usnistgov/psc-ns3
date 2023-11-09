@@ -49,12 +49,12 @@ class SipTestCase : public TestCase
 public:
   SipTestCase (std::string name);
   // Scheduled events
-  void Client1SendSipInvite (void);
-  void Client1SendSipBye (void);
+  void Client1SendSipInvite();
+  void Client1SendSipBye();
 
 protected:
   // Promoted from private in case it needs to be called by subclasses
-  virtual void DoSetup (void);
+  void DoSetup() override;
   // Member variables
   Ptr<SipAgent> m_sipAgent1;
   Ptr<SipAgent> m_sipAgent2;
@@ -154,7 +154,7 @@ protected:
   void Client3TxTrace (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
 private:
-  virtual void DoRun (void) = 0;
+  void DoRun() override = 0;
 };
 
 SipTestCase::SipTestCase (std::string name)
@@ -170,7 +170,7 @@ SipTestCase::SipTestCase (std::string name)
 {}
 
 void
-SipTestCase::DoSetup (void)
+SipTestCase::DoSetup()
 {
   NodeContainer n;
   m_server = CreateObject<Node> ();
@@ -351,59 +351,89 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
     {
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive SIP INVITE"));
-          m_step++;
-          // SIP has delivered an invite to the proxy.  Check that this is
-          // from client 1.  Send '100 Trying' to client 1, and then forward
-          // the INVITE to client 2 and client 3.
-          if (hdr.GetFrom () == 1)
+            m_observedEvents.emplace_back(m_step, 0, "Server receive SIP INVITE");
+            m_step++;
+            // SIP has delivered an invite to the proxy.  Check that this is
+            // from client 1.  Send '100 Trying' to client 1, and then forward
+            // the INVITE to client 2 and client 3.
+            if (hdr.GetFrom() == 1)
             {
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 100 Trying"));
-              m_step++;
-              Ptr<Packet> p1 = Create<Packet> ();
-              // From: and To: fields remain the same in the response
-              m_sipProxy->SendResponse (p1, m_client1Address, 100, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
-                                        MakeCallback (&SipTestCase::ServerSendSipMessage, this));
-              // Save header for later responses
-              m_proxiedInviteHeader = hdr;
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP INVITE"));
-              m_step++;
-              Ptr<Packet> p2 = Create<Packet> ();
-              // From: server URI, to:  client URI
-              m_sipProxy->SendInvite (p2, m_client2Address, 2, 0, 2, hdr.GetCallId (),
-                                      MakeCallback (&SipTestCase::ServerSendSipMessage, this));
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP INVITE"));
-              m_step++;
-              Ptr<Packet> p3 = Create<Packet> ();
-              // From: server URI, to:  client URI
-              m_sipProxy->SendInvite (p3, m_client3Address, 3, 0, 3, hdr.GetCallId (),
-                                      MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+                m_observedEvents.emplace_back(m_step, 0, "Server send 100 Trying");
+                m_step++;
+                Ptr<Packet> p1 = Create<Packet>();
+                // From: and To: fields remain the same in the response
+                m_sipProxy->SendResponse(p1,
+                                         m_client1Address,
+                                         100,
+                                         hdr.GetFrom(),
+                                         hdr.GetTo(),
+                                         hdr.GetCallId(),
+                                         MakeCallback(&SipTestCase::ServerSendSipMessage, this));
+                // Save header for later responses
+                m_proxiedInviteHeader = hdr;
+                m_observedEvents.emplace_back(m_step, 0, "Server send SIP INVITE");
+                m_step++;
+                Ptr<Packet> p2 = Create<Packet>();
+                // From: server URI, to:  client URI
+                m_sipProxy->SendInvite(p2,
+                                       m_client2Address,
+                                       2,
+                                       0,
+                                       2,
+                                       hdr.GetCallId(),
+                                       MakeCallback(&SipTestCase::ServerSendSipMessage, this));
+                m_observedEvents.emplace_back(m_step, 0, "Server send SIP INVITE");
+                m_step++;
+                Ptr<Packet> p3 = Create<Packet>();
+                // From: server URI, to:  client URI
+                m_sipProxy->SendInvite(p3,
+                                       m_client3Address,
+                                       3,
+                                       0,
+                                       3,
+                                       hdr.GetCallId(),
+                                       MakeCallback(&SipTestCase::ServerSendSipMessage, this));
             }
         }
       else if (hdr.GetMethod () == sip::SipHeader::BYE)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive SIP BYE"));
-          m_step++;
-          // SIP has delivered a bye  to the proxy.  Check that this is
-          // from client 1.  Send 'OK' to client 1, and then forward
-          // the BYE to client 2 and client 3.
-          if (hdr.GetFrom () == 1)
+            m_observedEvents.emplace_back(m_step, 0, "Server receive SIP BYE");
+            m_step++;
+            // SIP has delivered a bye  to the proxy.  Check that this is
+            // from client 1.  Send 'OK' to client 1, and then forward
+            // the BYE to client 2 and client 3.
+            if (hdr.GetFrom() == 1)
             {
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 200 OK"));
-              m_step++;
-              Ptr<Packet> p1 = Create<Packet> ();
-              m_sipProxy->SendResponse (p1, m_client1Address, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
-                                        MakeCallback (&SipTestCase::ServerSendSipMessage, this));
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP BYE"));
-              m_step++;
-              Ptr<Packet> p2 = Create<Packet> ();
-              m_sipProxy->SendBye (p2, m_client2Address, 2, 0, 2, hdr.GetCallId (),
-                                   MakeCallback (&SipTestCase::ServerSendSipMessage, this));
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP BYE"));
-              m_step++;
-              Ptr<Packet> p3 = Create<Packet> ();
-              m_sipProxy->SendBye (p3, m_client3Address, 3, 0, 3, hdr.GetCallId (),
-                                   MakeCallback (&SipTestCase::ServerSendSipMessage, this));
+                m_observedEvents.emplace_back(m_step, 0, "Server send 200 OK");
+                m_step++;
+                Ptr<Packet> p1 = Create<Packet>();
+                m_sipProxy->SendResponse(p1,
+                                         m_client1Address,
+                                         200,
+                                         hdr.GetFrom(),
+                                         hdr.GetTo(),
+                                         hdr.GetCallId(),
+                                         MakeCallback(&SipTestCase::ServerSendSipMessage, this));
+                m_observedEvents.emplace_back(m_step, 0, "Server send SIP BYE");
+                m_step++;
+                Ptr<Packet> p2 = Create<Packet>();
+                m_sipProxy->SendBye(p2,
+                                    m_client2Address,
+                                    2,
+                                    0,
+                                    2,
+                                    hdr.GetCallId(),
+                                    MakeCallback(&SipTestCase::ServerSendSipMessage, this));
+                m_observedEvents.emplace_back(m_step, 0, "Server send SIP BYE");
+                m_step++;
+                Ptr<Packet> p3 = Create<Packet>();
+                m_sipProxy->SendBye(p3,
+                                    m_client3Address,
+                                    3,
+                                    0,
+                                    3,
+                                    hdr.GetCallId(),
+                                    MakeCallback(&SipTestCase::ServerSendSipMessage, this));
             }
         }
     }
@@ -411,14 +441,14 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
     {
       if (hdr.GetStatusCode () == 100)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive 100 Trying"));
-          m_step++;
+            m_observedEvents.emplace_back(m_step, 0, "Server receive 100 Trying");
+            m_step++;
         }
       else if (hdr.GetStatusCode () == 200)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive 200 OK"));
-          m_step++;
-          if (m_receivedTerminatingReply)
+            m_observedEvents.emplace_back(m_step, 0, "Server receive 200 OK");
+            m_step++;
+            if (m_receivedTerminatingReply)
             {
               // Server has already sent the 200 OK to the originating client
             }
@@ -427,7 +457,7 @@ SipTestCase::ServerReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hdr
               // This is the first 200 OK received from client 2 or 3, so
               // send 200 OK to the originating client
               m_receivedTerminatingReply = true;
-              m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 200 OK"));
+              m_observedEvents.emplace_back(m_step, 0, "Server send 200 OK");
               m_step++;
               Ptr<Packet> p1 = Create<Packet> ();
               m_sipProxy->SendResponse (p1, m_client1Address, 200, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), hdr.GetCallId (),
@@ -444,26 +474,26 @@ SipTestCase::ServerReceiveSipEvent (const char* event, sip::SipElement::Transact
                 TransactionStateToString (state));
   if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive ACK"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 0, "Server receive ACK");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive 100 Trying"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 0, "Server receive 100 Trying");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TIMER_B_EXPIRED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 0, "Server Timer B expired"));
-      m_step++;
-      m_proxyTimerBCount++;
-      if (m_proxyTimerBCount == 2)
+        m_observedEvents.emplace_back(m_step, 0, "Server Timer B expired");
+        m_step++;
+        m_proxyTimerBCount++;
+        if (m_proxyTimerBCount == 2)
         {
           // Both clients 2 and 3 failed; send 408 Request Timeout to client 1
           Ptr<Packet> p1 = Create<Packet> ();
           m_sipProxy->SendResponse (p1, m_client1Address, 408, m_proxiedInviteHeader.GetFrom (), m_proxiedInviteHeader.GetTo (), m_proxiedInviteHeader.GetCallId (),
                                     MakeCallback (&SipTestCase::ServerSendSipMessage, this));
-          m_observedEvents.push_back (TestEvent (m_step, 0, "Server send 408 Request Timeout"));
+          m_observedEvents.emplace_back(m_step, 0, "Server send 408 Request Timeout");
         }
     }
 }
@@ -480,7 +510,7 @@ SipTestCase::ServerReceive (Ptr<Socket> socket)
           break;
         }
       NS_LOG_DEBUG ("Server received packet from UDP socket");
-      m_observedEvents.push_back (TestEvent (m_step, 0, "Server receive SIP message"));
+      m_observedEvents.emplace_back(m_step, 0, "Server receive SIP message");
       m_step++;
       m_sipProxy->Receive (packet, from);
     }
@@ -490,7 +520,7 @@ void
 SipTestCase::ServerSendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr)
 {
   NS_LOG_DEBUG ("Server sending SIP message: " << hdr);
-  m_observedEvents.push_back (TestEvent (m_step, 0, "Server send SIP message"));
+  m_observedEvents.emplace_back(m_step, 0, "Server send SIP message");
   m_step++;
   m_serverSocket->SendTo (pkt, 0, addr);
 }
@@ -503,18 +533,18 @@ SipTestCase::Client1ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
     {
       if (hdr.GetStatusCode () == 100)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 100 Trying"));
-          m_step++;
+            m_observedEvents.emplace_back(m_step, 1, "Client1 receive 100 Trying");
+            m_step++;
         }
       else if (hdr.GetStatusCode () == 200)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 200 OK"));
-          m_step++;
+            m_observedEvents.emplace_back(m_step, 1, "Client1 receive 200 OK");
+            m_step++;
         }
       else if (hdr.GetStatusCode () == 408)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 408 Request Timeout"));
-          m_step++;
+            m_observedEvents.emplace_back(m_step, 1, "Client1 receive 408 Request Timeout");
+            m_step++;
         }
     }
 }
@@ -525,33 +555,33 @@ SipTestCase::Client1ReceiveSipEvent (const char* event, sip::SipElement::Transac
   NS_LOG_DEBUG ("Client1 received SIP event: " << event << "; state: " << SipElement::TransactionStateToString (state));
   if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive ACK"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 1, "Client1 receive ACK");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive 100 Trying"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 1, "Client1 receive 100 Trying");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TIMER_A_EXPIRED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer A expired"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 1, "Client1 Timer A expired");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TIMER_B_EXPIRED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer B expired"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 1, "Client1 Timer B expired");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TIMER_E_EXPIRED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer E expired"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 1, "Client1 Timer E expired");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TIMER_F_EXPIRED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 Timer F expired"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 1, "Client1 Timer F expired");
+        m_step++;
     }
 }
 
@@ -567,7 +597,7 @@ SipTestCase::Client1Receive (Ptr<Socket> socket)
           break;
         }
       NS_LOG_DEBUG ("Client1 received packet from UDP socket");
-      m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 receive SIP message"));
+      m_observedEvents.emplace_back(m_step, 1, "Client1 receive SIP message");
       m_step++;
       m_sipAgent1->Receive (packet, from);
     }
@@ -577,7 +607,7 @@ void
 SipTestCase::Client1SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr)
 {
   NS_LOG_DEBUG ("Client1 sending SIP message: " << hdr);
-  m_observedEvents.push_back (TestEvent (m_step, 1, "Client1 send SIP message"));
+  m_observedEvents.emplace_back(m_step, 1, "Client1 send SIP message");
   m_step++;
   m_client1Socket->SendTo (pkt, 0, addr);
 }
@@ -590,23 +620,33 @@ SipTestCase::Client2ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
     {
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive SIP INVITE"));
-          m_step++;
-          m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 send 200 OK"));
-          m_step++;
-          Ptr<Packet> p2 = Create<Packet> ();
-          m_sipAgent2->SendResponse (p2, m_client2ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
-                                     MakeCallback (&SipTestCase::Client2SendSipMessage, this));
+            m_observedEvents.emplace_back(m_step, 2, "Client2 receive SIP INVITE");
+            m_step++;
+            m_observedEvents.emplace_back(m_step, 2, "Client2 send 200 OK");
+            m_step++;
+            Ptr<Packet> p2 = Create<Packet>();
+            m_sipAgent2->SendResponse(p2,
+                                      m_client2ServerAddress,
+                                      200,
+                                      hdr.GetFrom(),
+                                      hdr.GetTo(),
+                                      hdr.GetCallId(),
+                                      MakeCallback(&SipTestCase::Client2SendSipMessage, this));
         }
       else if (hdr.GetMethod () == sip::SipHeader::BYE)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive SIP BYE"));
-          m_step++;
-          m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 send 200 OK"));
-          m_step++;
-          Ptr<Packet> p2 = Create<Packet> ();
-          m_sipAgent2->SendResponse (p2, m_client2ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
-                                     MakeCallback (&SipTestCase::Client2SendSipMessage, this));
+            m_observedEvents.emplace_back(m_step, 2, "Client2 receive SIP BYE");
+            m_step++;
+            m_observedEvents.emplace_back(m_step, 2, "Client2 send 200 OK");
+            m_step++;
+            Ptr<Packet> p2 = Create<Packet>();
+            m_sipAgent2->SendResponse(p2,
+                                      m_client2ServerAddress,
+                                      200,
+                                      hdr.GetFrom(),
+                                      hdr.GetTo(),
+                                      hdr.GetCallId(),
+                                      MakeCallback(&SipTestCase::Client2SendSipMessage, this));
         }
     }
 }
@@ -617,13 +657,13 @@ SipTestCase::Client2ReceiveSipEvent (const char* event, sip::SipElement::Transac
   NS_LOG_DEBUG ("Client2 received SIP event: " << event << "; state: " << SipElement::TransactionStateToString (state));
   if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive ACK"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 2, "Client2 receive ACK");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive 100 Trying"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 2, "Client2 receive 100 Trying");
+        m_step++;
     }
 }
 
@@ -639,7 +679,7 @@ SipTestCase::Client2Receive (Ptr<Socket> socket)
           break;
         }
       NS_LOG_DEBUG ("Client2 received packet from UDP socket");
-      m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive SIP message"));
+      m_observedEvents.emplace_back(m_step, 2, "Client2 receive SIP message");
       m_step++;
       m_sipAgent2->Receive (packet, from);
     }
@@ -649,7 +689,7 @@ void
 SipTestCase::Client2SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr)
 {
   NS_LOG_DEBUG ("Client2 sending SIP message: " << hdr);
-  m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 send SIP message"));
+  m_observedEvents.emplace_back(m_step, 2, "Client2 send SIP message");
   m_step++;
   m_client2Socket->SendTo (pkt, 0, addr);
 }
@@ -662,23 +702,33 @@ SipTestCase::Client3ReceiveSipMessage (Ptr<Packet> pkt, const sip::SipHeader& hd
     {
       if (hdr.GetMethod () == sip::SipHeader::INVITE)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 receive SIP INVITE"));
-          m_step++;
-          m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 send 200 OK"));
-          m_step++;
-          Ptr<Packet> p3 = Create<Packet> ();
-          m_sipAgent3->SendResponse (p3, m_client3ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
-                                     MakeCallback (&SipTestCase::Client3SendSipMessage, this));
+            m_observedEvents.emplace_back(m_step, 3, "Client3 receive SIP INVITE");
+            m_step++;
+            m_observedEvents.emplace_back(m_step, 3, "Client3 send 200 OK");
+            m_step++;
+            Ptr<Packet> p3 = Create<Packet>();
+            m_sipAgent3->SendResponse(p3,
+                                      m_client3ServerAddress,
+                                      200,
+                                      hdr.GetFrom(),
+                                      hdr.GetTo(),
+                                      hdr.GetCallId(),
+                                      MakeCallback(&SipTestCase::Client3SendSipMessage, this));
         }
       else if (hdr.GetMethod () == sip::SipHeader::BYE)
         {
-          m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 receive SIP BYE"));
-          m_step++;
-          m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 send 200 OK"));
-          m_step++;
-          Ptr<Packet> p2 = Create<Packet> ();
-          m_sipAgent3->SendResponse (p2, m_client3ServerAddress, 200, hdr.GetFrom (), hdr.GetTo (), hdr.GetCallId (),
-                                     MakeCallback (&SipTestCase::Client3SendSipMessage, this));
+            m_observedEvents.emplace_back(m_step, 3, "Client3 receive SIP BYE");
+            m_step++;
+            m_observedEvents.emplace_back(m_step, 3, "Client3 send 200 OK");
+            m_step++;
+            Ptr<Packet> p2 = Create<Packet>();
+            m_sipAgent3->SendResponse(p2,
+                                      m_client3ServerAddress,
+                                      200,
+                                      hdr.GetFrom(),
+                                      hdr.GetTo(),
+                                      hdr.GetCallId(),
+                                      MakeCallback(&SipTestCase::Client3SendSipMessage, this));
         }
     }
 }
@@ -689,13 +739,13 @@ SipTestCase::Client3ReceiveSipEvent (const char* event, sip::SipElement::Transac
   NS_LOG_DEBUG ("Client3 received SIP event: " << event << "; state: " << SipElement::TransactionStateToString (state));
   if (strcmp (event, SipElement::ACK_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive ACK"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 2, "Client2 receive ACK");
+        m_step++;
     }
   else if (strcmp (event, SipElement::TRYING_RECEIVED) == 0)
     {
-      m_observedEvents.push_back (TestEvent (m_step, 2, "Client2 receive 100 Trying"));
-      m_step++;
+        m_observedEvents.emplace_back(m_step, 2, "Client2 receive 100 Trying");
+        m_step++;
     }
 }
 
@@ -711,7 +761,7 @@ SipTestCase::Client3Receive (Ptr<Socket> socket)
           break;
         }
       NS_LOG_DEBUG ("Client3 received packet from UDP socket");
-      m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 receive SIP message"));
+      m_observedEvents.emplace_back(m_step, 3, "Client3 receive SIP message");
       m_step++;
       m_sipAgent3->Receive (packet, from);
     }
@@ -721,7 +771,7 @@ void
 SipTestCase::Client3SendSipMessage (Ptr<Packet> pkt, const Address& addr, const sip::SipHeader& hdr)
 {
   NS_LOG_DEBUG ("Client3 sending SIP message: " << hdr);
-  m_observedEvents.push_back (TestEvent (m_step, 3, "Client3 send SIP message"));
+  m_observedEvents.emplace_back(m_step, 3, "Client3 send SIP message");
   m_step++;
   m_client3Socket->SendTo (pkt, 0, addr);
 }
@@ -729,13 +779,13 @@ SipTestCase::Client3SendSipMessage (Ptr<Packet> pkt, const Address& addr, const 
 
 // This is specialized to client 1
 void
-SipTestCase::Client1SendSipInvite (void)
+SipTestCase::Client1SendSipInvite()
 {
   Ptr<Packet> p = Create<Packet> ();
   uint32_t clientUri = 1; // representing client URI
   uint32_t requestUri = 0; // representing server URI
   NS_LOG_DEBUG ("Send SIP INVITE to request URI " << requestUri << " clientUri " << clientUri);
-  m_observedEvents.push_back (TestEvent (m_step, clientUri, "Client1 send SIP INVITE"));
+  m_observedEvents.emplace_back(m_step, clientUri, "Client1 send SIP INVITE");
   m_step++;
   m_sipAgent1->SendInvite (p, m_client1ServerAddress,
                            requestUri, // request URI
@@ -747,13 +797,13 @@ SipTestCase::Client1SendSipInvite (void)
 
 // This is specialized to client 1
 void
-SipTestCase::Client1SendSipBye (void)
+SipTestCase::Client1SendSipBye()
 {
   Ptr<Packet> p = Create<Packet> ();
   uint32_t clientUri = 1; // representing client URI
   uint32_t requestUri = 0; // representing server URI
   NS_LOG_DEBUG ("Send SIP BYE to request URI " << requestUri << " clientUri " << clientUri);
-  m_observedEvents.push_back (TestEvent (m_step, clientUri, "Client1 send SIP BYE"));
+  m_observedEvents.emplace_back(m_step, clientUri, "Client1 send SIP BYE");
   m_step++;
   m_sipAgent1->SendBye (p, m_client1ServerAddress,
                         requestUri, // request URI
@@ -768,7 +818,7 @@ SipTestCase::ProxyDialogStateTrace (std::string context, uint16_t callId, uint32
 {
   std::stringstream message;
   message << "Dialog (" << callId << "," << lowerUri << "," << higherUri << ") enter " << SipElement::DialogStateToString (state);
-  m_proxyObservedStateChanges.push_back (TestEvent (m_proxyStep, 0, message.str ()));
+  m_proxyObservedStateChanges.emplace_back(m_proxyStep, 0, message.str());
   m_proxyStep++;
 }
 
@@ -777,20 +827,20 @@ SipTestCase::AgentDialogStateTrace (std::string context, uint16_t callId, uint32
 {
   std::stringstream message;
   message << "Dialog (" << callId << "," << lowerUri << "," << higherUri << ") enter " << SipElement::DialogStateToString (state);
-  if (context.compare ("1") == 0)
-    {
-      m_client1ObservedStateChanges.push_back (TestEvent (m_client1Step, 0, message.str ()));
+  if (context == "1")
+  {
+      m_client1ObservedStateChanges.emplace_back(m_client1Step, 0, message.str());
       m_client1Step++;
     }
-  else if (context.compare ("2") == 0)
+    else if (context == "2")
     {
-      m_client2ObservedStateChanges.push_back (TestEvent (m_client2Step, 0, message.str ()));
-      m_client2Step++;
+        m_client2ObservedStateChanges.emplace_back(m_client2Step, 0, message.str());
+        m_client2Step++;
     }
-  else if (context.compare ("3") == 0)
+    else if (context == "3")
     {
-      m_client3ObservedStateChanges.push_back (TestEvent (m_client3Step, 0, message.str ()));
-      m_client3Step++;
+        m_client3ObservedStateChanges.emplace_back(m_client3Step, 0, message.str());
+        m_client3Step++;
     }
 }
 
@@ -799,7 +849,7 @@ SipTestCase::ProxyTransactionStateTrace (std::string context, uint16_t callId, u
 {
   std::stringstream message;
   message << "Transaction (" << callId << "," << from << "," << to << ") enter " << SipElement::TransactionStateToString (state);
-  m_proxyObservedStateChanges.push_back (TestEvent (m_proxyStep, 0, message.str ()));
+  m_proxyObservedStateChanges.emplace_back(m_proxyStep, 0, message.str());
   m_proxyStep++;
 }
 
@@ -808,20 +858,20 @@ SipTestCase::AgentTransactionStateTrace (std::string context, uint16_t callId, u
 {
   std::stringstream message;
   message << "Transaction (" << callId << "," << from << "," << to << ") enter " << SipElement::TransactionStateToString (state);
-  if (context.compare ("1") == 0)
-    {
-      m_client1ObservedStateChanges.push_back (TestEvent (m_client1Step, 0, message.str ()));
+  if (context == "1")
+  {
+      m_client1ObservedStateChanges.emplace_back(m_client1Step, 0, message.str());
       m_client1Step++;
     }
-  else if (context.compare ("2") == 0)
+    else if (context == "2")
     {
-      m_client2ObservedStateChanges.push_back (TestEvent (m_client2Step, 0, message.str ()));
-      m_client2Step++;
+        m_client2ObservedStateChanges.emplace_back(m_client2Step, 0, message.str());
+        m_client2Step++;
     }
-  else if (context.compare ("3") == 0)
+    else if (context == "3")
     {
-      m_client3ObservedStateChanges.push_back (TestEvent (m_client3Step, 0, message.str ()));
-      m_client3Step++;
+        m_client3ObservedStateChanges.emplace_back(m_client3Step, 0, message.str());
+        m_client3Step++;
     }
 }
 
@@ -832,14 +882,14 @@ SipTestCase::AgentTransactionStateTrace (std::string context, uint16_t callId, u
 class SipDialogTest : public SipTestCase
 {
 public:
-  SipDialogTest (void);
+  SipDialogTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipDialogTest::SipDialogTest (void)
-  : SipTestCase ("SIP dialog test")
+SipDialogTest::SipDialogTest()
+    : SipTestCase("SIP dialog test")
 {}
 
 void
@@ -853,168 +903,168 @@ SipDialogTest::DoRun ()
 
   // Define the expected events
   // Client 1 sends INVITE
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
   // Server receives invite, sends trying to client 1, sends INVITE to others
-  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(2, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(3, 0, "Server receive SIP INVITE");
+  m_expectedEvents.emplace_back(4, 0, "Server send 100 Trying");
+  m_expectedEvents.emplace_back(5, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(6, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(7, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(8, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(9, 0, "Server send SIP message");
   // Client 1 receives Trying
-  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  m_expectedEvents.emplace_back(10, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(11, 1, "Client1 receive 100 Trying");
   // Clients 2 and 3 receive INVITE and automatically commence
-  m_expectedEvents.push_back (TestEvent (12, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (13, 2, "Client2 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (16, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (17, 3, "Client3 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 send SIP message"));
+  m_expectedEvents.emplace_back(12, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(13, 2, "Client2 receive SIP INVITE");
+  m_expectedEvents.emplace_back(14, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(15, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(16, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(17, 3, "Client3 receive SIP INVITE");
+  m_expectedEvents.emplace_back(18, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(19, 3, "Client3 send SIP message");
   // Server receives the first OK (from client 2), and returns an OK
   // to the originating client
-  m_expectedEvents.push_back (TestEvent (20, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (21, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (22, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(20, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(21, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(22, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(23, 0, "Server send SIP message");
   // Server sends ACK for 200 OK
-  m_expectedEvents.push_back (TestEvent (24, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(24, 0, "Server send SIP message");
   // Server receives the second OK from client 3, and returns an ACK
-  m_expectedEvents.push_back (TestEvent (25, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (26, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (27, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(25, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(26, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(27, 0, "Server send SIP message");
   // Client 1 receives OK and sends ACK
-  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (29, 1, "Client1 receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(28, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(29, 1, "Client1 receive 200 OK");
+  m_expectedEvents.emplace_back(30, 1, "Client1 send SIP message");
   // Clients 2 and 3 receive ACK
-  m_expectedEvents.push_back (TestEvent (31, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (32, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (33, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
+  m_expectedEvents.emplace_back(31, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(32, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(33, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(34, 2, "Client2 receive ACK");
   // Server receives ACK
-  m_expectedEvents.push_back (TestEvent (35, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (36, 0, "Server receive ACK"));
+  m_expectedEvents.emplace_back(35, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(36, 0, "Server receive ACK");
   // Client 1 sends a BYE
-  m_expectedEvents.push_back (TestEvent (37, 1, "Client1 send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (38, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (39, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (40, 0, "Server receive SIP BYE"));
+  m_expectedEvents.emplace_back(37, 1, "Client1 send SIP BYE");
+  m_expectedEvents.emplace_back(38, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(39, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(40, 0, "Server receive SIP BYE");
   // Server sends 200 OK back to Client 1, and forwards BYE to clients 2 and 3
-  m_expectedEvents.push_back (TestEvent (41, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (42, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (43, 0, "Server send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (44, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (45, 0, "Server send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (46, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(41, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(42, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(43, 0, "Server send SIP BYE");
+  m_expectedEvents.emplace_back(44, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(45, 0, "Server send SIP BYE");
+  m_expectedEvents.emplace_back(46, 0, "Server send SIP message");
   // Client 1 receives the OK and does not reply with any message
-  m_expectedEvents.push_back (TestEvent (47, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (48, 1, "Client1 receive 200 OK"));
+  m_expectedEvents.emplace_back(47, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(48, 1, "Client1 receive 200 OK");
   // Clients 2 and 3 receive the BYE and reply with OK
-  m_expectedEvents.push_back (TestEvent (49, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (50, 2, "Client2 receive SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (51, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (52, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (53, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (54, 3, "Client3 receive SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (55, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (56, 3, "Client3 send SIP message"));
+  m_expectedEvents.emplace_back(49, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(50, 2, "Client2 receive SIP BYE");
+  m_expectedEvents.emplace_back(51, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(52, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(53, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(54, 3, "Client3 receive SIP BYE");
+  m_expectedEvents.emplace_back(55, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(56, 3, "Client3 send SIP message");
   // Server receives both OK responses
-  m_expectedEvents.push_back (TestEvent (57, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (58, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (59, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (60, 0, "Server receive 200 OK"));
+  m_expectedEvents.emplace_back(57, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(58, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(59, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(60, 0, "Server receive 200 OK");
 
   // Define the expected state transitions
   // Client 1 plays the UAC role in sending an INVITE
-  m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
+  m_client1ExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,1) enter TRYING");
+  m_client1ExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,1,0) enter CALLING");
   // receives 100 Trying
-  m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,1) enter PROCEEDING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,1,0) enter PROCEEDING"));
+  m_client1ExpectedStateChanges.emplace_back(2, 0, "Dialog (1000,0,1) enter PROCEEDING");
+  m_client1ExpectedStateChanges.emplace_back(3, 0, "Transaction (1000,1,0) enter PROCEEDING");
   // receives OK
-  m_client1ExpectedStateChanges.push_back (TestEvent (4, 0, "Dialog (1000,0,1) enter CONFIRMED"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,1,0) enter TERMINATED"));
+  m_client1ExpectedStateChanges.emplace_back(4, 0, "Dialog (1000,0,1) enter CONFIRMED");
+  m_client1ExpectedStateChanges.emplace_back(5, 0, "Transaction (1000,1,0) enter TERMINATED");
   // sends BYE
-  m_client1ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,1) enter TERMINATED"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,1,0) enter TRYING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,1,0) enter COMPLETED"));
+  m_client1ExpectedStateChanges.emplace_back(6, 0, "Dialog (1000,0,1) enter TERMINATED");
+  m_client1ExpectedStateChanges.emplace_back(7, 0, "Transaction (1000,1,0) enter TRYING");
+  m_client1ExpectedStateChanges.emplace_back(8, 0, "Transaction (1000,1,0) enter COMPLETED");
   // After Timer K expires, move to TERMINATED
-  m_client1ExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,1,0) enter TERMINATED"));
+  m_client1ExpectedStateChanges.emplace_back(9, 0, "Transaction (1000,1,0) enter TERMINATED");
 
   // Clients 2  and 3 plays the UAS role in receiving both INVITE and BYE
   // Client 2 receives INVITE, and the transaction ends in CONFIRMED upon ACK
-  m_client2ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,2) enter TRYING"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,0,2) enter TRYING"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,2) enter CONFIRMED"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,0,2) enter COMPLETED"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (4, 0, "Transaction (1000,0,2) enter CONFIRMED"));
+  m_client2ExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,2) enter TRYING");
+  m_client2ExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,0,2) enter TRYING");
+  m_client2ExpectedStateChanges.emplace_back(2, 0, "Dialog (1000,0,2) enter CONFIRMED");
+  m_client2ExpectedStateChanges.emplace_back(3, 0, "Transaction (1000,0,2) enter COMPLETED");
+  m_client2ExpectedStateChanges.emplace_back(4, 0, "Transaction (1000,0,2) enter CONFIRMED");
   // After Timer I expires, move to TERMINATED
-  m_client2ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,0,2) enter TERMINATED"));
+  m_client2ExpectedStateChanges.emplace_back(5, 0, "Transaction (1000,0,2) enter TERMINATED");
   // Client 2 later receives BYE, and the transaction ends up in TERMINATED
   // after Timer J expires
-  m_client2ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,2) enter TERMINATED"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,2) enter TRYING"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,0,2) enter COMPLETED"));
-  m_client2ExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,0,2) enter TERMINATED"));
+  m_client2ExpectedStateChanges.emplace_back(6, 0, "Dialog (1000,0,2) enter TERMINATED");
+  m_client2ExpectedStateChanges.emplace_back(7, 0, "Transaction (1000,0,2) enter TRYING");
+  m_client2ExpectedStateChanges.emplace_back(8, 0, "Transaction (1000,0,2) enter COMPLETED");
+  m_client2ExpectedStateChanges.emplace_back(9, 0, "Transaction (1000,0,2) enter TERMINATED");
 
   // Client 3's transitions should be identical to Client 2's transitions
-  m_client3ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,3) enter TRYING"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,0,3) enter TRYING"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,3) enter CONFIRMED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,0,3) enter COMPLETED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (4, 0, "Transaction (1000,0,3) enter CONFIRMED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,0,3) enter TERMINATED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,3) enter TERMINATED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,3) enter TRYING"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,0,3) enter COMPLETED"));
-  m_client3ExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,0,3) enter TERMINATED"));
+  m_client3ExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,3) enter TRYING");
+  m_client3ExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,0,3) enter TRYING");
+  m_client3ExpectedStateChanges.emplace_back(2, 0, "Dialog (1000,0,3) enter CONFIRMED");
+  m_client3ExpectedStateChanges.emplace_back(3, 0, "Transaction (1000,0,3) enter COMPLETED");
+  m_client3ExpectedStateChanges.emplace_back(4, 0, "Transaction (1000,0,3) enter CONFIRMED");
+  m_client3ExpectedStateChanges.emplace_back(5, 0, "Transaction (1000,0,3) enter TERMINATED");
+  m_client3ExpectedStateChanges.emplace_back(6, 0, "Dialog (1000,0,3) enter TERMINATED");
+  m_client3ExpectedStateChanges.emplace_back(7, 0, "Transaction (1000,0,3) enter TRYING");
+  m_client3ExpectedStateChanges.emplace_back(8, 0, "Transaction (1000,0,3) enter COMPLETED");
+  m_client3ExpectedStateChanges.emplace_back(9, 0, "Transaction (1000,0,3) enter TERMINATED");
 
   // The proxy plays the role of UAS towards Client 1 and UAC towards 2 and 3
   // Handle the INVITE from client 1
-  m_proxyExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter TRYING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,1) enter PROCEEDING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,1,0) enter PROCEEDING"));
+  m_proxyExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,1) enter TRYING");
+  m_proxyExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,1,0) enter TRYING");
+  m_proxyExpectedStateChanges.emplace_back(2, 0, "Dialog (1000,0,1) enter PROCEEDING");
+  m_proxyExpectedStateChanges.emplace_back(3, 0, "Transaction (1000,1,0) enter PROCEEDING");
   // Send INVITE towards clients 2 and 3; transaction ends in TERMINATED
-  m_proxyExpectedStateChanges.push_back (TestEvent (4, 0, "Dialog (1000,0,2) enter TRYING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,0,2) enter CALLING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,3) enter TRYING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,0,3) enter CALLING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (8, 0, "Dialog (1000,0,2) enter CONFIRMED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (9, 0, "Transaction (1000,0,2) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (10, 0, "Dialog (1000,0,1) enter CONFIRMED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (11, 0, "Transaction (1000,1,0) enter COMPLETED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (12, 0, "Dialog (1000,0,3) enter CONFIRMED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (13, 0, "Transaction (1000,0,3) enter TERMINATED"));
+  m_proxyExpectedStateChanges.emplace_back(4, 0, "Dialog (1000,0,2) enter TRYING");
+  m_proxyExpectedStateChanges.emplace_back(5, 0, "Transaction (1000,0,2) enter CALLING");
+  m_proxyExpectedStateChanges.emplace_back(6, 0, "Dialog (1000,0,3) enter TRYING");
+  m_proxyExpectedStateChanges.emplace_back(7, 0, "Transaction (1000,0,3) enter CALLING");
+  m_proxyExpectedStateChanges.emplace_back(8, 0, "Dialog (1000,0,2) enter CONFIRMED");
+  m_proxyExpectedStateChanges.emplace_back(9, 0, "Transaction (1000,0,2) enter TERMINATED");
+  m_proxyExpectedStateChanges.emplace_back(10, 0, "Dialog (1000,0,1) enter CONFIRMED");
+  m_proxyExpectedStateChanges.emplace_back(11, 0, "Transaction (1000,1,0) enter COMPLETED");
+  m_proxyExpectedStateChanges.emplace_back(12, 0, "Dialog (1000,0,3) enter CONFIRMED");
+  m_proxyExpectedStateChanges.emplace_back(13, 0, "Transaction (1000,0,3) enter TERMINATED");
   // upon ACK from 1, enter CONFIRMED state
   // send the 200 OK towards Client 1
-  m_proxyExpectedStateChanges.push_back (TestEvent (14, 0, "Transaction (1000,1,0) enter CONFIRMED"));
+  m_proxyExpectedStateChanges.emplace_back(14, 0, "Transaction (1000,1,0) enter CONFIRMED");
   // Timer I expires towards UAC (node 1).  This ends INVITE state changes
-  m_proxyExpectedStateChanges.push_back (TestEvent (15, 0, "Transaction (1000,1,0) enter TERMINATED"));
+  m_proxyExpectedStateChanges.emplace_back(15, 0, "Transaction (1000,1,0) enter TERMINATED");
   // upon receipt of BYE, the Dialog goes to TERMINATED
-  m_proxyExpectedStateChanges.push_back (TestEvent (16, 0, "Dialog (1000,0,1) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (17, 0, "Transaction (1000,1,0) enter TRYING"));
+  m_proxyExpectedStateChanges.emplace_back(16, 0, "Dialog (1000,0,1) enter TERMINATED");
+  m_proxyExpectedStateChanges.emplace_back(17, 0, "Transaction (1000,1,0) enter TRYING");
   // send OK to client 1 and enter COMPLETED
-  m_proxyExpectedStateChanges.push_back (TestEvent (18, 0, "Transaction (1000,1,0) enter COMPLETED"));
+  m_proxyExpectedStateChanges.emplace_back(18, 0, "Transaction (1000,1,0) enter COMPLETED");
   // close the Dialog from 0 to 2 and 0 to 3
-  m_proxyExpectedStateChanges.push_back (TestEvent (19, 0, "Dialog (1000,0,2) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (20, 0, "Transaction (1000,0,2) enter TRYING"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (21, 0, "Dialog (1000,0,3) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (22, 0, "Transaction (1000,0,3) enter TRYING"));
+  m_proxyExpectedStateChanges.emplace_back(19, 0, "Dialog (1000,0,2) enter TERMINATED");
+  m_proxyExpectedStateChanges.emplace_back(20, 0, "Transaction (1000,0,2) enter TRYING");
+  m_proxyExpectedStateChanges.emplace_back(21, 0, "Dialog (1000,0,3) enter TERMINATED");
+  m_proxyExpectedStateChanges.emplace_back(22, 0, "Transaction (1000,0,3) enter TRYING");
   // Non-INVITE client transaction moves to COMPLETED upon 200 OK
-  m_proxyExpectedStateChanges.push_back (TestEvent (23, 0, "Transaction (1000,0,2) enter COMPLETED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (24, 0, "Transaction (1000,0,3) enter COMPLETED"));
+  m_proxyExpectedStateChanges.emplace_back(23, 0, "Transaction (1000,0,2) enter COMPLETED");
+  m_proxyExpectedStateChanges.emplace_back(24, 0, "Transaction (1000,0,3) enter COMPLETED");
   // After timers J (towards client 1) and K (towards clients 2 and 3) expire,
   // transactions move to TERMINATED
-  m_proxyExpectedStateChanges.push_back (TestEvent (25, 0, "Transaction (1000,0,2) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (26, 0, "Transaction (1000,0,3) enter TERMINATED"));
-  m_proxyExpectedStateChanges.push_back (TestEvent (27, 0, "Transaction (1000,1,0) enter TERMINATED"));
+  m_proxyExpectedStateChanges.emplace_back(25, 0, "Transaction (1000,0,2) enter TERMINATED");
+  m_proxyExpectedStateChanges.emplace_back(26, 0, "Transaction (1000,0,3) enter TERMINATED");
+  m_proxyExpectedStateChanges.emplace_back(27, 0, "Transaction (1000,1,0) enter TERMINATED");
 
   Simulator::Stop (Seconds (60));  // greater than 45 seconds to cover Timer J
   Simulator::Run ();
@@ -1131,14 +1181,14 @@ SipDialogTest::DoRun ()
 class SipInitiatorInviteLossTest : public SipTestCase
 {
 public:
-  SipInitiatorInviteLossTest (void);
+  SipInitiatorInviteLossTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipInitiatorInviteLossTest::SipInitiatorInviteLossTest (void)
-  : SipTestCase ("SIP initiator INVITE loss test")
+SipInitiatorInviteLossTest::SipInitiatorInviteLossTest()
+    : SipTestCase("SIP initiator INVITE loss test")
 {}
 
 void
@@ -1157,56 +1207,56 @@ SipInitiatorInviteLossTest::DoRun ()
 
   // Expected events
   // Client 1 sends INVITE
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
   // The message is lost; Timer A expired
-  m_expectedEvents.push_back (TestEvent (2, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (3, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(2, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(3, 1, "Client1 send SIP message");
   // Server receives invite, sends trying to client 1, sends INVITE to others
-  m_expectedEvents.push_back (TestEvent (4, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (5, 0, "Server receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (6, 0, "Server send 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (10, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (11, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(4, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(5, 0, "Server receive SIP INVITE");
+  m_expectedEvents.emplace_back(6, 0, "Server send 100 Trying");
+  m_expectedEvents.emplace_back(7, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(8, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(9, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(10, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(11, 0, "Server send SIP message");
   // Client 1 receives Trying
-  m_expectedEvents.push_back (TestEvent (12, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (13, 1, "Client1 receive 100 Trying"));
+  m_expectedEvents.emplace_back(12, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(13, 1, "Client1 receive 100 Trying");
   // Clients 2 and 3 receive INVITE and automatically commence
-  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (16, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (17, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (20, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (21, 3, "Client3 send SIP message"));
+  m_expectedEvents.emplace_back(14, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(15, 2, "Client2 receive SIP INVITE");
+  m_expectedEvents.emplace_back(16, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(17, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(18, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(19, 3, "Client3 receive SIP INVITE");
+  m_expectedEvents.emplace_back(20, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(21, 3, "Client3 send SIP message");
   // Server receives the first OK (from client 2), and returns an OK
   // to the originating client
-  m_expectedEvents.push_back (TestEvent (22, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (23, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (24, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (25, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(22, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(23, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(24, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(25, 0, "Server send SIP message");
   // Server sends ACK for 200 OK
-  m_expectedEvents.push_back (TestEvent (26, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(26, 0, "Server send SIP message");
   // Server receives the second OK from client 3, and returns an ACK
-  m_expectedEvents.push_back (TestEvent (27, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (28, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (29, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(27, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(28, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(29, 0, "Server send SIP message");
   // Client 1 receives OK and sends ACK
-  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (31, 1, "Client1 receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (32, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(30, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(31, 1, "Client1 receive 200 OK");
+  m_expectedEvents.emplace_back(32, 1, "Client1 send SIP message");
   // Clients 2 and 3 receive ACK
-  m_expectedEvents.push_back (TestEvent (33, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (35, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (36, 2, "Client2 receive ACK"));
+  m_expectedEvents.emplace_back(33, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(34, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(35, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(36, 2, "Client2 receive ACK");
   // Server receives ACK
-  m_expectedEvents.push_back (TestEvent (37, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (38, 0, "Server receive ACK"));
+  m_expectedEvents.emplace_back(37, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(38, 0, "Server receive ACK");
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1266,14 +1316,14 @@ SipInitiatorInviteLossTest::DoRun ()
 class SipInitiatorInviteFailureTest : public SipTestCase
 {
 public:
-  SipInitiatorInviteFailureTest (void);
+  SipInitiatorInviteFailureTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipInitiatorInviteFailureTest::SipInitiatorInviteFailureTest (void)
-  : SipTestCase ("SIP initiator INVITE failure test")
+SipInitiatorInviteFailureTest::SipInitiatorInviteFailureTest()
+    : SipTestCase("SIP initiator INVITE failure test")
 {}
 
 void
@@ -1299,33 +1349,33 @@ SipInitiatorInviteFailureTest::DoRun ()
 
   // Expected events
   // Client 1 sends INVITE at time 1 second
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
   // all retransmissions are lost (sent at 1.5, 2.5, 4.5, 8.5, 16.5,i 32.5s)
-  m_expectedEvents.push_back (TestEvent (2, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (3, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (4, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (5, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (6, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (7, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (9, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (12, 1, "Client1 Timer A expired"));
-  m_expectedEvents.push_back (TestEvent (13, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(2, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(3, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(4, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(5, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(6, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(7, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(8, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(9, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(10, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(11, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(12, 1, "Client1 Timer A expired");
+  m_expectedEvents.emplace_back(13, 1, "Client1 send SIP message");
   // At time 33 s (64 * 0.5 sec + 1 sec), Timer B expires
-  m_expectedEvents.push_back (TestEvent (14, 1, "Client1 Timer B expired"));
+  m_expectedEvents.emplace_back(14, 1, "Client1 Timer B expired");
   // No further timer A expiry
 
   // We expect at time 1s for the dialog to enter TRYING and transaction to
   // enter CALLING
-  m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
+  m_client1ExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,1) enter TRYING");
+  m_client1ExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,1,0) enter CALLING");
   // We expect at time 33s for the dialog to enter TERMINATED and transaction
   // to enter FAILED
-  m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Transaction (1000,1,0) enter FAILED"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Dialog (1000,0,1) enter TERMINATED"));
+  m_client1ExpectedStateChanges.emplace_back(2, 0, "Transaction (1000,1,0) enter FAILED");
+  m_client1ExpectedStateChanges.emplace_back(3, 0, "Dialog (1000,0,1) enter TERMINATED");
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1383,14 +1433,14 @@ SipInitiatorInviteFailureTest::DoRun ()
 class SipInitiatorByeLossTest : public SipTestCase
 {
 public:
-  SipInitiatorByeLossTest (void);
+  SipInitiatorByeLossTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipInitiatorByeLossTest::SipInitiatorByeLossTest (void)
-  : SipTestCase ("SIP initiator BYE loss test")
+SipInitiatorByeLossTest::SipInitiatorByeLossTest()
+    : SipTestCase("SIP initiator BYE loss test")
 {}
 
 void
@@ -1410,70 +1460,70 @@ SipInitiatorByeLossTest::DoRun ()
 
   // Expected events
   // Client 1 sends INVITE
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (12, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (13, 2, "Client2 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (16, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (17, 3, "Client3 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (20, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (21, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (22, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (24, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (25, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (26, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (27, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (29, 1, "Client1 receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (31, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (32, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (33, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (35, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (36, 0, "Server receive ACK"));
-  m_expectedEvents.push_back (TestEvent (37, 1, "Client1 send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (38, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(2, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(3, 0, "Server receive SIP INVITE");
+  m_expectedEvents.emplace_back(4, 0, "Server send 100 Trying");
+  m_expectedEvents.emplace_back(5, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(6, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(7, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(8, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(9, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(10, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(11, 1, "Client1 receive 100 Trying");
+  m_expectedEvents.emplace_back(12, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(13, 2, "Client2 receive SIP INVITE");
+  m_expectedEvents.emplace_back(14, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(15, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(16, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(17, 3, "Client3 receive SIP INVITE");
+  m_expectedEvents.emplace_back(18, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(19, 3, "Client3 send SIP message");
+  m_expectedEvents.emplace_back(20, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(21, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(22, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(23, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(24, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(25, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(26, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(27, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(28, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(29, 1, "Client1 receive 200 OK");
+  m_expectedEvents.emplace_back(30, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(31, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(32, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(33, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(34, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(35, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(36, 0, "Server receive ACK");
+  m_expectedEvents.emplace_back(37, 1, "Client1 send SIP BYE");
+  m_expectedEvents.emplace_back(38, 1, "Client1 send SIP message");
   // The message is lost; Timer E expires, and the BYE is sent again
-  m_expectedEvents.push_back (TestEvent (39, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (40, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (41, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (42, 0, "Server receive SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (43, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (44, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (45, 0, "Server send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (46, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (47, 0, "Server send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (48, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (49, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (50, 1, "Client1 receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (51, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (52, 2, "Client2 receive SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (53, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (54, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (55, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (56, 3, "Client3 receive SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (57, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (58, 3, "Client3 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (59, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (60, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (61, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (62, 0, "Server receive 200 OK"));
+  m_expectedEvents.emplace_back(39, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(40, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(41, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(42, 0, "Server receive SIP BYE");
+  m_expectedEvents.emplace_back(43, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(44, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(45, 0, "Server send SIP BYE");
+  m_expectedEvents.emplace_back(46, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(47, 0, "Server send SIP BYE");
+  m_expectedEvents.emplace_back(48, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(49, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(50, 1, "Client1 receive 200 OK");
+  m_expectedEvents.emplace_back(51, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(52, 2, "Client2 receive SIP BYE");
+  m_expectedEvents.emplace_back(53, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(54, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(55, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(56, 3, "Client3 receive SIP BYE");
+  m_expectedEvents.emplace_back(57, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(58, 3, "Client3 send SIP message");
+  m_expectedEvents.emplace_back(59, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(60, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(61, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(62, 0, "Server receive 200 OK");
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1533,14 +1583,14 @@ SipInitiatorByeLossTest::DoRun ()
 class SipInitiatorByeFailureTest : public SipTestCase
 {
 public:
-  SipInitiatorByeFailureTest (void);
+  SipInitiatorByeFailureTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipInitiatorByeFailureTest::SipInitiatorByeFailureTest (void)
-  : SipTestCase ("SIP initiator BYE failure test")
+SipInitiatorByeFailureTest::SipInitiatorByeFailureTest()
+    : SipTestCase("SIP initiator BYE failure test")
 {}
 
 void
@@ -1568,76 +1618,76 @@ SipInitiatorByeFailureTest::DoRun ()
 
   // Expected events
   // Client 1 sends INVITE at time 1 second, and first transaction completes
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (12, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (13, 2, "Client2 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (16, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (17, 3, "Client3 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (20, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (21, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (22, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (24, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (25, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (26, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (27, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (29, 1, "Client1 receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (31, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (32, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (33, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (35, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (36, 0, "Server receive ACK"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(2, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(3, 0, "Server receive SIP INVITE");
+  m_expectedEvents.emplace_back(4, 0, "Server send 100 Trying");
+  m_expectedEvents.emplace_back(5, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(6, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(7, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(8, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(9, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(10, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(11, 1, "Client1 receive 100 Trying");
+  m_expectedEvents.emplace_back(12, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(13, 2, "Client2 receive SIP INVITE");
+  m_expectedEvents.emplace_back(14, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(15, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(16, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(17, 3, "Client3 receive SIP INVITE");
+  m_expectedEvents.emplace_back(18, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(19, 3, "Client3 send SIP message");
+  m_expectedEvents.emplace_back(20, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(21, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(22, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(23, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(24, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(25, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(26, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(27, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(28, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(29, 1, "Client1 receive 200 OK");
+  m_expectedEvents.emplace_back(30, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(31, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(32, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(33, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(34, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(35, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(36, 0, "Server receive ACK");
   // Client 1 sends BYE at 10 seconds
   // all retransmissions are lost (sent at 10.5, 11.5, 13.5, 17.5, 25.5, 41.5s)
-  m_expectedEvents.push_back (TestEvent (37, 1, "Client1 send SIP BYE"));
-  m_expectedEvents.push_back (TestEvent (38, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (39, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (40, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (41, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (42, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (43, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (44, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (45, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (46, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (47, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (48, 1, "Client1 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (49, 1, "Client1 Timer E expired"));
-  m_expectedEvents.push_back (TestEvent (50, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(37, 1, "Client1 send SIP BYE");
+  m_expectedEvents.emplace_back(38, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(39, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(40, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(41, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(42, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(43, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(44, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(45, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(46, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(47, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(48, 1, "Client1 send SIP message");
+  m_expectedEvents.emplace_back(49, 1, "Client1 Timer E expired");
+  m_expectedEvents.emplace_back(50, 1, "Client1 send SIP message");
   // After 6th retransmission, Timer F fires
-  m_expectedEvents.push_back (TestEvent (51, 1, "Client1 Timer F expired"));
+  m_expectedEvents.emplace_back(51, 1, "Client1 Timer F expired");
   // No further timer E expiry
 
   // We expect at time 1s for the dialog to enter TRYING and transaction to
   // enter CALLING
-  m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,1) enter PROCEEDING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,1,0) enter PROCEEDING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (4, 0, "Dialog (1000,0,1) enter CONFIRMED"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,1,0) enter TERMINATED"));
+  m_client1ExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,1) enter TRYING");
+  m_client1ExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,1,0) enter CALLING");
+  m_client1ExpectedStateChanges.emplace_back(2, 0, "Dialog (1000,0,1) enter PROCEEDING");
+  m_client1ExpectedStateChanges.emplace_back(3, 0, "Transaction (1000,1,0) enter PROCEEDING");
+  m_client1ExpectedStateChanges.emplace_back(4, 0, "Dialog (1000,0,1) enter CONFIRMED");
+  m_client1ExpectedStateChanges.emplace_back(5, 0, "Transaction (1000,1,0) enter TERMINATED");
   // We expect at time 10s for the dialog to enter TERMINATED and transaction to
   // enter TRYING, then later to FAILED
-  m_client1ExpectedStateChanges.push_back (TestEvent (6, 0, "Dialog (1000,0,1) enter TERMINATED"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (7, 0, "Transaction (1000,1,0) enter TRYING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (8, 0, "Transaction (1000,1,0) enter FAILED"));
+  m_client1ExpectedStateChanges.emplace_back(6, 0, "Dialog (1000,0,1) enter TERMINATED");
+  m_client1ExpectedStateChanges.emplace_back(7, 0, "Transaction (1000,1,0) enter TRYING");
+  m_client1ExpectedStateChanges.emplace_back(8, 0, "Transaction (1000,1,0) enter FAILED");
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1695,14 +1745,14 @@ SipInitiatorByeFailureTest::DoRun ()
 class SipProxyInviteLossTest : public SipTestCase
 {
 public:
-  SipProxyInviteLossTest (void);
+  SipProxyInviteLossTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipProxyInviteLossTest::SipProxyInviteLossTest (void)
-  : SipTestCase ("SIP proxy INVITE loss test")
+SipProxyInviteLossTest::SipProxyInviteLossTest()
+    : SipTestCase("SIP proxy INVITE loss test")
 {}
 
 void
@@ -1724,56 +1774,56 @@ SipProxyInviteLossTest::DoRun ()
 
   // Expected events
   // Client 1 sends INVITE
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
   // Server receives invite, sends trying to client 1, sends INVITE to others
-  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(2, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(3, 0, "Server receive SIP INVITE");
+  m_expectedEvents.emplace_back(4, 0, "Server send 100 Trying");
+  m_expectedEvents.emplace_back(5, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(6, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(7, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(8, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(9, 0, "Server send SIP message");
   // Client 1 receives Trying
-  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  m_expectedEvents.emplace_back(10, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(11, 1, "Client1 receive 100 Trying");
   // Retransmissions occur towards both client 2 and 3 after Timer A
-  m_expectedEvents.push_back (TestEvent (12, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (13, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(12, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(13, 0, "Server send SIP message");
   // Clients 2 and 3 receive INVITE and automatically commence
-  m_expectedEvents.push_back (TestEvent (14, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (15, 2, "Client2 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (16, 2, "Client2 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (17, 2, "Client2 send SIP message"));
-  m_expectedEvents.push_back (TestEvent (18, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (19, 3, "Client3 receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (20, 3, "Client3 send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (21, 3, "Client3 send SIP message"));
+  m_expectedEvents.emplace_back(14, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(15, 2, "Client2 receive SIP INVITE");
+  m_expectedEvents.emplace_back(16, 2, "Client2 send 200 OK");
+  m_expectedEvents.emplace_back(17, 2, "Client2 send SIP message");
+  m_expectedEvents.emplace_back(18, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(19, 3, "Client3 receive SIP INVITE");
+  m_expectedEvents.emplace_back(20, 3, "Client3 send 200 OK");
+  m_expectedEvents.emplace_back(21, 3, "Client3 send SIP message");
   // Server receives the first OK (from client 2), and returns an OK
   // to the originating client
-  m_expectedEvents.push_back (TestEvent (22, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (23, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (24, 0, "Server send 200 OK"));
-  m_expectedEvents.push_back (TestEvent (25, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(22, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(23, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(24, 0, "Server send 200 OK");
+  m_expectedEvents.emplace_back(25, 0, "Server send SIP message");
   // Server sends ACK for 200 OK
-  m_expectedEvents.push_back (TestEvent (26, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(26, 0, "Server send SIP message");
   // Server receives the second OK from client 3, and returns an ACK
-  m_expectedEvents.push_back (TestEvent (27, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (28, 0, "Server receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (29, 0, "Server send SIP message"));
+  m_expectedEvents.emplace_back(27, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(28, 0, "Server receive 200 OK");
+  m_expectedEvents.emplace_back(29, 0, "Server send SIP message");
   // Client 1 receives OK and sends ACK
-  m_expectedEvents.push_back (TestEvent (30, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (31, 1, "Client1 receive 200 OK"));
-  m_expectedEvents.push_back (TestEvent (32, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(30, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(31, 1, "Client1 receive 200 OK");
+  m_expectedEvents.emplace_back(32, 1, "Client1 send SIP message");
   // Clients 2 and 3 receive ACK
-  m_expectedEvents.push_back (TestEvent (33, 2, "Client2 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (34, 2, "Client2 receive ACK"));
-  m_expectedEvents.push_back (TestEvent (35, 3, "Client3 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (36, 2, "Client2 receive ACK"));
+  m_expectedEvents.emplace_back(33, 2, "Client2 receive SIP message");
+  m_expectedEvents.emplace_back(34, 2, "Client2 receive ACK");
+  m_expectedEvents.emplace_back(35, 3, "Client3 receive SIP message");
+  m_expectedEvents.emplace_back(36, 2, "Client2 receive ACK");
   // Server receives ACK
-  m_expectedEvents.push_back (TestEvent (37, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (38, 0, "Server receive ACK"));
+  m_expectedEvents.emplace_back(37, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(38, 0, "Server receive ACK");
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1833,14 +1883,14 @@ SipProxyInviteLossTest::DoRun ()
 class SipProxyInviteFailureTest : public SipTestCase
 {
 public:
-  SipProxyInviteFailureTest (void);
+  SipProxyInviteFailureTest();
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 };
 
-SipProxyInviteFailureTest::SipProxyInviteFailureTest (void)
-  : SipTestCase ("SIP proxy INVITE failure test")
+SipProxyInviteFailureTest::SipProxyInviteFailureTest()
+    : SipTestCase("SIP proxy INVITE failure test")
 {}
 
 void
@@ -1869,49 +1919,49 @@ SipProxyInviteFailureTest::DoRun ()
 
   // Expected events
   // Client 1 sends INVITE at time 1 second
-  m_expectedEvents.push_back (TestEvent (0, 1, "Client1 send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (1, 1, "Client1 send SIP message"));
+  m_expectedEvents.emplace_back(0, 1, "Client1 send SIP INVITE");
+  m_expectedEvents.emplace_back(1, 1, "Client1 send SIP message");
   // Server sends 100 Trying back to client 1, and INVITE to clients 2 and 3
-  m_expectedEvents.push_back (TestEvent (2, 0, "Server receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (3, 0, "Server receive SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (4, 0, "Server send 100 Trying"));
-  m_expectedEvents.push_back (TestEvent (5, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (6, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (7, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (8, 0, "Server send SIP INVITE"));
-  m_expectedEvents.push_back (TestEvent (9, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (10, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (11, 1, "Client1 receive 100 Trying"));
+  m_expectedEvents.emplace_back(2, 0, "Server receive SIP message");
+  m_expectedEvents.emplace_back(3, 0, "Server receive SIP INVITE");
+  m_expectedEvents.emplace_back(4, 0, "Server send 100 Trying");
+  m_expectedEvents.emplace_back(5, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(6, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(7, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(8, 0, "Server send SIP INVITE");
+  m_expectedEvents.emplace_back(9, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(10, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(11, 1, "Client1 receive 100 Trying");
   // Server retransmits until Timer B expires (towards both client 2 and 3)
-  m_expectedEvents.push_back (TestEvent (12, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (13, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (14, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (15, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (16, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (17, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (18, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (19, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (20, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (21, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (22, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (23, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (24, 0, "Server Timer B expired"));
-  m_expectedEvents.push_back (TestEvent (25, 0, "Server Timer B expired"));
+  m_expectedEvents.emplace_back(12, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(13, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(14, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(15, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(16, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(17, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(18, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(19, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(20, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(21, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(22, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(23, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(24, 0, "Server Timer B expired");
+  m_expectedEvents.emplace_back(25, 0, "Server Timer B expired");
   // At this point, we have failed transactions towards client 2 and client 3
   // and the server has issued a 100 TRYING towards client 1
   // In this model, the server should send a 408 (Request Timeout), not a
   // CANCEL, back to client 1
-  m_expectedEvents.push_back (TestEvent (26, 0, "Server send SIP message"));
-  m_expectedEvents.push_back (TestEvent (27, 0, "Server send 408 Request Timeout"));
-  m_expectedEvents.push_back (TestEvent (27, 1, "Client1 receive SIP message"));
-  m_expectedEvents.push_back (TestEvent (28, 1, "Client1 receive 408 Request Timeout"));
+  m_expectedEvents.emplace_back(26, 0, "Server send SIP message");
+  m_expectedEvents.emplace_back(27, 0, "Server send 408 Request Timeout");
+  m_expectedEvents.emplace_back(27, 1, "Client1 receive SIP message");
+  m_expectedEvents.emplace_back(28, 1, "Client1 receive 408 Request Timeout");
   // Corresponding client 1 state transitions
-  m_client1ExpectedStateChanges.push_back (TestEvent (0, 0, "Dialog (1000,0,1) enter TRYING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (1, 0, "Transaction (1000,1,0) enter CALLING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (2, 0, "Dialog (1000,0,1) enter PROCEEDING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (3, 0, "Transaction (1000,1,0) enter PROCEEDING"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (4, 0, "Dialog (1000,0,1) enter TERMINATED"));
-  m_client1ExpectedStateChanges.push_back (TestEvent (5, 0, "Transaction (1000,1,0) enter FAILED"));
+  m_client1ExpectedStateChanges.emplace_back(0, 0, "Dialog (1000,0,1) enter TRYING");
+  m_client1ExpectedStateChanges.emplace_back(1, 0, "Transaction (1000,1,0) enter CALLING");
+  m_client1ExpectedStateChanges.emplace_back(2, 0, "Dialog (1000,0,1) enter PROCEEDING");
+  m_client1ExpectedStateChanges.emplace_back(3, 0, "Transaction (1000,1,0) enter PROCEEDING");
+  m_client1ExpectedStateChanges.emplace_back(4, 0, "Dialog (1000,0,1) enter TERMINATED");
+  m_client1ExpectedStateChanges.emplace_back(5, 0, "Transaction (1000,1,0) enter FAILED");
 
   Simulator::Run ();
   Simulator::Destroy ();

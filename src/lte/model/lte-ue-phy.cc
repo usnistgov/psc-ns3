@@ -717,7 +717,7 @@ LteUePhy::PhyPscchPduReceived(Ptr<Packet> p)
 
             // todo, how to find the pool among the available ones?
             // right now just use the first one
-            std::list<RxPoolInfo>::iterator poolIt = m_sidelinkRxPools.begin();
+            auto poolIt = m_sidelinkRxPools.begin();
             if (poolIt == m_sidelinkRxPools.end())
             {
                 NS_LOG_INFO(this << " No Rx pool configured");
@@ -725,8 +725,7 @@ LteUePhy::PhyPscchPduReceived(Ptr<Packet> p)
             else
             {
                 // this is the first transmission of PSCCH
-                std::map<uint16_t, SidelinkGrantInfo>::iterator grantIt =
-                    poolIt->m_currentGrants.find(tag.GetRnti());
+                auto grantIt = poolIt->m_currentGrants.find(tag.GetRnti());
                 if (grantIt == poolIt->m_currentGrants.end())
                 {
                     SidelinkGrantInfo txInfo;
@@ -1638,7 +1637,7 @@ LteUePhy::SubframeIndication(uint32_t frameNo, uint32_t subframeNo)
         std::list<RxPoolInfo>::iterator it;
         for (it = m_sidelinkRxPools.begin(); it != m_sidelinkRxPools.end(); it++)
         {
-            std::map<uint16_t, SidelinkGrantInfo>::iterator grantIt = it->m_currentGrants.begin();
+            auto grantIt = it->m_currentGrants.begin();
             while (grantIt != it->m_currentGrants.end())
             {
                 std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo>::iterator rxIt;
@@ -1823,8 +1822,7 @@ LteUePhy::SubframeIndication(uint32_t frameNo, uint32_t subframeNo)
 
                 if (pb)
                 {
-                    std::list<LteUePhySapProvider::TransmitSlPhySduParameters>::iterator paramIt =
-                        params.begin();
+                    auto paramIt = params.begin();
                     NS_ASSERT_MSG(paramIt != params.end(),
                                   "Found packet burst without associated parameters");
                     NS_ASSERT_MSG(ctrlMsg.empty(),
@@ -2600,7 +2598,7 @@ LteUePhy::DoAddSlDestination(uint32_t destination)
 void
 LteUePhy::DoRemoveSlDestination(uint32_t destination)
 {
-    std::list<uint32_t>::iterator it = m_destinations.begin();
+    auto it = m_destinations.begin();
     while (it != m_destinations.end())
     {
         if ((*it) == destination)
@@ -2672,7 +2670,7 @@ LteUePhy::ReceiveSlss(uint16_t slssid, Ptr<SpectrumValue> p)
         // Note that a SyncRef is identified by SLSSID and reception offset.
         // SLSSs coming from different UEs, but having the same SyncRef info (same SLSSID and
         // reception offset) are considered as different S-RSRP samples of the same SyncRef
-        std::map<std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator itMeasMap =
+        auto itMeasMap =
             m_ueSlssMeasurementsMap.find(std::pair<uint16_t, uint16_t>(slssid, offset));
 
         if (itMeasMap == m_ueSlssMeasurementsMap.end()) // First entry
@@ -2693,9 +2691,8 @@ LteUePhy::ReceiveSlss(uint16_t slssid, Ptr<SpectrumValue> p)
             {
                 NS_LOG_LOGIC("S-RSRP measurement in progress, first measurement entry");
                 // Insert new measurement only if it was already detected
-                std::map<std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator
-                    itDetectionMap =
-                        m_ueSlssDetectionMap.find(std::pair<uint16_t, uint16_t>(slssid, offset));
+                auto itDetectionMap =
+                    m_ueSlssDetectionMap.find(std::pair<uint16_t, uint16_t>(slssid, offset));
                 if (itDetectionMap != m_ueSlssDetectionMap.end())
                 {
                     NS_LOG_LOGIC("SyncRef already detected, storing measurement");
@@ -2765,10 +2762,9 @@ LteUePhy::EndSlssScanning()
             "UE RNTI " << m_rnti << " detected SyncRef with SLSSID " << itDetectionMap->first.first
                        << " offset " << itDetectionMap->first.second << " S-RSRP "
                        << itDetectionMap->second.srsrpSum / itDetectionMap->second.srsrpNum);
-        std::map<std::pair<uint16_t, uint16_t>, LteRrcSap::MasterInformationBlockSL>::iterator
-            itMap =
-                m_detectedMibSl.find(std::pair<uint16_t, uint16_t>(itDetectionMap->first.first,
-                                                                   itDetectionMap->first.second));
+        auto itMap =
+            m_detectedMibSl.find(std::pair<uint16_t, uint16_t>(itDetectionMap->first.first,
+                                                               itDetectionMap->first.second));
         // If the MIB-SL wasn't received, erase it from the detection map
         if (itMap == m_detectedMibSl.end())
         {
@@ -2799,8 +2795,7 @@ LteUePhy::EndSlssScanning()
     std::map<double, std::pair<uint16_t, uint16_t>>::iterator itTmp;
     for (itTmp = tmp.begin(); itTmp != tmp.end(); itTmp++)
     {
-        std::map<std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>::iterator
-            itDetectionMapTwo = m_ueSlssDetectionMap.find(itTmp->second);
+        auto itDetectionMapTwo = m_ueSlssDetectionMap.find(itTmp->second);
         if (itDetectionMapTwo != m_ueSlssDetectionMap.end())
         {
             ret.insert(std::pair<std::pair<uint16_t, uint16_t>, UeSlssMeasurementsElement>(
@@ -3294,7 +3289,7 @@ LteUePhy::ReceivePsdchSdRsrp(Ptr<Packet> p, Ptr<SpectrumValue> psd, const std::v
         // Measure SD-RSRP
         double sum = 0.0;
         uint16_t nRB = 0;
-        for (uint16_t i = 0; i < rbs.size(); i++)
+        for (uint32_t i = 0; i < rbs.size(); i++)
         {
             int rb = rbs[i];
             // convert PSD [W/Hz] to linear power [W] for the single RE
@@ -3310,7 +3305,7 @@ LteUePhy::ReceivePsdchSdRsrp(Ptr<Packet> p, Ptr<SpectrumValue> psd, const std::v
                          << sd_rsrp_dBm << " nRB " << nRB);
 
         // Store SD-RSRP
-        std::map<std::pair<uint64_t, uint32_t>, UeSdRsrpMeasurementsElement>::iterator itMeasMap =
+        auto itMeasMap =
             m_ueSdRsrpMeasurementsMap.find(std::pair<uint64_t, uint32_t>(relayUeId, serviceCode));
         if (itMeasMap == m_ueSdRsrpMeasurementsMap.end())
         {

@@ -100,7 +100,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   //Sidelink bearers activation time
-  Time slBearersActivationTime = startTime;
+  const Time& slBearersActivationTime = startTime;
 
   //Create the helpers
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
@@ -251,7 +251,7 @@ int main (int argc, char *argv[])
   McpttHelper mcpttHelper;
   if (enableNsLogs)
     {
-      mcpttHelper.EnableLogComponents ();
+        ns3::psc::McpttHelper::EnableLogComponents();
     }
 
   mcpttHelper.SetPttApp ("ns3::psc::McpttPttApp",

@@ -61,7 +61,7 @@ const McpttEntityId McpttCallTypeMachineGrpBasic::T2 = McpttEntityId (2, "'T2: i
 const McpttEntityId McpttCallTypeMachineGrpBasic::T3 = McpttEntityId (3, "'T3: in-progress imminent peril group call'");
 
 TypeId
-McpttCallTypeMachineGrpBasic::GetTypeId (void)
+McpttCallTypeMachineGrpBasic::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -125,13 +125,13 @@ McpttCallTypeMachineGrpBasic::McpttCallTypeMachineGrpBasic (Ptr<McpttCallMachine
   m_tfg14->Link (&McpttCallTypeMachineGrpBasic::ExpiryOfTfg14, this);
 }
 
-McpttCallTypeMachineGrpBasic::~McpttCallTypeMachineGrpBasic (void)
+McpttCallTypeMachineGrpBasic::~McpttCallTypeMachineGrpBasic()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Time
-McpttCallTypeMachineGrpBasic::CalcDelayForTfg13 (void) const
+McpttCallTypeMachineGrpBasic::CalcDelayForTfg13() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -156,7 +156,7 @@ McpttCallTypeMachineGrpBasic::CalcDelayForTfg13 (void) const
 }
 
 Time
-McpttCallTypeMachineGrpBasic::CalcDelayForTfg14 (void) const
+McpttCallTypeMachineGrpBasic::CalcDelayForTfg14() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -181,7 +181,7 @@ McpttCallTypeMachineGrpBasic::CalcDelayForTfg14 (void) const
 }
 
 void
-McpttCallTypeMachineGrpBasic::CallStarted (void)
+McpttCallTypeMachineGrpBasic::CallStarted()
 {
   NS_LOG_FUNCTION (this);
 
@@ -248,7 +248,7 @@ McpttCallTypeMachineGrpBasic::ChangeState (const McpttEntityId& stateId)
 }
 
 void
-McpttCallTypeMachineGrpBasic::Downgrade (void)
+McpttCallTypeMachineGrpBasic::Downgrade()
 {
   NS_LOG_FUNCTION (this);
 
@@ -332,7 +332,7 @@ McpttCallTypeMachineGrpBasic::Downgrade (void)
 }
 
 void
-McpttCallTypeMachineGrpBasic::ExpiryOfTfg1 (void)
+McpttCallTypeMachineGrpBasic::ExpiryOfTfg1()
 {
   NS_LOG_FUNCTION (this);
 
@@ -348,7 +348,7 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg1 (void)
 }
 
 TypeId
-McpttCallTypeMachineGrpBasic::GetInstanceTypeId (void) const
+McpttCallTypeMachineGrpBasic::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -407,7 +407,7 @@ McpttCallTypeMachineGrpBasic::InitiateCall (uint8_t callType)
 }
 
 bool
-McpttCallTypeMachineGrpBasic::IsStarted (void) const
+McpttCallTypeMachineGrpBasic::IsStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -486,7 +486,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
               ChangeState (McpttCallTypeMachineGrpBasic::T2);
             }
         }
-      else if (userAckRequired == true)
+        else if (userAckRequired)
         {
           if (theirCallType.GetType () == McpttCallMsgFieldCallType::EMERGENCY_GROUP)
             {
@@ -506,7 +506,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallAnnoun (const McpttCallMsgGrpAnnoun&
           SetLastChgTime (theirLastChgTime);
           SetLastChgUserId (theirLastChgUserId);
         }
-      else if (userAckRequired == false)
+        else if (!userAckRequired)
         {
           SetLastChgTime (theirLastChgTime);
           SetLastChgUserId (theirLastChgUserId);
@@ -750,7 +750,7 @@ McpttCallTypeMachineGrpBasic::ReceiveGrpCallImmPerilEnd (const McpttCallMsgGrpIm
 }
 
 void
-McpttCallTypeMachineGrpBasic::ReleaseCall (void)
+McpttCallTypeMachineGrpBasic::ReleaseCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -784,7 +784,7 @@ McpttCallTypeMachineGrpBasic::ReleaseCall (void)
 }
 
 void
-McpttCallTypeMachineGrpBasic::RejectCall (void)
+McpttCallTypeMachineGrpBasic::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -857,7 +857,7 @@ McpttCallTypeMachineGrpBasic::SetLimitCfg12 (uint32_t limitCfg12)
 }
 
 void
-McpttCallTypeMachineGrpBasic::Start (void)
+McpttCallTypeMachineGrpBasic::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -867,7 +867,7 @@ McpttCallTypeMachineGrpBasic::Start (void)
 }
 
 void
-McpttCallTypeMachineGrpBasic::Stop (void)
+McpttCallTypeMachineGrpBasic::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1015,21 +1015,21 @@ McpttCallTypeMachineGrpBasic::UpgradeTo (const McpttCallMsgFieldCallType& callTy
 }
 
 void
-McpttCallTypeMachineGrpBasic::DoDispose (void)
+McpttCallTypeMachineGrpBasic::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetOwner (0);
-  SetCfg11 (0);
-  SetCfg12 (0);
-  SetTfg11 (0);
-  SetTfg12 (0);
-  SetTfg13 (0);
-  SetTfg14 (0);
+  SetOwner(nullptr);
+  SetCfg11(nullptr);
+  SetCfg12(nullptr);
+  SetTfg11(nullptr);
+  SetTfg12(nullptr);
+  SetTfg13(nullptr);
+  SetTfg14(nullptr);
 }
 
 void
-McpttCallTypeMachineGrpBasic::ExpiryOfTfg11 (void)
+McpttCallTypeMachineGrpBasic::ExpiryOfTfg11()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1072,7 +1072,7 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg11 (void)
 }
 
 void
-McpttCallTypeMachineGrpBasic::ExpiryOfTfg12 (void)
+McpttCallTypeMachineGrpBasic::ExpiryOfTfg12()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1115,7 +1115,7 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg12 (void)
 }
 
 void
-McpttCallTypeMachineGrpBasic::ExpiryOfTfg13 (void)
+McpttCallTypeMachineGrpBasic::ExpiryOfTfg13()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1143,7 +1143,7 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg13 (void)
 }
 
 void
-McpttCallTypeMachineGrpBasic::ExpiryOfTfg14 (void)
+McpttCallTypeMachineGrpBasic::ExpiryOfTfg14()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1171,7 +1171,7 @@ McpttCallTypeMachineGrpBasic::ExpiryOfTfg14 (void)
 }
 
 McpttCallMsgFieldCallType
-McpttCallTypeMachineGrpBasic::GetCallType (void) const
+McpttCallTypeMachineGrpBasic::GetCallType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1179,7 +1179,7 @@ McpttCallTypeMachineGrpBasic::GetCallType (void) const
 }
 
 Ptr<McpttCounter>
-McpttCallTypeMachineGrpBasic::GetCfg11 (void) const
+McpttCallTypeMachineGrpBasic::GetCfg11() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1187,7 +1187,7 @@ McpttCallTypeMachineGrpBasic::GetCfg11 (void) const
 }
 
 Ptr<McpttCounter>
-McpttCallTypeMachineGrpBasic::GetCfg12 (void) const
+McpttCallTypeMachineGrpBasic::GetCfg12() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1195,7 +1195,7 @@ McpttCallTypeMachineGrpBasic::GetCfg12 (void) const
 }
 
 McpttCallMsgFieldLastChgTime
-McpttCallTypeMachineGrpBasic::GetLastChgTime (void) const
+McpttCallTypeMachineGrpBasic::GetLastChgTime() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1203,7 +1203,7 @@ McpttCallTypeMachineGrpBasic::GetLastChgTime (void) const
 }
 
 McpttCallMsgFieldUserId
-McpttCallTypeMachineGrpBasic::GetLastChgUserId (void) const
+McpttCallTypeMachineGrpBasic::GetLastChgUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1211,7 +1211,7 @@ McpttCallTypeMachineGrpBasic::GetLastChgUserId (void) const
 }
 
 Ptr<McpttCallMachineGrpBasic>
-McpttCallTypeMachineGrpBasic::GetOwner (void) const
+McpttCallTypeMachineGrpBasic::GetOwner() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1219,7 +1219,7 @@ McpttCallTypeMachineGrpBasic::GetOwner (void) const
 }
 
 uint8_t
-McpttCallTypeMachineGrpBasic::GetPriority (void) const
+McpttCallTypeMachineGrpBasic::GetPriority() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1227,7 +1227,7 @@ McpttCallTypeMachineGrpBasic::GetPriority (void) const
 }
 
 bool
-McpttCallTypeMachineGrpBasic::GetStarted (void) const
+McpttCallTypeMachineGrpBasic::GetStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1235,7 +1235,7 @@ McpttCallTypeMachineGrpBasic::GetStarted (void) const
 }
 
 McpttEntityId
-McpttCallTypeMachineGrpBasic::GetStateId (void) const
+McpttCallTypeMachineGrpBasic::GetStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1243,7 +1243,7 @@ McpttCallTypeMachineGrpBasic::GetStateId (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallTypeMachineGrpBasic::GetTfg11 (void) const
+McpttCallTypeMachineGrpBasic::GetTfg11() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1251,7 +1251,7 @@ McpttCallTypeMachineGrpBasic::GetTfg11 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallTypeMachineGrpBasic::GetTfg12 (void) const
+McpttCallTypeMachineGrpBasic::GetTfg12() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1259,7 +1259,7 @@ McpttCallTypeMachineGrpBasic::GetTfg12 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallTypeMachineGrpBasic::GetTfg13 (void) const
+McpttCallTypeMachineGrpBasic::GetTfg13() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1267,7 +1267,7 @@ McpttCallTypeMachineGrpBasic::GetTfg13 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallTypeMachineGrpBasic::GetTfg14 (void) const
+McpttCallTypeMachineGrpBasic::GetTfg14() const
 {
   NS_LOG_FUNCTION (this);
 

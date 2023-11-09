@@ -73,7 +73,7 @@ class IntelHttpBaseTestCase : public TestCase
 {
 public:
   IntelHttpBaseTestCase (const std::string &name);
-  virtual ~IntelHttpBaseTestCase () = default;
+  ~IntelHttpBaseTestCase() override = default;
 
 protected:
   const Time DEFAULT_STOP_TIME{Seconds (100)};
@@ -86,7 +86,7 @@ protected:
   Ptr<psc::IntelHttpClient> client;
 
 private:
-  void DoSetup (void) override;
+  void DoSetup() override;
 };
 
 IntelHttpBaseTestCase::IntelHttpBaseTestCase (const std::string &name) : TestCase (name)
@@ -94,7 +94,7 @@ IntelHttpBaseTestCase::IntelHttpBaseTestCase (const std::string &name) : TestCas
 }
 
 void
-IntelHttpBaseTestCase::DoSetup (void)
+IntelHttpBaseTestCase::DoSetup()
 {
   nodes.Create (2);
 
@@ -142,7 +142,7 @@ class IntelHttpTestCaseEventOrder : public IntelHttpBaseTestCase
   Time m_nextSessionMainObjectRequest;
 
 public:
-  IntelHttpTestCaseEventOrder (void);
+  IntelHttpTestCaseEventOrder();
 
   void RequestMainObject (Ptr<const Packet> /* unused */);
   void ReceiveMainObjectRequest (Ptr<const Packet> /* unused */, const Address & /* unused */);
@@ -153,11 +153,11 @@ public:
   void SendEmbeddedObject (Ptr<const Packet> /* unused */);
   void ReceiveEmbeddedObject (Ptr<const Packet> /* unused */, const Address & /* unused */);
 
-  void DoRun (void) override;
+  void DoRun() override;
 };
 
-IntelHttpTestCaseEventOrder::IntelHttpTestCaseEventOrder (void)
-    : IntelHttpBaseTestCase ("Intel HTTP Model Test Case - Verify Event Order")
+IntelHttpTestCaseEventOrder::IntelHttpTestCaseEventOrder()
+    : IntelHttpBaseTestCase("Intel HTTP Model Test Case - Verify Event Order")
 {
 }
 
@@ -268,7 +268,7 @@ IntelHttpTestCaseEventOrder::ReceiveEmbeddedObject (Ptr<const Packet> /* unused 
 }
 
 void
-IntelHttpTestCaseEventOrder::DoRun (void)
+IntelHttpTestCaseEventOrder::DoRun()
 {
   // Keep it simple so we don't have to track multiple Embedded Object requests
   const auto EMBEDDED_OBJECT_COUNT = 1.0;
@@ -349,17 +349,17 @@ class IntelHttpTestCaseTxRxCountSizes : public IntelHttpBaseTestCase
    * Fixed size for the client's requests for both main
    * and embedded objects
    */
-  const uint32_t OBJECT_REQUEST_SIZE{128u};
+  const uint32_t OBJECT_REQUEST_SIZE{128U};
 
   /**
    * Fixed size of each main object
    */
-  const uint32_t MAIN_OBJECT_SIZE{512u};
+  const uint32_t MAIN_OBJECT_SIZE{512U};
 
   /**
    * Fixed size of each embedded object
    */
-  const uint32_t EMBEDDED_OBJECT_SIZE{2048u};
+  const uint32_t EMBEDDED_OBJECT_SIZE{2048U};
 
   /**
    * Total count of transmissions from the client.
@@ -426,7 +426,7 @@ class IntelHttpTestCaseTxRxCountSizes : public IntelHttpBaseTestCase
   int m_embeddedObjectsReceived{0};
 
 public:
-  IntelHttpTestCaseTxRxCountSizes (void);
+  IntelHttpTestCaseTxRxCountSizes();
   void TxClient (Ptr<const Packet> /*unused*/);
   void RxClient (Ptr<const Packet> /*unused*/, const Address & /* unused */);
 
@@ -445,12 +445,12 @@ public:
   void SendEmbeddedObject (Ptr<const Packet> packet);
   void ReceiveEmbeddedObject (Ptr<const Packet> packet, const Address & /* unused */);
 
-  void DoRun (void) override;
+  void DoRun() override;
 };
 
-IntelHttpTestCaseTxRxCountSizes::IntelHttpTestCaseTxRxCountSizes (void)
-    : IntelHttpBaseTestCase ("Intel HTTP Model Test Case - Verify Request and Response Sizes, "
-                             "Overall and Specific counts")
+IntelHttpTestCaseTxRxCountSizes::IntelHttpTestCaseTxRxCountSizes()
+    : IntelHttpBaseTestCase("Intel HTTP Model Test Case - Verify Request and Response Sizes, "
+                            "Overall and Specific counts")
 {
 }
 
@@ -549,7 +549,7 @@ IntelHttpTestCaseTxRxCountSizes::ReceiveEmbeddedObject (Ptr<const Packet> packet
 }
 
 void
-IntelHttpTestCaseTxRxCountSizes::DoRun (void)
+IntelHttpTestCaseTxRxCountSizes::DoRun()
 {
   // Fix request/response sizes
   client->SetAttribute ("RequestSizeRvs", PointerValue (MakeConstantStream (OBJECT_REQUEST_SIZE)));
@@ -655,25 +655,25 @@ class IntelHttpTestCaseCacheTotal : public IntelHttpBaseTestCase
   bool m_isFirstMainObject{true};
 
   // Set our count of embedded objects big enough to get a few cache hits/misses
-  const uint16_t EMBEDDED_OBJECTS{40u};
+  const uint16_t EMBEDDED_OBJECTS{40U};
   // Running count of received/cached embedded objects
-  unsigned int m_countHit{0u};
-  unsigned int m_countMiss{0u};
+  unsigned int m_countHit{0U};
+  unsigned int m_countMiss{0U};
   unsigned int m_countRemaining{EMBEDDED_OBJECTS};
 
 public:
-  IntelHttpTestCaseCacheTotal (void);
+  IntelHttpTestCaseCacheTotal();
 
   void RequestMainObject (Ptr<const Packet> /*unused*/);
   void CacheHit (uint16_t currentObject);
   void CacheMiss (uint16_t currentObject);
 
-  void DoRun (void) override;
+  void DoRun() override;
 };
 
-IntelHttpTestCaseCacheTotal::IntelHttpTestCaseCacheTotal (void)
-    : IntelHttpBaseTestCase ("Intel HTTP Model Test Case - Verify Cache Hit Count Added With "
-                             "Cache Miss Count is The Count of Embedded Objects")
+IntelHttpTestCaseCacheTotal::IntelHttpTestCaseCacheTotal()
+    : IntelHttpBaseTestCase("Intel HTTP Model Test Case - Verify Cache Hit Count Added With "
+                            "Cache Miss Count is The Count of Embedded Objects")
 {
 }
 
@@ -714,7 +714,7 @@ IntelHttpTestCaseCacheTotal::CacheMiss (uint16_t currentObject)
 }
 
 void
-IntelHttpTestCaseCacheTotal::DoRun (void)
+IntelHttpTestCaseCacheTotal::DoRun()
 {
   // This cache threshold should be high enough to give us at least one
   // cache hit & one cache miss
@@ -753,21 +753,21 @@ IntelHttpTestCaseCacheTotal::DoRun (void)
  */
 class IntelHttpTestCaseAllCacheHits : public IntelHttpBaseTestCase
 {
-  const uint16_t EMBEDDED_OBJECTS{100u};
-  unsigned int m_countHit{0u};
-  bool m_isFirstMainObject{true};
+    const uint16_t EMBEDDED_OBJECTS{100U};
+    unsigned int m_countHit{0U};
+    bool m_isFirstMainObject{true};
 
-public:
-  IntelHttpTestCaseAllCacheHits (void);
-  // Use this to stop after the first run
-  void RequestMainObject (Ptr<const Packet> /*unused*/);
-  void CacheHit (uint16_t /*unused*/);
-  void CacheMiss (uint16_t /*unused*/);
-  void DoRun (void) override;
+  public:
+    IntelHttpTestCaseAllCacheHits();
+    // Use this to stop after the first run
+    void RequestMainObject(Ptr<const Packet> /*unused*/);
+    void CacheHit(uint16_t /*unused*/);
+    void CacheMiss(uint16_t /*unused*/);
+    void DoRun() override;
 };
 
-IntelHttpTestCaseAllCacheHits::IntelHttpTestCaseAllCacheHits (void)
-    : IntelHttpBaseTestCase (
+IntelHttpTestCaseAllCacheHits::IntelHttpTestCaseAllCacheHits()
+    : IntelHttpBaseTestCase(
           "Intel HTTP Model Test Case - Test that a cache threshold of 1 has all cache hits")
 {
 }
@@ -799,7 +799,7 @@ void IntelHttpTestCaseAllCacheHits::CacheMiss (uint16_t /*unused*/)
 }
 
 void
-IntelHttpTestCaseAllCacheHits::DoRun (void)
+IntelHttpTestCaseAllCacheHits::DoRun()
 {
   // Should guarantee all cache hits
   const auto CACHE_THRESHOLD = 1.0;
@@ -840,21 +840,21 @@ IntelHttpTestCaseAllCacheHits::DoRun (void)
  */
 class IntelHttpTestCaseAllCacheMisses : public IntelHttpBaseTestCase
 {
-  const uint16_t EMBEDDED_OBJECTS{20u};
-  unsigned int m_countMiss{0u};
-  bool m_isFirstMainObject{true};
+    const uint16_t EMBEDDED_OBJECTS{20U};
+    unsigned int m_countMiss{0U};
+    bool m_isFirstMainObject{true};
 
-public:
-  IntelHttpTestCaseAllCacheMisses (void);
-  // Use this to stop after the first run
-  void RequestMainObject (Ptr<const Packet> /*unused*/);
-  void CacheHit (uint16_t /*unused*/);
-  void CacheMiss (uint16_t /*unused*/);
-  void DoRun (void) override;
+  public:
+    IntelHttpTestCaseAllCacheMisses();
+    // Use this to stop after the first run
+    void RequestMainObject(Ptr<const Packet> /*unused*/);
+    void CacheHit(uint16_t /*unused*/);
+    void CacheMiss(uint16_t /*unused*/);
+    void DoRun() override;
 };
 
-IntelHttpTestCaseAllCacheMisses::IntelHttpTestCaseAllCacheMisses (void)
-    : IntelHttpBaseTestCase (
+IntelHttpTestCaseAllCacheMisses::IntelHttpTestCaseAllCacheMisses()
+    : IntelHttpBaseTestCase(
           "Intel HTTP Model Test Case - Test that a cache threshold of 0 has no cache hits")
 {
 }
@@ -886,7 +886,7 @@ void IntelHttpTestCaseAllCacheMisses::CacheMiss (uint16_t /*unused*/)
 }
 
 void
-IntelHttpTestCaseAllCacheMisses::DoRun (void)
+IntelHttpTestCaseAllCacheMisses::DoRun()
 {
   // Should guarantee all cache misses
   const auto CACHE_THRESHOLD = 0.0;
@@ -938,25 +938,25 @@ class IntelHttpTestCaseEmbeddedObjectSequence : public IntelHttpBaseTestCase
 
   // Track the number of times the Embedded Object traces are called
   // so we can verify sequence number 0 occurs on the first call
-  uint16_t m_requestCalls{0u};
-  uint16_t m_transmitCalls{0u};
+  uint16_t m_requestCalls{0U};
+  uint16_t m_transmitCalls{0U};
 
   // Sequence Number of the last embedded object
   // Should start with 0 so we can
   // special case the first object
-  uint16_t m_lastRequestedObjectNumber{0u};
-  uint16_t m_lastTransmittedObjectNumber{0u};
+  uint16_t m_lastRequestedObjectNumber{0U};
+  uint16_t m_lastTransmittedObjectNumber{0U};
 
 public:
-  IntelHttpTestCaseEmbeddedObjectSequence (void);
+  IntelHttpTestCaseEmbeddedObjectSequence();
   void RequestMainObject (Ptr<const Packet> /*unused*/);
   void RequestEmbeddedObject (Ptr<const Packet> packet);
   void TransmitEmbeddedObject (Ptr<const Packet> packet);
-  void DoRun (void) override;
+  void DoRun() override;
 };
 
-IntelHttpTestCaseEmbeddedObjectSequence::IntelHttpTestCaseEmbeddedObjectSequence (void)
-    : IntelHttpBaseTestCase (
+IntelHttpTestCaseEmbeddedObjectSequence::IntelHttpTestCaseEmbeddedObjectSequence()
+    : IntelHttpBaseTestCase(
           "Intel HTTP Model Test Case - Verify the Sequence Order of Embedded Objects")
 {
 }
@@ -980,8 +980,8 @@ IntelHttpTestCaseEmbeddedObjectSequence::RequestEmbeddedObject (Ptr<const Packet
   psc::IntelHttpHeader header;
   packet->PeekHeader (header);
 
-  if (header.GetNumberEmbeddedObjects () == 0u)
-    {
+  if (header.GetNumberEmbeddedObjects() == 0U)
+  {
       NS_TEST_ASSERT_MSG_EQ (
           m_requestCalls, 0,
           "Embedded object with sequence number 0 requested after first embedded object");
@@ -1005,8 +1005,8 @@ IntelHttpTestCaseEmbeddedObjectSequence::TransmitEmbeddedObject (Ptr<const Packe
   // Since we don't have a previous one in the sequence
   // to compare it with, use the number of times this
   // trace was called
-  if (header.GetNumberEmbeddedObjects () == 0u)
-    {
+  if (header.GetNumberEmbeddedObjects() == 0U)
+  {
       NS_TEST_ASSERT_MSG_EQ (
           m_transmitCalls, 0,
           "Embedded object with sequence number 0 received after first embedded object");
@@ -1021,7 +1021,7 @@ IntelHttpTestCaseEmbeddedObjectSequence::TransmitEmbeddedObject (Ptr<const Packe
 }
 
 void
-IntelHttpTestCaseEmbeddedObjectSequence::DoRun (void)
+IntelHttpTestCaseEmbeddedObjectSequence::DoRun()
 {
   // Fix the embedded object count to a known value
   server->SetAttribute ("EmbeddedObjectAmountRvs",
@@ -1080,8 +1080,8 @@ public:
   void RequestEmbeddedObject (Ptr<const Packet> /* unused */);
   void ReceiveEmbeddedObject (Ptr<const Packet> packet, const Address & /* unused */);
 
-  IntelHttpTestCaseParseTime (void);
-  void DoRun (void) override;
+  IntelHttpTestCaseParseTime();
+  void DoRun() override;
 };
 
 void
@@ -1119,13 +1119,14 @@ IntelHttpTestCaseParseTime::ReceiveEmbeddedObject (Ptr<const Packet> /* unused *
 {
   m_embeddedObjectStart = Simulator::Now ();
 }
-IntelHttpTestCaseParseTime::IntelHttpTestCaseParseTime (void)
-    : IntelHttpBaseTestCase ("Intel HTTP Model Test Case - Verify the Client Parse Times")
+
+IntelHttpTestCaseParseTime::IntelHttpTestCaseParseTime()
+    : IntelHttpBaseTestCase("Intel HTTP Model Test Case - Verify the Client Parse Times")
 {
 }
 
 void
-IntelHttpTestCaseParseTime::DoRun (void)
+IntelHttpTestCaseParseTime::DoRun()
 {
   // Fix the parse time to an expected value
   const auto PARSE_TIME = 20;
@@ -1184,8 +1185,8 @@ public:
   void RequestMainObject (Ptr<const Packet> /* unused */);
   void ReceiveEmbeddedObject (Ptr<const Packet> /* unused */, const Address & /* unused */);
 
-  IntelHttpTestCaseReadTime (void);
-  void DoRun (void) override;
+  IntelHttpTestCaseReadTime();
+  void DoRun() override;
 };
 
 void
@@ -1211,13 +1212,13 @@ IntelHttpTestCaseReadTime::ReceiveEmbeddedObject (Ptr<const Packet> /* unused */
   m_readStart = Simulator::Now ();
 }
 
-IntelHttpTestCaseReadTime::IntelHttpTestCaseReadTime (void)
-    : IntelHttpBaseTestCase ("Intel HTTP Model Test Case - Verify the Client Read Time")
+IntelHttpTestCaseReadTime::IntelHttpTestCaseReadTime()
+    : IntelHttpBaseTestCase("Intel HTTP Model Test Case - Verify the Client Read Time")
 {
 }
 
 void
-IntelHttpTestCaseReadTime::DoRun (void)
+IntelHttpTestCaseReadTime::DoRun()
 {
   // Fix the read time to an expected value
   const auto READ_TIME = 20;
@@ -1263,8 +1264,8 @@ public:
   void RequestEmbeddedObject (Ptr<const Packet> /* unused */, const Address & /* unused */);
   void TransmitEmbeddedObject (Ptr<const Packet> /* unused */);
 
-  IntelHttpTestCaseObjectInterArrival (void);
-  void DoRun (void) override;
+  IntelHttpTestCaseObjectInterArrival();
+  void DoRun() override;
 };
 
 void
@@ -1281,13 +1282,13 @@ IntelHttpTestCaseObjectInterArrival::TransmitEmbeddedObject (Ptr<const Packet> /
   Simulator::Stop ();
 }
 
-IntelHttpTestCaseObjectInterArrival::IntelHttpTestCaseObjectInterArrival (void)
-    : IntelHttpBaseTestCase ("Intel HTTP Model Test Case - Verify the Server IAT")
+IntelHttpTestCaseObjectInterArrival::IntelHttpTestCaseObjectInterArrival()
+    : IntelHttpBaseTestCase("Intel HTTP Model Test Case - Verify the Server IAT")
 {
 }
 
 void
-IntelHttpTestCaseObjectInterArrival::DoRun (void)
+IntelHttpTestCaseObjectInterArrival::DoRun()
 {
   const auto INTER_ARRIVAL_TIME = 15.0;
   server->SetAttribute ("EmbeddedObjectIatRvs",
@@ -1334,8 +1335,8 @@ public:
   void ReceiveMainObjectRequest (Ptr<const Packet> /* unused */, const Address & /* unused */);
   void ReceiveEmbeddedObject (Ptr<const Packet> /* unused */, const Address & /* unused */);
 
-  IntelHttpTestCaseIpv6 (void);
-  void DoRun (void) override;
+  IntelHttpTestCaseIpv6();
+  void DoRun() override;
 };
 
 void
@@ -1365,13 +1366,13 @@ IntelHttpTestCaseIpv6::ReceiveEmbeddedObject (Ptr<const Packet> /* unused */,
   m_embeddedObjectReceived = true;
 }
 
-IntelHttpTestCaseIpv6::IntelHttpTestCaseIpv6 (void)
-    : TestCase ("Intel HTTP Model Test Case - Verify IPv6 Addresses Are Accepted By the Model")
+IntelHttpTestCaseIpv6::IntelHttpTestCaseIpv6()
+    : TestCase("Intel HTTP Model Test Case - Verify IPv6 Addresses Are Accepted By the Model")
 {
 }
 
 void
-IntelHttpTestCaseIpv6::DoRun (void)
+IntelHttpTestCaseIpv6::DoRun()
 {
   // Run through the setup
   // the base case would normally handle
@@ -1435,7 +1436,7 @@ class IntelHttpTestCaseHeaderContent : public IntelHttpBaseTestCase
 {
   // Use a fixed number (not 1 since we've used that plenty of times)
   // so we can test the request for embedded objects has the correct count
-  const uint16_t EMBEDDED_OBJECTS = 5u;
+  const uint16_t EMBEDDED_OBJECTS = 5U;
 
   // Make sure we test each possible type at least once
   bool m_mainObjectRequest{false};
@@ -1448,7 +1449,7 @@ class IntelHttpTestCaseHeaderContent : public IntelHttpBaseTestCase
   bool m_embeddedObjectReceived{false};
 
 public:
-  IntelHttpTestCaseHeaderContent (void);
+  IntelHttpTestCaseHeaderContent();
 
   void RequestMainObject (Ptr<const Packet> packet);
   void ReceiveMainObjectRequest (Ptr<const Packet> packet, const Address & /* unused */);
@@ -1459,11 +1460,11 @@ public:
   void SendEmbeddedObject (Ptr<const Packet> packet);
   void ReceiveEmbeddedObject (Ptr<const Packet> packet, const Address & /* unused */);
 
-  void DoRun (void) override;
+  void DoRun() override;
 };
 
-IntelHttpTestCaseHeaderContent::IntelHttpTestCaseHeaderContent (void)
-    : IntelHttpBaseTestCase (
+IntelHttpTestCaseHeaderContent::IntelHttpTestCaseHeaderContent()
+    : IntelHttpBaseTestCase(
           "Intel HTTP Model Test Case - Verify HTTP Headers Report the Correct Information")
 {
 }
@@ -1581,7 +1582,7 @@ IntelHttpTestCaseHeaderContent::ReceiveEmbeddedObject (Ptr<const Packet> packet,
 }
 
 void
-IntelHttpTestCaseHeaderContent::DoRun (void)
+IntelHttpTestCaseHeaderContent::DoRun()
 {
   // Fix us to a guaranteed count of embedded objects
   const auto CACHE_THRESHOLD = 0.0;
@@ -1640,9 +1641,11 @@ IntelHttpTestCaseHeaderContent::DoRun (void)
 class IntelHttpTestSuite : public TestSuite
 {
 public:
-  IntelHttpTestSuite (void);
+  IntelHttpTestSuite();
 };
-IntelHttpTestSuite::IntelHttpTestSuite (void) : TestSuite ("intel-http-model")
+
+IntelHttpTestSuite::IntelHttpTestSuite()
+    : TestSuite("intel-http-model")
 {
   AddTestCase (new IntelHttpTestCaseEventOrder ());
   AddTestCase (new IntelHttpTestCaseTxRxCountSizes ());

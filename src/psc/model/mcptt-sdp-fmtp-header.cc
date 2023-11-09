@@ -45,7 +45,7 @@ McpttSdpFmtpHeader::~McpttSdpFmtpHeader ()
 {}
 
 TypeId
-McpttSdpFmtpHeader::GetTypeId (void)
+McpttSdpFmtpHeader::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttSdpFmtpHeader")
     .SetParent<Header> ()
@@ -62,7 +62,7 @@ McpttSdpFmtpHeader::SetMcQueueing (bool mcQueueing)
 }
 
 bool
-McpttSdpFmtpHeader::GetMcQueueing (void) const
+McpttSdpFmtpHeader::GetMcQueueing() const
 {
   return m_mcQueueing;
 }
@@ -74,7 +74,7 @@ McpttSdpFmtpHeader::SetMcPriority (uint8_t mcPriority)
 }
 
 uint8_t
-McpttSdpFmtpHeader::GetMcPriority (void) const
+McpttSdpFmtpHeader::GetMcPriority() const
 {
   return m_mcPriority;
 }
@@ -86,7 +86,7 @@ McpttSdpFmtpHeader::SetMcGranted (bool mcGranted)
 }
 
 bool
-McpttSdpFmtpHeader::GetMcGranted (void) const
+McpttSdpFmtpHeader::GetMcGranted() const
 {
   return m_mcGranted;
 }
@@ -98,13 +98,13 @@ McpttSdpFmtpHeader::SetMcImplicitRequest (bool mcImplicitRequest)
 }
 
 bool
-McpttSdpFmtpHeader::GetMcImplicitRequest (void) const
+McpttSdpFmtpHeader::GetMcImplicitRequest() const
 {
   return m_mcImplicitRequest;
 }
 
 TypeId
-McpttSdpFmtpHeader::GetInstanceTypeId (void) const
+McpttSdpFmtpHeader::GetInstanceTypeId() const
 {
   return GetTypeId ();
 }
@@ -119,7 +119,7 @@ McpttSdpFmtpHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-McpttSdpFmtpHeader::GetSerializedSize (void) const
+McpttSdpFmtpHeader::GetSerializedSize() const
 {
   return 1 + 1 + 1 + 1;
 }

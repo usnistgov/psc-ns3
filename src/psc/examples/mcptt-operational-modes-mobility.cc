@@ -831,7 +831,7 @@ int main (int argc, char *argv[])
   mobilityeNodeB.SetPositionAllocator (positionAllocEnb);
   mobilityeNodeB.Install (enbNode);
   BuildingsHelper::Install (enbNode);
-  mobilityeNodeB.EnableAsciiAll (mobilityOutputStream);
+  ns3::MobilityHelper::EnableAsciiAll(mobilityOutputStream);
 
   //Static UEs
   MobilityHelper mobilityStaticUEs;
@@ -839,7 +839,7 @@ int main (int argc, char *argv[])
   mobilityStaticUEs.SetPositionAllocator (positionAllocStaticUEs);
   mobilityStaticUEs.Install (staticUEsNodes);
   BuildingsHelper::Install (staticUEsNodes);
-  mobilityStaticUEs.EnableAsciiAll (mobilityOutputStream);
+  ns3::MobilityHelper::EnableAsciiAll(mobilityOutputStream);
 
   //Moving UEs
   MobilityHelper mobilityMovingUEs;
@@ -911,7 +911,7 @@ int main (int argc, char *argv[])
                        " on position (" << inside_pos_x << "m, " << inside_pos_y << "m, 1.5)");
 
         }
-      mobilityMovingUEs.EnableAsciiAll (mobilityOutputStream);
+        ns3::MobilityHelper::EnableAsciiAll(mobilityOutputStream);
     }
 
   NS_LOG_INFO ("Configuring network parameters...");
@@ -1081,7 +1081,7 @@ int main (int argc, char *argv[])
                    " UE IP address = " << clientAddress);
 
       //Set Rx trace for counting rx messages
-      std::map <uint32_t, MessagesTracer>::iterator it = rxMessagesPerUeTracerMap.find (ueNodeIdx);
+      auto it = rxMessagesPerUeTracerMap.find(ueNodeIdx);
       pttApp->TraceConnectWithoutContext ("RxTrace", MakeCallback (&MessagesTracer::RxTrace, &it->second));
       pttApp->TraceConnectWithoutContext ("TxTrace", MakeCallback (&MessagesTracer::TxTrace, &it->second));
     }

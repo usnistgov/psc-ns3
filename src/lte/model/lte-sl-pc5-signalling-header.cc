@@ -310,7 +310,7 @@ DirectCommunicationRequest::Print(std::ostream& os) const
     os << "ipAddressConfig: " << (uint16_t)m_ipAddressConfig << " "
        << "maxInactivityPeriod: " << m_maxInactivityPeriod << " nonce1: ";
 
-    for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
+    for (auto it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
     {
         os << (uint16_t)*it << " ";
     }
@@ -331,8 +331,7 @@ DirectCommunicationRequest::Print(std::ostream& os) const
     if (m_hasSignature)
     {
         os << "signature: ";
-        for (std::vector<uint8_t>::const_iterator it = m_signature.begin(); it != m_signature.end();
-             ++it)
+        for (auto it = m_signature.begin(); it != m_signature.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -341,9 +340,7 @@ DirectCommunicationRequest::Print(std::ostream& os) const
     if (m_hasLinkLocalIpv6Address)
     {
         os << "linkLocalIpv6Address: ";
-        for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin();
-             it != m_linkLocalIpv6Address.end();
-             ++it)
+        for (auto it = m_linkLocalIpv6Address.begin(); it != m_linkLocalIpv6Address.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -389,7 +386,7 @@ DirectCommunicationRequest::Serialize(Buffer::Iterator start) const
     i.WriteU64(m_userInfo);
     i.WriteU8(m_ipAddressConfig);
     i.WriteHtonU32(m_maxInactivityPeriod);
-    for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
+    for (auto it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
     {
         i.WriteU8(*it);
     }
@@ -410,8 +407,7 @@ DirectCommunicationRequest::Serialize(Buffer::Iterator start) const
     if (m_hasSignature)
     {
         i.WriteU8(22);
-        for (std::vector<uint8_t>::const_iterator it = m_signature.begin(); it != m_signature.end();
-             ++it)
+        for (auto it = m_signature.begin(); it != m_signature.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -419,9 +415,7 @@ DirectCommunicationRequest::Serialize(Buffer::Iterator start) const
     if (m_hasLinkLocalIpv6Address)
     {
         i.WriteU8(3);
-        for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin();
-             it != m_linkLocalIpv6Address.end();
-             ++it)
+        for (auto it = m_linkLocalIpv6Address.begin(); it != m_linkLocalIpv6Address.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -601,7 +595,7 @@ void
 DirectCommunicationRequest::SetNonce1(std::vector<uint8_t> nonce1)
 {
     m_nonce1.assign(NonceSize, 0);
-    for (uint16_t i = 0; i < nonce1.size(); i++)
+    for (uint32_t i = 0; i < nonce1.size(); i++)
     {
         m_nonce1[i] = nonce1[i];
     }
@@ -668,7 +662,7 @@ DirectCommunicationRequest::SetSignature(std::vector<uint8_t> signature)
 {
     m_hasSignature = true;
     m_signature.assign(SignatureSize, 0);
-    for (uint16_t i = 0; i < signature.size(); i++)
+    for (uint32_t i = 0; i < signature.size(); i++)
     {
         m_signature[i] = signature[i];
     }
@@ -685,7 +679,7 @@ DirectCommunicationRequest::SetLinkLocalIpv6Address(std::vector<uint8_t> linkLoc
 {
     m_hasLinkLocalIpv6Address = true;
     m_linkLocalIpv6Address.assign(LinkLocalIpv6AddressSize, 0);
-    for (uint16_t i = 0; i < linkLocalIpv6Address.size(); i++)
+    for (uint32_t i = 0; i < linkLocalIpv6Address.size(); i++)
     {
         m_linkLocalIpv6Address[i] = linkLocalIpv6Address[i];
     }
@@ -740,9 +734,7 @@ DirectCommunicationAccept::Print(std::ostream& os) const
     if (m_hasLinkLocalIpv6Address)
     {
         os << " linkLocalIpv6Address: ";
-        for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin();
-             it != m_linkLocalIpv6Address.end();
-             ++it)
+        for (auto it = m_linkLocalIpv6Address.begin(); it != m_linkLocalIpv6Address.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -772,9 +764,7 @@ DirectCommunicationAccept::Serialize(Buffer::Iterator start) const
     if (m_hasLinkLocalIpv6Address)
     {
         i.WriteU8(3);
-        for (std::vector<uint8_t>::const_iterator it = m_linkLocalIpv6Address.begin();
-             it != m_linkLocalIpv6Address.end();
-             ++it)
+        for (auto it = m_linkLocalIpv6Address.begin(); it != m_linkLocalIpv6Address.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -854,7 +844,7 @@ DirectCommunicationAccept::SetLinkLocalIpv6Address(std::vector<uint8_t> linkLoca
 {
     m_hasLinkLocalIpv6Address = true;
     m_linkLocalIpv6Address.assign(LinkLocalIpv6AddressSize, 0);
-    for (uint16_t i = 0; i < linkLocalIpv6Address.size(); i++)
+    for (uint32_t i = 0; i < linkLocalIpv6Address.size(); i++)
     {
         m_linkLocalIpv6Address[i] = linkLocalIpv6Address[i];
     }
@@ -1435,7 +1425,7 @@ DirectSecurityModeCommand::Print(std::ostream& os) const
        << "seqNum: " << m_seqNum << " "
        << "ueSecurityCapabilities: " << m_ueSecurityCapabilities << " nonce2: ";
 
-    for (std::vector<uint8_t>::const_iterator it = m_nonce2.begin(); it != m_nonce2.end(); ++it)
+    for (auto it = m_nonce2.begin(); it != m_nonce2.end(); ++it)
     {
         os << (uint16_t)*it << " ";
     }
@@ -1452,9 +1442,7 @@ DirectSecurityModeCommand::Print(std::ostream& os) const
     if (m_hasKdFreshness)
     {
         os << "kdFreshness: ";
-        for (std::vector<uint8_t>::const_iterator it = m_kdFreshness.begin();
-             it != m_kdFreshness.end();
-             ++it)
+        for (auto it = m_kdFreshness.begin(); it != m_kdFreshness.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -1463,7 +1451,7 @@ DirectSecurityModeCommand::Print(std::ostream& os) const
     if (m_hasGpi)
     {
         os << "gpi: ";
-        for (std::vector<uint8_t>::const_iterator it = m_gpi.begin(); it != m_gpi.end(); ++it)
+        for (auto it = m_gpi.begin(); it != m_gpi.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -1477,8 +1465,7 @@ DirectSecurityModeCommand::Print(std::ostream& os) const
     if (m_hasSignature)
     {
         os << "signature: ";
-        for (std::vector<uint8_t>::const_iterator it = m_signature.begin(); it != m_signature.end();
-             ++it)
+        for (auto it = m_signature.begin(); it != m_signature.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -1487,9 +1474,7 @@ DirectSecurityModeCommand::Print(std::ostream& os) const
     if (m_hasEncryptedPayload)
     {
         os << "encryptedPayload: ";
-        for (std::vector<uint8_t>::const_iterator it = m_encryptedPayload.begin();
-             it != m_encryptedPayload.end();
-             ++it)
+        for (auto it = m_encryptedPayload.begin(); it != m_encryptedPayload.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -1539,7 +1524,7 @@ DirectSecurityModeCommand::Serialize(Buffer::Iterator start) const
     i.WriteHtonU16(m_seqNum);
     i.WriteHtonU16(m_ueSecurityCapabilities);
 
-    for (std::vector<uint8_t>::const_iterator it = m_nonce2.begin(); it != m_nonce2.end(); ++it)
+    for (auto it = m_nonce2.begin(); it != m_nonce2.end(); ++it)
     {
         i.WriteU8(*it);
     }
@@ -1559,9 +1544,7 @@ DirectSecurityModeCommand::Serialize(Buffer::Iterator start) const
     if (m_hasKdFreshness)
     {
         i.WriteU8(18);
-        for (std::vector<uint8_t>::const_iterator it = m_kdFreshness.begin();
-             it != m_kdFreshness.end();
-             ++it)
+        for (auto it = m_kdFreshness.begin(); it != m_kdFreshness.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -1570,7 +1553,7 @@ DirectSecurityModeCommand::Serialize(Buffer::Iterator start) const
     {
         i.WriteU8(24);
         i.WriteU8(m_gpi.size());
-        for (std::vector<uint8_t>::const_iterator it = m_gpi.begin(); it != m_gpi.end(); ++it)
+        for (auto it = m_gpi.begin(); it != m_gpi.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -1585,8 +1568,7 @@ DirectSecurityModeCommand::Serialize(Buffer::Iterator start) const
     if (m_hasSignature)
     {
         i.WriteU8(22);
-        for (std::vector<uint8_t>::const_iterator it = m_signature.begin(); it != m_signature.end();
-             ++it)
+        for (auto it = m_signature.begin(); it != m_signature.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -1595,9 +1577,7 @@ DirectSecurityModeCommand::Serialize(Buffer::Iterator start) const
     {
         i.WriteU8(23);
         i.WriteU8(m_encryptedPayload.size());
-        for (std::vector<uint8_t>::const_iterator it = m_encryptedPayload.begin();
-             it != m_encryptedPayload.end();
-             ++it)
+        for (auto it = m_encryptedPayload.begin(); it != m_encryptedPayload.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -1745,7 +1725,7 @@ void
 DirectSecurityModeCommand::SetNonce2(std::vector<uint8_t> nonce2)
 {
     m_nonce2.assign(NonceSize, 0);
-    for (uint16_t i = 0; i < nonce2.size(); i++)
+    for (uint32_t i = 0; i < nonce2.size(); i++)
     {
         m_nonce2[i] = nonce2[i];
     }
@@ -1807,7 +1787,7 @@ DirectSecurityModeCommand::SetKdFreshness(std::vector<uint8_t> kdFreshness)
 {
     m_hasKdFreshness = true;
     m_kdFreshness.assign(KdFreshnessSize, 0);
-    for (uint16_t i = 0; i < kdFreshness.size(); i++)
+    for (uint32_t i = 0; i < kdFreshness.size(); i++)
     {
         m_kdFreshness[i] = kdFreshness[i];
     }
@@ -1859,7 +1839,7 @@ DirectSecurityModeCommand::SetSignature(std::vector<uint8_t> signature)
 {
     m_hasSignature = true;
     m_signature.assign(SignatureSize, 0);
-    for (uint16_t i = 0; i < signature.size(); i++)
+    for (uint32_t i = 0; i < signature.size(); i++)
     {
         m_signature[i] = signature[i];
     }
@@ -2049,7 +2029,7 @@ DirectSecurityModeReject::Print(std::ostream& os) const
     if (m_hasRand)
     {
         os << "rand: ";
-        for (std::vector<uint8_t>::const_iterator it = m_rand.begin(); it != m_rand.end(); ++it)
+        for (auto it = m_rand.begin(); it != m_rand.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -2058,7 +2038,7 @@ DirectSecurityModeReject::Print(std::ostream& os) const
     if (m_hasAuts)
     {
         os << "auts: ";
-        for (std::vector<uint8_t>::const_iterator it = m_auts.begin(); it != m_auts.end(); ++it)
+        for (auto it = m_auts.begin(); it != m_auts.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -2093,7 +2073,7 @@ DirectSecurityModeReject::Serialize(Buffer::Iterator start) const
     if (m_hasRand)
     {
         i.WriteU8(10);
-        for (std::vector<uint8_t>::const_iterator it = m_rand.begin(); it != m_rand.end(); ++it)
+        for (auto it = m_rand.begin(); it != m_rand.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -2101,7 +2081,7 @@ DirectSecurityModeReject::Serialize(Buffer::Iterator start) const
     if (m_hasAuts)
     {
         i.WriteU8(9);
-        for (std::vector<uint8_t>::const_iterator it = m_auts.begin(); it != m_auts.end(); ++it)
+        for (auto it = m_auts.begin(); it != m_auts.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -2180,7 +2160,7 @@ DirectSecurityModeReject::SetRand(std::vector<uint8_t> rand)
 {
     m_hasRand = true;
     m_rand.assign(RandSize, 0);
-    for (uint16_t i = 0; i < rand.size(); i++)
+    for (uint32_t i = 0; i < rand.size(); i++)
     {
         m_rand[i] = rand[i];
     }
@@ -2197,7 +2177,7 @@ DirectSecurityModeReject::SetAuts(std::vector<uint8_t> auts)
 {
     m_hasAuts = true;
     m_auts.assign(AutsSize, 0);
-    for (uint16_t i = 0; i < auts.size(); i++)
+    for (uint32_t i = 0; i < auts.size(); i++)
     {
         m_auts[i] = auts[i];
     }
@@ -2254,7 +2234,7 @@ DirectRekeyingRequest::Print(std::ostream& os) const
        << "seqNum: " << m_seqNum << " "
        << "ueSecurityCapabilities: " << m_ueSecurityCapabilities << " nonce1: ";
 
-    for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
+    for (auto it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
     {
         os << (uint16_t)*it << " ";
     }
@@ -2269,7 +2249,7 @@ DirectRekeyingRequest::Print(std::ostream& os) const
     if (m_hasPrukId)
     {
         os << " prukId: ";
-        for (std::vector<uint8_t>::const_iterator it = m_prukId.begin(); it != m_prukId.end(); ++it)
+        for (auto it = m_prukId.begin(); it != m_prukId.end(); ++it)
         {
             os << (uint16_t)*it << " ";
         }
@@ -2305,7 +2285,7 @@ DirectRekeyingRequest::Serialize(Buffer::Iterator start) const
     i.WriteU8(m_msgId);
     i.WriteHtonU16(m_seqNum);
     i.WriteHtonU16(m_ueSecurityCapabilities);
-    for (std::vector<uint8_t>::const_iterator it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
+    for (auto it = m_nonce1.begin(); it != m_nonce1.end(); ++it)
     {
         i.WriteU8(*it);
     }
@@ -2318,7 +2298,7 @@ DirectRekeyingRequest::Serialize(Buffer::Iterator start) const
     if (m_hasPrukId)
     {
         i.WriteU8(8);
-        for (std::vector<uint8_t>::const_iterator it = m_prukId.begin(); it != m_prukId.end(); ++it)
+        for (auto it = m_prukId.begin(); it != m_prukId.end(); ++it)
         {
             i.WriteU8(*it);
         }
@@ -2420,7 +2400,7 @@ void
 DirectRekeyingRequest::SetNonce1(std::vector<uint8_t> nonce1)
 {
     m_nonce1.assign(NonceSize, 0);
-    for (uint16_t i = 0; i < nonce1.size(); i++)
+    for (uint32_t i = 0; i < nonce1.size(); i++)
     {
         m_nonce1[i] = nonce1[i];
     }
@@ -2462,7 +2442,7 @@ DirectRekeyingRequest::SetPrukId(std::vector<uint8_t> prukId)
 {
     m_hasPrukId = true;
     m_prukId.assign(PrukIdSize, 0);
-    for (uint16_t i = 0; i < prukId.size(); i++)
+    for (uint32_t i = 0; i < prukId.size(); i++)
     {
         m_prukId[i] = prukId[i];
     }

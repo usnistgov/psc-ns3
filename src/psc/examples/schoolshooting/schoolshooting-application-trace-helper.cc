@@ -65,8 +65,7 @@ SchoolShootingApplicationTraceHelper::SchoolShootingApplicationTraceHelper (Ptr<
   m_applicationHelper = applicationHelper;
 }
 
-
-SchoolShootingApplicationTraceHelper::~SchoolShootingApplicationTraceHelper (void)
+SchoolShootingApplicationTraceHelper::~SchoolShootingApplicationTraceHelper()
 {
   NS_LOG_FUNCTION (this);
   m_applicationHelper = nullptr;
@@ -74,7 +73,7 @@ SchoolShootingApplicationTraceHelper::~SchoolShootingApplicationTraceHelper (voi
 }
 
 TypeId
-SchoolShootingApplicationTraceHelper::GetTypeId (void)
+SchoolShootingApplicationTraceHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::SchoolShootingApplicationTraceHelper")
     .SetParent<Object> ()
@@ -89,7 +88,7 @@ SchoolShootingApplicationTraceHelper::EnablePscAppsTimeTrace (SchoolShootingAppl
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_appTimeOutputStreamWrappers.find (name);
+  auto it = m_appTimeOutputStreamWrappers.find(name);
   NS_ABORT_MSG_UNLESS (it == m_appTimeOutputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnablePscAppsTimeTrace (" << name << ") only once");
 
   PscScenarioDefinition::ApplicationInfo ai = m_applicationHelper->GetScenarioDefinition()->GetApplication (name);
@@ -123,7 +122,7 @@ SchoolShootingApplicationTraceHelper::EnablePscAppsTrafficTrace (SchoolShootingA
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_appTrafficOutputStreamWrappers.find (name);
+  auto it = m_appTrafficOutputStreamWrappers.find(name);
   NS_ABORT_MSG_UNLESS (it == m_appTrafficOutputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnablePscAppsTrafficTrace (" << name << ") only once");
 
   PscScenarioDefinition::ApplicationInfo ai = m_applicationHelper->GetScenarioDefinition()->GetApplication (name);
@@ -178,7 +177,8 @@ SchoolShootingApplicationTraceHelper::EnableSwatHelmetCameraTraces (ApplicationC
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_SWAT_HELMET_CAMERA);
+  auto it = m_outputStreamWrappers.find(
+      SchoolShootingApplicationHelper::SCHOOL_SHOOTING_SWAT_HELMET_CAMERA);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableSwatHelmetCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-SwatHelmetCameraVideo-appTraffic.txt", std::ios::out);
@@ -186,11 +186,11 @@ SchoolShootingApplicationTraceHelper::EnableSwatHelmetCameraTraces (ApplicationC
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxSwatHelmetCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxSwatHelmetCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -228,7 +228,8 @@ SchoolShootingApplicationTraceHelper::EnableDeployableCameraTraces (ApplicationC
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_DEPLOYABLE_CAMERA);
+  auto it = m_outputStreamWrappers.find(
+      SchoolShootingApplicationHelper::SCHOOL_SHOOTING_DEPLOYABLE_CAMERA);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableDeployableCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-DeployableCameraVideo-appTraffic.txt", std::ios::out);
@@ -236,11 +237,11 @@ SchoolShootingApplicationTraceHelper::EnableDeployableCameraTraces (ApplicationC
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxDeployableCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxDeployableCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -278,7 +279,8 @@ SchoolShootingApplicationTraceHelper::EnableThrowPhoneCameraTraces (ApplicationC
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_THROW_PHONE_VIDEO);
+  auto it = m_outputStreamWrappers.find(
+      SchoolShootingApplicationHelper::SCHOOL_SHOOTING_THROW_PHONE_VIDEO);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableThrowPhoneCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-ThrowPhoneCameraVideo-appTraffic.txt", std::ios::out);
@@ -286,11 +288,11 @@ SchoolShootingApplicationTraceHelper::EnableThrowPhoneCameraTraces (ApplicationC
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxThrowPhoneCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxThrowPhoneCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -328,7 +330,8 @@ SchoolShootingApplicationTraceHelper::EnableHelicopterCameraTraces (ApplicationC
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_HELICOPTER);
+  auto it =
+      m_outputStreamWrappers.find(SchoolShootingApplicationHelper::SCHOOL_SHOOTING_HELICOPTER);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableHelicopterCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-HelicopterCameraVideo-appTraffic.txt", std::ios::out);
@@ -336,11 +339,11 @@ SchoolShootingApplicationTraceHelper::EnableHelicopterCameraTraces (ApplicationC
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxHelicopterCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxHelicopterCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -378,7 +381,8 @@ SchoolShootingApplicationTraceHelper::EnableEmsVehicleCameraTraces (ApplicationC
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_EMS_VEHICLES);
+  auto it =
+      m_outputStreamWrappers.find(SchoolShootingApplicationHelper::SCHOOL_SHOOTING_EMS_VEHICLES);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableEmsVehicleCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-EmsVehicleCameraVideo-appTraffic.txt", std::ios::out);
@@ -386,11 +390,11 @@ SchoolShootingApplicationTraceHelper::EnableEmsVehicleCameraTraces (ApplicationC
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxEmsVehicleCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxEmsVehicleCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -428,7 +432,8 @@ SchoolShootingApplicationTraceHelper::EnableVideoConferenceVideoTraces (Applicat
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_VIDEO_CONFERENCE_VIDEO);
+  auto it = m_outputStreamWrappers.find(
+      SchoolShootingApplicationHelper::SCHOOL_SHOOTING_VIDEO_CONFERENCE_VIDEO);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableVideoConferenceVideoTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-VideoConferenceVideo-appTraffic.txt", std::ios::out);
@@ -436,11 +441,11 @@ SchoolShootingApplicationTraceHelper::EnableVideoConferenceVideoTraces (Applicat
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxVideoConferenceVideo, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxVideoConferenceVideo, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -478,7 +483,8 @@ SchoolShootingApplicationTraceHelper::EnableSchoolCameraTraces (ApplicationConta
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_SCHOOL_VIDEO);
+  auto it =
+      m_outputStreamWrappers.find(SchoolShootingApplicationHelper::SCHOOL_SHOOTING_SCHOOL_VIDEO);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableSchoolCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-SchoolCameraVideo-appTraffic.txt", std::ios::out);
@@ -486,11 +492,11 @@ SchoolShootingApplicationTraceHelper::EnableSchoolCameraTraces (ApplicationConta
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxSchoolCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxSchoolCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -528,7 +534,8 @@ SchoolShootingApplicationTraceHelper::EnableTrafficCameraTraces (ApplicationCont
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_TRAFFIC_VIDEO);
+  auto it =
+      m_outputStreamWrappers.find(SchoolShootingApplicationHelper::SCHOOL_SHOOTING_TRAFFIC_VIDEO);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableTrafficCameraTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-TrafficCameraVideo-appTraffic.txt", std::ios::out);
@@ -536,11 +543,11 @@ SchoolShootingApplicationTraceHelper::EnableTrafficCameraTraces (ApplicationCont
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxTrafficCamera, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxTrafficCamera, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -578,7 +585,7 @@ SchoolShootingApplicationTraceHelper::EnableWebTraces (ApplicationContainer txAp
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_WEB);
+  auto it = m_outputStreamWrappers.find(SchoolShootingApplicationHelper::SCHOOL_SHOOTING_WEB);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableWebTraces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-Web-appTraffic.txt", std::ios::out);
@@ -586,11 +593,11 @@ SchoolShootingApplicationTraceHelper::EnableWebTraces (ApplicationContainer txAp
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxWeb, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxWeb, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -621,7 +628,7 @@ SchoolShootingApplicationTraceHelper::EnableNg911Traces (ApplicationContainer tx
 {
   NS_LOG_FUNCTION (this);
 
-  std::map<SchoolShootingApplicationHelper::SchoolSchootingApplicationId, Ptr<OutputStreamWrapper> >::iterator it = m_outputStreamWrappers.find (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_NG911);
+  auto it = m_outputStreamWrappers.find(SchoolShootingApplicationHelper::SCHOOL_SHOOTING_NG911);
   NS_ABORT_MSG_UNLESS (it == m_outputStreamWrappers.end (), "Make sure to call PscScenarioTraceHelper::EnableNg911Traces () only once");
 
   Ptr<OutputStreamWrapper> wrapper = Create<OutputStreamWrapper> (m_applicationHelper->GetScenarioDefinition()->GetName () + "-NG911Video-appTraffic.txt", std::ios::out);
@@ -629,11 +636,11 @@ SchoolShootingApplicationTraceHelper::EnableNg911Traces (ApplicationContainer tx
   //print header line
   *wrapper->GetStream () << "Time\tID\tAction\tSeqNum\tSize" << std::endl;
 
-  for (uint16_t i = 0; i < txApps.GetN (); i++)
+  for (uint32_t i = 0; i < txApps.GetN (); i++)
     {
       txApps.Get (i)->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&TraceTxNg911, wrapper, txApps.Get (i)->GetNode ()));
     }
-  for (uint16_t i = 0; i < rxApps.GetN (); i++)
+  for (uint32_t i = 0; i < rxApps.GetN (); i++)
     {
       rxApps.Get (i)->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&TraceRxNg911, wrapper, rxApps.Get (i)->GetNode ()));
     }
@@ -673,7 +680,7 @@ SchoolShootingApplicationTraceHelper::SetOutputPrecision (uint16_t outputPrecisi
 }
 
 uint16_t
-SchoolShootingApplicationTraceHelper::GetOutputPrecision (void)
+SchoolShootingApplicationTraceHelper::GetOutputPrecision()
 {
   return s_outputPrecision;
 }

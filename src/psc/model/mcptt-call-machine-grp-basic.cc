@@ -66,7 +66,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMachineGrpBasic);
 
 TypeId
-McpttCallMachineGrpBasic::GetTypeId (void)
+McpttCallMachineGrpBasic::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMachineGrpBasic")
     .SetParent<McpttCallMachineGrp> ()
@@ -160,13 +160,13 @@ McpttCallMachineGrpBasic::McpttCallMachineGrpBasic (Ptr<McpttCall> call)
   m_tfg6->Link (&McpttCallMachineGrpBasic::ExpiryOfTfg6, this);
 }
 
-McpttCallMachineGrpBasic::~McpttCallMachineGrpBasic (void)
+McpttCallMachineGrpBasic::~McpttCallMachineGrpBasic()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttCallMachineGrpBasic::AcceptCall (void)
+McpttCallMachineGrpBasic::AcceptCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -186,7 +186,7 @@ McpttCallMachineGrpBasic::AcceptCall (void)
 }
 
 void
-McpttCallMachineGrpBasic::BeginEmergAlert (void)
+McpttCallMachineGrpBasic::BeginEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
@@ -198,7 +198,7 @@ McpttCallMachineGrpBasic::BeginEmergAlert (void)
 }
 
 Time
-McpttCallMachineGrpBasic::CalcDelayForAfterCallProbe (void)
+McpttCallMachineGrpBasic::CalcDelayForAfterCallProbe()
 {
   NS_LOG_FUNCTION (this);
 
@@ -215,7 +215,7 @@ McpttCallMachineGrpBasic::CalcDelayForAfterCallProbe (void)
 }
 
 Time
-McpttCallMachineGrpBasic::CalcDelayForPeriodicAnnoun (void)
+McpttCallMachineGrpBasic::CalcDelayForPeriodicAnnoun()
 {
   NS_LOG_FUNCTION (this);
 
@@ -235,7 +235,7 @@ McpttCallMachineGrpBasic::CalcDelayForPeriodicAnnoun (void)
 }
 
 Time
-McpttCallMachineGrpBasic::CalcDelayForMaxDuration (void) const
+McpttCallMachineGrpBasic::CalcDelayForMaxDuration() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -258,7 +258,7 @@ McpttCallMachineGrpBasic::CalcDelayForMaxDuration (void) const
 }
 
 void
-McpttCallMachineGrpBasic::CancelEmergAlert (void)
+McpttCallMachineGrpBasic::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
@@ -309,7 +309,7 @@ McpttCallMachineGrpBasic::ChangeState (Ptr<McpttCallMachineGrpBasicState>  state
 }
 
 void
-McpttCallMachineGrpBasic::DowngradeCallType (void)
+McpttCallMachineGrpBasic::DowngradeCallType()
 {
   NS_LOG_FUNCTION (this);
 
@@ -319,7 +319,7 @@ McpttCallMachineGrpBasic::DowngradeCallType (void)
 }
 
 uint32_t
-McpttCallMachineGrpBasic::GetCallerUserId (void) const
+McpttCallMachineGrpBasic::GetCallerUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -330,7 +330,7 @@ McpttCallMachineGrpBasic::GetCallerUserId (void) const
 }
 
 McpttCallMsgFieldCallType
-McpttCallMachineGrpBasic::GetCallType (void) const
+McpttCallMachineGrpBasic::GetCallType() const
 {
   Ptr<McpttCallTypeMachineGrpBasic> typeMachine = GetTypeMachine ();
   McpttCallMsgFieldCallType typeField = typeMachine->GetCallType ();
@@ -339,13 +339,13 @@ McpttCallMachineGrpBasic::GetCallType (void) const
 }
 
 TypeId
-McpttCallMachineGrpBasic::GetInstanceTypeId (void) const
+McpttCallMachineGrpBasic::GetInstanceTypeId() const
 {
   return McpttCallMachineGrpBasic::GetTypeId ();
 }
 
 McpttEntityId
-McpttCallMachineGrpBasic::GetStateId (void) const
+McpttCallMachineGrpBasic::GetStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -356,7 +356,7 @@ McpttCallMachineGrpBasic::GetStateId (void) const
 }
 
 Ptr<McpttCallTypeMachine>
-McpttCallMachineGrpBasic::GetCallTypeMachine (void) const
+McpttCallMachineGrpBasic::GetCallTypeMachine() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -367,7 +367,7 @@ McpttCallMachineGrpBasic::GetCallTypeMachine (void) const
 }
 
 void
-McpttCallMachineGrpBasic::InitiateCall (void)
+McpttCallMachineGrpBasic::InitiateCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -387,7 +387,7 @@ McpttCallMachineGrpBasic::InitiateCall (void)
 }
 
 bool
-McpttCallMachineGrpBasic::IsCallOngoing (void) const
+McpttCallMachineGrpBasic::IsCallOngoing() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -398,7 +398,7 @@ McpttCallMachineGrpBasic::IsCallOngoing (void) const
 }
 
 bool
-McpttCallMachineGrpBasic::IsConfirmMode (void) const
+McpttCallMachineGrpBasic::IsConfirmMode() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -408,7 +408,7 @@ McpttCallMachineGrpBasic::IsConfirmMode (void) const
 }
 
 bool
-McpttCallMachineGrpBasic::IsStarted (void) const
+McpttCallMachineGrpBasic::IsStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -418,7 +418,7 @@ McpttCallMachineGrpBasic::IsStarted (void) const
 }
 
 bool
-McpttCallMachineGrpBasic::IsUserAckReq (void) const
+McpttCallMachineGrpBasic::IsUserAckReq() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -626,7 +626,7 @@ McpttCallMachineGrpBasic::ReceiveGrpCallProbe (const McpttCallMsgGrpProbe& msg)
 }
 
 void
-McpttCallMachineGrpBasic::RejectCall (void)
+McpttCallMachineGrpBasic::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -646,7 +646,7 @@ McpttCallMachineGrpBasic::RejectCall (void)
 }
 
 void
-McpttCallMachineGrpBasic::ReleaseCall (void)
+McpttCallMachineGrpBasic::ReleaseCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -744,7 +744,7 @@ McpttCallMachineGrpBasic::SetRefIntVal (uint16_t refIntVal)
 }
 
 void
-McpttCallMachineGrpBasic::Start (void)
+McpttCallMachineGrpBasic::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -757,7 +757,7 @@ McpttCallMachineGrpBasic::Start (void)
 }
 
 void
-McpttCallMachineGrpBasic::Stop (void)
+McpttCallMachineGrpBasic::Stop()
 {
   Ptr<McpttCall> call = GetCall ();
   Ptr<McpttTimer> tfg1 = GetTfg1 ();
@@ -852,24 +852,24 @@ McpttCallMachineGrpBasic::UpgradeCallType (uint8_t callType)
 }
 
 void
-McpttCallMachineGrpBasic::DoDispose (void)
+McpttCallMachineGrpBasic::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetEmergMachine (0);
-  SetRndDelays (0);
-  SetState (0);
-  SetTfg1 (0);
-  SetTfg2 (0);
-  SetTfg3 (0);
-  SetTfg4 (0);
-  SetTfg5 (0);
-  SetTfg6 (0);
-  SetTypeMachine (0);
+  SetEmergMachine(nullptr);
+  SetRndDelays(nullptr);
+  SetState(nullptr);
+  SetTfg1(nullptr);
+  SetTfg2(nullptr);
+  SetTfg3(nullptr);
+  SetTfg4(nullptr);
+  SetTfg5(nullptr);
+  SetTfg6(nullptr);
+  SetTypeMachine(nullptr);
 }
 
 void
-McpttCallMachineGrpBasic::ExpiryOfTfg1 (void)
+McpttCallMachineGrpBasic::ExpiryOfTfg1()
 {
   NS_LOG_FUNCTION (this);
 
@@ -889,7 +889,7 @@ McpttCallMachineGrpBasic::ExpiryOfTfg1 (void)
 }
 
 void
-McpttCallMachineGrpBasic::ExpiryOfTfg2 (void)
+McpttCallMachineGrpBasic::ExpiryOfTfg2()
 {
   NS_LOG_FUNCTION (this);
 
@@ -906,7 +906,7 @@ McpttCallMachineGrpBasic::ExpiryOfTfg2 (void)
 }
 
 void
-McpttCallMachineGrpBasic::ExpiryOfTfg3 (void)
+McpttCallMachineGrpBasic::ExpiryOfTfg3()
 {
   NS_LOG_FUNCTION (this);
 
@@ -923,7 +923,7 @@ McpttCallMachineGrpBasic::ExpiryOfTfg3 (void)
 }
 
 void
-McpttCallMachineGrpBasic::ExpiryOfTfg4 (void)
+McpttCallMachineGrpBasic::ExpiryOfTfg4()
 {
   NS_LOG_FUNCTION (this);
 
@@ -940,7 +940,7 @@ McpttCallMachineGrpBasic::ExpiryOfTfg4 (void)
 }
 
 void
-McpttCallMachineGrpBasic::ExpiryOfTfg5 (void)
+McpttCallMachineGrpBasic::ExpiryOfTfg5()
 {
   NS_LOG_FUNCTION (this);
 
@@ -957,7 +957,7 @@ McpttCallMachineGrpBasic::ExpiryOfTfg5 (void)
 }
 
 void
-McpttCallMachineGrpBasic::ExpiryOfTfg6 (void)
+McpttCallMachineGrpBasic::ExpiryOfTfg6()
 {
   NS_LOG_FUNCTION (this);
 
@@ -974,7 +974,7 @@ McpttCallMachineGrpBasic::ExpiryOfTfg6 (void)
 }
 
 bool
-McpttCallMachineGrpBasic::GetStarted (void) const
+McpttCallMachineGrpBasic::GetStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -990,7 +990,7 @@ McpttCallMachineGrpBasic::SetStarted (const bool& started)
 }
 
 McpttCallMsgFieldCallId
-McpttCallMachineGrpBasic::GetCallId (void) const
+McpttCallMachineGrpBasic::GetCallId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -998,7 +998,7 @@ McpttCallMachineGrpBasic::GetCallId (void) const
 }
 
 Ptr<McpttCounter>
-McpttCallMachineGrpBasic::GetCfg3 (void) const
+McpttCallMachineGrpBasic::GetCfg3() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1006,7 +1006,7 @@ McpttCallMachineGrpBasic::GetCfg3 (void) const
 }
 
 Ptr<McpttEmergAlertMachineBasic>
-McpttCallMachineGrpBasic::GetEmergMachine (void) const
+McpttCallMachineGrpBasic::GetEmergMachine() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1014,7 +1014,7 @@ McpttCallMachineGrpBasic::GetEmergMachine (void) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMachineGrpBasic::GetGrpId (void) const
+McpttCallMachineGrpBasic::GetGrpId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1022,7 +1022,7 @@ McpttCallMachineGrpBasic::GetGrpId (void) const
 }
 
 McpttCallMsgFieldUserId
-McpttCallMachineGrpBasic::GetOrigId (void) const
+McpttCallMachineGrpBasic::GetOrigId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1030,13 +1030,13 @@ McpttCallMachineGrpBasic::GetOrigId (void) const
 }
 
 Ptr<McpttCall>
-McpttCallMachineGrpBasic::GetCall (void) const
+McpttCallMachineGrpBasic::GetCall() const
 {
   return m_call;
 }
 
 bool
-McpttCallMachineGrpBasic::GetProbeRespVal (void) const
+McpttCallMachineGrpBasic::GetProbeRespVal() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1044,7 +1044,7 @@ McpttCallMachineGrpBasic::GetProbeRespVal (void) const
 }
 
 McpttCallMsgFieldRefreshInterval
-McpttCallMachineGrpBasic::GetRefInt (void) const
+McpttCallMachineGrpBasic::GetRefInt() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1052,7 +1052,7 @@ McpttCallMachineGrpBasic::GetRefInt (void) const
 }
 
 uint16_t
-McpttCallMachineGrpBasic::GenerateRandomCallId (void) const
+McpttCallMachineGrpBasic::GenerateRandomCallId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1060,7 +1060,7 @@ McpttCallMachineGrpBasic::GenerateRandomCallId (void) const
 }
 
 Ptr<RandomVariableStream>
-McpttCallMachineGrpBasic::GetRndDelays (void) const
+McpttCallMachineGrpBasic::GetRndDelays() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1068,7 +1068,7 @@ McpttCallMachineGrpBasic::GetRndDelays (void) const
 }
 
 McpttCallMsgFieldSdp
-McpttCallMachineGrpBasic::GetSdp (void) const
+McpttCallMachineGrpBasic::GetSdp() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1076,7 +1076,7 @@ McpttCallMachineGrpBasic::GetSdp (void) const
 }
 
 McpttCallMsgFieldStartTime
-McpttCallMachineGrpBasic::GetStartTime (void) const
+McpttCallMachineGrpBasic::GetStartTime() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1084,7 +1084,7 @@ McpttCallMachineGrpBasic::GetStartTime (void) const
 }
 
 Ptr<McpttCallMachineGrpBasicState>
-McpttCallMachineGrpBasic::GetState (void) const
+McpttCallMachineGrpBasic::GetState() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1092,7 +1092,7 @@ McpttCallMachineGrpBasic::GetState (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBasic::GetTfg1 (void) const
+McpttCallMachineGrpBasic::GetTfg1() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1100,7 +1100,7 @@ McpttCallMachineGrpBasic::GetTfg1 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBasic::GetTfg2 (void) const
+McpttCallMachineGrpBasic::GetTfg2() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1108,7 +1108,7 @@ McpttCallMachineGrpBasic::GetTfg2 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBasic::GetTfg3 (void) const
+McpttCallMachineGrpBasic::GetTfg3() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1116,7 +1116,7 @@ McpttCallMachineGrpBasic::GetTfg3 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBasic::GetTfg4 (void) const
+McpttCallMachineGrpBasic::GetTfg4() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1124,7 +1124,7 @@ McpttCallMachineGrpBasic::GetTfg4 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBasic::GetTfg5 (void) const
+McpttCallMachineGrpBasic::GetTfg5() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1132,7 +1132,7 @@ McpttCallMachineGrpBasic::GetTfg5 (void) const
 }
 
 Ptr<McpttTimer>
-McpttCallMachineGrpBasic::GetTfg6 (void) const
+McpttCallMachineGrpBasic::GetTfg6() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1140,7 +1140,7 @@ McpttCallMachineGrpBasic::GetTfg6 (void) const
 }
 
 Ptr<McpttCallTypeMachineGrpBasic>
-McpttCallMachineGrpBasic::GetTypeMachine (void) const
+McpttCallMachineGrpBasic::GetTypeMachine() const
 {
   NS_LOG_FUNCTION (this);
 

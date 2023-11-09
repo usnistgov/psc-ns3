@@ -49,7 +49,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (IndoorToIndoorPropagationLossModel);
 
 TypeId
-IndoorToIndoorPropagationLossModel::GetTypeId (void)
+IndoorToIndoorPropagationLossModel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::IndoorToIndoorPropagationLossModel")
 
@@ -110,7 +110,7 @@ IndoorToIndoorPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityM
       MobilityDuo couple;
       couple.a = a;
       couple.b = b;
-      std::map<MobilityDuo, double>::iterator it_a = m_randomMap.find (couple);
+      auto it_a = m_randomMap.find(couple);
       if (it_a != m_randomMap.end ())
         {
           rand = it_a->second;
@@ -119,7 +119,7 @@ IndoorToIndoorPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityM
         {
           couple.a = b;
           couple.b = a;
-          std::map<MobilityDuo, double>::iterator it_b = m_randomMap.find (couple);
+          auto it_b = m_randomMap.find(couple);
           if (it_b != m_randomMap.end ())
             {
               rand = it_b->second;

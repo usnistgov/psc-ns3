@@ -55,7 +55,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttCallMsg");
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMsg);
 
 TypeId
-McpttCallMsg::GetTypeId (void)
+McpttCallMsg::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsg")
     .SetParent<McpttMsg> ()
@@ -64,9 +64,9 @@ McpttCallMsg::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsg::McpttCallMsg (void)
-  : McpttMsg (),
-    m_msgType (McpttCallMsgFieldMsgType ())
+McpttCallMsg::McpttCallMsg()
+    : McpttMsg(),
+      m_msgType(McpttCallMsgFieldMsgType())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -78,7 +78,7 @@ McpttCallMsg::McpttCallMsg (const McpttCallMsgFieldMsgType& msgType)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsg::~McpttCallMsg (void)
+McpttCallMsg::~McpttCallMsg()
 {}
 
 uint32_t
@@ -98,13 +98,13 @@ McpttCallMsg::Deserialize (Buffer::Iterator start)
 }
 
 TypeId
-McpttCallMsg::GetInstanceTypeId (void) const
+McpttCallMsg::GetInstanceTypeId() const
 {
   return McpttCallMsg::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsg::GetSerializedSize (void) const
+McpttCallMsg::GetSerializedSize() const
 {
   uint32_t serializedSize = 0;
   McpttCallMsgFieldMsgType msgType = GetMsgType ();
@@ -169,7 +169,7 @@ McpttCallMsg::WriteData (Buffer::Iterator& start) const
 }
 
 McpttCallMsgFieldMsgType
-McpttCallMsg::GetMsgType (void) const
+McpttCallMsg::GetMsgType() const
 {
   return m_msgType;
 }
@@ -189,7 +189,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpProbe);
 const uint8_t McpttCallMsgGrpProbe::CODE = 1;
 
 TypeId
-McpttCallMsgGrpProbe::GetTypeId (void)
+McpttCallMsgGrpProbe::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpProbe")
     .SetParent<McpttCallMsg> ()
@@ -199,24 +199,24 @@ McpttCallMsgGrpProbe::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpProbe::McpttCallMsgGrpProbe (void)
-  : McpttCallMsg (McpttCallMsgGrpProbe::CODE),
-    m_grpId (McpttCallMsgFieldGrpId  ())
+McpttCallMsgGrpProbe::McpttCallMsgGrpProbe()
+    : McpttCallMsg(McpttCallMsgGrpProbe::CODE),
+      m_grpId(McpttCallMsgFieldGrpId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpProbe::~McpttCallMsgGrpProbe (void)
+McpttCallMsgGrpProbe::~McpttCallMsgGrpProbe()
 {}
 
 TypeId
-McpttCallMsgGrpProbe::GetInstanceTypeId (void) const
+McpttCallMsgGrpProbe::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpProbe::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpProbe::GetSerializedSize (void) const
+McpttCallMsgGrpProbe::GetSerializedSize() const
 {
   McpttCallMsgFieldGrpId grpId = GetGrpId ();
 
@@ -276,7 +276,7 @@ McpttCallMsgGrpProbe::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpProbe::GetGrpId (void) const
+McpttCallMsgGrpProbe::GetGrpId() const
 {
   return m_grpId;
 }
@@ -296,7 +296,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpAnnoun);
 const uint8_t McpttCallMsgGrpAnnoun::CODE = 2;
 
 TypeId
-McpttCallMsgGrpAnnoun::GetTypeId (void)
+McpttCallMsgGrpAnnoun::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpAnnoun")
     .SetParent<McpttCallMsg> ()
@@ -306,34 +306,34 @@ McpttCallMsgGrpAnnoun::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpAnnoun::McpttCallMsgGrpAnnoun (void)
-  : McpttCallMsg (McpttCallMsgGrpAnnoun::CODE),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_callType (McpttCallMsgFieldCallType ()),
-    m_confirmMode (false),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_lastChgTime (McpttCallMsgFieldLastChgTime ()),
-    m_lastChgUserId (McpttCallMsgFieldUserId ()),
-    m_origUserId (McpttCallMsgFieldUserId ()),
-    m_probeResp (false),
-    m_refInt (McpttCallMsgFieldRefreshInterval ()),
-    m_sdp (McpttCallMsgFieldSdp ()),
-    m_startTime (McpttCallMsgFieldStartTime ())
+McpttCallMsgGrpAnnoun::McpttCallMsgGrpAnnoun()
+    : McpttCallMsg(McpttCallMsgGrpAnnoun::CODE),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_callType(McpttCallMsgFieldCallType()),
+      m_confirmMode(false),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_lastChgTime(McpttCallMsgFieldLastChgTime()),
+      m_lastChgUserId(McpttCallMsgFieldUserId()),
+      m_origUserId(McpttCallMsgFieldUserId()),
+      m_probeResp(false),
+      m_refInt(McpttCallMsgFieldRefreshInterval()),
+      m_sdp(McpttCallMsgFieldSdp()),
+      m_startTime(McpttCallMsgFieldStartTime())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpAnnoun::~McpttCallMsgGrpAnnoun (void)
+McpttCallMsgGrpAnnoun::~McpttCallMsgGrpAnnoun()
 {}
 
 TypeId
-McpttCallMsgGrpAnnoun::GetInstanceTypeId (void) const
+McpttCallMsgGrpAnnoun::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpAnnoun::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpAnnoun::GetSerializedSize (void) const
+McpttCallMsgGrpAnnoun::GetSerializedSize() const
 {
   McpttCallMsgFieldProbeResp probeRespField;
   McpttCallMsgFieldConfirmMode confirmModeField;
@@ -361,12 +361,12 @@ McpttCallMsgGrpAnnoun::GetSerializedSize (void) const
   size += sdp.GetSerializedSize ();
   size += startTime.GetSerializedSize ();
 
-  if (confirmMode == true)
-    {
+  if (confirmMode)
+  {
       size += confirmModeField.GetSerializedSize ();
     }
 
-  if (probeResp == true)
+    if (probeResp)
     {
       size += probeRespField.GetSerializedSize ();
     }
@@ -375,7 +375,7 @@ McpttCallMsgGrpAnnoun::GetSerializedSize (void) const
 }
 
 bool
-McpttCallMsgGrpAnnoun::IsConfirmModeIndicated (void) const
+McpttCallMsgGrpAnnoun::IsConfirmModeIndicated() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -385,7 +385,7 @@ McpttCallMsgGrpAnnoun::IsConfirmModeIndicated (void) const
 }
 
 bool
-McpttCallMsgGrpAnnoun::IsProbeResp (void) const
+McpttCallMsgGrpAnnoun::IsProbeResp() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -533,79 +533,79 @@ McpttCallMsgGrpAnnoun::WriteData (Buffer::Iterator& buff) const
   lastChgTime.Serialize (buff);
   lastChgUserId.Serialize (buff);
 
-  if (confirmMode == true)
-    {
+  if (confirmMode)
+  {
       confirmModeField.Serialize (buff);
     }
 
-  if (probeResp == true)
+    if (probeResp)
     {
       probeRespField.Serialize (buff);
     }
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgGrpAnnoun::GetCallId (void) const
+McpttCallMsgGrpAnnoun::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldCallType
-McpttCallMsgGrpAnnoun::GetCallType (void) const
+McpttCallMsgGrpAnnoun::GetCallType() const
 {
   return m_callType;
 }
 
 bool
-McpttCallMsgGrpAnnoun::GetConfirmMode (void) const
+McpttCallMsgGrpAnnoun::GetConfirmMode() const
 {
   return m_confirmMode;
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpAnnoun::GetGrpId (void) const
+McpttCallMsgGrpAnnoun::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldLastChgTime
-McpttCallMsgGrpAnnoun::GetLastChgTime (void) const
+McpttCallMsgGrpAnnoun::GetLastChgTime() const
 {
   return m_lastChgTime;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpAnnoun::GetLastChgUserId (void) const
+McpttCallMsgGrpAnnoun::GetLastChgUserId() const
 {
   return m_lastChgUserId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpAnnoun::GetOrigId (void) const
+McpttCallMsgGrpAnnoun::GetOrigId() const
 {
   return m_origUserId;
 }
 
 bool
-McpttCallMsgGrpAnnoun::GetProbeResp (void) const
+McpttCallMsgGrpAnnoun::GetProbeResp() const
 {
   return m_probeResp;
 }
 
 McpttCallMsgFieldRefreshInterval
-McpttCallMsgGrpAnnoun::GetRefInt (void) const
+McpttCallMsgGrpAnnoun::GetRefInt() const
 {
   return m_refInt;
 }
 
 McpttCallMsgFieldSdp
-McpttCallMsgGrpAnnoun::GetSdp (void) const
+McpttCallMsgGrpAnnoun::GetSdp() const
 {
   return m_sdp;
 }
 
 McpttCallMsgFieldStartTime
-McpttCallMsgGrpAnnoun::GetStartTime (void) const
+McpttCallMsgGrpAnnoun::GetStartTime() const
 {
   return m_startTime;
 }
@@ -705,7 +705,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpAccept);
 const uint8_t McpttCallMsgGrpAccept::CODE = 3;
 
 TypeId
-McpttCallMsgGrpAccept::GetTypeId (void)
+McpttCallMsgGrpAccept::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpAccept")
     .SetParent<McpttCallMsg> ()
@@ -715,21 +715,21 @@ McpttCallMsgGrpAccept::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpAccept::McpttCallMsgGrpAccept (void)
-  : McpttCallMsg (McpttCallMsgGrpAccept::CODE),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_callType (McpttCallMsgFieldCallType ()),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_userId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpAccept::McpttCallMsgGrpAccept()
+    : McpttCallMsg(McpttCallMsgGrpAccept::CODE),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_callType(McpttCallMsgFieldCallType()),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_userId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpAccept::~McpttCallMsgGrpAccept (void)
+McpttCallMsgGrpAccept::~McpttCallMsgGrpAccept()
 {}
 
 TypeId
-McpttCallMsgGrpAccept::GetInstanceTypeId (void) const
+McpttCallMsgGrpAccept::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpAccept::GetTypeId ();
 }
@@ -821,25 +821,25 @@ McpttCallMsgGrpAccept::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgGrpAccept::GetCallId (void) const
+McpttCallMsgGrpAccept::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldCallType
-McpttCallMsgGrpAccept::GetCallType (void) const
+McpttCallMsgGrpAccept::GetCallType() const
 {
   return m_callType;
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpAccept::GetGrpId (void) const
+McpttCallMsgGrpAccept::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpAccept::GetUserId (void) const
+McpttCallMsgGrpAccept::GetUserId() const
 {
   return m_userId;
 }
@@ -883,7 +883,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpImmPerilEnd);
 const uint8_t McpttCallMsgGrpImmPerilEnd::CODE = 5;
 
 TypeId
-McpttCallMsgGrpImmPerilEnd::GetTypeId (void)
+McpttCallMsgGrpImmPerilEnd::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpImmPerilEnd")
     .SetParent<McpttCallMsg> ()
@@ -893,28 +893,28 @@ McpttCallMsgGrpImmPerilEnd::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpImmPerilEnd::McpttCallMsgGrpImmPerilEnd (void)
-  : McpttCallMsg (McpttCallMsgGrpImmPerilEnd::CODE),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_lastChgTime (McpttCallMsgFieldLastChgTime ()),
-    m_lastChgUserId (McpttCallMsgFieldUserId ()),
-    m_userId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpImmPerilEnd::McpttCallMsgGrpImmPerilEnd()
+    : McpttCallMsg(McpttCallMsgGrpImmPerilEnd::CODE),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_lastChgTime(McpttCallMsgFieldLastChgTime()),
+      m_lastChgUserId(McpttCallMsgFieldUserId()),
+      m_userId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpImmPerilEnd::~McpttCallMsgGrpImmPerilEnd (void)
+McpttCallMsgGrpImmPerilEnd::~McpttCallMsgGrpImmPerilEnd()
 {}
 
 TypeId
-McpttCallMsgGrpImmPerilEnd::GetInstanceTypeId (void) const
+McpttCallMsgGrpImmPerilEnd::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpImmPerilEnd::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpImmPerilEnd::GetSerializedSize (void) const
+McpttCallMsgGrpImmPerilEnd::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldGrpId grpId = GetGrpId ();
@@ -1011,31 +1011,31 @@ McpttCallMsgGrpImmPerilEnd::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgGrpImmPerilEnd::GetCallId (void) const
+McpttCallMsgGrpImmPerilEnd::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpImmPerilEnd::GetGrpId (void) const
+McpttCallMsgGrpImmPerilEnd::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldLastChgTime
-McpttCallMsgGrpImmPerilEnd::GetLastChgTime (void) const
+McpttCallMsgGrpImmPerilEnd::GetLastChgTime() const
 {
   return m_lastChgTime;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpImmPerilEnd::GetLastChgUserId (void) const
+McpttCallMsgGrpImmPerilEnd::GetLastChgUserId() const
 {
   return m_lastChgUserId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpImmPerilEnd::GetUserId (void) const
+McpttCallMsgGrpImmPerilEnd::GetUserId() const
 {
   return m_userId;
 }
@@ -1088,7 +1088,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpEmergEnd);
 const uint8_t McpttCallMsgGrpEmergEnd::CODE = 4;
 
 TypeId
-McpttCallMsgGrpEmergEnd::GetTypeId (void)
+McpttCallMsgGrpEmergEnd::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergEnd")
     .SetParent<McpttCallMsg> ()
@@ -1098,28 +1098,28 @@ McpttCallMsgGrpEmergEnd::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpEmergEnd::McpttCallMsgGrpEmergEnd (void)
-  : McpttCallMsg (McpttCallMsgGrpEmergEnd::CODE),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_lastChgTime (McpttCallMsgFieldLastChgTime ()),
-    m_lastChgUserId (McpttCallMsgFieldUserId ()),
-    m_userId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpEmergEnd::McpttCallMsgGrpEmergEnd()
+    : McpttCallMsg(McpttCallMsgGrpEmergEnd::CODE),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_lastChgTime(McpttCallMsgFieldLastChgTime()),
+      m_lastChgUserId(McpttCallMsgFieldUserId()),
+      m_userId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpEmergEnd::~McpttCallMsgGrpEmergEnd (void)
+McpttCallMsgGrpEmergEnd::~McpttCallMsgGrpEmergEnd()
 {}
 
 TypeId
-McpttCallMsgGrpEmergEnd::GetInstanceTypeId (void) const
+McpttCallMsgGrpEmergEnd::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpEmergEnd::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpEmergEnd::GetSerializedSize (void) const
+McpttCallMsgGrpEmergEnd::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldGrpId grpId = GetGrpId ();
@@ -1216,31 +1216,31 @@ McpttCallMsgGrpEmergEnd::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgGrpEmergEnd::GetCallId (void) const
+McpttCallMsgGrpEmergEnd::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpEmergEnd::GetGrpId (void) const
+McpttCallMsgGrpEmergEnd::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldLastChgTime
-McpttCallMsgGrpEmergEnd::GetLastChgTime (void) const
+McpttCallMsgGrpEmergEnd::GetLastChgTime() const
 {
   return m_lastChgTime;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergEnd::GetLastChgUserId (void) const
+McpttCallMsgGrpEmergEnd::GetLastChgUserId() const
 {
   return m_lastChgUserId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergEnd::GetUserId (void) const
+McpttCallMsgGrpEmergEnd::GetUserId() const
 {
   return m_userId;
 }
@@ -1293,7 +1293,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpEmergAlert);
 const uint8_t McpttCallMsgGrpEmergAlert::CODE = 17;
 
 TypeId
-McpttCallMsgGrpEmergAlert::GetTypeId (void)
+McpttCallMsgGrpEmergAlert::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlert")
     .SetParent<McpttCallMsg> ()
@@ -1303,27 +1303,27 @@ McpttCallMsgGrpEmergAlert::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpEmergAlert::McpttCallMsgGrpEmergAlert (void)
-  : McpttCallMsg (McpttCallMsgGrpEmergAlert::CODE),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_orgName (McpttCallMsgFieldOrgName ()),
-    m_userId (McpttCallMsgFieldUserId ()),
-    m_userLoc (McpttCallMsgFieldUserLoc ())
+McpttCallMsgGrpEmergAlert::McpttCallMsgGrpEmergAlert()
+    : McpttCallMsg(McpttCallMsgGrpEmergAlert::CODE),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_orgName(McpttCallMsgFieldOrgName()),
+      m_userId(McpttCallMsgFieldUserId()),
+      m_userLoc(McpttCallMsgFieldUserLoc())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpEmergAlert::~McpttCallMsgGrpEmergAlert (void)
+McpttCallMsgGrpEmergAlert::~McpttCallMsgGrpEmergAlert()
 {}
 
 TypeId
-McpttCallMsgGrpEmergAlert::GetInstanceTypeId (void) const
+McpttCallMsgGrpEmergAlert::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpEmergAlert::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpEmergAlert::GetSerializedSize (void) const
+McpttCallMsgGrpEmergAlert::GetSerializedSize() const
 {
   McpttCallMsgFieldGrpId grpId = GetGrpId ();
   McpttCallMsgFieldOrgName orgName = GetOrgName ();
@@ -1419,25 +1419,25 @@ McpttCallMsgGrpEmergAlert::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpEmergAlert::GetGrpId (void) const
+McpttCallMsgGrpEmergAlert::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldOrgName
-McpttCallMsgGrpEmergAlert::GetOrgName (void) const
+McpttCallMsgGrpEmergAlert::GetOrgName() const
 {
   return m_orgName;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlert::GetUserId (void) const
+McpttCallMsgGrpEmergAlert::GetUserId() const
 {
   return m_userId;
 }
 
 McpttCallMsgFieldUserLoc
-McpttCallMsgGrpEmergAlert::GetUserLoc (void) const
+McpttCallMsgGrpEmergAlert::GetUserLoc() const
 {
   return m_userLoc;
 }
@@ -1481,7 +1481,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpEmergAlertAck);
 const uint8_t McpttCallMsgGrpEmergAlertAck::CODE = 18;
 
 TypeId
-McpttCallMsgGrpEmergAlertAck::GetTypeId (void)
+McpttCallMsgGrpEmergAlertAck::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlertAck")
     .SetParent<McpttCallMsg> ()
@@ -1491,26 +1491,26 @@ McpttCallMsgGrpEmergAlertAck::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpEmergAlertAck::McpttCallMsgGrpEmergAlertAck (void)
-  : McpttCallMsg (McpttCallMsgGrpEmergAlertAck::CODE),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_origId (McpttCallMsgFieldUserId ()),
-    m_sendingId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpEmergAlertAck::McpttCallMsgGrpEmergAlertAck()
+    : McpttCallMsg(McpttCallMsgGrpEmergAlertAck::CODE),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_origId(McpttCallMsgFieldUserId()),
+      m_sendingId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpEmergAlertAck::~McpttCallMsgGrpEmergAlertAck (void)
+McpttCallMsgGrpEmergAlertAck::~McpttCallMsgGrpEmergAlertAck()
 {}
 
 TypeId
-McpttCallMsgGrpEmergAlertAck::GetInstanceTypeId (void) const
+McpttCallMsgGrpEmergAlertAck::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpEmergAlertAck::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpEmergAlertAck::GetSerializedSize (void) const
+McpttCallMsgGrpEmergAlertAck::GetSerializedSize() const
 {
   McpttCallMsgFieldGrpId grpId = GetGrpId ();
   McpttCallMsgFieldUserId origId = GetOrigId ();
@@ -1589,19 +1589,19 @@ McpttCallMsgGrpEmergAlertAck::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpEmergAlertAck::GetGrpId (void) const
+McpttCallMsgGrpEmergAlertAck::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlertAck::GetOrigId (void) const
+McpttCallMsgGrpEmergAlertAck::GetOrigId() const
 {
   return m_origId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlertAck::GetSendingId (void) const
+McpttCallMsgGrpEmergAlertAck::GetSendingId() const
 {
   return m_sendingId;
 }
@@ -1637,7 +1637,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpEmergAlertCancel);
 const uint8_t McpttCallMsgGrpEmergAlertCancel::CODE = 19;
 
 TypeId
-McpttCallMsgGrpEmergAlertCancel::GetTypeId (void)
+McpttCallMsgGrpEmergAlertCancel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlertCancel")
     .SetParent<McpttCallMsg> ()
@@ -1647,20 +1647,20 @@ McpttCallMsgGrpEmergAlertCancel::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpEmergAlertCancel::McpttCallMsgGrpEmergAlertCancel (void)
-  : McpttCallMsg (McpttCallMsgGrpEmergAlertCancel::CODE),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_origId (McpttCallMsgFieldUserId ()),
-    m_sendingId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpEmergAlertCancel::McpttCallMsgGrpEmergAlertCancel()
+    : McpttCallMsg(McpttCallMsgGrpEmergAlertCancel::CODE),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_origId(McpttCallMsgFieldUserId()),
+      m_sendingId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpEmergAlertCancel::~McpttCallMsgGrpEmergAlertCancel (void)
+McpttCallMsgGrpEmergAlertCancel::~McpttCallMsgGrpEmergAlertCancel()
 {}
 
 TypeId
-McpttCallMsgGrpEmergAlertCancel::GetInstanceTypeId (void) const
+McpttCallMsgGrpEmergAlertCancel::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1668,7 +1668,7 @@ McpttCallMsgGrpEmergAlertCancel::GetInstanceTypeId (void) const
 }
 
 uint32_t
-McpttCallMsgGrpEmergAlertCancel::GetSerializedSize (void) const
+McpttCallMsgGrpEmergAlertCancel::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1757,19 +1757,19 @@ McpttCallMsgGrpEmergAlertCancel::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpEmergAlertCancel::GetGrpId (void) const
+McpttCallMsgGrpEmergAlertCancel::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlertCancel::GetOrigId (void) const
+McpttCallMsgGrpEmergAlertCancel::GetOrigId() const
 {
   return m_origId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlertCancel::GetSendingId (void) const
+McpttCallMsgGrpEmergAlertCancel::GetSendingId() const
 {
   return m_sendingId;
 }
@@ -1805,7 +1805,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpEmergAlertCancelAck);
 const uint8_t McpttCallMsgGrpEmergAlertCancelAck::CODE = 20;
 
 TypeId
-McpttCallMsgGrpEmergAlertCancelAck::GetTypeId (void)
+McpttCallMsgGrpEmergAlertCancelAck::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpEmergAlertCancelAck")
     .SetParent<McpttCallMsg> ()
@@ -1815,20 +1815,20 @@ McpttCallMsgGrpEmergAlertCancelAck::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpEmergAlertCancelAck::McpttCallMsgGrpEmergAlertCancelAck (void)
-  : McpttCallMsg (McpttCallMsgGrpEmergAlertCancelAck::CODE),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_origId (McpttCallMsgFieldUserId ()),
-    m_sendingId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpEmergAlertCancelAck::McpttCallMsgGrpEmergAlertCancelAck()
+    : McpttCallMsg(McpttCallMsgGrpEmergAlertCancelAck::CODE),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_origId(McpttCallMsgFieldUserId()),
+      m_sendingId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpEmergAlertCancelAck::~McpttCallMsgGrpEmergAlertCancelAck (void)
+McpttCallMsgGrpEmergAlertCancelAck::~McpttCallMsgGrpEmergAlertCancelAck()
 {}
 
 TypeId
-McpttCallMsgGrpEmergAlertCancelAck::GetInstanceTypeId (void) const
+McpttCallMsgGrpEmergAlertCancelAck::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1836,7 +1836,7 @@ McpttCallMsgGrpEmergAlertCancelAck::GetInstanceTypeId (void) const
 }
 
 uint32_t
-McpttCallMsgGrpEmergAlertCancelAck::GetSerializedSize (void) const
+McpttCallMsgGrpEmergAlertCancelAck::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1917,19 +1917,19 @@ McpttCallMsgGrpEmergAlertCancelAck::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpEmergAlertCancelAck::GetGrpId (void) const
+McpttCallMsgGrpEmergAlertCancelAck::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlertCancelAck::GetOrigId (void) const
+McpttCallMsgGrpEmergAlertCancelAck::GetOrigId() const
 {
   return m_origId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpEmergAlertCancelAck::GetSendingId (void) const
+McpttCallMsgGrpEmergAlertCancelAck::GetSendingId() const
 {
   return m_sendingId;
 }
@@ -1965,7 +1965,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpBroadcast);
 const uint8_t McpttCallMsgGrpBroadcast::CODE = 6;
 
 TypeId
-McpttCallMsgGrpBroadcast::GetTypeId (void)
+McpttCallMsgGrpBroadcast::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpBroadcast")
     .SetParent<McpttCallMsg> ()
@@ -1975,28 +1975,28 @@ McpttCallMsgGrpBroadcast::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpBroadcast::McpttCallMsgGrpBroadcast (void)
-  : McpttCallMsg (McpttCallMsgGrpBroadcast::CODE),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_callType (McpttCallMsgFieldCallType ()),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_origId (McpttCallMsgFieldUserId ()),
-    m_sdp (McpttCallMsgFieldSdp ())
+McpttCallMsgGrpBroadcast::McpttCallMsgGrpBroadcast()
+    : McpttCallMsg(McpttCallMsgGrpBroadcast::CODE),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_callType(McpttCallMsgFieldCallType()),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_origId(McpttCallMsgFieldUserId()),
+      m_sdp(McpttCallMsgFieldSdp())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpBroadcast::~McpttCallMsgGrpBroadcast (void)
+McpttCallMsgGrpBroadcast::~McpttCallMsgGrpBroadcast()
 {}
 
 TypeId
-McpttCallMsgGrpBroadcast::GetInstanceTypeId (void) const
+McpttCallMsgGrpBroadcast::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpBroadcast::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpBroadcast::GetSerializedSize (void) const
+McpttCallMsgGrpBroadcast::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldCallType callType = GetCallType ();
@@ -2091,31 +2091,31 @@ McpttCallMsgGrpBroadcast::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgGrpBroadcast::GetCallId (void) const
+McpttCallMsgGrpBroadcast::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldCallType
-McpttCallMsgGrpBroadcast::GetCallType (void) const
+McpttCallMsgGrpBroadcast::GetCallType() const
 {
   return m_callType;
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpBroadcast::GetGrpId (void) const
+McpttCallMsgGrpBroadcast::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpBroadcast::GetOrigId (void) const
+McpttCallMsgGrpBroadcast::GetOrigId() const
 {
   return m_origId;
 }
 
 McpttCallMsgFieldSdp
-McpttCallMsgGrpBroadcast::GetSdp (void) const
+McpttCallMsgGrpBroadcast::GetSdp() const
 {
   return m_sdp;
 }
@@ -2167,7 +2167,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgGrpBroadcastEnd);
 const uint8_t McpttCallMsgGrpBroadcastEnd::CODE = 7;
 
 TypeId
-McpttCallMsgGrpBroadcastEnd::GetTypeId (void)
+McpttCallMsgGrpBroadcastEnd::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgGrpBroadcastEnd")
     .SetParent<McpttCallMsg> ()
@@ -2177,26 +2177,26 @@ McpttCallMsgGrpBroadcastEnd::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgGrpBroadcastEnd::McpttCallMsgGrpBroadcastEnd (void)
-  : McpttCallMsg (McpttCallMsgGrpBroadcastEnd::CODE),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_grpId (McpttCallMsgFieldGrpId ()),
-    m_origId (McpttCallMsgFieldUserId ())
+McpttCallMsgGrpBroadcastEnd::McpttCallMsgGrpBroadcastEnd()
+    : McpttCallMsg(McpttCallMsgGrpBroadcastEnd::CODE),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_grpId(McpttCallMsgFieldGrpId()),
+      m_origId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgGrpBroadcastEnd::~McpttCallMsgGrpBroadcastEnd (void)
+McpttCallMsgGrpBroadcastEnd::~McpttCallMsgGrpBroadcastEnd()
 {}
 
 TypeId
-McpttCallMsgGrpBroadcastEnd::GetInstanceTypeId (void) const
+McpttCallMsgGrpBroadcastEnd::GetInstanceTypeId() const
 {
   return McpttCallMsgGrpBroadcastEnd::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgGrpBroadcastEnd::GetSerializedSize (void) const
+McpttCallMsgGrpBroadcastEnd::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldGrpId grpId = GetGrpId ();
@@ -2273,19 +2273,19 @@ McpttCallMsgGrpBroadcastEnd::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgGrpBroadcastEnd::GetCallId (void) const
+McpttCallMsgGrpBroadcastEnd::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldGrpId
-McpttCallMsgGrpBroadcastEnd::GetGrpId (void) const
+McpttCallMsgGrpBroadcastEnd::GetGrpId() const
 {
   return m_grpId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgGrpBroadcastEnd::GetOrigId (void) const
+McpttCallMsgGrpBroadcastEnd::GetOrigId() const
 {
   return m_origId;
 }
@@ -2321,7 +2321,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateSetupReq);
 const uint8_t McpttCallMsgPrivateSetupReq::CODE = 8;
 
 TypeId
-McpttCallMsgPrivateSetupReq::GetTypeId (void)
+McpttCallMsgPrivateSetupReq::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateSetupReq")
     .SetParent<McpttCallMsg> ()
@@ -2331,30 +2331,30 @@ McpttCallMsgPrivateSetupReq::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateSetupReq::McpttCallMsgPrivateSetupReq (void)
-  : McpttCallMsg (8),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_callType (McpttCallMsgFieldCallType ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ()),
-    m_commMode (McpttCallMsgFieldCommMode ()),
-    m_sdp (McpttCallMsgFieldSdp ()),
-    m_userLoc (McpttCallMsgFieldUserLoc ())
+McpttCallMsgPrivateSetupReq::McpttCallMsgPrivateSetupReq()
+    : McpttCallMsg(8),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_callType(McpttCallMsgFieldCallType()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId()),
+      m_commMode(McpttCallMsgFieldCommMode()),
+      m_sdp(McpttCallMsgFieldSdp()),
+      m_userLoc(McpttCallMsgFieldUserLoc())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateSetupReq::~McpttCallMsgPrivateSetupReq (void)
+McpttCallMsgPrivateSetupReq::~McpttCallMsgPrivateSetupReq()
 {}
 
 TypeId
-McpttCallMsgPrivateSetupReq::GetInstanceTypeId (void) const
+McpttCallMsgPrivateSetupReq::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateSetupReq::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateSetupReq::GetSerializedSize (void) const
+McpttCallMsgPrivateSetupReq::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldCallType callType = GetCallType ();
@@ -2467,43 +2467,43 @@ McpttCallMsgPrivateSetupReq::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateSetupReq::GetCallId (void) const
+McpttCallMsgPrivateSetupReq::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldCallType
-McpttCallMsgPrivateSetupReq::GetCallType (void) const
+McpttCallMsgPrivateSetupReq::GetCallType() const
 {
   return m_callType;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateSetupReq::GetCalleeId (void) const
+McpttCallMsgPrivateSetupReq::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateSetupReq::GetCallerId (void) const
+McpttCallMsgPrivateSetupReq::GetCallerId() const
 {
   return m_callerId;
 }
 
 McpttCallMsgFieldCommMode
-McpttCallMsgPrivateSetupReq::GetCommMode (void) const
+McpttCallMsgPrivateSetupReq::GetCommMode() const
 {
   return m_commMode;
 }
 
 McpttCallMsgFieldSdp
-McpttCallMsgPrivateSetupReq::GetSdp (void) const
+McpttCallMsgPrivateSetupReq::GetSdp() const
 {
   return m_sdp;
 }
 
 McpttCallMsgFieldUserLoc
-McpttCallMsgPrivateSetupReq::GetUserLoc (void) const
+McpttCallMsgPrivateSetupReq::GetUserLoc() const
 {
   return m_userLoc;
 }
@@ -2571,7 +2571,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateRinging);
 const uint8_t McpttCallMsgPrivateRinging::CODE = 9;
 
 TypeId
-McpttCallMsgPrivateRinging::GetTypeId (void)
+McpttCallMsgPrivateRinging::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateRinging")
     .SetParent<McpttCallMsg> ()
@@ -2581,26 +2581,26 @@ McpttCallMsgPrivateRinging::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateRinging::McpttCallMsgPrivateRinging (void)
-  : McpttCallMsg (9),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ())
+McpttCallMsgPrivateRinging::McpttCallMsgPrivateRinging()
+    : McpttCallMsg(9),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateRinging::~McpttCallMsgPrivateRinging (void)
+McpttCallMsgPrivateRinging::~McpttCallMsgPrivateRinging()
 {}
 
 TypeId
-McpttCallMsgPrivateRinging::GetInstanceTypeId (void) const
+McpttCallMsgPrivateRinging::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateRinging::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateRinging::GetSerializedSize (void) const
+McpttCallMsgPrivateRinging::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -2678,19 +2678,19 @@ McpttCallMsgPrivateRinging::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateRinging::GetCallId (void) const
+McpttCallMsgPrivateRinging::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateRinging::GetCalleeId (void) const
+McpttCallMsgPrivateRinging::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateRinging::GetCallerId (void) const
+McpttCallMsgPrivateRinging::GetCallerId() const
 {
   return m_callerId;
 }
@@ -2726,7 +2726,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateAccept);
 const uint8_t McpttCallMsgPrivateAccept::CODE = 10;
 
 TypeId
-McpttCallMsgPrivateAccept::GetTypeId (void)
+McpttCallMsgPrivateAccept::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateAccept")
     .SetParent<McpttCallMsg> ()
@@ -2736,27 +2736,27 @@ McpttCallMsgPrivateAccept::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateAccept::McpttCallMsgPrivateAccept (void)
-  : McpttCallMsg (10),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ()),
-    m_sdp (McpttCallMsgFieldSdp ())
+McpttCallMsgPrivateAccept::McpttCallMsgPrivateAccept()
+    : McpttCallMsg(10),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId()),
+      m_sdp(McpttCallMsgFieldSdp())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateAccept::~McpttCallMsgPrivateAccept (void)
+McpttCallMsgPrivateAccept::~McpttCallMsgPrivateAccept()
 {}
 
 TypeId
-McpttCallMsgPrivateAccept::GetInstanceTypeId (void) const
+McpttCallMsgPrivateAccept::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateAccept::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateAccept::GetSerializedSize (void) const
+McpttCallMsgPrivateAccept::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -2843,25 +2843,25 @@ McpttCallMsgPrivateAccept::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateAccept::GetCallId (void) const
+McpttCallMsgPrivateAccept::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateAccept::GetCalleeId (void) const
+McpttCallMsgPrivateAccept::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateAccept::GetCallerId (void) const
+McpttCallMsgPrivateAccept::GetCallerId() const
 {
   return m_callerId;
 }
 
 McpttCallMsgFieldSdp
-McpttCallMsgPrivateAccept::GetSdp (void) const
+McpttCallMsgPrivateAccept::GetSdp() const
 {
   return m_sdp;
 }
@@ -2905,7 +2905,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateReject);
 const uint8_t McpttCallMsgPrivateReject::CODE = 11;
 
 TypeId
-McpttCallMsgPrivateReject::GetTypeId (void)
+McpttCallMsgPrivateReject::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateReject")
     .SetParent<McpttCallMsg> ()
@@ -2915,27 +2915,27 @@ McpttCallMsgPrivateReject::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateReject::McpttCallMsgPrivateReject (void)
-  : McpttCallMsg (11),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ()),
-    m_reason (McpttCallMsgFieldReason ())
+McpttCallMsgPrivateReject::McpttCallMsgPrivateReject()
+    : McpttCallMsg(11),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId()),
+      m_reason(McpttCallMsgFieldReason())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateReject::~McpttCallMsgPrivateReject (void)
+McpttCallMsgPrivateReject::~McpttCallMsgPrivateReject()
 {}
 
 TypeId
-McpttCallMsgPrivateReject::GetInstanceTypeId (void) const
+McpttCallMsgPrivateReject::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateReject::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateReject::GetSerializedSize (void) const
+McpttCallMsgPrivateReject::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -3023,25 +3023,25 @@ McpttCallMsgPrivateReject::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateReject::GetCallId (void) const
+McpttCallMsgPrivateReject::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateReject::GetCalleeId (void) const
+McpttCallMsgPrivateReject::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateReject::GetCallerId (void) const
+McpttCallMsgPrivateReject::GetCallerId() const
 {
   return m_callerId;
 }
 
 McpttCallMsgFieldReason
-McpttCallMsgPrivateReject::GetReason (void) const
+McpttCallMsgPrivateReject::GetReason() const
 {
   return m_reason;
 }
@@ -3085,7 +3085,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateRelease);
 const uint8_t McpttCallMsgPrivateRelease::CODE = 12;
 
 TypeId
-McpttCallMsgPrivateRelease::GetTypeId (void)
+McpttCallMsgPrivateRelease::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateRelease")
     .SetParent<McpttCallMsg> ()
@@ -3095,26 +3095,26 @@ McpttCallMsgPrivateRelease::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateRelease::McpttCallMsgPrivateRelease (void)
-  : McpttCallMsg (12),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ())
+McpttCallMsgPrivateRelease::McpttCallMsgPrivateRelease()
+    : McpttCallMsg(12),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateRelease::~McpttCallMsgPrivateRelease (void)
+McpttCallMsgPrivateRelease::~McpttCallMsgPrivateRelease()
 {}
 
 TypeId
-McpttCallMsgPrivateRelease::GetInstanceTypeId (void) const
+McpttCallMsgPrivateRelease::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateRelease::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateRelease::GetSerializedSize (void) const
+McpttCallMsgPrivateRelease::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -3193,19 +3193,19 @@ McpttCallMsgPrivateRelease::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateRelease::GetCallId (void) const
+McpttCallMsgPrivateRelease::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateRelease::GetCalleeId (void) const
+McpttCallMsgPrivateRelease::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateRelease::GetCallerId (void) const
+McpttCallMsgPrivateRelease::GetCallerId() const
 {
   return m_callerId;
 }
@@ -3241,7 +3241,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateReleaseAck);
 const uint8_t McpttCallMsgPrivateReleaseAck::CODE = 13;
 
 TypeId
-McpttCallMsgPrivateReleaseAck::GetTypeId (void)
+McpttCallMsgPrivateReleaseAck::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateReleaseAck")
     .SetParent<McpttCallMsg> ()
@@ -3251,26 +3251,26 @@ McpttCallMsgPrivateReleaseAck::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateReleaseAck::McpttCallMsgPrivateReleaseAck (void)
-  : McpttCallMsg (13),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ())
+McpttCallMsgPrivateReleaseAck::McpttCallMsgPrivateReleaseAck()
+    : McpttCallMsg(13),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateReleaseAck::~McpttCallMsgPrivateReleaseAck (void)
+McpttCallMsgPrivateReleaseAck::~McpttCallMsgPrivateReleaseAck()
 {}
 
 TypeId
-McpttCallMsgPrivateReleaseAck::GetInstanceTypeId (void) const
+McpttCallMsgPrivateReleaseAck::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateReleaseAck::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateReleaseAck::GetSerializedSize (void) const
+McpttCallMsgPrivateReleaseAck::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -3349,19 +3349,19 @@ McpttCallMsgPrivateReleaseAck::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateReleaseAck::GetCallId (void) const
+McpttCallMsgPrivateReleaseAck::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateReleaseAck::GetCalleeId (void) const
+McpttCallMsgPrivateReleaseAck::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateReleaseAck::GetCallerId (void) const
+McpttCallMsgPrivateReleaseAck::GetCallerId() const
 {
   return m_callerId;
 }
@@ -3397,7 +3397,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateAcceptAck);
 const uint8_t McpttCallMsgPrivateAcceptAck::CODE = 14;
 
 TypeId
-McpttCallMsgPrivateAcceptAck::GetTypeId (void)
+McpttCallMsgPrivateAcceptAck::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateAcceptAck")
     .SetParent<McpttCallMsg> ()
@@ -3407,26 +3407,26 @@ McpttCallMsgPrivateAcceptAck::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateAcceptAck::McpttCallMsgPrivateAcceptAck (void)
-  : McpttCallMsg (14),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ())
+McpttCallMsgPrivateAcceptAck::McpttCallMsgPrivateAcceptAck()
+    : McpttCallMsg(14),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateAcceptAck::~McpttCallMsgPrivateAcceptAck (void)
+McpttCallMsgPrivateAcceptAck::~McpttCallMsgPrivateAcceptAck()
 {}
 
 TypeId
-McpttCallMsgPrivateAcceptAck::GetInstanceTypeId (void) const
+McpttCallMsgPrivateAcceptAck::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateAcceptAck::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateAcceptAck::GetSerializedSize (void) const
+McpttCallMsgPrivateAcceptAck::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -3505,19 +3505,19 @@ McpttCallMsgPrivateAcceptAck::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateAcceptAck::GetCallId (void) const
+McpttCallMsgPrivateAcceptAck::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateAcceptAck::GetCalleeId (void) const
+McpttCallMsgPrivateAcceptAck::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateAcceptAck::GetCallerId (void) const
+McpttCallMsgPrivateAcceptAck::GetCallerId() const
 {
   return m_callerId;
 }
@@ -3553,7 +3553,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateEmergCancel);
 const uint8_t McpttCallMsgPrivateEmergCancel::CODE = 15;
 
 TypeId
-McpttCallMsgPrivateEmergCancel::GetTypeId (void)
+McpttCallMsgPrivateEmergCancel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateEmergCancel")
     .SetParent<McpttCallMsg> ()
@@ -3563,26 +3563,26 @@ McpttCallMsgPrivateEmergCancel::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateEmergCancel::McpttCallMsgPrivateEmergCancel (void)
-  : McpttCallMsg (15),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ())
+McpttCallMsgPrivateEmergCancel::McpttCallMsgPrivateEmergCancel()
+    : McpttCallMsg(15),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateEmergCancel::~McpttCallMsgPrivateEmergCancel (void)
+McpttCallMsgPrivateEmergCancel::~McpttCallMsgPrivateEmergCancel()
 {}
 
 TypeId
-McpttCallMsgPrivateEmergCancel::GetInstanceTypeId (void) const
+McpttCallMsgPrivateEmergCancel::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateEmergCancel::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateEmergCancel::GetSerializedSize (void) const
+McpttCallMsgPrivateEmergCancel::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -3661,19 +3661,19 @@ McpttCallMsgPrivateEmergCancel::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateEmergCancel::GetCallId (void) const
+McpttCallMsgPrivateEmergCancel::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateEmergCancel::GetCalleeId (void) const
+McpttCallMsgPrivateEmergCancel::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateEmergCancel::GetCallerId (void) const
+McpttCallMsgPrivateEmergCancel::GetCallerId() const
 {
   return m_callerId;
 }
@@ -3709,7 +3709,7 @@ NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgPrivateEmergCancelAck);
 const uint8_t McpttCallMsgPrivateEmergCancelAck::CODE = 16;
 
 TypeId
-McpttCallMsgPrivateEmergCancelAck::GetTypeId (void)
+McpttCallMsgPrivateEmergCancelAck::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgPrivateEmergCancelAck")
     .SetParent<McpttCallMsg> ()
@@ -3719,26 +3719,26 @@ McpttCallMsgPrivateEmergCancelAck::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgPrivateEmergCancelAck::McpttCallMsgPrivateEmergCancelAck (void)
-  : McpttCallMsg (16),
-    m_callId (McpttCallMsgFieldCallId ()),
-    m_calleeId (McpttCallMsgFieldUserId ()),
-    m_callerId (McpttCallMsgFieldUserId ())
+McpttCallMsgPrivateEmergCancelAck::McpttCallMsgPrivateEmergCancelAck()
+    : McpttCallMsg(16),
+      m_callId(McpttCallMsgFieldCallId()),
+      m_calleeId(McpttCallMsgFieldUserId()),
+      m_callerId(McpttCallMsgFieldUserId())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgPrivateEmergCancelAck::~McpttCallMsgPrivateEmergCancelAck (void)
+McpttCallMsgPrivateEmergCancelAck::~McpttCallMsgPrivateEmergCancelAck()
 {}
 
 TypeId
-McpttCallMsgPrivateEmergCancelAck::GetInstanceTypeId (void) const
+McpttCallMsgPrivateEmergCancelAck::GetInstanceTypeId() const
 {
   return McpttCallMsgPrivateEmergCancelAck::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgPrivateEmergCancelAck::GetSerializedSize (void) const
+McpttCallMsgPrivateEmergCancelAck::GetSerializedSize() const
 {
   McpttCallMsgFieldCallId callId = GetCallId ();
   McpttCallMsgFieldUserId calleeId = GetCalleeId ();
@@ -3817,19 +3817,19 @@ McpttCallMsgPrivateEmergCancelAck::WriteData (Buffer::Iterator& buff) const
 }
 
 McpttCallMsgFieldCallId
-McpttCallMsgPrivateEmergCancelAck::GetCallId (void) const
+McpttCallMsgPrivateEmergCancelAck::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateEmergCancelAck::GetCalleeId (void) const
+McpttCallMsgPrivateEmergCancelAck::GetCalleeId() const
 {
   return m_calleeId;
 }
 
 McpttCallMsgFieldUserId
-McpttCallMsgPrivateEmergCancelAck::GetCallerId (void) const
+McpttCallMsgPrivateEmergCancelAck::GetCallerId() const
 {
   return m_callerId;
 }

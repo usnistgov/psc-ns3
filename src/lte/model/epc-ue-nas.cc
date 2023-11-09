@@ -160,9 +160,7 @@ EpcUeNas::RemoveForwardUpCallback(Ptr<LteSlTft> tft)
 {
     NS_LOG_FUNCTION(this);
 
-    for (std::list<SlCallbackInfo>::iterator it = m_slForwardUpCallbackList.begin();
-         it != m_slForwardUpCallbackList.end();
-         it++)
+    for (auto it = m_slForwardUpCallbackList.begin(); it != m_slForwardUpCallbackList.end(); it++)
     {
         if ((*it).tft->Equals(tft))
         {
@@ -246,8 +244,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
         {
             Ipv4Header ipv4Header;
             pCopy->RemoveHeader(ipv4Header);
-            for (std::list<Ptr<LteSlTft>>::iterator it = m_slBearersActivatedList.begin();
-                 it != m_slBearersActivatedList.end();
+            for (auto it = m_slBearersActivatedList.begin(); it != m_slBearersActivatedList.end();
                  it++)
             {
                 if ((*it)->Matches(ipv4Header.GetSource(), ipv4Header.GetDestination()))
@@ -258,9 +255,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
                 }
             }
             // check if pending
-            for (std::list<Ptr<LteSlTft>>::iterator it = m_pendingSlBearersList.begin();
-                 it != m_pendingSlBearersList.end();
-                 it++)
+            for (auto it = m_pendingSlBearersList.begin(); it != m_pendingSlBearersList.end(); it++)
             {
                 if ((*it)->Matches(ipv4Header.GetSource(), ipv4Header.GetDestination()))
                 {
@@ -274,8 +269,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
         {
             Ipv6Header ipv6Header;
             pCopy->RemoveHeader(ipv6Header);
-            for (std::list<Ptr<LteSlTft>>::iterator it = m_slBearersActivatedList.begin();
-                 it != m_slBearersActivatedList.end();
+            for (auto it = m_slBearersActivatedList.begin(); it != m_slBearersActivatedList.end();
                  it++)
             {
                 if ((*it)->Matches(ipv6Header.GetSource(), ipv6Header.GetDestination()))
@@ -286,9 +280,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
                 }
             }
             // check if pending
-            for (std::list<Ptr<LteSlTft>>::iterator it = m_pendingSlBearersList.begin();
-                 it != m_pendingSlBearersList.end();
-                 it++)
+            for (auto it = m_pendingSlBearersList.begin(); it != m_pendingSlBearersList.end(); it++)
             {
                 if ((*it)->Matches(ipv6Header.GetSource(), ipv6Header.GetDestination()))
                 {
@@ -321,8 +313,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
         {
             Ipv4Header ipv4Header;
             pCopy->RemoveHeader(ipv4Header);
-            for (std::list<Ptr<LteSlTft>>::iterator it = m_slBearersActivatedList.begin();
-                 it != m_slBearersActivatedList.end();
+            for (auto it = m_slBearersActivatedList.begin(); it != m_slBearersActivatedList.end();
                  it++)
             {
                 if ((*it)->Matches(ipv4Header.GetSource(), ipv4Header.GetDestination()))
@@ -337,8 +328,7 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
         {
             Ipv6Header ipv6Header;
             pCopy->RemoveHeader(ipv6Header);
-            for (std::list<Ptr<LteSlTft>>::iterator it = m_slBearersActivatedList.begin();
-                 it != m_slBearersActivatedList.end();
+            for (auto it = m_slBearersActivatedList.begin(); it != m_slBearersActivatedList.end();
                  it++)
             {
                 if ((*it)->Matches(ipv6Header.GetSource(), ipv6Header.GetDestination()))
@@ -384,9 +374,7 @@ EpcUeNas::DoRecvData(Ptr<Packet> packet)
     Ipv6Header ipv6Header;
     pCopy->RemoveHeader(ipv6Header);
 
-    for (std::list<SlCallbackInfo>::iterator it = m_slForwardUpCallbackList.begin();
-         it != m_slForwardUpCallbackList.end();
-         it++)
+    for (auto it = m_slForwardUpCallbackList.begin(); it != m_slForwardUpCallbackList.end(); it++)
     {
         if ((*it).tft->Matches(ipv6Header.GetDestination(), ipv6Header.GetSource()))
         {
@@ -477,9 +465,7 @@ void
 EpcUeNas::DeactivateSidelinkBearer(Ptr<LteSlTft> tft)
 {
     NS_LOG_FUNCTION(this);
-    for (std::list<Ptr<LteSlTft>>::iterator it = m_slBearersActivatedList.begin();
-         it != m_slBearersActivatedList.end();
-         it++)
+    for (auto it = m_slBearersActivatedList.begin(); it != m_slBearersActivatedList.end(); it++)
     {
         if (*it == tft)
         {
@@ -497,7 +483,7 @@ EpcUeNas::DoNotifySidelinkRadioBearerActivated(uint32_t group)
 {
     NS_LOG_FUNCTION(this);
 
-    std::list<Ptr<LteSlTft>>::iterator it = m_pendingSlBearersList.begin();
+    auto it = m_pendingSlBearersList.begin();
     while (it != m_pendingSlBearersList.end())
     {
         if ((*it)->GetRemoteL2Address() == group)

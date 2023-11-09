@@ -118,7 +118,7 @@ SipHeader::~SipHeader ()
 {}
 
 TypeId
-SipHeader::GetTypeId (void)
+SipHeader::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::sip::SipHeader")
     .SetParent<Header> ()
@@ -135,13 +135,13 @@ SipHeader::SetMessageType (SipHeader::SipMessageType messageType)
 }
 
 SipHeader::SipMessageType
-SipHeader::GetMessageType (void) const
+SipHeader::GetMessageType() const
 {
   return SipHeader::SipMessageType (m_messageType);
 }
 
 std::string
-SipHeader::GetMessageTypeName (void) const
+SipHeader::GetMessageTypeName() const
 {
   return SipMessageTypeToString (SipMessageType (m_messageType));
 }
@@ -153,13 +153,13 @@ SipHeader::SetMethod (SipMethod method)
 }
 
 SipHeader::SipMethod
-SipHeader::GetMethod (void) const
+SipHeader::GetMethod() const
 {
   return SipHeader::SipMethod (m_method);
 }
 
 std::string
-SipHeader::GetMethodName (void) const
+SipHeader::GetMethodName() const
 {
   return SipMethodToString (SipMethod (m_method));
 }
@@ -171,7 +171,7 @@ SipHeader::SetStatusCode (uint16_t statusCode)
 }
 
 uint16_t
-SipHeader::GetStatusCode (void) const
+SipHeader::GetStatusCode() const
 {
   return m_statusCode;
 }
@@ -183,7 +183,7 @@ SipHeader::SetRequestUri (uint32_t requestUri)
 }
 
 uint32_t
-SipHeader::GetRequestUri (void) const
+SipHeader::GetRequestUri() const
 {
   return m_requestUri;
 }
@@ -195,7 +195,7 @@ SipHeader::SetFrom (uint32_t from)
 }
 
 uint32_t
-SipHeader::GetFrom (void) const
+SipHeader::GetFrom() const
 {
   return m_from;
 }
@@ -207,7 +207,7 @@ SipHeader::SetTo (uint32_t to)
 }
 
 uint32_t
-SipHeader::GetTo (void) const
+SipHeader::GetTo() const
 {
   return m_to;
 }
@@ -219,13 +219,13 @@ SipHeader::SetCallId (uint16_t callId)
 }
 
 uint16_t
-SipHeader::GetCallId (void) const
+SipHeader::GetCallId() const
 {
   return m_callId;
 }
 
 TypeId
-SipHeader::GetInstanceTypeId (void) const
+SipHeader::GetInstanceTypeId() const
 {
   return GetTypeId ();
 }
@@ -253,7 +253,7 @@ SipHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-SipHeader::GetSerializedSize (void) const
+SipHeader::GetSerializedSize() const
 {
   return 1 + 1 + 2 + 4 + 4 + 4 + 2;
 }

@@ -49,11 +49,10 @@ NS_LOG_COMPONENT_DEFINE ("ScmUrbanMacroCellPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (ScmUrbanMacroCellPropagationLossModel);
-
+NS_OBJECT_ENSURE_REGISTERED(ScmUrbanMacroCellPropagationLossModel);
 
 TypeId
-ScmUrbanMacroCellPropagationLossModel::GetTypeId (void)
+ScmUrbanMacroCellPropagationLossModel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::ScmUrbanMacroCellPropagationLossModel")
 
@@ -130,11 +129,11 @@ const
   Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
   NS_ABORT_MSG_IF ((!a1 || !b1), "ScmUrbanMacroCellPropagationLossModel only works with MobilityBuildingInfo");
 
-  std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> >::iterator ait = m_shadowingLossMap.find (a);
+  auto ait = m_shadowingLossMap.find(a);
   if (ait != m_shadowingLossMap.end ())
     {
-      std::map<Ptr<MobilityModel>, double>::iterator bit = ait->second.find (b);
-      if (bit != ait->second.end ())
+        auto bit = ait->second.find(b);
+        if (bit != ait->second.end())
         {
           return (bit->second);
         }

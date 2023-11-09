@@ -49,19 +49,19 @@ namespace tests {
 class BroadcastTestCallMachine : public McpttCallMachineGrpBroadcast
 {
 public:
-  static TypeId GetTypeId (void);
-  BroadcastTestCallMachine (void);
-  virtual ~BroadcastTestCallMachine (void);
-  virtual void ChangeState (Ptr<McpttCallMachineGrpBroadcastState>  newState);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Receive (const McpttCallMsg& msg);
-  virtual void Start (void);
-  virtual void Send (const McpttCallMsg& msg);
+  static TypeId GetTypeId();
+  BroadcastTestCallMachine();
+  ~BroadcastTestCallMachine() override;
+  void ChangeState(Ptr<McpttCallMachineGrpBroadcastState> newState) override;
+  TypeId GetInstanceTypeId() const override;
+  void Receive(const McpttCallMsg& msg) override;
+  void Start() override;
+  void Send(const McpttCallMsg& msg) override;
 
 protected:
-  virtual void ExpiryOfTfb1 (void);
-  virtual void ExpiryOfTfb2 (void);
-  virtual void ExpiryOfTfb3 (void);
+  void ExpiryOfTfb1() override;
+  void ExpiryOfTfb2() override;
+  void ExpiryOfTfb3() override;
 
 private:
   Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> m_postRxCb;
@@ -74,14 +74,20 @@ private:
   Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState>, Ptr<McpttCallMachineGrpBroadcastState> > m_stateChangeCb;
 
 public:
-  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPostRxCb (void) const;
-  virtual Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> GetPostTimerExpCb (void) const;
-  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPostTxCb (void) const;
-  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPreRxCb (void) const;
-  virtual Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> GetPreTimerExpCb (void) const;
-  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPreTxCb (void) const;
-  virtual Ptr<McpttCallMachineGrpBroadcastState> GetStartState (void) const;
-  virtual Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState>, Ptr<McpttCallMachineGrpBroadcastState> > GetStateChangeCb (void) const;
+  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPostRxCb() const;
+  virtual Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> GetPostTimerExpCb()
+      const;
+  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPostTxCb() const;
+  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPreRxCb() const;
+  virtual Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> GetPreTimerExpCb()
+      const;
+  virtual Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> GetPreTxCb() const;
+  virtual Ptr<McpttCallMachineGrpBroadcastState> GetStartState() const;
+  virtual Callback<void,
+                   const BroadcastTestCallMachine&,
+                   Ptr<McpttCallMachineGrpBroadcastState>,
+                   Ptr<McpttCallMachineGrpBroadcastState>>
+  GetStateChangeCb() const;
   virtual void SetPostRxCb (const Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>  postRxCb);
   virtual void SetPostTimerExpCb (const Callback<void, const BroadcastTestCallMachine&, const McpttTimer&>  timerExpCb);
   virtual void SetPostTxCb (const Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>  postTxCb);
@@ -103,8 +109,8 @@ public:
   BroadcastCallScenario1 (const std::string& name = "BroadcastCallScenario1", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const BroadcastTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const BroadcastTestCallMachine& machine, Ptr<McpttCallMachineGrpBroadcastState>  oldState, Ptr<McpttCallMachineGrpBroadcastState>  newState);
   virtual void UeATimerExpCb (const BroadcastTestCallMachine& machine, const McpttTimer& timer);
@@ -139,8 +145,8 @@ public:
   BroadcastCallScenario2 (const std::string& name = "BroadcastCallScenario2", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const BroadcastTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const BroadcastTestCallMachine& machine, Ptr<McpttCallMachineGrpBroadcastState>  oldState, Ptr<McpttCallMachineGrpBroadcastState>  newState);
   virtual void UeATimerExpCb (const BroadcastTestCallMachine& machine, const McpttTimer& timer);
@@ -175,8 +181,8 @@ public:
   BroadcastCallScenario3 (const std::string& name = "BroadcastCallScenario3", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const BroadcastTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const BroadcastTestCallMachine& machine, Ptr<McpttCallMachineGrpBroadcastState>  oldState, Ptr<McpttCallMachineGrpBroadcastState>  newState);
   virtual void UeATimerExpCb (const BroadcastTestCallMachine& machine, const McpttTimer& timer);
@@ -209,8 +215,8 @@ public:
   BroadcastCallScenario4 (const std::string& name = "BroadcastCallScenario4", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const BroadcastTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const BroadcastTestCallMachine& machine, Ptr<McpttCallMachineGrpBroadcastState>  oldState, Ptr<McpttCallMachineGrpBroadcastState>  newState);
   virtual void UeATimerExpCb (const BroadcastTestCallMachine& machine, const McpttTimer& timer);
@@ -241,7 +247,7 @@ private:
 class McpttBroadcastCallControlTestSuite : public TestSuite
 {
 public:
-  McpttBroadcastCallControlTestSuite (void);
+  McpttBroadcastCallControlTestSuite();
 };
 
 /***************************************************************
@@ -251,7 +257,7 @@ public:
 static McpttBroadcastCallControlTestSuite callSuite;
 
 TypeId
-BroadcastTestCallMachine::GetTypeId (void)
+BroadcastTestCallMachine::GetTypeId()
 {
   static TypeId tid = TypeId ("BroadcastTestCallMachine")
     .SetParent<McpttCallMachineGrpBroadcast> ()
@@ -261,19 +267,23 @@ BroadcastTestCallMachine::GetTypeId (void)
   return tid;
 }
 
-BroadcastTestCallMachine::BroadcastTestCallMachine (void)
-  : McpttCallMachineGrpBroadcast (),
-    m_postRxCb (MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> ()),
-    m_postTimerExpCb (MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttTimer&> ()),
-    m_postTxCb (MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> ()),
-    m_preRxCb (MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> ()),
-    m_preTimerExpCb (MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttTimer&> ()),
-    m_preTxCb (MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&> ()),
-    m_startState (McpttCallMachineGrpBroadcastStateB1::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState>, Ptr<McpttCallMachineGrpBroadcastState> > ())
+BroadcastTestCallMachine::BroadcastTestCallMachine()
+    : McpttCallMachineGrpBroadcast(),
+      m_postRxCb(MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>()),
+      m_postTimerExpCb(
+          MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttTimer&>()),
+      m_postTxCb(MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>()),
+      m_preRxCb(MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>()),
+      m_preTimerExpCb(MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttTimer&>()),
+      m_preTxCb(MakeNullCallback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>()),
+      m_startState(McpttCallMachineGrpBroadcastStateB1::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void,
+                                       const BroadcastTestCallMachine&,
+                                       Ptr<McpttCallMachineGrpBroadcastState>,
+                                       Ptr<McpttCallMachineGrpBroadcastState>>())
 { }
 
-BroadcastTestCallMachine::~BroadcastTestCallMachine (void)
+BroadcastTestCallMachine::~BroadcastTestCallMachine()
 { }
 
 void
@@ -315,7 +325,7 @@ BroadcastTestCallMachine::Send (const McpttCallMsg& msg)
 }
 
 void
-BroadcastTestCallMachine::ExpiryOfTfb1 (void)
+BroadcastTestCallMachine::ExpiryOfTfb1()
 {
   Ptr<McpttTimer> tfg = GetTfb1 ();
   Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -335,7 +345,7 @@ BroadcastTestCallMachine::ExpiryOfTfb1 (void)
 }
 
 void
-BroadcastTestCallMachine::ExpiryOfTfb2 (void)
+BroadcastTestCallMachine::ExpiryOfTfb2()
 {
   Ptr<McpttTimer> tfg = GetTfb2 ();
   Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -355,7 +365,7 @@ BroadcastTestCallMachine::ExpiryOfTfb2 (void)
 }
 
 void
-BroadcastTestCallMachine::ExpiryOfTfb3 (void)
+BroadcastTestCallMachine::ExpiryOfTfb3()
 {
   Ptr<McpttTimer> tfg = GetTfb3 ();
   Callback<void, const BroadcastTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -375,7 +385,7 @@ BroadcastTestCallMachine::ExpiryOfTfb3 (void)
 }
 
 void
-BroadcastTestCallMachine::Start (void)
+BroadcastTestCallMachine::Start()
 {
   Ptr<McpttCallMachineGrpBroadcastState> startState = GetStartState ();
 
@@ -399,56 +409,58 @@ BroadcastTestCallMachine::ChangeState (Ptr<McpttCallMachineGrpBroadcastState>  n
 }
 
 TypeId
-BroadcastTestCallMachine::GetInstanceTypeId (void) const
+BroadcastTestCallMachine::GetInstanceTypeId() const
 {
   return BroadcastTestCallMachine::GetTypeId ();
 }
 
 Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>
-BroadcastTestCallMachine::GetPostRxCb (void) const
+BroadcastTestCallMachine::GetPostRxCb() const
 {
   return m_postRxCb;
 }
 
 Callback<void, const BroadcastTestCallMachine&, const McpttTimer&>
-BroadcastTestCallMachine::GetPostTimerExpCb (void) const
+BroadcastTestCallMachine::GetPostTimerExpCb() const
 {
   return m_postTimerExpCb;
 }
 
-
 Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>
-BroadcastTestCallMachine::GetPostTxCb (void) const
+BroadcastTestCallMachine::GetPostTxCb() const
 {
   return m_postTxCb;
 }
 
 Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>
-BroadcastTestCallMachine::GetPreRxCb (void) const
+BroadcastTestCallMachine::GetPreRxCb() const
 {
   return m_preRxCb;
 }
 
 Callback<void, const BroadcastTestCallMachine&, const McpttTimer&>
-BroadcastTestCallMachine::GetPreTimerExpCb (void) const
+BroadcastTestCallMachine::GetPreTimerExpCb() const
 {
   return m_preTimerExpCb;
 }
 
 Callback<void, const BroadcastTestCallMachine&, const McpttCallMsg&>
-BroadcastTestCallMachine::GetPreTxCb (void) const
+BroadcastTestCallMachine::GetPreTxCb() const
 {
   return m_preTxCb;
 }
 
 Ptr<McpttCallMachineGrpBroadcastState>
-BroadcastTestCallMachine::GetStartState (void) const
+BroadcastTestCallMachine::GetStartState() const
 {
   return m_startState;
 }
 
-Callback<void, const BroadcastTestCallMachine&, Ptr<McpttCallMachineGrpBroadcastState>, Ptr<McpttCallMachineGrpBroadcastState> >
-BroadcastTestCallMachine::GetStateChangeCb (void) const
+Callback<void,
+         const BroadcastTestCallMachine&,
+         Ptr<McpttCallMachineGrpBroadcastState>,
+         Ptr<McpttCallMachineGrpBroadcastState>>
+BroadcastTestCallMachine::GetStateChangeCb() const
 {
   return m_stateChangeCb;
 }
@@ -513,7 +525,7 @@ BroadcastCallScenario1::BroadcastCallScenario1 (const std::string& name, Ptr<Mcp
 { }
 
 void
-BroadcastCallScenario1::Configure (void)
+BroadcastCallScenario1::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (BroadcastTestCallMachine::GetTypeId ());
@@ -554,7 +566,7 @@ BroadcastCallScenario1::Configure (void)
 }
 
 void
-BroadcastCallScenario1::Execute (void)
+BroadcastCallScenario1::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -774,7 +786,7 @@ BroadcastCallScenario2::BroadcastCallScenario2 (const std::string& name, Ptr<Mcp
 { }
 
 void
-BroadcastCallScenario2::Configure (void)
+BroadcastCallScenario2::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (BroadcastTestCallMachine::GetTypeId ());
@@ -815,7 +827,7 @@ BroadcastCallScenario2::Configure (void)
 }
 
 void
-BroadcastCallScenario2::Execute (void)
+BroadcastCallScenario2::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1043,7 +1055,7 @@ BroadcastCallScenario3::BroadcastCallScenario3 (const std::string& name, Ptr<Mcp
 { }
 
 void
-BroadcastCallScenario3::Configure (void)
+BroadcastCallScenario3::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (BroadcastTestCallMachine::GetTypeId ());
@@ -1139,7 +1151,7 @@ BroadcastCallScenario3::Configure (void)
 }
 
 void
-BroadcastCallScenario3::Execute (void)
+BroadcastCallScenario3::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1234,8 +1246,8 @@ BroadcastCallScenario3::UeBRxCb (const BroadcastTestCallMachine& machine, const 
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxGrpBroadcastEnd, false, "UE B already received " << McpttCallMsgGrpBroadcastEnd::GetTypeId ().GetName () << ".");
       NS_TEST_ASSERT_MSG_EQ (m_ueBB2ToB1, true, "UE B never made transition from " << McpttCallMachineGrpBroadcastStateB2::GetStateId () << " to " << McpttCallMachineGrpBroadcastStateB1::GetStateId () << ".");
       m_ueBRxGrpBroadcastEnd = true;
-      if (m_ueCRxGrpBroadcastEnd == true)
-        {
+      if (m_ueCRxGrpBroadcastEnd)
+      {
           Stop ();
         }
     }
@@ -1298,8 +1310,8 @@ BroadcastCallScenario3::UeCRxCb (const BroadcastTestCallMachine& machine, const 
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrpBroadcastEnd, false, "UE C already recieved " << McpttCallMsgGrpBroadcastEnd::GetTypeId () << ".");
       NS_TEST_ASSERT_MSG_EQ (m_ueCB2ToB1, true, "UE C never made transiton from " << McpttCallMachineGrpBroadcastStateB2::GetStateId () << " to " << McpttCallMachineGrpBroadcastStateB1::GetStateId () << ".");
       m_ueCRxGrpBroadcastEnd = true;
-      if (m_ueBRxGrpBroadcastEnd == true)
-        {
+      if (m_ueBRxGrpBroadcastEnd)
+      {
           Stop ();
         }
     }
@@ -1358,7 +1370,7 @@ BroadcastCallScenario4::BroadcastCallScenario4 (const std::string& name, Ptr<Mcp
 { }
 
 void
-BroadcastCallScenario4::Configure (void)
+BroadcastCallScenario4::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (BroadcastTestCallMachine::GetTypeId ());
@@ -1457,7 +1469,7 @@ BroadcastCallScenario4::Configure (void)
 }
 
 void
-BroadcastCallScenario4::Execute (void)
+BroadcastCallScenario4::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1750,8 +1762,8 @@ BroadcastCallScenario4::UeCStateChangeCb (const BroadcastTestCallMachine& machin
   NS_TEST_ASSERT_MSG_EQ (tfb3->IsRunning (), false, "UE C TFB3 is running.");
 }
 
-McpttBroadcastCallControlTestSuite::McpttBroadcastCallControlTestSuite (void)
-  : TestSuite ("mcptt-call-control-broadcast", TestSuite::SYSTEM)
+McpttBroadcastCallControlTestSuite::McpttBroadcastCallControlTestSuite()
+    : TestSuite("mcptt-call-control-broadcast", TestSuite::SYSTEM)
 {
   AddTestCase (new BroadcastCallScenario1 (), TestCase::QUICK);
   AddTestCase (new BroadcastCallScenario2 (), TestCase::QUICK);

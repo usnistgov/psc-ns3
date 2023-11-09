@@ -54,7 +54,7 @@ NS_OBJECT_ENSURE_REGISTERED (PscApplication);
 uint64_t PscSequenceNumber::s_sequenceNumber = 0;
 
 TypeId
-PscApplication::GetTypeId (void)
+PscApplication::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscApplication")
     .SetParent<Application> ()
@@ -95,7 +95,7 @@ PscApplication::~PscApplication ()
 }
 
 void
-PscApplication::DoDispose (void)
+PscApplication::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 

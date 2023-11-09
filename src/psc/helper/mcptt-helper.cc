@@ -53,7 +53,7 @@ namespace psc {
 NS_LOG_COMPONENT_DEFINE ("McpttHelper");
 
 void
-McpttHelper::EnableLogComponents (void)
+McpttHelper::EnableLogComponents()
 {
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnableAll (LOG_PREFIX_FUNC);
@@ -112,7 +112,7 @@ McpttHelper::EnableLogComponents (void)
 }
 
 uint32_t
-McpttHelper::GetNextUserId (void)
+McpttHelper::GetNextUserId()
 {
   static uint32_t s_nextUserId = 0;
 
@@ -121,9 +121,9 @@ McpttHelper::GetNextUserId (void)
   return s_nextUserId;
 }
 
-McpttHelper::McpttHelper (void)
-  : m_pushConfigured (false),
-    m_releaseConfigured (false)
+McpttHelper::McpttHelper()
+    : m_pushConfigured(false),
+      m_releaseConfigured(false)
 {
   m_appFac.SetTypeId (McpttPttApp::GetTypeId ());
   m_pusherFac.SetTypeId (McpttPusher::GetTypeId ());
@@ -160,8 +160,8 @@ ApplicationContainer
 McpttHelper::Install (const NodeContainer& c)
 {
   ApplicationContainer apps;
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
+  for (auto i = c.Begin(); i != c.End(); ++i)
+  {
       apps.Add (InstallPriv (*i));
     }
 
@@ -299,12 +299,12 @@ McpttHelper::InstallPriv (const Ptr<Node>& node)
   Ptr<McpttMediaSrc> requester = m_mediaSrcFac.Create<McpttMediaSrc> ();
   Ptr<McpttPusher> pusher = m_pusherFac.Create<McpttPusher> ();
 
-  if (m_pushConfigured == true)
-    {
+  if (m_pushConfigured)
+  {
       pusher->SetAttribute ("PttInterarrivalTimeVariable", PointerValue (m_pusherPushFac.Create<RandomVariableStream> ()));
     }
 
-  if (m_releaseConfigured == true)
+    if (m_releaseConfigured)
     {
       pusher->SetAttribute ("PttDurationVariable", PointerValue (m_pusherReleaseFac.Create<RandomVariableStream> ()));
     }

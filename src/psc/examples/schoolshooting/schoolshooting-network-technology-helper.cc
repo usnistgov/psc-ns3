@@ -47,7 +47,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (SchoolShootingNetworkTechnologyHelper);
 
 TypeId
-SchoolShootingNetworkTechnologyHelper::GetTypeId (void)
+SchoolShootingNetworkTechnologyHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::SchoolShootingNetworkTechnologyHelper")
     .SetParent<Object> ()

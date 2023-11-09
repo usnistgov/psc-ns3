@@ -52,7 +52,7 @@ namespace psc {
 /** McpttOnNetworkFloorParticipantState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorParticipantState");
 
-McpttOnNetworkFloorParticipantState::~McpttOnNetworkFloorParticipantState (void)
+McpttOnNetworkFloorParticipantState::~McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -106,7 +106,7 @@ McpttOnNetworkFloorParticipantState::ExpiryOfT132 (McpttOnNetworkFloorParticipan
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantState::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantState::GetInstanceStateId() const
 {
   return McpttEntityId ();
 }
@@ -274,8 +274,8 @@ McpttOnNetworkFloorParticipantState::GetName () const
   return GetInstanceStateId ().GetName ();
 }
 
-McpttOnNetworkFloorParticipantState::McpttOnNetworkFloorParticipantState (void)
-  : SimpleRefCount<McpttOnNetworkFloorParticipantState> ()
+McpttOnNetworkFloorParticipantState::McpttOnNetworkFloorParticipantState()
+    : SimpleRefCount<McpttOnNetworkFloorParticipantState>()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -289,33 +289,33 @@ operator<< (std::ostream& os, const McpttOnNetworkFloorParticipantState& state)
 
 /** McpttOnNetworkFloorParticipantStateStartStop - begin **/
 Ptr<McpttOnNetworkFloorParticipantStateStartStop>
-McpttOnNetworkFloorParticipantStateStartStop::GetInstance (void)
+McpttOnNetworkFloorParticipantStateStartStop::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStateStartStop> instance = Create<McpttOnNetworkFloorParticipantStateStartStop> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateStartStop::GetStateId (void)
+McpttOnNetworkFloorParticipantStateStartStop::GetStateId()
 {
   static McpttEntityId id (0, "'Start-stop'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStateStartStop::McpttOnNetworkFloorParticipantStateStartStop (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStateStartStop::McpttOnNetworkFloorParticipantStateStartStop()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStateStartStop::~McpttOnNetworkFloorParticipantStateStartStop (void)
+McpttOnNetworkFloorParticipantStateStartStop::~McpttOnNetworkFloorParticipantStateStartStop()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateStartStop::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStateStartStop::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStateStartStop::GetStateId ();
 }
@@ -469,33 +469,35 @@ McpttOnNetworkFloorParticipantStateStartStop::ReceiveMedia (McpttOnNetworkFloorP
 
 /** McpttOnNetworkFloorParticipantStateHasNoPermission - begin **/
 Ptr<McpttOnNetworkFloorParticipantStateHasNoPermission>
-McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance (void)
+McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStateHasNoPermission> instance = Create<McpttOnNetworkFloorParticipantStateHasNoPermission> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateHasNoPermission::GetStateId (void)
+McpttOnNetworkFloorParticipantStateHasNoPermission::GetStateId()
 {
   static McpttEntityId id (1, "'U: has no permission'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStateHasNoPermission::McpttOnNetworkFloorParticipantStateHasNoPermission (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStateHasNoPermission::
+    McpttOnNetworkFloorParticipantStateHasNoPermission()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStateHasNoPermission::~McpttOnNetworkFloorParticipantStateHasNoPermission (void)
+McpttOnNetworkFloorParticipantStateHasNoPermission::
+    ~McpttOnNetworkFloorParticipantStateHasNoPermission()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStateHasNoPermission::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStateHasNoPermission::GetStateId ();
 }
@@ -597,33 +599,35 @@ McpttOnNetworkFloorParticipantStateHasNoPermission::Selected (McpttOnNetworkFloo
 
 /** McpttOnNetworkFloorParticipantStatePendingRequest - begin **/
 Ptr<McpttOnNetworkFloorParticipantStatePendingRequest>
-McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance (void)
+McpttOnNetworkFloorParticipantStatePendingRequest::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStatePendingRequest> instance = Create<McpttOnNetworkFloorParticipantStatePendingRequest> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStatePendingRequest::GetStateId (void)
+McpttOnNetworkFloorParticipantStatePendingRequest::GetStateId()
 {
   static McpttEntityId id (2, "'U: pending Request'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStatePendingRequest::McpttOnNetworkFloorParticipantStatePendingRequest (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStatePendingRequest::
+    McpttOnNetworkFloorParticipantStatePendingRequest()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStatePendingRequest::~McpttOnNetworkFloorParticipantStatePendingRequest (void)
+McpttOnNetworkFloorParticipantStatePendingRequest::
+    ~McpttOnNetworkFloorParticipantStatePendingRequest()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStatePendingRequest::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStatePendingRequest::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStatePendingRequest::GetStateId ();
 }
@@ -967,33 +971,34 @@ McpttOnNetworkFloorParticipantStatePendingRequest::ReceiveFloorQueuePositionInfo
 
 /** McpttOnNetworkFloorParticipantStateHasPermission - begin **/
 Ptr<McpttOnNetworkFloorParticipantStateHasPermission>
-McpttOnNetworkFloorParticipantStateHasPermission::GetInstance (void)
+McpttOnNetworkFloorParticipantStateHasPermission::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStateHasPermission> instance = Create<McpttOnNetworkFloorParticipantStateHasPermission> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateHasPermission::GetStateId (void)
+McpttOnNetworkFloorParticipantStateHasPermission::GetStateId()
 {
   static McpttEntityId id (3, "'U: has permission'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStateHasPermission::McpttOnNetworkFloorParticipantStateHasPermission (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStateHasPermission::McpttOnNetworkFloorParticipantStateHasPermission()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStateHasPermission::~McpttOnNetworkFloorParticipantStateHasPermission (void)
+McpttOnNetworkFloorParticipantStateHasPermission::
+    ~McpttOnNetworkFloorParticipantStateHasPermission()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateHasPermission::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStateHasPermission::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStateHasPermission::GetStateId ();
 }
@@ -1191,33 +1196,35 @@ McpttOnNetworkFloorParticipantStateHasPermission::Unselected (McpttOnNetworkFloo
 
 /** McpttOnNetworkFloorParticipantStatePendingRelease - begin **/
 Ptr<McpttOnNetworkFloorParticipantStatePendingRelease>
-McpttOnNetworkFloorParticipantStatePendingRelease::GetInstance (void)
+McpttOnNetworkFloorParticipantStatePendingRelease::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStatePendingRelease> instance = Create<McpttOnNetworkFloorParticipantStatePendingRelease> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStatePendingRelease::GetStateId (void)
+McpttOnNetworkFloorParticipantStatePendingRelease::GetStateId()
 {
   static McpttEntityId id (4, "'U: pending Release'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStatePendingRelease::McpttOnNetworkFloorParticipantStatePendingRelease (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStatePendingRelease::
+    McpttOnNetworkFloorParticipantStatePendingRelease()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStatePendingRelease::~McpttOnNetworkFloorParticipantStatePendingRelease (void)
+McpttOnNetworkFloorParticipantStatePendingRelease::
+    ~McpttOnNetworkFloorParticipantStatePendingRelease()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStatePendingRelease::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStatePendingRelease::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStatePendingRelease::GetStateId ();
 }
@@ -1349,33 +1356,33 @@ McpttOnNetworkFloorParticipantStatePendingRelease::ReceiveFloorGranted (McpttOnN
 
 /** McpttOnNetworkFloorParticipantStateReleasing - begin **/
 Ptr<McpttOnNetworkFloorParticipantStateReleasing>
-McpttOnNetworkFloorParticipantStateReleasing::GetInstance (void)
+McpttOnNetworkFloorParticipantStateReleasing::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStateReleasing> instance = Create<McpttOnNetworkFloorParticipantStateReleasing> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateReleasing::GetStateId (void)
+McpttOnNetworkFloorParticipantStateReleasing::GetStateId()
 {
   static McpttEntityId id (5, "'Releasing'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStateReleasing::McpttOnNetworkFloorParticipantStateReleasing (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStateReleasing::McpttOnNetworkFloorParticipantStateReleasing()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStateReleasing::~McpttOnNetworkFloorParticipantStateReleasing (void)
+McpttOnNetworkFloorParticipantStateReleasing::~McpttOnNetworkFloorParticipantStateReleasing()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateReleasing::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStateReleasing::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStateReleasing::GetStateId ();
 }
@@ -1396,33 +1403,33 @@ McpttOnNetworkFloorParticipantStateReleasing::CallRelease2 (McpttOnNetworkFloorP
 
 /** McpttOnNetworkFloorParticipantStateQueued - begin **/
 Ptr<McpttOnNetworkFloorParticipantStateQueued>
-McpttOnNetworkFloorParticipantStateQueued::GetInstance (void)
+McpttOnNetworkFloorParticipantStateQueued::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorParticipantStateQueued> instance = Create<McpttOnNetworkFloorParticipantStateQueued> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateQueued::GetStateId (void)
+McpttOnNetworkFloorParticipantStateQueued::GetStateId()
 {
   static McpttEntityId id (6, "'U: queued'");
 
   return id;
 }
 
-McpttOnNetworkFloorParticipantStateQueued::McpttOnNetworkFloorParticipantStateQueued (void)
-  : McpttOnNetworkFloorParticipantState ()
+McpttOnNetworkFloorParticipantStateQueued::McpttOnNetworkFloorParticipantStateQueued()
+    : McpttOnNetworkFloorParticipantState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorParticipantStateQueued::~McpttOnNetworkFloorParticipantStateQueued (void)
+McpttOnNetworkFloorParticipantStateQueued::~McpttOnNetworkFloorParticipantStateQueued()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorParticipantStateQueued::GetInstanceStateId (void) const
+McpttOnNetworkFloorParticipantStateQueued::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorParticipantStateQueued::GetStateId ();
 }

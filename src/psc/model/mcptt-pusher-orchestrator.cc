@@ -50,7 +50,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestrator);
 
 TypeId
-McpttPusherOrchestrator::GetTypeId (void)
+McpttPusherOrchestrator::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestrator")
     .SetParent<McpttPusherOrchestratorInterface> ()
@@ -68,18 +68,18 @@ McpttPusherOrchestrator::GetTypeId (void)
   return tid;
 }
 
-McpttPusherOrchestrator::McpttPusherOrchestrator (void)
-  : McpttPusherOrchestratorInterface (),
-    m_active (false),
-    m_activePusher (0),
-    m_nextEvent (EventId ()),
-    m_pushers (std::vector<Ptr<McpttPusher> > ()),
-    m_selectionVariable (CreateObject<UniformRandomVariable> ())
+McpttPusherOrchestrator::McpttPusherOrchestrator()
+    : McpttPusherOrchestratorInterface(),
+      m_active(false),
+      m_activePusher(nullptr),
+      m_nextEvent(EventId()),
+      m_pushers(std::vector<Ptr<McpttPusher>>()),
+      m_selectionVariable(CreateObject<UniformRandomVariable>())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttPusherOrchestrator::~McpttPusherOrchestrator (void)
+McpttPusherOrchestrator::~McpttPusherOrchestrator()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -109,16 +109,16 @@ McpttPusherOrchestrator::AssignStreams (int64_t stream)
   return streams;
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestrator::GetPushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestrator::GetPushers() const
 {
   NS_LOG_FUNCTION (this);
 
   return m_pushers;
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestrator::GetActivePushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestrator::GetActivePushers() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -126,7 +126,7 @@ McpttPusherOrchestrator::GetActivePushers (void) const
 }
 
 Time
-McpttPusherOrchestrator::NextPttIat (void)
+McpttPusherOrchestrator::NextPttIat()
 {
   NS_LOG_FUNCTION (this);
 
@@ -134,7 +134,7 @@ McpttPusherOrchestrator::NextPttIat (void)
 }
 
 Time
-McpttPusherOrchestrator::NextPttDuration (void)
+McpttPusherOrchestrator::NextPttDuration()
 {
   NS_LOG_FUNCTION (this);
 
@@ -142,7 +142,7 @@ McpttPusherOrchestrator::NextPttDuration (void)
 }
 
 bool
-McpttPusherOrchestrator::IsActive (void) const
+McpttPusherOrchestrator::IsActive() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -150,7 +150,7 @@ McpttPusherOrchestrator::IsActive (void) const
 }
 
 void
-McpttPusherOrchestrator::Start (void)
+McpttPusherOrchestrator::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -162,7 +162,7 @@ McpttPusherOrchestrator::Start (void)
 }
 
 void
-McpttPusherOrchestrator::Stop (void)
+McpttPusherOrchestrator::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -188,7 +188,7 @@ McpttPusherOrchestrator::ActivatePusher (Ptr<McpttPusher> pusher)
 }
 
 void
-McpttPusherOrchestrator::DeactivatePusher (void)
+McpttPusherOrchestrator::DeactivatePusher()
 {
   if (m_activePusher)
     {
@@ -196,19 +196,19 @@ McpttPusherOrchestrator::DeactivatePusher (void)
         {
           m_activePusher->Release ();
         }
-      m_activePusher = 0;
+        m_activePusher = nullptr;
     }
 }
 
 void
-McpttPusherOrchestrator::DoDispose (void)
+McpttPusherOrchestrator::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   std::vector<Ptr<McpttPusher> >::iterator it;
   for (it = m_pushers.begin (); it != m_pushers.end (); it++)
     {
-      *it = 0;
+        *it = nullptr;
     }
 
   m_nextEvent.Cancel ();
@@ -217,21 +217,21 @@ McpttPusherOrchestrator::DoDispose (void)
 
   DeactivatePusher ();
 
-  m_nextPusher = 0;
-  m_pttIatVariable = 0;
-  m_pttDurationVariable = 0;
-  m_selectionVariable = 0;
+  m_nextPusher = nullptr;
+  m_pttIatVariable = nullptr;
+  m_pttDurationVariable = nullptr;
+  m_selectionVariable = nullptr;
 }
 
 void
-McpttPusherOrchestrator::PttPush (void)
+McpttPusherOrchestrator::PttPush()
 {
   NS_LOG_FUNCTION (this);
 
   if (m_nextPusher)
     {
       ActivatePusher (m_nextPusher);
-      m_nextPusher = 0;
+      m_nextPusher = nullptr;
     }
 
   Time pttDuration = NextPttDuration ();
@@ -241,12 +241,12 @@ McpttPusherOrchestrator::PttPush (void)
 }
 
 void
-McpttPusherOrchestrator::PttRelease (void)
+McpttPusherOrchestrator::PttRelease()
 {
   DeactivatePusher ();
 
-  if (m_pushers.size () > 0)
-    {
+  if (!m_pushers.empty())
+  {
       uint32_t rv = m_selectionVariable->GetInteger (0, m_pushers.size () - 1);
       m_nextPusher = m_pushers[rv];
     }

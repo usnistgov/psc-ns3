@@ -45,7 +45,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBroadcastState");
 namespace psc {
 
 /** McpttCallMachineGrpBroadcastState - begin **/
-McpttCallMachineGrpBroadcastState::~McpttCallMachineGrpBroadcastState (void)
+McpttCallMachineGrpBroadcastState::~McpttCallMachineGrpBroadcastState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -112,8 +112,8 @@ McpttCallMachineGrpBroadcastState::ReleaseCall (McpttCallMachineGrpBroadcast& ma
   NS_LOG_FUNCTION (this << &machine);
 }
 
-McpttCallMachineGrpBroadcastState::McpttCallMachineGrpBroadcastState (void)
-  : SimpleRefCount<McpttCallMachineGrpBroadcastState> ()
+McpttCallMachineGrpBroadcastState::McpttCallMachineGrpBroadcastState()
+    : SimpleRefCount<McpttCallMachineGrpBroadcastState>()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -131,7 +131,7 @@ operator<< (std::ostream& os, const McpttCallMachineGrpBroadcastState& inst)
 
 /** McpttCallMachineGrpBroadcastStateB1 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB1>
-McpttCallMachineGrpBroadcastStateB1::GetInstance (void)
+McpttCallMachineGrpBroadcastStateB1::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -141,7 +141,7 @@ McpttCallMachineGrpBroadcastStateB1::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB1::GetStateId (void)
+McpttCallMachineGrpBroadcastStateB1::GetStateId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -150,13 +150,13 @@ McpttCallMachineGrpBroadcastStateB1::GetStateId (void)
   return sid;
 }
 
-McpttCallMachineGrpBroadcastStateB1::~McpttCallMachineGrpBroadcastStateB1 (void)
+McpttCallMachineGrpBroadcastStateB1::~McpttCallMachineGrpBroadcastStateB1()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB1::GetInstanceStateId (void) const
+McpttCallMachineGrpBroadcastStateB1::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -274,8 +274,8 @@ McpttCallMachineGrpBroadcastStateB1::ReceiveGrpCallBroadcast (McpttCallMachineGr
     }
 }
 
-McpttCallMachineGrpBroadcastStateB1::McpttCallMachineGrpBroadcastStateB1 (void)
-  : McpttCallMachineGrpBroadcastState ()
+McpttCallMachineGrpBroadcastStateB1::McpttCallMachineGrpBroadcastStateB1()
+    : McpttCallMachineGrpBroadcastState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -283,7 +283,7 @@ McpttCallMachineGrpBroadcastStateB1::McpttCallMachineGrpBroadcastStateB1 (void)
 
 /** McpttCallMachineGrpBroadcastStateB2 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB2>
-McpttCallMachineGrpBroadcastStateB2::GetInstance (void)
+McpttCallMachineGrpBroadcastStateB2::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -293,7 +293,7 @@ McpttCallMachineGrpBroadcastStateB2::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB2::GetStateId (void)
+McpttCallMachineGrpBroadcastStateB2::GetStateId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -302,7 +302,7 @@ McpttCallMachineGrpBroadcastStateB2::GetStateId (void)
   return sid;
 }
 
-McpttCallMachineGrpBroadcastStateB2::~McpttCallMachineGrpBroadcastStateB2 (void)
+McpttCallMachineGrpBroadcastStateB2::~McpttCallMachineGrpBroadcastStateB2()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -364,7 +364,7 @@ McpttCallMachineGrpBroadcastStateB2::ExpiryOfTfb2 (McpttCallMachineGrpBroadcast&
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB2::GetInstanceStateId (void) const
+McpttCallMachineGrpBroadcastStateB2::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -457,8 +457,8 @@ McpttCallMachineGrpBroadcastStateB2::ReleaseCall (McpttCallMachineGrpBroadcast& 
     }
 }
 
-McpttCallMachineGrpBroadcastStateB2::McpttCallMachineGrpBroadcastStateB2 (void)
-  : McpttCallMachineGrpBroadcastState ()
+McpttCallMachineGrpBroadcastStateB2::McpttCallMachineGrpBroadcastStateB2()
+    : McpttCallMachineGrpBroadcastState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -466,7 +466,7 @@ McpttCallMachineGrpBroadcastStateB2::McpttCallMachineGrpBroadcastStateB2 (void)
 
 /** McpttCallMachineGrpBroadcastStateB3 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB3>
-McpttCallMachineGrpBroadcastStateB3::GetInstance (void)
+McpttCallMachineGrpBroadcastStateB3::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -476,7 +476,7 @@ McpttCallMachineGrpBroadcastStateB3::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB3::GetStateId (void)
+McpttCallMachineGrpBroadcastStateB3::GetStateId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -485,7 +485,7 @@ McpttCallMachineGrpBroadcastStateB3::GetStateId (void)
   return sid;
 }
 
-McpttCallMachineGrpBroadcastStateB3::~McpttCallMachineGrpBroadcastStateB3 (void)
+McpttCallMachineGrpBroadcastStateB3::~McpttCallMachineGrpBroadcastStateB3()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -526,9 +526,8 @@ McpttCallMachineGrpBroadcastStateB3::ExpiryOfTfb3 (McpttCallMachineGrpBroadcast&
   machine.ChangeState (McpttCallMachineGrpBroadcastStateB4::GetInstance ());
 }
 
-
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB3::GetInstanceStateId (void) const
+McpttCallMachineGrpBroadcastStateB3::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -549,8 +548,8 @@ McpttCallMachineGrpBroadcastStateB3::RejectCall (McpttCallMachineGrpBroadcast& m
   machine.ChangeState (McpttCallMachineGrpBroadcastStateB4::GetInstance ());
 }
 
-McpttCallMachineGrpBroadcastStateB3::McpttCallMachineGrpBroadcastStateB3 (void)
-  : McpttCallMachineGrpBroadcastState ()
+McpttCallMachineGrpBroadcastStateB3::McpttCallMachineGrpBroadcastStateB3()
+    : McpttCallMachineGrpBroadcastState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -558,7 +557,7 @@ McpttCallMachineGrpBroadcastStateB3::McpttCallMachineGrpBroadcastStateB3 (void)
 
 /** McpttCallMachineGrpBroadcastStateB4 - begin **/
 Ptr<McpttCallMachineGrpBroadcastStateB4>
-McpttCallMachineGrpBroadcastStateB4::GetInstance (void)
+McpttCallMachineGrpBroadcastStateB4::GetInstance()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -568,7 +567,7 @@ McpttCallMachineGrpBroadcastStateB4::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB4::GetStateId (void)
+McpttCallMachineGrpBroadcastStateB4::GetStateId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -577,7 +576,7 @@ McpttCallMachineGrpBroadcastStateB4::GetStateId (void)
   return sid;
 }
 
-McpttCallMachineGrpBroadcastStateB4::~McpttCallMachineGrpBroadcastStateB4 (void)
+McpttCallMachineGrpBroadcastStateB4::~McpttCallMachineGrpBroadcastStateB4()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -609,7 +608,7 @@ McpttCallMachineGrpBroadcastStateB4::ExpiryOfTfb1 (McpttCallMachineGrpBroadcast&
 }
 
 McpttEntityId
-McpttCallMachineGrpBroadcastStateB4::GetInstanceStateId (void) const
+McpttCallMachineGrpBroadcastStateB4::GetInstanceStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -666,8 +665,8 @@ McpttCallMachineGrpBroadcastStateB4::ReceiveGrpCallBroadcastEnd (McpttCallMachin
     }
 }
 
-McpttCallMachineGrpBroadcastStateB4::McpttCallMachineGrpBroadcastStateB4 (void)
-  : McpttCallMachineGrpBroadcastState ()
+McpttCallMachineGrpBroadcastStateB4::McpttCallMachineGrpBroadcastStateB4()
+    : McpttCallMachineGrpBroadcastState()
 {
   NS_LOG_FUNCTION (this);
 }

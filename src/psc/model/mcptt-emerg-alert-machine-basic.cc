@@ -52,18 +52,17 @@ namespace psc {
 /** McpttEmergAlertMachineBasic - begin **/
 NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachineBasic);
 
-McpttEmergAlertMachineBasic::EmergUser::~EmergUser (void)
+McpttEmergAlertMachineBasic::EmergUser::~EmergUser()
 {
   NS_LOG_FUNCTION (this);
 
   Id = 0;
   Loc = Vector ();
-  Tfe1 = 0;
+  Tfe1 = nullptr;
 }
 
-
 TypeId
-McpttEmergAlertMachineBasic::GetTypeId (void)
+McpttEmergAlertMachineBasic::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -101,13 +100,13 @@ McpttEmergAlertMachineBasic::McpttEmergAlertMachineBasic (Ptr<McpttCallMachineGr
   m_tfe2->Link (&McpttEmergAlertMachineBasic::ExpiryOfTfe2, this);
 }
 
-McpttEmergAlertMachineBasic::~McpttEmergAlertMachineBasic (void)
+McpttEmergAlertMachineBasic::~McpttEmergAlertMachineBasic()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttEmergAlertMachineBasic::CancelEmergAlert (void)
+McpttEmergAlertMachineBasic::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
@@ -150,7 +149,7 @@ McpttEmergAlertMachineBasic::CancelEmergAlert (void)
 }
 
 TypeId
-McpttEmergAlertMachineBasic::GetInstanceTypeId (void) const
+McpttEmergAlertMachineBasic::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -158,7 +157,7 @@ McpttEmergAlertMachineBasic::GetInstanceTypeId (void) const
 }
 
 bool
-McpttEmergAlertMachineBasic::IsInEmergState (void) const
+McpttEmergAlertMachineBasic::IsInEmergState() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -175,7 +174,7 @@ McpttEmergAlertMachineBasic::IsInEmergState (void) const
 }
 
 bool
-McpttEmergAlertMachineBasic::IsStarted (void) const
+McpttEmergAlertMachineBasic::IsStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -185,7 +184,7 @@ McpttEmergAlertMachineBasic::IsStarted (void) const
 }
 
 bool
-McpttEmergAlertMachineBasic::IsOtherInEmergState (void) const
+McpttEmergAlertMachineBasic::IsOtherInEmergState() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -284,7 +283,7 @@ McpttEmergAlertMachineBasic::Send (const McpttCallMsg& msg)
 }
 
 void
-McpttEmergAlertMachineBasic::SendEmergAlert (void)
+McpttEmergAlertMachineBasic::SendEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
@@ -339,7 +338,7 @@ McpttEmergAlertMachineBasic::SetDelayTfe2 (const Time& delayTfe2)
 }
 
 void
-McpttEmergAlertMachineBasic::Start (void)
+McpttEmergAlertMachineBasic::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -357,7 +356,7 @@ McpttEmergAlertMachineBasic::Start (void)
 }
 
 void
-McpttEmergAlertMachineBasic::Stop (void)
+McpttEmergAlertMachineBasic::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -370,12 +369,12 @@ McpttEmergAlertMachineBasic::Stop (void)
       tfe2->Stop ();
     }
 
-  for (std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it = m_emergUsers.begin (); it != m_emergUsers.end (); it++)
+    for (auto it = m_emergUsers.begin(); it != m_emergUsers.end(); it++)
     {
       if (it->Tfe1->IsRunning ())
         {
           it->Tfe1->Stop ();
-          it->Tfe1 = 0;
+          it->Tfe1 = nullptr;
         }
     }
 
@@ -396,12 +395,12 @@ McpttEmergAlertMachineBasic::AddEmergUser (const McpttEmergAlertMachineBasic::Em
 }
 
 void
-McpttEmergAlertMachineBasic::DoDispose (void)
+McpttEmergAlertMachineBasic::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetOwner (0);
-  SetTfe2 (0);
+  SetOwner(nullptr);
+  SetTfe2(nullptr);
 }
 
 void
@@ -421,7 +420,7 @@ McpttEmergAlertMachineBasic::ExpiryOfTfe1 (uint32_t userId)
 }
 
 void
-McpttEmergAlertMachineBasic::ExpiryOfTfe2 (void)
+McpttEmergAlertMachineBasic::ExpiryOfTfe2()
 {
   NS_LOG_FUNCTION (this);
 
@@ -490,8 +489,8 @@ McpttEmergAlertMachineBasic::RemoveEmergUser (uint32_t userId)
   std::list<McpttEmergAlertMachineBasic::EmergUser>::iterator it;
   bool found = FindEmergUser (userId, it);
 
-  if (found == true)
-    {
+  if (found)
+  {
       if (it->Tfe1->IsRunning ())
         {
           it->Tfe1->Stop ();
@@ -504,7 +503,7 @@ McpttEmergAlertMachineBasic::RemoveEmergUser (uint32_t userId)
 }
 
 std::list<McpttEmergAlertMachineBasic::EmergUser>
-McpttEmergAlertMachineBasic::GetEmergUsers (void) const
+McpttEmergAlertMachineBasic::GetEmergUsers() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -512,7 +511,7 @@ McpttEmergAlertMachineBasic::GetEmergUsers (void) const
 }
 
 Ptr<McpttTimer>
-McpttEmergAlertMachineBasic::GetTfe2 (void) const
+McpttEmergAlertMachineBasic::GetTfe2() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -536,7 +535,7 @@ McpttEmergAlertMachineBasic::SetTfe2 (Ptr<McpttTimer>  tfe2)
 }
 
 bool
-McpttEmergAlertMachineBasic::GetEmerg (void) const
+McpttEmergAlertMachineBasic::GetEmerg() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -544,7 +543,7 @@ McpttEmergAlertMachineBasic::GetEmerg (void) const
 }
 
 McpttCallMsgFieldOrgName
-McpttEmergAlertMachineBasic::GetOrgName (void) const
+McpttEmergAlertMachineBasic::GetOrgName() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -552,7 +551,7 @@ McpttEmergAlertMachineBasic::GetOrgName (void) const
 }
 
 Ptr<McpttCallMachineGrp>
-McpttEmergAlertMachineBasic::GetOwner (void) const
+McpttEmergAlertMachineBasic::GetOwner() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -560,7 +559,7 @@ McpttEmergAlertMachineBasic::GetOwner (void) const
 }
 
 bool
-McpttEmergAlertMachineBasic::GetStarted (void) const
+McpttEmergAlertMachineBasic::GetStarted() const
 {
   NS_LOG_FUNCTION (this);
 

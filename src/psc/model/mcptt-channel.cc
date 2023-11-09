@@ -51,7 +51,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttChannel");
 NS_OBJECT_ENSURE_REGISTERED (McpttChannel);
 
 TypeId
-McpttChannel::GetTypeId (void)
+McpttChannel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttChannel")
     .SetParent<Object> ()
@@ -61,21 +61,21 @@ McpttChannel::GetTypeId (void)
   return tid;
 }
 
-McpttChannel::McpttChannel (void)
-  : Object (),
-    m_rxPktCb (MakeNullCallback<void, Ptr<Packet>, Address> ()),
-    m_socket (0)
+McpttChannel::McpttChannel()
+    : Object(),
+      m_rxPktCb(MakeNullCallback<void, Ptr<Packet>, Address>()),
+      m_socket(nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttChannel::~McpttChannel (void)
+McpttChannel::~McpttChannel()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttChannel::Close (void)
+McpttChannel::Close()
 {
   NS_LOG_FUNCTION (this);
 
@@ -84,21 +84,21 @@ McpttChannel::Close (void)
   socket->Close ();
   socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
 
-  SetSocket (0);
+  SetSocket(nullptr);
 }
 
 TypeId
-McpttChannel::GetInstanceTypeId (void) const
+McpttChannel::GetInstanceTypeId() const
 {
   return McpttChannel::GetTypeId ();
 }
 
 bool
-McpttChannel::IsOpen (void) const
+McpttChannel::IsOpen() const
 {
   NS_LOG_FUNCTION (this);
 
-  return (GetSocket ()) ? true : false;
+  return static_cast<bool>((GetSocket()));
 }
 
 int
@@ -144,7 +144,7 @@ McpttChannel::Open (Ptr<Node>  node, uint16_t port, const Address& local, const 
           result = socket->Connect (InetSocketAddress (peerIpv4, port));
           ssPeer << peerIpv4;
           NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
-          success = (result == 0) ? true : false;
+          success = result == 0;
         }
       else
         {
@@ -160,7 +160,7 @@ McpttChannel::Open (Ptr<Node>  node, uint16_t port, const Address& local, const 
           result = socket->Connect (Inet6SocketAddress (peerIpv6, port));
           ssPeer << peerIpv6;
           NS_LOG_DEBUG ("Create socket on " << node->GetId () << " from " << ssLocal.str () << " port " << port << " to " << ssPeer.str () << " port " << port);
-          success = (result == 0) ? true : false;
+          success = result == 0;
         }
       else
         {
@@ -173,7 +173,7 @@ McpttChannel::Open (Ptr<Node>  node, uint16_t port, const Address& local, const 
       NS_ABORT_MSG ("Only Ipv4 and Ipv6 address are supported.");
     }
 
-  if (success == true)
+    if (success)
     {
       SetSocket (socket);
     }
@@ -181,7 +181,7 @@ McpttChannel::Open (Ptr<Node>  node, uint16_t port, const Address& local, const 
     {
       NS_LOG_DEBUG ("Unable to create socket");
       socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> >());
-      socket = 0;
+      socket = nullptr;
     }
 
   return result;
@@ -207,7 +207,7 @@ McpttChannel::SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress)
 }
 
 void
-McpttChannel::DoDispose (void)
+McpttChannel::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
@@ -266,7 +266,7 @@ McpttChannel::ReceivePkts (Ptr<Socket> socket)
 }
 
 Ptr<Socket>
-McpttChannel::GetSocket (void) const
+McpttChannel::GetSocket() const
 {
   NS_LOG_FUNCTION (this);
 

@@ -43,7 +43,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorParticipant);
 
 TypeId
-McpttFloorParticipant::GetTypeId (void)
+McpttFloorParticipant::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttFloorParticipant")
     .SetParent<Object> ()
@@ -52,18 +52,18 @@ McpttFloorParticipant::GetTypeId (void)
   return tid;
 }
 
-McpttFloorParticipant::McpttFloorParticipant (void)
+McpttFloorParticipant::McpttFloorParticipant()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorParticipant::~McpttFloorParticipant (void)
+McpttFloorParticipant::~McpttFloorParticipant()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttFloorParticipant::GetInstanceTypeId (void) const
+McpttFloorParticipant::GetInstanceTypeId() const
 {
   return McpttFloorParticipant::GetTypeId ();
 }
@@ -73,7 +73,7 @@ McpttFloorParticipant::GetInstanceTypeId (void) const
 NS_OBJECT_ENSURE_REGISTERED (McpttFloorParticipantNull);
 
 TypeId
-McpttFloorParticipantNull::GetTypeId (void)
+McpttFloorParticipantNull::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttFloorParticipantNull")
     .SetParent<Object> ()
@@ -83,37 +83,37 @@ McpttFloorParticipantNull::GetTypeId (void)
   return tid;
 }
 
-McpttFloorParticipantNull::McpttFloorParticipantNull (void)
-  : McpttFloorParticipant ()
+McpttFloorParticipantNull::McpttFloorParticipantNull()
+    : McpttFloorParticipant()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorParticipantNull::~McpttFloorParticipantNull (void)
+McpttFloorParticipantNull::~McpttFloorParticipantNull()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorParticipantNull::AcceptGrant (void)
+McpttFloorParticipantNull::AcceptGrant()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttFloorParticipantNull::GetInstanceTypeId (void) const
+McpttFloorParticipantNull::GetInstanceTypeId() const
 {
   return McpttFloorParticipantNull::GetTypeId ();
 }
 
 bool
-McpttFloorParticipantNull::HasFloor (void) const
+McpttFloorParticipantNull::HasFloor() const
 {
   return false;
 }
 
 bool
-McpttFloorParticipantNull::IsStarted (void) const
+McpttFloorParticipantNull::IsStarted() const
 {
   return true;
 }
@@ -125,13 +125,13 @@ McpttFloorParticipantNull::MediaReady (McpttMediaMsg& msg)
 }
 
 void
-McpttFloorParticipantNull::ReleaseRequest (void)
+McpttFloorParticipantNull::ReleaseRequest()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorParticipantNull::SendFloorQueuePositionRequest (void)
+McpttFloorParticipantNull::SendFloorQueuePositionRequest()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -161,25 +161,25 @@ McpttFloorParticipantNull::SetPriority (uint8_t priority)
 }
 
 void
-McpttFloorParticipantNull::Start (void)
+McpttFloorParticipantNull::Start()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorParticipantNull::Stop (void)
+McpttFloorParticipantNull::Stop()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorParticipantNull::PttPush (void)
+McpttFloorParticipantNull::PttPush()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttFloorParticipantNull::PttRelease (void)
+McpttFloorParticipantNull::PttRelease()
 {
   NS_LOG_FUNCTION (this);
 }

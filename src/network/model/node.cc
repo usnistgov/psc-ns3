@@ -155,8 +155,7 @@ void
 Node::RemoveDevice(Ptr<NetDevice> device)
 {
     NS_LOG_FUNCTION(this << device);
-    std::vector<Ptr<NetDevice>>::iterator it =
-        std::remove(m_devices.begin(), m_devices.end(), device);
+    auto it = std::remove(m_devices.begin(), m_devices.end(), device);
     NS_ASSERT_MSG(it != m_devices.end(), "Device not in node");
     m_devices.erase(it);
 }

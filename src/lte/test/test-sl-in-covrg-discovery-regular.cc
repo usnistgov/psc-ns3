@@ -386,9 +386,7 @@ SlInCovrgDiscoveryRegularTestCase::DoRun()
     }
 
     bool allDiscovered = true;
-    for (std::map<uint64_t, uint32_t>::const_iterator it = imsiAppcodeCountsMap.begin();
-         it != imsiAppcodeCountsMap.end();
-         ++it)
+    for (auto it = imsiAppcodeCountsMap.begin(); it != imsiAppcodeCountsMap.end(); ++it)
     {
         if (!m_useModelB)
         {

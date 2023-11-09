@@ -54,7 +54,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgField);
 
 TypeId
-McpttCallMsgField::GetTypeId (void)
+McpttCallMsgField::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgField")
     .SetParent<ObjectBase> ()
@@ -63,17 +63,17 @@ McpttCallMsgField::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgField::~McpttCallMsgField (void)
+McpttCallMsgField::~McpttCallMsgField()
 {}
 
 TypeId
-McpttCallMsgField::GetInstanceTypeId (void) const
+McpttCallMsgField::GetInstanceTypeId() const
 {
   return McpttCallMsgField::GetTypeId ();
 }
 
-McpttCallMsgField::McpttCallMsgField (void)
-  : ObjectBase ()
+McpttCallMsgField::McpttCallMsgField()
+    : ObjectBase()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -88,7 +88,7 @@ std::ostream& operator<< (std::ostream& os, const McpttCallMsgField& field)
 
 /** McpttCallMsgFieldType6 - begin **/
 TypeId
-McpttCallMsgFieldType6::GetTypeId (void)
+McpttCallMsgFieldType6::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldType6")
     .SetParent<McpttCallMsgField> ()
@@ -97,7 +97,7 @@ McpttCallMsgFieldType6::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldType6::~McpttCallMsgFieldType6 (void)
+McpttCallMsgFieldType6::~McpttCallMsgFieldType6()
 {}
 
 uint32_t
@@ -117,13 +117,13 @@ McpttCallMsgFieldType6::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldType6::GetInstanceTypeId (void) const
+McpttCallMsgFieldType6::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldType6::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldType6::GetSerializedSize (void) const
+McpttCallMsgFieldType6::GetSerializedSize() const
 {
   uint16_t length = GetLength ();
   // Two bytes for the length field, plus "length" bytes in the content.
@@ -152,9 +152,9 @@ McpttCallMsgFieldType6::Serialize (Buffer::Iterator& buff) const
   buff.WriteHtonU16 (length);
 }
 
-McpttCallMsgFieldType6::McpttCallMsgFieldType6 (void)
-  : McpttCallMsgField (),
-    m_length (0)
+McpttCallMsgFieldType6::McpttCallMsgFieldType6()
+    : McpttCallMsgField(),
+      m_length(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -167,7 +167,7 @@ McpttCallMsgFieldType6::McpttCallMsgFieldType6 (uint16_t length)
 }
 
 uint16_t
-McpttCallMsgFieldType6::GetLength (void) const
+McpttCallMsgFieldType6::GetLength() const
 {
   return m_length;
 }
@@ -185,7 +185,7 @@ McpttCallMsgFieldType6::SetLength (uint16_t length)
 NS_OBJECT_ENSURE_REGISTERED (McpttCallMsgFieldMsgType);
 
 TypeId
-McpttCallMsgFieldMsgType::GetTypeId (void)
+McpttCallMsgFieldMsgType::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldMsgType")
     .SetParent<McpttCallMsgField> ()
@@ -195,9 +195,9 @@ McpttCallMsgFieldMsgType::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldMsgType::McpttCallMsgFieldMsgType (void)
-  : McpttCallMsgField (),
-    m_type (0)
+McpttCallMsgFieldMsgType::McpttCallMsgFieldMsgType()
+    : McpttCallMsgField(),
+      m_type(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -209,7 +209,7 @@ McpttCallMsgFieldMsgType::McpttCallMsgFieldMsgType (uint8_t type)
   NS_LOG_FUNCTION (this << (uint32_t)type);
 }
 
-McpttCallMsgFieldMsgType::~McpttCallMsgFieldMsgType (void)
+McpttCallMsgFieldMsgType::~McpttCallMsgFieldMsgType()
 {}
 
 uint32_t
@@ -228,13 +228,13 @@ McpttCallMsgFieldMsgType::Deserialize (Buffer::Iterator& start)
 }
 
 TypeId
-McpttCallMsgFieldMsgType::GetInstanceTypeId (void) const
+McpttCallMsgFieldMsgType::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldMsgType::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldMsgType::GetSerializedSize (void) const
+McpttCallMsgFieldMsgType::GetSerializedSize() const
 {
   return 1; // One byte for the message type.
 }
@@ -260,7 +260,7 @@ McpttCallMsgFieldMsgType::Serialize (Buffer::Iterator& start) const
 }
 
 uint8_t
-McpttCallMsgFieldMsgType::GetType (void) const
+McpttCallMsgFieldMsgType::GetType() const
 {
   return m_type;
 }
@@ -276,7 +276,7 @@ McpttCallMsgFieldMsgType::SetType (uint8_t type)
 
 /** McpttCallMsgFieldCallId - begin **/
 TypeId
-McpttCallMsgFieldCallId::GetTypeId (void)
+McpttCallMsgFieldCallId::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldCallId")
     .SetParent<McpttCallMsgField> ()
@@ -286,9 +286,9 @@ McpttCallMsgFieldCallId::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldCallId::McpttCallMsgFieldCallId (void)
-  : McpttCallMsgField (),
-    m_callId (0)
+McpttCallMsgFieldCallId::McpttCallMsgFieldCallId()
+    : McpttCallMsgField(),
+      m_callId(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -300,7 +300,7 @@ McpttCallMsgFieldCallId::McpttCallMsgFieldCallId (uint16_t callId)
   NS_LOG_FUNCTION (this << (uint32_t)callId);
 }
 
-McpttCallMsgFieldCallId::~McpttCallMsgFieldCallId (void)
+McpttCallMsgFieldCallId::~McpttCallMsgFieldCallId()
 {}
 
 uint32_t
@@ -319,13 +319,13 @@ McpttCallMsgFieldCallId::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldCallId::GetInstanceTypeId (void) const
+McpttCallMsgFieldCallId::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldCallId::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldCallId::GetSerializedSize (void) const
+McpttCallMsgFieldCallId::GetSerializedSize() const
 {
   return 2;
 }
@@ -351,7 +351,7 @@ McpttCallMsgFieldCallId::Serialize (Buffer::Iterator& buff) const
 }
 
 uint16_t
-McpttCallMsgFieldCallId::GetCallId (void) const
+McpttCallMsgFieldCallId::GetCallId() const
 {
   return m_callId;
 }
@@ -367,7 +367,7 @@ McpttCallMsgFieldCallId::SetCallId (uint16_t callId)
 
 /** McpttCallMsgFieldRefreshInterval - begin **/
 TypeId
-McpttCallMsgFieldRefreshInterval::GetTypeId (void)
+McpttCallMsgFieldRefreshInterval::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldRefreshInterval")
     .SetParent<McpttCallMsgField> ()
@@ -377,9 +377,9 @@ McpttCallMsgFieldRefreshInterval::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldRefreshInterval::McpttCallMsgFieldRefreshInterval (void)
-  : McpttCallMsgField (),
-    m_interval (0)
+McpttCallMsgFieldRefreshInterval::McpttCallMsgFieldRefreshInterval()
+    : McpttCallMsgField(),
+      m_interval(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -391,7 +391,7 @@ McpttCallMsgFieldRefreshInterval::McpttCallMsgFieldRefreshInterval (uint16_t int
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldRefreshInterval::~McpttCallMsgFieldRefreshInterval (void)
+McpttCallMsgFieldRefreshInterval::~McpttCallMsgFieldRefreshInterval()
 {}
 
 uint32_t
@@ -410,13 +410,13 @@ McpttCallMsgFieldRefreshInterval::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldRefreshInterval::GetInstanceTypeId (void) const
+McpttCallMsgFieldRefreshInterval::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldRefreshInterval::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldRefreshInterval::GetSerializedSize (void) const
+McpttCallMsgFieldRefreshInterval::GetSerializedSize() const
 {
   return 2;
 }
@@ -442,7 +442,7 @@ McpttCallMsgFieldRefreshInterval::Serialize (Buffer::Iterator& buff) const
 }
 
 uint16_t
-McpttCallMsgFieldRefreshInterval::GetInterval (void) const
+McpttCallMsgFieldRefreshInterval::GetInterval() const
 {
   return m_interval;
 }
@@ -458,7 +458,7 @@ McpttCallMsgFieldRefreshInterval::SetInterval (uint16_t interval)
 
 /** McpttCallMsgFieldGrpId - begin **/
 TypeId
-McpttCallMsgFieldGrpId::GetTypeId (void)
+McpttCallMsgFieldGrpId::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldGrpId")
     .SetParent<McpttCallMsgField> ()
@@ -468,9 +468,9 @@ McpttCallMsgFieldGrpId::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldGrpId::McpttCallMsgFieldGrpId (void)
-  : McpttCallMsgFieldType6 (4),
-    m_grpId (0)
+McpttCallMsgFieldGrpId::McpttCallMsgFieldGrpId()
+    : McpttCallMsgFieldType6(4),
+      m_grpId(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -482,7 +482,7 @@ McpttCallMsgFieldGrpId::McpttCallMsgFieldGrpId (uint32_t grpId)
   NS_LOG_FUNCTION (this << grpId);
 }
 
-McpttCallMsgFieldGrpId::~McpttCallMsgFieldGrpId (void)
+McpttCallMsgFieldGrpId::~McpttCallMsgFieldGrpId()
 {}
 
 uint32_t
@@ -501,7 +501,7 @@ McpttCallMsgFieldGrpId::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldGrpId::GetInstanceTypeId (void) const
+McpttCallMsgFieldGrpId::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldGrpId::GetTypeId ();
 }
@@ -532,7 +532,7 @@ McpttCallMsgFieldGrpId::Serialize (Buffer::Iterator& buff) const
 }
 
 uint32_t
-McpttCallMsgFieldGrpId::GetGrpId (void) const
+McpttCallMsgFieldGrpId::GetGrpId() const
 {
   return m_grpId;
 }
@@ -548,7 +548,7 @@ McpttCallMsgFieldGrpId::SetGrpId (uint32_t grpId)
 
 /** McpttCallMsgFieldSdp - begin **/
 TypeId
-McpttCallMsgFieldSdp::GetTypeId (void)
+McpttCallMsgFieldSdp::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldSdp")
     .SetParent<McpttCallMsgFieldType6> ()
@@ -558,17 +558,17 @@ McpttCallMsgFieldSdp::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldSdp::McpttCallMsgFieldSdp (void)
-  : McpttCallMsgFieldType6 (120),
-    m_floorPort (0),
-    m_grpAddr (Ipv4Address ()),
-    m_origAddr (Ipv4Address ()),
-    m_speechPort (0)
+McpttCallMsgFieldSdp::McpttCallMsgFieldSdp()
+    : McpttCallMsgFieldType6(120),
+      m_floorPort(0),
+      m_grpAddr(Ipv4Address()),
+      m_origAddr(Ipv4Address()),
+      m_speechPort(0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldSdp::~McpttCallMsgFieldSdp (void)
+McpttCallMsgFieldSdp::~McpttCallMsgFieldSdp()
 {}
 
 uint32_t
@@ -702,7 +702,7 @@ McpttCallMsgFieldSdp::FromStr (const std::string& strRep)
 }
 
 TypeId
-McpttCallMsgFieldSdp::GetInstanceTypeId (void) const
+McpttCallMsgFieldSdp::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldSdp::GetTypeId ();
 }
@@ -737,7 +737,7 @@ McpttCallMsgFieldSdp::Serialize (Buffer::Iterator& buff) const
 }
 
 std::string
-McpttCallMsgFieldSdp::ToStr (void) const
+McpttCallMsgFieldSdp::ToStr() const
 {
   std::stringstream ss;
   std::string grpAddrType;
@@ -792,7 +792,7 @@ McpttCallMsgFieldSdp::ToStr (void) const
 }
 
 void
-McpttCallMsgFieldSdp::UpdateLength (void)
+McpttCallMsgFieldSdp::UpdateLength()
 {
   NS_LOG_FUNCTION (this);
 
@@ -803,25 +803,25 @@ McpttCallMsgFieldSdp::UpdateLength (void)
 }
 
 uint16_t
-McpttCallMsgFieldSdp::GetFloorPort (void) const
+McpttCallMsgFieldSdp::GetFloorPort() const
 {
   return m_floorPort;
 }
 
 Address
-McpttCallMsgFieldSdp::GetGrpAddr (void) const
+McpttCallMsgFieldSdp::GetGrpAddr() const
 {
   return m_grpAddr;
 }
 
 Address
-McpttCallMsgFieldSdp::GetOrigAddr (void) const
+McpttCallMsgFieldSdp::GetOrigAddr() const
 {
   return m_origAddr;
 }
 
 uint16_t
-McpttCallMsgFieldSdp::GetSpeechPort (void) const
+McpttCallMsgFieldSdp::GetSpeechPort() const
 {
   return m_speechPort;
 }
@@ -873,7 +873,7 @@ const uint8_t McpttCallMsgFieldCommMode::AUTOMATIC_MODE = 0;
 const uint8_t McpttCallMsgFieldCommMode::MANUAL_MODE = 1;
 
 TypeId
-McpttCallMsgFieldCommMode::GetTypeId (void)
+McpttCallMsgFieldCommMode::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldCommMode")
     .SetParent<McpttCallMsgField> ()
@@ -883,9 +883,9 @@ McpttCallMsgFieldCommMode::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldCommMode::McpttCallMsgFieldCommMode (void)
-  : McpttCallMsgField (),
-    m_mode (0)
+McpttCallMsgFieldCommMode::McpttCallMsgFieldCommMode()
+    : McpttCallMsgField(),
+      m_mode(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -897,7 +897,7 @@ McpttCallMsgFieldCommMode::McpttCallMsgFieldCommMode (uint8_t commMode)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldCommMode::~McpttCallMsgFieldCommMode (void)
+McpttCallMsgFieldCommMode::~McpttCallMsgFieldCommMode()
 {}
 
 uint32_t
@@ -917,13 +917,13 @@ McpttCallMsgFieldCommMode::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldCommMode::GetInstanceTypeId (void) const
+McpttCallMsgFieldCommMode::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldCommMode::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldCommMode::GetSerializedSize (void) const
+McpttCallMsgFieldCommMode::GetSerializedSize() const
 {
   return 1; // One byte for mode value.
 }
@@ -949,7 +949,7 @@ McpttCallMsgFieldCommMode::Serialize (Buffer::Iterator& buff) const
 }
 
 uint8_t
-McpttCallMsgFieldCommMode::GetMode (void) const
+McpttCallMsgFieldCommMode::GetMode() const
 {
   return m_mode;
 }
@@ -975,7 +975,7 @@ const uint8_t McpttCallMsgFieldReason::SECURITY_FAILURE = 3;
 const uint8_t McpttCallMsgFieldReason::FAILED = 4;
 
 TypeId
-McpttCallMsgFieldReason::GetTypeId (void)
+McpttCallMsgFieldReason::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldReason")
     .SetParent<McpttCallMsgField> ()
@@ -985,9 +985,9 @@ McpttCallMsgFieldReason::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldReason::McpttCallMsgFieldReason (void)
-  : McpttCallMsgField (),
-    m_reason (0)
+McpttCallMsgFieldReason::McpttCallMsgFieldReason()
+    : McpttCallMsgField(),
+      m_reason(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -999,7 +999,7 @@ McpttCallMsgFieldReason::McpttCallMsgFieldReason (uint8_t reason)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldReason::~McpttCallMsgFieldReason (void)
+McpttCallMsgFieldReason::~McpttCallMsgFieldReason()
 {}
 
 uint32_t
@@ -1018,13 +1018,13 @@ McpttCallMsgFieldReason::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldReason::GetInstanceTypeId (void) const
+McpttCallMsgFieldReason::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldReason::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldReason::GetSerializedSize (void) const
+McpttCallMsgFieldReason::GetSerializedSize() const
 {
   return 1; // One byte for the reason value.
 }
@@ -1050,7 +1050,7 @@ McpttCallMsgFieldReason::Serialize (Buffer::Iterator& buff) const
 }
 
 uint8_t
-McpttCallMsgFieldReason::GetReason (void) const
+McpttCallMsgFieldReason::GetReason() const
 {
   return m_reason;
 }
@@ -1066,13 +1066,13 @@ McpttCallMsgFieldReason::SetReason (uint8_t reason)
 
 /** McpttCallMsgFieldConfirmMode - begin **/
 uint8_t
-McpttCallMsgFieldConfirmMode::GetIei (void)
+McpttCallMsgFieldConfirmMode::GetIei()
 {
   return 80;
 }
 
 TypeId
-McpttCallMsgFieldConfirmMode::GetTypeId (void)
+McpttCallMsgFieldConfirmMode::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldConfirmMode")
     .SetParent<McpttCallMsgField> ()
@@ -1082,13 +1082,13 @@ McpttCallMsgFieldConfirmMode::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldConfirmMode::McpttCallMsgFieldConfirmMode (void)
-  : McpttCallMsgField ()
+McpttCallMsgFieldConfirmMode::McpttCallMsgFieldConfirmMode()
+    : McpttCallMsgField()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldConfirmMode::~McpttCallMsgFieldConfirmMode (void)
+McpttCallMsgFieldConfirmMode::~McpttCallMsgFieldConfirmMode()
 {}
 
 uint32_t
@@ -1107,13 +1107,13 @@ McpttCallMsgFieldConfirmMode::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldConfirmMode::GetInstanceTypeId (void) const
+McpttCallMsgFieldConfirmMode::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldConfirmMode::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldConfirmMode::GetSerializedSize (void) const
+McpttCallMsgFieldConfirmMode::GetSerializedSize() const
 {
   return 1; // One byte for the indication.
 }
@@ -1139,7 +1139,7 @@ McpttCallMsgFieldConfirmMode::Serialize (Buffer::Iterator& buff) const
 
 /** McpttCallMsgFieldUserId - begin **/
 TypeId
-McpttCallMsgFieldUserId::GetTypeId (void)
+McpttCallMsgFieldUserId::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldUserId")
     .SetParent<McpttCallMsgFieldType6> ()
@@ -1149,9 +1149,9 @@ McpttCallMsgFieldUserId::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldUserId::McpttCallMsgFieldUserId (void)
-  : McpttCallMsgFieldType6 (4),
-    m_id (0)
+McpttCallMsgFieldUserId::McpttCallMsgFieldUserId()
+    : McpttCallMsgFieldType6(4),
+      m_id(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1163,7 +1163,7 @@ McpttCallMsgFieldUserId::McpttCallMsgFieldUserId (uint32_t id)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldUserId::~McpttCallMsgFieldUserId (void)
+McpttCallMsgFieldUserId::~McpttCallMsgFieldUserId()
 {}
 
 uint32_t
@@ -1182,7 +1182,7 @@ McpttCallMsgFieldUserId::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldUserId::GetInstanceTypeId (void) const
+McpttCallMsgFieldUserId::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldUserId::GetTypeId ();
 }
@@ -1213,7 +1213,7 @@ McpttCallMsgFieldUserId::Serialize (Buffer::Iterator& buff) const
 }
 
 uint32_t
-McpttCallMsgFieldUserId::GetId (void) const
+McpttCallMsgFieldUserId::GetId() const
 {
   return m_id;
 }
@@ -1307,7 +1307,7 @@ McpttCallMsgFieldCallType::GetCallTypePriority (uint8_t type)
 }
 
 TypeId
-McpttCallMsgFieldCallType::GetTypeId (void)
+McpttCallMsgFieldCallType::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldCallType")
     .SetParent<McpttCallMsgField> ()
@@ -1317,9 +1317,9 @@ McpttCallMsgFieldCallType::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldCallType::McpttCallMsgFieldCallType (void)
-  : McpttCallMsgField (),
-    m_type (0)
+McpttCallMsgFieldCallType::McpttCallMsgFieldCallType()
+    : McpttCallMsgField(),
+      m_type(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1331,7 +1331,7 @@ McpttCallMsgFieldCallType::McpttCallMsgFieldCallType (uint8_t type)
   NS_LOG_FUNCTION (this << (uint32_t)type);
 }
 
-McpttCallMsgFieldCallType::~McpttCallMsgFieldCallType (void)
+McpttCallMsgFieldCallType::~McpttCallMsgFieldCallType()
 {}
 
 uint32_t
@@ -1350,13 +1350,13 @@ McpttCallMsgFieldCallType::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldCallType::GetInstanceTypeId (void) const
+McpttCallMsgFieldCallType::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldCallType::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldCallType::GetSerializedSize (void) const
+McpttCallMsgFieldCallType::GetSerializedSize() const
 {
   return 1; // One byte for the call type representation byte.
 }
@@ -1382,7 +1382,7 @@ McpttCallMsgFieldCallType::Serialize (Buffer::Iterator& buff) const
 }
 
 uint8_t
-McpttCallMsgFieldCallType::GetType (void) const
+McpttCallMsgFieldCallType::GetType() const
 {
   return m_type;
 }
@@ -1398,13 +1398,13 @@ McpttCallMsgFieldCallType::SetType (uint8_t type)
 
 /** McpttCallMsgFieldUserLoc - begin **/
 uint8_t
-McpttCallMsgFieldUserLoc::GetIei (void)
+McpttCallMsgFieldUserLoc::GetIei()
 {
   return 78;
 }
 
 TypeId
-McpttCallMsgFieldUserLoc::GetTypeId (void)
+McpttCallMsgFieldUserLoc::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldUserLoc")
     .SetParent<McpttCallMsgFieldType6> ()
@@ -1414,9 +1414,9 @@ McpttCallMsgFieldUserLoc::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldUserLoc::McpttCallMsgFieldUserLoc (void)
-  : McpttCallMsgFieldType6 (sizeof (double) * 3),
-    m_loc (Vector ())
+McpttCallMsgFieldUserLoc::McpttCallMsgFieldUserLoc()
+    : McpttCallMsgFieldType6(sizeof(double) * 3),
+      m_loc(Vector())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1428,7 +1428,7 @@ McpttCallMsgFieldUserLoc::McpttCallMsgFieldUserLoc (const Vector& loc)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldUserLoc::~McpttCallMsgFieldUserLoc (void)
+McpttCallMsgFieldUserLoc::~McpttCallMsgFieldUserLoc()
 {}
 
 uint32_t
@@ -1478,7 +1478,7 @@ McpttCallMsgFieldUserLoc::Deserialize (Buffer::Iterator& buff)
 }
 
 uint32_t
-McpttCallMsgFieldUserLoc::GetSerializedSize (void) const
+McpttCallMsgFieldUserLoc::GetSerializedSize() const
 {
   uint32_t size = McpttCallMsgFieldType6::GetSerializedSize ();
   size += 1; // Add one byte for IEI
@@ -1487,7 +1487,7 @@ McpttCallMsgFieldUserLoc::GetSerializedSize (void) const
 }
 
 TypeId
-McpttCallMsgFieldUserLoc::GetInstanceTypeId (void) const
+McpttCallMsgFieldUserLoc::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldUserLoc::GetTypeId ();
 }
@@ -1546,7 +1546,7 @@ McpttCallMsgFieldUserLoc::Serialize (Buffer::Iterator& buff) const
 }
 
 Vector
-McpttCallMsgFieldUserLoc::GetLoc (void) const
+McpttCallMsgFieldUserLoc::GetLoc() const
 {
   return m_loc;
 }
@@ -1562,7 +1562,7 @@ McpttCallMsgFieldUserLoc::SetLoc (const Vector& loc)
 
 /** McpttCallMsgFieldOrgName - begin **/
 TypeId
-McpttCallMsgFieldOrgName::GetTypeId (void)
+McpttCallMsgFieldOrgName::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldOrgName")
     .SetParent<McpttCallMsgFieldType6> ()
@@ -1572,9 +1572,9 @@ McpttCallMsgFieldOrgName::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldOrgName::McpttCallMsgFieldOrgName (void)
-  : McpttCallMsgFieldType6 (),
-    m_name ("")
+McpttCallMsgFieldOrgName::McpttCallMsgFieldOrgName()
+    : McpttCallMsgFieldType6(),
+      m_name("")
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1586,7 +1586,7 @@ McpttCallMsgFieldOrgName::McpttCallMsgFieldOrgName (const std::string& name)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldOrgName::~McpttCallMsgFieldOrgName (void)
+McpttCallMsgFieldOrgName::~McpttCallMsgFieldOrgName()
 {}
 
 uint32_t
@@ -1609,7 +1609,7 @@ McpttCallMsgFieldOrgName::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldOrgName::GetInstanceTypeId (void) const
+McpttCallMsgFieldOrgName::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldOrgName::GetTypeId ();
 }
@@ -1651,7 +1651,7 @@ McpttCallMsgFieldOrgName::UpdateName (const std::string& name)
 }
 
 std::string
-McpttCallMsgFieldOrgName::GetName (void) const
+McpttCallMsgFieldOrgName::GetName() const
 {
   return m_name;
 }
@@ -1672,7 +1672,7 @@ McpttCallMsgFieldOrgName::SetName (const std::string& name)
 
 /** McpttCallMsgFieldStartTime - begin **/
 TypeId
-McpttCallMsgFieldStartTime::GetTypeId (void)
+McpttCallMsgFieldStartTime::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldStartTime")
     .SetParent<McpttCallMsgField> ()
@@ -1682,9 +1682,9 @@ McpttCallMsgFieldStartTime::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldStartTime::McpttCallMsgFieldStartTime (void)
-  : McpttCallMsgField (),
-    m_time (Time ())
+McpttCallMsgFieldStartTime::McpttCallMsgFieldStartTime()
+    : McpttCallMsgField(),
+      m_time(Time())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1696,7 +1696,7 @@ McpttCallMsgFieldStartTime::McpttCallMsgFieldStartTime (const Time& time)
   NS_LOG_FUNCTION (this << time);
 }
 
-McpttCallMsgFieldStartTime::~McpttCallMsgFieldStartTime (void)
+McpttCallMsgFieldStartTime::~McpttCallMsgFieldStartTime()
 {}
 
 uint32_t
@@ -1717,13 +1717,13 @@ McpttCallMsgFieldStartTime::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldStartTime::GetInstanceTypeId (void) const
+McpttCallMsgFieldStartTime::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldStartTime::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldStartTime::GetSerializedSize (void) const
+McpttCallMsgFieldStartTime::GetSerializedSize() const
 {
   // Even though only four bytes are actually stored here, the size of the
   // field is supposed to be five byes, so an extra dummy byte will be
@@ -1748,14 +1748,14 @@ McpttCallMsgFieldStartTime::Serialize (Buffer::Iterator& buff) const
 
   Time t = GetTime ();
 
-  uint32_t seconds = (uint32_t)t.GetMilliSeconds ();
+  auto seconds = (uint32_t)t.GetMilliSeconds();
 
   buff.WriteHtonU32 (seconds);
   buff.WriteU8 (0); // Extra dummy byte
 }
 
 Time
-McpttCallMsgFieldStartTime::GetTime (void) const
+McpttCallMsgFieldStartTime::GetTime() const
 {
   return m_time;
 }
@@ -1771,7 +1771,7 @@ McpttCallMsgFieldStartTime::SetTime (const Time& time)
 
 /** McpttCallMsgFieldLastChgTime - begin **/
 TypeId
-McpttCallMsgFieldLastChgTime::GetTypeId (void)
+McpttCallMsgFieldLastChgTime::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldLastChgTime")
     .SetParent<McpttCallMsgField> ()
@@ -1781,9 +1781,9 @@ McpttCallMsgFieldLastChgTime::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldLastChgTime::McpttCallMsgFieldLastChgTime (void)
-  : McpttCallMsgField (),
-    m_time (Time ())
+McpttCallMsgFieldLastChgTime::McpttCallMsgFieldLastChgTime()
+    : McpttCallMsgField(),
+      m_time(Time())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1795,7 +1795,7 @@ McpttCallMsgFieldLastChgTime::McpttCallMsgFieldLastChgTime (const Time& time)
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldLastChgTime::~McpttCallMsgFieldLastChgTime (void)
+McpttCallMsgFieldLastChgTime::~McpttCallMsgFieldLastChgTime()
 {}
 
 uint32_t
@@ -1816,13 +1816,13 @@ McpttCallMsgFieldLastChgTime::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldLastChgTime::GetInstanceTypeId (void) const
+McpttCallMsgFieldLastChgTime::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldLastChgTime::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldLastChgTime::GetSerializedSize (void) const
+McpttCallMsgFieldLastChgTime::GetSerializedSize() const
 {
   // Even though only four bytes are actually stored here, the size of the
   // field is supposed to be five byes, so an extra dummy byte will be
@@ -1847,14 +1847,14 @@ McpttCallMsgFieldLastChgTime::Serialize (Buffer::Iterator& buff) const
 
   Time t = GetTime ();
 
-  uint32_t seconds = (uint32_t)t.GetMilliSeconds ();
+  auto seconds = (uint32_t)t.GetMilliSeconds();
 
   buff.WriteHtonU32 (seconds);
   buff.WriteU8 (0); // Extra dummy byte
 }
 
 Time
-McpttCallMsgFieldLastChgTime::GetTime (void) const
+McpttCallMsgFieldLastChgTime::GetTime() const
 {
   return m_time;
 }
@@ -1870,13 +1870,13 @@ McpttCallMsgFieldLastChgTime::SetTime (const Time& time)
 
 /** McpttCallMsgFieldProbeResp - begin **/
 uint8_t
-McpttCallMsgFieldProbeResp::GetIei (void)
+McpttCallMsgFieldProbeResp::GetIei()
 {
   return 81;
 }
 
 TypeId
-McpttCallMsgFieldProbeResp::GetTypeId (void)
+McpttCallMsgFieldProbeResp::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttCallMsgFieldProbeResp")
     .SetParent<McpttCallMsgField> ()
@@ -1886,13 +1886,13 @@ McpttCallMsgFieldProbeResp::GetTypeId (void)
   return tid;
 }
 
-McpttCallMsgFieldProbeResp::McpttCallMsgFieldProbeResp (void)
-  : McpttCallMsgField ()
+McpttCallMsgFieldProbeResp::McpttCallMsgFieldProbeResp()
+    : McpttCallMsgField()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMsgFieldProbeResp::~McpttCallMsgFieldProbeResp (void)
+McpttCallMsgFieldProbeResp::~McpttCallMsgFieldProbeResp()
 {}
 
 uint32_t
@@ -1911,13 +1911,13 @@ McpttCallMsgFieldProbeResp::Deserialize (Buffer::Iterator& buff)
 }
 
 TypeId
-McpttCallMsgFieldProbeResp::GetInstanceTypeId (void) const
+McpttCallMsgFieldProbeResp::GetInstanceTypeId() const
 {
   return McpttCallMsgFieldProbeResp::GetTypeId ();
 }
 
 uint32_t
-McpttCallMsgFieldProbeResp::GetSerializedSize (void) const
+McpttCallMsgFieldProbeResp::GetSerializedSize() const
 {
   return 1; // One byte for the IEI.
 }

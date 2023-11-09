@@ -1210,8 +1210,7 @@ LteUeRrc::DoRecvSystemInformation(LteRrcSap::SystemInformation msg)
         case CONNECTED_NORMALLY: {
             NS_LOG_LOGIC(this << " processing SIB18 in state " << m_state);
             // update Sidelink information for the cell
-            std::map<uint16_t, LteSlUeRrc::LteSlCellConfiguration>::iterator it =
-                m_sidelinkConfiguration->m_slMap.find(m_cellId);
+            auto it = m_sidelinkConfiguration->m_slMap.find(m_cellId);
             if (it == m_sidelinkConfiguration->m_slMap.end())
             {
                 NS_LOG_LOGIC(this << " adding SIB18 for cell " << m_cellId);
@@ -1275,8 +1274,7 @@ LteUeRrc::DoRecvSystemInformation(LteRrcSap::SystemInformation msg)
         case CONNECTED_NORMALLY: {
             NS_LOG_LOGIC(this << " processing SIB19 in state " << m_state);
             // update Sidelink information for the cell
-            std::map<uint16_t, LteSlUeRrc::LteSlCellConfiguration>::iterator it =
-                m_sidelinkConfiguration->m_slMap.find(m_cellId);
+            auto it = m_sidelinkConfiguration->m_slMap.find(m_cellId);
             if (it == m_sidelinkConfiguration->m_slMap.end())
             {
                 NS_LOG_LOGIC(this << " adding SIB19 for cell " << m_cellId);
@@ -3923,8 +3921,7 @@ LteUeRrc::AddSlrb(uint32_t source, uint32_t destination, uint8_t lcid)
                                      rlc->GetLteMacSapUser());
 
     NS_LOG_DEBUG("Size of lcOnCcMapping vector " << slLcOnCcMapping.size());
-    std::vector<LteUeCcmRrcSapProvider::LcsConfig>::iterator itLcOnCcMapping =
-        slLcOnCcMapping.begin();
+    auto itLcOnCcMapping = slLcOnCcMapping.begin();
     NS_ASSERT_MSG(itLcOnCcMapping != slLcOnCcMapping.end(),
                   "Component carrier manager failed to add Sl LC for SL radio bearer");
 
@@ -4330,8 +4327,7 @@ LteUeRrc::ApplySidelinkDedicatedConfiguration(LteRrcSap::SlCommConfig config)
 
         // indicate NAS that bearer was established
         // TODO: we should only indicate this once per bearer
-        for (std::list<uint32_t>::iterator it = destinations.begin(); it != destinations.end();
-             it++)
+        for (auto it = destinations.begin(); it != destinations.end(); it++)
         {
             m_asSapUser->NotifySidelinkRadioBearerActivated(*it);
             m_sidelinkConfiguration->NotifySidelinkRadioBearerActivated(*it);
@@ -4503,8 +4499,7 @@ LteUeRrc::SendSidelinkUeInformation(bool txComm, bool rxComm, bool txDisc, bool 
     sidelinkUeInformation.haveDiscRxInterest = false;
     sidelinkUeInformation.haveDiscTxResourceReq = false;
 
-    std::map<uint16_t, LteSlUeRrc::LteSlCellConfiguration>::iterator it =
-        m_sidelinkConfiguration->m_slMap.find(m_cellId);
+    auto it = m_sidelinkConfiguration->m_slMap.find(m_cellId);
     if (it != m_sidelinkConfiguration->m_slMap.end())
     {
         // if SIB 18 received
@@ -4924,8 +4919,7 @@ LteUeRrc::SaveSlssMeasurements(uint16_t slssid,
 {
     NS_LOG_FUNCTION(this << slssid << offset << srsrp << useLayer3Filtering);
 
-    std::map<std::pair<uint16_t, uint16_t>, SlssMeasValues>::iterator storedMeasIt =
-        m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(slssid, offset));
+    auto storedMeasIt = m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(slssid, offset));
 
     if (storedMeasIt != m_storedSlssMeasValues.end())
     {
@@ -5043,8 +5037,7 @@ LteUeRrc::SynchronizeToStrongestSyncRef()
     std::vector<std::pair<uint16_t, uint16_t>>::iterator RepIt;
     for (RepIt = m_lastReportedSlssidList.begin(); RepIt != m_lastReportedSlssidList.end(); ++RepIt)
     {
-        std::map<std::pair<uint16_t, uint16_t>, SlssMeasValues>::iterator it =
-            m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(*RepIt));
+        auto it = m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(*RepIt));
         if (it == m_storedSlssMeasValues.end())
         {
             NS_LOG_ERROR(
@@ -5082,9 +5075,8 @@ LteUeRrc::SynchronizeToStrongestSyncRef()
         NS_LOG_LOGIC(this << " The strongest SyncRef is suitable");
 
         // Verify we have the mib for the strongest SyncRef
-        std::map<std::pair<uint16_t, uint16_t>, LteSlSyncParams>::iterator itMap =
-            m_latestMibSlReceived.find(
-                std::pair<uint16_t, uint16_t>(maxSrsrpSlssid, maxSrsrpOffset));
+        auto itMap = m_latestMibSlReceived.find(
+            std::pair<uint16_t, uint16_t>(maxSrsrpSlssid, maxSrsrpOffset));
         if (itMap == m_latestMibSlReceived.end())
         {
             NS_LOG_ERROR(" The UE is unable to find the MIB-SL of the strongest SyncRef");
@@ -5118,8 +5110,7 @@ LteUeRrc::IsInTheInnerPartOfTheSyncRefCell(uint16_t slssid, uint16_t offset)
 
     LteRrcSap::SlPreconfiguration preconf = m_sidelinkConfiguration->GetSlPreconfiguration();
 
-    std::map<std::pair<uint16_t, uint16_t>, SlssMeasValues>::iterator itMap =
-        m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(slssid, offset));
+    auto itMap = m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(slssid, offset));
     if (itMap == m_storedSlssMeasValues.end())
     {
         NS_LOG_ERROR(" The UE cannot find the S-RSRP measurements for the selected SyncRef SLSSID "
@@ -5163,8 +5154,7 @@ LteUeRrc::DoReceiveMibSL(Ptr<Packet> p, uint16_t slssid)
                 << mibSl.directSubframeNo << ", slssid " << slssid << ", rxOffset " << rxOffset);
 
     // Store the mib
-    std::map<std::pair<uint16_t, uint16_t>, LteSlSyncParams>::iterator itMap =
-        m_latestMibSlReceived.find(std::pair<uint16_t, uint16_t>(slssid, rxOffset));
+    auto itMap = m_latestMibSlReceived.find(std::pair<uint16_t, uint16_t>(slssid, rxOffset));
 
     if (itMap == m_latestMibSlReceived.end())
     {
@@ -5372,8 +5362,7 @@ LteUeRrc::DoReportSlssMeasurements(LteUeCphySapUser::UeSlssMeasurementsParameter
             {
                 syncRefDetected = true;
             }
-            std::map<std::pair<uint16_t, uint16_t>, SlssMeasValues>::iterator it =
-                m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(*RepIt));
+            auto it = m_storedSlssMeasValues.find(std::pair<uint16_t, uint16_t>(*RepIt));
             if (it == m_storedSlssMeasValues.end())
             {
                 NS_LOG_ERROR(
@@ -5411,9 +5400,8 @@ LteUeRrc::DoReportSlssMeasurements(LteUeCphySapUser::UeSlssMeasurementsParameter
             else
             {
                 // Yes
-                std::map<std::pair<uint16_t, uint16_t>, SlssMeasValues>::iterator itMap =
-                    m_storedSlssMeasValues.find(
-                        std::pair<uint16_t, uint16_t>(m_currSyncRef.slssid, m_currSyncRef.offset));
+                auto itMap = m_storedSlssMeasValues.find(
+                    std::pair<uint16_t, uint16_t>(m_currSyncRef.slssid, m_currSyncRef.offset));
                 if (itMap == m_storedSlssMeasValues.end())
                 {
                     NS_LOG_LOGIC(this << " The UE cannot find the S-RSRP measurements for the "
@@ -5696,9 +5684,8 @@ LteUeRrc::DoReportUeSdRsrpMeasurements(LteUeCphySapUser::UeSdRsrpMeasurementsPar
          newMeasIt != params.m_ueSdRsrpMeasurementsList.end();
          newMeasIt++)
     {
-        std::map<std::pair<uint64_t, uint32_t>, SdRsrpMeasValue>::iterator storedMeasIt =
-            m_storedSdRsrpMeasValues.find(
-                std::pair<uint64_t, uint32_t>(newMeasIt->m_relayId, newMeasIt->m_serviceCode));
+        auto storedMeasIt = m_storedSdRsrpMeasValues.find(
+            std::pair<uint64_t, uint32_t>(newMeasIt->m_relayId, newMeasIt->m_serviceCode));
         if (storedMeasIt != m_storedSdRsrpMeasValues.end() &&
             (storedMeasIt->second.sdRsrp - qRxLevMin) > minHyst)
         {
@@ -5721,7 +5708,7 @@ LteUeRrc::SaveSdRsrpMeasurements(uint64_t relayId,
 {
     NS_LOG_FUNCTION(this << m_imsi << relayId << serviceCode << sdRsrp << layer3FilterCoefficient);
 
-    std::map<std::pair<uint64_t, uint32_t>, SdRsrpMeasValue>::iterator storedMeasIt =
+    auto storedMeasIt =
         m_storedSdRsrpMeasValues.find(std::pair<uint64_t, uint32_t>(relayId, serviceCode));
     if (storedMeasIt != m_storedSdRsrpMeasValues.end())
     {

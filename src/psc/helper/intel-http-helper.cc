@@ -97,7 +97,7 @@ IntelHttpClientHelper::DoInstall (Ptr<Node> node) const
 
 // -- IntelHttpServerHelper --
 
-IntelHttpServerHelper::IntelHttpServerHelper (void)
+IntelHttpServerHelper::IntelHttpServerHelper()
 {
   NS_LOG_FUNCTION (this);
   m_factory.SetTypeId ("ns3::psc::IntelHttpServer");

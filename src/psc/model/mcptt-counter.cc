@@ -45,7 +45,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCounter);
 
 TypeId
-McpttCounter::GetTypeId (void)
+McpttCounter::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -57,12 +57,12 @@ McpttCounter::GetTypeId (void)
   return tid;
 }
 
-McpttCounter::McpttCounter (void)
-  : Object (),
-    m_id (McpttEntityId (0, "Counter")),
-    m_limit (0),
-    m_start (0),
-    m_value (0)
+McpttCounter::McpttCounter()
+    : Object(),
+      m_id(McpttEntityId(0, "Counter")),
+      m_limit(0),
+      m_start(0),
+      m_value(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -77,13 +77,13 @@ McpttCounter::McpttCounter (const McpttEntityId& id, uint32_t start, uint32_t li
   NS_LOG_FUNCTION (this << id << limit << start);
 }
 
-McpttCounter::~McpttCounter (void)
+McpttCounter::~McpttCounter()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttCounter::GetInstanceTypeId (void) const
+McpttCounter::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -106,7 +106,7 @@ McpttCounter::Increment (uint32_t amount)
 }
 
 bool
-McpttCounter::IsLimitExceeded (void) const
+McpttCounter::IsLimitExceeded() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -122,7 +122,7 @@ McpttCounter::IsLimitExceeded (void) const
 }
 
 bool
-McpttCounter::IsLimitReached (void) const
+McpttCounter::IsLimitReached() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -168,7 +168,7 @@ McpttCounter::Reset ()
 }
 
 McpttEntityId
-McpttCounter::GetId (void) const
+McpttCounter::GetId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -176,7 +176,7 @@ McpttCounter::GetId (void) const
 }
 
 uint32_t
-McpttCounter::GetLimit (void) const
+McpttCounter::GetLimit() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -184,7 +184,7 @@ McpttCounter::GetLimit (void) const
 }
 
 uint32_t
-McpttCounter::GetStart (void) const
+McpttCounter::GetStart() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -192,7 +192,7 @@ McpttCounter::GetStart (void) const
 }
 
 uint32_t
-McpttCounter::GetValue (void) const
+McpttCounter::GetValue() const
 {
   NS_LOG_FUNCTION (this);
 

@@ -367,7 +367,7 @@ SaveNodesPositions(std::string fileName)
     // In the logs, ID corresponds to cell id of an eNB and in case of UE to its IMSI
     outFile << "Node\tID\tX\tY" << std::endl;
 
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -384,7 +384,7 @@ SaveNodesPositions(std::string fileName)
         }
     }
 
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();

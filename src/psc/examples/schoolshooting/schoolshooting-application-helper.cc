@@ -88,7 +88,7 @@ SchoolShootingApplicationHelper::~SchoolShootingApplicationHelper ()
 }
 
 TypeId
-SchoolShootingApplicationHelper::GetTypeId (void)
+SchoolShootingApplicationHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::SchoolShootingApplicationHelper")
     .SetParent<Object> ()
@@ -361,13 +361,13 @@ void SchoolShootingApplicationHelper::InitMcpttApp ()
   mcpttClientHelper.AddPushersToOrchestrator (taskForcePttActivity, mcpttClientAppsTaskForce);
 
   // Make it so that the pushers persist beyond the scope of this function
-  m_pttOrchestrators.push_back (swatTeam1PttActivity);
-  m_pttOrchestrators.push_back (swatTeam2PttActivity);
-  m_pttOrchestrators.push_back (swatTeam3PttActivity);
-  m_pttOrchestrators.push_back (swatTeam4PttActivity);
+  m_pttOrchestrators.emplace_back(swatTeam1PttActivity);
+  m_pttOrchestrators.emplace_back(swatTeam2PttActivity);
+  m_pttOrchestrators.emplace_back(swatTeam3PttActivity);
+  m_pttOrchestrators.emplace_back(swatTeam4PttActivity);
 
-  m_pttOrchestrators.push_back (fireEmsPttActivity);
-  m_pttOrchestrators.push_back (taskForcePttActivity);
+  m_pttOrchestrators.emplace_back(fireEmsPttActivity);
+  m_pttOrchestrators.emplace_back(taskForcePttActivity);
 
   // Collect all client applications into one container
   ApplicationContainer mcpttClientApps;
@@ -666,7 +666,7 @@ void SchoolShootingApplicationHelper::InitTacticalTelemetryApp ()
   allSwats.Add (m_scenarioDefinitionHelper->GetScenarioDefinition()->GetNodesForGroup (SchoolShootingDefinitionHelper::UserGroups::SWAT_TEAM_4).nodes);
 
   //Configure tactical telemetry applications
-  for (uint16_t i = 0; i < allSwats.GetN (); i++)
+  for (uint32_t i = 0; i < allSwats.GetN (); i++)
     {
       //Get start/stop time of the instance
       //randomize start time so applications are not synchronized
@@ -780,7 +780,7 @@ void SchoolShootingApplicationHelper::InitBiometricApp ()
   allSwats.Add (m_scenarioDefinitionHelper->GetScenarioDefinition()->GetNodesForGroup (SchoolShootingDefinitionHelper::UserGroups::SWAT_TEAM_4).nodes);
 
   // Configure the applications
-  for (uint16_t i = 0; i < allSwats.GetN (); i++)
+  for (uint32_t i = 0; i < allSwats.GetN (); i++)
     {
       //Deploy app
       AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_BIOMETRICS,
@@ -838,7 +838,7 @@ void SchoolShootingApplicationHelper::InitSwatHelmetCameraApp ()
   // Base port to use by applications
   uint16_t serverPort = m_basePortsMap[SCHOOL_SHOOTING_SWAT_HELMET_CAMERA];
 
-  for (uint16_t i = 0; i < allSwats.GetN (); i++)
+  for (uint32_t i = 0; i < allSwats.GetN (); i++)
     {
       //Configure the UDP echo server acting as media server
       psc::UdpGroupEchoServerHelper echoServer (serverPort);
@@ -944,7 +944,7 @@ void SchoolShootingApplicationHelper::InitDeployableCameraApp ()
   //Get all the sender nodes. One member in each team
   NodeContainer deployableCameras = m_scenarioDefinitionHelper->GetScenarioDefinition()->GetNodesForGroup (SchoolShootingDefinitionHelper::UserGroups::DEPLOYABLE_CAMERA).nodes;
 
-  for (uint16_t i = 0; i < deployableCameras.GetN (); i++)
+  for (uint32_t i = 0; i < deployableCameras.GetN (); i++)
     {
       //Configure the UDP echo server acting as media server
       psc::UdpGroupEchoServerHelper echoServer (serverPort);
@@ -1153,7 +1153,7 @@ void SchoolShootingApplicationHelper::InitThrowPhoneApp ()
     384,        //Client packet size (bytes)
     384);       //Server packet size (bytes)
 
-  for (uint16_t i = 0; i < offenders.GetN (); i++)
+  for (uint32_t i = 0; i < offenders.GetN (); i++)
     {
       //Deploy app
       AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_THROW_PHONE,
@@ -1291,7 +1291,7 @@ void SchoolShootingApplicationHelper::InitEmsVehicleApp ()
   // Base port to use by applications
   uint16_t serverPort = m_basePortsMap[SCHOOL_SHOOTING_EMS_VEHICLES];
 
-  for (uint16_t i = 0; i < emsVehicles.GetN (); i++)
+  for (uint32_t i = 0; i < emsVehicles.GetN (); i++)
     {
       //Configure the UDP echo server acting as media server
       psc::UdpGroupEchoServerHelper echoServer (serverPort);
@@ -1596,7 +1596,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
       nodes.Add (m_scenarioDefinitionHelper->GetScenarioDefinition()->GetNodesForGroup (SchoolShootingDefinitionHelper::UserGroups::SA_VEHICLE).nodes);
       nodes.Add (m_scenarioDefinitionHelper->GetScenarioDefinition()->GetNodesForGroup (SchoolShootingDefinitionHelper::UserGroups::HELICOPTER).nodes);
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
               m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -1623,7 +1623,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
           "Bound", DoubleValue (10 * 60),
           "Stream", IntegerValue (3752123142));
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
             m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -1648,7 +1648,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
           "Bound", DoubleValue (10 * 60),
           "Stream", IntegerValue (3945724599));
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
               m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -1673,7 +1673,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
           "Bound", DoubleValue (10 * 60),
           "Stream", IntegerValue (3034262386));
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
               m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -1698,7 +1698,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
           "Bound", DoubleValue (10 * 60),
           "Stream", IntegerValue (3543992080));
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
               m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -1723,7 +1723,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
           "Bound", DoubleValue (10 * 60),
           "Stream", IntegerValue (2875877323));
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
               m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -1748,7 +1748,7 @@ void SchoolShootingApplicationHelper::InitAvlApp ()
           "Bound", DoubleValue (10 * 60),
           "Stream", IntegerValue (2231723316));
 
-      for (uint16_t i = 0; i < nodes.GetN (); i++)
+      for (uint32_t i = 0; i < nodes.GetN (); i++)
         {
           AddPscApplications (SchoolShootingApplicationHelper::SCHOOL_SHOOTING_AVL,
               m_genericApplicationHelper->Install (appConfig, nodes.Get (i),
@@ -2373,7 +2373,7 @@ void SchoolShootingApplicationHelper::InitSchoolVideoApp ()
   // Base port to use by applications
   uint16_t serverPort = m_basePortsMap[SCHOOL_SHOOTING_SCHOOL_VIDEO];
 
-  for (uint16_t i = 0; i < schoolCameras.GetN (); i++)
+  for (uint32_t i = 0; i < schoolCameras.GetN (); i++)
     {
       //Configure the UDP echo server acting as media server
       psc::UdpGroupEchoServerHelper echoServer (serverPort);
@@ -2481,7 +2481,7 @@ void SchoolShootingApplicationHelper::InitTrafficVideoApp ()
   // Base port to use by applications
   uint16_t serverPort = m_basePortsMap[SCHOOL_SHOOTING_TRAFFIC_VIDEO];
   Address serverAddress = GetTechnologyHelper ()->GetPublicServer ()->GetObject<Ipv6L3Protocol> ()->GetAddress (1, 1).GetAddress ();
-  for (uint16_t i = 0; i < trafficCameras.GetN (); i++)
+  for (uint32_t i = 0; i < trafficCameras.GetN (); i++)
     {
       //Configure the UDP echo server acting as media server
       psc::UdpGroupEchoServerHelper echoServer (serverPort);
@@ -2698,7 +2698,7 @@ SchoolShootingApplicationHelper::EnableApplicationTraces (SchoolSchootingApplica
 }
 
 void
-SchoolShootingApplicationHelper::EnableMcpttTraces (void)
+SchoolShootingApplicationHelper::EnableMcpttTraces()
 {
   m_mcpttTraceHelper->EnableMsgTraces ();
   m_mcpttTraceHelper->EnableStateMachineTraces ();
@@ -2720,7 +2720,7 @@ void
 SchoolShootingApplicationHelper::AddPscApplications (SchoolSchootingApplicationId name, ApplicationContainer applications)
 {
   NS_LOG_FUNCTION (this);
-  std::map <SchoolSchootingApplicationId, ApplicationContainer>::iterator it = m_pscApplicationsMap.find (name);
+  auto it = m_pscApplicationsMap.find(name);
   if (it == m_pscApplicationsMap.end ())
     {
       //new type of application, just insert the container
@@ -2743,7 +2743,7 @@ ApplicationContainer
 SchoolShootingApplicationHelper::GetPscApplications (SchoolSchootingApplicationId name)
 {
   ApplicationContainer c;
-  std::map <SchoolSchootingApplicationId, ApplicationContainer>::iterator it = m_pscApplicationsMap.find (name);
+  auto it = m_pscApplicationsMap.find(name);
   if (it != m_pscApplicationsMap.end ())
     {
       c = it->second;

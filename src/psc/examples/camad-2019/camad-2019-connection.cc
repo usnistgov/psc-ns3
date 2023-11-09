@@ -427,7 +427,7 @@ int main (int argc, char *argv[])
       // e.g., Mean = 0.020 we will have values in [10 ms, 30 ms]
       offRv->SetAttribute ("Bound", DoubleValue ((relayTrafficOffMean / 2) / 1000.0));
 
-      for (uint16_t relUeIdx = 0; relUeIdx < relayUeNodes.GetN (); relUeIdx++)
+      for (uint32_t relUeIdx = 0; relUeIdx < relayUeNodes.GetN (); relUeIdx++)
         {
           uint16_t relUePort = echoPortBase + 100 + relUeIdx;
 

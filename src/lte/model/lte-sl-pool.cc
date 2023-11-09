@@ -345,9 +345,7 @@ SidelinkCommResourcePool::GetPscchOpportunities(uint32_t frameNo, uint32_t subfr
         if (m_scTfResourceConfig.subframeBitmap.bitmap.test(subframe - currentStart))
         {
             // subframe is set, report the RBs that could be used
-            for (std::vector<uint32_t>::iterator it = m_rbpscchVector.begin();
-                 it != m_rbpscchVector.end();
-                 it++)
+            for (auto it = m_rbpscchVector.begin(); it != m_rbpscchVector.end(); it++)
             {
                 opportunities.push_back((*it));
             }
@@ -482,8 +480,7 @@ SidelinkCommResourcePool::GetPsschTransmissions(SidelinkCommResourcePool::Subfra
     std::list<SidelinkCommResourcePool::SidelinkTransmissionInfo> txInfo;
     uint32_t tx_counter =
         1; // Transmission counter, used to keep track of parity when frequency hopping.
-    for (std::vector<uint32_t>::iterator it = psschsubframes.begin(); it != psschsubframes.end();
-         it++)
+    for (auto it = psschsubframes.begin(); it != psschsubframes.end(); it++)
     {
         SidelinkCommResourcePool::SidelinkTransmissionInfo info;
         info.subframe.frameNo = (*it) / 10;
@@ -548,7 +545,7 @@ SidelinkCommResourcePool::GetTbPerSlPeriod()
     NS_LOG_FUNCTION(this);
     std::vector<uint32_t> tbPerKtrpVector(4, 0);
 
-    for (uint8_t i = 0; i < m_trptSubset.subset.size(); i++)
+    for (uint32_t i = 0; i < m_trptSubset.subset.size(); i++)
     {
         if (m_trptSubset.subset[i])
         {
@@ -923,8 +920,7 @@ SidelinkCommResourcePool::GetNprbType2(uint8_t rbStart,
     uint8_t hopIndex = 0;
     uint32_t nTildeVrb = 0;
     uint8_t mirroring = 0;
-    for (std::vector<uint32_t>::iterator it = psschSFIndexes.begin(); it != psschSFIndexes.end();
-         it++)
+    for (auto it = psschSFIndexes.begin(); it != psschSFIndexes.end(); it++)
     {
         hopIndex = m_hopSequence[*it]; // FHopFunction (*it);
         hop_distance = hopIndex * sbSize;
@@ -1069,8 +1065,8 @@ SidelinkCommResourcePool::GenerateGoldSequence()
     uint32_t maxMpn = 102400; // 10239 * 10 + 10;     //max sequence length, derived from
                               // TS36.211, 5.3.4, where fhop(i) is defined, and i = SF number.
     uint32_t Nc = 1600;                          // derived from TS36.211 7.2
-    uint8_t* x1 = new uint8_t[Nc + maxMpn + 31]; // derived from TS36.211 7.2
-    uint8_t* x2 = new uint8_t[Nc + maxMpn + 31]; // derived from TS36.211 7.2
+    auto* x1 = new uint8_t[Nc + maxMpn + 31];    // derived from TS36.211 7.2
+    auto* x2 = new uint8_t[Nc + maxMpn + 31];    // derived from TS36.211 7.2
 
     // initialize x1
     x1[0] = 1;
@@ -1695,9 +1691,7 @@ SidelinkDiscResourcePool::GetPsdchOpportunities(uint32_t frameNo, uint32_t subfr
         if (m_discTfResourceConfig.subframeBitmap.bitmap.test(subframe - currentStart))
         {
             // subframe is set, report the RBs that could be used
-            for (std::vector<uint32_t>::iterator it = m_rbpsdchVector.begin();
-                 it != m_rbpsdchVector.end();
-                 it++)
+            for (auto it = m_rbpsdchVector.begin(); it != m_rbpsdchVector.end(); it++)
             {
                 opportunities.push_back((*it));
             }

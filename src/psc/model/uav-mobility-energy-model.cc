@@ -49,7 +49,8 @@ namespace psc {
 
 NS_OBJECT_ENSURE_REGISTERED (UavMobilityEnergyModel);
 
-TypeId UavMobilityEnergyModel::GetTypeId (void)
+TypeId
+UavMobilityEnergyModel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::UavMobilityEnergyModel")
     .SetParent<DeviceEnergyModel> ()
@@ -122,7 +123,7 @@ TypeId UavMobilityEnergyModel::GetTypeId (void)
   return tid;
 }
 
-UavMobilityEnergyModel::UavMobilityEnergyModel (void)
+UavMobilityEnergyModel::UavMobilityEnergyModel()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -138,7 +139,7 @@ void UavMobilityEnergyModel::Init (Ptr<Node> node, Ptr<EnergySource> energySourc
   ConnectMobility (node);
 }
 
-UavMobilityEnergyModel::~UavMobilityEnergyModel (void)
+UavMobilityEnergyModel::~UavMobilityEnergyModel()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -152,14 +153,14 @@ UavMobilityEnergyModel::SetEnergySource(Ptr<EnergySource> source)
 }
 
 Ptr<EnergySource>
-UavMobilityEnergyModel::GetEnergySource (void) const
+UavMobilityEnergyModel::GetEnergySource() const
 {
   NS_LOG_FUNCTION (this);
   return m_source;
 }
 
-double 
-UavMobilityEnergyModel::GetTotalEnergyConsumption (void) const
+double
+UavMobilityEnergyModel::GetTotalEnergyConsumption() const
 {
   NS_LOG_FUNCTION (this);
   Time deltaUpdate = Simulator::Now () - m_lastUpdateTime;
@@ -180,14 +181,14 @@ UavMobilityEnergyModel::ChangeState (int newState)
 }
 
 UavMobilityEnergyModel::State
-UavMobilityEnergyModel::GetState (void) const
+UavMobilityEnergyModel::GetState() const
 {
   NS_LOG_FUNCTION (this);
   return m_state;
 }
 
 void
-UavMobilityEnergyModel::Stop (void)
+UavMobilityEnergyModel::Stop()
 {
   NS_LOG_FUNCTION (this);
   
@@ -223,16 +224,20 @@ UavMobilityEnergyModel::Move (const Vector &velocity)
   
   double newCurrent = MoveCurrent (moveMagnitude);
   if (velocity.z > 0)
+  {
       newCurrent += AscendCurrent (velocity.z);
+  }
   else if (velocity.z < 0)
-      newCurrent += DescendCurrent (std::abs (velocity.z));
+  {
+      newCurrent += DescendCurrent(std::abs(velocity.z));
+  }
 
   UpdateState (UavMobilityEnergyModel::State::MOVE);
   UpdateCurrent (newCurrent);
 }
 
 void
-UavMobilityEnergyModel::Hover (void)
+UavMobilityEnergyModel::Hover()
 {
   NS_LOG_FUNCTION (this);
 
@@ -241,7 +246,7 @@ UavMobilityEnergyModel::Hover (void)
 }
 
 void
-UavMobilityEnergyModel::HandleEnergyDepletion (void)
+UavMobilityEnergyModel::HandleEnergyDepletion()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("UavMobilityEnergyModel: Energy depleted");
@@ -250,7 +255,7 @@ UavMobilityEnergyModel::HandleEnergyDepletion (void)
 }
 
 void
-UavMobilityEnergyModel::HandleEnergyRecharged (void)
+UavMobilityEnergyModel::HandleEnergyRecharged()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("UavMobilityEnergyModel: Energy recharged");
@@ -259,7 +264,7 @@ UavMobilityEnergyModel::HandleEnergyRecharged (void)
 }
 
 double
-UavMobilityEnergyModel::GetAscendEnergyConversionFactor (void) const
+UavMobilityEnergyModel::GetAscendEnergyConversionFactor() const
 {
   NS_LOG_FUNCTION (this);
   return m_ascendEnergyConversionFactor;
@@ -281,7 +286,7 @@ UavMobilityEnergyModel::SetAscendEnergyConversionFactor (double ascendEnergyConv
 }
 
 double
-UavMobilityEnergyModel::GetDescendEnergyConversionFactor (void) const
+UavMobilityEnergyModel::GetDescendEnergyConversionFactor() const
 {
   NS_LOG_FUNCTION (this);
   return m_descendEnergyConversionFactor;
@@ -303,7 +308,7 @@ UavMobilityEnergyModel::SetDescendEnergyConversionFactor (double descendEnergyCo
 }
 
 double
-UavMobilityEnergyModel::GetMoveEnergyConversionFactor (void) const
+UavMobilityEnergyModel::GetMoveEnergyConversionFactor() const
 {
   NS_LOG_FUNCTION (this);
   return m_moveEnergyConversionFactor;
@@ -358,21 +363,21 @@ void UavMobilityEnergyModel::ConnectMobility (Ptr<Node> node)
 }
 
 double
-UavMobilityEnergyModel::DoGetCurrentA (void) const
+UavMobilityEnergyModel::DoGetCurrentA() const
 {
   NS_LOG_FUNCTION (this);
   return m_current;
 }
 
 void
-UavMobilityEnergyModel::DoDispose (void)
+UavMobilityEnergyModel::DoDispose()
 {
-  m_mobility = 0;
-  m_source = 0;
-  // Implementations of DoDispose () are expected to chain
-  // to their parrent, even though DeviceEnergyModel::DoDispose
-  // is currently unimplemented
-  DeviceEnergyModel::DoDispose ();
+    m_mobility = nullptr;
+    m_source = nullptr;
+    // Implementations of DoDispose () are expected to chain
+    // to their parrent, even though DeviceEnergyModel::DoDispose
+    // is currently unimplemented
+    DeviceEnergyModel::DoDispose();
 }
 
 void
@@ -403,26 +408,36 @@ UavMobilityEnergyModel::CourseChangeCallback (Ptr<const MobilityModel> model)
     std::abs (velocity.z)};
 
   // normal, as in not 0, not NaN, not Infinite, etc.
-  if (std::fpclassify (speed.x + speed.y) == FP_NORMAL)
+  if (std::fpclassify(speed.x + speed.y) == FP_NORMAL)
+  {
       Move (velocity);
   // If we only have vertical movement
+  }
   else if (speed.z > 0)
-    {
+  {
       if (velocity.z > 0)
-        Ascend (speed.z);
+      {
+          Ascend(speed.z);
+      }
       else
-        Descend (speed.z);
+      {
+          Descend(speed.z);
+      }
     }
   // No movement at all
   else
     {
       // Not moving or hovering, So no energy should be consumed
       Vector position = model->GetPosition ();
-      if (std::fpclassify (position.z) == FP_ZERO)
-        Stop ();
-      // if we have a non-zero z position, then we are hovering
+      if (std::fpclassify(position.z) == FP_ZERO)
+      {
+          Stop();
+          // if we have a non-zero z position, then we are hovering
+      }
       else
-        Hover ();
+      {
+          Hover();
+      }
     }
 }
 
@@ -435,7 +450,9 @@ UavMobilityEnergyModel::UpdateState (UavMobilityEnergyModel::State newState)
 
   // Only notify if the state is different
   if (oldState != newState)
-    m_stateChangedTrace (oldState, newState, m_mobility->GetVelocity ());
+  {
+      m_stateChangedTrace(oldState, newState, m_mobility->GetVelocity());
+  }
 }
 
 double
@@ -471,7 +488,7 @@ UavMobilityEnergyModel::MoveCurrent (double speed)
 }
 
 void
-UavMobilityEnergyModel::UpdateTotalEnergyConsumption (void)
+UavMobilityEnergyModel::UpdateTotalEnergyConsumption()
 {
   NS_LOG_FUNCTION (this);
   Time deltaUpdate = Simulator::Now () - m_lastUpdateTime;

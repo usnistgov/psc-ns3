@@ -48,7 +48,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttQueuedUserInfo);
 
 TypeId
-McpttQueuedUserInfo::GetTypeId (void)
+McpttQueuedUserInfo::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttQueuedUserInfo")
     .SetParent<ObjectBase> ()
@@ -58,11 +58,11 @@ McpttQueuedUserInfo::GetTypeId (void)
   return tid;
 }
 
-McpttQueuedUserInfo::McpttQueuedUserInfo (void)
-  : ObjectBase (),
-    m_info (McpttFloorMsgFieldQueuePositionInfo ()),
-    m_ssrc (0),
-    m_userId (McpttFloorMsgFieldQueuedUserId ())
+McpttQueuedUserInfo::McpttQueuedUserInfo()
+    : ObjectBase(),
+      m_info(McpttFloorMsgFieldQueuePositionInfo()),
+      m_ssrc(0),
+      m_userId(McpttFloorMsgFieldQueuedUserId())
 {
   NS_LOG_FUNCTION (this);
 }
@@ -80,7 +80,7 @@ McpttQueuedUserInfo::McpttQueuedUserInfo (uint32_t ssrc, const McpttFloorMsgFiel
   SetInfo (info);
 }
 
-McpttQueuedUserInfo::~McpttQueuedUserInfo (void)
+McpttQueuedUserInfo::~McpttQueuedUserInfo()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -113,7 +113,7 @@ McpttQueuedUserInfo::Deserialize (Buffer::Iterator& buff)
 }
 
 uint32_t
-McpttQueuedUserInfo::GetSerializedSize (void) const
+McpttQueuedUserInfo::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -131,7 +131,7 @@ McpttQueuedUserInfo::GetSerializedSize (void) const
 }
 
 TypeId
-McpttQueuedUserInfo::GetInstanceTypeId (void) const
+McpttQueuedUserInfo::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -174,7 +174,7 @@ McpttQueuedUserInfo::Serialize (Buffer::Iterator& buff) const
 }
 
 McpttFloorMsgFieldQueuePositionInfo
-McpttQueuedUserInfo::GetInfo (void) const
+McpttQueuedUserInfo::GetInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -182,7 +182,7 @@ McpttQueuedUserInfo::GetInfo (void) const
 }
 
 uint32_t
-McpttQueuedUserInfo::GetSsrc (void) const
+McpttQueuedUserInfo::GetSsrc() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -190,7 +190,7 @@ McpttQueuedUserInfo::GetSsrc (void) const
 }
 
 McpttFloorMsgFieldQueuedUserId
-McpttQueuedUserInfo::GetUserId (void) const
+McpttQueuedUserInfo::GetUserId() const
 {
   NS_LOG_FUNCTION (this);
 

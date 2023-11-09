@@ -65,7 +65,7 @@ PscScenarioDefinition::~PscScenarioDefinition ()
 }
 
 TypeId
-PscScenarioDefinition::GetTypeId (void)
+PscScenarioDefinition::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscScenarioDefinition")
     .SetParent<Object> ()

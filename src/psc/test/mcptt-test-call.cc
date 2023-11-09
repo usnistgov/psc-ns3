@@ -47,7 +47,7 @@ namespace tests {
 NS_OBJECT_ENSURE_REGISTERED (McpttTestCall);
 
 TypeId
-McpttTestCall::GetTypeId (void)
+McpttTestCall::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttTestCall")
     .SetParent<McpttCall> ()
@@ -61,7 +61,7 @@ McpttTestCall::McpttTestCall (McpttCall::NetworkCallType callType)
   NS_LOG_FUNCTION (this);
 }
 
-McpttTestCall::~McpttTestCall (void)
+McpttTestCall::~McpttTestCall()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -70,8 +70,8 @@ bool
 McpttTestCall::ShouldDrop (const McpttMsg& msg)
 {
   bool drop = false;
-  for (std::vector<Ptr<McpttMsgDropper> >::iterator it = m_droppers.begin (); it != m_droppers.end () && drop == false; it++)
-    {
+  for (auto it = m_droppers.begin(); it != m_droppers.end() && !drop; it++)
+  {
       drop = (*it)->ShouldDropMsg (msg);
     }
   return drop;
@@ -132,7 +132,7 @@ McpttTestCall::Receive (const McpttMediaMsg& msg)
 }
 
 void
-McpttTestCall::DoDispose (void)
+McpttTestCall::DoDispose()
 {
   m_droppers.clear ();
   McpttCall::DoDispose ();

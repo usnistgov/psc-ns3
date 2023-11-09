@@ -291,7 +291,7 @@ const std::vector<std::pair<double, double> > McpttPusherOrchestratorSpurtCdf::C
 const double McpttPusherOrchestratorSpurtCdf::CDF_POINTS_AVG = 4.69;
 
 TypeId
-McpttPusherOrchestratorSpurtCdf::GetTypeId (void)
+McpttPusherOrchestratorSpurtCdf::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorSpurtCdf")
     .SetParent<McpttPusherOrchestratorInterface> ()
@@ -306,10 +306,10 @@ McpttPusherOrchestratorSpurtCdf::GetTypeId (void)
   return tid;
 }
 
-McpttPusherOrchestratorSpurtCdf::McpttPusherOrchestratorSpurtCdf (void)
-  : McpttPusherOrchestratorInterface (),
-    m_avgPttDuration (CDF_POINTS_AVG),
-    m_orchestrator (CreateObject<McpttPusherOrchestrator> ())
+McpttPusherOrchestratorSpurtCdf::McpttPusherOrchestratorSpurtCdf()
+    : McpttPusherOrchestratorInterface(),
+      m_avgPttDuration(CDF_POINTS_AVG),
+      m_orchestrator(CreateObject<McpttPusherOrchestrator>())
 {
   NS_LOG_FUNCTION (this);
 
@@ -329,7 +329,7 @@ McpttPusherOrchestratorSpurtCdf::McpttPusherOrchestratorSpurtCdf (void)
   m_orchestrator->TraceConnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttIatTrace, this));
 }
 
-McpttPusherOrchestratorSpurtCdf::~McpttPusherOrchestratorSpurtCdf (void)
+McpttPusherOrchestratorSpurtCdf::~McpttPusherOrchestratorSpurtCdf()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -362,16 +362,16 @@ McpttPusherOrchestratorSpurtCdf::ChangeCdf (Ptr<EmpiricalRandomVariable> pttDura
   UpdatePttIatVariable ();
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorSpurtCdf::GetPushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestratorSpurtCdf::GetPushers() const
 {
   NS_LOG_FUNCTION (this);
 
   return m_orchestrator->GetPushers ();
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorSpurtCdf::GetActivePushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestratorSpurtCdf::GetActivePushers() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -379,7 +379,7 @@ McpttPusherOrchestratorSpurtCdf::GetActivePushers (void) const
 }
 
 Time
-McpttPusherOrchestratorSpurtCdf::NextPttIat (void)
+McpttPusherOrchestratorSpurtCdf::NextPttIat()
 {
   NS_LOG_FUNCTION (this);
 
@@ -387,7 +387,7 @@ McpttPusherOrchestratorSpurtCdf::NextPttIat (void)
 }
 
 Time
-McpttPusherOrchestratorSpurtCdf::NextPttDuration (void)
+McpttPusherOrchestratorSpurtCdf::NextPttDuration()
 {
   NS_LOG_FUNCTION (this);
 
@@ -395,7 +395,7 @@ McpttPusherOrchestratorSpurtCdf::NextPttDuration (void)
 }
 
 void
-McpttPusherOrchestratorSpurtCdf::Start (void)
+McpttPusherOrchestratorSpurtCdf::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -405,7 +405,7 @@ McpttPusherOrchestratorSpurtCdf::Start (void)
 }
 
 void
-McpttPusherOrchestratorSpurtCdf::Stop (void)
+McpttPusherOrchestratorSpurtCdf::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -413,14 +413,14 @@ McpttPusherOrchestratorSpurtCdf::Stop (void)
 }
 
 void
-McpttPusherOrchestratorSpurtCdf::DoDispose (void)
+McpttPusherOrchestratorSpurtCdf::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   m_orchestrator->TraceDisconnectWithoutContext ("PttDurationTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttDurationTrace, this));
   m_orchestrator->TraceDisconnectWithoutContext ("PttInterarrivalTimeTrace", MakeCallback (&McpttPusherOrchestratorSpurtCdf::PttIatTrace, this));
 
-  m_orchestrator = 0;
+  m_orchestrator = nullptr;
 }
 
 void
@@ -440,13 +440,13 @@ McpttPusherOrchestratorSpurtCdf::PttIatTrace (uint32_t userId, Time iat)
 }
 
 void
-McpttPusherOrchestratorSpurtCdf::UpdatePttIatVariable (void)
+McpttPusherOrchestratorSpurtCdf::UpdatePttIatVariable()
 {
   NS_LOG_FUNCTION (this);
 
   double iat;
   PointerValue pttIatVariableValue;
-  Ptr<ExponentialRandomVariable> pttIatVariable = 0;
+  Ptr<ExponentialRandomVariable> pttIatVariable = nullptr;
 
   m_orchestrator->GetAttribute ("PttInterarrivalTimeVariable", pttIatVariableValue);
   pttIatVariable = pttIatVariableValue.Get<ExponentialRandomVariable> ();
@@ -469,7 +469,7 @@ McpttPusherOrchestratorSpurtCdf::UpdatePttIatVariable (void)
 }
 
 double
-McpttPusherOrchestratorSpurtCdf::GetActivityFactor (void) const
+McpttPusherOrchestratorSpurtCdf::GetActivityFactor() const
 {
   NS_LOG_FUNCTION (this);
 

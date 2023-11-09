@@ -68,7 +68,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorArbitrator);
 
 TypeId
-McpttOnNetworkFloorArbitrator::GetTypeId (void)
+McpttOnNetworkFloorArbitrator::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorArbitrator")
     .SetParent<Object> ()
@@ -143,27 +143,27 @@ McpttOnNetworkFloorArbitrator::GetTypeId (void)
   return tid;
 }
 
-McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
-  : Object (),
-    m_c7 (CreateObject<McpttCounter> (McpttEntityId (7, "C7"))),
-    m_c20 (CreateObject<McpttCounter> (McpttEntityId (20, "C20"))),
-    m_dualFloorSupported (false),
-    m_owner (0),
-    m_queueingSupported (false),
-    m_queue (CreateObject<McpttFloorQueue> ()),
-    m_rejectCause (0),
-    m_seqNum (0),
-    m_state (McpttOnNetworkFloorArbitratorStateStartStop::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
-    m_storedSsrc (0),
-    m_storedPriority (0),
-    m_trackInfo (McpttFloorMsgFieldTrackInfo ()),
-    m_t1 (CreateObject<McpttTimer> (McpttEntityId (1, "T1"))),
-    m_t2 (CreateObject<McpttTimer> (McpttEntityId (2, "T2"))),
-    m_t3 (CreateObject<McpttTimer> (McpttEntityId (3, "T3"))),
-    m_t4 (CreateObject<McpttTimer> (McpttEntityId (4, "T4"))),
-    m_t7 (CreateObject<McpttTimer> (McpttEntityId (7, "T7"))),
-    m_t20 (CreateObject<McpttTimer> (McpttEntityId (20, "T20")))
+McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator()
+    : Object(),
+      m_c7(CreateObject<McpttCounter>(McpttEntityId(7, "C7"))),
+      m_c20(CreateObject<McpttCounter>(McpttEntityId(20, "C20"))),
+      m_dualFloorSupported(false),
+      m_owner(nullptr),
+      m_queueingSupported(false),
+      m_queue(CreateObject<McpttFloorQueue>()),
+      m_rejectCause(0),
+      m_seqNum(0),
+      m_state(McpttOnNetworkFloorArbitratorStateStartStop::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>()),
+      m_storedSsrc(0),
+      m_storedPriority(0),
+      m_trackInfo(McpttFloorMsgFieldTrackInfo()),
+      m_t1(CreateObject<McpttTimer>(McpttEntityId(1, "T1"))),
+      m_t2(CreateObject<McpttTimer>(McpttEntityId(2, "T2"))),
+      m_t3(CreateObject<McpttTimer>(McpttEntityId(3, "T3"))),
+      m_t4(CreateObject<McpttTimer>(McpttEntityId(4, "T4"))),
+      m_t7(CreateObject<McpttTimer>(McpttEntityId(7, "T7"))),
+      m_t20(CreateObject<McpttTimer>(McpttEntityId(20, "T20")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -175,7 +175,7 @@ McpttOnNetworkFloorArbitrator::McpttOnNetworkFloorArbitrator (void)
   m_t20->Link (&McpttOnNetworkFloorArbitrator::ExpiryOfT20, this);
 }
 
-McpttOnNetworkFloorArbitrator::~McpttOnNetworkFloorArbitrator (void)
+McpttOnNetworkFloorArbitrator::~McpttOnNetworkFloorArbitrator()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -212,7 +212,7 @@ McpttOnNetworkFloorArbitrator::CallInitialized (Ptr<McpttOnNetworkFloorTowardsPa
 }
 
 void
-McpttOnNetworkFloorArbitrator::CallRelease1 (void)
+McpttOnNetworkFloorArbitrator::CallRelease1()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Call released (part I).");
@@ -220,7 +220,7 @@ McpttOnNetworkFloorArbitrator::CallRelease1 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::CallRelease2 (void)
+McpttOnNetworkFloorArbitrator::CallRelease2()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Call released (part II).");
@@ -228,7 +228,7 @@ McpttOnNetworkFloorArbitrator::CallRelease2 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ClientRelease (void)
+McpttOnNetworkFloorArbitrator::ClientRelease()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Taking client release notification.");
@@ -258,7 +258,7 @@ McpttOnNetworkFloorArbitrator::ChangeState (Ptr<McpttOnNetworkFloorArbitratorSta
 }
 
 McpttFloorMsgFieldIndic
-McpttOnNetworkFloorArbitrator::GetIndicator (void) const
+McpttOnNetworkFloorArbitrator::GetIndicator() const
 {
   McpttFloorMsgFieldIndic indicator;
   uint8_t callTypeId = GetOwner ()->GetCallMachine ()->GetCallType ().GetType ();
@@ -297,13 +297,13 @@ McpttOnNetworkFloorArbitrator::GetIndicator (void) const
 }
 
 TypeId
-McpttOnNetworkFloorArbitrator::GetInstanceTypeId (void) const
+McpttOnNetworkFloorArbitrator::GetInstanceTypeId() const
 {
   return McpttOnNetworkFloorArbitrator::GetTypeId ();
 }
 
 uint32_t
-McpttOnNetworkFloorArbitrator::GetNParticipants (void) const
+McpttOnNetworkFloorArbitrator::GetNParticipants() const
 {
   return m_participants.size ();
 }
@@ -318,10 +318,10 @@ McpttOnNetworkFloorArbitrator::GetParticipant (uint32_t index) const
 Ptr<McpttOnNetworkFloorTowardsParticipant>
 McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
 {
-  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
+    Ptr<McpttOnNetworkFloorTowardsParticipant> participant = nullptr;
+    auto it = m_participants.begin();
 
-  while (!participant && it != m_participants.end ())
+    while (!participant && it != m_participants.end())
     {
       if ((*it)->GetPeerUserId () == userId)
         {
@@ -340,9 +340,9 @@ McpttOnNetworkFloorArbitrator::GetParticipantByUserId (uint32_t userId) const
 Ptr<McpttOnNetworkFloorTowardsParticipant>
 McpttOnNetworkFloorArbitrator::GetParticipantBySsrc (const uint32_t ssrc) const
 {
-  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
-  while (!participant && it != m_participants.end ())
+    Ptr<McpttOnNetworkFloorTowardsParticipant> participant = nullptr;
+    auto it = m_participants.begin();
+    while (!participant && it != m_participants.end())
     {
       if ((*it)->GetStoredSsrc () == ssrc)
         {
@@ -357,12 +357,13 @@ McpttOnNetworkFloorArbitrator::GetParticipantBySsrc (const uint32_t ssrc) const
     }
   return participant;
 }
+
 Ptr<McpttOnNetworkFloorTowardsParticipant>
-McpttOnNetworkFloorArbitrator::GetOriginatingParticipant (void) const
+McpttOnNetworkFloorArbitrator::GetOriginatingParticipant() const
 {
-  Ptr<McpttOnNetworkFloorTowardsParticipant> participant = 0;
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::const_iterator it = m_participants.begin ();
-  while (!participant && it != m_participants.end ())
+    Ptr<McpttOnNetworkFloorTowardsParticipant> participant = nullptr;
+    auto it = m_participants.begin();
+    while (!participant && it != m_participants.end())
     {
       if ((*it)->IsOriginator ())
         {
@@ -379,7 +380,7 @@ McpttOnNetworkFloorArbitrator::GetOriginatingParticipant (void) const
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitrator::GetStateId (void) const
+McpttOnNetworkFloorArbitrator::GetStateId() const
 {
   McpttEntityId stateId = m_state->GetInstanceStateId ();
 
@@ -387,38 +388,37 @@ McpttOnNetworkFloorArbitrator::GetStateId (void) const
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsAudioCutIn (void) const
+McpttOnNetworkFloorArbitrator::IsAudioCutIn() const
 {
   return m_audioCutIn;
 }
 
-
 bool
-McpttOnNetworkFloorArbitrator::IsAckRequired (void) const
+McpttOnNetworkFloorArbitrator::IsAckRequired() const
 {
   return m_ackRequired;
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsDualFloor (void) const
+McpttOnNetworkFloorArbitrator::IsDualFloor() const
 {
   return (GetDualControl ()->IsStarted ());
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsDualFloorSupported (void) const
+McpttOnNetworkFloorArbitrator::IsDualFloorSupported() const
 {
   return m_dualFloorSupported;
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsFloorOccupied (void) const
+McpttOnNetworkFloorArbitrator::IsFloorOccupied() const
 {
   return m_state->IsFloorOccupied ();
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsQueueingSupported (void) const
+McpttOnNetworkFloorArbitrator::IsQueueingSupported() const
 {
   return m_queueingSupported;
 }
@@ -488,13 +488,13 @@ McpttOnNetworkFloorArbitrator::IsPreemptive (const McpttFloorMsgRequest& msg) co
 }
 
 bool
-McpttOnNetworkFloorArbitrator::IsStarted (void) const
+McpttOnNetworkFloorArbitrator::IsStarted() const
 {
   return GetStateId () != McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ();
 }
 
 uint16_t
-McpttOnNetworkFloorArbitrator::NextSeqNum (void)
+McpttOnNetworkFloorArbitrator::NextSeqNum()
 {
   NS_LOG_FUNCTION (this);
 
@@ -543,7 +543,7 @@ McpttOnNetworkFloorArbitrator::SendTo (McpttMsg& msg, const uint32_t ssrc)
   NS_LOG_LOGIC ("McpttOnNetworkFloorArbitrator (" << this << ") sending " << msg << " to " << ssrc << ".");
 
   bool found = false;
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin ();
+  auto it = m_participants.begin();
 
   while (it != m_participants.end () && !found)
     {
@@ -563,7 +563,7 @@ McpttOnNetworkFloorArbitrator::SendToAll (McpttMsg& msg)
 
   NS_LOG_LOGIC ("Sending " << msg << " to " << m_participants.size () << " participants");
 
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin ();
+  auto it = m_participants.begin();
 
   while (it != m_participants.end ())
     {
@@ -577,7 +577,7 @@ McpttOnNetworkFloorArbitrator::SendToAllExcept (McpttMsg& msg, const uint32_t ss
 {
   NS_LOG_FUNCTION (this << msg);
 
-  std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator pit = m_participants.begin ();
+  auto pit = m_participants.begin();
 
   NS_LOG_LOGIC ("Sending " << msg << " to " << m_participants.size () << " except " << ssrc);
 
@@ -656,25 +656,25 @@ McpttOnNetworkFloorArbitrator::SetLimitC20 (uint32_t limitC20)
 }
 
 void
-McpttOnNetworkFloorArbitrator::Start (void)
+McpttOnNetworkFloorArbitrator::Start()
 {
   NS_LOG_FUNCTION (this);
   // Start arbitrator state machine
 
   // Start participant state machines
-  for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
-    {
+  for (auto it = m_participants.begin(); it != m_participants.end(); it++)
+  {
       (*it)->Start ();
     }
 }
 
 void
-McpttOnNetworkFloorArbitrator::Stop (void)
+McpttOnNetworkFloorArbitrator::Stop()
 {
   NS_LOG_FUNCTION (this);
 
-  for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
-    {
+  for (auto it = m_participants.begin(); it != m_participants.end(); it++)
+  {
       (*it)->Stop ();
     }
 
@@ -713,27 +713,27 @@ McpttOnNetworkFloorArbitrator::Stop (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::DoDispose (void)
+McpttOnNetworkFloorArbitrator::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  m_c7 = 0;
-  m_c20 = 0;
-  m_owner = 0;
-  m_state = 0;
-  m_t1 = 0;
-  m_t2 = 0;
-  m_t3 = 0;
-  m_t4 = 0;
-  m_t7 = 0;
-  m_t20 = 0;
+  m_c7 = nullptr;
+  m_c20 = nullptr;
+  m_owner = nullptr;
+  m_state = nullptr;
+  m_t1 = nullptr;
+  m_t2 = nullptr;
+  m_t3 = nullptr;
+  m_t4 = nullptr;
+  m_t7 = nullptr;
+  m_t20 = nullptr;
   if (m_dualControl)
     {
       m_dualControl->Dispose ();
-      m_dualControl = 0;
+      m_dualControl = nullptr;
     }
 
-  for (std::vector<Ptr<McpttOnNetworkFloorTowardsParticipant> >::iterator it = m_participants.begin (); it != m_participants.end (); it++)
+    for (auto it = m_participants.begin(); it != m_participants.end(); it++)
     {
       (*it)->Dispose ();
     }
@@ -742,7 +742,7 @@ McpttOnNetworkFloorArbitrator::DoDispose (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT1 (void)
+McpttOnNetworkFloorArbitrator::ExpiryOfT1()
 {
   NS_LOG_FUNCTION (this);
 
@@ -752,7 +752,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT1 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT2 (void)
+McpttOnNetworkFloorArbitrator::ExpiryOfT2()
 {
   NS_LOG_FUNCTION (this);
 
@@ -762,7 +762,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT2 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT3 (void)
+McpttOnNetworkFloorArbitrator::ExpiryOfT3()
 {
   NS_LOG_FUNCTION (this);
 
@@ -772,7 +772,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT3 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT4 (void)
+McpttOnNetworkFloorArbitrator::ExpiryOfT4()
 {
   NS_LOG_FUNCTION (this);
 
@@ -782,7 +782,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT4 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT7 (void)
+McpttOnNetworkFloorArbitrator::ExpiryOfT7()
 {
   NS_LOG_FUNCTION (this);
 
@@ -792,7 +792,7 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT7 (void)
 }
 
 void
-McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
+McpttOnNetworkFloorArbitrator::ExpiryOfT20()
 {
   NS_LOG_FUNCTION (this);
 
@@ -802,97 +802,97 @@ McpttOnNetworkFloorArbitrator::ExpiryOfT20 (void)
 }
 
 Ptr<McpttCounter>
-McpttOnNetworkFloorArbitrator::GetC7 (void) const
+McpttOnNetworkFloorArbitrator::GetC7() const
 {
   return m_c7;
 }
 
 Ptr<McpttCounter>
-McpttOnNetworkFloorArbitrator::GetC20 (void) const
+McpttOnNetworkFloorArbitrator::GetC20() const
 {
   return m_c20;
 }
 
 Ptr<McpttOnNetworkFloorDualControl>
-McpttOnNetworkFloorArbitrator::GetDualControl (void) const
+McpttOnNetworkFloorArbitrator::GetDualControl() const
 {
   return m_dualControl;
 }
 
 Ptr<McpttServerCall>
-McpttOnNetworkFloorArbitrator::GetOwner (void) const
+McpttOnNetworkFloorArbitrator::GetOwner() const
 {
   return m_owner;
 }
 
 uint8_t
-McpttOnNetworkFloorArbitrator::GetStoredPriority (void) const
+McpttOnNetworkFloorArbitrator::GetStoredPriority() const
 {
   return m_storedPriority;
 }
 
 Ptr<McpttFloorQueue>
-McpttOnNetworkFloorArbitrator::GetQueue (void) const
+McpttOnNetworkFloorArbitrator::GetQueue() const
 {
   return m_queue;
 }
 
 uint16_t
-McpttOnNetworkFloorArbitrator::GetRejectCause (void) const
+McpttOnNetworkFloorArbitrator::GetRejectCause() const
 {
   return m_rejectCause;
 }
 
 uint32_t
-McpttOnNetworkFloorArbitrator::GetStoredSsrc (void) const
+McpttOnNetworkFloorArbitrator::GetStoredSsrc() const
 {
   return m_storedSsrc;
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttOnNetworkFloorArbitrator::GetTrackInfo (void) const
+McpttOnNetworkFloorArbitrator::GetTrackInfo() const
 {
   return m_trackInfo;
 }
 
 uint32_t
-McpttOnNetworkFloorArbitrator::GetTxSsrc (void) const
+McpttOnNetworkFloorArbitrator::GetTxSsrc() const
 {
   return m_txSsrc;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT1 (void) const
+McpttOnNetworkFloorArbitrator::GetT1() const
 {
   return m_t1;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT2 (void) const
+McpttOnNetworkFloorArbitrator::GetT2() const
 {
   return m_t2;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT3 (void) const
+McpttOnNetworkFloorArbitrator::GetT3() const
 {
   return m_t3;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT4 (void) const
+McpttOnNetworkFloorArbitrator::GetT4() const
 {
   return m_t4;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT7 (void) const
+McpttOnNetworkFloorArbitrator::GetT7() const
 {
   return m_t7;
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorArbitrator::GetT20 (void) const
+McpttOnNetworkFloorArbitrator::GetT20() const
 {
   return m_t20;
 }

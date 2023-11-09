@@ -1329,7 +1329,7 @@ LteSpectrumPhy::StartRxSlFrame(Ptr<LteSpectrumSignalParametersSlFrame> params)
 
                     std::vector<int> rbMap;
                     int rbI = 0;
-                    for (Values::const_iterator it = params->psd->ConstValuesBegin();
+                    for (auto it = params->psd->ConstValuesBegin();
                          it != params->psd->ConstValuesEnd();
                          it++, rbI++)
                     {
@@ -1777,11 +1777,9 @@ LteSpectrumPhy::EndRxData()
         itTb++;
     }
     std::map<uint16_t, DlInfoListElement_s> harqDlInfoMap;
-    for (std::list<Ptr<PacketBurst>>::const_iterator i = m_rxPacketBurstList.begin();
-         i != m_rxPacketBurstList.end();
-         ++i)
+    for (auto i = m_rxPacketBurstList.begin(); i != m_rxPacketBurstList.end(); ++i)
     {
-        for (std::list<Ptr<Packet>>::const_iterator j = (*i)->Begin(); j != (*i)->End(); ++j)
+        for (auto j = (*i)->Begin(); j != (*i)->End(); ++j)
         {
             // retrieve TB info of this packet
             LteRadioBearerTag tag;
@@ -1842,8 +1840,7 @@ LteSpectrumPhy::EndRxData()
                     }
                     else
                     {
-                        std::map<uint16_t, DlInfoListElement_s>::iterator itHarq =
-                            harqDlInfoMap.find(tbId.m_rnti);
+                        auto itHarq = harqDlInfoMap.find(tbId.m_rnti);
                         if (itHarq == harqDlInfoMap.end())
                         {
                             DlInfoListElement_s harqDlInfo;
@@ -1954,7 +1951,7 @@ LteSpectrumPhy::EndRxSlFrame()
     std::vector<uint32_t> psdchIndexes;
     std::vector<uint32_t> psbchIndexes;
 
-    for (uint16_t i = 0; i < m_rxPacketInfo.size(); i++)
+    for (uint32_t i = 0; i < m_rxPacketInfo.size(); i++)
     {
         Ptr<LteSpectrumSignalParametersSlFrame> pktParams = m_rxPacketInfo.at(i).params;
         Ptr<LteSpectrumSignalParametersSlCtrlFrame> lteSlCtrlRxParams =
@@ -2054,13 +2051,10 @@ LteSpectrumPhy::RxSlPscch(std::vector<uint32_t> pktIndexes)
         // Add new loop to make one pass and identify which RB have collisions
         std::set<int> collidedRbBitmapTemp;
 
-        for (std::multiset<SlCtrlPacketInfo_t>::iterator it = sortedControlMessages.begin();
-             it != sortedControlMessages.end();
-             it++)
+        for (auto it = sortedControlMessages.begin(); it != sortedControlMessages.end(); it++)
         {
             uint32_t pktIndex = (*it).index;
-            for (std::vector<int>::const_iterator rbIt =
-                     m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
+            for (auto rbIt = m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
                  rbIt != m_rxPacketInfo.at(pktIndex).rbBitmap.end();
                  rbIt++)
             {
@@ -2079,9 +2073,7 @@ LteSpectrumPhy::RxSlPscch(std::vector<uint32_t> pktIndexes)
         }
     }
 
-    for (std::multiset<SlCtrlPacketInfo_t>::iterator it = sortedControlMessages.begin();
-         it != sortedControlMessages.end();
-         it++)
+    for (auto it = sortedControlMessages.begin(); it != sortedControlMessages.end(); it++)
     {
         uint32_t pktIndex = (*it).index;
 
@@ -2089,8 +2081,7 @@ LteSpectrumPhy::RxSlPscch(std::vector<uint32_t> pktIndexes)
 
         if (m_slCtrlErrorModelEnabled)
         {
-            for (std::vector<int>::const_iterator rbIt =
-                     m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
+            for (auto rbIt = m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
                  rbIt != m_rxPacketInfo.at(pktIndex).rbBitmap.end();
                  rbIt++)
             {
@@ -2137,8 +2128,7 @@ LteSpectrumPhy::RxSlPscch(std::vector<uint32_t> pktIndexes)
             // TBs are considered as not corrupted.
             if (m_dropRbOnCollisionEnabled)
             {
-                for (std::vector<int>::const_iterator rbIt =
-                         m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
+                for (auto rbIt = m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
                      rbIt != m_rxPacketInfo.at(pktIndex).rbBitmap.end();
                      rbIt++)
                 {
@@ -2237,8 +2227,7 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
         uint32_t pktIndex = pktIndexes[i];
         // even though there may be multiple packets, they all have
         // the same tag
-        std::list<Ptr<Packet>>::const_iterator j =
-            m_rxPacketInfo.at(pktIndex).params->packetBurst->Begin();
+        auto j = m_rxPacketInfo.at(pktIndex).params->packetBurst->Begin();
         // retrieve TB info of this packet
         LteRadioBearerTag tag;
         (*j)->PeekPacketTag(tag);
@@ -2253,12 +2242,9 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
     {
         NS_LOG_DEBUG(this << " PSSCH DropOnCollisionEnabled: Identifying RB Collisions");
         std::set<int> collidedRbBitmapTemp;
-        for (expectedSlTbs_t::iterator itTb = m_expectedSlTbs.begin();
-             itTb != m_expectedSlTbs.end();
-             itTb++)
+        for (auto itTb = m_expectedSlTbs.begin(); itTb != m_expectedSlTbs.end(); itTb++)
         {
-            for (std::vector<int>::iterator rbIt = (*itTb).second.rbBitmap.begin();
-                 rbIt != (*itTb).second.rbBitmap.end();
+            for (auto rbIt = (*itTb).second.rbBitmap.begin(); rbIt != (*itTb).second.rbBitmap.end();
                  rbIt++)
             {
                 if (collidedRbBitmapTemp.find(*rbIt) != collidedRbBitmapTemp.end())
@@ -2276,7 +2262,7 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
     }
 
     // Compute the error and check for collision for each expected Tb
-    expectedSlTbs_t::iterator itTb = m_expectedSlTbs.begin();
+    auto itTb = m_expectedSlTbs.begin();
     std::map<SlTbId_t, uint32_t>::iterator itSinr;
     while (itTb != m_expectedSlTbs.end())
     {
@@ -2304,7 +2290,7 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
                 {
                     NS_LOG_DEBUG(this << " PSSCH DropOnCollisionEnabled: Labeling Corrupted TB");
                     // Check if any of the RBs have been decoded
-                    for (std::vector<int>::iterator rbIt = (*itTb).second.rbBitmap.begin();
+                    for (auto rbIt = (*itTb).second.rbBitmap.begin();
                          rbIt != (*itTb).second.rbBitmap.end();
                          rbIt++)
                     {
@@ -2354,7 +2340,7 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
                 {
                     NS_LOG_DEBUG(this << " PSSCH DropOnCollisionEnabled: Labeling Corrupted TB");
                     // Check if any of the RBs have been decoded
-                    for (std::vector<int>::iterator rbIt = (*itTb).second.rbBitmap.begin();
+                    for (auto rbIt = (*itTb).second.rbBitmap.begin();
                          rbIt != (*itTb).second.rbBitmap.end();
                          rbIt++)
                     {
@@ -2403,8 +2389,7 @@ LteSpectrumPhy::RxSlPssch(std::vector<uint32_t> pktIndexes)
         // should we increase the HARQ process for each packet? Shouldn't it be done
         // just for each packet burst?
         uint32_t pktIndex = pktIndexes[i];
-        for (std::list<Ptr<Packet>>::const_iterator j =
-                 m_rxPacketInfo[pktIndex].params->packetBurst->Begin();
+        for (auto j = m_rxPacketInfo[pktIndex].params->packetBurst->Begin();
              j != m_rxPacketInfo[pktIndex].params->packetBurst->End();
              ++j)
         {
@@ -2474,8 +2459,7 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
             std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> m_psdchTx =
                 (*discIt)->GetPsdchTransmissions(params->resNo);
             NS_LOG_DEBUG(this << " Total number of discovery transmissions = " << m_psdchTx.size());
-            std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator txIt =
-                m_psdchTx.begin();
+            auto txIt = m_psdchTx.begin();
             if (txIt != m_psdchTx.end())
             {
                 // There can be more than one (max 4) PSDCH transmissions, therefore, we need to
@@ -2522,8 +2506,7 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
     std::set<int> rbDecodedBitmap;
     std::set<SlCtrlPacketInfo_t> sortedDiscMessages;
 
-    for (expectedDiscTbs_t::iterator it = m_expectedDiscTbs.begin(); it != m_expectedDiscTbs.end();
-         it++)
+    for (auto it = m_expectedDiscTbs.begin(); it != m_expectedDiscTbs.end(); it++)
     {
         double meanSinr = GetMeanSinr(m_slSinrPerceived[(*it).second.index], (*it).second.rbBitmap);
         SlCtrlPacketInfo_t pInfo;
@@ -2538,11 +2521,10 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
     {
         NS_LOG_DEBUG(this << " PSDCH DropOnCollisionEnabled: Identifying RB Collisions");
         std::set<int> collidedRbBitmapTemp;
-        for (expectedDiscTbs_t::iterator itDiscTb = m_expectedDiscTbs.begin();
-             itDiscTb != m_expectedDiscTbs.end();
+        for (auto itDiscTb = m_expectedDiscTbs.begin(); itDiscTb != m_expectedDiscTbs.end();
              itDiscTb++)
         {
-            for (std::vector<int>::iterator rbIt = (*itDiscTb).second.rbBitmap.begin();
+            for (auto rbIt = (*itDiscTb).second.rbBitmap.begin();
                  rbIt != (*itDiscTb).second.rbBitmap.end();
                  rbIt++)
             {
@@ -2562,12 +2544,10 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
     }
 
     std::list<Ptr<Packet>> rxDiscMessageOkList;
-    expectedDiscTbs_t::iterator itTbDisc = m_expectedDiscTbs.begin();
+    auto itTbDisc = m_expectedDiscTbs.begin();
     HarqProcessInfoList_t harqInfoList;
 
-    for (std::set<SlCtrlPacketInfo_t>::iterator it = sortedDiscMessages.begin();
-         it != sortedDiscMessages.end();
-         it++)
+    for (auto it = sortedDiscMessages.begin(); it != sortedDiscMessages.end(); it++)
     {
         int pktIndex = (*it).index;
         NS_LOG_DEBUG("Decoding.."
@@ -2599,7 +2579,7 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
             }
 
             // Check if any of the RBs in this TB have been collided
-            for (std::vector<int>::iterator rbIt = (*itTbDisc).second.rbBitmap.begin();
+            for (auto rbIt = (*itTbDisc).second.rbBitmap.begin();
                  rbIt != (*itTbDisc).second.rbBitmap.end();
                  rbIt++)
             {
@@ -2706,7 +2686,7 @@ LteSpectrumPhy::RxSlPsdch(std::vector<uint32_t> pktIndexes)
             {
                 NS_LOG_DEBUG(this << " PSDCH DropOnCollisionEnabled: Labeling Corrupted TB");
                 // Check if any of the RBs in this TB have been collided
-                for (std::vector<int>::iterator rbIt = (*itTbDisc).second.rbBitmap.begin();
+                for (auto rbIt = (*itTbDisc).second.rbBitmap.begin();
                      rbIt != (*itTbDisc).second.rbBitmap.end();
                      rbIt++)
                 {
@@ -2856,13 +2836,10 @@ LteSpectrumPhy::RxSlPsbch(std::vector<uint32_t> pktIndexes)
         // Add new loop to make one pass and identify which RB have collisions
         std::set<int> collidedRbBitmapTemp;
 
-        for (std::multiset<SlCtrlPacketInfo_t>::iterator it = sortedControlMessages.begin();
-             it != sortedControlMessages.end();
-             it++)
+        for (auto it = sortedControlMessages.begin(); it != sortedControlMessages.end(); it++)
         {
             uint32_t pktIndex = (*it).index;
-            for (std::vector<int>::const_iterator rbIt =
-                     m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
+            for (auto rbIt = m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
                  rbIt != m_rxPacketInfo.at(pktIndex).rbBitmap.end();
                  rbIt++)
             {
@@ -2891,8 +2868,7 @@ LteSpectrumPhy::RxSlPsbch(std::vector<uint32_t> pktIndexes)
 
         if (m_slCtrlErrorModelEnabled)
         {
-            for (std::vector<int>::const_iterator rbIt =
-                     m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
+            for (auto rbIt = m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
                  rbIt != m_rxPacketInfo.at(pktIndex).rbBitmap.end();
                  rbIt++)
             {
@@ -2938,8 +2914,7 @@ LteSpectrumPhy::RxSlPsbch(std::vector<uint32_t> pktIndexes)
             // TBs are considered as not corrupted.
             if (m_dropRbOnCollisionEnabled)
             {
-                for (std::vector<int>::const_iterator rbIt =
-                         m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
+                for (auto rbIt = m_rxPacketInfo.at(pktIndex).rbBitmap.begin();
                      rbIt != m_rxPacketInfo.at(pktIndex).rbBitmap.end();
                      rbIt++)
                 {

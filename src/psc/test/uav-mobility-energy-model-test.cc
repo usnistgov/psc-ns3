@@ -86,19 +86,18 @@ AttachMockMobility (Ptr<Node> &node)
 class UavMobilityEnergyModelTestCaseEnergyConsumption : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseEnergyConsumption (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseEnergyConsumption();
+  void DoRun() override;
 };
 
-
-UavMobilityEnergyModelTestCaseEnergyConsumption::UavMobilityEnergyModelTestCaseEnergyConsumption (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Energy Consumption")
+UavMobilityEnergyModelTestCaseEnergyConsumption::UavMobilityEnergyModelTestCaseEnergyConsumption()
+    : TestCase("UAV Mobility Energy Model Test Case - Energy Consumption")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseEnergyConsumption::DoRun (void)
+UavMobilityEnergyModelTestCaseEnergyConsumption::DoRun()
 {
   const double HOVER_COST = 210; // Set This In Case The Default Changes
   const double INITIAL_ENERGY = 5000; // Should Leave Enough Leeway For 2 secs.
@@ -141,18 +140,18 @@ UavMobilityEnergyModelTestCaseEnergyConsumption::DoRun (void)
 class UavMobilityEnergyModelTestCaseZeroEnergyCost : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseZeroEnergyCost (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseZeroEnergyCost();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseZeroEnergyCost::UavMobilityEnergyModelTestCaseZeroEnergyCost (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Zero Energy Consumption")
+UavMobilityEnergyModelTestCaseZeroEnergyCost::UavMobilityEnergyModelTestCaseZeroEnergyCost()
+    : TestCase("UAV Mobility Energy Model Test Case - Zero Energy Consumption")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseZeroEnergyCost::DoRun (void)
+UavMobilityEnergyModelTestCaseZeroEnergyCost::DoRun()
 {
   // Make everything free (not realistic, but a supported feature)
   const double ZERO_ENERGY_COST = 0;
@@ -208,18 +207,18 @@ UavMobilityEnergyModelTestCaseZeroEnergyCost::DoRun (void)
 class UavMobilityEnergyModelTestCaseMoveEnergy : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseMoveEnergy (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseMoveEnergy();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseMoveEnergy::UavMobilityEnergyModelTestCaseMoveEnergy (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Move Energy")
+UavMobilityEnergyModelTestCaseMoveEnergy::UavMobilityEnergyModelTestCaseMoveEnergy()
+    : TestCase("UAV Mobility Energy Model Test Case - Move Energy")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseMoveEnergy::DoRun (void)
+UavMobilityEnergyModelTestCaseMoveEnergy::DoRun()
 {
   const double MOVE_CONVERSION_FACTOR = 220;
   const double ASCEND_CONVERSION_FACTOR = 250;
@@ -274,21 +273,21 @@ class UavMobilityEnergyModelTestCaseLowEnergyTrace : public TestCase
   int m_lowEnergyCount = 0;
   int m_highEnergyCount = 0;
 public:
-  UavMobilityEnergyModelTestCaseLowEnergyTrace (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseLowEnergyTrace();
+  void DoRun() override;
   void LowEnergy(Ptr<const UavMobilityEnergyModel> model);
   void HighEnergy(Ptr<const UavMobilityEnergyModel> model);
 
 };
 
-UavMobilityEnergyModelTestCaseLowEnergyTrace::UavMobilityEnergyModelTestCaseLowEnergyTrace (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Low Energy Callback")
+UavMobilityEnergyModelTestCaseLowEnergyTrace::UavMobilityEnergyModelTestCaseLowEnergyTrace()
+    : TestCase("UAV Mobility Energy Model Test Case - Low Energy Callback")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseLowEnergyTrace::DoRun (void)
+UavMobilityEnergyModelTestCaseLowEnergyTrace::DoRun()
 {
   // Make sure defaults are sane
   const double HOVER_COST = 210;
@@ -370,17 +369,18 @@ UavMobilityEnergyModelTestCaseLowEnergyTrace::HighEnergy (Ptr<const UavMobilityE
 class UavMobilityEnergyModelTestCaseLiIonEnergySource : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseLiIonEnergySource (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseLiIonEnergySource();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseLiIonEnergySource::UavMobilityEnergyModelTestCaseLiIonEnergySource (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - LiIonEnergySource")
+UavMobilityEnergyModelTestCaseLiIonEnergySource::UavMobilityEnergyModelTestCaseLiIonEnergySource()
+    : TestCase("UAV Mobility Energy Model Test Case - LiIonEnergySource")
 {
 
 }
 
-void UavMobilityEnergyModelTestCaseLiIonEnergySource::DoRun (void)
+void
+UavMobilityEnergyModelTestCaseLiIonEnergySource::DoRun()
 {
   Ptr<Node> node = CreateObject<Node> ();
 
@@ -416,18 +416,18 @@ void UavMobilityEnergyModelTestCaseLiIonEnergySource::DoRun (void)
 class UavMobilityEnergyModelTestCaseMobilityModel : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseMobilityModel (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseMobilityModel();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseMobilityModel::UavMobilityEnergyModelTestCaseMobilityModel (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Mobility Model")
+UavMobilityEnergyModelTestCaseMobilityModel::UavMobilityEnergyModelTestCaseMobilityModel()
+    : TestCase("UAV Mobility Energy Model Test Case - Mobility Model")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseMobilityModel::DoRun (void)
+UavMobilityEnergyModelTestCaseMobilityModel::DoRun()
 {
   const double DURATION = 3;
   const Vector STOPPED_VELOCITY (0, 0, 0);
@@ -492,18 +492,18 @@ UavMobilityEnergyModelTestCaseMobilityModel::DoRun (void)
 class UavMobilityEnergyModelTestCaseChangeCostsRuntime : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseChangeCostsRuntime (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseChangeCostsRuntime();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseChangeCostsRuntime::UavMobilityEnergyModelTestCaseChangeCostsRuntime (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Change Costs At Runtime")
+UavMobilityEnergyModelTestCaseChangeCostsRuntime::UavMobilityEnergyModelTestCaseChangeCostsRuntime()
+    : TestCase("UAV Mobility Energy Model Test Case - Change Costs At Runtime")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseChangeCostsRuntime::DoRun (void)
+UavMobilityEnergyModelTestCaseChangeCostsRuntime::DoRun()
 {
   const double DURATION = 2;
   const Vector STOPPED_VELOCITY (0, 0, 0);
@@ -579,18 +579,20 @@ class UavMobilityEnergyModelTestCaseTotalEnergyConsumption : public TestCase
 {
   double m_tracedEnergy = 0;
 public:
-  UavMobilityEnergyModelTestCaseTotalEnergyConsumption (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseTotalEnergyConsumption();
+  void DoRun() override;
   void TraceEnergy (double oldValue, double newValue);
 };
 
-UavMobilityEnergyModelTestCaseTotalEnergyConsumption::UavMobilityEnergyModelTestCaseTotalEnergyConsumption (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Total Energy Consumption")
+UavMobilityEnergyModelTestCaseTotalEnergyConsumption::
+    UavMobilityEnergyModelTestCaseTotalEnergyConsumption()
+    : TestCase("UAV Mobility Energy Model Test Case - Total Energy Consumption")
 {
 
 }
 
-void UavMobilityEnergyModelTestCaseTotalEnergyConsumption::DoRun (void)
+void
+UavMobilityEnergyModelTestCaseTotalEnergyConsumption::DoRun()
 {
   const double DURATION = 3;
   const Vector STOPPED_VELOCITY (0, 0, 0);
@@ -672,17 +674,18 @@ UavMobilityEnergyModelTestCaseTotalEnergyConsumption::TraceEnergy (double oldVal
 class UavMobilityEnergyModelTestCaseInitialVelocity : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseInitialVelocity (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseInitialVelocity();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseInitialVelocity::UavMobilityEnergyModelTestCaseInitialVelocity (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Total Energy Consumption")
+UavMobilityEnergyModelTestCaseInitialVelocity::UavMobilityEnergyModelTestCaseInitialVelocity()
+    : TestCase("UAV Mobility Energy Model Test Case - Total Energy Consumption")
 {
 
 }
 
-void UavMobilityEnergyModelTestCaseInitialVelocity::DoRun (void)
+void
+UavMobilityEnergyModelTestCaseInitialVelocity::DoRun()
 {
   const double DURATION = 3;
   const Vector MOVE_X_VELOCITY (1, 0, 0);
@@ -746,18 +749,19 @@ class UavMobilityEnergyModelTestCaseState : public TestCase
    */
   void ValidateState(Ptr<UavMobilityEnergyModel> energyModel, UavMobilityEnergyModel::State expected);
 public:
-  UavMobilityEnergyModelTestCaseState (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseState();
+  void DoRun() override;
   void TraceState(UavMobilityEnergyModel::State oldState, UavMobilityEnergyModel::State newState, Vector velocity);
 };
 
-UavMobilityEnergyModelTestCaseState::UavMobilityEnergyModelTestCaseState (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Get State")
+UavMobilityEnergyModelTestCaseState::UavMobilityEnergyModelTestCaseState()
+    : TestCase("UAV Mobility Energy Model Test Case - Get State")
 {
 
 }
 
-void UavMobilityEnergyModelTestCaseState::DoRun (void)
+void
+UavMobilityEnergyModelTestCaseState::DoRun()
 {
   using State = UavMobilityEnergyModel::State;
 
@@ -844,18 +848,19 @@ class UavMobilityEnergyModelTestCaseTraceCurrent : public TestCase
 {
   double m_current = 0;
 public:
-  UavMobilityEnergyModelTestCaseTraceCurrent (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseTraceCurrent();
+  void DoRun() override;
   void TraceCurrent(double oldCurrent, double newCurrent, Vector velocity);
 };
 
-UavMobilityEnergyModelTestCaseTraceCurrent::UavMobilityEnergyModelTestCaseTraceCurrent (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Trace Current")
+UavMobilityEnergyModelTestCaseTraceCurrent::UavMobilityEnergyModelTestCaseTraceCurrent()
+    : TestCase("UAV Mobility Energy Model Test Case - Trace Current")
 {
 
 }
 
-void UavMobilityEnergyModelTestCaseTraceCurrent::DoRun (void)
+void
+UavMobilityEnergyModelTestCaseTraceCurrent::DoRun()
 {
   // Keep velocities at 1 so, the current is wholly
   // determined by the cost
@@ -949,17 +954,19 @@ UavMobilityEnergyModelTestCaseTraceCurrent::TraceCurrent (double oldCurrent, dou
 class UavMobilityEnergyModelTestCaseAttributeEnergySource : public TestCase
 {
 public:
-  UavMobilityEnergyModelTestCaseAttributeEnergySource (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseAttributeEnergySource();
+  void DoRun() override;
 };
 
-UavMobilityEnergyModelTestCaseAttributeEnergySource::UavMobilityEnergyModelTestCaseAttributeEnergySource (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Attribute Energy Source")
+UavMobilityEnergyModelTestCaseAttributeEnergySource::
+    UavMobilityEnergyModelTestCaseAttributeEnergySource()
+    : TestCase("UAV Mobility Energy Model Test Case - Attribute Energy Source")
 {
 
 }
 
-void UavMobilityEnergyModelTestCaseAttributeEnergySource::DoRun (void)
+void
+UavMobilityEnergyModelTestCaseAttributeEnergySource::DoRun()
 {
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
@@ -1003,20 +1010,21 @@ class UavMobilityEnergyModelTestCaseFixedStateChangeSpeed : public TestCase
   int m_stateChangedCount = 0;
   int m_currentChangeCount = 0;
 public:
-  UavMobilityEnergyModelTestCaseFixedStateChangeSpeed (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseFixedStateChangeSpeed();
+  void DoRun() override;
   void StateTrace (UavMobilityEnergyModel::State oldState, UavMobilityEnergyModel::State newState, Vector velocity);
   void CurrentTrace (double oldCurrent, double newCurrent, Vector velocity);
 };
 
-UavMobilityEnergyModelTestCaseFixedStateChangeSpeed::UavMobilityEnergyModelTestCaseFixedStateChangeSpeed (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Fixed State, Change Speed")
+UavMobilityEnergyModelTestCaseFixedStateChangeSpeed::
+    UavMobilityEnergyModelTestCaseFixedStateChangeSpeed()
+    : TestCase("UAV Mobility Energy Model Test Case - Fixed State, Change Speed")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseFixedStateChangeSpeed::DoRun (void)
+UavMobilityEnergyModelTestCaseFixedStateChangeSpeed::DoRun()
 {
   const Vector ASCEND_SLOW (0, 0, 1);
   const Vector ASCEND_FAST (0, 0, 2);
@@ -1086,8 +1094,8 @@ class UavMobilityEnergyModelTestCaseVelocityTraces : public TestCase
   Vector m_stateVelocity;
   inline bool CompareVectors (const Vector &lhs, const Vector &rhs);
 public:
-  UavMobilityEnergyModelTestCaseVelocityTraces (void);
-  void DoRun (void) override;
+  UavMobilityEnergyModelTestCaseVelocityTraces();
+  void DoRun() override;
   void StateTrace (UavMobilityEnergyModel::State oldState, UavMobilityEnergyModel::State newState, Vector velocity);
   void CurrentTrace (double oldCurrent, double newCurrent, Vector velocity);
 };
@@ -1098,14 +1106,14 @@ UavMobilityEnergyModelTestCaseVelocityTraces::CompareVectors (const Vector &lhs,
   return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z; 
 }
 
-UavMobilityEnergyModelTestCaseVelocityTraces::UavMobilityEnergyModelTestCaseVelocityTraces (void)
-  : TestCase ("UAV Mobility Energy Model Test Case - Velocity Traces")
+UavMobilityEnergyModelTestCaseVelocityTraces::UavMobilityEnergyModelTestCaseVelocityTraces()
+    : TestCase("UAV Mobility Energy Model Test Case - Velocity Traces")
 {
 
 }
 
 void
-UavMobilityEnergyModelTestCaseVelocityTraces::DoRun (void)
+UavMobilityEnergyModelTestCaseVelocityTraces::DoRun()
 {
   // Make sure we use state where both current and state change
   const Vector MOVE (1, 0, 0);
@@ -1198,8 +1206,8 @@ public:
   UavMobilityEnergyModelTestSuite();
 };
 
-UavMobilityEnergyModelTestSuite::UavMobilityEnergyModelTestSuite (void)
-  : TestSuite ("uav-mobility-energy-model")
+UavMobilityEnergyModelTestSuite::UavMobilityEnergyModelTestSuite()
+    : TestSuite("uav-mobility-energy-model")
 {
   AddTestCase (new UavMobilityEnergyModelTestCaseEnergyConsumption ());
   AddTestCase (new UavMobilityEnergyModelTestCaseZeroEnergyCost ());

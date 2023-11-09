@@ -51,7 +51,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttMediaSrc);
 
 TypeId
-McpttMediaSrc::GetTypeId (void)
+McpttMediaSrc::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttMediaSrc")
     .SetParent<Object> ()
@@ -68,31 +68,31 @@ McpttMediaSrc::GetTypeId (void)
   return tid;
 }
 
-McpttMediaSrc::McpttMediaSrc (void)
-  : Object (),
-    m_lastReq (Seconds (0)),
-    m_reqEvent (EventId ()),
-    m_sink (0),
-    m_started (false),
-    m_totalBytes (0),
-    m_nextSeqNum (0)
+McpttMediaSrc::McpttMediaSrc()
+    : Object(),
+      m_lastReq(Seconds(0)),
+      m_reqEvent(EventId()),
+      m_sink(nullptr),
+      m_started(false),
+      m_totalBytes(0),
+      m_nextSeqNum(0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttMediaSrc::~McpttMediaSrc (void)
+McpttMediaSrc::~McpttMediaSrc()
 {
   NS_LOG_FUNCTION (this);
 }
 
 bool
-McpttMediaSrc::HasSink (void)
+McpttMediaSrc::HasSink()
 {
   NS_LOG_FUNCTION (this);
 
   McpttMediaSink* sink = GetSink ();
 
-  bool hasSink = (sink != 0);
+  bool hasSink = (sink != nullptr);
 
   if (hasSink)
     {
@@ -107,7 +107,7 @@ McpttMediaSrc::HasSink (void)
 }
 
 bool
-McpttMediaSrc::IsMakingReq (void) const
+McpttMediaSrc::IsMakingReq() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -115,7 +115,7 @@ McpttMediaSrc::IsMakingReq (void) const
 }
 
 void
-McpttMediaSrc::StartMakingReq (void)
+McpttMediaSrc::StartMakingReq()
 {
   NS_LOG_FUNCTION (this);
 
@@ -128,7 +128,7 @@ McpttMediaSrc::StartMakingReq (void)
 }
 
 void
-McpttMediaSrc::StopMakingReq (void)
+McpttMediaSrc::StopMakingReq()
 {
   NS_LOG_FUNCTION (this);
 
@@ -154,7 +154,7 @@ McpttMediaSrc::AddToTotalBytes (uint16_t numBytes)
 }
 
 void
-McpttMediaSrc::CancelRequest (void)
+McpttMediaSrc::CancelRequest()
 {
   NS_LOG_FUNCTION (this);
 
@@ -166,17 +166,17 @@ McpttMediaSrc::CancelRequest (void)
 }
 
 void
-McpttMediaSrc::DoDispose (void)
+McpttMediaSrc::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetSink (0);
+  SetSink(nullptr);
 
   Object::DoDispose ();
 }
 
 void
-McpttMediaSrc::MakeRequest (void)
+McpttMediaSrc::MakeRequest()
 {
   NS_LOG_FUNCTION (this);
 
@@ -209,7 +209,7 @@ McpttMediaSrc::MakeRequest (void)
 }
 
 void
-McpttMediaSrc::ScheduleNextReq (void)
+McpttMediaSrc::ScheduleNextReq()
 {
   NS_LOG_FUNCTION (this);
 
@@ -225,7 +225,7 @@ McpttMediaSrc::ScheduleNextReq (void)
 }
 
 McpttMediaSink*
-McpttMediaSrc::GetSink (void) const
+McpttMediaSrc::GetSink() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -233,7 +233,7 @@ McpttMediaSrc::GetSink (void) const
 }
 
 uint16_t
-McpttMediaSrc::GetTotalBytes (void) const
+McpttMediaSrc::GetTotalBytes() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -249,7 +249,7 @@ McpttMediaSrc::SetSink (McpttMediaSink* const& sink)
 }
 
 Time
-McpttMediaSrc::GetLastReq (void) const
+McpttMediaSrc::GetLastReq() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -257,7 +257,7 @@ McpttMediaSrc::GetLastReq (void) const
 }
 
 EventId
-McpttMediaSrc::GetReqEvent (void) const
+McpttMediaSrc::GetReqEvent() const
 {
   NS_LOG_FUNCTION (this);
 

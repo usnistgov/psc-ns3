@@ -58,7 +58,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttOnNetworkFloorDualControl);
 
 TypeId
-McpttOnNetworkFloorDualControl::GetTypeId (void)
+McpttOnNetworkFloorDualControl::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttOnNetworkFloorDualControl")
     .SetParent<Object> ()
@@ -80,13 +80,13 @@ McpttOnNetworkFloorDualControl::GetTypeId (void)
   return tid;
 }
 
-McpttOnNetworkFloorDualControl::McpttOnNetworkFloorDualControl (void)
-  : Object (),
-    m_owner (0),
-    m_state (McpttOnNetworkFloorDualControlStateStartStop::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
-    m_t11 (CreateObject<McpttTimer> (McpttEntityId (11, "T11"))),
-    m_t12 (CreateObject<McpttTimer> (McpttEntityId (12, "T12")))
+McpttOnNetworkFloorDualControl::McpttOnNetworkFloorDualControl()
+    : Object(),
+      m_owner(nullptr),
+      m_state(McpttOnNetworkFloorDualControlStateStartStop::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>()),
+      m_t11(CreateObject<McpttTimer>(McpttEntityId(11, "T11"))),
+      m_t12(CreateObject<McpttTimer>(McpttEntityId(12, "T12")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -94,13 +94,13 @@ McpttOnNetworkFloorDualControl::McpttOnNetworkFloorDualControl (void)
   m_t12->Link (&McpttOnNetworkFloorDualControl::ExpiryOfT12, this);
 }
 
-McpttOnNetworkFloorDualControl::~McpttOnNetworkFloorDualControl (void)
+McpttOnNetworkFloorDualControl::~McpttOnNetworkFloorDualControl()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttOnNetworkFloorDualControl::CallRelease1 (void)
+McpttOnNetworkFloorDualControl::CallRelease1()
 {
   NS_LOG_FUNCTION (this);
 
@@ -110,7 +110,7 @@ McpttOnNetworkFloorDualControl::CallRelease1 (void)
 }
 
 void
-McpttOnNetworkFloorDualControl::CallRelease2 (void)
+McpttOnNetworkFloorDualControl::CallRelease2()
 {
   NS_LOG_FUNCTION (this);
 
@@ -120,7 +120,7 @@ McpttOnNetworkFloorDualControl::CallRelease2 (void)
 }
 
 void
-McpttOnNetworkFloorDualControl::ClientRelease (void)
+McpttOnNetworkFloorDualControl::ClientRelease()
 {
   NS_LOG_FUNCTION (this);
 
@@ -157,13 +157,13 @@ McpttOnNetworkFloorDualControl::ChangeState (Ptr<McpttOnNetworkFloorDualControlS
 }
 
 TypeId
-McpttOnNetworkFloorDualControl::GetInstanceTypeId (void) const
+McpttOnNetworkFloorDualControl::GetInstanceTypeId() const
 {
   return McpttOnNetworkFloorDualControl::GetTypeId ();
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControl::GetStateId (void) const
+McpttOnNetworkFloorDualControl::GetStateId() const
 {
   McpttEntityId stateId = m_state->GetInstanceStateId ();
 
@@ -171,7 +171,7 @@ McpttOnNetworkFloorDualControl::GetStateId (void) const
 }
 
 bool
-McpttOnNetworkFloorDualControl::IsStarted (void) const
+McpttOnNetworkFloorDualControl::IsStarted() const
 {
   return m_state->GetInstanceStateId () != McpttOnNetworkFloorDualControlStateStartStop::GetStateId ();
 }
@@ -233,7 +233,7 @@ McpttOnNetworkFloorDualControl::SetDelayT12 (const Time& delayT12)
 }
 
 void
-McpttOnNetworkFloorDualControl::Stop (void)
+McpttOnNetworkFloorDualControl::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -249,7 +249,7 @@ McpttOnNetworkFloorDualControl::Stop (void)
 }
 
 void
-McpttOnNetworkFloorDualControl::Terminate (void)
+McpttOnNetworkFloorDualControl::Terminate()
 {
   NS_LOG_FUNCTION (this);
 
@@ -259,19 +259,19 @@ McpttOnNetworkFloorDualControl::Terminate (void)
 }
 
 void
-McpttOnNetworkFloorDualControl::DoDispose (void)
+McpttOnNetworkFloorDualControl::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  m_owner = 0;
-  m_state = 0;
-  m_t11 = 0;
-  m_t12 = 0;
+  m_owner = nullptr;
+  m_state = nullptr;
+  m_t11 = nullptr;
+  m_t12 = nullptr;
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
 void
-McpttOnNetworkFloorDualControl::ExpiryOfT11 (void)
+McpttOnNetworkFloorDualControl::ExpiryOfT11()
 {
   NS_LOG_FUNCTION (this);
 
@@ -281,7 +281,7 @@ McpttOnNetworkFloorDualControl::ExpiryOfT11 (void)
 }
 
 void
-McpttOnNetworkFloorDualControl::ExpiryOfT12 (void)
+McpttOnNetworkFloorDualControl::ExpiryOfT12()
 {
   NS_LOG_FUNCTION (this);
 
@@ -291,7 +291,7 @@ McpttOnNetworkFloorDualControl::ExpiryOfT12 (void)
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
-McpttOnNetworkFloorDualControl::GetOwner (void) const
+McpttOnNetworkFloorDualControl::GetOwner() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -299,7 +299,7 @@ McpttOnNetworkFloorDualControl::GetOwner (void) const
 }
 
 uint32_t
-McpttOnNetworkFloorDualControl::GetStoredSsrc (void) const
+McpttOnNetworkFloorDualControl::GetStoredSsrc() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -307,7 +307,7 @@ McpttOnNetworkFloorDualControl::GetStoredSsrc (void) const
 }
 
 uint8_t
-McpttOnNetworkFloorDualControl::GetStoredPriority (void) const
+McpttOnNetworkFloorDualControl::GetStoredPriority() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -315,7 +315,7 @@ McpttOnNetworkFloorDualControl::GetStoredPriority (void) const
 }
 
 McpttFloorMsgFieldTrackInfo
-McpttOnNetworkFloorDualControl::GetTrackInfo (void) const
+McpttOnNetworkFloorDualControl::GetTrackInfo() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -323,7 +323,7 @@ McpttOnNetworkFloorDualControl::GetTrackInfo (void) const
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorDualControl::GetT11 (void) const
+McpttOnNetworkFloorDualControl::GetT11() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -331,7 +331,7 @@ McpttOnNetworkFloorDualControl::GetT11 (void) const
 }
 
 Ptr<McpttTimer>
-McpttOnNetworkFloorDualControl::GetT12 (void) const
+McpttOnNetworkFloorDualControl::GetT12() const
 {
   NS_LOG_FUNCTION (this);
 

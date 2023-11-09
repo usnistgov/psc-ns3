@@ -57,7 +57,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGroupPrearranged);
 
 TypeId
-McpttServerCallMachineGroupPrearranged::GetTypeId (void)
+McpttServerCallMachineGroupPrearranged::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineGroupPrearranged")
     .SetParent<McpttServerCallMachineGrp> ()
@@ -99,18 +99,18 @@ McpttServerCallMachineGroupPrearranged::GetTypeId (void)
   return tid;
 }
 
-McpttServerCallMachineGroupPrearranged::McpttServerCallMachineGroupPrearranged (void)
-  : McpttServerCallMachineGrp (),
-    m_serverCall (0),
-    m_callId (0),
-    m_started (false)
+McpttServerCallMachineGroupPrearranged::McpttServerCallMachineGroupPrearranged()
+    : McpttServerCallMachineGrp(),
+      m_serverCall(nullptr),
+      m_callId(0),
+      m_started(false)
 {
   NS_LOG_FUNCTION (this);
   m_state = McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ();
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
 }
 
-McpttServerCallMachineGroupPrearranged::~McpttServerCallMachineGroupPrearranged (void)
+McpttServerCallMachineGroupPrearranged::~McpttServerCallMachineGroupPrearranged()
 {
   NS_LOG_FUNCTION (this);
   m_pending.clear ();
@@ -137,7 +137,7 @@ McpttServerCallMachineGroupPrearranged::SetState (Ptr<McpttServerCallMachineGrou
 }
 
 Ptr<McpttServerCallMachineGroupPrearrangedState>
-McpttServerCallMachineGroupPrearranged::GetState (void) const
+McpttServerCallMachineGroupPrearranged::GetState() const
 {
   return m_state;
 }
@@ -264,31 +264,31 @@ McpttServerCallMachineGroupPrearranged::SendSipResponse (uint32_t from, uint32_t
 }
 
 void
-McpttServerCallMachineGroupPrearranged::AcceptCall (void)
+McpttServerCallMachineGroupPrearranged::AcceptCall()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttServerCallMachineGroupPrearranged::BeginEmergAlert (void)
+McpttServerCallMachineGroupPrearranged::BeginEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttServerCallMachineGroupPrearranged::CancelEmergAlert (void)
+McpttServerCallMachineGroupPrearranged::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttServerCallMachineGroupPrearranged::DowngradeCallType (void)
+McpttServerCallMachineGroupPrearranged::DowngradeCallType()
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint32_t
-McpttServerCallMachineGroupPrearranged::GetCallerUserId (void) const
+McpttServerCallMachineGroupPrearranged::GetCallerUserId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -296,13 +296,13 @@ McpttServerCallMachineGroupPrearranged::GetCallerUserId (void) const
 }
 
 McpttCallMsgFieldCallId
-McpttServerCallMachineGroupPrearranged::GetCallId (void) const
+McpttServerCallMachineGroupPrearranged::GetCallId() const
 {
   return m_callId;
 }
 
 McpttCallMsgFieldCallType
-McpttServerCallMachineGroupPrearranged::GetCallType (void) const
+McpttServerCallMachineGroupPrearranged::GetCallType() const
 {
   McpttCallMsgFieldCallType callTypeField;
   callTypeField.SetType (m_callType);
@@ -311,32 +311,29 @@ McpttServerCallMachineGroupPrearranged::GetCallType (void) const
 }
 
 TypeId
-McpttServerCallMachineGroupPrearranged::GetInstanceTypeId (void) const
+McpttServerCallMachineGroupPrearranged::GetInstanceTypeId() const
 {
   return McpttServerCallMachineGroupPrearranged::GetTypeId ();
 }
 
 Ptr<McpttServerCall>
-McpttServerCallMachineGroupPrearranged::GetServerCall (void) const
+McpttServerCallMachineGroupPrearranged::GetServerCall() const
 {
   return m_serverCall;
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearranged::GetStateId (void) const
+McpttServerCallMachineGroupPrearranged::GetStateId() const
 {
   NS_LOG_FUNCTION (this);
   return m_state->GetInstanceStateId ();
 }
 
 bool
-McpttServerCallMachineGroupPrearranged::IsCallOngoing (void) const
+McpttServerCallMachineGroupPrearranged::IsCallOngoing() const
 {
-  if (GetStateId () != McpttServerCallMachineGroupPrearrangedStateS1::GetInstance ()->GetStateId ())
-    {
-      return true;
-    }
-  return false;
+    return GetStateId() !=
+           McpttServerCallMachineGroupPrearrangedStateS1::GetInstance()->GetStateId();
 }
 
 bool
@@ -385,7 +382,7 @@ McpttServerCallMachineGroupPrearranged::Receive (const McpttMediaMsg& msg)
 }
 
 void
-McpttServerCallMachineGroupPrearranged::RejectCall (void)
+McpttServerCallMachineGroupPrearranged::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -411,7 +408,7 @@ McpttServerCallMachineGroupPrearranged::SetServerCall (Ptr<McpttServerCall> call
 }
 
 void
-McpttServerCallMachineGroupPrearranged::Start (void)
+McpttServerCallMachineGroupPrearranged::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -425,7 +422,7 @@ McpttServerCallMachineGroupPrearranged::Start (void)
 }
 
 void
-McpttServerCallMachineGroupPrearranged::Stop (void)
+McpttServerCallMachineGroupPrearranged::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -445,7 +442,7 @@ McpttServerCallMachineGroupPrearranged::UpgradeCallType (uint8_t callType)
 }
 
 uint32_t
-McpttServerCallMachineGroupPrearranged::GetInvitePayloadSize (void)
+McpttServerCallMachineGroupPrearranged::GetInvitePayloadSize()
 {
   double value = m_invitePayloadSize->GetValue ();
   NS_ASSERT_MSG (value > 0, "Invalid random variate");
@@ -453,7 +450,7 @@ McpttServerCallMachineGroupPrearranged::GetInvitePayloadSize (void)
 }
 
 uint32_t
-McpttServerCallMachineGroupPrearranged::GetByePayloadSize (void)
+McpttServerCallMachineGroupPrearranged::GetByePayloadSize()
 {
   double value = m_byePayloadSize->GetValue ();
   NS_ASSERT_MSG (value > 0, "Invalid random variate");
@@ -461,7 +458,7 @@ McpttServerCallMachineGroupPrearranged::GetByePayloadSize (void)
 }
 
 uint32_t
-McpttServerCallMachineGroupPrearranged::GetResponsePayloadSize (void)
+McpttServerCallMachineGroupPrearranged::GetResponsePayloadSize()
 {
   double value = m_responsePayloadSize->GetValue ();
   NS_ASSERT_MSG (value > 0, "Invalid random variate");
@@ -483,11 +480,11 @@ McpttServerCallMachineGroupPrearranged::AssignStreams (int64_t stream)
 }
 
 void
-McpttServerCallMachineGroupPrearranged::DoDispose (void)
+McpttServerCallMachineGroupPrearranged::DoDispose()
 {
   NS_LOG_FUNCTION (this);
-  m_serverCall = 0;
-  m_state = 0;
+  m_serverCall = nullptr;
+  m_state = nullptr;
   m_stateChangeCb = MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ();
   McpttServerCallMachine::DoDispose ();
 }
@@ -509,13 +506,13 @@ McpttServerCallMachineGroupPrearranged::SetUserId (uint32_t userId)
 }
 
 McpttCallMsgFieldGrpId
-McpttServerCallMachineGroupPrearranged::GetGrpId (void) const
+McpttServerCallMachineGroupPrearranged::GetGrpId() const
 {
   return m_grpId;
 }
 
 uint32_t
-McpttServerCallMachineGroupPrearranged::GetUserId (void) const
+McpttServerCallMachineGroupPrearranged::GetUserId() const
 {
   return m_userId;
 }
@@ -525,8 +522,8 @@ void
 McpttServerCallMachineGroupPrearranged::SetPendingTransactionList (std::vector<uint32_t> pending)
 {
   NS_LOG_FUNCTION (this);
-  if (m_pending.size ())
-    {
+  if (!m_pending.empty())
+  {
       NS_LOG_DEBUG ("Replacing existing pending transaction list with size " << m_pending.size ());
       m_pending.clear ();
       m_pending.shrink_to_fit ();
@@ -553,7 +550,7 @@ McpttServerCallMachineGroupPrearranged::RemoveFromPending (uint32_t userId)
 }
 
 uint32_t
-McpttServerCallMachineGroupPrearranged::GetNPendingTransactions (void) const
+McpttServerCallMachineGroupPrearranged::GetNPendingTransactions() const
 {
   return m_pending.size ();
 }

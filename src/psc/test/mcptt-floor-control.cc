@@ -50,22 +50,22 @@ namespace tests {
 class TestFloorMachine : public McpttOffNetworkFloorParticipant
 {
 public:
-  static TypeId GetTypeId (void);
-  TestFloorMachine (void);
-  virtual ~TestFloorMachine (void);
+  static TypeId GetTypeId();
+  TestFloorMachine();
+  ~TestFloorMachine() override;
   virtual void AddDropper (Ptr<McpttMsgDropper>  dropper);
-  virtual void ChangeState (Ptr<McpttOffNetworkFloorParticipantState>  newState);
-  virtual void ExpiryOfT201 (void);
-  virtual void ExpiryOfT203 (void);
-  virtual void ExpiryOfT205 (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Receive (const McpttFloorMsg& msg);
-  virtual void Receive (const McpttMediaMsg& msg);
-  virtual void Send (const McpttFloorMsg& msg);
-  virtual void Start (void);
+  void ChangeState(Ptr<McpttOffNetworkFloorParticipantState> newState) override;
+  void ExpiryOfT201() override;
+  void ExpiryOfT203() override;
+  void ExpiryOfT205() override;
+  TypeId GetInstanceTypeId() const override;
+  void Receive(const McpttFloorMsg& msg) override;
+  void Receive(const McpttMediaMsg& msg) override;
+  void Send(const McpttFloorMsg& msg) override;
+  void Start() override;
 
 protected:
-  virtual void DoDispose (void);
+  void DoDispose() override;
 
 private:
   std::vector<Ptr<McpttMsgDropper> >* m_droppers;
@@ -79,18 +79,22 @@ private:
   Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState>, Ptr<McpttOffNetworkFloorParticipantState> > m_stateChangeCb;
 
 protected:
-  virtual std::vector<Ptr<McpttMsgDropper> >* GetDroppers (void) const;
+  virtual std::vector<Ptr<McpttMsgDropper>>* GetDroppers() const;
   virtual void SetDroppers (std::vector<Ptr<McpttMsgDropper> >* const& droppers);
 
 public:
-  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPostRxCb (void) const;
-  virtual Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > GetPostTimerExpCb (void) const;
-  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPostTxCb (void) const;
-  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPreRxCb (void) const;
-  virtual Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > GetPreTimerExpCb (void) const;
-  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPreTxCb (void) const;
-  virtual Ptr<McpttOffNetworkFloorParticipantState> GetStartState (void) const;
-  virtual Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState>, Ptr<McpttOffNetworkFloorParticipantState> > GetStateChangeCb (void) const;
+  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPostRxCb() const;
+  virtual Callback<void, const TestFloorMachine&, Ptr<McpttTimer>> GetPostTimerExpCb() const;
+  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPostTxCb() const;
+  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPreRxCb() const;
+  virtual Callback<void, const TestFloorMachine&, Ptr<McpttTimer>> GetPreTimerExpCb() const;
+  virtual Callback<void, const TestFloorMachine&, const McpttMsg&> GetPreTxCb() const;
+  virtual Ptr<McpttOffNetworkFloorParticipantState> GetStartState() const;
+  virtual Callback<void,
+                   const TestFloorMachine&,
+                   Ptr<McpttOffNetworkFloorParticipantState>,
+                   Ptr<McpttOffNetworkFloorParticipantState>>
+  GetStateChangeCb() const;
   virtual void SetPostRxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  postRxCb);
   virtual void SetPostTimerExpCb (const Callback<void, const TestFloorMachine&, Ptr<McpttTimer> >  timerExpCb);
   virtual void SetPostTxCb (const Callback<void, const TestFloorMachine&, const McpttMsg&>  postTxCb);
@@ -110,8 +114,8 @@ public:
   McpttFloorRequestIdle (const std::string& name = "Floor Request - Idle", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void IncrementReqCount (const uint32_t& amount = 1);
   virtual void IncrementTakenCount (const uint32_t& amount = 1);
   virtual void RxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -146,8 +150,8 @@ public:
   McpttFloorRequestDenied (const std::string& name = "Floor Request - Denied", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -179,8 +183,8 @@ public:
   McpttFloorRequestPreemptive (const std::string& name = "Floor Request - Preemptive", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -217,8 +221,8 @@ public:
   McpttFloorRequestQueued (const std::string& name = "Floor Request - Queued", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATimerExpCb (const TestFloorMachine& machine, Ptr<McpttTimer>  timer);
@@ -260,8 +264,8 @@ public:
   McpttSessionInitNormal (const std::string& name = "Session Initialization - Normal", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -290,8 +294,8 @@ public:
   McpttSessionInitLoss (const std::string& name = "Session Initialization - Message Lost", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -320,8 +324,8 @@ public:
   McpttFloorReleaseNormal (const std::string& name = "Floor Release - Normal", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -343,8 +347,8 @@ public:
   McpttFloorReleaseAfterReq (const std::string& name = "Floor Release - After Request", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -371,8 +375,8 @@ public:
   McpttFloorReleaseDuringGrantWhileQueued (const std::string& name = "Floor Release - During Grant While Queued", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -411,8 +415,8 @@ public:
   McpttFloorReleaseWhileQueued (const std::string& name = "Floor Release - While Queued", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -439,15 +443,15 @@ public:
   McpttFloorRequestIdleBis (const std::string& name = "Floor Request - Idle Bis", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeBRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeBStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeBTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
-  virtual void UeCFloorGrantedCb (void);
+  virtual void UeCFloorGrantedCb();
   virtual void UeCRxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeCStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeCTxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -490,8 +494,8 @@ public:
   McpttSessionInitPrivateCall (const std::string& name = "Session Initialization - Private Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -525,8 +529,8 @@ public:
   McpttFloorReleasePreemptedFloorArbitrator (const std::string& name = "Floor Release - Preemptive Floor Arbitrator", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestFloorMachine& machine, const McpttMsg& msg);
   virtual void UeAStateChangeCb (const TestFloorMachine& machine, Ptr<McpttOffNetworkFloorParticipantState>  oldState, Ptr<McpttOffNetworkFloorParticipantState>  newState);
   virtual void UeATxCb (const TestFloorMachine& machine, const McpttMsg& msg);
@@ -568,7 +572,7 @@ private:
 class McpttFloorControlTestSuite : public TestSuite
 {
 public:
-  McpttFloorControlTestSuite (void);
+  McpttFloorControlTestSuite();
 };
 
 /***************************************************************
@@ -578,7 +582,7 @@ public:
 static McpttFloorControlTestSuite suite;
 
 TypeId
-TestFloorMachine::GetTypeId (void)
+TestFloorMachine::GetTypeId()
 {
   static TypeId tid = TypeId ("TestFloorMachine")
     .SetParent<McpttOffNetworkFloorParticipant> ()
@@ -588,10 +592,10 @@ TestFloorMachine::GetTypeId (void)
   return tid;
 }
 
-TestFloorMachine::TestFloorMachine (void)
-  : McpttOffNetworkFloorParticipant (),
-    m_droppers (new std::vector<Ptr<McpttMsgDropper> > ()),
-    m_startState (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ())
+TestFloorMachine::TestFloorMachine()
+    : McpttOffNetworkFloorParticipant(),
+      m_droppers(new std::vector<Ptr<McpttMsgDropper>>()),
+      m_startState(McpttOffNetworkFloorParticipantStateStartStop::GetInstance())
 {
   SetPostRxCb (MakeNullCallback<void, const TestFloorMachine&, const McpttMsg&> ());
   SetPostTimerExpCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttTimer> > ());
@@ -602,7 +606,7 @@ TestFloorMachine::TestFloorMachine (void)
   SetStateChangeTestCb (MakeNullCallback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState>, Ptr<McpttOffNetworkFloorParticipantState> > ());
 }
 
-TestFloorMachine::~TestFloorMachine (void)
+TestFloorMachine::~TestFloorMachine()
 { }
 
 void
@@ -629,7 +633,7 @@ TestFloorMachine::ChangeState (Ptr<McpttOffNetworkFloorParticipantState>  newSta
 }
 
 void
-TestFloorMachine::ExpiryOfT201 (void)
+TestFloorMachine::ExpiryOfT201()
 {
   Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > postTimerExpCb = GetPostTimerExpCb ();
   Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > preTimerExpCb = GetPreTimerExpCb ();
@@ -648,7 +652,7 @@ TestFloorMachine::ExpiryOfT201 (void)
 }
 
 void
-TestFloorMachine::ExpiryOfT203 (void)
+TestFloorMachine::ExpiryOfT203()
 {
   Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > postTimerExpCb = GetPostTimerExpCb ();
   Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > preTimerExpCb = GetPreTimerExpCb ();
@@ -667,7 +671,7 @@ TestFloorMachine::ExpiryOfT203 (void)
 }
 
 void
-TestFloorMachine::ExpiryOfT205 (void)
+TestFloorMachine::ExpiryOfT205()
 {
   Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > postTimerExpCb = GetPostTimerExpCb ();
   Callback<void, const TestFloorMachine&, Ptr<McpttTimer> > preTimerExpCb = GetPreTimerExpCb ();
@@ -686,7 +690,7 @@ TestFloorMachine::ExpiryOfT205 (void)
 }
 
 TypeId
-TestFloorMachine::GetInstanceTypeId (void) const
+TestFloorMachine::GetInstanceTypeId() const
 {
   return TestFloorMachine::GetTypeId ();
 }
@@ -699,12 +703,12 @@ TestFloorMachine::Receive (const McpttFloorMsg& msg)
   Callback<void, const TestFloorMachine&, const McpttMsg&> postRxCb = GetPostRxCb ();
   Callback<void, const TestFloorMachine&, const McpttMsg&> preRxCb = GetPreRxCb ();
 
-  for (std::vector<Ptr<McpttMsgDropper> >::iterator it = droppers->begin (); it != droppers->end () && drop == false; it++)
-    {
+  for (auto it = droppers->begin(); it != droppers->end() && !drop; it++)
+  {
       drop = (*it)->ShouldDropMsg (msg);
     }
 
-  if (drop == false)
+    if (!drop)
     {
       if (!preRxCb.IsNull ())
         {
@@ -728,12 +732,12 @@ TestFloorMachine::Receive (const McpttMediaMsg& msg)
   Callback<void, const TestFloorMachine&, const McpttMsg&> postRxCb = GetPostRxCb ();
   Callback<void, const TestFloorMachine&, const McpttMsg&> preRxCb = GetPreRxCb ();
 
-  for (std::vector<Ptr<McpttMsgDropper> >::iterator it = droppers->begin (); it != droppers->end () && drop == false; it++)
-    {
+  for (auto it = droppers->begin(); it != droppers->end() && !drop; it++)
+  {
       drop = (*it)->ShouldDropMsg (msg);
     }
 
-  if (drop == false)
+    if (!drop)
     {
       if (!preRxCb.IsNull ())
         {
@@ -769,7 +773,7 @@ TestFloorMachine::Send (const McpttFloorMsg& msg)
 }
 
 void
-TestFloorMachine::Start (void)
+TestFloorMachine::Start()
 {
   Ptr<McpttOffNetworkFloorParticipantState> startState = GetStartState ();
 
@@ -779,23 +783,23 @@ TestFloorMachine::Start (void)
 }
 
 void
-TestFloorMachine::DoDispose (void)
+TestFloorMachine::DoDispose()
 {
   std::vector<Ptr<McpttMsgDropper> >* droppers = GetDroppers ();
-  for (std::vector<Ptr<McpttMsgDropper> >::iterator it = droppers->begin (); it != droppers->end (); it++)
-    {
-      (*it) = 0;
+  for (auto it = droppers->begin(); it != droppers->end(); it++)
+  {
+      (*it) = nullptr;
     }
 
   delete droppers;
 
-  SetDroppers (0);
+  SetDroppers(nullptr);
 
   McpttOffNetworkFloorParticipant::DoDispose ();
 }
 
-std::vector<Ptr<McpttMsgDropper> >*
-TestFloorMachine::GetDroppers (void) const
+std::vector<Ptr<McpttMsgDropper>>*
+TestFloorMachine::GetDroppers() const
 {
   return m_droppers;
 }
@@ -807,50 +811,52 @@ TestFloorMachine::SetDroppers (std::vector<Ptr<McpttMsgDropper> >* const& droppe
 }
 
 Callback<void, const TestFloorMachine&, const McpttMsg&>
-TestFloorMachine::GetPostRxCb (void) const
+TestFloorMachine::GetPostRxCb() const
 {
   return m_postRxCb;
 }
 
-Callback<void, const TestFloorMachine&, Ptr<McpttTimer> >
-TestFloorMachine::GetPostTimerExpCb (void) const
+Callback<void, const TestFloorMachine&, Ptr<McpttTimer>>
+TestFloorMachine::GetPostTimerExpCb() const
 {
   return m_postTimerExpCb;
 }
 
-
 Callback<void, const TestFloorMachine&, const McpttMsg&>
-TestFloorMachine::GetPostTxCb (void) const
+TestFloorMachine::GetPostTxCb() const
 {
   return m_postTxCb;
 }
 
 Callback<void, const TestFloorMachine&, const McpttMsg&>
-TestFloorMachine::GetPreRxCb (void) const
+TestFloorMachine::GetPreRxCb() const
 {
   return m_preRxCb;
 }
 
-Callback<void, const TestFloorMachine&, Ptr<McpttTimer> >
-TestFloorMachine::GetPreTimerExpCb (void) const
+Callback<void, const TestFloorMachine&, Ptr<McpttTimer>>
+TestFloorMachine::GetPreTimerExpCb() const
 {
   return m_preTimerExpCb;
 }
 
 Callback<void, const TestFloorMachine&, const McpttMsg&>
-TestFloorMachine::GetPreTxCb (void) const
+TestFloorMachine::GetPreTxCb() const
 {
   return m_preTxCb;
 }
 
 Ptr<McpttOffNetworkFloorParticipantState>
-TestFloorMachine::GetStartState (void) const
+TestFloorMachine::GetStartState() const
 {
   return m_startState;
 }
 
-Callback<void, const TestFloorMachine&, Ptr<McpttOffNetworkFloorParticipantState>, Ptr<McpttOffNetworkFloorParticipantState> >
-TestFloorMachine::GetStateChangeCb (void) const
+Callback<void,
+         const TestFloorMachine&,
+         Ptr<McpttOffNetworkFloorParticipantState>,
+         Ptr<McpttOffNetworkFloorParticipantState>>
+TestFloorMachine::GetStateChangeCb() const
 {
   return m_stateChangeCb;
 }
@@ -918,7 +924,7 @@ McpttFloorRequestIdle::McpttFloorRequestIdle (const std::string& name, Ptr<Mcptt
 { }
 
 void
-McpttFloorRequestIdle::Configure (void)
+McpttFloorRequestIdle::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
 
@@ -964,7 +970,7 @@ McpttFloorRequestIdle::Configure (void)
 }
 
 void
-McpttFloorRequestIdle::Execute (void)
+McpttFloorRequestIdle::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1114,8 +1120,8 @@ McpttFloorRequestIdle::UeBRxCb (const TestFloorMachine& machine, const McpttMsg&
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), false, "Timer " << *t230 << " is running.");
-      if (m_ueCRxTaken == true)
-        {
+      if (m_ueCRxTaken)
+      {
           Stop ();
         }
     }
@@ -1195,8 +1201,8 @@ McpttFloorRequestIdle::UeCRxCb (const TestFloorMachine& machine, const McpttMsg&
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       m_ueCRxTaken = true;
-      if (m_ueBRxTaken == true)
-        {
+      if (m_ueBRxTaken)
+      {
           Stop ();
         }
     }
@@ -1256,7 +1262,7 @@ McpttFloorRequestDenied::McpttFloorRequestDenied (const std::string& name, Ptr<M
 { }
 
 void
-McpttFloorRequestDenied::Configure (void)
+McpttFloorRequestDenied::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -1313,7 +1319,7 @@ McpttFloorRequestDenied::Configure (void)
 }
 
 void
-McpttFloorRequestDenied::Execute (void)
+McpttFloorRequestDenied::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -1356,8 +1362,8 @@ McpttFloorRequestDenied::UeARxCb (const TestFloorMachine& machine, const McpttMs
       NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is still running.");
       NS_TEST_ASSERT_MSG_EQ (c201->GetValue (), 1, "Counter C201 was not reset.");
 
-      if (m_ueCRxOfFloorDeny == true)
-        {
+      if (m_ueCRxOfFloorDeny)
+      {
           Stop ();
         }
     }
@@ -1568,8 +1574,8 @@ McpttFloorRequestDenied::UeCRxCb (const TestFloorMachine& machine, const McpttMs
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxOfFloorDeny, false, "UE C saw more than one floor deny message.");
       m_ueCRxOfFloorDeny = true;
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
-      if (m_rxOfFloorDeny == true)
-        {
+      if (m_rxOfFloorDeny)
+      {
           Stop ();
         }
     }
@@ -1637,7 +1643,7 @@ McpttFloorRequestPreemptive::McpttFloorRequestPreemptive (const std::string& nam
 { }
 
 void
-McpttFloorRequestPreemptive::Configure (void)
+McpttFloorRequestPreemptive::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -1703,7 +1709,7 @@ McpttFloorRequestPreemptive::Configure (void)
 }
 
 void
-McpttFloorRequestPreemptive::Execute (void)
+McpttFloorRequestPreemptive::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -1922,8 +1928,8 @@ McpttFloorRequestPreemptive::UeBRxCb (const TestFloorMachine& machine, const Mcp
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "Invalid state: " << *state << ".");
       m_ueBRxRtp = true;
-      if (m_ueCRxRtp == true)
-        {
+      if (m_ueCRxRtp)
+      {
           Stop ();
         }
     }
@@ -2045,8 +2051,8 @@ McpttFloorRequestPreemptive::UeCRxCb (const TestFloorMachine& machine, const Mcp
     {
       m_ueCRxRtp = true;
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
-      if (m_ueBRxRtp == true)
-        {
+      if (m_ueBRxRtp)
+      {
           Stop ();
         }
     }
@@ -2113,7 +2119,8 @@ McpttFloorRequestQueued::McpttFloorRequestQueued (const std::string& name, Ptr<M
     m_ueCRxRtp (false)
 { }
 
-void McpttFloorRequestQueued::Configure (void)
+void
+McpttFloorRequestQueued::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -2195,7 +2202,8 @@ void McpttFloorRequestQueued::Configure (void)
   Simulator::Schedule (Seconds (2.0), &McpttTimer::Start, ueCT203);
 }
 
-void McpttFloorRequestQueued::Execute (void)
+void
+McpttFloorRequestQueued::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -2417,8 +2425,8 @@ McpttFloorRequestQueued::UeBRxCb (const TestFloorMachine& machine, const McpttMs
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), true, "Timer " << *t203 << " is not running.");
       NS_TEST_ASSERT_MSG_EQ (t206->IsRunning (), false, "Timer " << *t206 << " is running.");
-      if (m_ueBRxRtp == true)
-        {
+      if (m_ueBRxRtp)
+      {
           Stop ();
         }
     }
@@ -2574,8 +2582,8 @@ McpttFloorRequestQueued::UeCRxCb (const TestFloorMachine& machine, const McpttMs
     {
       m_ueCRxRtp = true;
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C In state " << *state << " but should be in state '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "'.");
-      if (m_ueBRxRtp == true)
-        {
+      if (m_ueBRxRtp)
+      {
           Stop ();
         }
     }
@@ -2632,7 +2640,7 @@ McpttSessionInitNormal::McpttSessionInitNormal (const std::string& name, Ptr<Mcp
 { }
 
 void
-McpttSessionInitNormal::Configure (void)
+McpttSessionInitNormal::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -2665,7 +2673,7 @@ McpttSessionInitNormal::Configure (void)
 }
 
 void
-McpttSessionInitNormal::Execute (void)
+McpttSessionInitNormal::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -2793,8 +2801,8 @@ McpttSessionInitNormal::UeBRxCb (const TestFloorMachine& machine, const McpttMsg
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxGrant, false, "UE B already received " << msg << ".");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       m_ueBRxGrant = true;
-      if (m_ueCRxGrant == true)
-        {
+      if (m_ueCRxGrant)
+      {
           Stop ();
         }
     }
@@ -2898,8 +2906,8 @@ McpttSessionInitNormal::UeCRxCb (const TestFloorMachine& machine, const McpttMsg
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxGrant, false, "UE C already received " << msg << ".");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       m_ueCRxGrant = true;
-      if (m_ueBRxGrant == true)
-        {
+      if (m_ueBRxGrant)
+      {
           Stop ();
         }
     }
@@ -2993,7 +3001,7 @@ McpttSessionInitLoss::McpttSessionInitLoss (const std::string& name, Ptr<McpttTe
 { }
 
 void
-McpttSessionInitLoss::Configure (void)
+McpttSessionInitLoss::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -3040,7 +3048,7 @@ McpttSessionInitLoss::Configure (void)
 }
 
 void
-McpttSessionInitLoss::Execute (void)
+McpttSessionInitLoss::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -3173,8 +3181,8 @@ McpttSessionInitLoss::UeBRxCb (const TestFloorMachine& machine, const McpttMsg& 
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRtp, false, "UE B already received " << msg << ".");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE B not in '" << McpttOffNetworkFloorParticipantStateNoPerm::GetStateId () << "' state.");
       m_ueBRxRtp = true;
-      if (m_ueCRxRtp == true)
-        {
+      if (m_ueCRxRtp)
+      {
           Stop ();
         }
     }
@@ -3277,8 +3285,8 @@ McpttSessionInitLoss::UeCRxCb (const TestFloorMachine& machine, const McpttMsg& 
     {
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE A in invalid state: " << *state << ".");
       m_ueCRxRtp = true;
-      if (m_ueBRxRtp == true)
-        {
+      if (m_ueBRxRtp)
+      {
           Stop ();
         }
     }
@@ -3366,7 +3374,7 @@ McpttFloorReleaseNormal::McpttFloorReleaseNormal (const std::string& name, Ptr<M
 { }
 
 void
-McpttFloorReleaseNormal::Configure (void)
+McpttFloorReleaseNormal::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (2);
@@ -3408,7 +3416,7 @@ McpttFloorReleaseNormal::Configure (void)
 }
 
 void
-McpttFloorReleaseNormal::Execute (void)
+McpttFloorReleaseNormal::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -3621,7 +3629,7 @@ McpttFloorReleaseAfterReq::McpttFloorReleaseAfterReq (const std::string& name, P
 { }
 
 void
-McpttFloorReleaseAfterReq::Configure (void)
+McpttFloorReleaseAfterReq::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -3700,7 +3708,7 @@ McpttFloorReleaseAfterReq::Configure (void)
 }
 
 void
-McpttFloorReleaseAfterReq::Execute (void)
+McpttFloorReleaseAfterReq::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -3746,8 +3754,8 @@ McpttFloorReleaseAfterReq::UeARxCb (const TestFloorMachine& machine, const Mcptt
         {
           m_ueARxRtp = true;
           NS_TEST_ASSERT_MSG_EQ (t201->IsRunning (), false, "Timer " << *t201 << " is running.");
-          if (m_ueCRxRtp == true)
-            {
+          if (m_ueCRxRtp)
+          {
               Stop ();
             }
         }
@@ -3967,7 +3975,7 @@ McpttFloorReleaseAfterReq::UeCRxCb (const TestFloorMachine& machine, const Mcptt
     }
   else if (msg.GetInstanceTypeId () == McpttMediaMsg::GetTypeId ())
     {
-      if (m_ueCRxRtp == true)
+        if (m_ueCRxRtp)
         {}
       else
         {
@@ -3976,7 +3984,7 @@ McpttFloorReleaseAfterReq::UeCRxCb (const TestFloorMachine& machine, const Mcptt
           NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
           m_ueCRxRtp = true;
         }
-      if (m_ueARxRtp == true)
+        if (m_ueARxRtp)
         {
           Stop ();
         }
@@ -4019,27 +4027,29 @@ McpttFloorReleaseAfterReq::UeCTxCb (const TestFloorMachine& machine, const Mcptt
   NS_TEST_ASSERT_MSG_EQ (true, false, "UE C SENT UNEXPECTED MESSAGE: " << msg << ".");
 }
 
-McpttFloorReleaseDuringGrantWhileQueued::McpttFloorReleaseDuringGrantWhileQueued (const std::string& name, Ptr<McpttTestCaseConfig>  config)
-  : McpttTestCase (name, config),
-    m_ueAExpT203 (0),
-    m_ueANoPermToSilence (false),
-    m_ueAQueuedToNoPerm (false),
-    m_ueARxGrant (0),
-    m_ueATxRelease (false),
-    m_ueBExpT205 (0),
-    m_ueBHasPermToPendGrant (false),
-    m_ueBPendGrantToSilence (false),
-    m_ueBRxRelease (false),
-    m_ueBTxGrant (0),
-    m_ueCExpT203 (false),
-    m_ueCNoPermToSilence (0),
-    m_ueCRxGrant (0),
-    m_ueCRxRelease (false),
-    m_ueCSilenceToNoPerm (false)
+McpttFloorReleaseDuringGrantWhileQueued::McpttFloorReleaseDuringGrantWhileQueued(
+    const std::string& name,
+    Ptr<McpttTestCaseConfig> config)
+    : McpttTestCase(name, config),
+      m_ueAExpT203(false),
+      m_ueANoPermToSilence(false),
+      m_ueAQueuedToNoPerm(false),
+      m_ueARxGrant(0),
+      m_ueATxRelease(false),
+      m_ueBExpT205(0),
+      m_ueBHasPermToPendGrant(false),
+      m_ueBPendGrantToSilence(false),
+      m_ueBRxRelease(false),
+      m_ueBTxGrant(0),
+      m_ueCExpT203(false),
+      m_ueCNoPermToSilence(0),
+      m_ueCRxGrant(0),
+      m_ueCRxRelease(false),
+      m_ueCSilenceToNoPerm(false)
 { }
 
 void
-McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
+McpttFloorReleaseDuringGrantWhileQueued::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -4119,7 +4129,7 @@ McpttFloorReleaseDuringGrantWhileQueued::Configure (void)
 }
 
 void
-McpttFloorReleaseDuringGrantWhileQueued::Execute (void)
+McpttFloorReleaseDuringGrantWhileQueued::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -4643,9 +4653,8 @@ McpttFloorReleaseDuringGrantWhileQueued::UeCStateChangeCb (const TestFloorMachin
       NS_TEST_ASSERT_MSG_EQ (t203->IsRunning (), false, "Timer " << *t203 << " is running.");
       NS_TEST_ASSERT_MSG_EQ (t230->IsRunning (), true, "Timer " << *t230 << " is not running.");
       m_ueCNoPermToSilence += 1;
-      if (m_ueCNoPermToSilence == 2
-          && m_ueBPendGrantToSilence == true)
-        {
+      if (m_ueCNoPermToSilence == 2 && m_ueBPendGrantToSilence)
+      {
           Stop ();
         }
     }
@@ -4689,7 +4698,7 @@ McpttFloorReleaseWhileQueued::McpttFloorReleaseWhileQueued (const std::string& n
 { }
 
 void
-McpttFloorReleaseWhileQueued::Configure (void)
+McpttFloorReleaseWhileQueued::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (3);
@@ -4753,7 +4762,7 @@ McpttFloorReleaseWhileQueued::Configure (void)
 }
 
 void
-McpttFloorReleaseWhileQueued::Execute (void)
+McpttFloorReleaseWhileQueued::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -4884,8 +4893,8 @@ McpttFloorReleaseWhileQueued::UeBRxCb (const TestFloorMachine& machine, const Mc
       NS_TEST_ASSERT_MSG_EQ (m_ueBRxRelease, false, "UE B already received release message.");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateHasPerm::GetStateId (), "UE B in invalid state: " << *state << ".");
       m_ueBRxRelease = true;
-      if (m_ueCRxRelease == true)
-        {
+      if (m_ueCRxRelease)
+      {
           Stop ();
         }
     }
@@ -4942,8 +4951,8 @@ McpttFloorReleaseWhileQueued::UeCRxCb (const TestFloorMachine& machine, const Mc
       NS_TEST_ASSERT_MSG_EQ (m_ueCRxRelease, false, "UE C already recieved release message.");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttOffNetworkFloorParticipantStateNoPerm::GetStateId (), "UE C in invalid state: " << *state << ".");
       m_ueCRxRelease = true;
-      if (m_ueBRxRelease == true)
-        {
+      if (m_ueBRxRelease)
+      {
           Stop ();
         }
     }
@@ -5011,7 +5020,7 @@ McpttFloorRequestIdleBis::McpttFloorRequestIdleBis (const std::string& name, Ptr
 { }
 
 void
-McpttFloorRequestIdleBis::Configure (void)
+McpttFloorRequestIdleBis::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
 
@@ -5091,7 +5100,7 @@ McpttFloorRequestIdleBis::Configure (void)
 }
 
 void
-McpttFloorRequestIdleBis::Execute (void)
+McpttFloorRequestIdleBis::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -5255,7 +5264,7 @@ McpttFloorRequestIdleBis::UeBTxCb (const TestFloorMachine& machine, const McpttM
 }
 
 void
-McpttFloorRequestIdleBis::UeCFloorGrantedCb (void)
+McpttFloorRequestIdleBis::UeCFloorGrantedCb()
 {
   // Do nothing.
 }
@@ -5351,7 +5360,7 @@ McpttSessionInitPrivateCall::McpttSessionInitPrivateCall (const std::string& nam
 { }
 
 void
-McpttSessionInitPrivateCall::Configure (void)
+McpttSessionInitPrivateCall::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
   config->SetAppCount (2);
@@ -5402,7 +5411,7 @@ McpttSessionInitPrivateCall::Configure (void)
 }
 
 void
-McpttSessionInitPrivateCall::Execute (void)
+McpttSessionInitPrivateCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << ".");
 
@@ -5574,7 +5583,7 @@ McpttFloorReleasePreemptedFloorArbitrator::McpttFloorReleasePreemptedFloorArbitr
 { }
 
 void
-McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
+McpttFloorReleasePreemptedFloorArbitrator::Configure()
 {
   Ptr<McpttTestCaseConfig> config = GetConfig ();
 
@@ -5639,7 +5648,7 @@ McpttFloorReleasePreemptedFloorArbitrator::Configure (void)
 }
 
 void
-McpttFloorReleasePreemptedFloorArbitrator::Execute (void)
+McpttFloorReleasePreemptedFloorArbitrator::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -5864,8 +5873,8 @@ McpttFloorReleasePreemptedFloorArbitrator::UeCTxCb (const TestFloorMachine& mach
     }
 }
 
-McpttFloorControlTestSuite::McpttFloorControlTestSuite (void)
-  : TestSuite ("mcptt-floor-control", TestSuite::SYSTEM)
+McpttFloorControlTestSuite::McpttFloorControlTestSuite()
+    : TestSuite("mcptt-floor-control", TestSuite::SYSTEM)
 {
   AddTestCase (new McpttFloorRequestDenied (), TestCase::QUICK);
   AddTestCase (new McpttFloorRequestIdle (), TestCase::QUICK);

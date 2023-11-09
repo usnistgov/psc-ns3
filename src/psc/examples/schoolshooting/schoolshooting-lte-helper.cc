@@ -67,7 +67,7 @@ SchoolShootingLteHelper::~SchoolShootingLteHelper ()
 }
 
 TypeId
-SchoolShootingLteHelper::GetTypeId (void)
+SchoolShootingLteHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::SchoolShootingLteHelper")
     .SetParent<SchoolShootingNetworkTechnologyHelper> ()
@@ -212,9 +212,9 @@ Ptr<Node> SchoolShootingLteHelper::GetPublicServer ()
 
 NetDeviceContainer SchoolShootingLteHelper::GetNetDevicesForGroup (PscScenarioDefinition::GroupId id)
 {
-  std::map<PscScenarioDefinition::GroupId, NetDeviceContainer>::iterator it = m_netDeviceGroups.find (id);
-  NS_ABORT_MSG_UNLESS (it != m_netDeviceGroups.end (), "Group " << id << " not found in scenario");
-  return it->second;
+    auto it = m_netDeviceGroups.find(id);
+    NS_ABORT_MSG_UNLESS(it != m_netDeviceGroups.end(), "Group " << id << " not found in scenario");
+    return it->second;
 }
 
 void SchoolShootingLteHelper::InitNetwork ()
@@ -274,7 +274,7 @@ void SchoolShootingLteHelper::InitNetwork ()
 
   Ipv6StaticRoutingHelper ipv6RoutingHelper;
 
-  for (uint16_t i = 0; i < serverContainer.GetN (); i++)
+  for (uint32_t i = 0; i < serverContainer.GetN (); i++)
     {
       // Create the P2P links between P-GW and servers
       PointToPointHelper p2ph;
@@ -501,7 +501,7 @@ void SchoolShootingLteHelper::InitUes ()
 }
 
 void
-SchoolShootingLteHelper::EnableLteTraces (void)
+SchoolShootingLteHelper::EnableLteTraces()
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (!m_lteHelper, "LteHelper cannot be NULL!");

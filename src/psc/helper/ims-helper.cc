@@ -49,7 +49,7 @@ ImsHelper::~ImsHelper ()
 }
 
 TypeId
-ImsHelper::GetTypeId (void)
+ImsHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::ImsHelper")
     .SetParent<Object> ()
@@ -67,7 +67,7 @@ void
 ImsHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_pgwNode = 0;
+  m_pgwNode = nullptr;
   Object::DoDispose ();
 }
 
@@ -120,13 +120,13 @@ ImsHelper::ConnectPgw (Ptr<Node> pgw)
 }
 
 Ptr<Node>
-ImsHelper::GetImsNode (void) const
+ImsHelper::GetImsNode() const
 {
   return m_imsNode;
 }
 
 Address
-ImsHelper::GetImsGmAddress (void) const
+ImsHelper::GetImsGmAddress() const
 {
   if (!m_useIpv6)
     {
@@ -157,7 +157,7 @@ ImsHelper::GetImsGmAddress (void) const
 }
 
 Ptr<PointToPointNetDevice>
-ImsHelper::GetImsGmDevice (void) const
+ImsHelper::GetImsGmDevice() const
 {
   return m_imsDevice;
 }

@@ -45,8 +45,8 @@ namespace ns3 {
 namespace psc {
 namespace tests {
 
-McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork (void)
-  : McpttTestCaseConfig ()
+McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork()
+    : McpttTestCaseConfig()
 {
   m_clientHelper.SetPttApp ("ns3::psc::McpttPttApp",
                             "PushOnStart", BooleanValue (false));
@@ -72,11 +72,11 @@ McpttTestCaseConfigOnNetwork::McpttTestCaseConfigOnNetwork (void)
                               "TemporaryGroup", BooleanValue (false));
 }
 
-McpttTestCaseConfigOnNetwork::~McpttTestCaseConfigOnNetwork (void)
+McpttTestCaseConfigOnNetwork::~McpttTestCaseConfigOnNetwork()
 { }
 
 ApplicationContainer
-McpttTestCaseConfigOnNetwork::Configure (void)
+McpttTestCaseConfigOnNetwork::Configure()
 {
   uint32_t appCount = GetAppCount ();
   Time start = GetStart ();
@@ -168,7 +168,7 @@ McpttTestCaseConfigOnNetwork::SetServerHelper (const McpttServerHelper& serverHe
 }
 
 Ptr<McpttServerApp>
-McpttTestCaseConfigOnNetwork::GetServerApp (void) const
+McpttTestCaseConfigOnNetwork::GetServerApp() const
 {
   return m_serverApp;
 }

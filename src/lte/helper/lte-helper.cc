@@ -1332,7 +1332,7 @@ void
 LteHelper::ActivateSidelinkBearer(NetDeviceContainer ueDevices, Ptr<LteSlTft> tft)
 {
     NS_LOG_FUNCTION(this);
-    for (NetDeviceContainer::Iterator i = ueDevices.Begin(); i != ueDevices.End(); ++i)
+    for (auto i = ueDevices.Begin(); i != ueDevices.End(); ++i)
     {
         ActivateSidelinkBearer(*i, Create<LteSlTft>(tft));
     }
@@ -1352,7 +1352,7 @@ void
 LteHelper::DeactivateSidelinkBearer(NetDeviceContainer ueDevices, Ptr<LteSlTft> tft)
 {
     NS_LOG_FUNCTION(this);
-    for (NetDeviceContainer::Iterator i = ueDevices.Begin(); i != ueDevices.End(); ++i)
+    for (auto i = ueDevices.Begin(); i != ueDevices.End(); ++i)
     {
         DeactivateSidelinkBearer(*i, tft);
     }
@@ -1973,7 +1973,7 @@ LteHelper::InstallSidelinkConfiguration(NetDeviceContainer enbDevices,
 {
     // for each device, install a copy of the configuration
     NS_LOG_FUNCTION(this);
-    for (NetDeviceContainer::Iterator i = enbDevices.Begin(); i != enbDevices.End(); ++i)
+    for (auto i = enbDevices.Begin(); i != enbDevices.End(); ++i)
     {
         InstallSidelinkConfiguration(*i, slConfiguration->Copy());
     }
@@ -1993,7 +1993,7 @@ LteHelper::InstallSidelinkConfiguration(NetDeviceContainer ueDevices,
 {
     // for each device, install a copy of the configuration
     NS_LOG_FUNCTION(this);
-    for (NetDeviceContainer::Iterator i = ueDevices.Begin(); i != ueDevices.End(); ++i)
+    for (auto i = ueDevices.Begin(); i != ueDevices.End(); ++i)
     {
         InstallSidelinkConfiguration(*i, slConfiguration);
     }

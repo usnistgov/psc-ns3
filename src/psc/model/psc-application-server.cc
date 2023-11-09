@@ -51,7 +51,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (PscApplicationServer);
 
 TypeId
-PscApplicationServer::GetTypeId (void)
+PscApplicationServer::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscApplicationServer")
     .SetParent<PscApplication> ()
@@ -85,7 +85,7 @@ PscApplicationServer::PscApplicationServer ()
   NS_LOG_FUNCTION (this);
   m_timeLastSendScheduled = Time (MilliSeconds (1));
 
-  m_rxBuffer = 0;
+  m_rxBuffer = nullptr;
   m_txBuffer = Create<Packet> ();
 }
 
@@ -95,22 +95,22 @@ PscApplicationServer::~PscApplicationServer ()
 }
 
 void
-PscApplicationServer::DoDispose (void)
+PscApplicationServer::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  m_rxBuffer = 0;
-  m_txBuffer = 0;
+  m_rxBuffer = nullptr;
+  m_txBuffer = nullptr;
 
   PscApplication::DoDispose ();
 }
 
 void
-PscApplicationServer::StartApplication (void)
+PscApplicationServer::StartApplication()
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socket)
+  if (!m_socket)
     {
       m_socket = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
@@ -124,7 +124,7 @@ PscApplicationServer::StartApplication (void)
     MakeCallback (&PscApplicationServer::HandleAccept, this));
   m_socket->SetSendCallback (MakeCallback (&PscApplicationServer::TrySend, this));
 
-  if (m_socket6)
+  if (!m_socket6)
     {
       m_socket6 = ns3::Socket::CreateSocket (GetNode (), m_socketTid);
       Inet6SocketAddress local = Inet6SocketAddress (Ipv6Address::GetAny (), m_port);
@@ -142,7 +142,7 @@ PscApplicationServer::StartApplication (void)
 }
 
 void
-PscApplicationServer::StopNow (void)
+PscApplicationServer::StopNow()
 {
   NS_LOG_FUNCTION (this);
 
@@ -163,14 +163,14 @@ PscApplicationServer::StopApplication ()
       m_socket->Close ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<ns3::Socket> > ());
       m_socket->SetSendCallback (MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t > ());
-      m_socket = 0;
+      m_socket = nullptr;
     }
   if (m_socket6)
     {
       m_socket6->Close ();
       m_socket6->SetRecvCallback (MakeNullCallback<void, Ptr<ns3::Socket> > ());
       m_socket6->SetSendCallback (MakeNullCallback<void, Ptr<ns3::Socket>, uint32_t > ());
-      m_socket6 = 0;
+      m_socket6 = nullptr;
     }
 
 }
@@ -221,25 +221,25 @@ PscApplicationServer::HandleRead (Ptr<ns3::Socket> socket)
                   uint32_t bytesToRemove = tmpPacket->GetSize () - (m_rxBuffer->GetSize () - nbh.GetSize () - stsh.GetSerializedSize ());
                   m_rxBuffer->RemoveAllPacketTags ();
                   m_rxBuffer->RemoveAllByteTags ();
-                  m_rxBuffer = 0;
+                  m_rxBuffer = nullptr;
 
                   // Now let's see if there is anything else in the segment
                   tmpPacket->RemoveAtStart (bytesToRemove);
                   if (tmpPacket->GetSize () == 0)
                     {
-                      tmpPacket = 0;
+                        tmpPacket = nullptr;
                     }
                 }
               else
                 {
                   // We don't have the full packet. Let's wait.
-                  tmpPacket = 0;
+                  tmpPacket = nullptr;
                 }
             }
           else
             {
               // We still need to keep receiving data (we don't have the full header).
-              tmpPacket = 0;
+              tmpPacket = nullptr;
             }
         }
     }

@@ -45,7 +45,7 @@ using namespace psc;
 NS_LOG_COMPONENT_DEFINE ("Main");
 
 void
-SimTimeUpdate (void)
+SimTimeUpdate()
 {
   NS_LOG_INFO ("Time: " << Simulator::Now ().GetSeconds () << "s");
 }
@@ -64,7 +64,7 @@ int main (int argc, char *argv[])
   double startSec = 2.0;
   double stopSec = 12.0;
   TypeId socketFacTid = UdpSocketFactory::GetTypeId ();
-  Ipv4Address peerAddress = Ipv4Address ("255.255.255.255");
+  auto peerAddress = Ipv4Address("255.255.255.255");
 
   CommandLine cmd;
   cmd.AddValue ("users", "Number of users to include in a group.", usersPerGroup);
@@ -91,8 +91,8 @@ int main (int argc, char *argv[])
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
 
-  for (uint32_t s = (uint32_t)startSec; s < (uint32_t)stopSec; s += 1)
-    {
+  for (auto s = (uint32_t)startSec; s < (uint32_t)stopSec; s += 1)
+  {
       Simulator::Schedule (Seconds (s), &SimTimeUpdate);
     }
 

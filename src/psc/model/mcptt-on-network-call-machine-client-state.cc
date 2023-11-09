@@ -52,19 +52,19 @@ namespace psc {
 /** McpttOnNetworkCallMachineClientState - begin **/
 NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkCallMachineClientState");
 
-McpttOnNetworkCallMachineClientState::McpttOnNetworkCallMachineClientState (void)
-  : SimpleRefCount<McpttOnNetworkCallMachineClientState> ()
+McpttOnNetworkCallMachineClientState::McpttOnNetworkCallMachineClientState()
+    : SimpleRefCount<McpttOnNetworkCallMachineClientState>()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkCallMachineClientState::~McpttOnNetworkCallMachineClientState (void)
+McpttOnNetworkCallMachineClientState::~McpttOnNetworkCallMachineClientState()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientState::GetInstanceStateId (void) const
+McpttOnNetworkCallMachineClientState::GetInstanceStateId() const
 {
   return McpttEntityId ();
 }
@@ -125,32 +125,32 @@ operator<< (std::ostream& os, const McpttOnNetworkCallMachineClientState& inst)
 
 /** McpttOnNetworkCallMachineClientStateS1 - begin **/
 Ptr<McpttOnNetworkCallMachineClientStateS1>
-McpttOnNetworkCallMachineClientStateS1::GetInstance (void)
+McpttOnNetworkCallMachineClientStateS1::GetInstance()
 {
   static Ptr<McpttOnNetworkCallMachineClientStateS1> instance = Create<McpttOnNetworkCallMachineClientStateS1> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS1::GetStateId (void)
+McpttOnNetworkCallMachineClientStateS1::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (1, "'S1: start-stop'");
   return stateId;
 }
 
-McpttOnNetworkCallMachineClientStateS1::McpttOnNetworkCallMachineClientStateS1 (void)
-  : McpttOnNetworkCallMachineClientState ()
+McpttOnNetworkCallMachineClientStateS1::McpttOnNetworkCallMachineClientStateS1()
+    : McpttOnNetworkCallMachineClientState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkCallMachineClientStateS1::~McpttOnNetworkCallMachineClientStateS1 (void)
+McpttOnNetworkCallMachineClientStateS1::~McpttOnNetworkCallMachineClientStateS1()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS1::GetInstanceStateId (void) const
+McpttOnNetworkCallMachineClientStateS1::GetInstanceStateId() const
 {
   return McpttOnNetworkCallMachineClientStateS1::GetStateId ();
 }
@@ -213,32 +213,32 @@ McpttOnNetworkCallMachineClientStateS1::ReceiveInvite (McpttOnNetworkCallMachine
 
 /** McpttOnNetworkCallMachineClientStateS2 - begin **/
 Ptr<McpttOnNetworkCallMachineClientStateS2>
-McpttOnNetworkCallMachineClientStateS2::GetInstance (void)
+McpttOnNetworkCallMachineClientStateS2::GetInstance()
 {
   static Ptr<McpttOnNetworkCallMachineClientStateS2> instance = Create<McpttOnNetworkCallMachineClientStateS2> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS2::GetStateId (void)
+McpttOnNetworkCallMachineClientStateS2::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (2, "'S2: initiating'");
   return stateId;
 }
 
-McpttOnNetworkCallMachineClientStateS2::McpttOnNetworkCallMachineClientStateS2 (void)
-  : McpttOnNetworkCallMachineClientState ()
+McpttOnNetworkCallMachineClientStateS2::McpttOnNetworkCallMachineClientStateS2()
+    : McpttOnNetworkCallMachineClientState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkCallMachineClientStateS2::~McpttOnNetworkCallMachineClientStateS2 (void)
+McpttOnNetworkCallMachineClientStateS2::~McpttOnNetworkCallMachineClientStateS2()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS2::GetInstanceStateId (void) const
+McpttOnNetworkCallMachineClientStateS2::GetInstanceStateId() const
 {
   return McpttOnNetworkCallMachineClientStateS2::GetStateId ();
 }
@@ -313,33 +313,33 @@ McpttOnNetworkCallMachineClientStateS2::ReleaseCall (McpttOnNetworkCallMachineCl
 
 /** McpttOnNetworkCallMachineClientStateS3 - begin **/
 Ptr<McpttOnNetworkCallMachineClientStateS3>
-McpttOnNetworkCallMachineClientStateS3::GetInstance (void)
+McpttOnNetworkCallMachineClientStateS3::GetInstance()
 {
   static Ptr<McpttOnNetworkCallMachineClientStateS3> instance = Create<McpttOnNetworkCallMachineClientStateS3> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS3::GetStateId (void)
+McpttOnNetworkCallMachineClientStateS3::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (3, "'S3: part of ongoing call'");
 
   return stateId;
 }
 
-McpttOnNetworkCallMachineClientStateS3::McpttOnNetworkCallMachineClientStateS3 (void)
-  : McpttOnNetworkCallMachineClientState ()
+McpttOnNetworkCallMachineClientStateS3::McpttOnNetworkCallMachineClientStateS3()
+    : McpttOnNetworkCallMachineClientState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkCallMachineClientStateS3::~McpttOnNetworkCallMachineClientStateS3 (void)
+McpttOnNetworkCallMachineClientStateS3::~McpttOnNetworkCallMachineClientStateS3()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS3::GetInstanceStateId (void) const
+McpttOnNetworkCallMachineClientStateS3::GetInstanceStateId() const
 {
   return McpttOnNetworkCallMachineClientStateS3::GetStateId ();
 }
@@ -406,33 +406,33 @@ McpttOnNetworkCallMachineClientStateS3::ReleaseCall (McpttOnNetworkCallMachineCl
 
 /** McpttOnNetworkCallMachineClientStateS4 - begin **/
 Ptr<McpttOnNetworkCallMachineClientStateS4>
-McpttOnNetworkCallMachineClientStateS4::GetInstance (void)
+McpttOnNetworkCallMachineClientStateS4::GetInstance()
 {
   static Ptr<McpttOnNetworkCallMachineClientStateS4> instance = Create<McpttOnNetworkCallMachineClientStateS4> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS4::GetStateId (void)
+McpttOnNetworkCallMachineClientStateS4::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (4, "'S4: releasing'");
 
   return stateId;
 }
 
-McpttOnNetworkCallMachineClientStateS4::McpttOnNetworkCallMachineClientStateS4 (void)
-  : McpttOnNetworkCallMachineClientState ()
+McpttOnNetworkCallMachineClientStateS4::McpttOnNetworkCallMachineClientStateS4()
+    : McpttOnNetworkCallMachineClientState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkCallMachineClientStateS4::~McpttOnNetworkCallMachineClientStateS4 (void)
+McpttOnNetworkCallMachineClientStateS4::~McpttOnNetworkCallMachineClientStateS4()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkCallMachineClientStateS4::GetInstanceStateId (void) const
+McpttOnNetworkCallMachineClientStateS4::GetInstanceStateId() const
 {
   return McpttOnNetworkCallMachineClientStateS4::GetStateId ();
 }

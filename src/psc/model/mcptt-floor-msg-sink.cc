@@ -46,12 +46,12 @@ namespace psc {
 NS_LOG_COMPONENT_DEFINE ("McpttFloorMsgSink");
 
 /** McpttFloorMsgSink - begin **/
-McpttFloorMsgSink::McpttFloorMsgSink (void)
+McpttFloorMsgSink::McpttFloorMsgSink()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttFloorMsgSink::~McpttFloorMsgSink (void)
+McpttFloorMsgSink::~McpttFloorMsgSink()
 {
   NS_LOG_FUNCTION (this);
 }

@@ -404,7 +404,7 @@ SaveNodesPositions(std::string fileName)
     // In the logs, ID corresponds to cell id of an eNB and in case of UE to its IMSI
     outFile << "Node\tID\tX\tY" << std::endl;
 
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -421,7 +421,7 @@ SaveNodesPositions(std::string fileName)
         }
     }
 
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -450,7 +450,7 @@ SaveBuildingsPositions(std::string filename)
         return;
     }
     Box box;
-    for (BuildingList::Iterator it = BuildingList::Begin(); it != BuildingList::End(); ++it)
+    for (auto it = BuildingList::Begin(); it != BuildingList::End(); ++it)
     {
         box = (*it)->GetBoundaries();
         outFile << box.xMin << " " << box.xMax << " " << box.yMin << " " << box.yMax << std::endl;
@@ -468,7 +468,7 @@ PrintGnuplottableBuildingListToFile(std::string filename)
         return;
     }
     uint32_t index = 0;
-    for (BuildingList::Iterator it = BuildingList::Begin(); it != BuildingList::End(); ++it)
+    for (auto it = BuildingList::Begin(); it != BuildingList::End(); ++it)
     {
         ++index;
         Box box = (*it)->GetBoundaries();
@@ -487,7 +487,7 @@ PrintGnuplottableUeListToFile(std::string filename)
         NS_FATAL_ERROR("Can't open file " << filename);
         return;
     }
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -516,7 +516,7 @@ PrintGnuplottableEnbListToFile(std::string filename)
         NS_FATAL_ERROR("Can't open file " << filename);
         return;
     }
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -739,7 +739,7 @@ main(int argc, char* argv[])
         // By using this version of Attach we make sure that each eNB have UEs asper configured
         // nUesPerSector
         uint32_t currentUe = 0;
-        for (uint16_t i = 0; i < threeSectorNodes.GetN(); ++i)
+        for (uint32_t i = 0; i < threeSectorNodes.GetN(); ++i)
         {
             for (uint32_t uePerSector = 0; uePerSector < nUesPerSector; ++uePerSector)
             {

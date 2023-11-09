@@ -55,7 +55,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCallTypeMachinePrivate);
 
 TypeId
-McpttCallTypeMachinePrivate::GetTypeId (void)
+McpttCallTypeMachinePrivate::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -81,7 +81,7 @@ McpttCallTypeMachinePrivate::McpttCallTypeMachinePrivate (Ptr<McpttCallMachinePr
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallTypeMachinePrivate::~McpttCallTypeMachinePrivate (void)
+McpttCallTypeMachinePrivate::~McpttCallTypeMachinePrivate()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -117,7 +117,7 @@ McpttCallTypeMachinePrivate::ChangeState (Ptr<McpttCallTypeMachinePrivateState> 
 }
 
 void
-McpttCallTypeMachinePrivate::Downgrade (void)
+McpttCallTypeMachinePrivate::Downgrade()
 {
   NS_LOG_FUNCTION (this);
 
@@ -135,7 +135,7 @@ McpttCallTypeMachinePrivate::Downgrade (void)
 }
 
 void
-McpttCallTypeMachinePrivate::ExpiryOfTfp1 (void)
+McpttCallTypeMachinePrivate::ExpiryOfTfp1()
 {
   NS_LOG_FUNCTION (this);
 
@@ -153,7 +153,7 @@ McpttCallTypeMachinePrivate::ExpiryOfTfp1 (void)
 }
 
 void
-McpttCallTypeMachinePrivate::ExpiryOfTfp6 (void)
+McpttCallTypeMachinePrivate::ExpiryOfTfp6()
 {
   NS_LOG_FUNCTION (this);
 
@@ -171,7 +171,7 @@ McpttCallTypeMachinePrivate::ExpiryOfTfp6 (void)
 }
 
 void
-McpttCallTypeMachinePrivate::ExpiryOfTfp8 (void)
+McpttCallTypeMachinePrivate::ExpiryOfTfp8()
 {
   NS_LOG_FUNCTION (this);
 
@@ -189,7 +189,7 @@ McpttCallTypeMachinePrivate::ExpiryOfTfp8 (void)
 }
 
 TypeId
-McpttCallTypeMachinePrivate::GetInstanceTypeId (void) const
+McpttCallTypeMachinePrivate::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -197,7 +197,7 @@ McpttCallTypeMachinePrivate::GetInstanceTypeId (void) const
 }
 
 McpttEntityId
-McpttCallTypeMachinePrivate::GetStateId (void) const
+McpttCallTypeMachinePrivate::GetStateId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -205,7 +205,7 @@ McpttCallTypeMachinePrivate::GetStateId (void) const
 }
 
 void
-McpttCallTypeMachinePrivate::InitiateCall (void)
+McpttCallTypeMachinePrivate::InitiateCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -223,7 +223,7 @@ McpttCallTypeMachinePrivate::InitiateCall (void)
 }
 
 bool
-McpttCallTypeMachinePrivate::IsStarted (void) const
+McpttCallTypeMachinePrivate::IsStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -359,7 +359,7 @@ McpttCallTypeMachinePrivate::ReceiveSetupRequest (const McpttCallMsgPrivateSetup
 }
 
 void
-McpttCallTypeMachinePrivate::ReleaseCall (void)
+McpttCallTypeMachinePrivate::ReleaseCall()
 {
   NS_LOG_FUNCTION (this);
 
@@ -394,7 +394,7 @@ McpttCallTypeMachinePrivate::Send (const McpttCallMsg& msg)
 }
 
 void
-McpttCallTypeMachinePrivate::Start (void)
+McpttCallTypeMachinePrivate::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -404,7 +404,7 @@ McpttCallTypeMachinePrivate::Start (void)
 }
 
 void
-McpttCallTypeMachinePrivate::Stop (void)
+McpttCallTypeMachinePrivate::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -432,15 +432,15 @@ McpttCallTypeMachinePrivate::UpgradeTo (const McpttCallMsgFieldCallType& callTyp
 }
 
 void
-McpttCallTypeMachinePrivate::DoDispose (void)
+McpttCallTypeMachinePrivate::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetOwner (0);
+  SetOwner(nullptr);
 }
 
 McpttCallMsgFieldCallType
-McpttCallTypeMachinePrivate::GetCallType (void) const
+McpttCallTypeMachinePrivate::GetCallType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -448,7 +448,7 @@ McpttCallTypeMachinePrivate::GetCallType (void) const
 }
 
 Ptr<McpttCallMachinePrivate>
-McpttCallTypeMachinePrivate::GetOwner (void) const
+McpttCallTypeMachinePrivate::GetOwner() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -456,7 +456,7 @@ McpttCallTypeMachinePrivate::GetOwner (void) const
 }
 
 uint8_t
-McpttCallTypeMachinePrivate::GetPriority (void) const
+McpttCallTypeMachinePrivate::GetPriority() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -464,7 +464,7 @@ McpttCallTypeMachinePrivate::GetPriority (void) const
 }
 
 bool
-McpttCallTypeMachinePrivate::GetStarted (void) const
+McpttCallTypeMachinePrivate::GetStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -472,7 +472,7 @@ McpttCallTypeMachinePrivate::GetStarted (void) const
 }
 
 Ptr<McpttCallTypeMachinePrivateState>
-McpttCallTypeMachinePrivate::GetState (void) const
+McpttCallTypeMachinePrivate::GetState() const
 {
   NS_LOG_FUNCTION (this);
 

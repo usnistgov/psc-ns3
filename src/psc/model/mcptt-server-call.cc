@@ -60,41 +60,45 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCall);
 
 TypeId
-McpttServerCall::GetTypeId (void)
+McpttServerCall::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttServerCall")
-    .SetParent<Object> ()
-    .AddConstructor<McpttServerCall> ()
-    .AddAttribute ("CallMachine", "The call machine of the call.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttServerCall::m_callMachine),
-                   MakePointerChecker<McpttServerCallMachine> ())
-    .AddAttribute ("FloorArbitrator", "The floor arbitrator of the call.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttServerCall::m_arbitrator),
-                   MakePointerChecker<McpttOnNetworkFloorArbitrator> ())
-    .AddAttribute ("AmbientListening", "Indicates if the call is configured for ambient listening.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttServerCall::m_ambientListening),
-                   MakeBooleanChecker ())
-    .AddAttribute ("TemporaryGroup", "Indicates if the call is configured for a temporary group session.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&McpttServerCall::m_temporaryGroup),
-                   MakeBooleanChecker ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttServerCall")
+            .SetParent<Object>()
+            .AddConstructor<McpttServerCall>()
+            .AddAttribute("CallMachine",
+                          "The call machine of the call.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&McpttServerCall::m_callMachine),
+                          MakePointerChecker<McpttServerCallMachine>())
+            .AddAttribute("FloorArbitrator",
+                          "The floor arbitrator of the call.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&McpttServerCall::m_arbitrator),
+                          MakePointerChecker<McpttOnNetworkFloorArbitrator>())
+            .AddAttribute("AmbientListening",
+                          "Indicates if the call is configured for ambient listening.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&McpttServerCall::m_ambientListening),
+                          MakeBooleanChecker())
+            .AddAttribute("TemporaryGroup",
+                          "Indicates if the call is configured for a temporary group session.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&McpttServerCall::m_temporaryGroup),
+                          MakeBooleanChecker());
+    return tid;
 }
 
-McpttServerCall::McpttServerCall (void)
-  : Object (),
-    m_callId (std::numeric_limits<uint16_t>::max ()),
-    m_originator (std::numeric_limits<uint32_t>::max ()),
-    m_owner (0)
+McpttServerCall::McpttServerCall()
+    : Object(),
+      m_callId(std::numeric_limits<uint16_t>::max()),
+      m_originator(std::numeric_limits<uint32_t>::max()),
+      m_owner(nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCall::~McpttServerCall (void)
+McpttServerCall::~McpttServerCall()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -107,19 +111,19 @@ McpttServerCall::SetCallId (uint16_t callId)
 }
 
 uint16_t
-McpttServerCall::GetCallId (void) const
+McpttServerCall::GetCallId() const
 {
   return m_callId;
 }
 
 bool
-McpttServerCall::IsAmbientListening (void) const
+McpttServerCall::IsAmbientListening() const
 {
   return m_ambientListening;
 }
 
 bool
-McpttServerCall::IsTemporaryGroup (void) const
+McpttServerCall::IsTemporaryGroup() const
 {
   return m_temporaryGroup;
 }
@@ -158,39 +162,39 @@ McpttServerCall::SendCallControlPacket (Ptr<Packet> pkt, const Address& toAddr, 
 }
 
 void
-McpttServerCall::DoDispose (void)
+McpttServerCall::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   if (GetArbitrator ())
     {
       GetArbitrator ()->Dispose ();
-      SetArbitrator (0);
+      SetArbitrator(nullptr);
     }
   if (GetCallMachine ())
     {
       GetCallMachine ()->Dispose ();
-      SetCallMachine (0);
+      SetCallMachine(nullptr);
     }
-  SetOwner (0);
+    SetOwner(nullptr);
 
-  Object::DoDispose ();
+    Object::DoDispose();
 }
 
 Ptr<McpttServerCallMachine>
-McpttServerCall::GetCallMachine (void) const
+McpttServerCall::GetCallMachine() const
 {
   return m_callMachine;
 }
 
 Ptr<McpttOnNetworkFloorArbitrator>
-McpttServerCall::GetArbitrator (void) const
+McpttServerCall::GetArbitrator() const
 {
   return m_arbitrator;
 }
 
 Ptr<McpttServerApp>
-McpttServerCall::GetOwner (void) const
+McpttServerCall::GetOwner() const
 {
   return m_owner;
 }
@@ -237,7 +241,7 @@ McpttServerCall::SetClientUserIds (std::vector<uint32_t> clientUserIds)
 }
 
 std::vector<uint32_t>
-McpttServerCall::GetClientUserIds (void) const
+McpttServerCall::GetClientUserIds() const
 {
   return m_clientUserIds;
 }
@@ -250,7 +254,7 @@ McpttServerCall::SetOriginator (uint32_t originator)
 }
 
 uint32_t
-McpttServerCall::GetOriginator (void) const
+McpttServerCall::GetOriginator() const
 {
   return m_originator;
 }

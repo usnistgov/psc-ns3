@@ -156,7 +156,7 @@ MultipleServerClients (LossMode mode)
 
   // HTTP Server (Node 0)
   Ptr<Node> serverNode = nodes.Get (0);
-  const uint16_t serverPorts[] = {80u, 81u};
+  const uint16_t serverPorts[] = {80U, 81U};
   IntelHttpServerHelper serverHelper;
   // Install a server application for each client
   for (auto port : serverPorts)
@@ -216,10 +216,16 @@ main (int argc, char *argv[])
 
   LossMode mode = LossMode::Lossless;
   if (useLossyNetwork)
-    mode = LossMode::Lossy;
+  {
+      mode = LossMode::Lossy;
+  }
 
   if (useMultiple)
-    MultipleServerClients (mode);
+  {
+      MultipleServerClients(mode);
+  }
   else
-    SingleServerClient (mode);
+  {
+      SingleServerClient(mode);
+  }
 }

@@ -47,7 +47,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttTimer);
 
 TypeId
-McpttTimer::GetTypeId (void)
+McpttTimer::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -59,29 +59,29 @@ McpttTimer::GetTypeId (void)
   return tid;
 }
 
-McpttTimer::McpttTimer (void)
-  : Object (),
-    m_id (McpttEntityId (0, "Timer")),
-    m_rawTimer (0)
+McpttTimer::McpttTimer()
+    : Object(),
+      m_id(McpttEntityId(0, "Timer")),
+      m_rawTimer(nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttTimer::McpttTimer (const McpttEntityId& id)
-  : Object (),
-    m_id (id),
-    m_rawTimer (0)
+McpttTimer::McpttTimer(const McpttEntityId& id)
+    : Object(),
+      m_id(id),
+      m_rawTimer(nullptr)
 {
   NS_LOG_FUNCTION (this << id);
 }
 
-McpttTimer::~McpttTimer (void)
+McpttTimer::~McpttTimer()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Time
-McpttTimer::GetDelay (void) const
+McpttTimer::GetDelay() const
 {
   Timer* rawTimer = GetRawTimer ();
 
@@ -91,7 +91,7 @@ McpttTimer::GetDelay (void) const
 }
 
 TypeId
-McpttTimer::GetInstanceTypeId (void) const
+McpttTimer::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -99,7 +99,7 @@ McpttTimer::GetInstanceTypeId (void) const
 }
 
 Time
-McpttTimer::GetTimeLeft (void) const
+McpttTimer::GetTimeLeft() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -113,7 +113,7 @@ McpttTimer::GetTimeLeft (void) const
 }
 
 bool
-McpttTimer::IsExpired (void) const
+McpttTimer::IsExpired() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -127,7 +127,7 @@ McpttTimer::IsExpired (void) const
 }
 
 bool
-McpttTimer::IsRunning (void) const
+McpttTimer::IsRunning() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -174,7 +174,7 @@ McpttTimer::Print (std::ostream& os) const
 }
 
 void
-McpttTimer::Restart (void)
+McpttTimer::Restart()
 {
   NS_LOG_FUNCTION (this);
 
@@ -201,7 +201,7 @@ McpttTimer::SetDelay (const Time& delay)
 }
 
 void
-McpttTimer::Start (void)
+McpttTimer::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -226,7 +226,7 @@ McpttTimer::StartWith (const Time& delay)
 }
 
 void
-McpttTimer::Stop (void)
+McpttTimer::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -240,7 +240,7 @@ McpttTimer::Stop (void)
 }
 
 void
-McpttTimer::DoDispose (void)
+McpttTimer::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
@@ -248,11 +248,11 @@ McpttTimer::DoDispose (void)
 
   delete rawTimer;
 
-  SetRawTimer (0);
+  SetRawTimer(nullptr);
 }
 
 McpttEntityId
-McpttTimer::GetId (void) const
+McpttTimer::GetId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -260,7 +260,7 @@ McpttTimer::GetId (void) const
 }
 
 Timer*
-McpttTimer::GetRawTimer (void) const
+McpttTimer::GetRawTimer() const
 {
   NS_LOG_FUNCTION (this);
 

@@ -48,70 +48,70 @@ namespace tests {
 class McpttCallMsgGrpProbeTest : public TestCase
 {
 public:
-  McpttCallMsgGrpProbeTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpProbeTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpAnnounTest : public TestCase
 {
 public:
-  McpttCallMsgGrpAnnounTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpAnnounTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpAcceptTest : public TestCase
 {
 public:
-  McpttCallMsgGrpAcceptTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpAcceptTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpImmPerilEndTest : public TestCase
 {
 public:
-  McpttCallMsgGrpImmPerilEndTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpImmPerilEndTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergEndTest : public TestCase
 {
 public:
-  McpttCallMsgGrpEmergEndTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpEmergEndTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertTest : public TestCase
 {
 public:
-  McpttCallMsgGrpEmergAlertTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertAckTest : public TestCase
 {
 public:
-  McpttCallMsgGrpEmergAlertAckTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertAckTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertCancelTest : public TestCase
 {
 public:
-  McpttCallMsgGrpEmergAlertCancelTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertCancelTest();
+  void DoRun() override;
 };
 
 class McpttCallMsgGrpEmergAlertCancelAckTest : public TestCase
 {
 public:
-  McpttCallMsgGrpEmergAlertCancelAckTest (void);
-  virtual void DoRun (void);
+  McpttCallMsgGrpEmergAlertCancelAckTest();
+  void DoRun() override;
 };
 
 class McpttCallControlMsgTestSuite : public TestSuite
 {
 public:
-  McpttCallControlMsgTestSuite (void);
+  McpttCallControlMsgTestSuite();
 };
 
 /***************************************************************
@@ -120,12 +120,12 @@ public:
 
 static McpttCallControlMsgTestSuite suite;
 
-McpttCallMsgGrpProbeTest::McpttCallMsgGrpProbeTest (void)
-  : TestCase ("GROUP CALL PROBE")
+McpttCallMsgGrpProbeTest::McpttCallMsgGrpProbeTest()
+    : TestCase("GROUP CALL PROBE")
 {}
 
 void
-McpttCallMsgGrpProbeTest::DoRun (void)
+McpttCallMsgGrpProbeTest::DoRun()
 {
   McpttCallMsgFieldGrpId grpId = McpttCallMsgFieldGrpId ();
   grpId.SetGrpId (10);
@@ -150,12 +150,12 @@ McpttCallMsgGrpProbeTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpAnnounTest::McpttCallMsgGrpAnnounTest (void)
-  : TestCase ("GROUP CALL ANNOUNCEMENT")
+McpttCallMsgGrpAnnounTest::McpttCallMsgGrpAnnounTest()
+    : TestCase("GROUP CALL ANNOUNCEMENT")
 {}
 
 void
-McpttCallMsgGrpAnnounTest::DoRun (void)
+McpttCallMsgGrpAnnounTest::DoRun()
 {
   McpttCallMsgFieldCallId callId;
   callId.SetCallId (12);
@@ -221,12 +221,12 @@ McpttCallMsgGrpAnnounTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpAcceptTest::McpttCallMsgGrpAcceptTest (void)
-  : TestCase ("GROUP CALL ACCEPT")
+McpttCallMsgGrpAcceptTest::McpttCallMsgGrpAcceptTest()
+    : TestCase("GROUP CALL ACCEPT")
 {}
 
 void
-McpttCallMsgGrpAcceptTest::DoRun (void)
+McpttCallMsgGrpAcceptTest::DoRun()
 {
   McpttCallMsgFieldCallId callId;
   callId.SetCallId (2);
@@ -263,12 +263,12 @@ McpttCallMsgGrpAcceptTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpImmPerilEndTest::McpttCallMsgGrpImmPerilEndTest (void)
-  : TestCase ("GROUP CALL IMMINENT PERIL END")
+McpttCallMsgGrpImmPerilEndTest::McpttCallMsgGrpImmPerilEndTest()
+    : TestCase("GROUP CALL IMMINENT PERIL END")
 {}
 
 void
-McpttCallMsgGrpImmPerilEndTest::DoRun (void)
+McpttCallMsgGrpImmPerilEndTest::DoRun()
 {
   McpttCallMsgFieldCallId callId;
   callId.SetCallId (5);
@@ -309,12 +309,12 @@ McpttCallMsgGrpImmPerilEndTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpEmergEndTest::McpttCallMsgGrpEmergEndTest (void)
-  : TestCase ("GROUP CALL EMERGENCY END")
+McpttCallMsgGrpEmergEndTest::McpttCallMsgGrpEmergEndTest()
+    : TestCase("GROUP CALL EMERGENCY END")
 {}
 
 void
-McpttCallMsgGrpEmergEndTest::DoRun (void)
+McpttCallMsgGrpEmergEndTest::DoRun()
 {
   McpttCallMsgFieldCallId callId;
   callId.SetCallId (5);
@@ -355,12 +355,12 @@ McpttCallMsgGrpEmergEndTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpEmergAlertTest::McpttCallMsgGrpEmergAlertTest (void)
-  : TestCase ("GROUP CALL EMERGENCY ALERT")
+McpttCallMsgGrpEmergAlertTest::McpttCallMsgGrpEmergAlertTest()
+    : TestCase("GROUP CALL EMERGENCY ALERT")
 {}
 
 void
-McpttCallMsgGrpEmergAlertTest::DoRun (void)
+McpttCallMsgGrpEmergAlertTest::DoRun()
 {
   McpttCallMsgFieldGrpId grpId;
   grpId.SetGrpId (1);
@@ -397,12 +397,12 @@ McpttCallMsgGrpEmergAlertTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpEmergAlertAckTest::McpttCallMsgGrpEmergAlertAckTest (void)
-  : TestCase ("GROUP CALL EMERGENCY ALERT ACK")
+McpttCallMsgGrpEmergAlertAckTest::McpttCallMsgGrpEmergAlertAckTest()
+    : TestCase("GROUP CALL EMERGENCY ALERT ACK")
 {}
 
 void
-McpttCallMsgGrpEmergAlertAckTest::DoRun (void)
+McpttCallMsgGrpEmergAlertAckTest::DoRun()
 {
   McpttCallMsgFieldGrpId grpId;
   grpId.SetGrpId (95);
@@ -435,12 +435,12 @@ McpttCallMsgGrpEmergAlertAckTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpEmergAlertCancelTest::McpttCallMsgGrpEmergAlertCancelTest (void)
-  : TestCase ("GROUP CALL EMERGENCY ALERT CANCEL")
+McpttCallMsgGrpEmergAlertCancelTest::McpttCallMsgGrpEmergAlertCancelTest()
+    : TestCase("GROUP CALL EMERGENCY ALERT CANCEL")
 {}
 
 void
-McpttCallMsgGrpEmergAlertCancelTest::DoRun (void)
+McpttCallMsgGrpEmergAlertCancelTest::DoRun()
 {
   McpttCallMsgFieldGrpId grpId;
   grpId.SetGrpId (95);
@@ -473,12 +473,12 @@ McpttCallMsgGrpEmergAlertCancelTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallMsgGrpEmergAlertCancelAckTest::McpttCallMsgGrpEmergAlertCancelAckTest (void)
-  : TestCase ("GROUP CALL EMERGENCY ALERT CANCEL ACK")
+McpttCallMsgGrpEmergAlertCancelAckTest::McpttCallMsgGrpEmergAlertCancelAckTest()
+    : TestCase("GROUP CALL EMERGENCY ALERT CANCEL ACK")
 {}
 
 void
-McpttCallMsgGrpEmergAlertCancelAckTest::DoRun (void)
+McpttCallMsgGrpEmergAlertCancelAckTest::DoRun()
 {
   McpttCallMsgFieldGrpId grpId;
   grpId.SetGrpId (95);
@@ -511,8 +511,8 @@ McpttCallMsgGrpEmergAlertCancelAckTest::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((dstStr.str () == srcStr.str ()), true, "The serialized and deserialized messages do not match.");
 }
 
-McpttCallControlMsgTestSuite::McpttCallControlMsgTestSuite (void)
-  : TestSuite ("mcptt-call-control-messages", TestSuite::UNIT)
+McpttCallControlMsgTestSuite::McpttCallControlMsgTestSuite()
+    : TestSuite("mcptt-call-control-messages", TestSuite::UNIT)
 {
   AddTestCase (new McpttCallMsgGrpProbeTest (), TestCase::QUICK);
   AddTestCase (new McpttCallMsgGrpAnnounTest (), TestCase::QUICK);

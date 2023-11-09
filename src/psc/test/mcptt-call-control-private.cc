@@ -50,20 +50,20 @@ namespace tests {
 class PrivateTestCallMachine : public McpttCallMachinePrivate
 {
 public:
-  static TypeId GetTypeId (void);
-  PrivateTestCallMachine (void);
-  virtual ~PrivateTestCallMachine (void);
-  virtual void ChangeState (Ptr<McpttCallMachinePrivateState>  newState);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Receive (const McpttCallMsg& msg);
-  virtual void Start (void);
-  virtual void Send (const McpttCallMsg& msg);
+  static TypeId GetTypeId();
+  PrivateTestCallMachine();
+  ~PrivateTestCallMachine() override;
+  void ChangeState(Ptr<McpttCallMachinePrivateState> newState) override;
+  TypeId GetInstanceTypeId() const override;
+  void Receive(const McpttCallMsg& msg) override;
+  void Start() override;
+  void Send(const McpttCallMsg& msg) override;
 
 protected:
-  virtual void ExpiryOfTfp1 (void);
-  virtual void ExpiryOfTfp2 (void);
-  virtual void ExpiryOfTfp3 (void);
-  virtual void ExpiryOfTfp5 (void);
+  void ExpiryOfTfp1() override;
+  void ExpiryOfTfp2() override;
+  void ExpiryOfTfp3() override;
+  void ExpiryOfTfp5() override;
 
 private:
   Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> m_postRxCb;
@@ -76,14 +76,19 @@ private:
   Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState>, Ptr<McpttCallMachinePrivateState> > m_stateChangeCb;
 
 public:
-  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPostRxCb (void) const;
-  virtual Callback<void, const PrivateTestCallMachine&, const McpttTimer&> GetPostTimerExpCb (void) const;
-  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPostTxCb (void) const;
-  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPreRxCb (void) const;
-  virtual Callback<void, const PrivateTestCallMachine&, const McpttTimer&> GetPreTimerExpCb (void) const;
-  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPreTxCb (void) const;
-  virtual Ptr<McpttCallMachinePrivateState> GetStartState (void) const;
-  virtual Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState>, Ptr<McpttCallMachinePrivateState> > GetStateChangeCb (void) const;
+  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPostRxCb() const;
+  virtual Callback<void, const PrivateTestCallMachine&, const McpttTimer&> GetPostTimerExpCb()
+      const;
+  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPostTxCb() const;
+  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPreRxCb() const;
+  virtual Callback<void, const PrivateTestCallMachine&, const McpttTimer&> GetPreTimerExpCb() const;
+  virtual Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&> GetPreTxCb() const;
+  virtual Ptr<McpttCallMachinePrivateState> GetStartState() const;
+  virtual Callback<void,
+                   const PrivateTestCallMachine&,
+                   Ptr<McpttCallMachinePrivateState>,
+                   Ptr<McpttCallMachinePrivateState>>
+  GetStateChangeCb() const;
   virtual void SetPostRxCb (const Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>  postRxCb);
   virtual void SetPostTimerExpCb (const Callback<void, const PrivateTestCallMachine&, const McpttTimer&>  timerExpCb);
   virtual void SetPostTxCb (const Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>  postTxCb);
@@ -100,8 +105,8 @@ public:
   PrivateCallSetupAuto1 (const std::string& name = "Private Call Setup - Establish New Call in Automatic Mode 1", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -130,8 +135,8 @@ public:
   PrivateCallSetupAuto3 (const std::string& name = "Private Call Setup - Establish New Call in Automatic Mode 3", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -161,8 +166,8 @@ public:
   PrivateCallSetupManual1 (const std::string& name = "Private Call Setup - Establish New Call in Manual Mode 1", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -193,8 +198,8 @@ public:
   PrivateCallSetupManual3 (const std::string& name = "Private Call Setup - Establish New Call in Manual Mode 3", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -226,8 +231,8 @@ public:
   PrivateCallSetupFailure (const std::string& name = "Private Call Setup - Failure to New Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -253,8 +258,8 @@ public:
   PrivateCallCancel1 (const std::string& name = "Private Call Cancelation - Cancel an Ongoing Call 1", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -280,8 +285,8 @@ public:
   PrivateCallCancel2 (const std::string& name = "Private Call Cancelation - Cancel an Ongoing Call 2", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
   virtual void UeATimerExpCb (const PrivateTestCallMachine& machine, const McpttTimer& timer);
@@ -303,8 +308,8 @@ public:
   PrivateCallExpiration (const std::string& name = "Private Call Expiration", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void NewCallCb (uint16_t callId);
   virtual void UeARxCb (const PrivateTestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const PrivateTestCallMachine& machine, Ptr<McpttCallMachinePrivateState>  oldState, Ptr<McpttCallMachinePrivateState>  newState);
@@ -331,7 +336,7 @@ private:
 class McpttPrivateCallControlTestSuite : public TestSuite
 {
 public:
-  McpttPrivateCallControlTestSuite (void);
+  McpttPrivateCallControlTestSuite();
 };
 
 /***************************************************************
@@ -341,7 +346,7 @@ public:
 static McpttPrivateCallControlTestSuite callSuite;
 
 TypeId
-PrivateTestCallMachine::GetTypeId (void)
+PrivateTestCallMachine::GetTypeId()
 {
   static TypeId tid = TypeId ("PrivateTestCallMachine")
     .SetParent<McpttCallMachinePrivate> ()
@@ -351,19 +356,22 @@ PrivateTestCallMachine::GetTypeId (void)
   return tid;
 }
 
-PrivateTestCallMachine::PrivateTestCallMachine (void)
-  : McpttCallMachinePrivate (),
-    m_postRxCb (MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&> ()),
-    m_postTimerExpCb (MakeNullCallback<void, const PrivateTestCallMachine&, const McpttTimer&> ()),
-    m_postTxCb (MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&> ()),
-    m_preRxCb (MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&> ()),
-    m_preTimerExpCb (MakeNullCallback<void, const PrivateTestCallMachine&, const McpttTimer&> ()),
-    m_preTxCb (MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&> ()),
-    m_startState (McpttCallMachinePrivateStateP1::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState>, Ptr<McpttCallMachinePrivateState> > ())
+PrivateTestCallMachine::PrivateTestCallMachine()
+    : McpttCallMachinePrivate(),
+      m_postRxCb(MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&>()),
+      m_postTimerExpCb(MakeNullCallback<void, const PrivateTestCallMachine&, const McpttTimer&>()),
+      m_postTxCb(MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&>()),
+      m_preRxCb(MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&>()),
+      m_preTimerExpCb(MakeNullCallback<void, const PrivateTestCallMachine&, const McpttTimer&>()),
+      m_preTxCb(MakeNullCallback<void, const PrivateTestCallMachine&, const McpttCallMsg&>()),
+      m_startState(McpttCallMachinePrivateStateP1::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void,
+                                       const PrivateTestCallMachine&,
+                                       Ptr<McpttCallMachinePrivateState>,
+                                       Ptr<McpttCallMachinePrivateState>>())
 { }
 
-PrivateTestCallMachine::~PrivateTestCallMachine (void)
+PrivateTestCallMachine::~PrivateTestCallMachine()
 { }
 
 void
@@ -405,7 +413,7 @@ PrivateTestCallMachine::Send (const McpttCallMsg& msg)
 }
 
 void
-PrivateTestCallMachine::ExpiryOfTfp1 (void)
+PrivateTestCallMachine::ExpiryOfTfp1()
 {
   Ptr<McpttTimer> tfg = GetTfp1 ();
   Callback<void, const PrivateTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -425,7 +433,7 @@ PrivateTestCallMachine::ExpiryOfTfp1 (void)
 }
 
 void
-PrivateTestCallMachine::ExpiryOfTfp2 (void)
+PrivateTestCallMachine::ExpiryOfTfp2()
 {
   Ptr<McpttTimer> tfg = GetTfp2 ();
   Callback<void, const PrivateTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -445,7 +453,7 @@ PrivateTestCallMachine::ExpiryOfTfp2 (void)
 }
 
 void
-PrivateTestCallMachine::ExpiryOfTfp3 (void)
+PrivateTestCallMachine::ExpiryOfTfp3()
 {
   Ptr<McpttTimer> tfg = GetTfp3 ();
   Callback<void, const PrivateTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -465,7 +473,7 @@ PrivateTestCallMachine::ExpiryOfTfp3 (void)
 }
 
 void
-PrivateTestCallMachine::ExpiryOfTfp5 (void)
+PrivateTestCallMachine::ExpiryOfTfp5()
 {
   Ptr<McpttTimer> tfg = GetTfp5 ();
   Callback<void, const PrivateTestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -485,7 +493,7 @@ PrivateTestCallMachine::ExpiryOfTfp5 (void)
 }
 
 void
-PrivateTestCallMachine::Start (void)
+PrivateTestCallMachine::Start()
 {
   Ptr<McpttCallMachinePrivateState> startState = GetStartState ();
 
@@ -509,56 +517,58 @@ PrivateTestCallMachine::ChangeState (Ptr<McpttCallMachinePrivateState>  newState
 }
 
 TypeId
-PrivateTestCallMachine::GetInstanceTypeId (void) const
+PrivateTestCallMachine::GetInstanceTypeId() const
 {
   return PrivateTestCallMachine::GetTypeId ();
 }
 
 Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>
-PrivateTestCallMachine::GetPostRxCb (void) const
+PrivateTestCallMachine::GetPostRxCb() const
 {
   return m_postRxCb;
 }
 
 Callback<void, const PrivateTestCallMachine&, const McpttTimer&>
-PrivateTestCallMachine::GetPostTimerExpCb (void) const
+PrivateTestCallMachine::GetPostTimerExpCb() const
 {
   return m_postTimerExpCb;
 }
 
-
 Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>
-PrivateTestCallMachine::GetPostTxCb (void) const
+PrivateTestCallMachine::GetPostTxCb() const
 {
   return m_postTxCb;
 }
 
 Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>
-PrivateTestCallMachine::GetPreRxCb (void) const
+PrivateTestCallMachine::GetPreRxCb() const
 {
   return m_preRxCb;
 }
 
 Callback<void, const PrivateTestCallMachine&, const McpttTimer&>
-PrivateTestCallMachine::GetPreTimerExpCb (void) const
+PrivateTestCallMachine::GetPreTimerExpCb() const
 {
   return m_preTimerExpCb;
 }
 
 Callback<void, const PrivateTestCallMachine&, const McpttCallMsg&>
-PrivateTestCallMachine::GetPreTxCb (void) const
+PrivateTestCallMachine::GetPreTxCb() const
 {
   return m_preTxCb;
 }
 
 Ptr<McpttCallMachinePrivateState>
-PrivateTestCallMachine::GetStartState (void) const
+PrivateTestCallMachine::GetStartState() const
 {
   return m_startState;
 }
 
-Callback<void, const PrivateTestCallMachine&, Ptr<McpttCallMachinePrivateState>, Ptr<McpttCallMachinePrivateState> >
-PrivateTestCallMachine::GetStateChangeCb (void) const
+Callback<void,
+         const PrivateTestCallMachine&,
+         Ptr<McpttCallMachinePrivateState>,
+         Ptr<McpttCallMachinePrivateState>>
+PrivateTestCallMachine::GetStateChangeCb() const
 {
   return m_stateChangeCb;
 }
@@ -626,7 +636,7 @@ PrivateCallSetupAuto1::PrivateCallSetupAuto1 (const std::string& name, Ptr<Mcptt
 { }
 
 void
-PrivateCallSetupAuto1::Configure (void)
+PrivateCallSetupAuto1::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -661,7 +671,7 @@ PrivateCallSetupAuto1::Configure (void)
 }
 
 void
-PrivateCallSetupAuto1::Execute (void)
+PrivateCallSetupAuto1::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1031,7 +1041,7 @@ PrivateCallSetupAuto3::PrivateCallSetupAuto3 (const std::string& name, Ptr<Mcptt
 { }
 
 void
-PrivateCallSetupAuto3::Configure (void)
+PrivateCallSetupAuto3::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -1068,7 +1078,7 @@ PrivateCallSetupAuto3::Configure (void)
 }
 
 void
-PrivateCallSetupAuto3::Execute (void)
+PrivateCallSetupAuto3::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1456,7 +1466,7 @@ PrivateCallSetupManual1::PrivateCallSetupManual1 (const std::string& name, Ptr<M
 { }
 
 void
-PrivateCallSetupManual1::Configure (void)
+PrivateCallSetupManual1::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -1491,7 +1501,7 @@ PrivateCallSetupManual1::Configure (void)
 }
 
 void
-PrivateCallSetupManual1::Execute (void)
+PrivateCallSetupManual1::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1898,7 +1908,7 @@ PrivateCallSetupManual3::PrivateCallSetupManual3 (const std::string& name, Ptr<M
 { }
 
 void
-PrivateCallSetupManual3::Configure (void)
+PrivateCallSetupManual3::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -1935,7 +1945,7 @@ PrivateCallSetupManual3::Configure (void)
 }
 
 void
-PrivateCallSetupManual3::Execute (void)
+PrivateCallSetupManual3::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2356,7 +2366,7 @@ PrivateCallSetupFailure::PrivateCallSetupFailure (const std::string& name, Ptr<M
 { }
 
 void
-PrivateCallSetupFailure::Configure (void)
+PrivateCallSetupFailure::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -2392,7 +2402,7 @@ PrivateCallSetupFailure::Configure (void)
 }
 
 void
-PrivateCallSetupFailure::Execute (void)
+PrivateCallSetupFailure::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2710,7 +2720,7 @@ PrivateCallCancel1::PrivateCallCancel1 (const std::string& name, Ptr<McpttTestCa
 { }
 
 void
-PrivateCallCancel1::Configure (void)
+PrivateCallCancel1::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -2809,7 +2819,7 @@ PrivateCallCancel1::Configure (void)
 }
 
 void
-PrivateCallCancel1::Execute (void)
+PrivateCallCancel1::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3121,7 +3131,7 @@ PrivateCallCancel2::PrivateCallCancel2 (const std::string& name, Ptr<McpttTestCa
 { }
 
 void
-PrivateCallCancel2::Configure (void)
+PrivateCallCancel2::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -3219,7 +3229,7 @@ PrivateCallCancel2::Configure (void)
 }
 
 void
-PrivateCallCancel2::Execute (void)
+PrivateCallCancel2::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3395,7 +3405,7 @@ PrivateCallExpiration::PrivateCallExpiration (const std::string& name, Ptr<Mcptt
 { }
 
 void
-PrivateCallExpiration::Configure (void)
+PrivateCallExpiration::Configure()
 {
   GetConfig ()->SetAppCount (2);
   GetConfig ()->SetCallTid (PrivateTestCallMachine::GetTypeId ());
@@ -3496,7 +3506,7 @@ PrivateCallExpiration::Configure (void)
 }
 
 void
-PrivateCallExpiration::Execute (void)
+PrivateCallExpiration::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3913,8 +3923,8 @@ PrivateCallExpiration::UeBStateChangeCb (const PrivateTestCallMachine& machine, 
   NS_TEST_ASSERT_MSG_EQ (cfp6->GetValue (), 1, "UE B counter " << *cfp6 << " is not one.");
 }
 
-McpttPrivateCallControlTestSuite::McpttPrivateCallControlTestSuite (void)
-  : TestSuite ("mcptt-call-control-private", TestSuite::SYSTEM)
+McpttPrivateCallControlTestSuite::McpttPrivateCallControlTestSuite()
+    : TestSuite("mcptt-call-control-private", TestSuite::SYSTEM)
 {
   AddTestCase (new PrivateCallSetupAuto1 (), TestCase::QUICK);
   AddTestCase (new PrivateCallSetupAuto3 (), TestCase::QUICK);

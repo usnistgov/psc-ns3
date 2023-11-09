@@ -72,19 +72,19 @@ NS_OBJECT_ENSURE_REGISTERED (McpttPttApp);
 uint16_t McpttPttApp::s_portNumber = 9000; // Media ports typically 9000-10999
 
 uint16_t
-McpttPttApp::GetCurrentPortNumber (void)
+McpttPttApp::GetCurrentPortNumber()
 {
   return s_portNumber;
 }
 
 uint16_t
-McpttPttApp::AllocateNextPortNumber (void)
+McpttPttApp::AllocateNextPortNumber()
 {
   return s_portNumber++;
 }
 
 TypeId
-McpttPttApp::GetTypeId (void)
+McpttPttApp::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttPttApp")
     .SetParent<Application> ()
@@ -115,39 +115,39 @@ McpttPttApp::GetTypeId (void)
   return tid;
 }
 
-McpttPttApp::McpttPttApp (void)
-  : Application (),
-    m_isRunning (false),
-    m_callIdAllocator (0),
-    m_floorGrantedCb (MakeNullCallback<void> ()),
-    m_mediaSrc (0),
-    m_newCallCb (MakeNullCallback<void, uint16_t> ()),
-    m_pusher (0),
-    m_selectedCall (0),
-    m_selectedCallChangeCb (MakeNullCallback<void, Ptr<McpttCall>, Ptr<McpttCall> > ()),
-    m_userId (0)
+McpttPttApp::McpttPttApp()
+    : Application(),
+      m_isRunning(false),
+      m_callIdAllocator(0),
+      m_floorGrantedCb(MakeNullCallback<void>()),
+      m_mediaSrc(nullptr),
+      m_newCallCb(MakeNullCallback<void, uint16_t>()),
+      m_pusher(nullptr),
+      m_selectedCall(nullptr),
+      m_selectedCallChangeCb(MakeNullCallback<void, Ptr<McpttCall>, Ptr<McpttCall>>()),
+      m_userId(0)
 {
   NS_LOG_FUNCTION (this);
   m_sipAgent = CreateObject<sip::SipAgent> ();
 }
 
-McpttPttApp::~McpttPttApp (void)
+McpttPttApp::~McpttPttApp()
 {
   NS_LOG_FUNCTION (this);
 }
 
 Ptr<sip::SipAgent>
-McpttPttApp::GetSipAgent (void) const
+McpttPttApp::GetSipAgent() const
 {
   return m_sipAgent;
 }
 
 void
-McpttPttApp::AcceptCall (void)
+McpttPttApp::AcceptCall()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -159,11 +159,11 @@ McpttPttApp::AcceptCall (void)
 }
 
 void
-McpttPttApp::AcceptFloorGrant (void)
+McpttPttApp::AcceptFloorGrant()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -175,12 +175,12 @@ McpttPttApp::AcceptFloorGrant (void)
 }
 
 void
-McpttPttApp::BeginEmergAlert (void)
+McpttPttApp::BeginEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -193,12 +193,12 @@ McpttPttApp::BeginEmergAlert (void)
 }
 
 void
-McpttPttApp::CancelEmergAlert (void)
+McpttPttApp::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -249,11 +249,11 @@ McpttPttApp::AddCall (Ptr<McpttCall> call)
 }
 
 void
-McpttPttApp::DowngradeCallType (void)
+McpttPttApp::DowngradeCallType()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -265,7 +265,7 @@ McpttPttApp::DowngradeCallType (void)
 }
 
 Vector
-McpttPttApp::GetNodeLoc (void) const
+McpttPttApp::GetNodeLoc() const
 {
   Ptr<MobilityModel> mobility = GetNode ()->GetObject<MobilityModel> ();
   Vector current = mobility->GetPosition ();
@@ -281,7 +281,7 @@ McpttPttApp::HasGrpCallFor (uint32_t grpId)
   NS_LOG_FUNCTION (this << grpId);
 
   bool found = false;
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
 
   for (auto it = m_calls.begin (); it != m_calls.end () && !found; it++)
     {
@@ -297,7 +297,7 @@ McpttPttApp::HasPrivateCallFor (uint32_t userId)
   NS_LOG_FUNCTION (this << userId);
 
   bool found = false;
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
 
   for (auto it = m_calls.begin (); it != m_calls.end () && !found; it++)
     {
@@ -309,11 +309,11 @@ McpttPttApp::HasPrivateCallFor (uint32_t userId)
 }
 
 void
-McpttPttApp::InitiateCall (void)
+McpttPttApp::InitiateCall()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -324,7 +324,7 @@ McpttPttApp::InitiateCall (void)
 }
 
 void
-McpttPttApp::SessionInitiateRequest (void)
+McpttPttApp::SessionInitiateRequest()
 {
   NS_LOG_FUNCTION (this);
   Ptr<McpttCall> call = GetSelectedCall ();
@@ -345,19 +345,19 @@ McpttPttApp::SessionInitiateRequest (void)
 }
 
 bool
-McpttPttApp::IsRunning (void) const
+McpttPttApp::IsRunning() const
 {
   return m_isRunning;
 }
 
 bool
-McpttPttApp::IsPushed (void) const
+McpttPttApp::IsPushed() const
 {
   return m_pusher->IsPushing ();
 }
 
 void
-McpttPttApp::NotifyPushed (void)
+McpttPttApp::NotifyPushed()
 {
   NS_LOG_FUNCTION (this);
   if (!m_pusher->IsPushing ())
@@ -368,11 +368,11 @@ McpttPttApp::NotifyPushed (void)
 }
 
 void
-McpttPttApp::RejectCall (void)
+McpttPttApp::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -384,12 +384,12 @@ McpttPttApp::RejectCall (void)
 }
 
 void
-McpttPttApp::ReleaseCall (void)
+McpttPttApp::ReleaseCall()
 {
   NS_LOG_FUNCTION (this);
 
   Ptr<McpttCall> call = GetSelectedCall ();
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
 
   if (call)
     {
@@ -409,7 +409,7 @@ McpttPttApp::ReleaseCallByCallId (uint32_t callId)
   NS_LOG_FUNCTION (this << callId);
 
   Ptr<McpttCall> call = m_calls.find (callId)->second;
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
 
   if (call)
     {
@@ -424,7 +424,7 @@ McpttPttApp::ReleaseCallByCallId (uint32_t callId)
 }
 
 void
-McpttPttApp::SessionReleaseRequest (void)
+McpttPttApp::SessionReleaseRequest()
 {
   NS_LOG_FUNCTION (this);
   Ptr<McpttCall> call = GetSelectedCall ();
@@ -441,11 +441,11 @@ McpttPttApp::SessionReleaseRequest (void)
 }
 
 void
-McpttPttApp::ReleaseRequest (void)
+McpttPttApp::ReleaseRequest()
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -457,7 +457,7 @@ McpttPttApp::ReleaseRequest (void)
 }
 
 void
-McpttPttApp::NotifyReleased (void)
+McpttPttApp::NotifyReleased()
 {
   NS_LOG_FUNCTION (this);
   if (m_pusher->IsPushing ())
@@ -474,11 +474,11 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
 
   uint16_t oldCallId = 0;
   uint16_t newCallId = 0;
-  Ptr<McpttCall> newCall = 0;
-  Ptr<McpttCallMachine> oldCallMachine = 0;
-  Ptr<McpttFloorParticipant> oldFloorMachine = 0;
-  Ptr<McpttCallMachine> newCallMachine = 0;
-  Ptr<McpttFloorParticipant> newFloorMachine = 0;
+  Ptr<McpttCall> newCall = nullptr;
+  Ptr<McpttCallMachine> oldCallMachine = nullptr;
+  Ptr<McpttFloorParticipant> oldFloorMachine = nullptr;
+  Ptr<McpttCallMachine> newCallMachine = nullptr;
+  Ptr<McpttFloorParticipant> newFloorMachine = nullptr;
   Ptr<McpttCall> oldCall = GetSelectedCall ();
 
   if (oldCall && (callId == oldCall->GetCallId ()))
@@ -552,12 +552,12 @@ McpttPttApp::SelectCall (uint32_t callId, bool pushOnSelect)
 }
 
 void
-McpttPttApp::TakePushNotification (void)
+McpttPttApp::TakePushNotification()
 {
   NS_LOG_FUNCTION (this);
   Ptr<McpttCall> call = GetSelectedCall ();
-  Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   if (call)
     {
       callMachine = call->GetCallMachine ();
@@ -579,13 +579,13 @@ McpttPttApp::TakePushNotification (void)
 }
 
 void
-McpttPttApp::TakeReleaseNotification (void)
+McpttPttApp::TakeReleaseNotification()
 {
   NS_LOG_FUNCTION (this);
 
   uint32_t myUserId = GetUserId ();
-  Ptr<McpttCallMachine> callMachine = 0;
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -612,7 +612,7 @@ McpttPttApp::TakeSendReq (McpttMediaMsg& msg)
   NS_LOG_LOGIC ("PttApp taking request to send " << msg << ".");
 
   bool sent = false;
-  Ptr<McpttFloorParticipant> floorMachine = 0;
+  Ptr<McpttFloorParticipant> floorMachine = nullptr;
   Ptr<McpttCall> call = GetSelectedCall ();
 
   if (call)
@@ -637,7 +637,7 @@ McpttPttApp::UpgradeCallType (uint8_t callType)
   NS_LOG_FUNCTION (this << (uint32_t)callType);
 
   Ptr<McpttCall> call = GetSelectedCall ();
-  Ptr<McpttCallMachine> callMachine = 0;
+  Ptr<McpttCallMachine> callMachine = nullptr;
 
   if (call)
     {
@@ -660,21 +660,21 @@ McpttPttApp::ReportEvent (uint16_t callId, const char* reason)
 }
 
 void
-McpttPttApp::DoDispose (void)
+McpttPttApp::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetMediaSrc (0);
+  SetMediaSrc(nullptr);
   SetLocalAddress (Address ());
   if (m_pusher)
     {
       m_pusher->Dispose ();
     }
-  SetPusher (0);
-  m_selectedCall = 0;
-  m_callChannels.clear ();
-  m_callChannelReferenceCount.clear ();
-  for (auto it = m_calls.begin (); it != m_calls.end (); it++)
+    SetPusher(nullptr);
+    m_selectedCall = nullptr;
+    m_callChannels.clear();
+    m_callChannelReferenceCount.clear();
+    for (auto it = m_calls.begin(); it != m_calls.end(); it++)
     {
       it->second->Dispose ();
     }
@@ -682,13 +682,13 @@ McpttPttApp::DoDispose (void)
   m_onNetworkCalls.clear ();
   m_offNetworkCalls.clear ();
   m_sipAgent->Dispose ();
-  m_sipAgent = 0;
+  m_sipAgent = nullptr;
 
   Object::DoDispose ();
 }
 
 void
-McpttPttApp::FloorGrantedCb (void)
+McpttPttApp::FloorGrantedCb()
 {
   NS_LOG_FUNCTION (this);
 
@@ -874,7 +874,7 @@ McpttPttApp::TraceMessageReceive (uint16_t callId, Ptr<const Packet> pkt, const 
 }
 
 void
-McpttPttApp::StartApplication (void)
+McpttPttApp::StartApplication()
 {
   NS_LOG_FUNCTION (this);
 
@@ -883,7 +883,7 @@ McpttPttApp::StartApplication (void)
       Simulator::ScheduleNow (&McpttCall::Start, it->second);
     }
 
-  if (m_pushOnStart == true && GetSelectedCall ())
+    if (m_pushOnStart && GetSelectedCall())
     {
       // Start activity on the selected call (if one is selected)
       Simulator::ScheduleNow (&McpttPusher::Start, m_pusher);
@@ -893,7 +893,7 @@ McpttPttApp::StartApplication (void)
 }
 
 void
-McpttPttApp::StopApplication (void)
+McpttPttApp::StopApplication()
 {
   NS_LOG_FUNCTION (this);
 
@@ -915,7 +915,7 @@ McpttPttApp::StopApplication (void)
     }
 
   m_isRunning = false;
-  m_selectedCall = 0;
+  m_selectedCall = nullptr;
 }
 
 void
@@ -1021,38 +1021,38 @@ McpttPttApp::GetCallChannel (uint16_t port) const
   return nullptr;
 }
 
-std::map<uint16_t, Ptr<McpttCall> >
-McpttPttApp::GetCalls (void) const
+std::map<uint16_t, Ptr<McpttCall>>
+McpttPttApp::GetCalls() const
 {
   return m_calls;
 }
 
 Address
-McpttPttApp::GetLocalAddress (void) const
+McpttPttApp::GetLocalAddress() const
 {
   return m_localAddress;
 }
 
 Ptr<McpttMediaSrc>
-McpttPttApp::GetMediaSrc (void) const
+McpttPttApp::GetMediaSrc() const
 {
   return m_mediaSrc;
 }
 
 Ptr<McpttPusher>
-McpttPttApp::GetPusher (void) const
+McpttPttApp::GetPusher() const
 {
   return m_pusher;
 }
 
 Ptr<McpttCall>
-McpttPttApp::GetSelectedCall (void) const
+McpttPttApp::GetSelectedCall() const
 {
   return m_selectedCall;
 }
 
 uint32_t
-McpttPttApp::GetUserId (void) const
+McpttPttApp::GetUserId() const
 {
   return m_userId;
 }

@@ -30,7 +30,7 @@ namespace sip {
 NS_OBJECT_ENSURE_REGISTERED (SipProxy);
 
 TypeId
-SipProxy::GetTypeId (void)
+SipProxy::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::sip::SipProxy")
     .SetParent<SipElement> ()

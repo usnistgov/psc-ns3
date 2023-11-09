@@ -47,7 +47,7 @@ using namespace psc;
 NS_LOG_COMPONENT_DEFINE ("Main");
 
 void
-SimTimeUpdate (void)
+SimTimeUpdate()
 {
   NS_LOG_INFO ("Time: " << Simulator::Now ().GetSeconds () << "s");
 }
@@ -84,8 +84,8 @@ int main (int argc, char *argv[])
   Time start = Seconds (startSec);
   Time stop = Seconds (stopSec);
 
-  for (uint32_t s = (uint32_t)startSec; s < (uint32_t)stopSec; s += 1)
-    {
+  for (auto s = (uint32_t)startSec; s < (uint32_t)stopSec; s += 1)
+  {
       Simulator::Schedule (Seconds (s), &SimTimeUpdate);
     }
 

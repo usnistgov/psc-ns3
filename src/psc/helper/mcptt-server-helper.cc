@@ -45,7 +45,7 @@
 namespace ns3 {
 namespace psc {
 
-McpttServerHelper::McpttServerHelper (void)
+McpttServerHelper::McpttServerHelper()
 {
   m_serverFactory.SetTypeId (McpttServerApp::GetTypeId ());
 }

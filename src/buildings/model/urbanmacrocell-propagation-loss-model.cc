@@ -46,11 +46,10 @@ NS_LOG_COMPONENT_DEFINE ("UrbanMacroCellPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (UrbanMacroCellPropagationLossModel);
-
+NS_OBJECT_ENSURE_REGISTERED(UrbanMacroCellPropagationLossModel);
 
 TypeId
-UrbanMacroCellPropagationLossModel::GetTypeId (void)
+UrbanMacroCellPropagationLossModel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::UrbanMacroCellPropagationLossModel")
 
@@ -150,7 +149,7 @@ UrbanMacroCellPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityM
   MobilityDuo couple;
   couple.a = a;
   couple.b = b;
-  std::map<MobilityDuo, double>::iterator it_a = m_randomMap.find (couple);
+  auto it_a = m_randomMap.find(couple);
   if (it_a != m_randomMap.end ())
     {
       rand = it_a->second;
@@ -159,7 +158,7 @@ UrbanMacroCellPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityM
     {
       couple.a = b;
       couple.b = a;
-      std::map<MobilityDuo, double>::iterator it_b = m_randomMap.find (couple);
+      auto it_b = m_randomMap.find(couple);
       if (it_b != m_randomMap.end ())
         {
           rand = it_b->second;
@@ -215,11 +214,11 @@ const
       Ptr<MobilityBuildingInfo> b1 = b->GetObject <MobilityBuildingInfo> ();
       NS_ABORT_MSG_IF ((!a1 || !b1), "UrbanMacroCellPropagationLossModel only works with MobilityBuildingInfo");
 
-      std::map<Ptr<MobilityModel>,  std::map<Ptr<MobilityModel>, double> >::iterator ait = m_shadowingLossMap.find (a);
+      auto ait = m_shadowingLossMap.find(a);
       if (ait != m_shadowingLossMap.end ())
         {
-          std::map<Ptr<MobilityModel>, double>::iterator bit = ait->second.find (b);
-          if (bit != ait->second.end ())
+            auto bit = ait->second.find(b);
+            if (bit != ait->second.end())
             {
               return (bit->second);
             }
@@ -266,7 +265,7 @@ UrbanMacroCellPropagationLossModel::EvaluateSigma (Ptr<MobilityBuildingInfo> a, 
       MobilityDuo couple;
       couple.a = a1;
       couple.b = b1;
-      std::map<MobilityDuo, double>::iterator it_a = m_randomMap.find (couple);
+      auto it_a = m_randomMap.find(couple);
       if (it_a != m_randomMap.end ())
         {
           rand = it_a->second;
@@ -275,7 +274,7 @@ UrbanMacroCellPropagationLossModel::EvaluateSigma (Ptr<MobilityBuildingInfo> a, 
         {
           couple.a = b1;
           couple.b = a1;
-          std::map<MobilityDuo, double>::iterator it_b = m_randomMap.find (couple);
+          auto it_b = m_randomMap.find(couple);
           if (it_b != m_randomMap.end ())
             {
               rand = it_b->second;

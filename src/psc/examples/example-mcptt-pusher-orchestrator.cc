@@ -107,8 +107,8 @@ private:
   Callback<void, StateTracker&, bool, bool> m_destination;
 
 public:
-  uint32_t GetId (void) const;
-  std::string GetName (void) const;
+  uint32_t GetId() const;
+  std::string GetName() const;
   void SetDestination (const Callback<void, StateTracker&, bool, bool>& destination);
   void SetId (const uint32_t id);
   void SetName (const std::string& name);
@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
   double cp = 0.0;
   double saf = 0.5;
   TypeId socketFacTid = UdpSocketFactory::GetTypeId ();
-  Ipv4Address peerAddress = Ipv4Address ("255.255.255.255");
+  auto peerAddress = Ipv4Address("255.255.255.255");
 
   CommandLine cmd;
   cmd.AddValue ("trace", "Enable traces.", s_trace);
@@ -228,7 +228,7 @@ int main (int argc, char *argv[])
   McpttCallHelper callHelper;
   callHelper.ConfigureOffNetworkBasicGrpCall (clientApps, peerAddress, appCount);
 
-  Ptr<McpttPusherOrchestratorInterface> orchestrator = 0;
+  Ptr<McpttPusherOrchestratorInterface> orchestrator = nullptr;
   Ptr<McpttPusherOrchestratorSpurtCdf> spurtOrchestrator = CreateObject<McpttPusherOrchestratorSpurtCdf> ();
   spurtOrchestrator->SetAttribute ("ActivityFactor", DoubleValue (vaf));
   spurtOrchestrator->TraceConnectWithoutContext ("PttDurationTrace", MakeCallback (&PttDurationCallback));
@@ -257,7 +257,7 @@ int main (int argc, char *argv[])
 
   std::stringstream ss;
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamWrapper> stream = 0;
+  Ptr<OutputStreamWrapper> stream = nullptr;
   ss.str (std::string ());
 
   if (s_trace)
@@ -317,20 +317,24 @@ int main (int argc, char *argv[])
 
   if (s_trace)
     {
-      for (std::vector<Ptr<StateTracker> >::iterator it = stateTrackers.begin (); it != stateTrackers.end (); it++)
+        for (auto it = stateTrackers.begin(); it != stateTrackers.end(); it++)
         {
-          std::map<std::string, Ptr<OutputStreamWrapper> >::iterator streamIt = s_fileStreams.find ((*it)->GetName ());
-          *(streamIt->second)->GetStream () << stopTime.GetSeconds () << " " << "released" << " " << (2 * (*it)->GetId () + 2) << std::endl;
-          streamIt->second = 0;
-          (*it) = 0;
+            auto streamIt = s_fileStreams.find((*it)->GetName());
+            *(streamIt->second)->GetStream() << stopTime.GetSeconds() << " "
+                                             << "released"
+                                             << " " << (2 * (*it)->GetId() + 2) << std::endl;
+            streamIt->second = nullptr;
+            (*it) = nullptr;
         }
 
-      std::map<std::string, Ptr<OutputStreamWrapper> >::iterator it = s_fileStreams.find ("session");
-      *(it->second)->GetStream () << stopTime.GetSeconds () << " " << "inactive" << " " << 2 << std::endl;
-      it->second = 0;
+        auto it = s_fileStreams.find("session");
+        *(it->second)->GetStream() << stopTime.GetSeconds() << " "
+                                   << "inactive"
+                                   << " " << 2 << std::endl;
+        it->second = nullptr;
 
-      it = s_fileStreams.find ("contention");
-      it->second = 0;
+        it = s_fileStreams.find("contention");
+        it->second = nullptr;
     }
 
   if (s_verbose)
@@ -365,13 +369,13 @@ StateTracker::Trigger (bool oldState, bool newState)
 }
 
 uint32_t
-StateTracker::GetId (void) const
+StateTracker::GetId() const
 {
   return m_id;
 }
 
 std::string
-StateTracker::GetName (void) const
+StateTracker::GetName() const
 {
   return m_name;
 }
@@ -419,10 +423,10 @@ ContentionPttDurationCallback (uint32_t userId, Time duration)
 {
   if (s_trace)
     {
-      Ptr<OutputStreamWrapper> stream = 0;
-      std::map<std::string, Ptr<OutputStreamWrapper> >::iterator it = s_fileStreams.find ("contention");
-      stream = it->second;
-      *stream->GetStream () << Simulator::Now ().GetSeconds () << " contention " << 1 << std::endl;
+        Ptr<OutputStreamWrapper> stream = nullptr;
+        auto it = s_fileStreams.find("contention");
+        stream = it->second;
+        *stream->GetStream() << Simulator::Now().GetSeconds() << " contention " << 1 << std::endl;
     }
 
   if (s_verbose)
@@ -465,11 +469,14 @@ PusherStateCallback (StateTracker& stateId, bool oldState, bool newState)
 {
   if (s_trace)
     {
-      Ptr<OutputStreamWrapper> stream = 0;
-      std::map<std::string, Ptr<OutputStreamWrapper> >::iterator it = s_fileStreams.find (stateId.GetName ());
-      stream = it->second;
+        Ptr<OutputStreamWrapper> stream = nullptr;
+        auto it = s_fileStreams.find(stateId.GetName());
+        stream = it->second;
 
-      *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << (newState ? "pushed" : "released") << " " << (newState ? (2 * stateId.GetId () + 3) : (2 * stateId.GetId () + 2)) << std::endl;
+        *stream->GetStream() << Simulator::Now().GetSeconds() << " "
+                             << (newState ? "pushed" : "released") << " "
+                             << (newState ? (2 * stateId.GetId() + 3) : (2 * stateId.GetId() + 2))
+                             << std::endl;
     }
 
   if (s_verbose)
@@ -493,10 +500,12 @@ SessionStateCallback (bool oldState, bool newState)
 {
   if (s_trace)
     {
-      Ptr<OutputStreamWrapper> stream = 0;
-      std::map<std::string, Ptr<OutputStreamWrapper> >::iterator it = s_fileStreams.find ("session");
-      stream = it->second;
-      *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << (newState ? "active" : "inactive") << " " << (newState ? 3 : 2) << std::endl;
+        Ptr<OutputStreamWrapper> stream = nullptr;
+        auto it = s_fileStreams.find("session");
+        stream = it->second;
+        *stream->GetStream() << Simulator::Now().GetSeconds() << " "
+                             << (newState ? "active" : "inactive") << " " << (newState ? 3 : 2)
+                             << std::endl;
     }
 
   if (s_verbose)

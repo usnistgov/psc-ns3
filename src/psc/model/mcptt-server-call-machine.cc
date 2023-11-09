@@ -51,7 +51,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachine);
 
 TypeId
-McpttServerCallMachine::GetTypeId (void)
+McpttServerCallMachine::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -62,19 +62,19 @@ McpttServerCallMachine::GetTypeId (void)
   return tid;
 }
 
-McpttServerCallMachine::McpttServerCallMachine (void)
-  : Object ()
+McpttServerCallMachine::McpttServerCallMachine()
+    : Object()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachine::~McpttServerCallMachine (void)
+McpttServerCallMachine::~McpttServerCallMachine()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttServerCallMachine::GetInstanceTypeId (void) const
+McpttServerCallMachine::GetInstanceTypeId() const
 {
   return McpttServerCallMachine::GetTypeId ();
 }
@@ -84,7 +84,7 @@ McpttServerCallMachine::GetInstanceTypeId (void) const
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineGrp);
 
 TypeId
-McpttServerCallMachineGrp::GetTypeId (void)
+McpttServerCallMachineGrp::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineGrp")
     .SetParent<McpttServerCallMachine> ()
@@ -98,19 +98,19 @@ McpttServerCallMachineGrp::GetTypeId (void)
   return tid;
 }
 
-McpttServerCallMachineGrp::McpttServerCallMachineGrp (void)
-  : McpttServerCallMachine ()
+McpttServerCallMachineGrp::McpttServerCallMachineGrp()
+    : McpttServerCallMachine()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineGrp::~McpttServerCallMachineGrp (void)
+McpttServerCallMachineGrp::~McpttServerCallMachineGrp()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttServerCallMachineGrp::GetInstanceTypeId (void) const
+McpttServerCallMachineGrp::GetInstanceTypeId() const
 {
   return McpttServerCallMachineGrp::GetTypeId ();
 }
@@ -143,7 +143,7 @@ McpttServerCallMachineGrp::IsPrivateCall (uint32_t userId) const
 NS_OBJECT_ENSURE_REGISTERED (McpttServerCallMachineNull);
 
 McpttEntityId
-McpttServerCallMachineNull::GetNullStateId (void)
+McpttServerCallMachineNull::GetNullStateId()
 {
   static McpttEntityId stateId = McpttEntityId (0, "Null");
 
@@ -151,7 +151,7 @@ McpttServerCallMachineNull::GetNullStateId (void)
 }
 
 TypeId
-McpttServerCallMachineNull::GetTypeId (void)
+McpttServerCallMachineNull::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttServerCallMachineNull")
     .SetParent<McpttServerCallMachine> ()
@@ -173,57 +173,57 @@ McpttServerCallMachineNull::GetTypeId (void)
   return tid;
 }
 
-McpttServerCallMachineNull::McpttServerCallMachineNull (void)
-  : McpttServerCallMachine (),
-    m_serverCall (0),
-    m_userId (0)
+McpttServerCallMachineNull::McpttServerCallMachineNull()
+    : McpttServerCallMachine(),
+      m_serverCall(nullptr),
+      m_userId(0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineNull::~McpttServerCallMachineNull (void)
-{
-  NS_LOG_FUNCTION (this);
-}
-
-void
-McpttServerCallMachineNull::AcceptCall (void)
+McpttServerCallMachineNull::~McpttServerCallMachineNull()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttServerCallMachineNull::BeginEmergAlert (void)
+McpttServerCallMachineNull::AcceptCall()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttServerCallMachineNull::CancelEmergAlert (void)
+McpttServerCallMachineNull::BeginEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttServerCallMachineNull::DowngradeCallType (void)
+McpttServerCallMachineNull::CancelEmergAlert()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+McpttServerCallMachineNull::DowngradeCallType()
 {
   NS_LOG_FUNCTION (this);
 }
 
 uint32_t
-McpttServerCallMachineNull::GetCallerUserId (void) const
+McpttServerCallMachineNull::GetCallerUserId() const
 {
   return 0;
 }
 
 McpttCallMsgFieldCallId
-McpttServerCallMachineNull::GetCallId (void) const
+McpttServerCallMachineNull::GetCallId() const
 {
   return McpttCallMsgFieldCallId ();
 }
 
 McpttCallMsgFieldCallType
-McpttServerCallMachineNull::GetCallType (void) const
+McpttServerCallMachineNull::GetCallType() const
 {
   McpttCallMsgFieldCallType callTypeField;
   callTypeField.SetType (m_callType);
@@ -238,31 +238,31 @@ McpttServerCallMachineNull::SetUserId (uint32_t userId)
 }
 
 uint32_t
-McpttServerCallMachineNull::GetUserId (void) const
+McpttServerCallMachineNull::GetUserId() const
 {
   return m_userId;
 }
 
 TypeId
-McpttServerCallMachineNull::GetInstanceTypeId (void) const
+McpttServerCallMachineNull::GetInstanceTypeId() const
 {
   return McpttServerCallMachineNull::GetTypeId ();
 }
 
 Ptr<McpttServerCall>
-McpttServerCallMachineNull::GetServerCall (void) const
+McpttServerCallMachineNull::GetServerCall() const
 {
   return m_serverCall;
 }
 
 McpttEntityId
-McpttServerCallMachineNull::GetStateId (void) const
+McpttServerCallMachineNull::GetStateId() const
 {
   return McpttServerCallMachineNull::GetNullStateId ();
 }
 
 bool
-McpttServerCallMachineNull::IsCallOngoing (void) const
+McpttServerCallMachineNull::IsCallOngoing() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -298,7 +298,7 @@ McpttServerCallMachineNull::Receive (const McpttMediaMsg& msg)
 }
 
 void
-McpttServerCallMachineNull::RejectCall (void)
+McpttServerCallMachineNull::RejectCall()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -318,7 +318,7 @@ McpttServerCallMachineNull::SetServerCall (Ptr<McpttServerCall> call)
 }
 
 void
-McpttServerCallMachineNull::Start (void)
+McpttServerCallMachineNull::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -330,7 +330,7 @@ McpttServerCallMachineNull::Start (void)
 }
 
 void
-McpttServerCallMachineNull::Stop (void)
+McpttServerCallMachineNull::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -349,11 +349,11 @@ McpttServerCallMachineNull::UpgradeCallType (uint8_t callType)
 }
 
 void
-McpttServerCallMachineNull::DoDispose (void)
+McpttServerCallMachineNull::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  m_serverCall = 0;
+  m_serverCall = nullptr;
 
   McpttServerCallMachine::DoDispose ();
 }

@@ -164,7 +164,7 @@ SidelinkSynchTestCase::CheckSfnAlignment(LteUeRrc::SlChangeOfSyncRefStatParamete
                            << "New frame : " << param.currFrameNo << "\n"
                            << "New subframe : " << param.currSubframeNo);
 
-    for (uint16_t i = 0; i < m_txUeDevs.GetN(); i++)
+    for (uint32_t i = 0; i < m_txUeDevs.GetN(); i++)
     {
         uint64_t synchRefImsi = m_txUeDevs.Get(i)->GetObject<LteUeNetDevice>()->GetImsi();
         // Check sidelink design doc, current model assigns SLSS-ID = 10 * IMSI

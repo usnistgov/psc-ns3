@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttCallHelper");
 
 namespace psc {
 
-McpttCallHelper::McpttCallHelper (void)
+McpttCallHelper::McpttCallHelper()
 {
   m_arbitratorFactory.SetTypeId (McpttOnNetworkFloorArbitrator::GetTypeId ());
   m_towardsParticipantFactory.SetTypeId (McpttOnNetworkFloorTowardsParticipant::GetTypeId ());

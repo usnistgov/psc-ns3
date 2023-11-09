@@ -59,7 +59,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttOffNetworkFloorParticipant);
 
 TypeId
-McpttOffNetworkFloorParticipant::GetTypeId (void)
+McpttOffNetworkFloorParticipant::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttOffNetworkFloorParticipant")
     .SetParent<McpttFloorParticipant> ()
@@ -121,32 +121,32 @@ McpttOffNetworkFloorParticipant::GetTypeId (void)
   return tid;
 }
 
-McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant (void)
-  : McpttFloorParticipant (),
-    m_c201 (CreateObject<McpttCounter> (McpttEntityId (1, "C201"))),
-    m_c204 (CreateObject<McpttCounter> (McpttEntityId (4, "C204"))),
-    m_c205 (CreateObject<McpttCounter> (McpttEntityId (5, "C205"))),
-    m_floorGrantedCb (MakeNullCallback<void> ()),
-    m_lastGrantMsg (McpttFloorMsgGranted ()),
-    m_originator (false),
-    m_call (0),
-    m_priority (1),
-    m_queue (CreateObject<McpttFloorQueue> ()),
-    m_setupDelayStartTime (Seconds (0)),
-    m_setupDelayCb (MakeNullCallback<void, const Time&> ()),
-    m_started (false),
-    m_state (McpttOffNetworkFloorParticipantStateStartStop::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&> ()),
-    m_candidateSsrc (0),
-    m_currentSsrc (0),
-    m_t201 (CreateObject<McpttTimer> (McpttEntityId (1, "T201"))),
-    m_t203 (CreateObject<McpttTimer> (McpttEntityId (3, "T203"))),
-    m_t204 (CreateObject<McpttTimer> (McpttEntityId (4, "T204"))),
-    m_t205 (CreateObject<McpttTimer> (McpttEntityId (5, "T205"))),
-    m_t206 (CreateObject<McpttTimer> (McpttEntityId (6, "T206"))),
-    m_t207 (CreateObject<McpttTimer> (McpttEntityId (7, "T207"))),
-    m_t230 (CreateObject<McpttTimer> (McpttEntityId (30, "T230"))),
-    m_t233 (CreateObject<McpttTimer> (McpttEntityId (33, "T233")))
+McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant()
+    : McpttFloorParticipant(),
+      m_c201(CreateObject<McpttCounter>(McpttEntityId(1, "C201"))),
+      m_c204(CreateObject<McpttCounter>(McpttEntityId(4, "C204"))),
+      m_c205(CreateObject<McpttCounter>(McpttEntityId(5, "C205"))),
+      m_floorGrantedCb(MakeNullCallback<void>()),
+      m_lastGrantMsg(McpttFloorMsgGranted()),
+      m_originator(false),
+      m_call(nullptr),
+      m_priority(1),
+      m_queue(CreateObject<McpttFloorQueue>()),
+      m_setupDelayStartTime(Seconds(0)),
+      m_setupDelayCb(MakeNullCallback<void, const Time&>()),
+      m_started(false),
+      m_state(McpttOffNetworkFloorParticipantStateStartStop::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void, const McpttEntityId&, const McpttEntityId&>()),
+      m_candidateSsrc(0),
+      m_currentSsrc(0),
+      m_t201(CreateObject<McpttTimer>(McpttEntityId(1, "T201"))),
+      m_t203(CreateObject<McpttTimer>(McpttEntityId(3, "T203"))),
+      m_t204(CreateObject<McpttTimer>(McpttEntityId(4, "T204"))),
+      m_t205(CreateObject<McpttTimer>(McpttEntityId(5, "T205"))),
+      m_t206(CreateObject<McpttTimer>(McpttEntityId(6, "T206"))),
+      m_t207(CreateObject<McpttTimer>(McpttEntityId(7, "T207"))),
+      m_t230(CreateObject<McpttTimer>(McpttEntityId(30, "T230"))),
+      m_t233(CreateObject<McpttTimer>(McpttEntityId(33, "T233")))
 {
   NS_LOG_FUNCTION (this);
 
@@ -160,13 +160,13 @@ McpttOffNetworkFloorParticipant::McpttOffNetworkFloorParticipant (void)
   m_t233->Link (&McpttOffNetworkFloorParticipant::ExpiryOfT233, this);
 }
 
-McpttOffNetworkFloorParticipant::~McpttOffNetworkFloorParticipant (void)
+McpttOffNetworkFloorParticipant::~McpttOffNetworkFloorParticipant()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttOffNetworkFloorParticipant::AcceptGrant (void)
+McpttOffNetworkFloorParticipant::AcceptGrant()
 {
   NS_LOG_FUNCTION (this);
 
@@ -228,7 +228,7 @@ McpttOffNetworkFloorParticipant::ChangeState (Ptr<McpttOffNetworkFloorParticipan
 }
 
 void
-McpttOffNetworkFloorParticipant::ClearCandidateSsrc (void)
+McpttOffNetworkFloorParticipant::ClearCandidateSsrc()
 {
   NS_LOG_FUNCTION (this);
 
@@ -236,7 +236,7 @@ McpttOffNetworkFloorParticipant::ClearCandidateSsrc (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ClearCurrentSsrc (void)
+McpttOffNetworkFloorParticipant::ClearCurrentSsrc()
 {
   NS_LOG_FUNCTION (this);
 
@@ -244,7 +244,7 @@ McpttOffNetworkFloorParticipant::ClearCurrentSsrc (void)
 }
 
 uint8_t
-McpttOffNetworkFloorParticipant::GetCallTypeId (void) const
+McpttOffNetworkFloorParticipant::GetCallTypeId() const
 {
   Ptr<McpttCallMachine> callMachine = GetCall ()->GetCallMachine ();
   McpttCallMsgFieldCallType callType = callMachine->GetCallType ();
@@ -253,9 +253,8 @@ McpttOffNetworkFloorParticipant::GetCallTypeId (void) const
   return callTypeId;
 }
 
-
 McpttFloorMsgFieldIndic
-McpttOffNetworkFloorParticipant::GetIndicator (void) const
+McpttOffNetworkFloorParticipant::GetIndicator() const
 {
   McpttFloorMsgFieldIndic indicator;
   Ptr<McpttFloorQueue> queue = GetQueue ();
@@ -295,13 +294,13 @@ McpttOffNetworkFloorParticipant::GetIndicator (void) const
 }
 
 TypeId
-McpttOffNetworkFloorParticipant::GetInstanceTypeId (void) const
+McpttOffNetworkFloorParticipant::GetInstanceTypeId() const
 {
   return McpttOffNetworkFloorParticipant::GetTypeId ();
 }
 
 McpttEntityId
-McpttOffNetworkFloorParticipant::GetStateId (void) const
+McpttOffNetworkFloorParticipant::GetStateId() const
 {
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
   McpttEntityId stateId = state->GetInstanceStateId ();
@@ -318,7 +317,7 @@ McpttOffNetworkFloorParticipant::GetTxSsrc () const
 }
 
 bool
-McpttOffNetworkFloorParticipant::HasCandidateSsrc (void) const
+McpttOffNetworkFloorParticipant::HasCandidateSsrc() const
 {
   uint32_t candidateSsrc = GetCandidateSsrc ();
 
@@ -328,7 +327,7 @@ McpttOffNetworkFloorParticipant::HasCandidateSsrc (void) const
 }
 
 bool
-McpttOffNetworkFloorParticipant::HasCurrentSsrc (void) const
+McpttOffNetworkFloorParticipant::HasCurrentSsrc() const
 {
   uint32_t currentSsrc = GetCurrentSsrc ();
 
@@ -338,7 +337,7 @@ McpttOffNetworkFloorParticipant::HasCurrentSsrc (void) const
 }
 
 bool
-McpttOffNetworkFloorParticipant::HasFloor (void) const
+McpttOffNetworkFloorParticipant::HasFloor() const
 {
   Ptr<McpttOffNetworkFloorParticipantState> state = GetState ();
 
@@ -350,7 +349,7 @@ McpttOffNetworkFloorParticipant::HasFloor (void) const
 }
 
 bool
-McpttOffNetworkFloorParticipant::IsOriginator (void) const
+McpttOffNetworkFloorParticipant::IsOriginator() const
 {
   bool isOriginator = GetOriginator ();
 
@@ -358,7 +357,7 @@ McpttOffNetworkFloorParticipant::IsOriginator (void) const
 }
 
 bool
-McpttOffNetworkFloorParticipant::IsStarted (void) const
+McpttOffNetworkFloorParticipant::IsStarted() const
 {
   bool isStarted = GetStarted ();
 
@@ -385,7 +384,7 @@ McpttOffNetworkFloorParticipant::MediaReady (McpttMediaMsg& msg)
 }
 
 void
-McpttOffNetworkFloorParticipant::NotifyFloorGranted (void)
+McpttOffNetworkFloorParticipant::NotifyFloorGranted()
 {
   NS_LOG_FUNCTION (this);
 
@@ -556,7 +555,7 @@ McpttOffNetworkFloorParticipant::ReceiveMedia (const McpttMediaMsg& msg)
 }
 
 void
-McpttOffNetworkFloorParticipant::ReleaseRequest (void)
+McpttOffNetworkFloorParticipant::ReleaseRequest()
 {
   NS_LOG_FUNCTION (this);
 
@@ -573,7 +572,7 @@ McpttOffNetworkFloorParticipant::ReleaseRequest (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ResetCounters (void)
+McpttOffNetworkFloorParticipant::ResetCounters()
 {
   NS_LOG_FUNCTION (this);
 
@@ -605,9 +604,9 @@ McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
 
   if (msg.IsA (McpttFloorMsgGranted::GetTypeId ()))
     {
-      const McpttFloorMsgGranted& grantedMsg = dynamic_cast<const McpttFloorMsgGranted&> (msg);
+        const auto& grantedMsg = dynamic_cast<const McpttFloorMsgGranted&>(msg);
 
-      SetLastGrantMsg (grantedMsg);
+        SetLastGrantMsg(grantedMsg);
     }
 
   NS_LOG_LOGIC ("McpttOffNetworkFloorParticipant " << GetCall ()->GetOwner ()->GetUserId () << " sending " << msg << ".");
@@ -616,7 +615,7 @@ McpttOffNetworkFloorParticipant::Send (const McpttFloorMsg& msg)
 }
 
 void
-McpttOffNetworkFloorParticipant::SendFloorQueuePositionRequest (void)
+McpttOffNetworkFloorParticipant::SendFloorQueuePositionRequest()
 {
   NS_LOG_FUNCTION (this);
 
@@ -721,13 +720,13 @@ McpttOffNetworkFloorParticipant::SetLimitC205 (uint32_t limitC205)
 }
 
 bool
-McpttOffNetworkFloorParticipant::ShouldGenMedia (void) const
+McpttOffNetworkFloorParticipant::ShouldGenMedia() const
 {
   return m_genMedia;
 }
 
 void
-McpttOffNetworkFloorParticipant::Start (void)
+McpttOffNetworkFloorParticipant::Start()
 {
   Stop ();
 
@@ -743,7 +742,7 @@ McpttOffNetworkFloorParticipant::Start (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::Stop (void)
+McpttOffNetworkFloorParticipant::Stop()
 {
   NS_LOG_FUNCTION (this);
   if (IsStarted ())
@@ -769,7 +768,7 @@ McpttOffNetworkFloorParticipant::Stop (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::StopTimers (void)
+McpttOffNetworkFloorParticipant::StopTimers()
 {
   NS_LOG_FUNCTION (this);
 
@@ -817,7 +816,7 @@ McpttOffNetworkFloorParticipant::StopTimers (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::PttPush (void)
+McpttOffNetworkFloorParticipant::PttPush()
 {
   NS_LOG_FUNCTION (this);
 
@@ -856,7 +855,7 @@ McpttOffNetworkFloorParticipant::PttPush (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::PttRelease (void)
+McpttOffNetworkFloorParticipant::PttRelease()
 {
   NS_LOG_FUNCTION (this);
 
@@ -875,28 +874,28 @@ McpttOffNetworkFloorParticipant::PttRelease (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::DoDispose (void)
+McpttOffNetworkFloorParticipant::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
-  SetC201 (0);
-  SetC204 (0);
-  SetC205 (0);
-  SetCall (0);
-  SetQueue (0);
-  SetState (0);
-  SetT201 (0);
-  SetT203 (0);
-  SetT204 (0);
-  SetT205 (0);
-  SetT206 (0);
-  SetT207 (0);
-  SetT230 (0);
-  SetT233 (0);
+  SetC201(nullptr);
+  SetC204(nullptr);
+  SetC205(nullptr);
+  SetCall(nullptr);
+  SetQueue(nullptr);
+  SetState(nullptr);
+  SetT201(nullptr);
+  SetT203(nullptr);
+  SetT204(nullptr);
+  SetT205(nullptr);
+  SetT206(nullptr);
+  SetT207(nullptr);
+  SetT230(nullptr);
+  SetT233(nullptr);
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT201 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT201()
 {
   NS_LOG_FUNCTION (this);
 
@@ -916,7 +915,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT201 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT203 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT203()
 {
   NS_LOG_FUNCTION (this);
 
@@ -935,7 +934,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT203 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT204 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT204()
 {
   NS_LOG_FUNCTION (this);
 
@@ -955,7 +954,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT204 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT205 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT205()
 {
   NS_LOG_FUNCTION (this);
 
@@ -975,7 +974,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT205 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT206 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT206()
 {
   NS_LOG_FUNCTION (this);
 
@@ -994,7 +993,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT206 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT207 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT207()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1013,7 +1012,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT207 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT230 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT230()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1032,7 +1031,7 @@ McpttOffNetworkFloorParticipant::ExpiryOfT230 (void)
 }
 
 void
-McpttOffNetworkFloorParticipant::ExpiryOfT233 (void)
+McpttOffNetworkFloorParticipant::ExpiryOfT233()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1059,127 +1058,127 @@ McpttOffNetworkFloorParticipant::SetStarted (const bool& started)
 }
 
 McpttFloorMsgGranted
-McpttOffNetworkFloorParticipant::GetLastGrantMsg (void) const
+McpttOffNetworkFloorParticipant::GetLastGrantMsg() const
 {
   return m_lastGrantMsg;
 }
 
 bool
-McpttOffNetworkFloorParticipant::GetStarted (void) const
+McpttOffNetworkFloorParticipant::GetStarted() const
 {
   return m_started;
 }
 
 Ptr<McpttCounter>
-McpttOffNetworkFloorParticipant::GetC201 (void) const
+McpttOffNetworkFloorParticipant::GetC201() const
 {
   return m_c201;
 }
 
 Ptr<McpttCounter>
-McpttOffNetworkFloorParticipant::GetC204 (void) const
+McpttOffNetworkFloorParticipant::GetC204() const
 {
   return m_c204;
 }
 
 Ptr<McpttCounter>
-McpttOffNetworkFloorParticipant::GetC205 (void) const
+McpttOffNetworkFloorParticipant::GetC205() const
 {
   return m_c205;
 }
 
 bool
-McpttOffNetworkFloorParticipant::GetOriginator (void) const
+McpttOffNetworkFloorParticipant::GetOriginator() const
 {
   return m_originator;
 }
 
 Ptr<McpttCall>
-McpttOffNetworkFloorParticipant::GetCall (void) const
+McpttOffNetworkFloorParticipant::GetCall() const
 {
   return m_call;
 }
 
 uint8_t
-McpttOffNetworkFloorParticipant::GetPriority (void) const
+McpttOffNetworkFloorParticipant::GetPriority() const
 {
   return m_priority;
 }
 
 Ptr<McpttFloorQueue>
-McpttOffNetworkFloorParticipant::GetQueue (void) const
+McpttOffNetworkFloorParticipant::GetQueue() const
 {
   return m_queue;
 }
 
 Time
-McpttOffNetworkFloorParticipant::GetSetupDelayStartTime (void) const
+McpttOffNetworkFloorParticipant::GetSetupDelayStartTime() const
 {
   return m_setupDelayStartTime;
 }
 
 Ptr<McpttOffNetworkFloorParticipantState>
-McpttOffNetworkFloorParticipant::GetState (void) const
+McpttOffNetworkFloorParticipant::GetState() const
 {
   return m_state;
 }
 
 uint32_t
-McpttOffNetworkFloorParticipant::GetCandidateSsrc (void) const
+McpttOffNetworkFloorParticipant::GetCandidateSsrc() const
 {
   return m_candidateSsrc;
 }
 
 uint32_t
-McpttOffNetworkFloorParticipant::GetCurrentSsrc (void) const
+McpttOffNetworkFloorParticipant::GetCurrentSsrc() const
 {
   return m_currentSsrc;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT201 (void) const
+McpttOffNetworkFloorParticipant::GetT201() const
 {
   return m_t201;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT203 (void) const
+McpttOffNetworkFloorParticipant::GetT203() const
 {
   return m_t203;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT204 (void) const
+McpttOffNetworkFloorParticipant::GetT204() const
 {
   return m_t204;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT205 (void) const
+McpttOffNetworkFloorParticipant::GetT205() const
 {
   return m_t205;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT206 (void) const
+McpttOffNetworkFloorParticipant::GetT206() const
 {
   return m_t206;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT207 (void) const
+McpttOffNetworkFloorParticipant::GetT207() const
 {
   return m_t207;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT230 (void) const
+McpttOffNetworkFloorParticipant::GetT230() const
 {
   return m_t230;
 }
 
 Ptr<McpttTimer>
-McpttOffNetworkFloorParticipant::GetT233 (void) const
+McpttOffNetworkFloorParticipant::GetT233() const
 {
   return m_t233;
 }

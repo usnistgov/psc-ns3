@@ -56,7 +56,7 @@ IntelHttpHeader::~IntelHttpHeader ()
 }
 
 TypeId
-IntelHttpHeader::GetTypeId (void)
+IntelHttpHeader::GetTypeId()
 {
   static TypeId tid =
       TypeId ("ns3::psc::IntelHttpHeader").SetParent<Header> ().AddConstructor<IntelHttpHeader> ();
@@ -65,7 +65,7 @@ IntelHttpHeader::GetTypeId (void)
 }
 
 TypeId
-IntelHttpHeader::GetInstanceTypeId (void) const
+IntelHttpHeader::GetInstanceTypeId() const
 {
   return GetTypeId ();
 }
@@ -78,7 +78,7 @@ IntelHttpHeader::SetRequestType (Type requestType)
 }
 
 IntelHttpHeader::Type
-IntelHttpHeader::GetRequestType (void) const
+IntelHttpHeader::GetRequestType() const
 {
   NS_LOG_FUNCTION (this);
   return m_requestType;
@@ -92,7 +92,7 @@ IntelHttpHeader::SetNumberEmbeddedObjects (uint16_t numEmbeddedObjects)
 }
 
 uint16_t
-IntelHttpHeader::GetNumberEmbeddedObjects (void) const
+IntelHttpHeader::GetNumberEmbeddedObjects() const
 {
   NS_LOG_FUNCTION (this);
   return m_numEmbeddedObjects;
@@ -106,7 +106,7 @@ IntelHttpHeader::SetPayloadSize (uint32_t payloadSize)
 }
 
 uint32_t
-IntelHttpHeader::GetPayloadSize (void) const
+IntelHttpHeader::GetPayloadSize() const
 {
   NS_LOG_FUNCTION (this);
   return m_payloadSize;
@@ -122,21 +122,21 @@ IntelHttpHeader::Deserialize (Buffer::Iterator start)
   m_payloadSize = i.ReadNtohU32 ();
 
   uint16_t readVal = i.ReadNtohU16 ();
-  if (readVal & 0x8000u)
-    {
+  if (readVal & 0x8000U)
+  {
       m_requestType = Type::Main;
     }
   else
     {
       m_requestType = Type::Embedded;
     }
-  m_numEmbeddedObjects = readVal & 0x0FFFu;
+    m_numEmbeddedObjects = readVal & 0x0FFFU;
 
-  return GetSerializedSize ();
+    return GetSerializedSize();
 }
 
 uint32_t
-IntelHttpHeader::GetSerializedSize (void) const
+IntelHttpHeader::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -161,16 +161,16 @@ IntelHttpHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i.WriteHtonU32 (m_payloadSize);
 
-  uint16_t typeAndObjects = 0u;
+  uint16_t typeAndObjects = 0U;
   if (m_requestType == Type::Main)
     {
-      typeAndObjects = 0x8000u;
+        typeAndObjects = 0x8000U;
     }
   i.WriteHtonU16 (typeAndObjects + m_numEmbeddedObjects);
 }
 
 uint32_t
-IntelHttpHeader::GetHeaderSize (void)
+IntelHttpHeader::GetHeaderSize()
 {
   return sizeof (uint16_t) + sizeof (uint32_t);
 }

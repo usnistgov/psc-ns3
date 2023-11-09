@@ -47,7 +47,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttRtpHeader);
 
 TypeId
-McpttRtpHeader::GetTypeId (void)
+McpttRtpHeader::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -59,18 +59,18 @@ McpttRtpHeader::GetTypeId (void)
   return tid;
 }
 
-McpttRtpHeader::McpttRtpHeader (void)
-  : Header (),
-    m_csrcCount (0),
-    m_csrcs (std::vector<uint32_t> ()),
-    m_extension (0),
-    m_marker (0),
-    m_padding (0),
-    m_payloadType (0),
-    m_seqNum (0),
-    m_ssrc (0),
-    m_timestamp (0),
-    m_version (0)
+McpttRtpHeader::McpttRtpHeader()
+    : Header(),
+      m_csrcCount(0),
+      m_csrcs(std::vector<uint32_t>()),
+      m_extension(0),
+      m_marker(0),
+      m_padding(0),
+      m_payloadType(0),
+      m_seqNum(0),
+      m_ssrc(0),
+      m_timestamp(0),
+      m_version(0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -107,8 +107,7 @@ McpttRtpHeader::McpttRtpHeader (uint32_t ssrc, uint8_t payloadType)
   NS_LOG_FUNCTION (this);
 }
 
-
-McpttRtpHeader::~McpttRtpHeader (void)
+McpttRtpHeader::~McpttRtpHeader()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -135,7 +134,7 @@ McpttRtpHeader::AddCsrc (uint32_t csrc)
 }
 
 void
-McpttRtpHeader::ClearCsrcs (void)
+McpttRtpHeader::ClearCsrcs()
 {
   NS_LOG_FUNCTION (this);
 
@@ -196,13 +195,13 @@ McpttRtpHeader::Deserialize (Buffer::Iterator start)
 }
 
 TypeId
-McpttRtpHeader::GetInstanceTypeId (void) const
+McpttRtpHeader::GetInstanceTypeId() const
 {
   return McpttRtpHeader::GetTypeId ();
 }
 
 uint32_t
-McpttRtpHeader::GetSerializedSize (void) const
+McpttRtpHeader::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -337,7 +336,7 @@ McpttRtpHeader::SetCsrcs (const std::vector<uint32_t>  csrcs)
 }
 
 uint8_t
-McpttRtpHeader::GetCsrcCount (void) const
+McpttRtpHeader::GetCsrcCount() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -345,7 +344,7 @@ McpttRtpHeader::GetCsrcCount (void) const
 }
 
 std::vector<uint32_t>
-McpttRtpHeader::GetCsrcs (void) const
+McpttRtpHeader::GetCsrcs() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -353,7 +352,7 @@ McpttRtpHeader::GetCsrcs (void) const
 }
 
 uint8_t
-McpttRtpHeader::GetExtension (void) const
+McpttRtpHeader::GetExtension() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -361,7 +360,7 @@ McpttRtpHeader::GetExtension (void) const
 }
 
 uint8_t
-McpttRtpHeader::GetMarker (void) const
+McpttRtpHeader::GetMarker() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -369,7 +368,7 @@ McpttRtpHeader::GetMarker (void) const
 }
 
 uint8_t
-McpttRtpHeader::GetPadding (void) const
+McpttRtpHeader::GetPadding() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -377,7 +376,7 @@ McpttRtpHeader::GetPadding (void) const
 }
 
 uint8_t
-McpttRtpHeader::GetPayloadType (void) const
+McpttRtpHeader::GetPayloadType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -385,7 +384,7 @@ McpttRtpHeader::GetPayloadType (void) const
 }
 
 uint16_t
-McpttRtpHeader::GetSeqNum (void) const
+McpttRtpHeader::GetSeqNum() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -393,7 +392,7 @@ McpttRtpHeader::GetSeqNum (void) const
 }
 
 uint32_t
-McpttRtpHeader::GetSsrc (void) const
+McpttRtpHeader::GetSsrc() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -401,7 +400,7 @@ McpttRtpHeader::GetSsrc (void) const
 }
 
 uint32_t
-McpttRtpHeader::GetTimestamp (void) const
+McpttRtpHeader::GetTimestamp() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -409,7 +408,7 @@ McpttRtpHeader::GetTimestamp (void) const
 }
 
 uint8_t
-McpttRtpHeader::GetVersion (void) const
+McpttRtpHeader::GetVersion() const
 {
   NS_LOG_FUNCTION (this);
 

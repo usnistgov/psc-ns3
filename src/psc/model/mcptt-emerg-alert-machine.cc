@@ -52,7 +52,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachine);
 
 TypeId
-McpttEmergAlertMachine::GetTypeId (void)
+McpttEmergAlertMachine::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -63,19 +63,19 @@ McpttEmergAlertMachine::GetTypeId (void)
   return tid;
 }
 
-McpttEmergAlertMachine::McpttEmergAlertMachine (void)
-  : Object ()
+McpttEmergAlertMachine::McpttEmergAlertMachine()
+    : Object()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttEmergAlertMachine::~McpttEmergAlertMachine (void)
+McpttEmergAlertMachine::~McpttEmergAlertMachine()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttEmergAlertMachine::GetInstanceTypeId (void) const
+McpttEmergAlertMachine::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -87,7 +87,7 @@ McpttEmergAlertMachine::GetInstanceTypeId (void) const
 NS_OBJECT_ENSURE_REGISTERED (McpttEmergAlertMachineNull);
 
 TypeId
-McpttEmergAlertMachineNull::GetTypeId (void)
+McpttEmergAlertMachineNull::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -99,25 +99,25 @@ McpttEmergAlertMachineNull::GetTypeId (void)
   return tid;
 }
 
-McpttEmergAlertMachineNull::McpttEmergAlertMachineNull (void)
-  : McpttEmergAlertMachine ()
+McpttEmergAlertMachineNull::McpttEmergAlertMachineNull()
+    : McpttEmergAlertMachine()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttEmergAlertMachineNull::~McpttEmergAlertMachineNull (void)
+McpttEmergAlertMachineNull::~McpttEmergAlertMachineNull()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttEmergAlertMachineNull::CancelEmergAlert (void)
+McpttEmergAlertMachineNull::CancelEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttEmergAlertMachineNull::GetInstanceTypeId (void) const
+McpttEmergAlertMachineNull::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -125,7 +125,7 @@ McpttEmergAlertMachineNull::GetInstanceTypeId (void) const
 }
 
 bool
-McpttEmergAlertMachineNull::IsInEmergState (void) const
+McpttEmergAlertMachineNull::IsInEmergState() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -133,7 +133,7 @@ McpttEmergAlertMachineNull::IsInEmergState (void) const
 }
 
 bool
-McpttEmergAlertMachineNull::IsStarted (void) const
+McpttEmergAlertMachineNull::IsStarted() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -153,19 +153,19 @@ McpttEmergAlertMachineNull::ReceiveGrpCallEmergAlertCancel (const McpttCallMsgGr
 }
 
 void
-McpttEmergAlertMachineNull::SendEmergAlert (void)
+McpttEmergAlertMachineNull::SendEmergAlert()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttEmergAlertMachineNull::Start (void)
+McpttEmergAlertMachineNull::Start()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttEmergAlertMachineNull::Stop (void)
+McpttEmergAlertMachineNull::Stop()
 {
   NS_LOG_FUNCTION (this);
 }

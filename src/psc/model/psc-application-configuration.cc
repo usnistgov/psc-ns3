@@ -61,9 +61,9 @@ PscApplicationConfiguration::PscApplicationConfiguration (
 
 PscApplicationConfiguration::~PscApplicationConfiguration ()
 {
-  m_packetsPerSessionRandomVariable = 0;
-  m_packetIntervalRandomVariable  = 0;
-  m_sessionIntervalRandomVariable = 0;
+    m_packetsPerSessionRandomVariable = nullptr;
+    m_packetIntervalRandomVariable = nullptr;
+    m_sessionIntervalRandomVariable = nullptr;
 }
 
 void PscApplicationConfiguration::SetApplicationPattern (
@@ -83,7 +83,7 @@ void PscApplicationConfiguration::SetApplicationPattern (
 }
 
 std::string
-PscApplicationConfiguration::GetName (void) const
+PscApplicationConfiguration::GetName() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -91,7 +91,7 @@ PscApplicationConfiguration::GetName (void) const
 }
 
 TypeId
-PscApplicationConfiguration::GetSocketType (void) const
+PscApplicationConfiguration::GetSocketType() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -99,7 +99,7 @@ PscApplicationConfiguration::GetSocketType (void) const
 }
 
 uint16_t
-PscApplicationConfiguration::GetNextPort (void)
+PscApplicationConfiguration::GetNextPort()
 {
   NS_LOG_FUNCTION (this);
 
@@ -147,7 +147,7 @@ PscApplicationConfiguration::GetSessionInterval ()
 }
 
 uint32_t
-PscApplicationConfiguration::IncrementInstances (void)
+PscApplicationConfiguration::IncrementInstances()
 {
   NS_LOG_FUNCTION (this);
 

@@ -54,7 +54,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorArbitratorState");
 namespace psc {
 
 /** McpttOnNetworkFloorArbitratorState - begin **/
-McpttOnNetworkFloorArbitratorState::~McpttOnNetworkFloorArbitratorState (void)
+McpttOnNetworkFloorArbitratorState::~McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -124,13 +124,13 @@ McpttOnNetworkFloorArbitratorState::ExpiryOfT20 (Ptr<McpttOnNetworkFloorArbitrat
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorState::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorState::GetInstanceStateId() const
 {
   return McpttEntityId ();
 }
 
 bool
-McpttOnNetworkFloorArbitratorState::IsFloorOccupied (void) const
+McpttOnNetworkFloorArbitratorState::IsFloorOccupied() const
 {
   return false;
 }
@@ -198,8 +198,8 @@ McpttOnNetworkFloorArbitratorState::Unselected (Ptr<McpttOnNetworkFloorArbitrato
   NS_LOG_FUNCTION (this << machine);
 }
 
-McpttOnNetworkFloorArbitratorState::McpttOnNetworkFloorArbitratorState (void)
-  : SimpleRefCount<McpttOnNetworkFloorArbitratorState> ()
+McpttOnNetworkFloorArbitratorState::McpttOnNetworkFloorArbitratorState()
+    : SimpleRefCount<McpttOnNetworkFloorArbitratorState>()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -213,33 +213,33 @@ operator<< (std::ostream& os, const McpttOnNetworkFloorArbitratorState& state)
 
 /** McpttOnNetworkFloorArbitratorStateStartStop - begin **/
 Ptr<McpttOnNetworkFloorArbitratorStateStartStop>
-McpttOnNetworkFloorArbitratorStateStartStop::GetInstance (void)
+McpttOnNetworkFloorArbitratorStateStartStop::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorArbitratorStateStartStop> instance = Create<McpttOnNetworkFloorArbitratorStateStartStop> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateStartStop::GetStateId (void)
+McpttOnNetworkFloorArbitratorStateStartStop::GetStateId()
 {
   static McpttEntityId id (0, "'Start-stop'");
 
   return id;
 }
 
-McpttOnNetworkFloorArbitratorStateStartStop::McpttOnNetworkFloorArbitratorStateStartStop (void)
-  : McpttOnNetworkFloorArbitratorState ()
+McpttOnNetworkFloorArbitratorStateStartStop::McpttOnNetworkFloorArbitratorStateStartStop()
+    : McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorArbitratorStateStartStop::~McpttOnNetworkFloorArbitratorStateStartStop (void)
+McpttOnNetworkFloorArbitratorStateStartStop::~McpttOnNetworkFloorArbitratorStateStartStop()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateStartStop::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorStateStartStop::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorArbitratorStateStartStop::GetStateId ();
 }
@@ -284,33 +284,33 @@ McpttOnNetworkFloorArbitratorStateStartStop::CallInitialized (Ptr<McpttOnNetwork
 
 /** McpttOnNetworkFloorArbitratorStateIdle - begin **/
 Ptr<McpttOnNetworkFloorArbitratorStateIdle>
-McpttOnNetworkFloorArbitratorStateIdle::GetInstance (void)
+McpttOnNetworkFloorArbitratorStateIdle::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorArbitratorStateIdle> instance = Create<McpttOnNetworkFloorArbitratorStateIdle> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateIdle::GetStateId (void)
+McpttOnNetworkFloorArbitratorStateIdle::GetStateId()
 {
   static McpttEntityId id (1, "'G: Floor Idle'");
 
   return id;
 }
 
-McpttOnNetworkFloorArbitratorStateIdle::McpttOnNetworkFloorArbitratorStateIdle (void)
-  : McpttOnNetworkFloorArbitratorState ()
+McpttOnNetworkFloorArbitratorStateIdle::McpttOnNetworkFloorArbitratorStateIdle()
+    : McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorArbitratorStateIdle::~McpttOnNetworkFloorArbitratorStateIdle (void)
+McpttOnNetworkFloorArbitratorStateIdle::~McpttOnNetworkFloorArbitratorStateIdle()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateIdle::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorStateIdle::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorArbitratorStateIdle::GetStateId ();
 }
@@ -375,16 +375,15 @@ McpttOnNetworkFloorArbitratorStateIdle::ReceiveFloorRequest (Ptr<McpttOnNetworkF
   bool isOnlyParticipant = machine->GetNParticipants () == 1;
   bool isRxOnly = machine->GetParticipantBySsrc (msg.GetSsrc ())->IsReceiveOnly ();
 
-  if (isOnlyParticipant == true
-      || isRxOnly == true)
-    {
+  if (isOnlyParticipant || isRxOnly)
+  {
       McpttFloorMsgDeny denyMsg;
       denyMsg.SetSsrc (machine->GetTxSsrc ());
-      if (isOnlyParticipant == true)
-        {
+      if (isOnlyParticipant)
+      {
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_3));
         }
-      else if (isRxOnly == true)
+        else if (isRxOnly)
         {
           denyMsg.SetRejCause (McpttFloorMsgFieldRejectCause (McpttFloorMsgFieldRejectCause::CAUSE_5));
         }
@@ -442,39 +441,39 @@ McpttOnNetworkFloorArbitratorStateIdle::ExpiryOfT4 (Ptr<McpttOnNetworkFloorArbit
 
 /** McpttOnNetworkFloorArbitratorStateTaken - begin **/
 Ptr<McpttOnNetworkFloorArbitratorStateTaken>
-McpttOnNetworkFloorArbitratorStateTaken::GetInstance (void)
+McpttOnNetworkFloorArbitratorStateTaken::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorArbitratorStateTaken> instance = Create<McpttOnNetworkFloorArbitratorStateTaken> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateTaken::GetStateId (void)
+McpttOnNetworkFloorArbitratorStateTaken::GetStateId()
 {
   static McpttEntityId id (2, "'G: Floor Taken'");
 
   return id;
 }
 
-McpttOnNetworkFloorArbitratorStateTaken::McpttOnNetworkFloorArbitratorStateTaken (void)
-  : McpttOnNetworkFloorArbitratorState ()
+McpttOnNetworkFloorArbitratorStateTaken::McpttOnNetworkFloorArbitratorStateTaken()
+    : McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorArbitratorStateTaken::~McpttOnNetworkFloorArbitratorStateTaken (void)
+McpttOnNetworkFloorArbitratorStateTaken::~McpttOnNetworkFloorArbitratorStateTaken()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateTaken::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorStateTaken::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorArbitratorStateTaken::GetStateId ();
 }
 
 bool
-McpttOnNetworkFloorArbitratorStateTaken::IsFloorOccupied (void) const
+McpttOnNetworkFloorArbitratorStateTaken::IsFloorOccupied() const
 {
   return true;
 }
@@ -625,7 +624,7 @@ McpttOnNetworkFloorArbitratorStateTaken::ReceiveFloorRequest (Ptr<McpttOnNetwork
       grantedMsg.UpdateTrackInfo (msg.GetTrackInfo ());
       machine->SendTo (grantedMsg, machine->GetStoredSsrc ());
     }
-  else if (machine->IsPreemptive (msg) == true)
+    else if (machine->IsPreemptive(msg))
     {
       if (machine->IsDualFloorSupported ())
         {
@@ -704,39 +703,39 @@ McpttOnNetworkFloorArbitratorStateTaken::ClientRelease (Ptr<McpttOnNetworkFloorA
 
 /** McpttOnNetworkFloorArbitratorStateRevoke - begin **/
 Ptr<McpttOnNetworkFloorArbitratorStateRevoke>
-McpttOnNetworkFloorArbitratorStateRevoke::GetInstance (void)
+McpttOnNetworkFloorArbitratorStateRevoke::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorArbitratorStateRevoke> instance = Create<McpttOnNetworkFloorArbitratorStateRevoke> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateRevoke::GetStateId (void)
+McpttOnNetworkFloorArbitratorStateRevoke::GetStateId()
 {
   static McpttEntityId id (3, "'G: Pending Floor Revoke'");
 
   return id;
 }
 
-McpttOnNetworkFloorArbitratorStateRevoke::McpttOnNetworkFloorArbitratorStateRevoke (void)
-  : McpttOnNetworkFloorArbitratorState ()
+McpttOnNetworkFloorArbitratorStateRevoke::McpttOnNetworkFloorArbitratorStateRevoke()
+    : McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorArbitratorStateRevoke::~McpttOnNetworkFloorArbitratorStateRevoke (void)
+McpttOnNetworkFloorArbitratorStateRevoke::~McpttOnNetworkFloorArbitratorStateRevoke()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateRevoke::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorStateRevoke::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorArbitratorStateRevoke::GetStateId ();
 }
 
 bool
-McpttOnNetworkFloorArbitratorStateRevoke::IsFloorOccupied (void) const
+McpttOnNetworkFloorArbitratorStateRevoke::IsFloorOccupied() const
 {
   return true;
 }
@@ -829,33 +828,33 @@ McpttOnNetworkFloorArbitratorStateRevoke::ExpiryOfT1 (Ptr<McpttOnNetworkFloorArb
 
 /** McpttOnNetworkFloorArbitratorStateReleasing - begin **/
 Ptr<McpttOnNetworkFloorArbitratorStateReleasing>
-McpttOnNetworkFloorArbitratorStateReleasing::GetInstance (void)
+McpttOnNetworkFloorArbitratorStateReleasing::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorArbitratorStateReleasing> instance = Create<McpttOnNetworkFloorArbitratorStateReleasing> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateReleasing::GetStateId (void)
+McpttOnNetworkFloorArbitratorStateReleasing::GetStateId()
 {
   static McpttEntityId id (4, "'Releasing'");
 
   return id;
 }
 
-McpttOnNetworkFloorArbitratorStateReleasing::McpttOnNetworkFloorArbitratorStateReleasing (void)
-  : McpttOnNetworkFloorArbitratorState ()
+McpttOnNetworkFloorArbitratorStateReleasing::McpttOnNetworkFloorArbitratorStateReleasing()
+    : McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorArbitratorStateReleasing::~McpttOnNetworkFloorArbitratorStateReleasing (void)
+McpttOnNetworkFloorArbitratorStateReleasing::~McpttOnNetworkFloorArbitratorStateReleasing()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateReleasing::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorStateReleasing::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorArbitratorStateReleasing::GetStateId ();
 }
@@ -873,33 +872,33 @@ McpttOnNetworkFloorArbitratorStateReleasing::CallRelease2 (Ptr<McpttOnNetworkFlo
 
 /** McpttOnNetworkFloorArbitratorStateInitialising - begin **/
 Ptr<McpttOnNetworkFloorArbitratorStateInitialising>
-McpttOnNetworkFloorArbitratorStateInitialising::GetInstance (void)
+McpttOnNetworkFloorArbitratorStateInitialising::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorArbitratorStateInitialising> instance = Create<McpttOnNetworkFloorArbitratorStateInitialising> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateInitialising::GetStateId (void)
+McpttOnNetworkFloorArbitratorStateInitialising::GetStateId()
 {
   static McpttEntityId id (5, "'G: Floor Initialising'");
 
   return id;
 }
 
-McpttOnNetworkFloorArbitratorStateInitialising::McpttOnNetworkFloorArbitratorStateInitialising (void)
-  : McpttOnNetworkFloorArbitratorState ()
+McpttOnNetworkFloorArbitratorStateInitialising::McpttOnNetworkFloorArbitratorStateInitialising()
+    : McpttOnNetworkFloorArbitratorState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorArbitratorStateInitialising::~McpttOnNetworkFloorArbitratorStateInitialising (void)
+McpttOnNetworkFloorArbitratorStateInitialising::~McpttOnNetworkFloorArbitratorStateInitialising()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorArbitratorStateInitialising::GetInstanceStateId (void) const
+McpttOnNetworkFloorArbitratorStateInitialising::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorArbitratorStateInitialising::GetStateId ();
 }

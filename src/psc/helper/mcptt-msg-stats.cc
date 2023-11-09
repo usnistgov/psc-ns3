@@ -55,7 +55,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttMsgStats);
 
 TypeId
-McpttMsgStats::GetTypeId (void)
+McpttMsgStats::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttMsgStats")
     .SetParent<Object> ()
@@ -89,13 +89,13 @@ McpttMsgStats::GetTypeId (void)
   return tid;
 }
 
-McpttMsgStats::McpttMsgStats (void)
-  : m_firstMsg (true)
+McpttMsgStats::McpttMsgStats()
+    : m_firstMsg(true)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttMsgStats::~McpttMsgStats (void)
+McpttMsgStats::~McpttMsgStats()
 {
   NS_LOG_FUNCTION (this);
   if (m_outputFile.is_open ())
@@ -123,131 +123,131 @@ McpttMsgStats::ReceiveTxTrace (Ptr<const Application> app, uint16_t callId, Ptr<
 McpttCallMsg*
 McpttMsgStats::ResolveCallMsgType (Ptr<const Packet> pkt)
 {
-  McpttCallMsg* temp = new McpttCallMsg;
-  pkt->PeekHeader (*temp);
-  McpttCallMsgFieldMsgType msgType = temp->GetMsgType ();
-  uint8_t code = msgType.GetType ();
-  delete temp;
+    auto* temp = new McpttCallMsg;
+    pkt->PeekHeader(*temp);
+    McpttCallMsgFieldMsgType msgType = temp->GetMsgType();
+    uint8_t code = msgType.GetType();
+    delete temp;
 
-  if (code == McpttCallMsgGrpProbe::CODE)
+    if (code == McpttCallMsgGrpProbe::CODE)
     {
-      McpttCallMsgGrpProbe* probeMsg = new McpttCallMsgGrpProbe;
-      pkt->PeekHeader (*probeMsg);
-      return probeMsg;
+        auto* probeMsg = new McpttCallMsgGrpProbe;
+        pkt->PeekHeader(*probeMsg);
+        return probeMsg;
     }
   else if (code == McpttCallMsgGrpAnnoun::CODE)
     {
-      McpttCallMsgGrpAnnoun* grpAnnounMsg = new McpttCallMsgGrpAnnoun;
-      pkt->PeekHeader (*grpAnnounMsg);
-      return grpAnnounMsg;
+        auto* grpAnnounMsg = new McpttCallMsgGrpAnnoun;
+        pkt->PeekHeader(*grpAnnounMsg);
+        return grpAnnounMsg;
     }
   else if (code == McpttCallMsgGrpAccept::CODE)
     {
-      McpttCallMsgGrpAccept* grpAcceptMsg = new McpttCallMsgGrpAccept;
-      pkt->PeekHeader (*grpAcceptMsg);
-      return grpAcceptMsg;
+        auto* grpAcceptMsg = new McpttCallMsgGrpAccept;
+        pkt->PeekHeader(*grpAcceptMsg);
+        return grpAcceptMsg;
     }
   else if (code == McpttCallMsgGrpImmPerilEnd::CODE)
     {
-      McpttCallMsgGrpImmPerilEnd* grpImmPerilEndMsg = new McpttCallMsgGrpImmPerilEnd;
-      pkt->PeekHeader (*grpImmPerilEndMsg);
-      return grpImmPerilEndMsg;
+        auto* grpImmPerilEndMsg = new McpttCallMsgGrpImmPerilEnd;
+        pkt->PeekHeader(*grpImmPerilEndMsg);
+        return grpImmPerilEndMsg;
     }
   else if (code == McpttCallMsgGrpEmergEnd::CODE)
     {
-      McpttCallMsgGrpEmergEnd* grpEmergEndMsg = new McpttCallMsgGrpEmergEnd;
-      pkt->PeekHeader (*grpEmergEndMsg);
-      return grpEmergEndMsg;
+        auto* grpEmergEndMsg = new McpttCallMsgGrpEmergEnd;
+        pkt->PeekHeader(*grpEmergEndMsg);
+        return grpEmergEndMsg;
     }
   else if (code == McpttCallMsgGrpEmergAlert::CODE)
     {
-      McpttCallMsgGrpEmergAlert* grpEmergAlertMsg = new McpttCallMsgGrpEmergAlert;
-      pkt->PeekHeader (*grpEmergAlertMsg);
-      return grpEmergAlertMsg;
+        auto* grpEmergAlertMsg = new McpttCallMsgGrpEmergAlert;
+        pkt->PeekHeader(*grpEmergAlertMsg);
+        return grpEmergAlertMsg;
     }
   else if (code == McpttCallMsgGrpEmergAlertAck::CODE)
     {
-      McpttCallMsgGrpEmergAlertAck* grpEmergAlertAckMsg = new McpttCallMsgGrpEmergAlertAck;
-      pkt->PeekHeader (*grpEmergAlertAckMsg);
-      return grpEmergAlertAckMsg;
+        auto* grpEmergAlertAckMsg = new McpttCallMsgGrpEmergAlertAck;
+        pkt->PeekHeader(*grpEmergAlertAckMsg);
+        return grpEmergAlertAckMsg;
     }
   else if (code == McpttCallMsgGrpEmergAlertCancel::CODE)
     {
-      McpttCallMsgGrpEmergAlertCancel* grpEmergAlertCancelMsg = new McpttCallMsgGrpEmergAlertCancel;
-      pkt->PeekHeader (*grpEmergAlertCancelMsg);
-      return grpEmergAlertCancelMsg;
+        auto* grpEmergAlertCancelMsg = new McpttCallMsgGrpEmergAlertCancel;
+        pkt->PeekHeader(*grpEmergAlertCancelMsg);
+        return grpEmergAlertCancelMsg;
     }
   else if (code == McpttCallMsgGrpEmergAlertCancelAck::CODE)
     {
-      McpttCallMsgGrpEmergAlertCancelAck* emergAlertCancelAckMsg = new McpttCallMsgGrpEmergAlertCancelAck;
-      pkt->PeekHeader (*emergAlertCancelAckMsg);
-      return emergAlertCancelAckMsg;
+        auto* emergAlertCancelAckMsg = new McpttCallMsgGrpEmergAlertCancelAck;
+        pkt->PeekHeader(*emergAlertCancelAckMsg);
+        return emergAlertCancelAckMsg;
     }
   else if (code == McpttCallMsgGrpBroadcast::CODE)
     {
-      McpttCallMsgGrpBroadcast* grpBroadcastMsg = new McpttCallMsgGrpBroadcast;
-      pkt->PeekHeader (*grpBroadcastMsg);
-      return grpBroadcastMsg;
+        auto* grpBroadcastMsg = new McpttCallMsgGrpBroadcast;
+        pkt->PeekHeader(*grpBroadcastMsg);
+        return grpBroadcastMsg;
     }
   else if (code == McpttCallMsgGrpBroadcastEnd::CODE)
     {
-      McpttCallMsgGrpBroadcastEnd* grpBroadcastEndMsg = new McpttCallMsgGrpBroadcastEnd;
-      pkt->PeekHeader (*grpBroadcastEndMsg);
-      return grpBroadcastEndMsg;
+        auto* grpBroadcastEndMsg = new McpttCallMsgGrpBroadcastEnd;
+        pkt->PeekHeader(*grpBroadcastEndMsg);
+        return grpBroadcastEndMsg;
     }
   else if (code == McpttCallMsgPrivateSetupReq::CODE)
     {
-      McpttCallMsgPrivateSetupReq* privateSetupReqMsg = new McpttCallMsgPrivateSetupReq;
-      pkt->PeekHeader (*privateSetupReqMsg);
-      return privateSetupReqMsg;
+        auto* privateSetupReqMsg = new McpttCallMsgPrivateSetupReq;
+        pkt->PeekHeader(*privateSetupReqMsg);
+        return privateSetupReqMsg;
     }
   else if (code == McpttCallMsgPrivateRinging::CODE)
     {
-      McpttCallMsgPrivateRinging* privateRingingMsg = new McpttCallMsgPrivateRinging;
-      pkt->PeekHeader (*privateRingingMsg);
-      return privateRingingMsg;
+        auto* privateRingingMsg = new McpttCallMsgPrivateRinging;
+        pkt->PeekHeader(*privateRingingMsg);
+        return privateRingingMsg;
     }
   else if (code == McpttCallMsgPrivateAccept::CODE)
     {
-      McpttCallMsgPrivateAccept* privateAcceptMsg = new McpttCallMsgPrivateAccept;
-      pkt->PeekHeader (*privateAcceptMsg);
-      return privateAcceptMsg;
+        auto* privateAcceptMsg = new McpttCallMsgPrivateAccept;
+        pkt->PeekHeader(*privateAcceptMsg);
+        return privateAcceptMsg;
     }
   else if (code == McpttCallMsgPrivateReject::CODE)
     {
-      McpttCallMsgPrivateReject* privateRejectMsg = new McpttCallMsgPrivateReject;
-      pkt->PeekHeader (*privateRejectMsg);
-      return privateRejectMsg;
+        auto* privateRejectMsg = new McpttCallMsgPrivateReject;
+        pkt->PeekHeader(*privateRejectMsg);
+        return privateRejectMsg;
     }
   else if (code == McpttCallMsgPrivateRelease::CODE)
     {
-      McpttCallMsgPrivateRelease* privateReleaseMsg = new McpttCallMsgPrivateRelease;
-      pkt->PeekHeader (*privateReleaseMsg);
-      return privateReleaseMsg;
+        auto* privateReleaseMsg = new McpttCallMsgPrivateRelease;
+        pkt->PeekHeader(*privateReleaseMsg);
+        return privateReleaseMsg;
     }
   else if (code == McpttCallMsgPrivateReleaseAck::CODE)
     {
-      McpttCallMsgPrivateReleaseAck* privateReleaseAckMsg = new McpttCallMsgPrivateReleaseAck;
-      pkt->PeekHeader (*privateReleaseAckMsg);
-      return privateReleaseAckMsg;
+        auto* privateReleaseAckMsg = new McpttCallMsgPrivateReleaseAck;
+        pkt->PeekHeader(*privateReleaseAckMsg);
+        return privateReleaseAckMsg;
     }
   else if (code == McpttCallMsgPrivateAcceptAck::CODE)
     {
-      McpttCallMsgPrivateAcceptAck* privateAcceptAckMsg = new McpttCallMsgPrivateAcceptAck;
-      pkt->PeekHeader (*privateAcceptAckMsg);
-      return privateAcceptAckMsg;
+        auto* privateAcceptAckMsg = new McpttCallMsgPrivateAcceptAck;
+        pkt->PeekHeader(*privateAcceptAckMsg);
+        return privateAcceptAckMsg;
     }
   else if (code == McpttCallMsgPrivateEmergCancel::CODE)
     {
-      McpttCallMsgPrivateEmergCancel* privateEmergCancelMsg = new McpttCallMsgPrivateEmergCancel;
-      pkt->PeekHeader (*privateEmergCancelMsg);
-      return privateEmergCancelMsg;
+        auto* privateEmergCancelMsg = new McpttCallMsgPrivateEmergCancel;
+        pkt->PeekHeader(*privateEmergCancelMsg);
+        return privateEmergCancelMsg;
     }
   else if (code == McpttCallMsgPrivateEmergCancelAck::CODE)
     {
-      McpttCallMsgPrivateEmergCancelAck* privateEmergCancelAckMsg = new McpttCallMsgPrivateEmergCancelAck;
-      pkt->PeekHeader (*privateEmergCancelAckMsg);
-      return privateEmergCancelAckMsg;
+        auto* privateEmergCancelAckMsg = new McpttCallMsgPrivateEmergCancelAck;
+        pkt->PeekHeader(*privateEmergCancelAckMsg);
+        return privateEmergCancelAckMsg;
     }
   NS_FATAL_ERROR ("Could not resolve message code = " << (uint32_t)code << ".");
   return nullptr;
@@ -256,77 +256,77 @@ McpttMsgStats::ResolveCallMsgType (Ptr<const Packet> pkt)
 McpttFloorMsg*
 McpttMsgStats::ResolveFloorMsgType (Ptr<const Packet> pkt)
 {
-  McpttFloorMsg* temp = new McpttFloorMsg;
+    auto* temp = new McpttFloorMsg;
 
-  pkt->PeekHeader (*temp);
-  uint8_t subtype = temp->GetSubtype ();
-  delete temp;
+    pkt->PeekHeader(*temp);
+    uint8_t subtype = temp->GetSubtype();
+    delete temp;
 
-  if (subtype == McpttFloorMsgRequest::SUBTYPE)
+    if (subtype == McpttFloorMsgRequest::SUBTYPE)
     {
-      McpttFloorMsgRequest* reqMsg = new McpttFloorMsgRequest;
-      pkt->PeekHeader (*reqMsg);
-      return reqMsg;
+        auto* reqMsg = new McpttFloorMsgRequest;
+        pkt->PeekHeader(*reqMsg);
+        return reqMsg;
     }
   else if (subtype == McpttFloorMsgGranted::SUBTYPE
            || subtype == McpttFloorMsgGranted::SUBTYPE_ACK)
     {
-      McpttFloorMsgGranted* grantedMsg = new McpttFloorMsgGranted;
-      pkt->PeekHeader (*grantedMsg);
-      return grantedMsg;
+        auto* grantedMsg = new McpttFloorMsgGranted;
+        pkt->PeekHeader(*grantedMsg);
+        return grantedMsg;
     }
   else if (subtype == McpttFloorMsgDeny::SUBTYPE
            || subtype == McpttFloorMsgDeny::SUBTYPE_ACK)
     {
-      McpttFloorMsgDeny* denyMsg = new McpttFloorMsgDeny;
-      pkt->PeekHeader (*denyMsg);
-      return denyMsg;
+        auto* denyMsg = new McpttFloorMsgDeny;
+        pkt->PeekHeader(*denyMsg);
+        return denyMsg;
     }
   else if (subtype == McpttFloorMsgRelease::SUBTYPE
            || subtype == McpttFloorMsgRelease::SUBTYPE_ACK)
     {
-      McpttFloorMsgRelease* releaseMsg = new McpttFloorMsgRelease;
-      pkt->PeekHeader (*releaseMsg);
-      return releaseMsg;
+        auto* releaseMsg = new McpttFloorMsgRelease;
+        pkt->PeekHeader(*releaseMsg);
+        return releaseMsg;
     }
   else if (subtype == McpttFloorMsgIdle::SUBTYPE
            || subtype == McpttFloorMsgIdle::SUBTYPE_ACK)
     {
-      McpttFloorMsgIdle* idleMsg = new McpttFloorMsgIdle;
-      pkt->PeekHeader (*idleMsg);
-      return idleMsg;
+        auto* idleMsg = new McpttFloorMsgIdle;
+        pkt->PeekHeader(*idleMsg);
+        return idleMsg;
     }
   else if (subtype == McpttFloorMsgTaken::SUBTYPE
            || subtype == McpttFloorMsgTaken::SUBTYPE_ACK)
     {
-      McpttFloorMsgTaken* takenMsg = new McpttFloorMsgTaken;
-      pkt->PeekHeader (*takenMsg);
-      return takenMsg;
+        auto* takenMsg = new McpttFloorMsgTaken;
+        pkt->PeekHeader(*takenMsg);
+        return takenMsg;
     }
   else if (subtype == McpttFloorMsgRevoke::SUBTYPE)
     {
-      McpttFloorMsgRevoke* revokeMsg = new McpttFloorMsgRevoke;
-      pkt->PeekHeader (*revokeMsg);
-      return revokeMsg;
+        auto* revokeMsg = new McpttFloorMsgRevoke;
+        pkt->PeekHeader(*revokeMsg);
+        return revokeMsg;
     }
   else if (subtype == McpttFloorMsgQueuePositionRequest::SUBTYPE)
     {
-      McpttFloorMsgQueuePositionRequest* queuePositionRequestMsg = new McpttFloorMsgQueuePositionRequest;
-      pkt->PeekHeader (*queuePositionRequestMsg);
-      return queuePositionRequestMsg;
+        auto* queuePositionRequestMsg = new McpttFloorMsgQueuePositionRequest;
+        pkt->PeekHeader(*queuePositionRequestMsg);
+        return queuePositionRequestMsg;
     }
   else if (subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE
            || subtype == McpttFloorMsgQueuePositionInfo::SUBTYPE_ACK)
     {
-      McpttFloorMsgQueuePositionInfo* queueInfoMsg = new McpttFloorMsgQueuePositionInfo;
-      pkt->PeekHeader (*queueInfoMsg);
-      return queueInfoMsg;
+        auto* queueInfoMsg = new McpttFloorMsgQueuePositionInfo;
+        pkt->PeekHeader(*queueInfoMsg);
+        return queueInfoMsg;
     }
   else if (subtype == McpttFloorMsgAck::SUBTYPE)
     {
-      McpttFloorMsgAck* ackMsg = new McpttFloorMsgAck;
-      pkt->PeekHeader (*ackMsg);
-      return ackMsg;
+        auto* ackMsg = new McpttFloorMsgAck;
+        pkt->PeekHeader(*ackMsg);
+        return ackMsg;
     }
   NS_FATAL_ERROR ("Could not resolve message subtype = " << (uint32_t)subtype << ".");
   return nullptr;
@@ -336,8 +336,8 @@ void
 McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType, bool rx)
 {
   NS_LOG_FUNCTION (this << app << callId << pkt << headerType << rx);
-  if (m_firstMsg == true)
-    {
+  if (m_firstMsg)
+  {
       m_firstMsg = false;
       m_outputFile.open (m_outputFileName.c_str ());
       m_outputFile << "#";
@@ -365,7 +365,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Pac
           selected = "False";
         }
     }
-  if (headerType == sip::SipHeader::GetTypeId () && m_callControl == true)
+    if (headerType == sip::SipHeader::GetTypeId() && m_callControl)
     {
       sip::SipHeader sipHeader;
       pkt->PeekHeader (sipHeader);
@@ -403,7 +403,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Pac
         }
       m_outputFile << std::endl;
     }
-  else if (headerType.IsChildOf (McpttCallMsg::GetTypeId ()) && m_callControl == true)
+    else if (headerType.IsChildOf(McpttCallMsg::GetTypeId()) && m_callControl)
     {
       McpttCallMsg* callMsg = ResolveCallMsgType (pkt);
       m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
@@ -426,7 +426,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Pac
       m_outputFile << std::endl;
       delete callMsg;
     }
-  else if (headerType.IsChildOf (McpttFloorMsg::GetTypeId ()) && m_floorControl == true)
+    else if (headerType.IsChildOf(McpttFloorMsg::GetTypeId()) && m_floorControl)
     {
       McpttFloorMsg* floorMsg = ResolveFloorMsgType (pkt);
       m_outputFile << std::fixed << std::setw (10) << Simulator::Now ().GetSeconds ();
@@ -449,7 +449,7 @@ McpttMsgStats::Trace (Ptr<const Application> app, uint16_t callId, Ptr<const Pac
       m_outputFile << std::endl;
       delete floorMsg;
     }
-  else if (headerType == McpttMediaMsg::GetTypeId () && m_media == true)
+    else if (headerType == McpttMediaMsg::GetTypeId() && m_media)
     {
       McpttMediaMsg mediaMsg;
       pkt->PeekHeader (mediaMsg);

@@ -199,8 +199,7 @@ bool
 LteSlUeRrc::IsTxInterested()
 {
     // Loop through each bearer to see if one is interested to transmit
-    std::map<uint32_t, std::map<uint32_t, std::list<Ptr<LteSidelinkRadioBearerInfo>>>>::iterator
-        srcIt = m_slrbMap.find(m_sourceL2Id);
+    auto srcIt = m_slrbMap.find(m_sourceL2Id);
     if (srcIt == m_slrbMap.end())
     {
         return false;
@@ -221,9 +220,7 @@ LteSlUeRrc::IsMonitoringInterested()
     // requests/responses)
     bool monitoring = false;
     // check applications
-    for (std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_appServicesMap.begin();
-         itInfo != m_appServicesMap.end();
-         ++itInfo)
+    for (auto itInfo = m_appServicesMap.begin(); itInfo != m_appServicesMap.end(); ++itInfo)
     {
         if (itInfo->second.role != Announcing)
         {
@@ -235,9 +232,7 @@ LteSlUeRrc::IsMonitoringInterested()
     if (!monitoring)
     {
         // check relays
-        for (std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.begin();
-             itInfo != m_relayServicesMap.end();
-             ++itInfo)
+        for (auto itInfo = m_relayServicesMap.begin(); itInfo != m_relayServicesMap.end(); ++itInfo)
         {
             if (itInfo->second.role == RemoteUE ||
                 (itInfo->second.role == RelayUE && itInfo->second.model == ModelB))
@@ -258,9 +253,7 @@ LteSlUeRrc::IsAnnouncingInterested()
     // applications and relays
     bool announcing = false;
     // check applications
-    for (std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_appServicesMap.begin();
-         itInfo != m_appServicesMap.end();
-         ++itInfo)
+    for (auto itInfo = m_appServicesMap.begin(); itInfo != m_appServicesMap.end(); ++itInfo)
     {
         if (itInfo->second.role != Monitoring)
         {
@@ -270,9 +263,7 @@ LteSlUeRrc::IsAnnouncingInterested()
     }
     if (!announcing)
     { // check relays
-        for (std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.begin();
-             itInfo != m_relayServicesMap.end();
-             ++itInfo)
+        for (auto itInfo = m_relayServicesMap.begin(); itInfo != m_relayServicesMap.end(); ++itInfo)
         {
             if (itInfo->second.role == RelayUE ||
                 (itInfo->second.role == RemoteUE && itInfo->second.model == ModelB))
@@ -291,8 +282,7 @@ LteSlUeRrc::GetTxDestinations()
     std::list<uint32_t> destinations;
 
     // Loop through each bearer to see if one is interested to transmit
-    std::map<uint32_t, std::map<uint32_t, std::list<Ptr<LteSidelinkRadioBearerInfo>>>>::iterator
-        srcIt = m_slrbMap.find(m_sourceL2Id);
+    auto srcIt = m_slrbMap.find(m_sourceL2Id);
     if (srcIt != m_slrbMap.end())
     {
         // Loop through each bearer to see if one is interested to transmit
@@ -332,8 +322,7 @@ LteSlUeRrc::SetDiscInterFreq(uint16_t ulEarfcn)
 bool
 LteSlUeRrc::AddSidelinkRadioBearer(Ptr<LteSidelinkRadioBearerInfo> slb)
 {
-    std::map<uint32_t, std::map<uint32_t, std::list<Ptr<LteSidelinkRadioBearerInfo>>>>::iterator
-        srcIt = m_slrbMap.find(slb->m_sourceL2Id);
+    auto srcIt = m_slrbMap.find(slb->m_sourceL2Id);
     if (srcIt == m_slrbMap.end())
     {
         // must insert map
@@ -346,8 +335,7 @@ LteSlUeRrc::AddSidelinkRadioBearer(Ptr<LteSidelinkRadioBearerInfo> slb)
         NS_LOG_LOGIC("First SLRB for source " << slb->m_sourceL2Id);
     }
 
-    std::map<uint32_t, std::list<Ptr<LteSidelinkRadioBearerInfo>>>::iterator groupIt =
-        m_slrbMap[slb->m_sourceL2Id].find(slb->m_destinationL2Id);
+    auto groupIt = m_slrbMap[slb->m_sourceL2Id].find(slb->m_destinationL2Id);
     if (groupIt == m_slrbMap[slb->m_sourceL2Id].end())
     {
         NS_LOG_LOGIC("First SLRB for destination " << slb->m_destinationL2Id);
@@ -387,12 +375,10 @@ LteSlUeRrc::GetSidelinkRadioBearer(uint32_t src, uint32_t group)
 
     NS_LOG_LOGIC("Searching SLRB " << src << "->" << group);
 
-    std::map<uint32_t, std::map<uint32_t, std::list<Ptr<LteSidelinkRadioBearerInfo>>>>::iterator
-        srcIt = m_slrbMap.find(src);
+    auto srcIt = m_slrbMap.find(src);
     if (srcIt != m_slrbMap.end())
     {
-        std::map<uint32_t, std::list<Ptr<LteSidelinkRadioBearerInfo>>>::iterator srcIt2 =
-            (*srcIt).second.find(group);
+        auto srcIt2 = (*srcIt).second.find(group);
         if (srcIt2 != (*srcIt).second.end())
         {
             slrb = *(m_slrbMap[src][group].begin());
@@ -411,7 +397,7 @@ void
 LteSlUeRrc::StartDiscoveryApps(std::list<uint32_t> appCodes, DiscoveryRole role)
 {
     NS_LOG_FUNCTION(this);
-    for (std::list<uint32_t>::iterator it = appCodes.begin(); it != appCodes.end(); ++it)
+    for (auto it = appCodes.begin(); it != appCodes.end(); ++it)
     {
         AppServiceInfo info;
         info.role = role;
@@ -429,7 +415,7 @@ LteSlUeRrc::StopDiscoveryApps(std::list<uint32_t> appCodes, DiscoveryRole role)
     NS_LOG_FUNCTION(this);
     std::map<uint32_t, AppServiceInfo>::iterator itInfo;
 
-    for (std::list<uint32_t>::iterator it = appCodes.begin(); it != appCodes.end(); ++it)
+    for (auto it = appCodes.begin(); it != appCodes.end(); ++it)
     {
         itInfo = m_appServicesMap.find(*it);
         if (itInfo != m_appServicesMap.end())
@@ -447,7 +433,7 @@ LteSlUeRrc::IsMonitoringApp(uint8_t msgType, uint32_t appCode)
     NS_LOG_FUNCTION(this);
     // the device is interested in announcement if monitoring, in request if acting as discoveree,
     // and in response if acting as discoverer
-    std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_appServicesMap.find(appCode);
+    auto itInfo = m_appServicesMap.find(appCode);
     if (itInfo != m_appServicesMap.end())
     {
         return ((msgType == LteSlDiscHeader::DISC_OPEN_ANNOUNCEMENT &&
@@ -466,7 +452,7 @@ LteSlUeRrc::IsAnnouncingApp(uint32_t appCode)
     NS_LOG_FUNCTION(this);
     // the device is monitoring for message for this app if modelA/announcing or model B (discoveree
     // or discoverer) which covers all the cases that the device is not simply announcing
-    std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_appServicesMap.find(appCode);
+    auto itInfo = m_appServicesMap.find(appCode);
     if (itInfo != m_appServicesMap.end())
     {
         return itInfo->second.role != Monitoring;
@@ -479,7 +465,7 @@ LteSlUeRrc::RecvApplicationServiceDiscovery(uint8_t msgType, uint32_t appCode)
 {
     NS_LOG_FUNCTION(this);
     // Check if this is a request I am interested in
-    std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_appServicesMap.find(appCode);
+    auto itInfo = m_appServicesMap.find(appCode);
     if (itInfo != m_appServicesMap.end())
     {
         // check if this is a request message for an app for which this UE is a Discoveree
@@ -507,9 +493,7 @@ LteSlUeRrc::StartAnnouncing()
     NS_LOG_FUNCTION(this);
     Time period = MilliSeconds(m_activeDiscTxPool->GetDiscPeriod());
     // Applications
-    for (std::map<uint32_t, AppServiceInfo>::iterator itInfo = m_appServicesMap.begin();
-         itInfo != m_appServicesMap.end();
-         ++itInfo)
+    for (auto itInfo = m_appServicesMap.begin(); itInfo != m_appServicesMap.end(); ++itInfo)
     {
         if (itInfo->second.role == Announcing || itInfo->second.role == Discoverer)
         {
@@ -521,9 +505,7 @@ LteSlUeRrc::StartAnnouncing()
     }
 
     // Relay
-    for (std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.begin();
-         itInfo != m_relayServicesMap.end();
-         ++itInfo)
+    for (auto itInfo = m_relayServicesMap.begin(); itInfo != m_relayServicesMap.end(); ++itInfo)
     {
         if ((itInfo->second.role == RemoteUE && itInfo->second.model == ModelB) ||
             (itInfo->second.role == RelayUE && itInfo->second.model == ModelA))
@@ -594,14 +576,14 @@ LteSlUeRrc::GetNextLcid(uint32_t dstL2Id)
 bool
 LteSlUeRrc::IsCellBroadcastingSIB18(uint16_t cellId)
 {
-    std::map<uint16_t, LteSlCellConfiguration>::iterator it = m_slMap.find(cellId);
+    auto it = m_slMap.find(cellId);
     return (it != m_slMap.end() && it->second.haveSib18);
 }
 
 bool
 LteSlUeRrc::IsCellBroadcastingSIB19(uint16_t cellId)
 {
-    std::map<uint16_t, LteSlCellConfiguration>::iterator it = m_slMap.find(cellId);
+    auto it = m_slMap.find(cellId);
     return (it != m_slMap.end() && it->second.haveSib19);
 }
 
@@ -682,7 +664,7 @@ LteSlUeRrc::StopRelayService(uint32_t serviceCode)
 {
     NS_LOG_FUNCTION(this << serviceCode);
 
-    std::map<uint32_t, RelayServiceInfo>::iterator it = m_relayServicesMap.find(serviceCode);
+    auto it = m_relayServicesMap.find(serviceCode);
     if (it != m_relayServicesMap.end())
     {
         // stop timer and remove from list
@@ -698,10 +680,7 @@ LteSlUeRrc::StopRelayService(uint32_t serviceCode)
     // each context in the map would be accessed to send a DirectCommunicationRelease message
     // provided the UE is in the appropriate state to send DCR
     Ptr<LteSlO2oCommParams> o2ocp = CreateObject<LteSlO2oCommParams>();
-    for (std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-             m_o2oCommContexts.begin();
-         it != m_o2oCommContexts.end();
-         ++it)
+    for (auto it = m_o2oCommContexts.begin(); it != m_o2oCommContexts.end(); ++it)
     {
         ReleaseO2OConnection(it->second, LteSlO2oCommParams::COMM_NO_LONGER_NEEDED);
     }
@@ -802,7 +781,7 @@ LteSlUeRrc::RecvRelayServiceDiscovery(uint32_t serviceCode,
                          << proseRelayUeId);
 
     // Check if this is a request I am interested in
-    std::map<uint32_t, RelayServiceInfo>::iterator itInfo = m_relayServicesMap.find(serviceCode);
+    auto itInfo = m_relayServicesMap.find(serviceCode);
     if (itInfo != m_relayServicesMap.end())
     {
         NS_ASSERT(itInfo->second.model == ModelB && itInfo->second.role == RelayUE);
@@ -1015,8 +994,7 @@ LteSlUeRrc::ProcessDirectCommunicationRequest(uint32_t L2Id, Ptr<Packet> pdcpSdu
     cId.peerL2Id = L2Id;
     cId.contextId = dcrq.GetSequenceNumber();
     Ptr<LteSlO2oCommParams> o2ocp = nullptr;
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     if (it != m_o2oCommContexts.end())
     {
         o2ocp = it->second;
@@ -1110,8 +1088,7 @@ LteSlUeRrc::ProcessDirectCommunicationAccept(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectCommunicationAccept dca;
     pdcpSdu->PeekHeader(dca);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dca.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dca.GetSequenceNumber());
 
     if (it == m_o2oCommContexts.end())
     {
@@ -1175,8 +1152,7 @@ LteSlUeRrc::ProcessDirectCommunicationReject(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectCommunicationReject dcrj;
     pdcpSdu->PeekHeader(dcrj);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dcrj.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dcrj.GetSequenceNumber());
     if (it == m_o2oCommContexts.end())
     {
         NS_LOG_DEBUG(
@@ -1212,8 +1188,7 @@ LteSlUeRrc::ProcessDirectCommunicationKeepalive(uint32_t L2Id, Ptr<Packet> pdcpS
     DirectCommunicationKeepalive dck;
     pdcpSdu->PeekHeader(dck);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dck.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dck.GetSequenceNumber());
     if (it == m_o2oCommContexts.end())
     {
         NS_LOG_DEBUG(
@@ -1253,8 +1228,7 @@ LteSlUeRrc::ProcessDirectCommunicationKeepaliveAck(uint32_t L2Id, Ptr<Packet> pd
     DirectCommunicationKeepaliveAck dcka;
     pdcpSdu->PeekHeader(dcka);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dcka.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dcka.GetSequenceNumber());
     if (it == m_o2oCommContexts.end())
     {
         NS_LOG_DEBUG(
@@ -1292,8 +1266,7 @@ LteSlUeRrc::ProcessDirectCommunicationRelease(uint32_t L2Id, Ptr<Packet> pdcpSdu
     DirectCommunicationRelease dcr;
     pdcpSdu->PeekHeader(dcr);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dcr.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dcr.GetSequenceNumber());
 
     if (it == m_o2oCommContexts.end())
     {
@@ -1357,8 +1330,7 @@ LteSlUeRrc::ProcessDirectCommunicationReleaseAccept(uint32_t L2Id, Ptr<Packet> p
     DirectCommunicationReleaseAccept dcra;
     pdcpSdu->PeekHeader(dcra);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dcra.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dcra.GetSequenceNumber());
     Ptr<LteSlO2oCommParams> o2ocp;
     if (it != m_o2oCommContexts.end())
     {
@@ -1400,8 +1372,7 @@ LteSlUeRrc::ProcessDirectSecurityModeCommand(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectSecurityModeCommand dsmcm;
     pdcpSdu->PeekHeader(dsmcm);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dsmcm.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dsmcm.GetSequenceNumber());
     if (it == m_o2oCommContexts.end())
     {
         // This can happen if the message is late and the Remote UE has erased the context in the
@@ -1454,8 +1425,7 @@ LteSlUeRrc::ProcessDirectSecurityModeComplete(uint32_t L2Id, Ptr<Packet> pdcpSdu
     DirectSecurityModeComplete dsmcp;
     pdcpSdu->PeekHeader(dsmcp);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dsmcp.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dsmcp.GetSequenceNumber());
 
     if (it == m_o2oCommContexts.end())
     {
@@ -1531,7 +1501,7 @@ LteSlUeRrc::ProcessDirectSecurityModeComplete(uint32_t L2Id, Ptr<Packet> pdcpSdu
         m_slUeCtrlSapProvider->Pc5SecuredEstablished(L2Id, m_sourceL2Id, LteSlUeRrc::RelayUE);
 
         // Report connected Remote UE to the network
-        std::map<uint32_t, uint64_t>::iterator it = m_l2Id2ImsiMap.find(L2Id);
+        auto it = m_l2Id2ImsiMap.find(L2Id);
         if (it != m_l2Id2ImsiMap.end())
         {
             m_slUeCtrlSapProvider->RecvRemoteUeReport(m_rrc->GetImsi(), it->second, L2Id);
@@ -1565,8 +1535,7 @@ LteSlUeRrc::ProcessDirectSecurityModeReject(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectSecurityModeReject dsmrj;
     pdcpSdu->PeekHeader(dsmrj);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, dsmrj.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, dsmrj.GetSequenceNumber());
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID "
@@ -1594,8 +1563,7 @@ LteSlUeRrc::ProcessDirectRekeyingRequest(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectRekeyingRequest drrq;
     pdcpSdu->PeekHeader(drrq);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, drrq.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, drrq.GetSequenceNumber());
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID "
@@ -1613,8 +1581,7 @@ LteSlUeRrc::ProcessDirectRekeyingResponse(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectRekeyingResponse drrs;
     pdcpSdu->PeekHeader(drrs);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, drrs.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, drrs.GetSequenceNumber());
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID "
@@ -1632,8 +1599,7 @@ LteSlUeRrc::ProcessDirectRekeyingTrigger(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     DirectRekeyingTrigger drt;
     pdcpSdu->PeekHeader(drt);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, drt.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, drt.GetSequenceNumber());
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID "
@@ -1651,8 +1617,7 @@ LteSlUeRrc::ProcessRemoteUeInfoRequest(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     RemoteUeInfoRequest ruirq;
     pdcpSdu->PeekHeader(ruirq);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, ruirq.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, ruirq.GetSequenceNumber());
 
     if (it == m_o2oCommContexts.end())
     {
@@ -1693,8 +1658,7 @@ LteSlUeRrc::ProcessRemoteUeInfoResponse(uint32_t L2Id, Ptr<Packet> pdcpSdu)
     RemoteUeInfoResponse ruirs;
     pdcpSdu->PeekHeader(ruirs);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        GetO2OContext(L2Id, ruirs.GetSequenceNumber());
+    auto it = GetO2OContext(L2Id, ruirs.GetSequenceNumber());
     if (it == m_o2oCommContexts.end())
     {
         // This can happen if the message is late and the Relay UE has erased the context in the
@@ -1725,8 +1689,7 @@ LteSlUeRrc::Timer4100Expiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID");
@@ -1783,8 +1746,7 @@ LteSlUeRrc::Timer4111Expiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID");
@@ -1817,8 +1779,7 @@ LteSlUeRrc::Timer4108Expiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID");
@@ -1853,8 +1814,7 @@ LteSlUeRrc::Timer4103Expiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID");
@@ -1930,8 +1890,7 @@ LteSlUeRrc::Timer4102Expiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID");
@@ -1967,8 +1926,7 @@ LteSlUeRrc::Timer4101Expiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT_MSG(
         it != m_o2oCommContexts.end(),
         "Could not find the appropriate One-to-One Communication Context for the Layer-2 ID");
@@ -2025,8 +1983,7 @@ LteSlUeRrc::TimerRUIRExpiry(LteSlO2oCommParams::LteSlPc5ContextId cId)
 {
     NS_LOG_FUNCTION(this << cId.peerL2Id << cId.contextId);
 
-    std::map<LteSlO2oCommParams::LteSlPc5ContextId, Ptr<LteSlO2oCommParams>>::iterator it =
-        m_o2oCommContexts.find(cId);
+    auto it = m_o2oCommContexts.find(cId);
     NS_ASSERT(it != m_o2oCommContexts.end());
     Ptr<LteSlO2oCommParams> o2ocp = it->second;
 

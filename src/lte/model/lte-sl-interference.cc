@@ -89,23 +89,16 @@ LteSlInterference::StartRx(Ptr<const SpectrumValue> rxPsd)
     m_lastChangeTime = Now();
 
     // trigger the initialization of each chunk processor
-    for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-             m_rsPowerChunkProcessorList.begin();
-         it != m_rsPowerChunkProcessorList.end();
+    for (auto it = m_rsPowerChunkProcessorList.begin(); it != m_rsPowerChunkProcessorList.end();
          ++it)
     {
         (*it)->Start(init);
     }
-    for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-             m_interfChunkProcessorList.begin();
-         it != m_interfChunkProcessorList.end();
-         ++it)
+    for (auto it = m_interfChunkProcessorList.begin(); it != m_interfChunkProcessorList.end(); ++it)
     {
         (*it)->Start(init);
     }
-    for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it = m_sinrChunkProcessorList.begin();
-         it != m_sinrChunkProcessorList.end();
-         ++it)
+    for (auto it = m_sinrChunkProcessorList.begin(); it != m_sinrChunkProcessorList.end(); ++it)
     {
         (*it)->Start(init);
     }
@@ -123,24 +116,17 @@ LteSlInterference::EndRx()
     {
         ConditionallyEvaluateChunk();
         m_receiving = false;
-        for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-                 m_rsPowerChunkProcessorList.begin();
-             it != m_rsPowerChunkProcessorList.end();
+        for (auto it = m_rsPowerChunkProcessorList.begin(); it != m_rsPowerChunkProcessorList.end();
              ++it)
         {
             (*it)->End();
         }
-        for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-                 m_interfChunkProcessorList.begin();
-             it != m_interfChunkProcessorList.end();
+        for (auto it = m_interfChunkProcessorList.begin(); it != m_interfChunkProcessorList.end();
              ++it)
         {
             (*it)->End();
         }
-        for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-                 m_sinrChunkProcessorList.begin();
-             it != m_sinrChunkProcessorList.end();
-             ++it)
+        for (auto it = m_sinrChunkProcessorList.begin(); it != m_sinrChunkProcessorList.end(); ++it)
         {
             (*it)->End();
         }
@@ -210,22 +196,18 @@ LteSlInterference::ConditionallyEvaluateChunk()
 
             SpectrumValue sinr = (*(m_rxSignal[index])) / interf;
             Time duration = Now() - m_lastChangeTime;
-            for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-                     m_sinrChunkProcessorList.begin();
-                 it != m_sinrChunkProcessorList.end();
+            for (auto it = m_sinrChunkProcessorList.begin(); it != m_sinrChunkProcessorList.end();
                  ++it)
             {
                 (*it)->EvaluateChunk(index, sinr, duration);
             }
-            for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-                     m_interfChunkProcessorList.begin();
+            for (auto it = m_interfChunkProcessorList.begin();
                  it != m_interfChunkProcessorList.end();
                  ++it)
             {
                 (*it)->EvaluateChunk(index, interf, duration);
             }
-            for (std::list<Ptr<LteSlChunkProcessor>>::const_iterator it =
-                     m_rsPowerChunkProcessorList.begin();
+            for (auto it = m_rsPowerChunkProcessorList.begin();
                  it != m_rsPowerChunkProcessorList.end();
                  ++it)
             {

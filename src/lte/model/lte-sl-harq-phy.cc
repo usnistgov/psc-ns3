@@ -47,7 +47,7 @@ LteSlHarqPhy::GetTbIdx(uint16_t rnti, uint8_t l1dst)
 
     uint32_t idx = 0;
     uint32_t tbIdxId = (rnti << 8) + l1dst;
-    std::map<uint32_t, uint32_t>::iterator it = this->m_tbIdx.find(tbIdxId);
+    auto it = this->m_tbIdx.find(tbIdxId);
 
     if (it != this->m_tbIdx.end())
     {
@@ -94,7 +94,7 @@ LteSlHarqPhy::IsPrevDecoded(uint16_t rnti, uint8_t l1dst)
 
     uint32_t decodedId = (rnti << 8) + l1dst;
 
-    std::set<uint32_t>::iterator it = this->m_decoded.find(decodedId);
+    auto it = this->m_decoded.find(decodedId);
 
     bool prevDecoded = (it != this->m_decoded.end());
 
@@ -108,7 +108,7 @@ LteSlHarqPhy::ResetPrevDecoded(uint16_t rnti, uint8_t l1dst)
 
     uint32_t decodedId = (rnti << 8) + l1dst;
 
-    std::set<uint32_t>::iterator it = this->m_decoded.find(decodedId);
+    auto it = this->m_decoded.find(decodedId);
 
     if (it != this->m_decoded.end())
     {
@@ -136,7 +136,7 @@ LteSlHarqPhy::IsDiscTbPrevDecoded(uint16_t rnti, uint8_t resPsdch)
 
     uint32_t decodedId = (rnti << 8) + resPsdch;
 
-    std::set<uint32_t>::iterator it = this->m_discDecoded.find(decodedId);
+    auto it = this->m_discDecoded.find(decodedId);
 
     bool prevDecoded = (it != this->m_discDecoded.end());
 
@@ -150,7 +150,7 @@ LteSlHarqPhy::ResetDiscTbPrevDecoded(uint16_t rnti, uint8_t resPsdch)
 
     uint32_t decodedId = (rnti << 8) + resPsdch;
 
-    std::set<uint32_t>::iterator it = this->m_discDecoded.find(decodedId);
+    auto it = this->m_discDecoded.find(decodedId);
 
     if (it != this->m_discDecoded.end())
     {
@@ -164,7 +164,7 @@ LteSlHarqPhy::ResetTbIdx(uint16_t rnti, uint8_t l1dst)
     NS_LOG_FUNCTION(this << (uint32_t)rnti << (uint32_t)l1dst);
 
     uint32_t tbIdxId = (rnti << 8) + l1dst;
-    std::map<uint32_t, uint32_t>::iterator it = this->m_tbIdx.find(tbIdxId);
+    auto it = this->m_tbIdx.find(tbIdxId);
 
     if (it != this->m_tbIdx.end())
     {
@@ -185,7 +185,7 @@ LteSlHarqPhy::GetAccumulatedMiSl(uint16_t rnti, uint8_t l1dst)
     NS_ASSERT_MSG(it2 != it->second.end(), " Does not find MI for l1dst ");
     HarqProcessInfoList_t list = (*it2).second;
     double mi = 0.0;
-    for (uint8_t i = 0; i < list.size(); i++)
+    for (uint32_t i = 0; i < list.size(); i++)
     {
         mi += list.at(i).m_mi;
     }

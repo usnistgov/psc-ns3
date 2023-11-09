@@ -51,8 +51,8 @@ public:
   McpttTestCaseOnNetworkFloorRelease (const std::string& name = "Floor Release", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -76,8 +76,8 @@ public:
   McpttTestCaseOnNetworkFloorGranted (const std::string& name = "Floor Granted", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -107,8 +107,8 @@ public:
   McpttTestCaseOnNetworkFloorRevoke (const std::string& name = "Floor Revoke", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -135,8 +135,8 @@ public:
   McpttTestCaseOnNetworkFloorDeny (const std::string& name = "Floor Deny", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -162,8 +162,8 @@ public:
   McpttTestCaseOnNetworkFloorQueueAndCancel (const std::string& name = "Floor Queue and Cancel", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -193,8 +193,8 @@ public:
   McpttTestCaseOnNetworkFloorQueueAndGranted (const std::string& name = "Floor Queue and Granted", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
   virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
@@ -245,52 +245,70 @@ public:
   McpttTestCaseOnNetworkDualFloorControl (const std::string& name = "Dual Floor Control", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
  protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
-  virtual void Check4 (void); // Check values just before 4 s
-  virtual void Check5 (void); // Check values just before 5 s
-  virtual void Check7 (void); // Check values just before 7 s
-  virtual void Check8 (void); // Check values just before 8 s
-  virtual void Ue1RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue1TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue2TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue3RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
-  virtual void Ue3TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType);
+   void Configure() override;
+   void Execute() override;
+   virtual void Check4(); // Check values just before 4 s
+   virtual void Check5(); // Check values just before 5 s
+   virtual void Check7(); // Check values just before 7 s
+   virtual void Check8(); // Check values just before 8 s
+   virtual void Ue1RxCb(Ptr<const Application> app,
+                        uint16_t callId,
+                        Ptr<const Packet> pkt,
+                        const TypeId& headerType);
+   virtual void Ue1TxCb(Ptr<const Application> app,
+                        uint16_t callId,
+                        Ptr<const Packet> pkt,
+                        const TypeId& headerType);
+   virtual void Ue2RxCb(Ptr<const Application> app,
+                        uint16_t callId,
+                        Ptr<const Packet> pkt,
+                        const TypeId& headerType);
+   virtual void Ue2TxCb(Ptr<const Application> app,
+                        uint16_t callId,
+                        Ptr<const Packet> pkt,
+                        const TypeId& headerType);
+   virtual void Ue3RxCb(Ptr<const Application> app,
+                        uint16_t callId,
+                        Ptr<const Packet> pkt,
+                        const TypeId& headerType);
+   virtual void Ue3TxCb(Ptr<const Application> app,
+                        uint16_t callId,
+                        Ptr<const Packet> pkt,
+                        const TypeId& headerType);
 
-private:
-  bool m_ue1RxFloorGranted {false};
-  bool m_ue3RxFloorTaken {false};
-  bool m_ue2RxFloorTaken {false};
-  bool m_ue2TxFloorRequest {false};
-  bool m_ue2RxFloorDeny {false};
-  bool m_ue2TxFloorAck2 {false};
-  bool m_ue3TxFloorRequest {false};
-  bool m_ue3RxFloorGranted {false};
-  bool m_ue3TxFloorAck {false};
-  bool m_ue1RxFloorIdle {false}; 
-  bool m_ue2RxFloorIdle {false};
-  bool m_ue2TxFloorAck {false};
-  bool m_ue1RxFloorTaken {false};
-  bool m_ue2RxFloorTaken2 {false}; 
-  bool m_ue2TxFloorAck3 {false}; 
-  bool m_ue1TxFloorRelease {false};
-  bool m_ue1RxFloorAck {false};
-  bool m_ue2RxFloorIdle2 {false};
-  bool m_ue2TxFloorAck4 {false};
-  bool m_ue3RxFloorIdle {false};
-  bool m_ue3TxFloorAck2 {false};
-  bool m_ue3TxFloorRelease {false};
-  bool m_ue3RxFloorAck {false};
-  bool m_ue1RxFloorTaken2 {false};
-  bool m_ue2RxFloorTaken3 {false};
-  bool m_ue2TxFloorAck5 {false};
+ private:
+   bool m_ue1RxFloorGranted{false};
+   bool m_ue3RxFloorTaken{false};
+   bool m_ue2RxFloorTaken{false};
+   bool m_ue2TxFloorRequest{false};
+   bool m_ue2RxFloorDeny{false};
+   bool m_ue2TxFloorAck2{false};
+   bool m_ue3TxFloorRequest{false};
+   bool m_ue3RxFloorGranted{false};
+   bool m_ue3TxFloorAck{false};
+   bool m_ue1RxFloorIdle{false};
+   bool m_ue2RxFloorIdle{false};
+   bool m_ue2TxFloorAck{false};
+   bool m_ue1RxFloorTaken{false};
+   bool m_ue2RxFloorTaken2{false};
+   bool m_ue2TxFloorAck3{false};
+   bool m_ue1TxFloorRelease{false};
+   bool m_ue1RxFloorAck{false};
+   bool m_ue2RxFloorIdle2{false};
+   bool m_ue2TxFloorAck4{false};
+   bool m_ue3RxFloorIdle{false};
+   bool m_ue3TxFloorAck2{false};
+   bool m_ue3TxFloorRelease{false};
+   bool m_ue3RxFloorAck{false};
+   bool m_ue1RxFloorTaken2{false};
+   bool m_ue2RxFloorTaken3{false};
+   bool m_ue2TxFloorAck5{false};
 };
 
 class McpttTestSuiteFloorControlOnNetwork : public TestSuite
 {
 public:
-  McpttTestSuiteFloorControlOnNetwork (void);
+  McpttTestSuiteFloorControlOnNetwork();
 };
 
 /***************************************************************
@@ -304,7 +322,7 @@ McpttTestCaseOnNetworkFloorRelease::McpttTestCaseOnNetworkFloorRelease (const st
 { }
 
 void
-McpttTestCaseOnNetworkFloorRelease::Configure (void)
+McpttTestCaseOnNetworkFloorRelease::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -356,7 +374,7 @@ McpttTestCaseOnNetworkFloorRelease::Configure (void)
 }
 
 void
-McpttTestCaseOnNetworkFloorRelease::Execute (void)
+McpttTestCaseOnNetworkFloorRelease::Execute()
 {
   Simulator::Run ();
   Simulator::Destroy ();
@@ -420,7 +438,7 @@ McpttTestCaseOnNetworkFloorGranted::McpttTestCaseOnNetworkFloorGranted (const st
 { }
 
 void
-McpttTestCaseOnNetworkFloorGranted::Configure (void)
+McpttTestCaseOnNetworkFloorGranted::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -475,7 +493,7 @@ McpttTestCaseOnNetworkFloorGranted::Configure (void)
 }
 
 void
-McpttTestCaseOnNetworkFloorGranted::Execute (void)
+McpttTestCaseOnNetworkFloorGranted::Execute()
 {
   Simulator::Run ();
   Simulator::Destroy ();
@@ -551,8 +569,7 @@ McpttTestCaseOnNetworkFloorGranted::Ue2RxCb (Ptr<const Application> app, uint16_
 void
 McpttTestCaseOnNetworkFloorGranted::Ue2TxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  if (headerType == McpttFloorMsgAck::GetTypeId ()
-      && m_ue2TxFloorAck1 == false)
+    if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck1)
     {
       NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send a floor release.");
       NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
@@ -574,8 +591,7 @@ McpttTestCaseOnNetworkFloorGranted::Ue2TxCb (Ptr<const Application> app, uint16_
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send a floor ACK.");
       m_ue2TxFloorRequest = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck1 == true)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && m_ue2TxFloorAck1)
     {
       NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send a floor release.");
       NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive a floor ACK.");
@@ -602,7 +618,7 @@ McpttTestCaseOnNetworkFloorRevoke::McpttTestCaseOnNetworkFloorRevoke (const std:
 { }
 
 void
-McpttTestCaseOnNetworkFloorRevoke::Configure (void)
+McpttTestCaseOnNetworkFloorRevoke::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -662,7 +678,8 @@ McpttTestCaseOnNetworkFloorRevoke::Configure (void)
   Simulator::Schedule (Seconds (4), &McpttOnNetworkFloorParticipant::SetPriority, ue2OnNetworkFloorParticipant, 2);
 }
 
-void McpttTestCaseOnNetworkFloorRevoke::Execute (void)
+void
+McpttTestCaseOnNetworkFloorRevoke::Execute()
 {
   Simulator::Run ();
   Simulator::Destroy ();
@@ -772,7 +789,7 @@ McpttTestCaseOnNetworkFloorDeny::McpttTestCaseOnNetworkFloorDeny (const std::str
 { }
 
 void
-McpttTestCaseOnNetworkFloorDeny::Configure (void)
+McpttTestCaseOnNetworkFloorDeny::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -826,7 +843,7 @@ McpttTestCaseOnNetworkFloorDeny::Configure (void)
 }
 
 void
-McpttTestCaseOnNetworkFloorDeny::Execute (void)
+McpttTestCaseOnNetworkFloorDeny::Execute()
 {
   Simulator::Run ();
   Simulator::Destroy ();
@@ -879,7 +896,7 @@ McpttTestCaseOnNetworkFloorQueueAndCancel::McpttTestCaseOnNetworkFloorQueueAndCa
 { }
 
 void
-McpttTestCaseOnNetworkFloorQueueAndCancel::Configure (void)
+McpttTestCaseOnNetworkFloorQueueAndCancel::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -940,7 +957,7 @@ McpttTestCaseOnNetworkFloorQueueAndCancel::Configure (void)
 }
 
 void
-McpttTestCaseOnNetworkFloorQueueAndCancel::Execute (void)
+McpttTestCaseOnNetworkFloorQueueAndCancel::Execute()
 {
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1001,7 +1018,7 @@ McpttTestCaseOnNetworkFloorQueueAndCancel::Ue2TxCb (Ptr<const Application> app, 
 void
 McpttTestCaseOnNetworkFloorQueueAndCancel::Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
-  if (headerType == McpttFloorMsgQueuePositionInfo::GetTypeId ()&& m_ue2RxFloorQueuePositionInfo == false)
+    if (headerType == McpttFloorMsgQueuePositionInfo::GetTypeId() && !m_ue2RxFloorQueuePositionInfo)
     {
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
       NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorQueuePositionInfo, false, "UE 2 did receive queue posotion info");
@@ -1011,7 +1028,8 @@ McpttTestCaseOnNetworkFloorQueueAndCancel::Ue2RxCb (Ptr<const Application> app, 
       NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorAck, false, "UE 1 did receive a floor ACK.");
       m_ue2RxFloorQueuePositionInfo = true;
     }
-  else if (headerType == McpttFloorMsgQueuePositionInfo::GetTypeId ()&& m_ue2RxFloorQueuePositionInfo == true)
+    else if (headerType == McpttFloorMsgQueuePositionInfo::GetTypeId() &&
+             m_ue2RxFloorQueuePositionInfo)
     {
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
       NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorQueuePositionInfo, true, "UE 2 did not receive queue posotion info");
@@ -1047,7 +1065,7 @@ McpttTestCaseOnNetworkFloorQueueAndGranted::McpttTestCaseOnNetworkFloorQueueAndG
 { }
 
 void
-McpttTestCaseOnNetworkFloorQueueAndGranted::Configure (void)
+McpttTestCaseOnNetworkFloorQueueAndGranted::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -1103,7 +1121,7 @@ McpttTestCaseOnNetworkFloorQueueAndGranted::Configure (void)
 }
 
 void
-McpttTestCaseOnNetworkFloorQueueAndGranted::Execute (void)
+McpttTestCaseOnNetworkFloorQueueAndGranted::Execute()
 {
   Simulator::Run ();
   Simulator::Destroy ();
@@ -1166,8 +1184,7 @@ McpttTestCaseOnNetworkFloorQueueAndGranted::Ue2TxCb (Ptr<const Application> app,
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send a floor Ack.");
       m_ue2TxFloorRequest = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck1 == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck1)
     {
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
       NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorQueuePositionInfo, true, "UE 2 did not receive queue posotion info");
@@ -1178,8 +1195,7 @@ McpttTestCaseOnNetworkFloorQueueAndGranted::Ue2TxCb (Ptr<const Application> app,
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck2, false, "UE 2 did send a floor Ack.");
       m_ue2TxFloorAck1 = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck1 == true)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && m_ue2TxFloorAck1)
     {
       NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send a floor Request.");
       NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorQueuePositionInfo, true, "UE 2 did not receive queue posotion info");
@@ -1233,7 +1249,7 @@ McpttTestCaseOnNetworkDualFloorControl::McpttTestCaseOnNetworkDualFloorControl (
 {}
 
 void
-McpttTestCaseOnNetworkDualFloorControl::Configure (void)
+McpttTestCaseOnNetworkDualFloorControl::Configure()
 {
   McpttHelper clientHelper;
   clientHelper.SetPttApp ("ns3::psc::McpttPttApp");
@@ -1303,21 +1319,24 @@ McpttTestCaseOnNetworkDualFloorControl::Configure (void)
   Simulator::Schedule (Seconds (8) - MicroSeconds (1), &McpttTestCaseOnNetworkDualFloorControl::Check8, this);
 }
 
-void McpttTestCaseOnNetworkDualFloorControl::Check4 (void)
+void
+McpttTestCaseOnNetworkDualFloorControl::Check4()
 {
   NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorGranted, true, "UE 1 did not receive Floor Granted by 4 s.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorTaken, true, "UE 2 did not receive Floor Taken by 4 s.");
   NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorTaken, true, "UE 3 did not receive Floor Taken by 4 s.");
 }
 
-void McpttTestCaseOnNetworkDualFloorControl::Check5 (void)
+void
+McpttTestCaseOnNetworkDualFloorControl::Check5()
 {
   NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorRequest, true, "UE 2 did not send Floor Request by 5 s.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2RxFloorDeny, true, "UE 2 did not receive Floor Deny by 5 s.");
   NS_TEST_ASSERT_MSG_EQ (m_ue2TxFloorAck, true, "UE 2 did not send Floor Ack by 5 s.");
 }
 
-void McpttTestCaseOnNetworkDualFloorControl::Check7 (void)
+void
+McpttTestCaseOnNetworkDualFloorControl::Check7()
 {
   NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorRequest, true, "UE 3 did not send Floor Request by 7 s.");
   NS_TEST_ASSERT_MSG_EQ (m_ue3RxFloorGranted, true, "UE 3 did not receive Floor Granted by 7 s.");
@@ -1330,7 +1349,8 @@ void McpttTestCaseOnNetworkDualFloorControl::Check7 (void)
   NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorTaken, true, "UE 1 did not receive Floor Taken by 7 s.");
 }
 
-void McpttTestCaseOnNetworkDualFloorControl::Check8 (void)
+void
+McpttTestCaseOnNetworkDualFloorControl::Check8()
 {
   NS_TEST_ASSERT_MSG_EQ (m_ue1TxFloorRelease, true, "UE 1 did not send Floor Release by 8 s.");
   NS_TEST_ASSERT_MSG_EQ (m_ue1RxFloorAck, true, "UE 1 did not receive Floor Ack by 8 s.");
@@ -1341,7 +1361,8 @@ void McpttTestCaseOnNetworkDualFloorControl::Check8 (void)
   NS_TEST_ASSERT_MSG_EQ (m_ue3TxFloorAck, true, "UE 3 did not send Floor Ack by 8 s.");
 }
 
-void McpttTestCaseOnNetworkDualFloorControl::Execute (void)
+void
+McpttTestCaseOnNetworkDualFloorControl::Execute()
 {
   Simulator::Run ();
   // Final check:  Check that Ue3Tx saw a FloorMsgRelease
@@ -1424,28 +1445,23 @@ McpttTestCaseOnNetworkDualFloorControl::Ue2TxCb (Ptr<const Application> app, uin
     {    
       m_ue2TxFloorRequest = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck)
     {
       m_ue2TxFloorAck = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck2 == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck2)
     {
       m_ue2TxFloorAck2 = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck3 == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck3)
     {
       m_ue2TxFloorAck3 = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck4 == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck4)
     {
       m_ue2TxFloorAck4 = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue2TxFloorAck5 == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue2TxFloorAck5)
     {
       m_ue2TxFloorAck5 = true;
     }
@@ -1455,32 +1471,27 @@ void
 McpttTestCaseOnNetworkDualFloorControl::Ue2RxCb (Ptr<const Application> app, uint16_t callId, Ptr<const Packet> pkt, const TypeId& headerType)
 {
   NS_LOG_DEBUG("Ue2Rx " << headerType);
-  if (headerType == McpttFloorMsgTaken::GetTypeId ()
-      && m_ue2RxFloorTaken == false )
-    {
+  if (headerType == McpttFloorMsgTaken::GetTypeId() && !m_ue2RxFloorTaken)
+  {
       m_ue2RxFloorTaken = true;
     }
   else if (headerType == McpttFloorMsgDeny::GetTypeId ())
     {
       m_ue2RxFloorDeny = true;
     }
-  else if (headerType == McpttFloorMsgIdle::GetTypeId ()
-           && m_ue2RxFloorIdle == false)
+    else if (headerType == McpttFloorMsgIdle::GetTypeId() && !m_ue2RxFloorIdle)
     {  
       m_ue2RxFloorIdle = true;
     }
-  else if (headerType == McpttFloorMsgTaken::GetTypeId ()
-           && m_ue2RxFloorTaken2 == false)
+    else if (headerType == McpttFloorMsgTaken::GetTypeId() && !m_ue2RxFloorTaken2)
     {
       m_ue2RxFloorTaken2 = true;
     }
-  else if (headerType == McpttFloorMsgIdle::GetTypeId ()
-           && m_ue2RxFloorIdle == true)
+    else if (headerType == McpttFloorMsgIdle::GetTypeId() && m_ue2RxFloorIdle)
     {  
       m_ue2RxFloorIdle2 = true;
     }
-  else if (headerType == McpttFloorMsgTaken::GetTypeId ()
-           && m_ue2RxFloorTaken3 == false)
+    else if (headerType == McpttFloorMsgTaken::GetTypeId() && !m_ue2RxFloorTaken3)
     {
       m_ue2RxFloorTaken3 = true;  
     }
@@ -1517,13 +1528,11 @@ McpttTestCaseOnNetworkDualFloorControl::Ue3TxCb (Ptr<const Application> app, uin
     {
       m_ue3TxFloorRequest = true;
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue3TxFloorAck == false)
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue3TxFloorAck)
     {  
       m_ue3TxFloorAck = true;  
     }
-  else if (headerType == McpttFloorMsgAck::GetTypeId ()
-           && m_ue3TxFloorAck2 == false )
+    else if (headerType == McpttFloorMsgAck::GetTypeId() && !m_ue3TxFloorAck2)
     {
       m_ue3TxFloorAck2 = true;
     }  
@@ -1533,8 +1542,8 @@ McpttTestCaseOnNetworkDualFloorControl::Ue3TxCb (Ptr<const Application> app, uin
     }
 }
 
-McpttTestSuiteFloorControlOnNetwork::McpttTestSuiteFloorControlOnNetwork (void)
-  : TestSuite ("mcptt-floor-control-on-network", TestSuite::SYSTEM)
+McpttTestSuiteFloorControlOnNetwork::McpttTestSuiteFloorControlOnNetwork()
+    : TestSuite("mcptt-floor-control-on-network", TestSuite::SYSTEM)
 {
   AddTestCase (new McpttTestCaseOnNetworkFloorRelease (), TestCase::QUICK);
   AddTestCase (new McpttTestCaseOnNetworkFloorGranted (), TestCase::QUICK);

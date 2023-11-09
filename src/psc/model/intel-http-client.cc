@@ -53,7 +53,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (IntelHttpClient);
 
 TypeId
-IntelHttpClient::GetTypeId (void)
+IntelHttpClient::GetTypeId()
 {
   static TypeId tid =
       TypeId ("ns3::psc::IntelHttpClient")
@@ -177,7 +177,7 @@ IntelHttpClient::SetRemote (Address ip, uint16_t port)
 }
 
 void
-IntelHttpClient::DoDispose (void)
+IntelHttpClient::DoDispose()
 {
   NS_LOG_FUNCTION (this);
   m_socket = nullptr;
@@ -185,7 +185,7 @@ IntelHttpClient::DoDispose (void)
 }
 
 void
-IntelHttpClient::StartApplication (void)
+IntelHttpClient::StartApplication()
 {
   NS_LOG_FUNCTION (this);
   if (!m_socket)
@@ -213,7 +213,7 @@ IntelHttpClient::StartApplication (void)
 }
 
 void
-IntelHttpClient::StopApplication (void)
+IntelHttpClient::StopApplication()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_sendEvent);
@@ -228,7 +228,7 @@ IntelHttpClient::StopApplication (void)
 }
 
 void
-IntelHttpClient::SendRequestPage (void)
+IntelHttpClient::SendRequestPage()
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (!m_sendEvent.IsExpired (),

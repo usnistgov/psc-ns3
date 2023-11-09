@@ -48,7 +48,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttMediaMsg);
 
 TypeId
-McpttMediaMsg::GetTypeId (void)
+McpttMediaMsg::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -60,10 +60,10 @@ McpttMediaMsg::GetTypeId (void)
   return tid;
 }
 
-McpttMediaMsg::McpttMediaMsg (void)
-  : McpttMsg (),
-    m_payloadSize (0),
-    m_talkSpurtStart (Seconds (0))
+McpttMediaMsg::McpttMediaMsg()
+    : McpttMsg(),
+      m_payloadSize(0),
+      m_talkSpurtStart(Seconds(0))
 {
   NS_LOG_FUNCTION (this);
 }
@@ -103,7 +103,7 @@ McpttMediaMsg::McpttMediaMsg (const McpttRtpHeader& header, uint16_t payloadSize
   NS_LOG_FUNCTION (this << payloadSize);
 }
 
-McpttMediaMsg::~McpttMediaMsg (void)
+McpttMediaMsg::~McpttMediaMsg()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -141,7 +141,7 @@ McpttMediaMsg::Deserialize (Buffer::Iterator start)
 }
 
 TypeId
-McpttMediaMsg::GetInstanceTypeId (void) const
+McpttMediaMsg::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -149,7 +149,7 @@ McpttMediaMsg::GetInstanceTypeId (void) const
 }
 
 uint32_t
-McpttMediaMsg::GetSsrc (void) const
+McpttMediaMsg::GetSsrc() const
 {
   NS_LOG_FUNCTION (this);
   uint32_t ssrc = m_header.GetSsrc ();
@@ -157,7 +157,7 @@ McpttMediaMsg::GetSsrc (void) const
 }
 
 uint32_t
-McpttMediaMsg::GetSerializedSize (void) const
+McpttMediaMsg::GetSerializedSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -232,7 +232,7 @@ McpttMediaMsg::Visit (McpttFloorMsgSink& floorMachine) const
 }
 
 McpttRtpHeader
-McpttMediaMsg::GetHeader (void) const
+McpttMediaMsg::GetHeader() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -240,7 +240,7 @@ McpttMediaMsg::GetHeader (void) const
 }
 
 uint16_t
-McpttMediaMsg::GetPayloadSize (void) const
+McpttMediaMsg::GetPayloadSize() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -248,7 +248,7 @@ McpttMediaMsg::GetPayloadSize (void) const
 }
 
 Time
-McpttMediaMsg::GetTalkSpurtStart (void) const
+McpttMediaMsg::GetTalkSpurtStart() const
 {
   NS_LOG_FUNCTION (this);
 

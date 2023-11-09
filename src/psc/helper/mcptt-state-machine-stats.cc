@@ -52,7 +52,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttStateMachineStats);
 
 TypeId
-McpttStateMachineStats::GetTypeId (void)
+McpttStateMachineStats::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -69,14 +69,14 @@ McpttStateMachineStats::GetTypeId (void)
   return tid;
 }
 
-McpttStateMachineStats::McpttStateMachineStats (void)
-  : Object (),
-    m_firstCb (true)
+McpttStateMachineStats::McpttStateMachineStats()
+    : Object(),
+      m_firstCb(true)
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttStateMachineStats::~McpttStateMachineStats (void)
+McpttStateMachineStats::~McpttStateMachineStats()
 {
   NS_LOG_FUNCTION (this);
   if (m_outputFile.is_open ())
@@ -86,7 +86,7 @@ McpttStateMachineStats::~McpttStateMachineStats (void)
 }
 
 TypeId
-McpttStateMachineStats::GetInstanceTypeId (void) const
+McpttStateMachineStats::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -97,8 +97,8 @@ void
 McpttStateMachineStats::StateChangeCb (uint32_t userId, uint16_t callId, const std::string& selected, const std::string& typeId, const std::string& oldStateName, const std::string& newStateName)
 {
   NS_LOG_FUNCTION (this << userId << callId << selected << typeId << oldStateName << newStateName);
-  if (m_firstCb == true)
-    {
+  if (m_firstCb)
+  {
       m_firstCb = false;
       m_outputFile.open (m_outputFileName.c_str ());
       m_outputFile << "#";

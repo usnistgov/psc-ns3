@@ -39,9 +39,9 @@ namespace ns3 {
 
 namespace psc {
 
-McpttEntityId::McpttEntityId (void)
-  : m_name (""),
-    m_number (0)
+McpttEntityId::McpttEntityId()
+    : m_name(""),
+      m_number(0)
 {}
 
 McpttEntityId::McpttEntityId (uint32_t number, const std::string& name)
@@ -49,7 +49,7 @@ McpttEntityId::McpttEntityId (uint32_t number, const std::string& name)
     m_number (number)
 {}
 
-McpttEntityId::~McpttEntityId (void)
+McpttEntityId::~McpttEntityId()
 {}
 
 bool
@@ -74,13 +74,13 @@ McpttEntityId::Print (std::ostream& os) const
 }
 
 std::string
-McpttEntityId::GetName (void) const
+McpttEntityId::GetName() const
 {
   return m_name;
 }
 
 uint32_t
-McpttEntityId::GetNumber (void) const
+McpttEntityId::GetNumber() const
 {
   return m_number;
 }

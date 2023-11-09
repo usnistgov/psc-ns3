@@ -47,7 +47,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCallTypeMachine);
 
 TypeId
-McpttCallTypeMachine::GetTypeId (void)
+McpttCallTypeMachine::GetTypeId()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -58,19 +58,19 @@ McpttCallTypeMachine::GetTypeId (void)
   return tid;
 }
 
-McpttCallTypeMachine::McpttCallTypeMachine (void)
-  : Object ()
+McpttCallTypeMachine::McpttCallTypeMachine()
+    : Object()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallTypeMachine::~McpttCallTypeMachine (void)
+McpttCallTypeMachine::~McpttCallTypeMachine()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-McpttCallTypeMachine::GetInstanceTypeId (void) const
+McpttCallTypeMachine::GetInstanceTypeId() const
 {
   NS_LOG_FUNCTION (this);
 

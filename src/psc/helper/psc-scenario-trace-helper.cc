@@ -69,8 +69,7 @@ PscScenarioTraceHelper::PscScenarioTraceHelper (Ptr<PscScenarioDefinition> scena
   m_scenarioDefinition = scenarioDefinition;
 }
 
-
-PscScenarioTraceHelper::~PscScenarioTraceHelper (void)
+PscScenarioTraceHelper::~PscScenarioTraceHelper()
 {
   NS_LOG_FUNCTION (this);
   m_scenarioDefinition = nullptr;
@@ -82,7 +81,7 @@ PscScenarioTraceHelper::~PscScenarioTraceHelper (void)
 }
 
 TypeId
-PscScenarioTraceHelper::GetTypeId (void)
+PscScenarioTraceHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscScenarioTraceHelper")
     .SetParent<Object> ()
@@ -292,7 +291,7 @@ PscScenarioTraceHelper::SetOutputPrecision (uint16_t outputPrecision)
 }
 
 uint16_t
-PscScenarioTraceHelper::GetOutputPrecision (void) const
+PscScenarioTraceHelper::GetOutputPrecision() const
 {
   NS_LOG_FUNCTION (this);
 

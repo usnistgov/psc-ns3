@@ -68,7 +68,7 @@ SchoolShootingDefinitionHelper::~SchoolShootingDefinitionHelper ()
 }
 
 TypeId
-SchoolShootingDefinitionHelper::GetTypeId (void)
+SchoolShootingDefinitionHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::SchoolShootingDefinitionHelper")
     .SetParent<Object> ()

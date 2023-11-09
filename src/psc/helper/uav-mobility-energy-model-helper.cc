@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("UavMobilityEnergyModelHelper");
 
 namespace psc {
 
-UavMobilityEnergyModelHelper::UavMobilityEnergyModelHelper (void)
+UavMobilityEnergyModelHelper::UavMobilityEnergyModelHelper()
 {
   NS_LOG_FUNCTION (this);
   m_energyModel.SetTypeId ("ns3::psc::UavMobilityEnergyModel");

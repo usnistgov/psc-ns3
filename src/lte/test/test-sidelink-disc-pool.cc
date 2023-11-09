@@ -270,10 +270,7 @@ SidelinkDiscPoolResourceOpportunityTestCase::DoRun()
     uint32_t actualRbStart = 0;
     uint32_t actualNbCount = 0;
 
-    for (std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator it =
-             txInfo.begin();
-         it != txInfo.end();
-         it++)
+    for (auto it = txInfo.begin(); it != txInfo.end(); it++)
     {
         actualFrameNo = it->subframe.frameNo;
         actualSubframeNo = it->subframe.subframeNo;
@@ -520,10 +517,10 @@ SidlelinkDiscPoolOverlapResourcesTestCase::DoRun()
     std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo> list2 =
         txpool->GetPsdchTransmissions(m_res2);
 
-    std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator it1 = list1.begin();
+    auto it1 = list1.begin();
     NS_LOG_INFO(" res1 " << it1->subframe.frameNo << "/" << it1->subframe.subframeNo << " rbstart="
                          << (uint16_t)it1->rbStart << " nrb=" << (uint16_t)it1->nbRb);
-    std::list<SidelinkDiscResourcePool::SidelinkTransmissionInfo>::iterator it2 = list2.begin();
+    auto it2 = list2.begin();
     NS_LOG_INFO(" res2 " << it2->subframe.frameNo << "/" << it2->subframe.subframeNo << " rbstart="
                          << (uint16_t)it2->rbStart << " nrb=" << (uint16_t)it2->nbRb);
 

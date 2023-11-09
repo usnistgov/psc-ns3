@@ -502,15 +502,15 @@ int main (int argc, char *argv[])
   *packetTraceStream->GetStream () << "time(sec)\ttx/rx\tnodeType\tNodeID\tPktSize(bytes)\tPktSeq\tDelay(ms)" << std::endl;
 
   // Start only the transmitter of the desired type (txType)
-  if (txType.compare ("Regular") == 0)
-    {
+  if (txType == "Regular")
+  {
       regularUeOnOffApps.Get (0)->SetStartTime (Seconds (appStartTime));
 
       oss << "tx\tRegular\t" << regularUeOnOffApps.Get (0)->GetNode ()->GetId ();
       regularUeOnOffApps.Get (0)->TraceConnect ("TxWithAddresses", oss.str (), MakeBoundCallback (&UePacketTrace, packetTraceStream));
       regularClientUdpApps.Get (0)->SetStartTime (Seconds (simTime)); //do not pre-register sender node
     }
-  else if (txType.compare ("Relay") == 0)
+    else if (txType == "Relay")
     {
       relayUeOnOffApps.Get (0)->SetStartTime (Seconds (appStartTime));
 
@@ -518,7 +518,7 @@ int main (int argc, char *argv[])
       relayUeOnOffApps.Get (0)->TraceConnect ("TxWithAddresses", oss.str (), MakeBoundCallback (&UePacketTrace, packetTraceStream));
       relayClientUdpApps.Get (0)->SetStartTime (Seconds (simTime)); //do not pre-register sender node
     }
-  else if (txType.compare ("Remote") == 0)
+    else if (txType == "Remote")
     {
       remoteUeOnOffApps.Get (0)->SetStartTime (Seconds (appStartTime));
 

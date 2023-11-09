@@ -45,11 +45,10 @@ NS_LOG_COMPONENT_DEFINE ("OutdoorToOutdoorPropagationLossModel");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OutdoorToOutdoorPropagationLossModel);
-
+NS_OBJECT_ENSURE_REGISTERED(OutdoorToOutdoorPropagationLossModel);
 
 TypeId
-OutdoorToOutdoorPropagationLossModel::GetTypeId (void)
+OutdoorToOutdoorPropagationLossModel::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::OutdoorToOutdoorPropagationLossModel")
 
@@ -128,7 +127,7 @@ OutdoorToOutdoorPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobilit
   MobilityDuo couple;
   couple.a = a;
   couple.b = b;
-  std::map<MobilityDuo, double>::iterator it_a = m_randomMap.find (couple);
+  auto it_a = m_randomMap.find(couple);
   if (it_a != m_randomMap.end ())
     {
       r = it_a->second;
@@ -137,7 +136,7 @@ OutdoorToOutdoorPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobilit
     {
       couple.a = b;
       couple.b = a;
-      std::map<MobilityDuo, double>::iterator it_b = m_randomMap.find (couple);
+      auto it_b = m_randomMap.find(couple);
       if (it_b != m_randomMap.end ())
         {
           r = it_b->second;

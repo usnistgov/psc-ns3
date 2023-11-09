@@ -565,7 +565,7 @@ SlOocRelayGenericTrafficRm2RmTestCase::DoRun()
     // UdpEchoClient installed in the Remote UE, sending to the 'first Remote UE' address in the UE
     // port UdpEchoServer installed in the 'first Remote UE', listening to the Remote UE port
     std::ostringstream oss;
-    for (uint16_t remUeIdx = 1; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
+    for (uint32_t remUeIdx = 1; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
     {
         uint16_t remUePort = echoPortBase + remUeIdx;
 

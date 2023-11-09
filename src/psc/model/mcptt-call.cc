@@ -59,76 +59,84 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttCall);
 
 TypeId
-McpttCall::GetTypeId (void)
+McpttCall::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttCall")
-    .SetParent<Object> ()
-    .AddConstructor<McpttCall> ()
-    .AddAttribute ("CallMachine", "The call machine of the call.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttCall::m_callMachine),
-                   MakePointerChecker<McpttCallMachine> ())
-    .AddAttribute ("DefaultOnNetworkCallPort", "The default port for on-network call control messages.",
-                   UintegerValue (5060), // standard SIP call control port
-                   MakeUintegerAccessor (&McpttCall::m_defaultOnNetworkCallPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("DefaultOffNetworkCallPort", "The default port for off-network call control messages.",
-                   UintegerValue (8809), // standard MONP IANA allocation
-                   MakeUintegerAccessor (&McpttCall::m_defaultOffNetworkCallPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("CallPort", "The port to use for call control messages.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&McpttCall::m_callPort),
-                   MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("FloorMachine", "The floor machine of the call.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttCall::m_floorMachine),
-                   MakePointerChecker<McpttFloorParticipant> ())
-    .AddAttribute ("PeerAddress", "The address of the node that the peer application is on.",
-                   AddressValue (Ipv4Address ("255.255.255.255")),
-                   MakeAddressAccessor (&McpttCall::m_peerAddress),
-                   MakeAddressChecker ())
-    .AddAttribute ("PeerUserId", "The user ID of the peer (or server) application (for on-network operation).",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&McpttCall::m_peerUserId),
-                   MakeUintegerChecker<uint32_t> ())
-  ;
-  return tid;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttCall")
+            .SetParent<Object>()
+            .AddConstructor<McpttCall>()
+            .AddAttribute("CallMachine",
+                          "The call machine of the call.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&McpttCall::m_callMachine),
+                          MakePointerChecker<McpttCallMachine>())
+            .AddAttribute("DefaultOnNetworkCallPort",
+                          "The default port for on-network call control messages.",
+                          UintegerValue(5060), // standard SIP call control port
+                          MakeUintegerAccessor(&McpttCall::m_defaultOnNetworkCallPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("DefaultOffNetworkCallPort",
+                          "The default port for off-network call control messages.",
+                          UintegerValue(8809), // standard MONP IANA allocation
+                          MakeUintegerAccessor(&McpttCall::m_defaultOffNetworkCallPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("CallPort",
+                          "The port to use for call control messages.",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&McpttCall::m_callPort),
+                          MakeUintegerChecker<uint16_t>())
+            .AddAttribute("FloorMachine",
+                          "The floor machine of the call.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&McpttCall::m_floorMachine),
+                          MakePointerChecker<McpttFloorParticipant>())
+            .AddAttribute("PeerAddress",
+                          "The address of the node that the peer application is on.",
+                          AddressValue(Ipv4Address("255.255.255.255")),
+                          MakeAddressAccessor(&McpttCall::m_peerAddress),
+                          MakeAddressChecker())
+            .AddAttribute(
+                "PeerUserId",
+                "The user ID of the peer (or server) application (for on-network operation).",
+                UintegerValue(0),
+                MakeUintegerAccessor(&McpttCall::m_peerUserId),
+                MakeUintegerChecker<uint32_t>());
+    return tid;
 }
 
-McpttCall::McpttCall (void)
-  : Object (),
-    m_networkCallType (NetworkCallType::INVALID), // type must be set later
-    m_floorChannel (0),
-    m_mediaChannel (0),
-    m_owner (0),
-    m_pushOnSelect (false),
-    m_startTime (Seconds (0)),
-    m_stopTime (Seconds (0))
-{
-  NS_LOG_FUNCTION (this);
-}
-
-McpttCall::McpttCall (NetworkCallType callType)
-  : Object (),
-    m_networkCallType (callType),
-    m_floorChannel (0),
-    m_mediaChannel (0),
-    m_owner (0),
-    m_pushOnSelect (false),
-    m_startTime (Seconds (0)),
-    m_stopTime (Seconds (0))
+McpttCall::McpttCall()
+    : Object(),
+      m_networkCallType(NetworkCallType::INVALID), // type must be set later
+      m_floorChannel(nullptr),
+      m_mediaChannel(nullptr),
+      m_owner(nullptr),
+      m_pushOnSelect(false),
+      m_startTime(Seconds(0)),
+      m_stopTime(Seconds(0))
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCall::~McpttCall (void)
+McpttCall::McpttCall(NetworkCallType callType)
+    : Object(),
+      m_networkCallType(callType),
+      m_floorChannel(nullptr),
+      m_mediaChannel(nullptr),
+      m_owner(nullptr),
+      m_pushOnSelect(false),
+      m_startTime(Seconds(0)),
+      m_stopTime(Seconds(0))
+{
+  NS_LOG_FUNCTION (this);
+}
+
+McpttCall::~McpttCall()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-McpttCall::CloseFloorChannel (void)
+McpttCall::CloseFloorChannel()
 {
   NS_LOG_FUNCTION (this);
 
@@ -137,7 +145,7 @@ McpttCall::CloseFloorChannel (void)
 }
 
 void
-McpttCall::CloseMediaChannel (void)
+McpttCall::CloseMediaChannel()
 {
   NS_LOG_FUNCTION (this);
 
@@ -160,7 +168,7 @@ McpttCall::SetCallId (uint16_t callId)
 }
 
 uint16_t
-McpttCall::GetCallId (void) const
+McpttCall::GetCallId() const
 {
   if (m_callMachine)
     {
@@ -174,13 +182,13 @@ McpttCall::GetCallId (void) const
 }
 
 McpttCall::NetworkCallType
-McpttCall::GetNetworkCallType (void) const
+McpttCall::GetNetworkCallType() const
 {
   return m_networkCallType;
 }
 
 bool
-McpttCall::GetPushOnSelect (void) const
+McpttCall::GetPushOnSelect() const
 {
   return m_pushOnSelect;
 }
@@ -192,7 +200,7 @@ McpttCall::SetPushOnSelect (bool pushOnSelect)
 }
 
 bool
-McpttCall::IsFloorChannelOpen (void) const
+McpttCall::IsFloorChannelOpen() const
 {
   Ptr<McpttChannel> floorChannel = GetFloorChannel ();
   bool isOpen = floorChannel->IsOpen ();
@@ -201,7 +209,7 @@ McpttCall::IsFloorChannelOpen (void) const
 }
 
 bool
-McpttCall::IsMediaChannelOpen (void) const
+McpttCall::IsMediaChannelOpen() const
 {
   Ptr<McpttChannel> mediaChannel = GetMediaChannel ();
   bool isOpen = mediaChannel->IsOpen ();
@@ -303,7 +311,7 @@ McpttCall::Receive (const McpttMediaMsg& msg)
 }
 
 Address
-McpttCall::GetPeerSocketAddress (void) const
+McpttCall::GetPeerSocketAddress() const
 {
   if (Ipv4Address::IsMatchingType (m_peerAddress))
     {
@@ -323,7 +331,7 @@ McpttCall::GetPeerSocketAddress (void) const
 }
 
 uint32_t
-McpttCall::GetPeerUserId (void) const
+McpttCall::GetPeerUserId() const
 {
   return m_peerUserId;
 }
@@ -411,7 +419,7 @@ McpttCall::Send (const McpttMediaMsg& msg)
 }
 
 void
-McpttCall::Start (void)
+McpttCall::Start()
 {
   NS_LOG_FUNCTION (this);
   if (m_callPort == 0)
@@ -437,7 +445,7 @@ McpttCall::Start (void)
 }
 
 void
-McpttCall::Stop (void)
+McpttCall::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -446,16 +454,16 @@ McpttCall::Stop (void)
 }
 
 void
-McpttCall::DoDispose (void)
+McpttCall::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   GetCallMachine ()->Dispose ();
-  SetCallMachine (0);
-  SetFloorChannel (0);
-  SetFloorMachine (0);
-  SetMediaChannel (0);
-  SetOwner (0);
+  SetCallMachine(nullptr);
+  SetFloorChannel(nullptr);
+  SetFloorMachine(nullptr);
+  SetMediaChannel(nullptr);
+  SetOwner(nullptr);
 
   Object::DoDispose ();
 }
@@ -566,49 +574,49 @@ McpttCall::ReceiveMediaPkt (Ptr<Packet>  pkt, Address from)
 }
 
 Ptr<McpttChannel>
-McpttCall::GetCallChannel (void) const
+McpttCall::GetCallChannel() const
 {
   return GetOwner ()->GetCallChannel (m_callPort);
 }
 
 Ptr<McpttCallMachine>
-McpttCall::GetCallMachine (void) const
+McpttCall::GetCallMachine() const
 {
   return m_callMachine;
 }
 
 Ptr<McpttChannel>
-McpttCall::GetFloorChannel (void) const
+McpttCall::GetFloorChannel() const
 {
   return m_floorChannel;
 }
 
 Ptr<McpttFloorParticipant>
-McpttCall::GetFloorMachine (void) const
+McpttCall::GetFloorMachine() const
 {
   return m_floorMachine;
 }
 
 Ptr<McpttChannel>
-McpttCall::GetMediaChannel (void) const
+McpttCall::GetMediaChannel() const
 {
   return m_mediaChannel;
 }
 
 Ptr<McpttPttApp>
-McpttCall::GetOwner (void) const
+McpttCall::GetOwner() const
 {
   return m_owner;
 }
 
 Time
-McpttCall::GetStartTime (void) const
+McpttCall::GetStartTime() const
 {
   return m_startTime;
 }
 
 Time
-McpttCall::GetStopTime (void) const
+McpttCall::GetStopTime() const
 {
   return m_stopTime;
 }

@@ -51,7 +51,7 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (PscApplicationHelper);
 
 TypeId
-PscApplicationHelper::GetTypeId (void)
+PscApplicationHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::PscApplicationHelper")
     .SetParent<Object> ()

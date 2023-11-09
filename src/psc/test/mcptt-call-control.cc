@@ -49,22 +49,22 @@ namespace tests {
 class TestCallMachine : public McpttCallMachineGrpBasic
 {
 public:
-  static TypeId GetTypeId (void);
-  TestCallMachine (void);
-  virtual ~TestCallMachine (void);
-  virtual void ChangeState (Ptr<McpttCallMachineGrpBasicState>  newState);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual void Receive (const McpttCallMsg& msg);
-  virtual void Start (void);
-  virtual void Send (const McpttCallMsg& msg);
+  static TypeId GetTypeId();
+  TestCallMachine();
+  ~TestCallMachine() override;
+  void ChangeState(Ptr<McpttCallMachineGrpBasicState> newState) override;
+  TypeId GetInstanceTypeId() const override;
+  void Receive(const McpttCallMsg& msg) override;
+  void Start() override;
+  void Send(const McpttCallMsg& msg) override;
 
 protected:
-  virtual void ExpiryOfTfg1 (void);
-  virtual void ExpiryOfTfg2 (void);
-  virtual void ExpiryOfTfg3 (void);
-  virtual void ExpiryOfTfg4 (void);
-  virtual void ExpiryOfTfg5 (void);
-  virtual void ExpiryOfTfg6 (void);
+  void ExpiryOfTfg1() override;
+  void ExpiryOfTfg2() override;
+  void ExpiryOfTfg3() override;
+  void ExpiryOfTfg4() override;
+  void ExpiryOfTfg5() override;
+  void ExpiryOfTfg6() override;
 
 private:
   Callback<void, const TestCallMachine&, const McpttCallMsg&> m_postRxCb;
@@ -77,14 +77,18 @@ private:
   Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState>, Ptr<McpttCallMachineGrpBasicState> > m_stateChangeCb;
 
 public:
-  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPostRxCb (void) const;
-  virtual Callback<void, const TestCallMachine&, const McpttTimer&> GetPostTimerExpCb (void) const;
-  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPostTxCb (void) const;
-  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPreRxCb (void) const;
-  virtual Callback<void, const TestCallMachine&, const McpttTimer&> GetPreTimerExpCb (void) const;
-  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPreTxCb (void) const;
-  virtual Ptr<McpttCallMachineGrpBasicState> GetStartState (void) const;
-  virtual Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState>, Ptr<McpttCallMachineGrpBasicState> > GetStateChangeCb (void) const;
+  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPostRxCb() const;
+  virtual Callback<void, const TestCallMachine&, const McpttTimer&> GetPostTimerExpCb() const;
+  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPostTxCb() const;
+  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPreRxCb() const;
+  virtual Callback<void, const TestCallMachine&, const McpttTimer&> GetPreTimerExpCb() const;
+  virtual Callback<void, const TestCallMachine&, const McpttCallMsg&> GetPreTxCb() const;
+  virtual Ptr<McpttCallMachineGrpBasicState> GetStartState() const;
+  virtual Callback<void,
+                   const TestCallMachine&,
+                   Ptr<McpttCallMachineGrpBasicState>,
+                   Ptr<McpttCallMachineGrpBasicState>>
+  GetStateChangeCb() const;
   virtual void SetPostRxCb (const Callback<void, const TestCallMachine&, const McpttCallMsg&>  postRxCb);
   virtual void SetPostTimerExpCb (const Callback<void, const TestCallMachine&, const McpttTimer&>  timerExpCb);
   virtual void SetPostTxCb (const Callback<void, const TestCallMachine&, const McpttCallMsg&>  postTxCb);
@@ -101,8 +105,8 @@ public:
   McpttCallSetupJoinCall (const std::string& name = "Call Setup - Join Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -135,8 +139,8 @@ public:
   McpttCallSetupNewCall (const std::string& name = "Call Setup - New Call", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -174,8 +178,8 @@ public:
   McpttCallMerge (const std::string& name = "Call Merge", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -211,8 +215,8 @@ public:
   McpttCallRelease (const std::string& name = "Call Release", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -241,8 +245,8 @@ public:
   McpttCallReleaseAfterProbe (const std::string& name = "Call Release - After Probe", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -268,8 +272,8 @@ public:
   McpttCallReleasePendingUserAction1 (const std::string& name = "Call Release - Pending User Action 1", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -292,11 +296,11 @@ class McpttCallReleasePendingUserAction2 : public McpttTestCase
 {
 public:
   McpttCallReleasePendingUserAction2 (const std::string& name = "Call Release - Pending User Action 2", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
-  ~McpttCallReleasePendingUserAction2 (void);
+  ~McpttCallReleasePendingUserAction2() override;
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -327,8 +331,8 @@ public:
   McpttCallReleaseMaxDuration (const std::string& name = "Call Release - Max Duration", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -355,8 +359,8 @@ public:
   McpttCallReleaseAndSetup (const std::string& name = "Call Release - And Setup", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -383,8 +387,8 @@ public:
   McpttCallReject (const std::string& name = "Call Reject", Ptr<McpttTestCaseConfig> config = Create<McpttTestCaseConfig> ());
 
 protected:
-  virtual void Configure (void);
-  virtual void Execute (void);
+  void Configure() override;
+  void Execute() override;
   virtual void UeARxCb (const TestCallMachine& machine, const McpttCallMsg& msg);
   virtual void UeAStateChangeCb (const TestCallMachine& machine, Ptr<McpttCallMachineGrpBasicState>  oldState, Ptr<McpttCallMachineGrpBasicState>  newState);
   virtual void UeATimerExpCb (const TestCallMachine& machine, const McpttTimer& timer);
@@ -421,7 +425,7 @@ private:
 class McpttCallControlTestSuite : public TestSuite
 {
 public:
-  McpttCallControlTestSuite (void);
+  McpttCallControlTestSuite();
 };
 
 /***************************************************************
@@ -431,7 +435,7 @@ public:
 static McpttCallControlTestSuite callSuite;
 
 TypeId
-TestCallMachine::GetTypeId (void)
+TestCallMachine::GetTypeId()
 {
   static TypeId tid = TypeId ("TestCallMachine")
     .SetParent<McpttCallMachineGrpBasic> ()
@@ -441,19 +445,22 @@ TestCallMachine::GetTypeId (void)
   return tid;
 }
 
-TestCallMachine::TestCallMachine (void)
-  : McpttCallMachineGrpBasic (),
-    m_postRxCb (MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&> ()),
-    m_postTimerExpCb (MakeNullCallback<void, const TestCallMachine&, const McpttTimer&> ()),
-    m_postTxCb (MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&> ()),
-    m_preRxCb (MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&> ()),
-    m_preTimerExpCb (MakeNullCallback<void, const TestCallMachine&, const McpttTimer&> ()),
-    m_preTxCb (MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&> ()),
-    m_startState (McpttCallMachineGrpBasicStateS1::GetInstance ()),
-    m_stateChangeCb (MakeNullCallback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState>, Ptr<McpttCallMachineGrpBasicState> > ())
+TestCallMachine::TestCallMachine()
+    : McpttCallMachineGrpBasic(),
+      m_postRxCb(MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&>()),
+      m_postTimerExpCb(MakeNullCallback<void, const TestCallMachine&, const McpttTimer&>()),
+      m_postTxCb(MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&>()),
+      m_preRxCb(MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&>()),
+      m_preTimerExpCb(MakeNullCallback<void, const TestCallMachine&, const McpttTimer&>()),
+      m_preTxCb(MakeNullCallback<void, const TestCallMachine&, const McpttCallMsg&>()),
+      m_startState(McpttCallMachineGrpBasicStateS1::GetInstance()),
+      m_stateChangeCb(MakeNullCallback<void,
+                                       const TestCallMachine&,
+                                       Ptr<McpttCallMachineGrpBasicState>,
+                                       Ptr<McpttCallMachineGrpBasicState>>())
 { }
 
-TestCallMachine::~TestCallMachine (void)
+TestCallMachine::~TestCallMachine()
 { }
 
 void
@@ -495,7 +502,7 @@ TestCallMachine::Send (const McpttCallMsg& msg)
 }
 
 void
-TestCallMachine::ExpiryOfTfg1 (void)
+TestCallMachine::ExpiryOfTfg1()
 {
   Ptr<McpttTimer> tfg = GetTfg1 ();
   Callback<void, const TestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -515,7 +522,7 @@ TestCallMachine::ExpiryOfTfg1 (void)
 }
 
 void
-TestCallMachine::ExpiryOfTfg2 (void)
+TestCallMachine::ExpiryOfTfg2()
 {
   Ptr<McpttTimer> tfg = GetTfg2 ();
   Callback<void, const TestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -535,7 +542,7 @@ TestCallMachine::ExpiryOfTfg2 (void)
 }
 
 void
-TestCallMachine::ExpiryOfTfg3 (void)
+TestCallMachine::ExpiryOfTfg3()
 {
   Ptr<McpttTimer> tfg = GetTfg3 ();
   Callback<void, const TestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -555,7 +562,7 @@ TestCallMachine::ExpiryOfTfg3 (void)
 }
 
 void
-TestCallMachine::ExpiryOfTfg4 (void)
+TestCallMachine::ExpiryOfTfg4()
 {
   Ptr<McpttTimer> tfg = GetTfg4 ();
   Callback<void, const TestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -575,7 +582,7 @@ TestCallMachine::ExpiryOfTfg4 (void)
 }
 
 void
-TestCallMachine::ExpiryOfTfg5 (void)
+TestCallMachine::ExpiryOfTfg5()
 {
   Ptr<McpttTimer> tfg = GetTfg5 ();
   Callback<void, const TestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -595,7 +602,7 @@ TestCallMachine::ExpiryOfTfg5 (void)
 }
 
 void
-TestCallMachine::ExpiryOfTfg6 (void)
+TestCallMachine::ExpiryOfTfg6()
 {
   Ptr<McpttTimer> tfg = GetTfg6 ();
   Callback<void, const TestCallMachine&, const McpttTimer&> postTimerExpCb = GetPostTimerExpCb ();
@@ -615,7 +622,7 @@ TestCallMachine::ExpiryOfTfg6 (void)
 }
 
 void
-TestCallMachine::Start (void)
+TestCallMachine::Start()
 {
   Ptr<McpttCallMachineGrpBasicState> startState = GetStartState ();
 
@@ -639,56 +646,58 @@ TestCallMachine::ChangeState (Ptr<McpttCallMachineGrpBasicState>  newState)
 }
 
 TypeId
-TestCallMachine::GetInstanceTypeId (void) const
+TestCallMachine::GetInstanceTypeId() const
 {
   return TestCallMachine::GetTypeId ();
 }
 
 Callback<void, const TestCallMachine&, const McpttCallMsg&>
-TestCallMachine::GetPostRxCb (void) const
+TestCallMachine::GetPostRxCb() const
 {
   return m_postRxCb;
 }
 
 Callback<void, const TestCallMachine&, const McpttTimer&>
-TestCallMachine::GetPostTimerExpCb (void) const
+TestCallMachine::GetPostTimerExpCb() const
 {
   return m_postTimerExpCb;
 }
 
-
 Callback<void, const TestCallMachine&, const McpttCallMsg&>
-TestCallMachine::GetPostTxCb (void) const
+TestCallMachine::GetPostTxCb() const
 {
   return m_postTxCb;
 }
 
 Callback<void, const TestCallMachine&, const McpttCallMsg&>
-TestCallMachine::GetPreRxCb (void) const
+TestCallMachine::GetPreRxCb() const
 {
   return m_preRxCb;
 }
 
 Callback<void, const TestCallMachine&, const McpttTimer&>
-TestCallMachine::GetPreTimerExpCb (void) const
+TestCallMachine::GetPreTimerExpCb() const
 {
   return m_preTimerExpCb;
 }
 
 Callback<void, const TestCallMachine&, const McpttCallMsg&>
-TestCallMachine::GetPreTxCb (void) const
+TestCallMachine::GetPreTxCb() const
 {
   return m_preTxCb;
 }
 
 Ptr<McpttCallMachineGrpBasicState>
-TestCallMachine::GetStartState (void) const
+TestCallMachine::GetStartState() const
 {
   return m_startState;
 }
 
-Callback<void, const TestCallMachine&, Ptr<McpttCallMachineGrpBasicState>, Ptr<McpttCallMachineGrpBasicState> >
-TestCallMachine::GetStateChangeCb (void) const
+Callback<void,
+         const TestCallMachine&,
+         Ptr<McpttCallMachineGrpBasicState>,
+         Ptr<McpttCallMachineGrpBasicState>>
+TestCallMachine::GetStateChangeCb() const
 {
   return m_stateChangeCb;
 }
@@ -757,7 +766,7 @@ McpttCallSetupJoinCall::McpttCallSetupJoinCall (const std::string& name, Ptr<Mcp
 { }
 
 void
-McpttCallSetupJoinCall::Configure (void)
+McpttCallSetupJoinCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -875,7 +884,7 @@ McpttCallSetupJoinCall::Configure (void)
 }
 
 void
-McpttCallSetupJoinCall::Execute (void)
+McpttCallSetupJoinCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -925,9 +934,8 @@ McpttCallSetupJoinCall::UeARxCb (const TestCallMachine& machine, const McpttCall
       NS_TEST_ASSERT_MSG_EQ (tfg5->IsRunning (), false, "UE A TFG5 is running.");
       NS_TEST_ASSERT_MSG_EQ (tfg6->IsRunning (), true, "UE A TFG6 is not running.");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttCallMachineGrpBasicStateS3::GetStateId (), "UE A not in " << McpttCallMachineGrpBasicStateS3::GetStateId ());
-      if (m_ueBTfg2Exp == true
-          && m_ueCTfg2Exp == true)
-        {
+      if (m_ueBTfg2Exp && m_ueCTfg2Exp)
+      {
           Stop ();
         }
     }
@@ -1032,9 +1040,8 @@ McpttCallSetupJoinCall::UeBTimerExpCb (const TestCallMachine& machine, const Mcp
       NS_TEST_ASSERT_MSG_EQ (tfg6->IsRunning (), true, "UE B timer TFG6 is not running.");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttCallMachineGrpBasicStateS3::GetStateId (), "UE B in state " << state->GetInstanceStateId () << " but should be in " << McpttCallMachineGrpBasicStateS3::GetStateId () << ".");
       m_ueBTfg2Exp = true;
-      if (m_ueCTfg2Exp == true
-          && m_ueARxAnnoun == true)
-        {
+      if (m_ueCTfg2Exp && m_ueARxAnnoun)
+      {
           Stop ();
         }
     }
@@ -1142,9 +1149,8 @@ McpttCallSetupJoinCall::UeCTimerExpCb (const TestCallMachine& machine, const Mcp
       NS_TEST_ASSERT_MSG_EQ (tfg6->IsRunning (), true, "UE C timer TFG6 is not running.");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttCallMachineGrpBasicStateS3::GetStateId (), "UE C in state " << state->GetInstanceStateId () << " but should be in " << McpttCallMachineGrpBasicStateS3::GetStateId () << ".");
       m_ueCTfg2Exp = true;
-      if (m_ueBTfg2Exp == true
-          && m_ueARxAnnoun == true)
-        {
+      if (m_ueBTfg2Exp && m_ueARxAnnoun)
+      {
           Stop ();
         }
     }
@@ -1253,7 +1259,7 @@ McpttCallSetupNewCall::McpttCallSetupNewCall (const std::string& name, Ptr<Mcptt
 { }
 
 void
-McpttCallSetupNewCall::Configure (void)
+McpttCallSetupNewCall::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -1293,7 +1299,7 @@ McpttCallSetupNewCall::Configure (void)
 }
 
 void
-McpttCallSetupNewCall::Execute (void)
+McpttCallSetupNewCall::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -1774,7 +1780,7 @@ McpttCallMerge::McpttCallMerge (const std::string& name, Ptr<McpttTestCaseConfig
 { }
 
 void
-McpttCallMerge::Configure (void)
+McpttCallMerge::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -1903,7 +1909,7 @@ McpttCallMerge::Configure (void)
 }
 
 void
-McpttCallMerge::Execute (void)
+McpttCallMerge::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2077,9 +2083,8 @@ McpttCallMerge::UeBRxCb (const TestCallMachine& machine, const McpttCallMsg& msg
       NS_TEST_ASSERT_MSG_LT (m_ueBRxAnnoun, 2, "UE B received too many " << McpttCallMsgGrpAnnoun::GetTypeId () << ".");
       NS_TEST_ASSERT_MSG_EQ (state->GetInstanceStateId (), McpttCallMachineGrpBasicStateS3::GetStateId (), "UE B in state " << state->GetInstanceStateId () << " but should be in " << McpttCallMachineGrpBasicStateS3::GetStateId () << ".");
       m_ueBRxAnnoun += 1;
-      if (m_ueBRxAnnoun == 2
-          && m_ueCRxAnnoun == true)
-        {
+      if (m_ueBRxAnnoun == 2 && m_ueCRxAnnoun)
+      {
           Stop ();
         }
     }
@@ -2361,7 +2366,7 @@ McpttCallRelease::McpttCallRelease (const std::string& name, Ptr<McpttTestCaseCo
 { }
 
 void
-McpttCallRelease::Configure (void)
+McpttCallRelease::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -2511,7 +2516,7 @@ McpttCallRelease::Configure (void)
 }
 
 void
-McpttCallRelease::Execute (void)
+McpttCallRelease::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -2788,7 +2793,7 @@ McpttCallReleaseAfterProbe::McpttCallReleaseAfterProbe (const std::string& name,
 { }
 
 void
-McpttCallReleaseAfterProbe::Configure (void)
+McpttCallReleaseAfterProbe::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -2911,7 +2916,7 @@ McpttCallReleaseAfterProbe::Configure (void)
 }
 
 void
-McpttCallReleaseAfterProbe::Execute (void)
+McpttCallReleaseAfterProbe::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3064,7 +3069,7 @@ McpttCallReleasePendingUserAction1::McpttCallReleasePendingUserAction1 (const st
 { }
 
 void
-McpttCallReleasePendingUserAction1::Configure (void)
+McpttCallReleasePendingUserAction1::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -3212,7 +3217,7 @@ McpttCallReleasePendingUserAction1::Configure (void)
 }
 
 void
-McpttCallReleasePendingUserAction1::Execute (void)
+McpttCallReleasePendingUserAction1::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3331,29 +3336,31 @@ McpttCallReleasePendingUserAction1::UeCStateChangeCb (const TestCallMachine& mac
   NS_TEST_ASSERT_MSG_EQ (true, false, "UE C made invalid state transition from " << *oldState << " to " << *newState << ".");
 }
 
-McpttCallReleasePendingUserAction2::McpttCallReleasePendingUserAction2 (const std::string& name, Ptr<McpttTestCaseConfig>  config)
-  : McpttTestCase (name, config),
-    m_ueARxAnnoun (false),
-    m_ueAS5ToS6 (false),
-    m_ueAS6ToS1 (false),
-    m_ueATfg5Exp (false),
-    m_ueBRndVals (0),
-    m_ueBTfg2Exp (false),
-    m_ueBTxAnnoun (false),
-    m_ueCRxAnnoun (false)
+McpttCallReleasePendingUserAction2::McpttCallReleasePendingUserAction2(
+    const std::string& name,
+    Ptr<McpttTestCaseConfig> config)
+    : McpttTestCase(name, config),
+      m_ueARxAnnoun(false),
+      m_ueAS5ToS6(false),
+      m_ueAS6ToS1(false),
+      m_ueATfg5Exp(false),
+      m_ueBRndVals(nullptr),
+      m_ueBTfg2Exp(false),
+      m_ueBTxAnnoun(false),
+      m_ueCRxAnnoun(false)
 { }
 
-McpttCallReleasePendingUserAction2::~McpttCallReleasePendingUserAction2 (void)
+McpttCallReleasePendingUserAction2::~McpttCallReleasePendingUserAction2()
 {
-  if (m_ueBRndVals != 0)
+    if (m_ueBRndVals != nullptr)
     {
       delete[] m_ueBRndVals;
-      m_ueBRndVals = 0;
+      m_ueBRndVals = nullptr;
     }
 }
 
 void
-McpttCallReleasePendingUserAction2::Configure (void)
+McpttCallReleasePendingUserAction2::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -3512,7 +3519,7 @@ McpttCallReleasePendingUserAction2::Configure (void)
 }
 
 void
-McpttCallReleasePendingUserAction2::Execute (void)
+McpttCallReleasePendingUserAction2::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -3774,7 +3781,7 @@ McpttCallReleaseMaxDuration::McpttCallReleaseMaxDuration (const std::string& nam
 { }
 
 void
-McpttCallReleaseMaxDuration::Configure (void)
+McpttCallReleaseMaxDuration::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -3921,7 +3928,7 @@ McpttCallReleaseMaxDuration::Configure (void)
 }
 
 void
-McpttCallReleaseMaxDuration::Execute (void)
+McpttCallReleaseMaxDuration::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -4091,7 +4098,7 @@ McpttCallReleaseAndSetup::McpttCallReleaseAndSetup (const std::string& name, Ptr
 { }
 
 void
-McpttCallReleaseAndSetup::Configure (void)
+McpttCallReleaseAndSetup::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -4151,7 +4158,7 @@ McpttCallReleaseAndSetup::Configure (void)
 }
 
 void
-McpttCallReleaseAndSetup::Execute (void)
+McpttCallReleaseAndSetup::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -4346,7 +4353,7 @@ McpttCallReject::McpttCallReject (const std::string& name, Ptr<McpttTestCaseConf
 { }
 
 void
-McpttCallReject::Configure (void)
+McpttCallReject::Configure()
 {
   GetConfig ()->SetAppCount (3);
   GetConfig ()->SetCallTid (TestCallMachine::GetTypeId ());
@@ -4396,7 +4403,7 @@ McpttCallReject::Configure (void)
 }
 
 void
-McpttCallReject::Execute (void)
+McpttCallReject::Execute()
 {
   NS_LOG_LOGIC ("Starting " << GetName () << "...");
 
@@ -4819,8 +4826,8 @@ McpttCallReject::UeCStateChangeCb (const TestCallMachine& machine, Ptr<McpttCall
   NS_TEST_ASSERT_MSG_EQ (tfg6->IsRunning (), false, "UE C timer " << tfg6->GetId () << " is running.");
 }
 
-McpttCallControlTestSuite::McpttCallControlTestSuite (void)
-  : TestSuite ("mcptt-call-control", TestSuite::SYSTEM)
+McpttCallControlTestSuite::McpttCallControlTestSuite()
+    : TestSuite("mcptt-call-control", TestSuite::SYSTEM)
 {
   AddTestCase (new McpttCallSetupJoinCall (), TestCase::QUICK);
   AddTestCase (new McpttCallSetupNewCall (), TestCase::QUICK);

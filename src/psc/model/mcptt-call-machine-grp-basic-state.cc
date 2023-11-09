@@ -47,7 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttCallMachineGrpBasicState");
 namespace psc {
 
 /** McpttCallMachineGrpBasicState - begin **/
-McpttCallMachineGrpBasicState::~McpttCallMachineGrpBasicState (void)
+McpttCallMachineGrpBasicState::~McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -101,7 +101,7 @@ McpttCallMachineGrpBasicState::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine)
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicState::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicState::GetInstanceStateId() const
 {
   return McpttEntityId ();
 }
@@ -155,8 +155,8 @@ McpttCallMachineGrpBasicState::ReleaseCall (McpttCallMachineGrpBasic& machine)
   NS_LOG_LOGIC ("Ignoring release call.");
 }
 
-McpttCallMachineGrpBasicState::McpttCallMachineGrpBasicState (void)
-  : SimpleRefCount<McpttCallMachineGrpBasicState> ()
+McpttCallMachineGrpBasicState::McpttCallMachineGrpBasicState()
+    : SimpleRefCount<McpttCallMachineGrpBasicState>()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -174,32 +174,32 @@ operator<< (std::ostream& os, const McpttCallMachineGrpBasicState& inst)
 
 /** McpttCallMachineGrpBasicStateS1 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS1>
-McpttCallMachineGrpBasicStateS1::GetInstance (void)
+McpttCallMachineGrpBasicStateS1::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS1> instance = Create<McpttCallMachineGrpBasicStateS1> ();
   return instance;
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS1::GetStateId (void)
+McpttCallMachineGrpBasicStateS1::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (1, "'S1: start-stop'");
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS1::McpttCallMachineGrpBasicStateS1 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS1::McpttCallMachineGrpBasicStateS1()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS1::~McpttCallMachineGrpBasicStateS1 (void)
+McpttCallMachineGrpBasicStateS1::~McpttCallMachineGrpBasicStateS1()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS1::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS1::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS1::GetStateId ();
 }
@@ -273,8 +273,8 @@ McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 
       typeMachine->Start ();
 
-      if (userAckReq == true)
-        {
+      if (userAckReq)
+      {
           tfg4->Start ();
 
           if (msg.IsConfirmModeIndicated ())
@@ -329,26 +329,26 @@ McpttCallMachineGrpBasicStateS1::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 
 /** McpttCallMachineGrpBasicStateS2 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS2>
-McpttCallMachineGrpBasicStateS2::GetInstance (void)
+McpttCallMachineGrpBasicStateS2::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS2> instance = Create<McpttCallMachineGrpBasicStateS2> ();
   return instance;
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS2::GetStateId (void)
+McpttCallMachineGrpBasicStateS2::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (2, "'S2: waiting for call announcement'");
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS2::McpttCallMachineGrpBasicStateS2 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS2::McpttCallMachineGrpBasicStateS2()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS2::~McpttCallMachineGrpBasicStateS2 (void)
+McpttCallMachineGrpBasicStateS2::~McpttCallMachineGrpBasicStateS2()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -460,7 +460,7 @@ McpttCallMachineGrpBasicStateS2::ExpiryOfTfg3 (McpttCallMachineGrpBasic& machine
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS2::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS2::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS2::GetStateId ();
 }
@@ -538,7 +538,7 @@ McpttCallMachineGrpBasicStateS2::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
 /** McpttCallMachineGrpBasicStateS3 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS3>
-McpttCallMachineGrpBasicStateS3::GetInstance (void)
+McpttCallMachineGrpBasicStateS3::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS3> instance = Create<McpttCallMachineGrpBasicStateS3> ();
 
@@ -546,20 +546,20 @@ McpttCallMachineGrpBasicStateS3::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS3::GetStateId (void)
+McpttCallMachineGrpBasicStateS3::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (3, "'S3: part of ongoing call'");
 
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS3::McpttCallMachineGrpBasicStateS3 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS3::McpttCallMachineGrpBasicStateS3()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS3::~McpttCallMachineGrpBasicStateS3 (void)
+McpttCallMachineGrpBasicStateS3::~McpttCallMachineGrpBasicStateS3()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -594,8 +594,8 @@ McpttCallMachineGrpBasicStateS3::ExpiryOfTfg2 (McpttCallMachineGrpBasic& machine
   msg.SetLastChgUserId (myLastChgUserId);
   msg.SetStartTime (myStartTime);
 
-  if (probeRespVal == true)
-    {
+  if (probeRespVal)
+  {
       msg.SetProbeResp (true);
       machine.SetProbeRespVal (false);
     }
@@ -630,7 +630,7 @@ McpttCallMachineGrpBasicStateS3::ExpiryOfTfg6 (McpttCallMachineGrpBasic& machine
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS3::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS3::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS3::GetStateId ();
 }
@@ -692,16 +692,15 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
   Address grpAddr = theirSdp.GetGrpAddr ();
   uint16_t speechPort = theirSdp.GetSpeechPort ();
 
-  if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
-      && (myProbeRespVal == false
-          || (myProbeRespVal == true && msg.IsProbeResp ()))
-      && myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
-      && myStartTime.GetTime () == theirStartTime.GetTime ()
-      && myLastChgTime.GetTime () == theirLastChgTime.GetTime ()
-      && myLastChgUserId.GetId () == theirLastChgUserId.GetId ()
-      && myCallId.GetCallId () == theirCallId.GetCallId ()
-      && myCallType.GetType () == theirCallType.GetType ())
-    {
+  if (myGrpId.GetGrpId() == theirGrpId.GetGrpId() &&
+      (!myProbeRespVal || (myProbeRespVal && msg.IsProbeResp())) &&
+      myGrpId.GetGrpId() == theirGrpId.GetGrpId() &&
+      myStartTime.GetTime() == theirStartTime.GetTime() &&
+      myLastChgTime.GetTime() == theirLastChgTime.GetTime() &&
+      myLastChgUserId.GetId() == theirLastChgUserId.GetId() &&
+      myCallId.GetCallId() == theirCallId.GetCallId() &&
+      myCallType.GetType() == theirCallType.GetType())
+  {
       tfg2->Stop ();
       delayTfg2 = machine.CalcDelayForPeriodicAnnoun ();
       tfg2->SetDelay (delayTfg2);
@@ -772,9 +771,8 @@ McpttCallMachineGrpBasicStateS3::ReceiveGrpCallProbe (McpttCallMachineGrpBasic& 
   McpttCallMsgFieldGrpId theirGrpId = msg.GetGrpId ();
   McpttCallMsgFieldGrpId myGrpId = machine.GetGrpId ();
 
-  if (myGrpId.GetGrpId () == theirGrpId.GetGrpId ()
-      && probeRespVal == false)
-    {
+  if (myGrpId.GetGrpId() == theirGrpId.GetGrpId() && !probeRespVal)
+  {
       tfg2->Stop ();
       delayTfg2 = machine.CalcDelayForAfterCallProbe ();
       tfg2->SetDelay (delayTfg2);
@@ -821,7 +819,7 @@ McpttCallMachineGrpBasicStateS3::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
 /** McpttCallMachineGrpBasicStateS4 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS4>
-McpttCallMachineGrpBasicStateS4::GetInstance (void)
+McpttCallMachineGrpBasicStateS4::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS4> instance = Create<McpttCallMachineGrpBasicStateS4> ();
 
@@ -829,20 +827,20 @@ McpttCallMachineGrpBasicStateS4::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS4::GetStateId (void)
+McpttCallMachineGrpBasicStateS4::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (4, "'S4: pending user action without confirm indication'");
 
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS4::McpttCallMachineGrpBasicStateS4 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS4::McpttCallMachineGrpBasicStateS4()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS4::~McpttCallMachineGrpBasicStateS4 (void)
+McpttCallMachineGrpBasicStateS4::~McpttCallMachineGrpBasicStateS4()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -894,7 +892,7 @@ McpttCallMachineGrpBasicStateS4::ExpiryOfTfg4 (McpttCallMachineGrpBasic& machine
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS4::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS4::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS4::GetStateId ();
 }
@@ -955,7 +953,7 @@ McpttCallMachineGrpBasicStateS4::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
 /** McpttCallMachineGrpBasicStateS5 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS5>
-McpttCallMachineGrpBasicStateS5::GetInstance (void)
+McpttCallMachineGrpBasicStateS5::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS5> instance = Create<McpttCallMachineGrpBasicStateS5> ();
 
@@ -963,20 +961,20 @@ McpttCallMachineGrpBasicStateS5::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS5::GetStateId (void)
+McpttCallMachineGrpBasicStateS5::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (5, "'S5: pending user action with confirm indication'");
 
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS5::McpttCallMachineGrpBasicStateS5 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS5::McpttCallMachineGrpBasicStateS5()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS5::~McpttCallMachineGrpBasicStateS5 (void)
+McpttCallMachineGrpBasicStateS5::~McpttCallMachineGrpBasicStateS5()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1041,7 +1039,7 @@ McpttCallMachineGrpBasicStateS5::ExpiryOfTfg4 (McpttCallMachineGrpBasic& machine
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS5::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS5::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS5::GetStateId ();
 }
@@ -1109,7 +1107,7 @@ McpttCallMachineGrpBasicStateS5::ReleaseCall (McpttCallMachineGrpBasic& machine)
 
 /** McpttCallMachineGrpBasicStateS6 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS6>
-McpttCallMachineGrpBasicStateS6::GetInstance (void)
+McpttCallMachineGrpBasicStateS6::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS6> instance = Create<McpttCallMachineGrpBasicStateS6> ();
 
@@ -1117,20 +1115,20 @@ McpttCallMachineGrpBasicStateS6::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS6::GetStateId (void)
+McpttCallMachineGrpBasicStateS6::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (6, "'S6: ignoring incoming call announcements'");
 
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS6::McpttCallMachineGrpBasicStateS6 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS6::McpttCallMachineGrpBasicStateS6()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS6::~McpttCallMachineGrpBasicStateS6 (void)
+McpttCallMachineGrpBasicStateS6::~McpttCallMachineGrpBasicStateS6()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1160,7 +1158,7 @@ McpttCallMachineGrpBasicStateS6::ExpiryOfTfg5 (McpttCallMachineGrpBasic& machine
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS6::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS6::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS6::GetStateId ();
 }
@@ -1233,7 +1231,7 @@ McpttCallMachineGrpBasicStateS6::ReceiveGrpCallAnnoun (McpttCallMachineGrpBasic&
 
 /** McpttCallMachineGrpBasicStateS7 - begin **/
 Ptr<McpttCallMachineGrpBasicStateS7>
-McpttCallMachineGrpBasicStateS7::GetInstance (void)
+McpttCallMachineGrpBasicStateS7::GetInstance()
 {
   static Ptr<McpttCallMachineGrpBasicStateS7> instance = Create<McpttCallMachineGrpBasicStateS7> ();
 
@@ -1241,20 +1239,20 @@ McpttCallMachineGrpBasicStateS7::GetInstance (void)
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS7::GetStateId (void)
+McpttCallMachineGrpBasicStateS7::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (7, "'S7: waiting for call announcement after call release'");
 
   return stateId;
 }
 
-McpttCallMachineGrpBasicStateS7::McpttCallMachineGrpBasicStateS7 (void)
-  : McpttCallMachineGrpBasicState ()
+McpttCallMachineGrpBasicStateS7::McpttCallMachineGrpBasicStateS7()
+    : McpttCallMachineGrpBasicState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttCallMachineGrpBasicStateS7::~McpttCallMachineGrpBasicStateS7 (void)
+McpttCallMachineGrpBasicStateS7::~McpttCallMachineGrpBasicStateS7()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -1275,7 +1273,7 @@ McpttCallMachineGrpBasicStateS7::ExpiryOfTfg1 (McpttCallMachineGrpBasic& machine
 }
 
 McpttEntityId
-McpttCallMachineGrpBasicStateS7::GetInstanceStateId (void) const
+McpttCallMachineGrpBasicStateS7::GetInstanceStateId() const
 {
   return McpttCallMachineGrpBasicStateS7::GetStateId ();
 }

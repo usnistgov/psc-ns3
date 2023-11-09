@@ -47,7 +47,7 @@ public:
 
 
 private:
-  virtual void DoRun (void);
+  void DoRun() override;
 
   Angles m_a;
   double m_hb;

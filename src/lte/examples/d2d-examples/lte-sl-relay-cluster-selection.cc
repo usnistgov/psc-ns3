@@ -722,7 +722,7 @@ main(int argc, char* argv[])
     *packetOutputStream->GetStream()
         << "time(sec)\ttx/rx\tC/S\tNodeID\tIP[src]\tIP[dst]\tPktSize(bytes)" << std::endl;
 
-    for (uint16_t remUeIdx = 0; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
+    for (uint32_t remUeIdx = 0; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
     {
         if (echoServerNode == "RemoteUE" && remUeIdx == 0)
         {

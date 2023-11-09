@@ -53,7 +53,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttOnNetworkFloorDualControlState");
 namespace psc {
 
 /** McpttOnNetworkFloorDualControlState - begin **/
-McpttOnNetworkFloorDualControlState::~McpttOnNetworkFloorDualControlState (void)
+McpttOnNetworkFloorDualControlState::~McpttOnNetworkFloorDualControlState()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -101,7 +101,7 @@ McpttOnNetworkFloorDualControlState::ExpiryOfT12 (McpttOnNetworkFloorDualControl
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlState::GetInstanceStateId (void) const
+McpttOnNetworkFloorDualControlState::GetInstanceStateId() const
 {
   return McpttEntityId ();
 }
@@ -166,8 +166,8 @@ McpttOnNetworkFloorDualControlState::Unselected (McpttOnNetworkFloorDualControl&
   NS_LOG_FUNCTION (this << &machine);
 }
 
-McpttOnNetworkFloorDualControlState::McpttOnNetworkFloorDualControlState (void)
-  : SimpleRefCount<McpttOnNetworkFloorDualControlState> ()
+McpttOnNetworkFloorDualControlState::McpttOnNetworkFloorDualControlState()
+    : SimpleRefCount<McpttOnNetworkFloorDualControlState>()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -181,33 +181,33 @@ operator<< (std::ostream& os, const McpttOnNetworkFloorDualControlState& state)
 
 /** McpttOnNetworkFloorDualControlStateStartStop - begin **/
 Ptr<McpttOnNetworkFloorDualControlStateStartStop>
-McpttOnNetworkFloorDualControlStateStartStop::GetInstance (void)
+McpttOnNetworkFloorDualControlStateStartStop::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorDualControlStateStartStop> instance = Create<McpttOnNetworkFloorDualControlStateStartStop> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlStateStartStop::GetStateId (void)
+McpttOnNetworkFloorDualControlStateStartStop::GetStateId()
 {
   static McpttEntityId id (0, "'Start-stop'");
 
   return id;
 }
 
-McpttOnNetworkFloorDualControlStateStartStop::McpttOnNetworkFloorDualControlStateStartStop (void)
-  : McpttOnNetworkFloorDualControlState ()
+McpttOnNetworkFloorDualControlStateStartStop::McpttOnNetworkFloorDualControlStateStartStop()
+    : McpttOnNetworkFloorDualControlState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorDualControlStateStartStop::~McpttOnNetworkFloorDualControlStateStartStop (void)
+McpttOnNetworkFloorDualControlStateStartStop::~McpttOnNetworkFloorDualControlStateStartStop()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlStateStartStop::GetInstanceStateId (void) const
+McpttOnNetworkFloorDualControlStateStartStop::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorDualControlStateStartStop::GetStateId ();
 }
@@ -227,33 +227,33 @@ McpttOnNetworkFloorDualControlStateStartStop::ReceivePreemptiveFloorRequest (Mcp
 
 /** McpttOnNetworkFloorDualControlStateTaken - begin **/
 Ptr<McpttOnNetworkFloorDualControlStateTaken>
-McpttOnNetworkFloorDualControlStateTaken::GetInstance (void)
+McpttOnNetworkFloorDualControlStateTaken::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorDualControlStateTaken> instance = Create<McpttOnNetworkFloorDualControlStateTaken> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlStateTaken::GetStateId (void)
+McpttOnNetworkFloorDualControlStateTaken::GetStateId()
 {
   static McpttEntityId id (1, "'D: Floor Taken'");
 
   return id;
 }
 
-McpttOnNetworkFloorDualControlStateTaken::McpttOnNetworkFloorDualControlStateTaken (void)
-  : McpttOnNetworkFloorDualControlState ()
+McpttOnNetworkFloorDualControlStateTaken::McpttOnNetworkFloorDualControlStateTaken()
+    : McpttOnNetworkFloorDualControlState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorDualControlStateTaken::~McpttOnNetworkFloorDualControlStateTaken (void)
+McpttOnNetworkFloorDualControlStateTaken::~McpttOnNetworkFloorDualControlStateTaken()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlStateTaken::GetInstanceStateId (void) const
+McpttOnNetworkFloorDualControlStateTaken::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorDualControlStateTaken::GetStateId ();
 }
@@ -507,33 +507,33 @@ McpttOnNetworkFloorDualControlStateTaken::Terminate (McpttOnNetworkFloorDualCont
 
 /** McpttOnNetworkFloorDualControlStateReleasing - begin **/
 Ptr<McpttOnNetworkFloorDualControlStateReleasing>
-McpttOnNetworkFloorDualControlStateReleasing::GetInstance (void)
+McpttOnNetworkFloorDualControlStateReleasing::GetInstance()
 {
   static Ptr<McpttOnNetworkFloorDualControlStateReleasing> instance = Create<McpttOnNetworkFloorDualControlStateReleasing> ();
   return instance;
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlStateReleasing::GetStateId (void)
+McpttOnNetworkFloorDualControlStateReleasing::GetStateId()
 {
   static McpttEntityId id (2, "'Releasing'");
 
   return id;
 }
 
-McpttOnNetworkFloorDualControlStateReleasing::McpttOnNetworkFloorDualControlStateReleasing (void)
-  : McpttOnNetworkFloorDualControlState ()
+McpttOnNetworkFloorDualControlStateReleasing::McpttOnNetworkFloorDualControlStateReleasing()
+    : McpttOnNetworkFloorDualControlState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttOnNetworkFloorDualControlStateReleasing::~McpttOnNetworkFloorDualControlStateReleasing (void)
+McpttOnNetworkFloorDualControlStateReleasing::~McpttOnNetworkFloorDualControlStateReleasing()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttOnNetworkFloorDualControlStateReleasing::GetInstanceStateId (void) const
+McpttOnNetworkFloorDualControlStateReleasing::GetInstanceStateId() const
 {
   return McpttOnNetworkFloorDualControlStateReleasing::GetStateId ();
 }

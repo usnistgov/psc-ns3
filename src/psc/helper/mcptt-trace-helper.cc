@@ -48,7 +48,7 @@ NS_LOG_COMPONENT_DEFINE ("McpttTraceHelper");
 namespace psc {
 
 TypeId
-McpttTraceHelper::GetTypeId (void)
+McpttTraceHelper::GetTypeId()
 {
   static TypeId tid = TypeId ("ns3::psc::McpttTraceHelper")
     .SetParent<Object> ()
@@ -64,9 +64,10 @@ McpttTraceHelper::GetTypeId (void)
   ;
   return tid;
 }
-McpttTraceHelper::McpttTraceHelper (void)
-  : m_msgTracer (nullptr),
-    m_stateMachineTracer (nullptr)
+
+McpttTraceHelper::McpttTraceHelper()
+    : m_msgTracer(nullptr),
+      m_stateMachineTracer(nullptr)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -87,7 +88,7 @@ McpttTraceHelper::~McpttTraceHelper ()
 }
 
 void
-McpttTraceHelper::EnableMsgTraces (void)
+McpttTraceHelper::EnableMsgTraces()
 {
   NS_LOG_FUNCTION (this);
   if (!m_msgTracer)
@@ -101,7 +102,7 @@ McpttTraceHelper::EnableMsgTraces (void)
 }
 
 void
-McpttTraceHelper::DisableMsgTraces (void)
+McpttTraceHelper::DisableMsgTraces()
 {
   NS_LOG_FUNCTION (this);
   if (m_msgTracer != nullptr)
@@ -113,9 +114,8 @@ McpttTraceHelper::DisableMsgTraces (void)
     }
 }
 
-
 void
-McpttTraceHelper::EnableStateMachineTraces (void)
+McpttTraceHelper::EnableStateMachineTraces()
 {
   NS_LOG_FUNCTION (this);
   if (!m_stateMachineTracer)
@@ -133,7 +133,7 @@ McpttTraceHelper::EnableStateMachineTraces (void)
 }
 
 void
-McpttTraceHelper::DisableStateMachineTraces (void)
+McpttTraceHelper::DisableStateMachineTraces()
 {
   NS_LOG_FUNCTION (this);
   if (m_stateMachineTracer != nullptr)
@@ -180,7 +180,7 @@ McpttTraceHelper::TraceMcpttMediaMsg (Ptr<const Application> app, uint16_t callI
 }
 
 void
-McpttTraceHelper::EnableMouthToEarLatencyTrace (void)
+McpttTraceHelper::EnableMouthToEarLatencyTrace()
 {
   NS_LOG_FUNCTION (this);
 
@@ -207,7 +207,7 @@ McpttTraceHelper::EnableMouthToEarLatencyTrace (std::string filename)
 }
 
 void
-McpttTraceHelper::DisableMouthToEarLatencyTrace (void)
+McpttTraceHelper::DisableMouthToEarLatencyTrace()
 {
   NS_LOG_FUNCTION (this);
 
@@ -512,7 +512,7 @@ McpttTraceHelper::TraceStatesForAccessTime (uint32_t userId, uint16_t callId, co
 }
 
 void
-McpttTraceHelper::EnableAccessTimeTrace (void)
+McpttTraceHelper::EnableAccessTimeTrace()
 {
   NS_LOG_FUNCTION (this);
 
@@ -540,7 +540,7 @@ McpttTraceHelper::EnableAccessTimeTrace (std::string filename)
 }
 
 void
-McpttTraceHelper::DisableAccessTimeTrace (void)
+McpttTraceHelper::DisableAccessTimeTrace()
 {
   NS_LOG_FUNCTION (this);
 
@@ -554,7 +554,7 @@ McpttTraceHelper::DisableAccessTimeTrace (void)
 }
 
 void
-McpttTraceHelper::DoDispose (void)
+McpttTraceHelper::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 

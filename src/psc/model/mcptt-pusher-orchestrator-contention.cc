@@ -49,35 +49,37 @@ namespace psc {
 NS_OBJECT_ENSURE_REGISTERED (McpttPusherOrchestratorContention);
 
 TypeId
-McpttPusherOrchestratorContention::GetTypeId (void)
+McpttPusherOrchestratorContention::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorContention")
-    .SetParent<McpttPusherOrchestratorInterface> ()
-    .AddConstructor<McpttPusherOrchestratorContention>()
-    .AddAttribute ("ContentionProbability", "Probability that there will be contention.",
-                   DoubleValue (0.0),
-                   MakeDoubleAccessor (&McpttPusherOrchestratorContention::m_cp),
-                   MakeDoubleChecker<double> (0, 1))
-    .AddAttribute ("Orchestrator", "The underlying orchestrator to contend with.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttPusherOrchestratorContention::GetOrchestrator,
-                                        &McpttPusherOrchestratorContention::SetOrchestrator),
-                   MakePointerChecker<McpttPusherOrchestratorInterface> ())
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttPusherOrchestratorContention")
+            .SetParent<McpttPusherOrchestratorInterface>()
+            .AddConstructor<McpttPusherOrchestratorContention>()
+            .AddAttribute("ContentionProbability",
+                          "Probability that there will be contention.",
+                          DoubleValue(0.0),
+                          MakeDoubleAccessor(&McpttPusherOrchestratorContention::m_cp),
+                          MakeDoubleChecker<double>(0, 1))
+            .AddAttribute("Orchestrator",
+                          "The underlying orchestrator to contend with.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&McpttPusherOrchestratorContention::GetOrchestrator,
+                                              &McpttPusherOrchestratorContention::SetOrchestrator),
+                          MakePointerChecker<McpttPusherOrchestratorInterface>());
 
-  return tid;
+    return tid;
 }
 
-McpttPusherOrchestratorContention::McpttPusherOrchestratorContention (void)
-  : McpttPusherOrchestratorInterface (),
-    m_activePusher (0),
-    m_nextEvent (EventId ()),
-    m_rv (CreateObject<UniformRandomVariable> ())
+McpttPusherOrchestratorContention::McpttPusherOrchestratorContention()
+    : McpttPusherOrchestratorInterface(),
+      m_activePusher(nullptr),
+      m_nextEvent(EventId()),
+      m_rv(CreateObject<UniformRandomVariable>())
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttPusherOrchestratorContention::~McpttPusherOrchestratorContention (void)
+McpttPusherOrchestratorContention::~McpttPusherOrchestratorContention()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -102,16 +104,16 @@ McpttPusherOrchestratorContention::AssignStreams (int64_t stream)
   return streams;
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorContention::GetPushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestratorContention::GetPushers() const
 {
   NS_LOG_FUNCTION (this);
 
   return m_orchestrator->GetPushers ();
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorContention::GetActivePushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestratorContention::GetActivePushers() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -126,7 +128,7 @@ McpttPusherOrchestratorContention::GetActivePushers (void) const
 }
 
 Time
-McpttPusherOrchestratorContention::NextPttIat (void)
+McpttPusherOrchestratorContention::NextPttIat()
 {
   NS_LOG_FUNCTION (this);
 
@@ -134,7 +136,7 @@ McpttPusherOrchestratorContention::NextPttIat (void)
 }
 
 Time
-McpttPusherOrchestratorContention::NextPttDuration (void)
+McpttPusherOrchestratorContention::NextPttDuration()
 {
   NS_LOG_FUNCTION (this);
 
@@ -142,7 +144,7 @@ McpttPusherOrchestratorContention::NextPttDuration (void)
 }
 
 void
-McpttPusherOrchestratorContention::Start (void)
+McpttPusherOrchestratorContention::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -152,7 +154,7 @@ McpttPusherOrchestratorContention::Start (void)
 }
 
 void
-McpttPusherOrchestratorContention::Stop (void)
+McpttPusherOrchestratorContention::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -178,7 +180,7 @@ McpttPusherOrchestratorContention::ActivatePusher (Ptr<McpttPusher> pusher)
 }
 
 void
-McpttPusherOrchestratorContention::DeactivatePusher (void)
+McpttPusherOrchestratorContention::DeactivatePusher()
 {
   if (m_activePusher)
     {
@@ -186,32 +188,32 @@ McpttPusherOrchestratorContention::DeactivatePusher (void)
         {
           m_activePusher->Release ();
         }
-      m_activePusher = 0;
+        m_activePusher = nullptr;
     }
 }
 
 void
-McpttPusherOrchestratorContention::DoDispose (void)
+McpttPusherOrchestratorContention::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   m_nextEvent.Cancel ();
-  m_nextPusher = 0;
-  m_orchestrator = 0;
-  m_rv = 0;
+  m_nextPusher = nullptr;
+  m_orchestrator = nullptr;
+  m_rv = nullptr;
 
   DeactivatePusher ();
 }
 
 void
-McpttPusherOrchestratorContention::PttPush (void)
+McpttPusherOrchestratorContention::PttPush()
 {
   NS_LOG_FUNCTION (this);
 
   if (m_nextPusher)
     {
       ActivatePusher (m_nextPusher);
-      m_nextPusher = 0;
+      m_nextPusher = nullptr;
     }
 
   Time pttDuration = NextPttDuration ();
@@ -222,7 +224,7 @@ McpttPusherOrchestratorContention::PttPush (void)
 }
 
 void
-McpttPusherOrchestratorContention::PttRelease (void)
+McpttPusherOrchestratorContention::PttRelease()
 {
   NS_LOG_FUNCTION (this);
 
@@ -240,15 +242,11 @@ McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Ti
       std::vector<Ptr<McpttPusher> > pushers = GetPushers ();
       std::vector<Ptr<McpttPusher> > activePushers = GetActivePushers ();
 
-      for (std::vector<Ptr<McpttPusher> >::iterator pit = pushers.begin ();
-           pit != pushers.end ();
-           pit++)
-        {
+      for (auto pit = pushers.begin(); pit != pushers.end(); pit++)
+      {
           bool found = false;
-          for (std::vector<Ptr<McpttPusher> >::iterator apit = activePushers.begin ();
-               apit != activePushers.end ();
-               apit++)
-            {
+          for (auto apit = activePushers.begin(); apit != activePushers.end(); apit++)
+          {
               if (*pit == *apit)
                 {
                   found = true;
@@ -261,7 +259,7 @@ McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Ti
             }
         }
 
-      if (contenders.size () > 0)
+        if (!contenders.empty())
         {
           uint32_t rv = m_rv->GetInteger (0, contenders.size () - 1);
           m_nextPusher = contenders[rv];
@@ -275,7 +273,7 @@ McpttPusherOrchestratorContention::PttDurationTraceCallback (uint32_t userId, Ti
 }
 
 Ptr<McpttPusherOrchestratorInterface>
-McpttPusherOrchestratorContention::GetOrchestrator (void) const
+McpttPusherOrchestratorContention::GetOrchestrator() const
 {
   NS_LOG_FUNCTION (this);
 

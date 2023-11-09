@@ -52,19 +52,19 @@ NS_LOG_COMPONENT_DEFINE ("McpttServerCallMachineGroupPrearrangedState");
 namespace psc {
 
 /** McpttServerCallMachineGroupPrearrangedState - begin **/
-McpttServerCallMachineGroupPrearrangedState::McpttServerCallMachineGroupPrearrangedState (void)
-  : SimpleRefCount<McpttServerCallMachineGroupPrearrangedState> ()
+McpttServerCallMachineGroupPrearrangedState::McpttServerCallMachineGroupPrearrangedState()
+    : SimpleRefCount<McpttServerCallMachineGroupPrearrangedState>()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineGroupPrearrangedState::~McpttServerCallMachineGroupPrearrangedState (void)
+McpttServerCallMachineGroupPrearrangedState::~McpttServerCallMachineGroupPrearrangedState()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedState::GetInstanceStateId (void) const
+McpttServerCallMachineGroupPrearrangedState::GetInstanceStateId() const
 {
   return McpttEntityId ();
 }
@@ -111,32 +111,32 @@ operator<< (std::ostream& os, const McpttServerCallMachineGroupPrearrangedState&
 
 /** McpttServerCallMachineGroupPrearrangedStateS1 - begin **/
 Ptr<McpttServerCallMachineGroupPrearrangedStateS1>
-McpttServerCallMachineGroupPrearrangedStateS1::GetInstance (void)
+McpttServerCallMachineGroupPrearrangedStateS1::GetInstance()
 {
   static Ptr<McpttServerCallMachineGroupPrearrangedStateS1> instance = Create<McpttServerCallMachineGroupPrearrangedStateS1> ();
   return instance;
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS1::GetStateId (void)
+McpttServerCallMachineGroupPrearrangedStateS1::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (1, "'S1: start-stop'");
   return stateId;
 }
 
-McpttServerCallMachineGroupPrearrangedStateS1::McpttServerCallMachineGroupPrearrangedStateS1 (void)
-  : McpttServerCallMachineGroupPrearrangedState ()
+McpttServerCallMachineGroupPrearrangedStateS1::McpttServerCallMachineGroupPrearrangedStateS1()
+    : McpttServerCallMachineGroupPrearrangedState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineGroupPrearrangedStateS1::~McpttServerCallMachineGroupPrearrangedStateS1 (void)
+McpttServerCallMachineGroupPrearrangedStateS1::~McpttServerCallMachineGroupPrearrangedStateS1()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS1::GetInstanceStateId (void) const
+McpttServerCallMachineGroupPrearrangedStateS1::GetInstanceStateId() const
 {
   return McpttServerCallMachineGroupPrearrangedStateS1::GetStateId ();
 }
@@ -170,38 +170,38 @@ McpttServerCallMachineGroupPrearrangedStateS1::ReceiveInvite (McpttServerCallMac
           pending.push_back (userId);
         }
     }
-  NS_ASSERT_MSG (pending.size (), "Error, no responses added to pending list");
+  NS_ASSERT_MSG (!pending.empty (), "Error, no responses added to pending list");
   machine.SetPendingTransactionList (pending);
 }
 
 /** McpttServerCallMachineGroupPrearrangedStateS2 - begin **/
 Ptr<McpttServerCallMachineGroupPrearrangedStateS2>
-McpttServerCallMachineGroupPrearrangedStateS2::GetInstance (void)
+McpttServerCallMachineGroupPrearrangedStateS2::GetInstance()
 {
   static Ptr<McpttServerCallMachineGroupPrearrangedStateS2> instance = Create<McpttServerCallMachineGroupPrearrangedStateS2> ();
   return instance;
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS2::GetStateId (void)
+McpttServerCallMachineGroupPrearrangedStateS2::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (2, "'S2: initiating'");
   return stateId;
 }
 
-McpttServerCallMachineGroupPrearrangedStateS2::McpttServerCallMachineGroupPrearrangedStateS2 (void)
-  : McpttServerCallMachineGroupPrearrangedState ()
+McpttServerCallMachineGroupPrearrangedStateS2::McpttServerCallMachineGroupPrearrangedStateS2()
+    : McpttServerCallMachineGroupPrearrangedState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineGroupPrearrangedStateS2::~McpttServerCallMachineGroupPrearrangedStateS2 (void)
+McpttServerCallMachineGroupPrearrangedStateS2::~McpttServerCallMachineGroupPrearrangedStateS2()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS2::GetInstanceStateId (void) const
+McpttServerCallMachineGroupPrearrangedStateS2::GetInstanceStateId() const
 {
   return McpttServerCallMachineGroupPrearrangedStateS2::GetStateId ();
 }
@@ -305,33 +305,33 @@ McpttServerCallMachineGroupPrearrangedStateS2::ReceiveBye (McpttServerCallMachin
 
 /** McpttServerCallMachineGroupPrearrangedStateS3 - begin **/
 Ptr<McpttServerCallMachineGroupPrearrangedStateS3>
-McpttServerCallMachineGroupPrearrangedStateS3::GetInstance (void)
+McpttServerCallMachineGroupPrearrangedStateS3::GetInstance()
 {
   static Ptr<McpttServerCallMachineGroupPrearrangedStateS3> instance = Create<McpttServerCallMachineGroupPrearrangedStateS3> ();
   return instance;
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS3::GetStateId (void)
+McpttServerCallMachineGroupPrearrangedStateS3::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (3, "'S3: part of ongoing call'");
 
   return stateId;
 }
 
-McpttServerCallMachineGroupPrearrangedStateS3::McpttServerCallMachineGroupPrearrangedStateS3 (void)
-  : McpttServerCallMachineGroupPrearrangedState ()
+McpttServerCallMachineGroupPrearrangedStateS3::McpttServerCallMachineGroupPrearrangedStateS3()
+    : McpttServerCallMachineGroupPrearrangedState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineGroupPrearrangedStateS3::~McpttServerCallMachineGroupPrearrangedStateS3 (void)
+McpttServerCallMachineGroupPrearrangedStateS3::~McpttServerCallMachineGroupPrearrangedStateS3()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS3::GetInstanceStateId (void) const
+McpttServerCallMachineGroupPrearrangedStateS3::GetInstanceStateId() const
 {
   return McpttServerCallMachineGroupPrearrangedStateS3::GetStateId ();
 }
@@ -376,7 +376,7 @@ McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachin
         }
       machine.SetState (McpttServerCallMachineGroupPrearrangedStateS4::GetInstance ());
       machine.GetServerCall ()->GetArbitrator ()->CallRelease1 ();
-      NS_ASSERT_MSG (pending.size (), "Error, no responses added to pending list");
+      NS_ASSERT_MSG (!pending.empty (), "Error, no responses added to pending list");
       machine.SetPendingTransactionList (pending);
       NS_LOG_DEBUG ("Reply to BYE with 200 OK");
       Ptr<Packet> response = Create<Packet> ();
@@ -400,33 +400,33 @@ McpttServerCallMachineGroupPrearrangedStateS3::ReceiveBye (McpttServerCallMachin
 
 /** McpttServerCallMachineGroupPrearrangedStateS4 - begin **/
 Ptr<McpttServerCallMachineGroupPrearrangedStateS4>
-McpttServerCallMachineGroupPrearrangedStateS4::GetInstance (void)
+McpttServerCallMachineGroupPrearrangedStateS4::GetInstance()
 {
   static Ptr<McpttServerCallMachineGroupPrearrangedStateS4> instance = Create<McpttServerCallMachineGroupPrearrangedStateS4> ();
   return instance;
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS4::GetStateId (void)
+McpttServerCallMachineGroupPrearrangedStateS4::GetStateId()
 {
   static McpttEntityId stateId = McpttEntityId (4, "'S4: releasing'");
 
   return stateId;
 }
 
-McpttServerCallMachineGroupPrearrangedStateS4::McpttServerCallMachineGroupPrearrangedStateS4 (void)
-  : McpttServerCallMachineGroupPrearrangedState ()
+McpttServerCallMachineGroupPrearrangedStateS4::McpttServerCallMachineGroupPrearrangedStateS4()
+    : McpttServerCallMachineGroupPrearrangedState()
 {
   NS_LOG_FUNCTION (this);
 }
 
-McpttServerCallMachineGroupPrearrangedStateS4::~McpttServerCallMachineGroupPrearrangedStateS4 (void)
+McpttServerCallMachineGroupPrearrangedStateS4::~McpttServerCallMachineGroupPrearrangedStateS4()
 {
   NS_LOG_FUNCTION (this);
 }
 
 McpttEntityId
-McpttServerCallMachineGroupPrearrangedStateS4::GetInstanceStateId (void) const
+McpttServerCallMachineGroupPrearrangedStateS4::GetInstanceStateId() const
 {
   return McpttServerCallMachineGroupPrearrangedStateS4::GetStateId ();
 }

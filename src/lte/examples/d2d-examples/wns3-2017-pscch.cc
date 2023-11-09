@@ -65,7 +65,7 @@ PacketSrcDstAddrsTrace(Ptr<OutputStreamWrapper> stream,
     if (InetSocketAddress::IsMatchingType(srcAddrs))
     {
         oss << InetSocketAddress::ConvertFrom(srcAddrs).GetIpv4();
-        if (!oss.str().compare("0.0.0.0")) // srcAddrs not set
+        if (oss.str() == "0.0.0.0") // srcAddrs not set
         {
             *stream->GetStream() << localAddrs << ":"
                                  << InetSocketAddress::ConvertFrom(srcAddrs).GetPort() << "\t"
@@ -76,7 +76,7 @@ PacketSrcDstAddrsTrace(Ptr<OutputStreamWrapper> stream,
         {
             oss.str("");
             oss << InetSocketAddress::ConvertFrom(dstAddrs).GetIpv4();
-            if (!oss.str().compare("0.0.0.0")) // dstAddrs not set
+            if (oss.str() == "0.0.0.0") // dstAddrs not set
             {
                 *stream->GetStream()
                     << InetSocketAddress::ConvertFrom(srcAddrs).GetIpv4() << ":"
@@ -173,7 +173,7 @@ main(int argc, char* argv[])
 
     if (enableNsLogs)
     {
-        LogLevel logLevel =
+        auto logLevel =
             (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_ALL);
         LogComponentEnable("wns3-2017-pscch", logLevel);
 
@@ -258,7 +258,7 @@ main(int argc, char* argv[])
     sectorNodes.Create(topoHelper->GetNumNodes());
 
     std::cout << "eNb IDs=[";
-    for (NodeContainer::Iterator it = sectorNodes.Begin(); it != sectorNodes.End(); it++)
+    for (auto it = sectorNodes.Begin(); it != sectorNodes.End(); it++)
     {
         if (it + 1 != sectorNodes.End())
         {
@@ -293,7 +293,7 @@ main(int argc, char* argv[])
         ueAllNodes.Add(ueResponders);
 
         std::cout << "Responders IDs=[";
-        for (NodeContainer::Iterator it = ueResponders.Begin(); it != ueResponders.End(); it++)
+        for (auto it = ueResponders.Begin(); it != ueResponders.End(); it++)
         {
             if (it + 1 != ueResponders.End())
             {
@@ -547,7 +547,7 @@ main(int argc, char* argv[])
     NS_LOG_INFO("Setting application traces...");
     std::ostringstream oss;
     // Set responders Tx traces
-    for (uint16_t ac = 0; ac < clientRespondersApps.GetN(); ac++)
+    for (uint32_t ac = 0; ac < clientRespondersApps.GetN(); ac++)
     {
         oss << "t\t" << activeTxUes.Get(ac)->GetNode()->GetId() << "\t"
             << activeTxUes.Get(ac)->GetObject<LteUeNetDevice>()->GetImsi() << "\tresp";
@@ -565,7 +565,7 @@ main(int argc, char* argv[])
     }
 
     // Set responders Rx traces
-    for (uint16_t ac = 0; ac < clientRespondersSrvApps.GetN(); ac++)
+    for (uint32_t ac = 0; ac < clientRespondersSrvApps.GetN(); ac++)
     {
         Ipv4Address localAddrs = ueRespondersDevs.Get(ac)
                                      ->GetNode()

@@ -401,7 +401,7 @@ SlInCovrg1Relay2RemoteRegularTestCase::DoRun()
 
     if (relayTraffic)
     {
-        for (uint16_t relUeIdx = 0; relUeIdx < relayUeNodes.GetN(); relUeIdx++)
+        for (uint32_t relUeIdx = 0; relUeIdx < relayUeNodes.GetN(); relUeIdx++)
         {
             uint16_t relUePort = echoPortBase + 100 + relUeIdx;
 
@@ -431,7 +431,7 @@ SlInCovrg1Relay2RemoteRegularTestCase::DoRun()
 
     if (remoteTraffic)
     {
-        for (uint16_t remUeIdx = 0; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
+        for (uint32_t remUeIdx = 0; remUeIdx < remoteUeNodes.GetN(); remUeIdx++)
         {
             uint16_t remUePort = echoPortBase + remUeIdx;
 

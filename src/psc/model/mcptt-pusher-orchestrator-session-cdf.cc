@@ -381,43 +381,48 @@ const std::vector<std::pair<double, double> > McpttPusherOrchestratorSessionCdf:
 const double McpttPusherOrchestratorSessionCdf::CDF_POINTS_AVG = 8.58;
 
 TypeId
-McpttPusherOrchestratorSessionCdf::GetTypeId (void)
+McpttPusherOrchestratorSessionCdf::GetTypeId()
 {
-  static TypeId tid = TypeId ("ns3::psc::McpttPusherOrchestratorSessionCdf")
-    .SetParent<McpttPusherOrchestratorInterface> ()
-    .AddConstructor<McpttPusherOrchestratorSessionCdf>()
-    .AddAttribute ("ActivityFactor", "The desired activity factor.",
-                   DoubleValue (.50),
-                   MakeDoubleAccessor (&McpttPusherOrchestratorSessionCdf::GetActivityFactor,
-                                       &McpttPusherOrchestratorSessionCdf::SetActivityFactor),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("Orchestrator", "The underlying orchestrator to contend with.",
-                   PointerValue (0),
-                   MakePointerAccessor (&McpttPusherOrchestratorSessionCdf::GetOrchestrator,
-                                        &McpttPusherOrchestratorSessionCdf::SetOrchestrator),
-                   MakePointerChecker<McpttPusherOrchestratorInterface> ())
-    .AddTraceSource ("SessionInterarrivalTimeTrace",
-                     "The trace for capturing session interarrival times.",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestratorSessionCdf::m_sessionIatTrace),
-                     "ns3::Time::TracedCallback")
-    .AddTraceSource ("SessionDurationTrace",
-                     "The trace for capturing session durations.",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestratorSessionCdf::m_sessionDurationTrace),
-                     "ns3::Time::TracedCallback")
-    .AddTraceSource ("SessionState", "Trace state changes of active sessions state",
-                     MakeTraceSourceAccessor (&McpttPusherOrchestratorSessionCdf::m_active),
-                     "ns3::TracedValueCallback::Boolean")
-  ;
+    static TypeId tid =
+        TypeId("ns3::psc::McpttPusherOrchestratorSessionCdf")
+            .SetParent<McpttPusherOrchestratorInterface>()
+            .AddConstructor<McpttPusherOrchestratorSessionCdf>()
+            .AddAttribute("ActivityFactor",
+                          "The desired activity factor.",
+                          DoubleValue(.50),
+                          MakeDoubleAccessor(&McpttPusherOrchestratorSessionCdf::GetActivityFactor,
+                                             &McpttPusherOrchestratorSessionCdf::SetActivityFactor),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("Orchestrator",
+                          "The underlying orchestrator to contend with.",
+                          PointerValue(nullptr),
+                          MakePointerAccessor(&McpttPusherOrchestratorSessionCdf::GetOrchestrator,
+                                              &McpttPusherOrchestratorSessionCdf::SetOrchestrator),
+                          MakePointerChecker<McpttPusherOrchestratorInterface>())
+            .AddTraceSource(
+                "SessionInterarrivalTimeTrace",
+                "The trace for capturing session interarrival times.",
+                MakeTraceSourceAccessor(&McpttPusherOrchestratorSessionCdf::m_sessionIatTrace),
+                "ns3::Time::TracedCallback")
+            .AddTraceSource(
+                "SessionDurationTrace",
+                "The trace for capturing session durations.",
+                MakeTraceSourceAccessor(&McpttPusherOrchestratorSessionCdf::m_sessionDurationTrace),
+                "ns3::Time::TracedCallback")
+            .AddTraceSource("SessionState",
+                            "Trace state changes of active sessions state",
+                            MakeTraceSourceAccessor(&McpttPusherOrchestratorSessionCdf::m_active),
+                            "ns3::TracedValueCallback::Boolean");
 
-  return tid;
+    return tid;
 }
 
-McpttPusherOrchestratorSessionCdf::McpttPusherOrchestratorSessionCdf (void)
-  : McpttPusherOrchestratorInterface (),
-    m_avgSessionDuration (CDF_POINTS_AVG),
-    m_nextEvent (EventId ()),
-    m_sessionDurationVariable (CreateObject<EmpiricalRandomVariable> ()),
-    m_sessionIatVariable (CreateObject<ExponentialRandomVariable> ())
+McpttPusherOrchestratorSessionCdf::McpttPusherOrchestratorSessionCdf()
+    : McpttPusherOrchestratorInterface(),
+      m_avgSessionDuration(CDF_POINTS_AVG),
+      m_nextEvent(EventId()),
+      m_sessionDurationVariable(CreateObject<EmpiricalRandomVariable>()),
+      m_sessionIatVariable(CreateObject<ExponentialRandomVariable>())
 {
   NS_LOG_FUNCTION (this);
 
@@ -428,7 +433,7 @@ McpttPusherOrchestratorSessionCdf::McpttPusherOrchestratorSessionCdf (void)
     }
 }
 
-McpttPusherOrchestratorSessionCdf::~McpttPusherOrchestratorSessionCdf (void)
+McpttPusherOrchestratorSessionCdf::~McpttPusherOrchestratorSessionCdf()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -465,16 +470,17 @@ McpttPusherOrchestratorSessionCdf::ChangeCdf (Ptr<EmpiricalRandomVariable> sessi
 
   UpdateSessionIatVariable ();
 }
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorSessionCdf::GetPushers (void) const
+
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestratorSessionCdf::GetPushers() const
 {
   NS_LOG_FUNCTION (this);
 
   return m_orchestrator->GetPushers ();
 }
 
-std::vector<Ptr<McpttPusher> >
-McpttPusherOrchestratorSessionCdf::GetActivePushers (void) const
+std::vector<Ptr<McpttPusher>>
+McpttPusherOrchestratorSessionCdf::GetActivePushers() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -482,7 +488,7 @@ McpttPusherOrchestratorSessionCdf::GetActivePushers (void) const
 }
 
 Time
-McpttPusherOrchestratorSessionCdf::NextPttIat (void)
+McpttPusherOrchestratorSessionCdf::NextPttIat()
 {
   NS_LOG_FUNCTION (this);
 
@@ -490,7 +496,7 @@ McpttPusherOrchestratorSessionCdf::NextPttIat (void)
 }
 
 Time
-McpttPusherOrchestratorSessionCdf::NextPttDuration (void)
+McpttPusherOrchestratorSessionCdf::NextPttDuration()
 {
   NS_LOG_FUNCTION (this);
 
@@ -498,7 +504,7 @@ McpttPusherOrchestratorSessionCdf::NextPttDuration (void)
 }
 
 void
-McpttPusherOrchestratorSessionCdf::Start (void)
+McpttPusherOrchestratorSessionCdf::Start()
 {
   NS_LOG_FUNCTION (this);
 
@@ -508,7 +514,7 @@ McpttPusherOrchestratorSessionCdf::Start (void)
 }
 
 void
-McpttPusherOrchestratorSessionCdf::Stop (void)
+McpttPusherOrchestratorSessionCdf::Stop()
 {
   NS_LOG_FUNCTION (this);
 
@@ -522,18 +528,18 @@ McpttPusherOrchestratorSessionCdf::Stop (void)
 }
 
 void
-McpttPusherOrchestratorSessionCdf::DoDispose (void)
+McpttPusherOrchestratorSessionCdf::DoDispose()
 {
   NS_LOG_FUNCTION (this);
 
   m_nextEvent.Cancel ();
-  m_orchestrator = 0;
-  m_sessionDurationVariable = 0;
-  m_sessionIatVariable = 0;
+  m_orchestrator = nullptr;
+  m_sessionDurationVariable = nullptr;
+  m_sessionIatVariable = nullptr;
 }
 
 void
-McpttPusherOrchestratorSessionCdf::StartSession (void)
+McpttPusherOrchestratorSessionCdf::StartSession()
 {
   NS_LOG_FUNCTION (this);
 
@@ -548,7 +554,7 @@ McpttPusherOrchestratorSessionCdf::StartSession (void)
 }
 
 void
-McpttPusherOrchestratorSessionCdf::StopSession (void)
+McpttPusherOrchestratorSessionCdf::StopSession()
 {
   Time sessionIat = Seconds (m_sessionIatVariable->GetValue ());
   m_nextEvent = Simulator::Schedule (sessionIat, &McpttPusherOrchestratorSessionCdf::StartSession, this);
@@ -561,7 +567,7 @@ McpttPusherOrchestratorSessionCdf::StopSession (void)
 }
 
 void
-McpttPusherOrchestratorSessionCdf::UpdateSessionIatVariable (void)
+McpttPusherOrchestratorSessionCdf::UpdateSessionIatVariable()
 {
   NS_LOG_FUNCTION (this);
 
@@ -584,7 +590,7 @@ McpttPusherOrchestratorSessionCdf::UpdateSessionIatVariable (void)
 }
 
 double
-McpttPusherOrchestratorSessionCdf::GetActivityFactor (void) const
+McpttPusherOrchestratorSessionCdf::GetActivityFactor() const
 {
   NS_LOG_FUNCTION (this);
 
@@ -592,7 +598,7 @@ McpttPusherOrchestratorSessionCdf::GetActivityFactor (void) const
 }
 
 Ptr<McpttPusherOrchestratorInterface>
-McpttPusherOrchestratorSessionCdf::GetOrchestrator (void) const
+McpttPusherOrchestratorSessionCdf::GetOrchestrator() const
 {
   NS_LOG_FUNCTION (this);
 
